@@ -491,10 +491,14 @@ The separate [constructive realization](nodal/ORGANIZED_PARENT_CONSTRUCTIVE_ACTU
 supplies a four-slow-unit input that reaches the exact same endpoint within
 the net work budget and preserves every child throughout the path. Its input
 depends on actual initial complete state, including the reached forms, and
-assumes actuation at all nodes. These are supplied control premises. Exact
-endpoint and complete-law matching then permit the admitted restoring response
-after release; they do not establish autonomous event occurrence or realization
-from parent means alone.
+assumes actuation at all nodes. The
+[collective construction](nodal/ORGANIZED_PARENT_COLLECTIVE_ACTUATION.md)
+reduces initialization to eight child means and actuation to four uniform
+channels. It retains every fine coordinate, with a controlled endpoint error
+and separately justified recovery and prediction after release. The collective
+observations retain child association; they are not the four parent means.
+Exact initial observations, marked channels and supplied intervention timing
+remain premises, without autonomous event occurrence or physical identification.
 
 Here structural participation does not identify the entire joint state with
 one scalar EPI coordinate. The current representation also retains phase,

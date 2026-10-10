@@ -317,3 +317,8 @@ under supplied full-node actuation and complete initial-state knowledge.
 It preserves the one-unit impossibility result, without claiming optimal
 duration, optimal work, a registered operator's runtime admission, a selected
 natural forcing law or a laboratory actuator and clock.
+
+The separate [collective actuation theorem](ORGANIZED_PARENT_COLLECTIVE_ACTUATION.md)
+uses eight initial child means and four uniform input channels. Its endpoint
+is approximate, and its same-input error, actual work and perturbed release
+require new bounds. That reduction leaves the exact construction above intact.

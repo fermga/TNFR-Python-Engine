@@ -52,6 +52,8 @@ def _prepared_heat_error_radii(
 
     Callers prove the complete reciprocal rows, mean-zero form difference,
     spectral/Lipschitz bounds and the whole-time growth factor. Identical
+    prescribed additive form inputs cancel from the compared rows; estimates
+    for a common input do not transfer to different input recipes. Identical
     additive jumps preserve the difference only when applied to both compared
     states. No event, source, clock or horizon is selected by this arithmetic.
     Exact rational errors remain exact even below the interval grid.

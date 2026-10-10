@@ -227,9 +227,14 @@ The [constructive realization](nodal/ORGANIZED_PARENT_CONSTRUCTIVE_ACTUATION.md)
 adds a sufficient result under its own frozen four-unit path. It retains
 actual endpoint forms, all fine source errors, child identity during actuation
 and the signed net work budget. Its full-state initialization and all-node
-actuation authority remain premises. Reducing those observation or input
-requirements would need a new approximation and release argument, even though
-the exact endpoint permits reuse of the earlier restoring theorem.
+actuation authority are reduced by the
+[collective construction](nodal/ORGANIZED_PARENT_COLLECTIVE_ACTUATION.md),
+which uses eight initial means and four uniform channels. Its same-input
+comparison carries the unresolved fine state into actual work, approximate
+endpoints and a separately admitted recovery. The eight-coordinate forecast
+uses no release measurement. This is controlled collective sufficiency for
+one preparation and horizon; exact observation, supplied timing and the input
+source remain premises rather than derived autonomous behavior.
 
 ### Ordered geometry connects transfer to formation
 

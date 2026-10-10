@@ -309,6 +309,18 @@ executes no solver or graph mutation. Shared interval field extraction must
 preserve previous observations exactly; retain malformed-input and subgrid
 controls. Do not replay frozen source producers.
 
+For [collective actuation](theory/nodal/ORGANIZED_PARENT_COLLECTIVE_ACTUATION.md),
+add `tests/physics/test_organized_parent_collective_actuation.py` to that
+selection. Verify identical child input channels against independent complete
+rows, including the inherited denominator and all clock conversions. The
+input and predictor consume only the eight initial means. Keep the actual
+fine state, compare both flows under the same input, and include both the
+initial discarded residual and the final error in the endpoint budget.
+Check actual work beyond reference work, every forecast coordinate, and
+recovery after propagating endpoint mismatch. Old aggregate verdicts or an
+outer-gap-only forecast cannot replace these premises. No release observation,
+fine-state feedback, source refinement or frozen producer is admitted.
+
 For [identity-preserving assembly work](theory/nodal/ORGANIZED_ASSEMBLY_WORK.md),
 select `tests/physics/test_organized_assembly_work.py` with
 `tests/physics/test_acquired_organized_network_capture.py`,
