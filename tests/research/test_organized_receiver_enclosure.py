@@ -220,7 +220,9 @@ def test_error_budget_is_unavailable_not_negative_evidence(
     assert result["accepted_steps"] == 1
 
 
-def test_arithmetic_failure_preserves_the_validated_prefix(monkeypatch, synthetic_source):
+def test_arithmetic_failure_preserves_the_validated_prefix(
+    monkeypatch, synthetic_source
+):
     def eventually_unavailable(*args, time, **kwargs):
         if time == 0:
             return _record()

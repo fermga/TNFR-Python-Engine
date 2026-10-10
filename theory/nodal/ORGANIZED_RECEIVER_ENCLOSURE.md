@@ -275,10 +275,74 @@ phase-error budget exhaustion, unresolved winding or a horizon without
 capture remain explicit unavailable outcomes; none is silently promoted to
 nonformation.
 
-## Evaluation status
+<a id="organized-receiver-enclosure-result"></a>
+## Evaluated result: loss of both donor identities
 
-The finite response is pending. The protocol above is prospective and no
-trajectory values or outcome are asserted in this version. The retained
-evaluation artifact will identify its single executed response and validated
-prefix. Supplied support, donor preparation, law and structural clocks remain
-premises under every possible outcome.
+The first response to the [frozen protocol](../../docs/assets/sine_formed_classes/organized-receiver-enclosure-v1.protocol.json)
+certifies **whole-family donor loss**. The
+[response archive](../../docs/assets/sine_formed_classes/organized-receiver-enclosure-v1.response.zip)
+preserves the first outcome JSON and every original step JSON byte-for-byte
+at their recorded repository-relative paths. Its outcome contains the complete
+source admission, ordered step manifest and terminal observation. This lossless
+transport does not replace or regenerate any evaluated value. The
+[freeze record](../../docs/assets/sine_formed_classes/organized-receiver-enclosure-v1.freeze.json)
+and [source archive](../../docs/assets/sine_formed_classes/organized-receiver-enclosure-v1.source.zip)
+preserve the evaluated implementation and policy. There were 76 accepted
+steps, with no refinement or retry. The declared donor-loss stopping rule
+ended the calculation at
+\[
+ u_*=19/2,\qquad
+ \tau_*=400+\frac{19}{2\gamma^2},\qquad
+ t_*=\frac{1024}{1023}\left(400+\frac{19}{2\gamma^2}\right).
+\]
+The final carried Euclidean phase radius is approximately
+\(0.0031002376916330595<0.00311\). Every source in the original error family
+has endpoint windings \((0,0,0)\). Each donor's principal branch margin at
+that endpoint exceeds \(1/20\), including the complete source error and
+velocity defect. This is a validated property of the actual complete law,
+not a winding read from the nominal reference alone.
+
+The retained history distinguishes the loss proof from the earlier failure
+of a sufficient corridor:
+
+| Retained endpoint | Actual winding enclosure | Continuous donor-history evidence |
+| --- | --- | --- |
+| Step 74, \(u=37/4\) | \((1,1,0)\) | Both donors retained through this entire prefix |
+| Step 75, \(u=75/8\) | \((1,1,0)\) | The whole-step donor corridor is unavailable; its endpoint remains certified |
+| Step 76, \(u=19/2\) | \((0,0,0)\) | Both donors have definitely lost winding one |
+
+Thus, for each original source and each donor, a winding-one to winding-zero
+transition occurs between \(75/8\) and \(19/2\). The first donor loss is
+enclosed by \([37/4,19/2]\): retention is proved through the former time,
+and loss is established by the latter. The narrower endpoint interval does
+not establish the first or unique crossing, because the step-75 interior
+margin is unavailable. That unavailable margin was not treated as a negative
+verdict; validation continued to the strict endpoint loss certificate.
+
+A further consequence follows from the retained full-time tubes without a
+new trajectory evaluation. Reconstructing their original receiver edge
+differences and enlarging by the certified \(\sqrt2E_{\max}\) gives a
+strict winding-zero branch margin greater than \(13/10\) on every one of
+the 76 intervals. The receiver therefore remains winding zero throughout
+\(0\le u\le19/2\), including the donor losses. This is an additional
+retained-tube consequence, distinct from the prospectively declared terminal
+donor-loss verdict. Together with the earlier initial-layer exclusion, the
+receiver has not acquired winding one anywhere from preparation to this stop.
+
+The requested acquisition with donor retention and joined capture is
+therefore false for this full source family under this complete law. Initial
+motion toward the donor phases, reciprocal interaction, monotone complete
+storage and the existence of the joined attracting target are insufficient
+to establish that claim. The loss concerns the declared regional winding
+identity; winding zero does not imply that the phase state is uniform or
+that every possible organization has disappeared. Neither future receiver
+acquisition nor global synchronization is decided by this finite result.
+
+The [three-ramp acquisition theorem](ORGANIZED_JOINT_ACQUISITION.md) remains
+valid under its different preparation. This result supplies a counterexample
+to transferring its acquisition verdict to a locally unprepared receiver,
+even though support, constitutive law and attracting target are shared.
+Supplied support, donor preparation and structural clocks remain premises;
+no physical identification or unique TNFR law follows. The
+[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns the subsequent foundational question.

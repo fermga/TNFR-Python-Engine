@@ -91,3 +91,7 @@ logs/
 # Local-only modules (not published to GitHub)
 crypto/
 publish/
+# The first receiver response is retained byte-for-byte in its response ZIP.
+# Keep the original evaluator's local journal without tracking a duplicate.
+/docs/assets/sine_formed_classes/organized-receiver-enclosure-v1.json
+/docs/assets/sine_formed_classes/organized-receiver-enclosure-v1.steps/

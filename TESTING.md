@@ -308,8 +308,10 @@ evaluate neither a reduced trajectory nor a frozen response producer.
 
 For the [source-preserving receiver enclosure](theory/nodal/ORGANIZED_RECEIVER_ENCLOSURE.md),
 select `tests/physics/test_organized_receiver_enclosure_geometry.py`,
-`tests/research/test_organized_receiver_enclosure.py` and the shared metric
-Taylor, frozen-source and exact-artifact controls. Use synthetic reference
+`tests/research/test_organized_receiver_enclosure.py`,
+`tests/research/test_organized_receiver_enclosure_lifecycle.py` and
+`tests/research/test_organized_receiver_enclosure_evidence.py` with the shared
+metric Taylor, frozen-source and exact-artifact controls. Use synthetic reference
 states; never replay the reserved two-ramp trajectory during regression.
 Check both mean-zero reflection sectors against an independent full-space
 Jacobian certificate, fixed seams, signed scalar growth, endpoint recentering,

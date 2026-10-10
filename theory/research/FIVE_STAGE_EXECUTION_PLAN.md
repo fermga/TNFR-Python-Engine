@@ -143,12 +143,14 @@ part of the complete law. The [slow admission](#organized-receiver-slow-capture-
 now derives an exact second-order phase description and a uniform defect
 bound for first-order descent after structural time 400. At time 400, actual
 receiver phase rates have the donor-directed signs while its winding remains
-zero. The source-inclusive differential-inclusion contract is admitted;
-eventual acquisition and donor retention are unresolved. The sole next task
-is a [prospective receiver enclosure](#current-g3-gate): freeze one finite
-protocol and evaluate whether this unchanged source reaches joined capture
-while retaining the donors, or whether the admitted calculation instead
-certifies donor loss or remains unavailable.
+zero. The subsequent [frozen enclosure](#organized-receiver-prospective-enclosure)
+certifies loss of both donor windings for the entire unchanged source family,
+while the receiver retains winding zero throughout the validated interval.
+This excludes donor-retaining transfer under this preparation and law;
+eventual regeneration remains unresolved. The sole next task is
+[full-state retention under interaction](#current-g3-gate): determine what
+restriction on boundary work, form memory or phase velocity can protect
+donor identity while permitting receiver acquisition.
 The [prepared storage observer](#storage-comparison-producer-admission)
 is retained as an instrument; it has no frozen protocol or reserved response
 and is not the next campaign.
@@ -165,8 +167,9 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next prospective enclosure | [One source-preserving receiver enclosure](#current-g3-gate): freeze the finite horizon, observations, method and numerical budget for the unchanged two-ramp source, then evaluate the admitted slow inclusion with donor identity and full-state capture; retain positive, donor-loss and unavailable outcomes without a sweep or source retuning |
-| Closed theoretical slow admission | [Controlled slow receiver evolution](#organized-receiver-slow-capture-admission): exact second-order phase closure, uniform source-inclusive first-order defect after time 400, actual receiver phase-rate signs and a differential-inclusion capture contract; eventual acquisition and long-window donor retention remain unresolved |
+| Next theoretical admission | [Identity-preserving interaction](#current-g3-gate): derive full-state donor-retention conditions from regional work and winding-boundary motion, then test their compatibility with receiver acquisition under the unchanged complete law |
+| Closed finite counterexample | [Source-preserving receiver enclosure](#organized-receiver-prospective-enclosure): the frozen 76-step enclosure certifies whole-family loss of both donor windings by elapsed slow time 19/2; the receiver retains zero winding throughout the validated prefix |
+| Closed theoretical slow admission | [Controlled slow receiver evolution](#organized-receiver-slow-capture-admission): exact second-order phase closure, uniform source-inclusive first-order defect after time 400, actual receiver phase-rate signs and a differential-inclusion capture contract; the separate finite enclosure resolves donor loss for this source |
 | Closed theoretical mechanism admission | [Locally unprepared receiver](#organized-receiver-mechanism-admission): complete two-ramp source cost, time-200 donor/receiver winding distinction, receiver exclusion from preparation to the proved necessary timescale, exact regional work and slow memory; eventual receiver acquisition and joined capture remain unresolved |
 | Closed theoretical joint-acquisition admission | [Joint acquisition on preexisting fine support](#organized-joint-acquisition): original phase-flat ramp families acquire all three winding identities and enter full-state capture by time 200 on both connected controls, with complete initial storage below the fixed budget |
 | Closed theoretical work admission | [Identity-preserving assembly work](#organized-assembly-work-admission): strictly positive required-work floors survive arbitrary simultaneous fine-state resets with acute winding-one child endpoints under both fixed contacts; passive intermediate actions cannot evade the complete endpoint balance |
@@ -224,7 +227,7 @@ remain open; no empirical response has passed complete physical admission.
 
 <a id="current-g3-gate"></a>
 <a id="foundational-organized-pattern-admission"></a>
-<a id="organized-receiver-prospective-enclosure"></a>
+<a id="organized-identity-preserving-interaction"></a>
 ## Primary plan: foundations tested by organized patterns
 
 Investigate which premises are sufficient, necessary within a declared class,
@@ -244,136 +247,56 @@ to its actual state, scale and execution path before treating a matched
 geometric or response property as sufficient. Retain the distinction between
 defining requirements, supplied hypotheses and derived restrictions.
 
-The next question is: **does one prospectively frozen, source-preserving
-enclosure certify receiver acquisition with donor retention and joined
-capture?** The [slow admission](../nodal/ORGANIZED_RECEIVER_SLOW_ADMISSION.md)
-supplies the complete-source phase inclusion and its full-state capture
-contract. The [receiver-mechanism theorem](../nodal/ORGANIZED_RECEIVER_MECHANISM.md)
-retains the initial-layer outcome and receiver exclusion from preparation
-to its proved necessary timescale. Eventual acquisition remains unresolved. The
-[joint-acquisition theorem](../nodal/ORGANIZED_JOINT_ACQUISITION.md) instead
-supplies complete formation when every region receives a structured form
-ramp; that source verdict does not transfer to this receiver. The
-[ontology](../EMERGENT_ONTOLOGY.md#nfr-participation-in-form) admits the
-regional question, while the [connection owner](../nodal/RELATIONAL_EFFECTIVE_CONNECTIONS.md#connection-mechanisms-and-mediators)
-separates causal interaction on existing fine support from primitive edge
-birth. The present gate evaluates that specific missing acquisition claim
-under the admitted slow mechanism, with the original source unchanged.
+The next question is: **what full-state restriction can preserve formed
+constituents during interaction while permitting an unprepared receiver to
+acquire organization?** The [frozen result](../nodal/ORGANIZED_RECEIVER_ENCLOSURE.md#organized-receiver-enclosure-result)
+provides a whole-family counterexample to inferring that outcome from initial
+receiver motion toward donor phases, a joined target and positive storage loss.
+Both donor windings are zero at the certified endpoint, while the receiver
+has remained at zero winding throughout the validated prefix. An unavailable
+intermediate donor corridor is distinct from that robust endpoint loss.
 
-Retain all 27 labelled fine nodes, the three original unit C9 cycles, held
-unit capacities and the same detached reciprocal sine law and structural
-clock `tau=(1023/1024)*t`, with `gamma=1/(1023*pi)`. The fixed equal-weight
-connected support is present at `tau=0` and remains unchanged: the oriented
-contacts `(0,1),(1,2),(2,0)` use offsets `{0,1}` and weights `1-s_e,s_e`,
-with `s_e=(1/2,1/2,1/2)`. Every node has weighted
-degree four. Use both actual degree-four evolution rows and the complete
-weighted storage; native neighbor semantics and registered operators remain
-separate. No forcing, state reset, support event or conductance evolution is
-admitted during this preparation.
+Keep the unchanged two-ramp source, fixed equal-weight 27-node support, held
+capacities, complete sine law, clocks and error family with their
+[source owner](../nodal/ORGANIZED_RECEIVER_MECHANISM.md#organized-receiver-source).
+The prior three-ramp acquisition and recovered-source joined capture remain
+valid in their own domains. Neither transfers a retention certificate to this
+preparation. The [ontology](../EMERGENT_ONTOLOGY.md#nfr-participation-in-form)
+allows collective acquisition as a question; it does not promise it.
 
-Declare the original primitive class-one ramps on regions `r=0,1` only:
-`x_(r,j)(0)=m*(j-4)+delta_x_(r,j)`, where
-`m=(2046/9)*(355/113)**2` and `j=0,...,8`. On region `r=2`, declare
-`x_(2,j)(0)=delta_x_(2,j)`. For every region keep
-`theta_(r,j)(0)=delta_theta_(r,j)`.
-Each form and lifted-phase error is independently bounded in magnitude by
-`10^-10`, with separate exact zero sums within each child. Retain the fixed
-common initial phase origin and every allowed combination of the errors.
-These initial circular phase configurations have winding zero. Only the
-global means remain conserved after connected evolution begins.
+1. **Retain the sufficient state.** Use the full form/phase law or the exact
+   second-order phase representation, including initial velocity, regional
+   work and global mean constraints. A reduced phase field or instantaneous
+   current sign cannot replace the form memory.
+2. **Derive a retention condition.** Reuse the
+   [regional work identity](../nodal/ORGANIZED_RECEIVER_MECHANISM.md#organized-receiver-work)
+   and derive a first-exit lower bound for internal C9 phase storage. Turn
+   it into a conditional no-slip budget for cumulative boundary work and
+   regional loss, retaining the admitted release form and phase errors.
+   Also compute the normal motion at donor winding boundaries. Determine
+   whether a proposed phase-only cell can be invariant over its admitted
+   form states, or whether an explicit velocity, storage or boundary-work
+   restriction is necessary. Preserve counterexamples to stronger claims;
+   global dissipation alone is not a regional identity budget.
+3. **Check joint compatibility.** Apply any justified full-state retention
+   condition to receiver progress under the same law, source and support.
+   Establish a conditional compatible domain or a scoped obstruction.
+   A sufficient condition failing at this source does not prove that no
+   alternative condition or preparation can work. Distinguish protecting
+   donors, receiver formation, joined capture and eventual regeneration.
+4. **Integrate the decision.** Put definitions and proofs with their owners,
+   reuse shared mathematical kernels, and test boundary counterexamples and
+   full-state hypotheses independently. State which extra premise is supplied
+   and which restriction follows from the actual complete law. Only after
+   this admission may a new prospective comparison be selected here.
 
-The [source owner](../nodal/ORGANIZED_RECEIVER_MECHANISM.md#organized-receiver-source)
-derives nominal storage `150*m**2`, including `78*m**2` on the contacts,
-and retains every error. The donor regions start from ramps, not acquired
-targets, and inherit no isolated-source or three-ramp capture verdict.
-Retain the actual [regional boundary work](../nodal/ORGANIZED_RECEIVER_MECHANISM.md#organized-receiver-work)
-throughout the argument; supplied initial storage is not a free or autonomous
-source, and continuous loss is not an event reserve.
-
-Use the [slow admission](../nodal/ORGANIZED_RECEIVER_SLOW_ADMISSION.md)
-from `tau=400`, with its source-inclusive phase enclosure and uniform
-first-order defect. The actual receiver phase-rate signs then point toward
-the donor ramp, but winding remains zero and those signs do not determine
-the later basin. Retain the original form through its independently bounded
-state and the exact second-order phase law; memoryless descent alone is not
-the full model. The earlier [delay theorem](../nodal/ORGANIZED_RECEIVER_MECHANISM.md#organized-receiver-delay)
-continues to exclude receiver acquisition on its original interval.
-
-Freeze one finite slow-time horizon, source/observation map, node order,
-precision/backend, enclosure method, step/refinement limits and stopping
-conditions before evaluating its response. Build on shared validated
-mathematical owners. The concrete route is a 13-coordinate nominal reference
-in the preserved reflection/sign subspace with a full 27-coordinate
-transverse tube; a direct full 27-coordinate phase inclusion is an admissible
-alternative to select at protocol freeze. The full initial-error family need
-not respect nominal symmetry. Its transverse uncertainty, complete-row
-defect and carried form must remain in every admitted bound. Do not evaluate
-both routes and then choose the successful result.
-
-A positive whole-family outcome requires the initially unprepared receiver
-to acquire winding one, the two donor regions to acquire and retain their
-own winding identities, and the actual complete state to enter a justified
-joined capture region. Include the donor-retention interval from the proved time-200
-acquisition through the time-400 inclusion start. The
-[capture owner](../nodal/ACQUIRED_ORGANIZED_NETWORK_CAPTURE.md)
-supplies a conditional target and barrier, not these entry claims. Reapply
-all mean, source, fine-deviation and work premises. A necessary condition or
-an insufficient bound does not prove receiver formation or its impossibility.
-The protocol must also admit a certified donor-loss outcome with its source
-quantifier stated: one actual admitted counterexample refutes whole-family
-retention, whereas a nominal approximate path alone does not. Failure to
-enclose a branch margin or reach capture within the frozen horizon/budget
-is unavailable evidence for the
-requested formation claim, not proof of nonformation. Preserve the first
-evaluation and any partial valid prefix without retuning the source or
-expanding to a sweep.
-
-No finite response horizon or trajectory budget has yet been frozen. This
-gate owns that prospective freeze and its single evaluation; the analytic
-exclusion interval is not an evaluation horizon. No source scan, topology
-campaign or physical dataset is admitted. Even a positive result
-would retain supplied support, donor preparation and law; it would not
-derive an autonomous reservoir, event selector, universal replication law,
-laboratory clock or physical bound state.
-
-1. **Declare the object and the claim.** Specify sufficient form/phase state,
-   identity, source class, clock, support, capacity, boundaries and observation.
-   Distinguish an independently described preparation from a source defined
-   through the desired future trajectory. State which part of formation or
-   selection is actually under investigation. Fixed support or capacity may
-   remain explicit premises while that narrower question is isolated.
-   Include the claimed NFR identity and nesting requirements and, where an
-   operator is consumed, its live preconditions, ordered composition and
-   postconditions. A collective event needs its own descent and occurrence
-   analysis even when the continuous collective law closes.
-2. **Specify the proposed discrimination.** Keep the equal-weight connected
-   support, two original form ramps, locally flat receiver and original
-   errors; retain complete source storage and both regional work channels.
-   Separate constitutive freedom from supplied preparation and support.
-   No controller, fitted sensor or hidden clock adjustment supplies closure.
-3. **Evaluate the frozen discrimination.** Match the declared preparation
-   observations, geometry, units, clock and costs under each complete law.
-   Check symmetries, equilibrium boundaries, reachable identities, balances
-   and information loss. Apply the admitted source-inclusive enclosure once
-   to distinguish full-state capture with donor retention, certified donor
-   loss and unavailable bounds, with the actual source, memory and preparation
-   cost retained.
-   Distinguish a new initial condition from a symmetry copy or a changed law. A
-   necessary condition or failed sufficient bound is not a formation theorem.
-4. **Integrate only the justified result.** Preserve useful conditional proofs
-   and frozen evidence; change shared mathematical/execution owners and
-   consumers only where the contract changes. Require independent tests or
-   counterexamples. Freeze a numerical or physical comparison only after its
-   observation and error model are admitted. A controller added to produce a
-   desired object is an additional premise, not a derivation of that object.
-
-The gate distinguishes receiver acquisition through interaction from three
-locally prepared ramps, capture after separate recovery and support birth.
-Continuous closure does not establish collective event descent or occurrence;
-those require the [operator criterion](../STRUCTURAL_OPERATORS.md#collective-operator-descent).
-State unresolved source, identity or equivalence estimates explicitly rather
-than expanding the design. Independent physical calibration, autonomous
-preparation, support selection and constituent identification remain open.
+This gate is analytic. Do not replay or extend the frozen response, increase
+its precision, tune the source, scan contacts, introduce a controller or
+launch a physical-data campaign. A changed support, event or constitutive
+law would define a separate model and needs its own justification. No finite
+result here derives an autonomous reservoir, support selector, physical clock
+or constituent identification. Eventual receiver formation or donor
+regeneration beyond the retained interval remains open.
 
 The dependency order for subsequent work is:
 
@@ -399,6 +322,23 @@ examples supply possible controls and discriminators; they do not replace
 the generative objective with imitation of a convenient apparatus. Substrate
 origin, universal laws and recurrence across scales remain open hypotheses.
 
+<a id="organized-receiver-prospective-enclosure"></a>
+## Closed finite result: source-preserving receiver enclosure
+
+The [result owner](../nodal/ORGANIZED_RECEIVER_ENCLOSURE.md#organized-receiver-enclosure-result)
+retains the prospective protocol, committed source, immutable first attempt
+and 76 validated steps. At elapsed slow time `19/2`, the complete source
+family has winding `(0,0,0)`, after donor winding one was independently
+acquired and retained through the earlier preparation. The receiver keeps
+zero winding throughout every validated interval. This is certified donor
+loss, not failure of an enclosure or evidence from the nominal reference alone.
+
+The result rules out donor-retaining acquisition for this unchanged source
+and law. It neither invalidates the separate three-ramp acquisition theorem
+nor excludes later receiver formation, donor regeneration or other explicitly
+admitted preparations. The [next gate](#current-g3-gate) asks what full-state
+retention condition is missing; it does not repeat this experiment.
+
 <a id="organized-receiver-slow-capture-admission"></a>
 ## Closed theoretical admission: controlled slow receiver evolution
 
@@ -422,8 +362,9 @@ phase-branch margins, form storage and the joined capture barrier. It
 also retains the distinction between the nominal reflection symmetry and
 the nonsymmetric full error family. No trajectory is evaluated, no source
 is retuned and no response horizon is inferred from the necessary delay.
-The [next gate](#current-g3-gate) freezes and evaluates one finite enclosure
-under this contract; eventual receiver formation remains unresolved.
+The separate [frozen enclosure](#organized-receiver-prospective-enclosure)
+evaluates this contract and certifies donor loss for the unchanged source.
+Eventual receiver formation remains unresolved.
 
 <a id="organized-interaction-driven-acquisition"></a>
 <a id="organized-receiver-mechanism-admission"></a>
@@ -450,9 +391,10 @@ trajectory or reserved response is produced.
 
 The separate [slow admission](#organized-receiver-slow-capture-admission)
 now bounds the actual phase-law defect and gives a complete-source capture
-contract. Its [prospective enclosure](#current-g3-gate) leaves eventual
-acquisition unresolved until evaluated. The earlier three-ramp acquisition
-and conditional joined barrier remain valid under their own premises.
+contract. Its [frozen enclosure](#organized-receiver-prospective-enclosure)
+certifies donor loss with continuous receiver zero winding on the evaluated
+interval. The earlier three-ramp acquisition and conditional joined barrier
+remain valid under their own premises.
 
 <a id="organized-joint-acquisition"></a>
 ## Closed theoretical admission: joint acquisition on preexisting fine support

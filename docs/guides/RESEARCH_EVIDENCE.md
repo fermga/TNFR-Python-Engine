@@ -127,10 +127,11 @@ freeze but cannot substitute its runtime for the declared one. The immutable
 state; it is not a query about subsequent execution.
 
 The maintained [restoration entry point](../../scripts/restore_frozen_source.py)
-admits three explicit schema families: class nonlinear-readout v1, class
-comparison v1, and class collective-forward v1. Each requires its own matching
-protocol and source-snapshot schema, a complete pinned Git base and no runtime
-overlays. Support for one does not admit an unrelated freeze format.
+admits only the explicit adapters registered by the shared
+[frozen-source owner](../../src/tnfr/research/frozen_source.py). Each requires
+its own matching protocol and source-snapshot schema, a complete pinned Git
+base and no runtime overlays. Support for one does not admit an unrelated
+freeze format.
 
 The [collective-forward admission](../../theory/nodal/SINE_CLASS_COLLECTIVE_FORWARD_PROTOCOL.md#sine-class-collective-forward-protocol)
 retains the prior causal prediction as a separate byte-verified ZIP. Restoring
@@ -152,9 +153,10 @@ python scripts/restore_frozen_source.py --receipt docs/assets/sine_formed_classe
 
 The destination must not exist and must be outside the active repository, with
 an existing unredirected parent directory. The utility refuses restoration when
-an attempt or outcome already exists in the source evidence directory; the
-comparison and collective-forward schemas also reject a retained export-error
-record. It creates a detached worktree of the full pinned base and restores the
+an attempt or outcome already exists in the source evidence directory.
+Schema-specific checks also preserve export-error records and, for the receiver
+enclosure, a retained step journal even without a final outcome. It creates a
+detached worktree of the full pinned base and restores the
 verified supplemental files, receipt and associated prior evidence. It does not
 run the evaluator or certify interpreter and dependency compatibility. A prepared
 workspace is neither an admitted
@@ -174,6 +176,13 @@ outcome; a correction requires separately identified evidence.
 An export-error record preserves the failure metadata and points to the retained
 attempt. Any partial output remains unchanged. It does not establish that the
 complete in-memory report was successfully written.
+
+The [receiver enclosure](../../theory/nodal/ORGANIZED_RECEIVER_ENCLOSURE.md#organized-receiver-enclosure-result)
+writes each accepted or failed step before continuing. Its lossless response
+ZIP preserves the first outcome and every original step at the recorded paths,
+including their exact byte receipts. The raw local journal may remain untracked;
+read-only audits consume the archive and verify its complete member inventory.
+Transport compression neither regenerates the response nor authorizes a retry.
 
 The [benchmark lifecycle](../../benchmarks/README.md#running-and-reporting)
 and each protocol own their declared execution procedure. This guide centralizes
