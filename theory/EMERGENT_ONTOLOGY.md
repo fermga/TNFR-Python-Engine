@@ -575,6 +575,14 @@ the earlier acquired families, but its generic members are not proved formed.
 Its same-source observation, finite work and identity premises remain explicit.
 A singleton necessary sector is not authentication of an arbitrary record.
 
+The [sequential observation theorem](nodal/ORGANIZED_SEQUENTIAL_OBSERVATION.md)
+removes the matched-copy premise: twenty-five readings along one continuing
+history identify the initial winding while retaining all respective identities
+through its prescribed probes. Cancelling a commanded phase offset does not
+undo the evolved state. The proof carries the induced motion, unknown
+background and cumulative event work; it establishes neither autonomous
+sensing nor a laboratory readout model.
+
 The specified five-child organization can therefore be described as a
 collective NFR with declared membership, acquired identity and interaction,
 while retaining its constituent state and boundary relations. Its observable

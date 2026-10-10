@@ -407,6 +407,19 @@ identification distinct. Independent static record enclosures must not be
 described as measured finite trajectories. Probe work is per branch, and
 the broader state class has only the declared finite identity horizon.
 
+For [single-history outer observation](theory/nodal/ORGANIZED_SEQUENTIAL_OBSERVATION.md),
+select `tests/physics/test_organized_sequential_observation.py` and the
+matched-observation owner whenever their shared inverse changes. Test all
+25 primitive endpoint readings, exact cancellation of constant/affine
+background slopes and the distinct arbitrary-noise weights. Keep nonlinear
+background curvature, probe backaction and initial-moment transport separate.
+Verify all fifteen event maps, cumulative absolute work and the finite
+fourteen-cycle identity contract; restoring an offset is not a source reset.
+Synthetic necessary-record witnesses are not integrated trajectories. The
+inverse must neither consume hidden phases nor rebuild an acquired source;
+conditional necessary compatibility cannot authenticate a supplied history.
+Retain the no-trajectory and frozen-producer guards.
+
 For [identity-preserving assembly work](theory/nodal/ORGANIZED_ASSEMBLY_WORK.md),
 select `tests/physics/test_organized_assembly_work.py` with
 `tests/physics/test_acquired_organized_network_capture.py`,

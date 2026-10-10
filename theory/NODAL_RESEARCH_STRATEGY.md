@@ -297,6 +297,15 @@ reduction. The result is uniform on a declared state class containing the
 previous acquired sources; formation of the larger class and realization of
 its matched observation branches remain separate obligations.
 
+The [single-history result](nodal/ORGANIZED_SEQUENTIAL_OBSERVATION.md)
+then removes that matched-preparation dependency. Endpoint combinations
+cancel constant and affine background slopes, while bounds retain background
+curvature and the motion induced by every probe. Returning the imposed offset
+to zero is not a reset. The initial identity is inferred from public readings
+and retained through the finite word, with cumulative absolute event work
+accounted separately. These are sufficient observations under a known complete
+law; they do not select that law or replace the state needed for later interaction.
+
 ### Ordered geometry connects transfer to formation
 
 The [sine pattern owner](nodal/SINE_PATTERN_DYNAMICS.md) combines entry,

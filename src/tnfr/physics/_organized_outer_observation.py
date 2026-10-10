@@ -111,21 +111,29 @@ class _OrganizedOuterObservationProtocol:
     )
 
 
-def _assess_organized_outer_observation_protocol():
-    """Rebuild the fixed uniform information, work and finite-identity bounds."""
+@dataclass(frozen=True)
+class _OuterObservationInverseGeometry:
+    cosine_inverse_factor_bounds: I
+    sine_inverse_factor_bounds: I
+    cosine_prior_lower_bound: Q
+    cosine_width_upper_bound: Q
+    sine_width_upper_bound: Q
+    quadrature_interval_rounding_allowances: tuple[Q, Q]
+    child_origin_angle_width_upper_bound: Q
+    cycle_sum_width_upper_bound: Q
+    winding_resolution_margin: Q
+
+
+def _outer_observation_inverse_geometry(*, gamma, odd_error, even_error):
+    """Common initial-class quadrature geometry for separately proved protocols.
+
+    Callers supply their own complete-law finite and reading-error bounds;
+    sharing this inverse does not transfer any observation-history theorem.
+    The state class, phase amplitude and window duration are the common fixed
+    choices of the matched-source and sequential observation contracts.
+    """
     pi = pi_interval()
-    gamma = Q(1, 1023) / pi
     sine, one_minus_cosine = sin(I(_EPSILON)), 1 - cos(I(_EPSILON))
-    remainder = _prepared_degree_four_probe_remainder(
-        gamma_upper=gamma.hi,
-        initial_form_upper_bound=_FORM_BOUND,
-        phase_jump_upper_bound=_EPSILON,
-        elapsed_time=_DELAY,
-    )
-    odd_error, even_error = (
-        2 * remainder + 2 * _RAW_ERROR,
-        2 * remainder + 4 * _RAW_ERROR,
-    )
     kc = 2 / (gamma * _DELAY * sine)
     ks = 2 / (gamma * _DELAY * one_minus_cosine)
     fc = gamma.hi * _DELAY * sine.hi / 2
@@ -145,7 +153,40 @@ def _assess_organized_outer_observation_protocol():
         ws / c0 + wc / c0**2 + 4 * _FINE_PHASE_BOUND + _ANGLE_ARITHMETIC_ALLOWANCE
     )
     cycle_width = 5 * angle_width
-    resolution = 2 * pi.lo - cycle_width
+    return _OuterObservationInverseGeometry(
+        cosine_inverse_factor_bounds=kc,
+        sine_inverse_factor_bounds=ks,
+        cosine_prior_lower_bound=c0,
+        cosine_width_upper_bound=wc,
+        sine_width_upper_bound=ws,
+        quadrature_interval_rounding_allowances=(rounding_c, rounding_s),
+        child_origin_angle_width_upper_bound=angle_width,
+        cycle_sum_width_upper_bound=cycle_width,
+        winding_resolution_margin=2 * pi.lo - cycle_width,
+    )
+
+
+def _assess_organized_outer_observation_protocol():
+    """Rebuild the fixed uniform information, work and finite-identity bounds."""
+    pi = pi_interval()
+    gamma = Q(1, 1023) / pi
+    remainder = _prepared_degree_four_probe_remainder(
+        gamma_upper=gamma.hi,
+        initial_form_upper_bound=_FORM_BOUND,
+        phase_jump_upper_bound=_EPSILON,
+        elapsed_time=_DELAY,
+    )
+    odd_error, even_error = (
+        2 * remainder + 2 * _RAW_ERROR,
+        2 * remainder + 4 * _RAW_ERROR,
+    )
+    geometry = _outer_observation_inverse_geometry(
+        gamma=gamma, odd_error=odd_error, even_error=even_error
+    )
+    c0, resolution = (
+        geometry.cosine_prior_lower_bound,
+        geometry.winding_resolution_margin,
+    )
     drift = 4 * gamma.hi * (_FORM_BOUND + gamma.hi * _DELAY) * _DELAY
     internal_positive = 2 * pi.lo / 9 - 2 * _FINE_PHASE_BOUND - drift
     internal_acute = pi.lo / 2 - 2 * pi.hi / 9 - 2 * _FINE_PHASE_BOUND - drift
@@ -171,18 +212,10 @@ def _assess_organized_outer_observation_protocol():
     admitted = identity_ok and work_ok and information_ok
     return _OrganizedOuterObservationProtocol(
         gamma_bounds=gamma,
-        cosine_inverse_factor_bounds=kc,
-        sine_inverse_factor_bounds=ks,
         finite_remainder_upper_bound=remainder,
         odd_total_error_upper_bound=odd_error,
         even_total_error_upper_bound=even_error,
-        cosine_prior_lower_bound=c0,
-        cosine_width_upper_bound=wc,
-        sine_width_upper_bound=ws,
-        quadrature_interval_rounding_allowances=(rounding_c, rounding_s),
-        child_origin_angle_width_upper_bound=angle_width,
-        cycle_sum_width_upper_bound=cycle_width,
-        winding_resolution_margin=resolution,
+        **vars(geometry),
         continuous_edge_drift_upper_bound=drift,
         internal_positive_gap_margin=internal_positive,
         internal_acute_gap_margin=internal_acute,
@@ -230,6 +263,24 @@ class _OrganizedOuterWindingInference:
     identification_scope: str = "conditional_on_the_declared_same_source_state_and_law"
 
 
+@dataclass(frozen=True)
+class _OuterWindingQuadratureInference:
+    odd_reading_differences: tuple[Q, ...]
+    even_reading_combinations: tuple[Q, ...]
+    raw_readings_compatible: tuple[bool, ...]
+    cosine_bounds: tuple[I | None, ...]
+    sine_bounds: tuple[I | None, ...]
+    resultant_squared_modulus_bounds: tuple[I | None, ...]
+    resultant_compatible: tuple[bool, ...]
+    resultant_angle_bounds: tuple[I | None, ...]
+    child_origin_angle_bounds: tuple[I | None, ...]
+    cycle_sum_bounds: I | None
+    candidate_windings: tuple[int, ...]
+    identified_winding: int | None
+    status: str
+    unresolved_conditions: tuple[str, ...]
+
+
 def _infer_organized_outer_winding(
     *, unprobed_means, positive_probe_means, negative_probe_means
 ):
@@ -248,6 +299,25 @@ def _infer_organized_outer_winding(
     even = tuple(p + m - 2 * b for p, m, b in zip(positive, negative, baseline))
     raw_bound = _FORM_BOUND + protocol.gamma_bounds.hi * _DELAY + _RAW_ERROR
     raw_compatible = tuple(abs(v) <= raw_bound for v in baseline + positive + negative)
+    inference = _infer_outer_quadrature_cycle(
+        odd=odd, even=even, raw_compatible=raw_compatible, protocol=protocol
+    )
+    return _OrganizedOuterWindingInference(
+        unprobed_means=baseline,
+        positive_probe_means=positive,
+        negative_probe_means=negative,
+        protocol=protocol,
+        **vars(inference),
+    )
+
+
+def _infer_outer_quadrature_cycle(*, odd, even, raw_compatible, protocol):
+    """Shared necessary inverse after each caller admits its primitive records.
+
+    The protocol supplies freshly rebuilt complete-history errors. This kernel
+    only converts those envelopes into quadratures, initial coarse angles and
+    necessary sectors; neither radial nor cycle checks authenticate a record.
+    """
     resultant_floor = cos(I(2 * _FINE_PHASE_BOUND)).lo ** 2
     cb, sb, moduli, radial_compatible, arguments, angles = [], [], [], [], [], []
     for dc, ds in zip(odd, even):
@@ -318,11 +388,7 @@ def _infer_organized_outer_winding(
         + (("no_compatible_sector",) if not candidates else ())
         + (("multiple_compatible_sectors",) if len(candidates) > 1 else ())
     )
-    return _OrganizedOuterWindingInference(
-        unprobed_means=baseline,
-        positive_probe_means=positive,
-        negative_probe_means=negative,
-        protocol=protocol,
+    return _OuterWindingQuadratureInference(
         odd_reading_differences=odd,
         even_reading_combinations=even,
         raw_readings_compatible=raw_compatible,
