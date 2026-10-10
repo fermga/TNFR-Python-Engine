@@ -271,6 +271,18 @@ same alignment. This is a controlled collective property under the supplied
 law and attachment. It does not exhaust possible properties of more complex
 organizations or make their effective laws identical to a constituent law.
 
+The [outer-winding result](nodal/ORGANIZED_OUTER_WINDING.md) tests a new
+identity on a different supplied product support. Five acquired C9s retain
+their internal windings while all nine outer slot cycles acquire winding
+one from initial winding zero. The exact carrier map transfers both rows
+with its clock; full-state source transport and a separate product barrier
+are needed to extend the primitive C5 method to actual acquired children.
+The paired zero-common-form source remains outer-unwound. Supplied form
+information and attachment work therefore matter even when child identities
+match. An additional identity and an interaction observable sensitive to it
+are separate results; neither implies autonomous preparation or exhausts the
+properties available to more complex organizations.
+
 ### Ordered geometry connects transfer to formation
 
 The [sine pattern owner](nodal/SINE_PATTERN_DYNAMICS.md) combines entry,

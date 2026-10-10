@@ -366,6 +366,21 @@ means; distinguish its obstruction from a simulated endpoint. Failed source,
 chart or strict barrier premises yield unavailable capture. No finite settling
 deadline or continuous parent-registration certificate follows.
 
+For [acquired outer winding](theory/nodal/ORGANIZED_OUTER_WINDING.md), select
+`tests/physics/test_organized_outer_winding.py` with isolated recovery,
+prepared-entry and shared preparation contracts. Check every fine row of the
+product law, the factor-two carrier clock, all 80 original relative source
+directions, exact attachment work and full endpoint cross terms. All five
+internal and nine outer winding observations are required. Cover all 180
+signed boundary constraints, including the empty negative outer faces;
+Jensen bounds cannot consume a nonacute proposed minimizer. The paired
+actual-residual control may evolve and must retain outer winding zero.
+Failed sufficient premises remain unavailable. Analytic-only checks must
+exclude the prepared-entry trajectory regressions
+`test_complete_nonlinear_response_is_inside_the_analytic_endpoint` and
+`test_nonflat_corner_response_respects_mean_centered_and_correlated_edge_bounds`; do not
+regenerate frozen response producers for this proof-only owner.
+
 For [identity-preserving assembly work](theory/nodal/ORGANIZED_ASSEMBLY_WORK.md),
 select `tests/physics/test_organized_assembly_work.py` with
 `tests/physics/test_acquired_organized_network_capture.py`,

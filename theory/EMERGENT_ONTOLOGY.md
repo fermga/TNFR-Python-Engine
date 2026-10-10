@@ -546,6 +546,17 @@ shared registration absent from the disconnected control, while the child
 windings already existed. It supplies no finite settling time, new primitive
 law, autonomous contact occurrence or general classification of larger objects.
 
+The [outer-winding theorem](nodal/ORGANIZED_OUTER_WINDING.md) supplies a
+different conditional property on a five-child cycle: the whole acquires an
+initially absent outer winding while preserving each acquired C9 winding.
+It covers all nine fine outer cycles, all original relative preparation
+directions and subsequent maintenance. The matched source without supplied
+child-common form differences remains in outer winding zero. This is an
+additional relational identity, not a sum of constituent winding labels.
+Its preparation information and positive contact work remain premises;
+acquiring this identity does not by itself prove a new interaction law,
+autonomous hierarchy formation or identification with physical matter.
+
 Here structural participation does not identify the entire joint state with
 one scalar EPI coordinate. The current representation also retains phase,
 capacity and support; reducing these to a richer form description would need
