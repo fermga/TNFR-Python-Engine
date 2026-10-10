@@ -14,6 +14,7 @@ from ..mathematics._rational_interval import I, cos, pi_interval
 from ._organized_external_interaction import (
     _OrganizedExternalInteraction,
     _OrganizedExternalInteractionGeometry,
+    _SOURCE_FAILURE_NAMES,
     _assess_organized_external_interaction,
     _derive_organized_external_interaction,
 )
@@ -78,10 +79,12 @@ def _derive_organized_contact_maintenance():
         ),
     )
     pi, gamma = pi_interval(), geometry.gamma_bounds
+    gamma_squared = gamma**2
     inner_cosine = cos(geometry.alpha_bounds)
+    outer_cosines = tuple(cos(2 * pi * k / 5) for k in range(1, 5))
     outer_modes = (("common", I(0), I(0)), ("hub", I(6), I(-6))) + tuple(
-        (f"ring{k}", 3 - 2 * cos(2 * pi * k / 5), 1 - 2 * cos(2 * pi * k / 5))
-        for k in range(1, 5)
+        (f"ring{k}", 3 - 2 * cosine, 1 - 2 * cosine)
+        for k, cosine in enumerate(outer_cosines, 1)
     )
     modes = []
     for k in range(9):
@@ -98,11 +101,11 @@ def _derive_organized_contact_maintenance():
                     aligned_hessian_bounds=aligned_hessian,
                     antipodal_hessian_bounds=antipodal_hessian,
                     trace_bounds=-laplacian / 4,
-                    aligned_determinant_bounds=gamma**2
+                    aligned_determinant_bounds=gamma_squared
                     * laplacian
                     * aligned_hessian
                     / 16,
-                    antipodal_determinant_bounds=gamma**2
+                    antipodal_determinant_bounds=gamma_squared
                     * laplacian
                     * antipodal_hessian
                     / 16,
@@ -131,7 +134,7 @@ def _derive_organized_contact_maintenance():
     antipodal_unstable = sum(
         mode.antipodal_determinant_bounds.hi < 0 for mode in relative
     )
-    outer_cosine = cos(2 * pi / 5)
+    outer_cosine = outer_cosines[0]
     defect = Q(5, 4) - 5 * outer_cosine * (1 - outer_cosine)
     return _OrganizedContactMaintenanceGeometry(
         interaction_geometry=geometry,
@@ -253,17 +256,10 @@ def _assess_organized_contact_maintenance(*, form_error_bounds, phase_error_boun
         and geometry.aligned_stability_certified
         and all(value > 0 for _, value in margins)
     )
-    flag_names = (
-        "host_acquisition_not_certified",
-        "paired_host_control_not_certified",
-        "external_recovery_not_certified",
-        "preceding_sequential_observation_not_certified",
-        "actual_hosts_outside_observation_class",
-    )
     unresolved = (
         tuple(
             name
-            for name, ok in zip(flag_names, source.source_admission_flags)
+            for name, ok in zip(_SOURCE_FAILURE_NAMES, source.source_admission_flags)
             if not ok
         )
         + (

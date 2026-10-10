@@ -64,11 +64,13 @@ A resolved finite interaction leaves three distinct obligations: whether the
 organization survives the continuing contact, whether its preparation and
 measurement budgets admit an operational realization, and whether an
 independently measured property distinguishes its complete law from alternatives.
-The [relative-origin result](nodal/ORGANIZED_EXTERNAL_REGISTRATION.md) removes
-one favorable-alignment premise without closing those obligations. Changing
-support requires its own stationary geometry, stability and actual-source
-inclusion; an isolated capture certificate cannot supply them. A new moment
-or tighter remainder is useful when it decides one of these questions.
+The [relative-origin result](nodal/ORGANIZED_EXTERNAL_REGISTRATION.md) bounds
+outer-one response at every origin and admits a larger outer-zero response at
+a source-dependent witness origin. It supplies no alignment selector and does
+not close those obligations. Changing support requires its own stationary
+geometry, stability and actual-source inclusion; an isolated capture
+certificate cannot supply them. A new moment or tighter remainder is useful
+when it decides one of these questions.
 Physical confrontation can begin once a concrete signature and independent
 bridge are admitted, without waiting for unique law selection or substrate
 origin. The plan selects the next bounded question from these dependencies.

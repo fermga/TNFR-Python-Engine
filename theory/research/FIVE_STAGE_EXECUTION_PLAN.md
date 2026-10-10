@@ -347,10 +347,11 @@ The [outer-winding source](../nodal/ORGANIZED_OUTER_WINDING.md),
 [single-history observation](../nodal/ORGANIZED_SEQUENTIAL_OBSERVATION.md) and
 [relative-origin interaction](../nodal/ORGANIZED_EXTERNAL_REGISTRATION.md)
 now support conditional formation, observation and finite collective response
-on one carried source history. Removing the favorable-alignment restriction
-is a substantive completed gate. It does not establish what remains of the
-object after continued interaction, an operational preparation or a measured
-physical correspondence. These are the principal remaining dependencies.
+on one carried source history. The response comparison separates an all-origin
+upper bound for outer-one sources from a larger response at a source-dependent
+witness origin for each outer-zero source. It supplies no alignment selector,
+continued-contact identity, operational preparation or measured physical
+correspondence. These are the principal remaining dependencies.
 
 The [continued-contact theorem](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md)
 now closes the first geometry and control-source question. The actual
@@ -525,8 +526,10 @@ still omit correlations needed for future response. These are conditional
 analytical results, not integrated trajectories or physical measurements.
 No winding-only charge, autonomous contact or later capture follows.
 The [relative-origin result](#organized-external-port-registration-admission)
-separately removes the single-alignment restriction without refining sensing
-precision; the original fixed contact and its evidence remain unchanged.
+separately bounds the entire prepared-origin family without refining sensing
+precision: outer-one response is uniformly small, while each outer-zero source
+admits a larger response at some origin. The original fixed contact and its
+evidence remain unchanged.
 
 <a id="organized-sequential-observation-admission"></a>
 ## Closed theoretical admission: observation on one continuing organization

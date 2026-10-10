@@ -176,6 +176,22 @@ def test_both_contact_reactions_and_actual_attachment_storage(observation, mp):
     assert work > 0
 
 
+def test_complete_and_contact_fields_share_one_admitted_edge_evaluation(
+    monkeypatch, observation
+):
+    evaluate = owner._bounded_sine_edge_fields
+    calls = []
+
+    def fields(**kwargs):
+        calls.append(kwargs["weighted_edges"])
+        return evaluate(**kwargs)
+
+    monkeypatch.setattr(owner, "_bounded_sine_edge_fields", fields)
+    actual = _observe()
+    assert calls == [_EDGES]
+    assert actual == observation
+
+
 def test_complete_storage_balance_and_mean_reactions(observation, mp):
     form, phase = tuple(_mp(mp, v) for v in _FORMS), _phase(mp, _OFFSETS)
     gradient, current, dx, dtheta, _ = _fields(mp, form, phase)
@@ -536,18 +552,19 @@ def test_all_fifteen_marked_identities_keep_a_strict_finite_margin(report, mp):
 
 
 @pytest.mark.parametrize(
-    "failure",
+    "failure,condition",
     (
-        "host",
-        "control",
-        "donor",
-        "missing_donor_bound",
-        "large_donor_bound",
-        "observation",
+        ("host", "host_acquisition_not_certified"),
+        ("control", "paired_host_control_not_certified"),
+        ("donor", "external_recovery_not_certified"),
+        ("missing_donor_bound", "external_recovery_not_certified"),
+        ("large_donor_bound", "external_recovery_not_certified"),
+        ("observation", "preceding_sequential_observation_not_certified"),
+        ("source_class", "actual_hosts_outside_observation_class"),
     ),
 )
 def test_missing_source_premises_never_certify_an_actual_interaction(
-    monkeypatch, report, failure
+    monkeypatch, report, failure, condition
 ):
     host, donor, observation = (
         report.host_acquisition,
@@ -564,6 +581,8 @@ def test_missing_source_premises_never_certify_an_actual_interaction(
         donor = replace(donor, endpoint_form_norm_squared_upper_bound=None)
     elif failure == "large_donor_bound":
         donor = replace(donor, endpoint_phase_norm_squared_upper_bound=Q(1, 10**140))
+    elif failure == "source_class":
+        host = replace(host, full_form_error_upper_bound=Q(1))
     else:
         observation = replace(observation, admitted=False)
     monkeypatch.setattr(owner, "_assess_organized_outer_winding", lambda **kwargs: host)
@@ -578,4 +597,4 @@ def test_missing_source_premises_never_certify_an_actual_interaction(
     assert not unavailable.comparison_certified
     assert not unavailable.admitted
     assert unavailable.status == "unavailable"
-    assert unavailable.unresolved_conditions
+    assert condition in unavailable.unresolved_conditions

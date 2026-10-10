@@ -329,6 +329,14 @@ def test_fresh_source_chain_is_rebuilt_once(monkeypatch, report):
     )
     assert rebuilt.external_interaction is not base
     assert rebuilt.observed_capability_bounds == report.observed_capability_bounds
+    assert (
+        rebuilt.boundary_cosine_bounds[0]
+        is rebuilt.external_interaction.outer_one_boundary_moment_bounds
+    )
+    assert (
+        rebuilt.boundary_cosine_bounds[1]
+        is rebuilt.external_interaction.outer_zero_boundary_moment_bounds
+    )
 
 
 def test_legacy_pi_over_two_comparison_verdict_is_not_a_registration_premise(
@@ -357,17 +365,28 @@ def test_legacy_pi_over_two_comparison_verdict_is_not_a_registration_premise(
 
 
 @pytest.mark.parametrize(
-    "failed", ("source_certified", "work_certified", "identity_certified")
+    "failed,flag_index,condition",
+    (
+        ("source_certified", 0, "host_acquisition_not_certified"),
+        ("source_certified", 1, "paired_host_control_not_certified"),
+        ("source_certified", 2, "external_recovery_not_certified"),
+        ("source_certified", 3, "preceding_sequential_observation_not_certified"),
+        ("source_certified", 4, "actual_hosts_outside_observation_class"),
+        ("work_certified", None, "attachment_work"),
+        ("identity_certified", None, "internal_positive_gap[0]"),
+    ),
 )
 def test_missing_actual_source_or_retention_premises_block_admission(
-    monkeypatch, report, failed
+    monkeypatch, report, failed, flag_index, condition
 ):
     base = report.external_interaction
     if failed == "source_certified":
+        flags = list(base.source_admission_flags)
+        flags[flag_index] = False
         unavailable = replace(
             base,
             source_certified=False,
-            source_admission_flags=(False,) + base.source_admission_flags[1:],
+            source_admission_flags=tuple(flags),
         )
     elif failed == "work_certified":
         unavailable = replace(
@@ -386,7 +405,7 @@ def test_missing_actual_source_or_retention_premises_block_admission(
     assert not getattr(current, failed)
     assert not current.admitted
     assert current.status == "unavailable"
-    assert current.unresolved_conditions
+    assert condition in current.unresolved_conditions
     if failed == "source_certified":
         assert not current.work_certified
         assert not current.identity_certified

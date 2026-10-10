@@ -372,9 +372,18 @@ def test_source_rebuilt_once_and_old_fixed_origin_verdict_is_not_consumed(
     assert result.admitted
 
 
-@pytest.mark.parametrize("flag_index", range(5))
+@pytest.mark.parametrize(
+    "flag_index,condition",
+    (
+        (0, "host_acquisition_not_certified"),
+        (1, "paired_host_control_not_certified"),
+        (2, "external_recovery_not_certified"),
+        (3, "preceding_sequential_observation_not_certified"),
+        (4, "actual_hosts_outside_observation_class"),
+    ),
+)
 def test_missing_actual_source_premise_abstains_in_every_capture_field(
-    monkeypatch, report, flag_index
+    monkeypatch, report, flag_index, condition
 ):
     flags = list(report.external_interaction.source_admission_flags)
     flags[flag_index] = False
@@ -393,7 +402,7 @@ def test_missing_actual_source_premise_abstains_in_every_capture_field(
     assert not result.control_convergence_certified
     assert not result.outer_one_initial_defect_domain_certified
     assert not result.admitted
-    assert result.unresolved_conditions
+    assert condition in result.unresolved_conditions
     assert result.geometry.aligned_stability_certified
 
 

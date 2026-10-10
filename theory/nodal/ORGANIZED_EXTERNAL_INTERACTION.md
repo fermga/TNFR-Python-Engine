@@ -516,6 +516,9 @@ The offsets are relative to \(\psi_j\), with the donor's exact
 \(\pi/2\) added symbolically; raw donor offset means therefore omit
 that supplied origin. Complete phase lifts and the fixed geometry retain
 it. No floating approximation to pi is installed as primitive preparation.
+The contact reaction and potential reuse the matching edge fields from
+that same complete-state evaluation; they require no second trigonometric
+pass or separately cached state.
 
 The assessor re-admits all twelve original allowances and rebuilds the host
 acquisition, independent donor recovery, sequential observation protocol
@@ -523,6 +526,8 @@ and actual-source inclusion. It consumes shared coordinate admission,
 form-cost and interval sine kernels. Cached report flags or winding labels
 are not substitutes for those primitive premises. Its work, identity and
 response verdicts retain source admission and explicit unavailable margins.
+This owner also supplies the source-failure names used by the registration
+and maintenance assessors; each keeps its own acceptance conditions.
 These readers install no support, choose no event and advance no state.
 
 The [contract tests](../../tests/physics/test_organized_external_interaction.py)

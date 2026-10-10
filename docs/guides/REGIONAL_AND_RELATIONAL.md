@@ -38,6 +38,18 @@ conditional on the declared source, law, clock and observation premises;
 it neither authenticates arbitrary readings nor replaces the state needed
 to predict a later interaction.
 
+For a subsequent contact, the [explicit-origin reader](../../theory/nodal/ORGANIZED_EXTERNAL_REGISTRATION.md#7-state-sufficiency-and-implementation-boundary)
+consumes all 108 fine form/phase-offset coordinates and a supplied relative
+origin. Its shared [contact owner](../../theory/nodal/ORGANIZED_EXTERNAL_INTERACTION.md)
+retains the complete fields, both reactions and attachment work. The family
+assessors instead consume the twelve original preparation allowances and
+rebuild the source and observation history. Use the relative-origin assessor
+for its finite response envelope and the [maintenance assessor](../../theory/nodal/ORGANIZED_CONTACT_MAINTENANCE.md#8-detached-implementation-and-verification-boundary)
+for stationary geometry and the separately declared zero-origin outer-zero
+control. A finite envelope or a stationary target does not supply actual
+source capture; other origins and outer-one maintenance remain unavailable.
+These readers accept no incoming report as a substitute for primitive premises.
+
 ## Section link directory
 
 These aliases route existing citations to their substantive owner.

@@ -536,10 +536,12 @@ positive definite on the zero-mean leaf. Its lifted cell is convex, and
 the target is its unique stationary phase point.
 
 If the rebuilt actual source satisfies (21) and `U0<min(1/100,Bcal)`,
-nonincrease of H forbids a first exit from the cell. The strict sublevel
-is separated from its boundary. On the fixed-mean leaf the connected
-form quadratic form and bounded fixed-branch phase differences make it
-compact. Its largest invariant zero-loss set requires `Lx=0` and
+nonincrease of H forbids a first exit from the cell. Use the preserved
+closed sublevel `H-6V9<=U0<Bcal` on the fixed-mean leaf inside the target
+cell. Its closure cannot meet the cell boundary because every boundary
+point costs at least Bcal. Connectedness bounds form through its quadratic
+storage and phase through fixed-branch edge differences. The sublevel is
+therefore compact. Its largest invariant zero-loss set requires `Lx=0` and
 `S(theta)=0`; it is the single aligned target. The invariance principle
 therefore proves **all-future retention of six internal windings one and
 nine old outer windings zero, and full-state convergence to the target**.
@@ -596,7 +598,9 @@ The [maintenance owner](../../src/tnfr/physics/_organized_contact_maintenance.py
 reuses the existing complete contact support and exact interval arithmetic.
 Its geometric derivation retains the separate form and phase eigenvalues
 and both complete tangent rows, the two conserved neutral directions and
-the constant in the full-fine curvature obstruction. Its source assessor
+the constant in the full-fine curvature obstruction. Repeated spectral
+coefficients are evaluated once within each derivation, without caching
+source premises or verdicts. Its source assessor
 admits all twelve original primitive allowances and freshly rebuilds the
 source and observation evidence. It accepts no incoming report as a
 replacement for those premises and advances no trajectory.

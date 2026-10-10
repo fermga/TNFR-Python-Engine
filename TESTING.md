@@ -442,6 +442,10 @@ Retain the whole observation word's endpoint drift, exact mean correlations,
 four-reading error, separate contact work and all fifteen marked identities.
 Static arbitrary-state and closure witnesses are not acquired trajectories.
 Use the shared no-trajectory/frozen-producer guards and module-scoped reports.
+The boundary fields must agree with independent edge calculations while
+reusing the complete-state pass. Across the contact, registration and
+maintenance consumers, exercise each failed source premise and retain its
+shared reason without allowing a consumer-specific verdict to certify it.
 
 For [relative-origin interaction capability](theory/nodal/ORGANIZED_EXTERNAL_REGISTRATION.md),
 select `tests/physics/test_organized_external_registration.py` with the fixed
@@ -453,6 +457,8 @@ retain the uniform nonlinear remainder and two errors for each increment.
 Check complete source reconstruction once, unavailable-source gating and
 independence from the old pi/2 response verdict. Contact work and all fifteen
 finite identities must hold uniformly; static examples certify no trajectory.
+Reused cosine quadratures must come from that fresh source reconstruction;
+their reuse does not admit externally supplied or stale reports.
 
 For [continued-contact identity](theory/nodal/ORGANIZED_CONTACT_MAINTENANCE.md),
 select `tests/physics/test_organized_contact_maintenance.py` with external

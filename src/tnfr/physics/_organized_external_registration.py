@@ -11,10 +11,11 @@ from dataclasses import dataclass, replace
 from fractions import Fraction as Q
 
 from .._exact_time import exact_or_represented_real as _exact
-from ..mathematics._rational_interval import I, cos, sin, sqrt
+from ..mathematics._rational_interval import I, sin, sqrt
 from ._organized_external_interaction import (
     _OrganizedExternalInteraction,
     _OrganizedExternalInteractionObservation,
+    _SOURCE_FAILURE_NAMES,
     _assess_organized_external_interaction,
     _derive_organized_external_interaction,
     _observe_admitted_external_interaction,
@@ -155,9 +156,11 @@ def _assess_organized_external_registration(*, form_error_bounds, phase_error_bo
         source.outer_one_host_phase_offset_bounds,
         source.outer_zero_host_phase_offset_bounds,
     )
-    cosines = tuple(
-        sum((cos(box + donor_error) for box in phases), I(0))
-        for phases in phase_families
+    # The freshly rebuilt pi/2 boundary moments are these same beta-free
+    # cosine quadratures. Reuse their arithmetic, not the old response verdict.
+    cosines = (
+        source.outer_one_boundary_moment_bounds,
+        source.outer_zero_boundary_moment_bounds,
     )
     sines = tuple(
         -sum((sin(box + donor_error) for box in phases), I(0))
@@ -202,15 +205,10 @@ def _assess_organized_external_registration(*, form_error_bounds, phase_error_bo
     identity_ok = source_ok and all(value > 0 for _, value in source.identity_margins)
     comparison_ok = source_ok and one_margin > 0 and zero_margin > 0
     admitted = source_ok and work_ok and identity_ok and comparison_ok
-    flag_names = (
-        "host_acquisition_not_certified",
-        "paired_host_control_not_certified",
-        "external_recovery_not_certified",
-        "preceding_sequential_observation_not_certified",
-        "actual_hosts_outside_observation_class",
-    )
     unresolved = tuple(
-        name for name, ok in zip(flag_names, source.source_admission_flags) if not ok
+        name
+        for name, ok in zip(_SOURCE_FAILURE_NAMES, source.source_admission_flags)
+        if not ok
     ) + tuple(name for name, value in margins if value <= 0)
     return _OrganizedExternalRegistration(
         form_error_bounds=source.form_error_bounds,

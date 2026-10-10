@@ -17,7 +17,7 @@ or replace the complete state with an instantaneous boundary moment.
 | Support and law | Same 54 nodes, 144 unit edges and 45 all-child same-slot contacts; x_tau=(-Lx+gamma*S(theta))/4, theta_tau=gamma*Lx/4, gamma=1/(1023*pi), held unit capacity and full-circle phase domain. No new event after contact; the two rows retain the uniform quarter factor |
 | Clock and horizon | tau=(1023/1024)*t in both rows, elapsed contact h=1/1000. Preserve all earlier formation, recovery and observation clocks |
 | Retained correlations | Exact initial zero host and external form totals; joined form total remains zero. Joined lifted phase total is now 9*beta. Relative rotation of the isolated preparation is not a symmetry rotating only the external constituent after attachment |
-| Boundary quantity | For each actual source member define Q=(1/9)*sum_cj exp(i(z_Dj-host_offset_cj)) at contact, with beta excluded from the external residual. The initial sine moment is Im(exp(i*beta)*Q). Retain both quadratures and actual fine matching correlations; |Q| is independent of the supplied rigid relative origin, not of interface, source or law |
+| Boundary quantity | For each actual source member define Q=(1/9)*sum_cj exp(i(z_Dj-host_offset_cj)) at contact, with beta excluded from the external residual. The initial sine moment is Im(exp(i*beta)*Q). Retain both quadratures and actual fine matching correlations; \|Q\| is independent of the supplied rigid relative origin, not of interface, source or law |
 | Finite observation | External mean signed form increment from contact to h, using two primitive readings with arbitrary errors of magnitude at most eta=1e-10 each. No independence across readings, sources or beta is assumed |
 | Envelope meaning | For each actual source member and any admissible assignment of reading errors, bound sup_beta of the absolute observed finite increment. The envelope describes the prepared family, not an operational scan or a reconstruction from one record |
 | Prospective outer-one requirement | Every original outer-one source and every beta must have absolute observed increment below 1e-8, including both reading errors and the complete nonlinear remainder |
@@ -37,9 +37,11 @@ autonomous preparation, contact selection or a uniquely selected law.
 After this gate closes, reassess the research needs against the original
 generative and physical objectives before selecting another investigation.
 
-The declaration above was committed as `d2f6f3df` before assessment. The
-following argument uses a uniform bound over the declared prepared family;
-it evaluates no sequence of trial origins and advances no trajectory.
+The original declaration committed as `d2f6f3df` before assessment remains
+authoritative. Only the two Markdown delimiters around the boundary norm
+were escaped above so that the complete table cell renders. The following
+argument uses a uniform bound over the declared prepared family; it evaluates
+no sequence of trial origins and advances no trajectory.
 
 ## 1. Prepared family, sufficient state and symmetry
 
@@ -273,8 +275,8 @@ admitted bounds. It neither claims a signed contrast at every origin nor
 identifies a single operationally chosen origin common to all source members.
 
 Even the true finite response can vanish at some origins. Whenever
-\(\gamma h|Q|/4>E\), (7) gives opposite strict signs at beta_* and
-beta_*+pi. Smooth dependence of the complete solution on its prepared
+\(\gamma h|Q|/4>E\), (7) gives opposite strict signs at \(\beta_*\) and
+\(\beta_*+\pi\). Smooth dependence of the complete solution on its prepared
 initial origin makes the true response continuous in beta; the intermediate
 value theorem supplies a zero between them. No analogous continuity of
 arbitrary measurement errors is assumed. Nonzero interaction capability
@@ -428,12 +430,14 @@ require representing every real beta as an input to this numerical reader.
 
 The family assessor takes only the twelve original allowances. It rebuilds
 the earlier primitive-source proof, uses its origin-independent source,
-degree, form, work and identity bounds, then applies (9)--(13). The earlier
-pi/2 comparison verdict is not a premise of this new comparison. No incoming
-cached report or inferred winding substitutes for source admission. The
-rectangle norm uses the shared interval even-power and outward square-root
-kernels; unavailable source, work, identity and comparison conditions remain
-separately reported.
+degree, form, work and identity bounds, then applies (9)--(13). The cosine
+quadratures reuse the boundary moments from that freshly rebuilt source
+report within the same primitive-only call; the sine quadratures and norms
+are calculated for the same source. The earlier pi/2 comparison verdict is
+not a premise of this new comparison. No incoming cached report or inferred
+winding substitutes for source admission. The rectangle norm uses the shared
+interval even-power and outward square-root kernels; unavailable source,
+work, identity and comparison conditions remain separately reported.
 
 The [contract tests](../../tests/physics/test_organized_external_registration.py)
 exercise exact detached boundary calculations, relative-origin dependence

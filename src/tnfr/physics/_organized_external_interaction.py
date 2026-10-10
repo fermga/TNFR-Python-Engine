@@ -40,6 +40,13 @@ _HORIZON = Q(1, 1000)
 _READOUT_ERROR = Q(1, 10**10)
 _RESOLUTION = Q(1, 10**7)
 _ORIGINAL_CLOCK_FACTOR = Q(1023, 1024)
+_SOURCE_FAILURE_NAMES = (
+    "host_acquisition_not_certified",
+    "paired_host_control_not_certified",
+    "external_recovery_not_certified",
+    "preceding_sequential_observation_not_certified",
+    "actual_hosts_outside_observation_class",
+)
 
 
 @dataclass(frozen=True)
@@ -149,7 +156,7 @@ def _observe_admitted_external_interaction(values, offsets, geometry):
     costs, gradient = _prepared_form_costs(
         form=values, weighted_edges=geometry.weighted_edges
     )
-    current, potential, _ = _bounded_sine_edge_fields(
+    current, potential, edge_currents = _bounded_sine_edge_fields(
         phase_offsets=lifted_offsets,
         weighted_edges=geometry.weighted_edges,
         alpha_bounds=geometry.alpha_bounds,
@@ -157,11 +164,17 @@ def _observe_admitted_external_interaction(values, offsets, geometry):
     boundary_costs, boundary_gradient = _prepared_form_costs(
         form=values, weighted_edges=geometry.contact_edges
     )
-    boundary_current, boundary_potential, _ = _bounded_sine_edge_fields(
-        phase_offsets=lifted_offsets,
-        weighted_edges=geometry.contact_edges,
-        alpha_bounds=geometry.alpha_bounds,
-    )
+    # Fresh geometry orders contact edges last. Reuse their complete-state
+    # fields without repeating trigonometry or dropping fine correlations.
+    contact_start = len(geometry.internal_edges) + len(geometry.outer_edges)
+    boundary_potential = potential[contact_start:]
+    boundary_current = [I(0) for _ in values]
+    for (a, b, _), edge_current in zip(
+        geometry.contact_edges, edge_currents[contact_start:]
+    ):
+        boundary_current[a] += edge_current
+        boundary_current[b] -= edge_current
+    boundary_current = tuple(boundary_current)
     gamma, k = geometry.gamma_bounds, geometry.clock_factor
 
     def rows(gradients, currents):
@@ -391,16 +404,9 @@ def _assess_organized_external_interaction(*, form_error_bounds, phase_error_bou
         + work_margins
         + (("observed_contrast_resolution", resolution),)
     )
-    flag_names = (
-        "host_acquisition_not_certified",
-        "paired_host_control_not_certified",
-        "external_recovery_not_certified",
-        "preceding_sequential_observation_not_certified",
-        "actual_hosts_outside_observation_class",
-    )
-    unresolved = tuple(name for name, ok in zip(flag_names, flags) if not ok) + tuple(
-        name for name, value in margins if value <= 0
-    )
+    unresolved = tuple(
+        name for name, ok in zip(_SOURCE_FAILURE_NAMES, flags) if not ok
+    ) + tuple(name for name, value in margins if value <= 0)
     admitted = source_ok and identity_ok and work_ok and comparison_ok
     return _OrganizedExternalInteraction(
         form_error_bounds=rx,
