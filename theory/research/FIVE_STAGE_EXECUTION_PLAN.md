@@ -608,6 +608,12 @@ the unnormalized current statistic. This tests whether the conditional
 electrical relation earns a usable reserved prediction, beyond an ideal
 change of coordinates.
 
+The [prospective declaration](../nodal/ORGANIZED_ROBUST_CURRENT.md)
+fixes a common nominal voltage/current observation, constant calibration and
+clock boxes, separate whole-history and plateau tracking bounds, and inward
+sampling apertures. Its own-law envelope decision is reserved until the
+declaration, consuming code and driver are committed.
+
 1. **Specify both complete laws and preparation information.** Compare the
    independently calibrated fixed amplitude with an explicit alternative,
    initially twice that amplitude, under the same linear components and

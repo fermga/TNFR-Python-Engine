@@ -573,6 +573,17 @@ of a winding result. The phase-free current statistic and loose source
 inequalities are mathematical controls; they neither rerun frozen assessors
 nor admit physical sensors, hidden-phase initialization or a different law.
 
+For [current discrimination under uncertainty](theory/nodal/ORGANIZED_ROBUST_CURRENT.md),
+select `tests/physics/test_organized_robust_current.py` and
+`tests/physics/test_organized_robust_current_theory.py` with finite observation
+and electrical protocol controls. Verify that both candidates use one fixed
+nominal input and raw current statistic; calibration changes their complete
+rows and bounds, not the observed records. Exercise each law's phase/identity
+and current envelope, integrable tracking during plateaus, inward sampling
+apertures, invalid ratios/errors and unavailable sufficient bounds. Synthetic
+controls must not evaluate the declared single-assessment corner or transfer
+formation and work certificates to the alternative law.
+
 For [finite interface factorization](theory/nodal/ORGANIZED_INTERFACE_FACTORIZATION.md),
 select `tests/physics/test_organized_slot_registration.py` and
 `tests/physics/test_organized_interface_factorization.py` with the joint-resource,
