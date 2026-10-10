@@ -9,6 +9,7 @@ import pytest
 
 from tests.sine_evidence_helpers import forbid_sine_regeneration
 from tnfr.physics import _acquired_organized_network_capture as owner
+from tnfr.physics import _organized_network_capture as capture_owner
 
 _ERROR = Q(1, 10**10)
 _EPS = Q(1, 10**70)
@@ -269,7 +270,7 @@ def test_invalid_or_unsupported_primitives_reject_before_source(changes, monkeyp
         pytest.fail("invalid primitive reached recovery or support construction")
 
     monkeypatch.setattr(owner, "_assess_constitutive_recovery", forbidden)
-    monkeypatch.setattr(owner, "_derive_organized_triangle", forbidden)
+    monkeypatch.setattr(owner, "_derive_organized_triangle_capture", forbidden)
     with pytest.raises((TypeError, ValueError)):
         _assess(**changes)
 
@@ -299,7 +300,9 @@ def test_unproved_large_source_is_unavailable_without_changing_its_preparation()
 
 
 def test_unproved_resistance_does_not_pass_the_full_state_boundary(monkeypatch):
-    monkeypatch.setattr(owner, "_edge_resistances", lambda geometry: (Q(1),) * 81)
+    monkeypatch.setattr(
+        capture_owner, "_edge_resistances", lambda geometry: (Q(1),) * 81
+    )
     report = _assess()
     assert report.source_certified and report.target_certified
     assert not report.barrier_certified and not report.capture_certified

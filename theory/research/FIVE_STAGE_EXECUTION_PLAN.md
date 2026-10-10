@@ -124,14 +124,18 @@ laws remain valid with the boundary coefficients retained. The separate
 [acquired-assembly theorem](#acquired-organized-network-capture) now proves
 full-state winding retention and convergence from the original independently
 recovered sources for both controls, with their distinct joined targets and
-supplied contact work. The sole next admission is
-[joint acquisition on preexisting fine support](#current-g3-gate). The
+supplied contact work. The
 [assembly-work theorem](#organized-assembly-work-admission) proves that even
 simultaneous fine-state reorganization cannot passively assemble these
 recovered children within the declared acute winding-one endpoint class.
-The next question is whether the same primitive phase-flat ramps can acquire
-the children and their joint registration together when the final fine
-support is present from preparation, with its complete initial storage paid.
+The [joint-acquisition theorem](#organized-joint-acquisition) now proves
+formation of all three identities and entry to joined capture by the fixed
+time 200 when the same primitive ramps evolve on the connected support from
+preparation. It retains every source error and the full initial contact
+storage under the declared budget. The sole next admission is
+[interaction-driven acquisition of a locally unprepared region](#current-g3-gate):
+can two initially supplied ramps organize a third region whose own nominal
+form and phase are flat, while all three identities remain retained?
 The [prepared storage observer](#storage-comparison-producer-admission)
 is retained as an instrument; it has no frozen protocol or reserved response
 and is not the next campaign.
@@ -148,7 +152,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next theoretical admission | [Joint acquisition on preexisting fine support](#current-g3-gate): re-admit the original primitive phase-flat ramps on both fixed connected supports, including all initial storage, and test full-state formation and capture at the declared structural time and budget |
+| Next theoretical admission | [Interaction-driven acquisition](#current-g3-gate): on the fixed equal-weight connected support, admit two original ramps and one locally unprepared region; derive a complete-law acquisition/capture mechanism or a scoped obstruction, retaining source cost and donor identities |
+| Closed theoretical joint-acquisition admission | [Joint acquisition on preexisting fine support](#organized-joint-acquisition): original phase-flat ramp families acquire all three winding identities and enter full-state capture by time 200 on both connected controls, with complete initial storage below the fixed budget |
 | Closed theoretical work admission | [Identity-preserving assembly work](#organized-assembly-work-admission): strictly positive required-work floors survive arbitrary simultaneous fine-state resets with acute winding-one child endpoints under both fixed contacts; passive intermediate actions cannot evade the complete endpoint balance |
 | Closed theoretical capture admission | [Capture of the acquired three-object assembly](#acquired-organized-network-capture): full-state target admission, winding retention and convergence from the original independent recovered sources under both fixed contact controls, with supplied work retained |
 | Closed theoretical network admission | [Network-wide compatibility of organized interactions](#organized-network-compatibility): exact three-C9 collective law; common phase-origin, form and reciprocal maps require zero contact-cycle phase and equal amplitudes, while retained boundary data supports both incompatible controls |
@@ -204,7 +209,7 @@ remain open; no empirical response has passed complete physical admission.
 
 <a id="current-g3-gate"></a>
 <a id="foundational-organized-pattern-admission"></a>
-<a id="organized-joint-acquisition"></a>
+<a id="organized-interaction-driven-acquisition"></a>
 ## Primary plan: foundations tested by organized patterns
 
 Investigate which premises are sufficient, necessary within a declared class,
@@ -224,63 +229,74 @@ to its actual state, scale and execution path before treating a matched
 geometric or response property as sufficient. Retain the distinction between
 defining requirements, supplied hypotheses and derived restrictions.
 
-The next question is: **can the three child identities and their joined
-registration form together on fine support present from preparation?** The
-[assembly-work theorem](../nodal/ORGANIZED_ASSEMBLY_WORK.md) excludes a
-passive late attachment from the recovered sources in its declared endpoint
-class. It does not exclude regional formation on existing fine support.
-The [ontology](../EMERGENT_ONTOLOGY.md#nfr-participation-in-form) admits that
-distinct claim, while the [connection owner](../nodal/RELATIONAL_EFFECTIVE_CONNECTIONS.md#connection-mechanisms-and-mediators)
-already separates effective organization from primitive edge birth.
+The next question is: **can interaction acquire a winding-one identity in a
+locally unprepared third region while the two prepared regions acquire and
+retain their own identities?** The [joint-acquisition theorem](../nodal/ORGANIZED_JOINT_ACQUISITION.md)
+supplies a complete connected-support mechanism when every region receives
+a structured form ramp. It does not establish that an organization can form
+without that local preparation. The
+[ontology](../EMERGENT_ONTOLOGY.md#nfr-participation-in-form) admits the
+regional question, while the [connection owner](../nodal/RELATIONAL_EFFECTIVE_CONNECTIONS.md#connection-mechanisms-and-mediators)
+separates causal interaction on existing fine support from primitive edge
+birth. This gate changes one source premise; it does not repeat the earlier
+three-ramp certificate with a tighter bound.
 
 Retain all 27 labelled fine nodes, the three original unit C9 cycles, held
 unit capacities and the same detached reciprocal sine law and structural
-clock `tau=(1023/1024)*t`, with `gamma=1/(1023*pi)`. Both fixed connected
-supports are now present at `tau=0` and remain unchanged: the oriented
+clock `tau=(1023/1024)*t`, with `gamma=1/(1023*pi)`. The fixed equal-weight
+connected support is present at `tau=0` and remains unchanged: the oriented
 contacts `(0,1),(1,2),(2,0)` use offsets `{0,1}` and weights `1-s_e,s_e`,
-for `s_e=(1/2,1/2,1/2)` or `(1/4,1/2,3/4)`. Every node has weighted
+with `s_e=(1/2,1/2,1/2)`. Every node has weighted
 degree four. Use both actual degree-four evolution rows and the complete
 weighted storage; native neighbor semantics and registered operators remain
 separate. No forcing, state reset, support event or conductance evolution is
 admitted during this preparation.
 
-Declare the original primitive class-one ramps anew on this connected
-support: `x_(r,j)(0)=m*(j-4)+delta_x_(r,j)` and
-`theta_(r,j)(0)=delta_theta_(r,j)`, where
-`m=(2046/9)*(355/113)**2`, `r=0,1,2`, and `j=0,...,8`.
+Declare the original primitive class-one ramps on regions `r=0,1` only:
+`x_(r,j)(0)=m*(j-4)+delta_x_(r,j)`, where
+`m=(2046/9)*(355/113)**2` and `j=0,...,8`. On region `r=2`, declare
+`x_(2,j)(0)=delta_x_(2,j)`. For every region keep
+`theta_(r,j)(0)=delta_theta_(r,j)`.
 Each form and lifted-phase error is independently bounded in magnitude by
 `10^-10`, with separate exact zero sums within each child. Retain the fixed
 common initial phase origin and every allowed combination of the errors.
 These initial circular phase configurations have winding zero. Only the
 global means remain conserved after connected evolution begins.
 
-Before evaluating a certificate, fix acquisition time `T=200` in `tau`
-(`204800/1023` in original time) and a common whole-network initial storage
-ceiling `10^9`. These are fresh connected-source obligations, not transferred
-isolated-source verdicts. Include the contact form and phase storage already
-present at preparation; a large supplied initial form is neither free work
-nor an autonomous preparation mechanism. Rebuild represented-real source
-admission, all residual bounds and storage with shared exact rational and
-outward dyadic128 arithmetic. No precision, source, time or topology sweep is
-active.
+These are fresh complete-source obligations. The two donor regions do not
+start at acquired targets and inherit no isolated-source or three-ramp
+capture verdict. Rebuild the complete initial storage, including all contact
+form and phase terms. Retain the actual regional boundary work throughout
+the argument; supplied initial storage is not a free or autonomous source,
+and continuous loss is not an event reserve.
 
-Seek a complete-law analytic bound from this original source to the stated
-deadline. At `T`, certify all three child windings equal one and admit the
-actual full state to the existing joined target's storage barrier under
-each fixed control, including its fine form and phase deviations. The
-[capture owner](../nodal/ACQUIRED_ORGANIZED_NETWORK_CAPTURE.md) supplies
-the targets and conditional full-state barrier, not acquisition from this
-new initial support. Reapply every entry and mean premise; do not replace
-the reached source by an ideal target or by its old `10^-70` recovery bound.
-If a source, storage or entry bound fails, retain that unavailable sufficient
-certificate without retuning this declaration or inferring nonformation.
+First derive a complete-law mechanism, sufficient capture conditions or a
+scoped symmetry, energy or accessibility obstruction for this one fixed
+source family. Separate the initial form-relaxation layer from any later
+phase-mediated acquisition. The mixed coordinate `theta+gamma*x` evolves
+under the actual nonlinear current; its value at the locally flat receiver
+cannot be replaced by the missing ramp's phase profile. The old time-200
+certificate is not a receiver-formation deadline for this new source.
+An asymptotic approximation needs full-law error and source control.
 
-A positive result would establish conditional joint formation and eventual
-registration on existing fine support, with retained preparation cost. It
-would neither create that support nor derive a reservoir, event selector,
-unique law, laboratory clock or physical bound state. The task is a static
-analytic admission; no trajectory producer, physical dataset, reserved
-response or additional numerical campaign is active.
+A positive conclusion requires the initially unprepared receiver to acquire
+winding one, the two donor regions to acquire and retain their own winding
+identities, and the actual complete state to enter a justified joined capture
+region. The [capture owner](../nodal/ACQUIRED_ORGANIZED_NETWORK_CAPTURE.md)
+supplies a conditional target and barrier, not these entry claims. Reapply
+all mean, source, fine-deviation and work premises. A necessary condition or
+an insufficient bound does not prove receiver formation or its impossibility.
+If the analytic admission leaves an unresolved estimate, state it without
+retuning the source or expanding to a sweep.
+
+No finite response horizon or trajectory budget is admitted before this
+mechanism analysis. Any later numerical comparison must separately freeze
+its complete horizon, observation and budget before response evaluation.
+The current task is theoretical: no producer, physical dataset, reserved
+response, source scan or topology campaign is active. Even a positive result
+would retain supplied support, donor preparation and law; it would not
+derive an autonomous reservoir, event selector, universal replication law,
+laboratory clock or physical bound state.
 
 1. **Declare the object and the claim.** Specify sufficient form/phase state,
    identity, source class, clock, support, capacity, boundaries and observation.
@@ -292,17 +308,17 @@ response or additional numerical campaign is active.
    operator is consumed, its live preconditions, ordered composition and
    postconditions. A collective event needs its own descent and occurrence
    analysis even when the continuous collective law closes.
-2. **Specify the proposed discrimination.** Fix the complete three-object
-   support and storage from preparation, primitive phase-flat ramps and
-   original errors, structural deadline and total initial storage ceiling.
+2. **Specify the proposed discrimination.** Keep the equal-weight connected
+   support, two original form ramps, locally flat receiver and original
+   errors; derive complete source storage and both regional work channels.
    Separate constitutive freedom from supplied preparation and support.
    No controller, fitted sensor or hidden clock adjustment supplies closure.
 3. **Derive a discrimination or obstruction.** Match the declared preparation
    observations, geometry, units, clock and costs under each complete law.
    Check symmetries, equilibrium boundaries, reachable identities, balances
-   and information loss. Determine whether every admitted initial connected
-   state reaches the declared winding and full-state capture conditions at
-   the fixed deadline, with its own source and preparation storage retained.
+   and information loss. Determine whether interaction supplies a justified
+   receiver-acquisition route while retaining the donors, or identify a
+   scoped obstruction, with the actual source and preparation cost retained.
    Distinguish a new initial condition from a symmetry copy or a changed law. A
    necessary condition or failed sufficient bound is not a formation theorem.
 4. **Integrate only the justified result.** Preserve useful conditional proofs
@@ -312,8 +328,8 @@ response or additional numerical campaign is active.
    observation and error model are admitted. A controller added to produce a
    desired object is an additional premise, not a derivation of that object.
 
-The gate distinguishes joint acquisition on supplied fine support from
-capture after separate recovery, simultaneous reset work and support birth.
+The gate distinguishes receiver acquisition through interaction from three
+locally prepared ramps, capture after separate recovery and support birth.
 Continuous closure does not establish collective event descent or occurrence;
 those require the [operator criterion](../STRUCTURAL_OPERATORS.md#collective-operator-descent).
 State unresolved source, identity or equivalence estimates explicitly rather
@@ -327,7 +343,7 @@ The dependency order for subsequent work is:
 | Complete foundations | State and law choices are explicit; independent selection arguments and surviving countermodels are retained |
 | Formation and identity | Entry from the declared source, stability/maintenance and preparation costs; autonomous preparation and scale/support selection are separately identified |
 | Composite organization | Dynamical attachment/interaction, retained constituent identity and a declared separation/work criterion; negative rectangular storage excess alone is not binding |
-| Inheritance across scales | Network compatibility retains relational data when pairwise charts cannot coexist, and full-state acquired-source capture holds for the two fixed supplied contacts. The recovered children's declared identity-preserving assembly now has a positive work floor. A hierarchy still needs compatible repeated composition, justified parameter and clock maps, identity/source control and preparation or assembly work at every claimed level. Retain necessary hidden state, memory and event contracts through the existing [scale](../TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) and [collective closure](../nodal/DERIVED_FORM_PHASE.md#collective-interaction-closure-and-relational-state) owners. Matching a tangent or re-encoding the full state alone does not establish inheritance |
+| Inheritance across scales | Network compatibility retains relational data when pairwise charts cannot coexist. Both recovered-source capture and joint acquisition from three ramps hold on the fixed contacts, while late identity-preserving assembly has a positive work floor. Acquisition of a locally unprepared child remains separate. A hierarchy still needs compatible repeated composition, justified parameter and clock maps, identity/source control and preparation or assembly work at every claimed level. Retain necessary hidden state, memory and event contracts through the existing [scale](../TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) and [collective closure](../nodal/DERIVED_FORM_PHASE.md#collective-interaction-closure-and-relational-state) owners. Matching a tangent or re-encoding the full state alone does not establish inheritance |
 | Physical interpretation | Derive geometric/measurement transformations and quantitative observables with units, independent preparation and alternatives before identifying a fundamental constituent |
 
 For each subsequent law or hypothesis, record its status, independent
@@ -343,6 +359,34 @@ The physical objective guides which mathematical property matters. Laboratory
 examples supply possible controls and discriminators; they do not replace
 the generative objective with imitation of a convenient apparatus. Substrate
 origin, universal laws and recurrence across scales remain open hypotheses.
+
+<a id="organized-joint-acquisition"></a>
+## Closed theoretical admission: joint acquisition on preexisting fine support
+
+The [connected-source theorem](../nodal/ORGANIZED_JOINT_ACQUISITION.md) retains
+all 27 fine coordinates, the original three primitive ramps and every
+`10^-10` coordinate error with separate initial child zero sums. Under both
+fixed connected supports, the degree-four complete sine law carries every
+member from winding-zero phases to three winding-one identities and admits
+its full reached state to the respective target's storage trap by `tau=200`
+(`204800/1023` in original time). Subsequent trapping retains those identities
+and gives convergence to the joined registration on the global conserved-mean
+leaf. Only the global means remain conserved during connected evolution.
+
+The initial complete storage, including the contacts, lies below the fixed
+ceiling `10^9`. Spectral form decay and the actual mixed-coordinate identity
+bound the reached form and phase without a trajectory producer. The target
+and phase-sector barrier are shared with acquired-source capture; the source
+transport, residual and entry estimates are rebuilt for this preparation.
+No independent-source recovery radius or verdict substitutes for them.
+
+This is conditional joint formation on supplied fine support. It requires
+three structured form preparations and does not explain their origin, select
+the marked child partition, create support or establish physical binding.
+The [next admission](#current-g3-gate) removes one local ramp and asks whether
+the actual interaction can acquire that region's identity while retaining
+the two prepared regions. No response for that changed source is evaluated
+by this theorem.
 
 <a id="organized-assembly-work-admission"></a>
 ## Closed theoretical admission: identity-preserving assembly work
@@ -371,8 +415,10 @@ late attachment while retaining that endpoint identity. Earlier attachment,
 different source or identity classes, removed edges and separately justified
 storage or reservoir laws remain outside this result. Arbitrary reset
 endpoints inherit neither the no-reset capture theorem nor an event selector.
-The [next gate](#current-g3-gate) tests joint acquisition on fine support
-already present in preparation, with all its initial storage included.
+The separate [joint-acquisition result](#organized-joint-acquisition) admits
+fine support already present in preparation, with all its initial storage
+included. Its positive result does not evade this late-assembly obstruction;
+it uses a different source and support history.
 
 <a id="acquired-organized-network-capture"></a>
 ## Closed theoretical admission: capture of the acquired three-object assembly

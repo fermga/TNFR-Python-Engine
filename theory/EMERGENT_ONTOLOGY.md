@@ -260,9 +260,19 @@ the actual recovered-source excess. Cross-contact phases need not be acute.
 Passive intervening flow or actions cannot evade that complete endpoint
 balance. This is a scoped storage obstruction, not a sharp minimum or an
 exclusion of other source, support, identity or storage laws. Regional
-organization on fine support present from preparation remains a distinct
-formation question: its initial contact storage must be admitted, and the
-existing disconnected acquisition proof does not transfer to it.
+organization on fine support present from preparation is a distinct
+formation question. The [joint-acquisition theorem](nodal/ORGANIZED_JOINT_ACQUISITION.md)
+now proves that the three primitive phase-flat ramp families acquire all
+three winding-one identities and enter the appropriate full-state capture
+region by the fixed structural time 200 on both connected supports. Their
+subsequent relative registration converges to the respective joined target.
+The proof retains every original error and pays all initial contact storage
+within the declared whole-network budget; it transfers no isolated-source
+recovery verdict. It therefore removes late attachment as a requirement for
+this conditional formation route. The marked partition, support, three
+structured form preparations and complete sine law remain supplied. No
+locally unprepared child's acquisition, autonomous source, primitive support
+birth or physical bound state follows.
 
 Distinct internal geometries need not be distinguishable through every
 contact. The [central-contact obstruction](nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-contact-admission)

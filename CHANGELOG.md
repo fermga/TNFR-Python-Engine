@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Prove [joint acquisition on preexisting fine support](theory/nodal/ORGANIZED_JOINT_ACQUISITION.md)
+  for both fixed three-C9 contacts. The original phase-flat ramp families
+  acquire all three winding identities and enter their full-state capture
+  regions by the fixed structural time 200, retaining all source errors and
+  the complete initial storage below the declared budget. Share the static
+  target/barrier owner with recovered-source capture; no attachment event,
+  trajectory producer or autonomous preparation is introduced.
 - Prove a strictly positive [identity-preserving assembly-work floor](theory/nodal/ORGANIZED_ASSEMBLY_WORK.md)
   for both fixed three-C9 contacts, even with simultaneous full form/phase
   resets and arbitrary relative origins. Admit every endpoint whose original

@@ -454,6 +454,10 @@ its capture certificate to arbitrary reset endpoints.
 The [capture implementation](../../src/tnfr/physics/_acquired_organized_network_capture.py)
 rebuilds the selected rational support, target enclosures, edge resistance
 certificate, original source recovery, support work and full-state barrier.
+The shared [target and barrier owner](../../src/tnfr/physics/_organized_network_capture.py)
+has no source or entry premise. This recovered-source consumer and the
+separate [connected-source acquisition](ORGANIZED_JOINT_ACQUISITION.md)
+each admit their own preparation and reached-state bounds before applying it.
 It does not accept incoming report verdicts as replacement premises.
 The [independent controls](../../tests/physics/test_acquired_organized_network_capture.py)
 check the fine-node target balances, exact rational support certificates,

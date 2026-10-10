@@ -261,6 +261,21 @@ Check primitive admission before source assessment and retain the earlier
 capture controls; arbitrary reset endpoints inherit no capture verdict.
 These static controls install no event and rerun no frozen producer.
 
+For [joint acquisition on preexisting fine support](theory/nodal/ORGANIZED_JOINT_ACQUISITION.md),
+select `tests/physics/test_organized_joint_acquisition.py` with
+`tests/physics/test_acquired_organized_network_capture.py` and
+`tests/physics/test_organized_network_compatibility.py`. Independently rebuild
+the connected primitive source, actual weighted Laplacian, spectral decay,
+both complete evolution rows and initial contact storage. Retain every
+coordinate error and the separate initial zero sums; only global means are
+conserved during connected evolution. Check winding-zero preparation,
+time-200 winding-one entry and the full reached form/phase storage against
+the shared target/barrier owner. Neither the old isolated recovery radius
+nor its source verdict may supply this handoff. Exercise invalid primitives
+before assessment and unavailable strict margins without inferring failure
+of the actual flow. Preserve the earlier capture and work contracts; these
+static checks rerun no trajectory or frozen producer.
+
 For [preparation information and acquired modes](theory/nodal/SINE_PREPARATION_MODE_SELECTION.md),
 select `tests/physics/test_sine_preparation_mode_selection.py` with the shared
 preparation and isolated-class controls above. Reconstruct the Laplacian energy
