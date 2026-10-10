@@ -95,11 +95,29 @@ def _observe_parent_reservoir_exchange(
     values = _vector(form, "form", 36)
     offsets = _vector(phase_offsets, "phase_offsets", 36)
     reservoir = _exact(reservoir_state, "reservoir_state")
+    return _observe_admitted_parent_reservoir_exchange(
+        form=values,
+        phase_offsets=offsets,
+        reservoir_state=reservoir,
+        port=selected,
+        leakage="original",
+    )
+
+
+def _observe_admitted_parent_reservoir_exchange(
+    *, form, phase_offsets, reservoir_state, port, leakage
+):
+    """Joint algebra for caller-admitted primitives and one declared leakage.
+
+    The public-to-this-module adapters own scalar, vector and law admission.
+    This shared kernel installs no law and certifies no trapping or source.
+    """
+    values, offsets, reservoir, selected = form, phase_offsets, reservoir_state, port
     network = _observe_repeated_composition(
         interface="matching", form=values, phase_offsets=offsets
     )
     gamma = network.geometry.gamma_bounds
-    decay = gamma**2 / 2
+    decay = gamma**2 / 2 if leakage == "original" else I(0)
     coupling = tuple(
         gamma * Q(2 * (node // 9 % 2) - 1, 12) if selected == "connected" else I(0)
         for node in range(36)

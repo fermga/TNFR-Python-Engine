@@ -181,9 +181,14 @@ The [finite-reservoir comparison](#organized-parent-reservoir-exchange-admission
 now excludes the fixed disruption readout for the whole admitted source,
 despite a valid autonomous balance, finite work and retained children.
 Registration at its later deadline is not a demonstrated loss/return cycle.
-The sole next task is [reservoir memory and equilibrium admission](#current-g3-gate):
-classify whether retained auxiliary state changes stable geometry under the
-same port, and which conclusions require positive reservoir leakage.
+The [reservoir memory classification](#organized-parent-reservoir-memory-admission)
+now gives different locally attracting geometries on fixed information
+leaves at zero leakage, and a separate registered target at original positive
+leakage. Its full-state traps do not establish entry from the previous source.
+The sole next task is [organized-source port admission](#current-g3-gate):
+derive the actual interaction supplied by one existing organized constituent,
+including its retained state and reaction, rather than assume an auxiliary
+scalar source law.
 The [prepared storage observer](#storage-comparison-producer-admission)
 is retained as an instrument; it has no frozen protocol or reserved response
 and is not the next campaign.
@@ -200,7 +205,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next theoretical admission | [Reservoir memory and equilibrium admission](#current-g3-gate): retain the fixed port and compare zero with original positive leakage; classify retained-state equilibria and full transverse local stability on an admitted lifted domain, with a trap required for attraction |
+| Next theoretical admission | [Organized-source port admission](#current-g3-gate): declare one C9 source attached to the four-child assembly, derive both complete interaction channels and storage, and admit a sufficient retained source state or a scalar-closure obstruction |
+| Closed theoretical memory classification | [Reservoir memory and equilibrium](#organized-parent-reservoir-memory-admission): a lifted conserved quantity labels distinct locally attracting registration geometries at zero leakage; original positive leakage has a separate local target. Full transverse traps retain fine state, fixed means and the zero-leakage information leaf |
 | Closed theoretical reservoir obstruction | [Autonomous finite-reservoir exchange](#organized-parent-reservoir-exchange-admission): both connected parents remain registered at the frozen disruption readout for the entire source; joint balance, finite signed work, child retention and later registration hold, without a demonstrated loss/return cycle |
 | Closed theoretical collective realization | [Eight-observation actuation](#organized-parent-collective-actuation-admission): four uniform input channels preserve the children, respect actual signed work and fine endpoint budgets, and admit all eight mean predictions and perturbed recovery; no release measurement is used |
 | Closed theoretical constructive realization | [Four-unit prescribed actuation](#organized-parent-constructive-actuation-admission): exact actual endpoints, retained children throughout, signed net work below three, and admitted autonomous release; complete initial-state knowledge and all-node actuation remain premises |
@@ -270,7 +276,7 @@ remain open; no empirical response has passed complete physical admission.
 
 <a id="current-g3-gate"></a>
 <a id="foundational-organized-pattern-admission"></a>
-<a id="organized-parent-reservoir-memory-admission"></a>
+<a id="organized-source-port-admission"></a>
 ## Primary plan: foundations tested by organized patterns
 
 Investigate which premises are sufficient, necessary within a declared class,
@@ -309,63 +315,70 @@ and all-node input. The
 reduces those requirements to eight initial means and four uniform channels.
 The [autonomous reservoir comparison](../nodal/ORGANIZED_PARENT_RESERVOIR_EXCHANGE.md)
 supplies a complete passive joint law but excludes its fixed disruption
-readout. An admitted storage budget alone does not select the response. The selected
-immediate gap is now whether retained reservoir information changes stable
-geometry, and whether leakage removes that dependence. This joins the
-portfolio's information and organization contributions without retuning the
-failed readout or treating one source as a prerequisite for the whole paradigm.
+readout. An admitted storage budget alone does not select the response. The
+[memory classification](../nodal/ORGANIZED_PARENT_RESERVOIR_MEMORY.md) now
+derives preparation-dependent local geometry for that auxiliary state.
+Its origin and coupling remain supplied. The selected immediate gap is the
+actual port law of an organized source built from the existing constituents,
+with its own phase, form, storage and reaction retained. Extending the old
+source's trajectory would not remove this constitutive premise.
 
 | Research front | Existing basis and genuinely missing result | Priority and activation |
 | --- | --- | --- |
 | Repeated composition and sufficient collective state | [Pair inheritance](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md), [network compatibility](../nodal/ORGANIZED_NETWORK_COMPATIBILITY.md) and [carried-source capture](../nodal/ACQUIRED_ORGANIZED_NETWORK_CAPTURE.md) now support a [finite two-level prediction](../nodal/REPEATED_ORGANIZED_COMPOSITION.md) with full transverse errors. Its approximate parent law retains a specific exact-closure obstruction | **Admitted for the fixed finite model**. Reuse its identity and predictive domain; broader hierarchy, other contacts and indefinite approximation remain separate |
-| Formation, composite identity and work | [Parent acquisition](../nodal/ORGANIZED_PARENT_ACQUISITION.md) supplies entry; [restoring response](../nodal/ORGANIZED_PARENT_RESTORING_RESPONSE.md) supplies finite return. [Collective actuation](../nodal/ORGANIZED_PARENT_COLLECTIVE_ACTUATION.md) supplies bounded input work; the [autonomous reservoir](../nodal/ORGANIZED_PARENT_RESERVOIR_EXCHANGE.md) fails its fixed disruption readout while retaining the children | **Sole immediate gate**, specified below: retained reservoir memory, equilibrium geometry and full-state local stability for the fixed port with zero versus original positive leakage. Auxiliary preparation and coupling remain supplied; physical binding and source formation are separate claims |
-| Effective memory and controlled reduction | [Causal component composition](../nodal/SINE_CLASS_INTERFACE_COMPOSITION.md) and [bridge memory](../nodal/RESONANCE_FOUNDATIONS.md#sine-bridge-causal-memory) already retain hidden state. A formal slow expansion is not a time-domain approximation | **Method within the immediate gate**: retain reservoir initialization when eliminating its coordinate, distinguish a conserved lifted quantity from a circular observation, and prove any reduced equilibrium/stability claim in the full state; no generic memory framework |
+| Formation, composite identity and work | [Parent acquisition](../nodal/ORGANIZED_PARENT_ACQUISITION.md) supplies entry; [restoring response](../nodal/ORGANIZED_PARENT_RESTORING_RESPONSE.md) supplies finite return. The [auxiliary reservoir](../nodal/ORGANIZED_PARENT_RESERVOIR_EXCHANGE.md) has a scoped failed readout and a separate [local memory classification](../nodal/ORGANIZED_PARENT_RESERVOIR_MEMORY.md) | **Sole immediate gate**, specified below: derive a port from one C9 source interacting with the existing assembly, retaining both channels, contact work and source reaction. A supplied auxiliary scalar is not already that constituent |
+| Effective memory and controlled reduction | [Causal component composition](../nodal/SINE_CLASS_INTERFACE_COMPOSITION.md), [bridge memory](../nodal/RESONANCE_FOUNDATIONS.md#sine-bridge-causal-memory) and [reservoir equilibrium](../nodal/ORGANIZED_PARENT_RESERVOIR_MEMORY.md) distinguish retained initialization from instantaneous observations | **Method within the immediate gate**: test whether the organized source can be represented by one scalar on the declared domain; retain phase or derived causal memory if its complete port consumes it. Existing elimination methods do not transfer another model's coefficients or source |
 | Identity, internal activity and constitutive freedom | [Positive-loss and conservative boundaries](../nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission) distinguish static identity, moving constituents and recurrence. [Alternative mobility](../nodal/SINE_PAIR_MOBILITY.md#sine-mobility-relative-geometry) protects geometry without an established equivalent invariant measure | **Prepared alternative**, when a selected object requires sustained activity. One bounded question is invariant-density admission for the existing alternative mobility; failure of a phase-only density ansatz does not exclude every full-state measure |
 | Independent selection of laws and information premises | [First-moment selection](../nodal/SINE_CONSTITUTIVE_INFORMATION.md#first-phase-moment-sufficiency) is conditional; [recursive inheritance countermodels](../nodal/SINE_PAIR_MOBILITY.md#sine-replica-constitutive-nonselection) retain kinetic freedom | **Conceptually critical**, but another compatibility scan cannot establish uniqueness. Reopen with an independently justified restriction or an admitted discriminating observation; retain valid alternative complete laws meanwhile |
-| Autonomous preparation, contacts, capacity and collective events | [Relation laws](../nodal/RELATION_FOUNDATIONS.md), [capacity admission](../CAPACITY_LOCALIZATION_BALANCE.md), [support work](../nodal/RELATIONAL_SUPPORT_EVENTS.md) and [operator descent](../STRUCTURAL_OPERATORS.md) have separate contracts. Neither passivity nor a valid inherited event selects its occurrence | **Critical for autonomous assembly**. The active gate addresses only a declared finite-storage input source on held support; its origin, support/capacity selection and registered operator occurrence remain separate |
+| Autonomous preparation, contacts, capacity and collective events | [Relation laws](../nodal/RELATION_FOUNDATIONS.md), [capacity admission](../CAPACITY_LOCALIZATION_BALANCE.md), [support work](../nodal/RELATIONAL_SUPPORT_EVENTS.md) and [operator descent](../STRUCTURAL_OPERATORS.md) have separate contracts. Neither passivity nor a valid inherited event selects its occurrence | **Critical for autonomous assembly**. The active gate admits one supplied contact and the actual organized-source interaction; it does not select the contact's occurrence, support/capacity evolution or substrate origin |
 | Independent physical observation | The [P1-P5 contract](#supporting-measurement-bridge) and [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md) separate internal constructions from measured properties | **Essential for physical identification**. Activate one falsifiable collective observable with independent preparation, readout, clock and alternatives. It need not wait for every foundational question, but no current dataset has complete admission |
 
-Only reservoir memory and equilibrium admission is active. The others are conditional routes, not a fixed
+Only organized-source port admission is active. The others are conditional routes, not a fixed
 seven-step schedule or a ranking of their ultimate scientific importance.
 Fixed capacity and support define legitimate conditional models; their
 autonomous selection becomes necessary only for claims that require it.
 
-### Immediate question: reservoir memory and stable geometry
+### Immediate question: a port supplied by an organized constituent
 
-**Can retained auxiliary information support a shifted stable organization
-under passive joint dynamics, and which restoration claims require leakage?**
-Keep the existing port fixed; changing the failed readout is not this task.
+**Which complete interaction and retained state does one organized TNFR
+source actually supply to the existing assembly?** The auxiliary reservoir
+is a conditional model, not yet an inherited constituent description.
 
-1. **Declare the comparison and domain before assessment.** Retain the
-   acquired-parent support, unit capacities, sine law, clock and
-   `b[g,a,j]=gamma*sigma_a/12`. Compare only `lambda=0` and the original
-   `lambda=gamma^2/2` in `r_tau=-b^T*Lx-lambda*r`. Declare a continuous lifted
-   acute winding cell, fixed common modes and the admissible auxiliary-state
-   range. A new local domain must not be presented as capture of the earlier
-   full source. The auxiliary coordinate and preparation remain supplied.
-2. **Derive the retained information and equilibrium equations.** Determine
-   whether a conserved joint quantity permits eliminating `r` at zero
-   leakage, retaining its initial value and phase-lift dependence. Derive the
-   resulting potential and full-state equilibrium conditions. Compare them
-   with the positive-leakage law without treating a decaying quantity as a
-   constant, or a lifted invariant as a globally circular observation.
-3. **Admit full transverse stability and any attraction claim.** A root on
-   the four-child reference is insufficient. Account for fine perturbations,
-   common modes, the retained-information leaf, child winding and the actual
-   joint balance. Require a proved trap or basin for convergence; equilibrium
-   existence, a local Hessian or nonincreasing storage alone does not prove
-   entry or restoration of the original source.
-4. **Close at one conditional classification or obstruction.** Establish
-   whether retained reservoir preparation can change locally stable
-   registration, and which conclusions survive positive leakage. Do not scan
-   coupling strengths, construct another pulse, move the frozen disruption
-   time or claim a uniquely selected law, formed reservoir or physical bath.
+1. **Declare one fine model and attachment before assessment.** Use one
+   additional marked winding-one C9 source with unit same-slot contacts to
+   one fixed child of the four-C9 assembly. Declare every coefficient,
+   capacity, clock, phase lift and input row on the enlarged support;
+   nonuniform degrees must not silently change normalization. Re-admit the
+   organized source's identity/preparation and the support-change work under
+   the actual maps. A supplied attachment is not an occurrence law.
+2. **Derive the actual complete port and source reaction.** Retain both form
+   and phase channels, the interaction storage and every consumed source
+   coordinate. Establish the exact inherited law on the compatible carrier
+   family, and distinguish it from any claim about acquired fine deviations.
+   Do not insert the earlier `b*r` law or a standalone `r^2/2` storage merely
+   to reproduce the auxiliary construction.
+3. **Test sufficient source state.** Decide whether a declared scalar
+   observation closes the complete interaction on a nontrivial admitted
+   domain. First declare which host observations and conserved preparation
+   totals are retained; those totals can change whether a donor coordinate
+   is independently required. Distinguish evolving state from initialization
+   constants before claiming minimality. If closure fails, give a
+   matched-observation counterexample or derive the
+   additional phase/state or causal memory needed, retaining initialization
+   and both response channels. An instantaneous port match or a tangent
+   reduction is not a complete nonlinear source representation.
+4. **Close at one inherited mechanism or scoped obstruction.** Record what
+   the actual organized source explains and which constitutive premises
+   remain independent. No finite disruption campaign, source-horizon
+   extension, universal reservoir realization or physical identification is
+   activated by this admission. Finite identity/response claims require their
+   own source, work and transverse-error hypotheses.
 
-Reuse the [component storage discipline](../nodal/SINE_CLASS_INTERFACE_COMPOSITION.md#sine-composition-balances)
-and [autonomous joint-state comparison](../nodal/ORGANIZED_PARENT_RESERVOIR_EXCHANGE.md)
-with their actual hypotheses. Existing memory methods do not already prove
-this nonlinear full-transverse classification. No new basin, asymptotic
-source outcome or trajectory campaign has been admitted for this next gate.
+Reuse [constitutive inheritance](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md),
+[component balances](../nodal/SINE_CLASS_INTERFACE_COMPOSITION.md#sine-composition-balances)
+and [retained-information scope](../nodal/ORGANIZED_PARENT_RESERVOIR_MEMORY.md).
+Their methods do not select the new coefficients or supply its source
+certificate. No enlarged-support source outcome has yet been admitted.
 
 For each subsequent law or hypothesis, record its status, independent
 premises, consequences, countermodels and decision in the existing definition
@@ -380,6 +393,31 @@ The physical objective guides which mathematical property matters. Laboratory
 examples supply possible controls and discriminators; they do not replace
 the generative objective with imitation of a convenient apparatus. Substrate
 origin, universal laws and recurrence across scales remain open hypotheses.
+
+<a id="organized-parent-reservoir-memory-admission"></a>
+## Closed theoretical admission: retained memory and local equilibrium
+
+The [result owner](../nodal/ORGANIZED_PARENT_RESERVOIR_MEMORY.md) preserves
+declaration `53cc7b68`: the same reciprocal port, zero versus original
+positive leakage, fixed means and a specified lifted acute winding chart.
+The exact quantity `J=r+c^T*theta`, with `c=4*b/gamma`, is conserved only at
+zero leakage. For `abs(J)<=3`, each fixed information leaf has one equilibrium
+in the chart, with both registered and unregistered parent geometries among
+the family while every child retains winding one.
+
+The proof includes all fine transverse directions. A phase radius `1/8`
+and a strict joint-storage excess below `1/768` supply a local trap and
+asymptotic attraction to the appropriate target. At zero leakage attraction
+to one member is relative to its fixed information leaf; changing `J` can
+change the destination. Original positive leakage retains the auxiliary
+coordinate and has local attraction to the zero-reservoir registered
+target. It cannot eliminate `r` while holding `J` constant.
+
+These are conditional local basins, not entry of the earlier acquired source,
+global attraction or a finite recovery deadline. Threshold equality and
+unresolved numerical comparisons do not establish strict registration.
+The auxiliary state and port remain supplied; the [next gate](#current-g3-gate)
+examines an interaction inherited from an existing organized constituent.
 
 <a id="organized-parent-reservoir-exchange-admission"></a>
 ## Closed theoretical admission: fixed autonomous reservoir obstruction
@@ -402,8 +440,9 @@ the disconnected parents stay registered on the full interval.
 This is a uniform scoped obstruction, not an unavailable estimate or a
 demonstrated loss/return cycle. Other intermediate parent states and other
 autonomous laws are not classified. A finite passive reserve does not alone
-ensure the requested response. The [next gate](#current-g3-gate) examines
-retained-state geometry under the same port rather than retuning this test.
+ensure the requested response. The separate
+[memory classification](#organized-parent-reservoir-memory-admission) examines
+retained-state geometry under the same port without retuning this test.
 
 <a id="organized-parent-collective-actuation-admission"></a>
 ## Closed theoretical admission: collective actuation with unresolved fine state
@@ -563,7 +602,7 @@ trajectory, law scan or reserved response was evaluated. The original
 prospective maximum horizon `32` was not reached or reinterpreted as evidence.
 The [deferred long-time question](#constitutive-receiver-long-time-trapping)
 retains delayed acquisition and the unresolved donor classification. Neither
-is a prerequisite for the [active reservoir-memory admission](#current-g3-gate).
+is a prerequisite for the [active organized-source admission](#current-g3-gate).
 
 <a id="constitutive-identity-barriers-and-work"></a>
 ## Closed constitutive discrimination: identity barriers and work
@@ -1727,7 +1766,7 @@ the unavailable donor endpoint is activated by retaining this question.
 | General partial observation and internal-state recovery | General joint noisy record/state compatibility and a uniform sufficient derivative order remain deferred. The [fixed-law endpoint certificate](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-readout), [one-unknown-coefficient test](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-two-time) and [two-unknown-coefficient separation](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-two-law) cover only their named binary families and bounded preparation/readout errors. Reopen broader recovery only when a selected response needs it; reuse [sample admission](../nodal/SINE_ENVIRONMENTAL_MEMORY.md#sine-finite-sample-admission), [regular internal observability](../nodal/SINE_PAIR_STATE.md#sine-replica-internal-observability) and [cancellation classification](../nodal/SINE_PAIR_STATE.md#sine-pair-cancellation-observability) |
 | Controlled slow bridge reduction | Preparation, hidden source and time-domain approximation error. Reopen only when a selected response needs reduction of its [exact causal memory](../nodal/RESONANCE_FOUNDATIONS.md#sine-bridge-causal-memory); fix the preparation, domain and finite horizon, then bound the actual full/reduced trajectories. Existing reactive coefficients are not that bound and do not derive local damping |
 | Nonlinear mediated rebound or broader pulse estimates | Quantitative remainder or finite-preparation bounds beyond the already admitted finite-kick response. Reopen only for a named response claim outside that scope; do not repeat the closed bounded calculation |
-| Universal law, autonomous support/capacity and hierarchy selection | The active gate classifies retained reservoir memory and local equilibrium under one fixed port, with zero versus original positive leakage; it does not derive that reservoir, its preparation, universal hierarchy formation or a uniquely selected complete law. Independent justification of these premises remains open. Reopen a broader claim only with its own F1-F4 admission; synchronization, passivity and contact eligibility do not select an occurrence law |
+| Universal law, autonomous support/capacity and hierarchy selection | The active gate derives one organized source's interaction under an explicitly supplied attachment; it does not select that attachment, universal hierarchy formation, substrate origin or a uniquely selected complete law. The auxiliary reservoir's local classification does not supply these premises. Reopen a broader claim only with its own F1-F4 admission; synchronization, passivity and contact eligibility do not select an occurrence law |
 | Approximate physical reduction and data evaluation | Activate only when a named mechanism or information discriminator needs independent confrontation. The [primitive-phase review](PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#primitive-phase-information-boundary) supplies source metadata and obstructions, not admitted data. The [receiver defect certificate](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-defect) propagates declared complete-row errors for its own model; it does not establish source-specific mapped-law bounds. Reopening the direct oscillator route needs a justified preparation/reduction and sensor/clock bridge; more samples do not repair its closure obstruction. No blanket search or response fit is active |
 
 Earlier C4/C8 continuations, C5 itineraries, C6 global-runtime certification,

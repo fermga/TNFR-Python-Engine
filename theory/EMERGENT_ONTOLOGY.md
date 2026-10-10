@@ -509,6 +509,15 @@ preserving the children. Thus autonomous exchange, energy consistency and a
 particular organizational response are distinct claims. The auxiliary scalar
 is supplied constitutive state; its formation as an NFR has not been derived.
 
+The [reservoir memory classification](nodal/ORGANIZED_PARENT_RESERVOIR_MEMORY.md)
+separates that auxiliary law from its retained preparation information.
+Without reservoir leakage, a conserved lifted quantity labels different
+locally attracting geometries on fixed information leaves. These include
+registered and unregistered parents with the same retained child winding.
+Original positive leakage admits local attraction to the registered
+equilibrium. The full-state traps are conditional initial neighborhoods, not
+capture of the earlier acquired source or emergence of the auxiliary scalar.
+
 Here structural participation does not identify the entire joint state with
 one scalar EPI coordinate. The current representation also retains phase,
 capacity and support; reducing these to a richer form description would need

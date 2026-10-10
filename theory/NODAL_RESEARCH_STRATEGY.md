@@ -244,6 +244,15 @@ bound. This distinguishes an admitted storage budget from the dynamics required 
 a response. The negative result retains its source and readout; changing a
 reservoir law or asking about another time is a separately declared question.
 
+The [fixed-port memory classification](nodal/ORGANIZED_PARENT_RESERVOIR_MEMORY.md)
+then distinguishes complete law from retained preparation: at zero leakage,
+one lifted conserved quantity labels different locally stable geometries.
+Original positive leakage has a separate local equilibrium and attraction
+argument. The comparison retains all fine transverse directions and explicit
+traps; it does not promote an equilibrium family to a preparation mechanism.
+Thus a shared sign of storage loss does not select stable organization or
+erase the information consumed by the complete dynamics.
+
 ### Ordered geometry connects transfer to formation
 
 The [sine pattern owner](nodal/SINE_PATTERN_DYNAMICS.md) combines entry,

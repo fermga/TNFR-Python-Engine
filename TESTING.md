@@ -333,6 +333,17 @@ and every original source allowance. Distinguish a proved failed readout,
 an unavailable estimate and registration at the later deadline; the latter
 does not prove a loss-and-return cycle. No frozen producer is replayed.
 
+For [reservoir memory and equilibrium](theory/nodal/ORGANIZED_PARENT_RESERVOIR_MEMORY.md),
+select `tests/physics/test_organized_parent_reservoir_memory.py` together with
+the reservoir-exchange and repeated-composition owners. Check the retained
+quantity against all complete rows, its leakage-dependent derivative, the
+fixed phase lift, implicit equilibrium enclosure and the full fine-state
+potential Hessian. Exercise strict mean, chart, phase-radius and storage-trap
+conditions separately from equilibrium registration. Stability on a fixed
+information leaf does not imply attraction to one point across different
+leaves. An unresolved root or margin remains unavailable, and a local trap
+does not certify capture of the previously acquired source.
+
 For [identity-preserving assembly work](theory/nodal/ORGANIZED_ASSEMBLY_WORK.md),
 select `tests/physics/test_organized_assembly_work.py` with
 `tests/physics/test_acquired_organized_network_capture.py`,
