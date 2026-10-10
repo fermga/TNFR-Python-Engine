@@ -557,6 +557,16 @@ Its preparation information and positive contact work remain premises;
 acquiring this identity does not by itself prove a new interaction law,
 autonomous hierarchy formation or identification with physical matter.
 
+The [finite outer-response theorem](nodal/ORGANIZED_OUTER_RESPONSE.md)
+separately establishes a consequence of the two actual acquired organizations.
+Their incremental receiver responses to the same phase probe are distinguishable
+with the declared observation allowance, while their constituent winding labels
+and global means match. Full nonlinear bounds retain background evolution,
+original fine uncertainty, signed probe work and every respective identity.
+Here the information absent from a list of constituent identities is their
+relational state. The result does not make response a function of winding
+alone, prove a resonance spectrum or establish fractality at arbitrary scales.
+
 Here structural participation does not identify the entire joint state with
 one scalar EPI coordinate. The current representation also retains phase,
 capacity and support; reducing these to a richer form description would need

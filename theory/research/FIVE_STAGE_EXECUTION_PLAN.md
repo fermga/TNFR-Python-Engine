@@ -201,9 +201,12 @@ that registration because it conserves distinct component means.
 The [outer-winding theorem](#organized-outer-winding-admission) now acquires
 an initially absent winding on all nine outer cycles while retaining five
 actual C9 identities. Its paired zero-common-form control remains outer-unwound.
-The sole next task is [outer-organization response admission](#current-g3-gate):
-test whether these two actual reached organizations give a resolved difference
-under one common probe, with source uncertainty, work and identity retained.
+The [finite probe comparison](#organized-outer-response-admission) now
+resolves different incremental receiver responses from those actual sources,
+including nonlinear motion, signed work and four-reading uncertainty.
+The sole next task is [outer-identity observation admission](#current-g3-gate):
+determine which boundary information allows finite collective observations
+to identify winding when the child phase origins are not supplied to the observer.
 The [prepared storage observer](#storage-comparison-producer-admission)
 is retained as an instrument; it has no frozen protocol or reserved response
 and is not the next campaign.
@@ -220,7 +223,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next theoretical admission | [Outer-organization response](#current-g3-gate): freeze one common probe and finite readout on the two actual reached product organizations; admit or obstruct a response contrast beyond their matching constituent winding labels and conserved global means |
+| Next theoretical admission | [Outer-identity observation](#current-g3-gate): declare a state class with unknown child phase origins and determine whether fixed finite collective probe observations identify outer winding, retaining fine errors, branch ambiguity, work and identity |
+| Closed theoretical response admission | [Outer-organization response](#organized-outer-response-admission): the two actual reached organizations have a resolved nonlinear finite probe-response contrast with original source errors, signed work, four-reading uncertainty and all respective windings retained |
 | Closed theoretical formation and capture | [Additional collective winding](#organized-outer-winding-admission): all nine outer slot cycles acquire winding one by the fixed readout, all five constituent windings persist, and a full-state barrier retains the new identity; the paired zero-common-form source stays outer-unwound |
 | Closed theoretical full-state capture | [Organized-source retention and collective registration](#organized-source-capture-admission): the entire original prepared source retains five windings and converges to a common registration; the disconnected same-source control preserves a nonzero relative mean and cannot share that alignment |
 | Closed theoretical port admission | [Organized C9 source](#organized-source-port-admission): two inherited channels and source reaction, carrier reconstruction from host means plus conserved totals, and distinct scalar/fine-correlation obstructions; the actual prepared source and positive contact work are admitted only at attachment |
@@ -294,7 +298,7 @@ remain open; no empirical response has passed complete physical admission.
 
 <a id="current-g3-gate"></a>
 <a id="foundational-organized-pattern-admission"></a>
-<a id="organized-outer-response-admission"></a>
+<a id="organized-outer-observation-admission"></a>
 ## Primary plan: foundations tested by organized patterns
 
 Investigate which premises are sufficient, necessary within a declared class,
@@ -344,61 +348,60 @@ now carries every actual source to a common joined registration, a property
 excluded by the disconnected control's distinct component means. The
 [outer-winding theorem](../nodal/ORGANIZED_OUTER_WINDING.md) additionally
 acquires a new collective identity while preserving every constituent winding.
-The immediate gap is a resolved interaction consequence of that organization
-on the actual reached family, rather than on an ideal limiting target.
+The [finite probe theorem](../nodal/ORGANIZED_OUTER_RESPONSE.md) establishes
+a resolved interaction consequence on the actual reached families. Its
+contrast depends on their phase geometry and is not a unique measurement
+of winding. The immediate gap is an observation contract for collective
+identity when that geometry is not already supplied to the observer.
 
 | Research front | Existing basis and genuinely missing result | Priority and activation |
 | --- | --- | --- |
-| Repeated composition and sufficient collective state | [Pair inheritance](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md), [network compatibility](../nodal/ORGANIZED_NETWORK_COMPATIBILITY.md) and [repeated composition](../nodal/REPEATED_ORGANIZED_COMPOSITION.md) supply conditional scale maps. [Outer winding](../nodal/ORGANIZED_OUTER_WINDING.md) adds full-state formation on a product support | **Method within the immediate gate**. Retain actual reached fine errors and both rows when comparing responses; neither matching constituent labels nor conserved global means specifies the full organization |
-| Formation, composite identity and work | [Parent acquisition](../nodal/ORGANIZED_PARENT_ACQUISITION.md), [organized-source capture](../nodal/ORGANIZED_SOURCE_CAPTURE.md) and [outer-winding formation](../nodal/ORGANIZED_OUTER_WINDING.md) distinguish acquired registration from an additional maintained collective identity, with supplied preparation and contact work | **Sole immediate gate**, specified below: admit or obstruct a finite probe-response contrast between the actual outer-one and outer-zero organizations while retaining their internal and respective outer identities |
-| Effective memory and controlled reduction | [Causal component composition](../nodal/SINE_CLASS_INTERFACE_COMPOSITION.md), [bridge memory](../nodal/RESONANCE_FOUNDATIONS.md#sine-bridge-causal-memory) and [organized-source information](../nodal/ORGANIZED_SOURCE_PORT.md#4-conserved-preparation-information-and-the-scalar-obstruction) distinguish retained initialization from instantaneous observations | **Admitted scope to preserve**: eight host means plus conserved totals close the exact carrier; fine-state correlations remain outside that family. Reopen an approximate or causal reduction only for a named prediction that needs it, retaining the actual source and both channels |
+| Repeated composition and sufficient collective state | [Pair inheritance](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md), [network compatibility](../nodal/ORGANIZED_NETWORK_COMPATIBILITY.md) and [repeated composition](../nodal/REPEATED_ORGANIZED_COMPOSITION.md) supply conditional scale maps. [Outer winding](../nodal/ORGANIZED_OUTER_WINDING.md) adds full-state formation on a product support | **Method within the immediate gate**. Retain fine errors, both rows and cycle consistency when inferring a collective identity; matching constituent labels and global means omit relevant relational state |
+| Formation, composite identity and work | [Outer-winding formation](../nodal/ORGANIZED_OUTER_WINDING.md) and [finite response](../nodal/ORGANIZED_OUTER_RESPONSE.md) give an additional maintained collective identity and one source-inclusive interaction consequence | **Established basis to preserve**. The new observation question does not reopen formation or retune the evaluated probe. A larger admitted state class is not automatically an acquired family; source preparation, probe work and maintenance need their own scope |
+| Effective memory, observation and controlled reduction | [Causal component composition](../nodal/SINE_CLASS_INTERFACE_COMPOSITION.md), [bridge memory](../nodal/RESONANCE_FOUNDATIONS.md#sine-bridge-causal-memory) and [organized-source information](../nodal/ORGANIZED_SOURCE_PORT.md#4-conserved-preparation-information-and-the-scalar-obstruction) distinguish retained initialization from instantaneous observations | **Sole immediate gate**, specified below: identify sufficient boundary information or a concrete observation ambiguity for outer winding when child phase origins are hidden. Local response sensitivity does not by itself identify a global cycle branch |
 | Identity, internal activity and constitutive freedom | [Positive-loss and conservative boundaries](../nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission) distinguish static identity, moving constituents and recurrence. [Alternative mobility](../nodal/SINE_PAIR_MOBILITY.md#sine-mobility-relative-geometry) protects geometry without an established equivalent invariant measure | **Prepared alternative**, when a selected object requires sustained activity. One bounded question is invariant-density admission for the existing alternative mobility; failure of a phase-only density ansatz does not exclude every full-state measure |
 | Independent selection of laws and information premises | [First-moment selection](../nodal/SINE_CONSTITUTIVE_INFORMATION.md#first-phase-moment-sufficiency) is conditional; [recursive inheritance countermodels](../nodal/SINE_PAIR_MOBILITY.md#sine-replica-constitutive-nonselection) retain kinetic freedom | **Conceptually critical**, but another compatibility scan cannot establish uniqueness. Reopen with an independently justified restriction or an admitted discriminating observation; retain valid alternative complete laws meanwhile |
-| Autonomous preparation, contacts, capacity and collective events | [Relation laws](../nodal/RELATION_FOUNDATIONS.md), [capacity admission](../CAPACITY_LOCALIZATION_BALANCE.md), [support work](../nodal/RELATIONAL_SUPPORT_EVENTS.md) and [operator descent](../STRUCTURAL_OPERATORS.md) have separate contracts. Neither passivity nor a valid inherited event selects its occurrence | **Critical for autonomous assembly**. The active gate retains supplied cyclic contacts, original form preparation and a declared probe; it does not select their occurrence, support/capacity evolution or substrate origin |
+| Autonomous preparation, contacts, capacity and collective events | [Relation laws](../nodal/RELATION_FOUNDATIONS.md), [capacity admission](../CAPACITY_LOCALIZATION_BALANCE.md), [support work](../nodal/RELATIONAL_SUPPORT_EVENTS.md) and [operator descent](../STRUCTURAL_OPERATORS.md) have separate contracts. Neither passivity nor a valid inherited event selects its occurrence | **Critical for autonomous assembly**. The observation gate retains supplied support, preparation and probes; it does not select their occurrence, support/capacity evolution or substrate origin |
 | Independent physical observation | The [P1-P5 contract](#supporting-measurement-bridge) and [comparison atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md) separate internal constructions from measured properties | **Essential for physical identification**. Activate one falsifiable collective observable with independent preparation, readout, clock and alternatives. It need not wait for every foundational question, but no current dataset has complete admission |
 
-Only outer-organization response admission is active. The others are conditional routes, not a fixed
+Only outer-identity observation admission is active. The others are conditional routes, not a fixed
 seven-step schedule or a ranking of their ultimate scientific importance.
 Fixed capacity and support define legitimate conditional models; their
 autonomous selection becomes necessary only for claims that require it.
 
-### Immediate question: response of the newly acquired outer organization
+### Immediate question: observing collective identity with hidden phase origins
 
-**Do the actual outer-one and outer-zero organizations respond differently
-to the same finite probe, beyond their identical constituent winding labels
-and conserved global means?** An additional identity is established; an
-observable interaction consequence needs a separate controlled comparison.
+**Which finite collective observations identify the outer winding when the
+child phase origins are not already known?** Distinguishing two prepared
+organizations is established; identifying an unknown organization requires
+an inverse contract and explicit alternatives.
 
-1. **Freeze one source-preserving probe and readout before assessment.**
-   Use both actual 45-node families at the existing readout `tau=200`, with
-   their own carried residuals and the unchanged support, capacities, complete
-   law and clock. Select one zero-total, child-uniform phase displacement,
-   its amplitude, a marked receiver-child form observation, finite delay,
-   resolution and work budget. Do not replace either source by its limiting
-   twist, fit a response-dependent horizon or add another contact.
-2. **Compare incremental responses under the complete law.** For each
-   organization compare the probed response with its own unprobed evolution.
-   Retain both rows and all original source directions through the four
-   branches. Matching global means and constituent winding labels does not
-   make the complete reached states identical; keep that distinction in the
-   interpretation rather than attributing every contrast to winding alone.
-3. **Admit work, identity and finite resolution together.** Account for
-   the supplied jump's actual storage change separately from subsequent
-   loss. Preserve every internal winding and each branch's respective outer
-   winding. Prove a finite nonlinear response separation or give a scoped
-   obstruction/unavailable bound; a tangent contrast or equilibrium Hessian
-   alone is insufficient.
-4. **Close at one discriminating interaction result.** Reuse the product
-   geometry, prepared source and complete storage checks. Do not replay
-   frozen producers, open a sweep or infer a physical interaction from a
-   resolved structural response. Further complexity remains an open route,
-   not an assumption that this property inventory is exhaustive.
+1. **Declare one admissible state and observation class.** Keep the same
+   product support, complete law and clock. Specify unknown child origins,
+   form bounds, fine deviations and permitted sectors; distinguish sources
+   actually reached by a proved preparation from a larger admitted state
+   class. Freeze a bounded set of marked phase probes, readouts, errors,
+   horizons and work/identity budgets before assessing any response.
+2. **Derive the information carried by local responses.** Retain the full
+   nonlinear finite increment and unknown background. Determine whether a
+   single probe loses sine/cosine or branch information; give compatible
+   alternatives if it does. Opposite probe signs are a candidate method,
+   not an already admitted protocol or successful inverse.
+3. **Require complete cycle consistency.** An inferred interface angle
+   alone cannot identify an outer winding. Combine only jointly compatible
+   boundary information, keep finite errors and all nine fine slot cycles,
+   and return an explicit ambiguity when more than one sector survives.
+4. **Close at one sufficient observation or scoped obstruction.** Account
+   for actual probe work and respective identity retention. Report which
+   additional boundary information resolves an ambiguity, without fitting
+   the existing response, replaying frozen producers or adding a general
+   tomography campaign. Observation admission is not physical calibration.
 
-Reuse the [outer-winding source and capture](../nodal/ORGANIZED_OUTER_WINDING.md),
-[source-inclusive response methods](../nodal/ORGANIZED_PARENT_RESTORING_RESPONSE.md)
-and [full-state barrier discipline](../nodal/ORGANIZED_SOURCE_CAPTURE.md).
-Their coefficients and verdicts do not transfer automatically. No new probe,
-amplitude, readout delay or response outcome has yet been evaluated.
+Reuse the [finite response and signed-work owner](../nodal/ORGANIZED_OUTER_RESPONSE.md),
+[acquired source and product geometry](../nodal/ORGANIZED_OUTER_WINDING.md)
+and [retained phase-information methods](../nodal/SINE_CONSTITUTIVE_INFORMATION.md).
+Their models and verdicts do not transfer automatically. No inverse protocol,
+new probe collection or unknown-source identification has yet been evaluated.
 
 For each subsequent law or hypothesis, record its status, independent
 premises, consequences, countermodels and decision in the existing definition
@@ -413,6 +416,27 @@ The physical objective guides which mathematical property matters. Laboratory
 examples supply possible controls and discriminators; they do not replace
 the generative objective with imitation of a convenient apparatus. Substrate
 origin, universal laws and recurrence across scales remain open hypotheses.
+
+<a id="organized-outer-response-admission"></a>
+## Closed theoretical admission: finite response of the acquired organization
+
+The [result owner](../nodal/ORGANIZED_OUTER_RESPONSE.md) preserves declaration
+`50ce12a5`, both actual reached sources at `tau=200` and all 80 original
+relative preparation directions. One common zero-total phase probe, fixed
+delay `h=1/100` and receiver-child form readout give a noisy contrast strictly
+above `4.20e-10`, exceeding the frozen `1e-10` requirement after all four raw
+reading errors. The bound retains both nonlinear rows, background motion and
+probe feedback rather than substituting an initial slope or limiting target.
+
+Both actual signed jump works have magnitude below `1/1000`; the probe
+extracts storage from the acquired outer-one organization and adds storage
+to the outer-zero control. Complete post-jump barriers retain all five
+constituent windings and all nine respective outer windings for all future
+time. The original preparation, large attachment cost and externally supplied
+probe remain premises. The contrast proves that constituent winding labels
+and conserved global means omit response-relevant relational information;
+it is not a unique winding measurement, resonance spectrum or physical
+identification. The separate [observation gate](#current-g3-gate) is next.
 
 <a id="organized-outer-winding-admission"></a>
 ## Closed theoretical admission: acquisition and maintenance of outer winding
@@ -435,8 +459,9 @@ stationary. Actual positive attachment work and joined initial storage each
 remain below the declared two-billion-unit structural budget. This is a
 conditional new relational identity under supplied preparation and support,
 not autonomous organization selection or physical identification. No trajectory
-or frozen producer was regenerated; the next gate is the separate
-[response admission](#current-g3-gate).
+or frozen producer was regenerated. The separate
+[response admission](#organized-outer-response-admission) supplies a finite
+interaction consequence of these acquired organizations.
 
 <a id="organized-source-capture-admission"></a>
 ## Closed theoretical admission: full-state capture and collective registration
@@ -455,8 +480,9 @@ that separation exactly `1/8`, excluding the same common registration.
 This is an interaction-dependent collective property; the existing child
 windings are retained rather than newly formed. No finite settling time,
 continuous parent-registration tube, autonomous attachment or new primitive
-law is established. The [next gate](#current-g3-gate) concerns an additional
-collective identity instead of a longer alignment calculation.
+law is established. The separate
+[outer-winding result](#organized-outer-winding-admission) establishes an
+additional collective identity on its declared product support.
 
 <a id="organized-source-port-admission"></a>
 ## Closed theoretical admission: complete organized-source port
@@ -502,8 +528,9 @@ target. It cannot eliminate `r` while holding `J` constant.
 These are conditional local basins, not entry of the earlier acquired source,
 global attraction or a finite recovery deadline. Threshold equality and
 unresolved numerical comparisons do not establish strict registration.
-The auxiliary state and port remain supplied; the [next gate](#current-g3-gate)
-examines an interaction inherited from an existing organized constituent.
+The auxiliary state and port remain supplied; the separate
+[organized-source port](#organized-source-port-admission) derives an
+interaction from an existing organized constituent under its own attachment.
 
 <a id="organized-parent-reservoir-exchange-admission"></a>
 ## Closed theoretical admission: fixed autonomous reservoir obstruction
@@ -1853,7 +1880,7 @@ the unavailable donor endpoint is activated by retaining this question.
 | General partial observation and internal-state recovery | General joint noisy record/state compatibility and a uniform sufficient derivative order remain deferred. The [fixed-law endpoint certificate](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-readout), [one-unknown-coefficient test](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-two-time) and [two-unknown-coefficient separation](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-two-law) cover only their named binary families and bounded preparation/readout errors. Reopen broader recovery only when a selected response needs it; reuse [sample admission](../nodal/SINE_ENVIRONMENTAL_MEMORY.md#sine-finite-sample-admission), [regular internal observability](../nodal/SINE_PAIR_STATE.md#sine-replica-internal-observability) and [cancellation classification](../nodal/SINE_PAIR_STATE.md#sine-pair-cancellation-observability) |
 | Controlled slow bridge reduction | Preparation, hidden source and time-domain approximation error. Reopen only when a selected response needs reduction of its [exact causal memory](../nodal/RESONANCE_FOUNDATIONS.md#sine-bridge-causal-memory); fix the preparation, domain and finite horizon, then bound the actual full/reduced trajectories. Existing reactive coefficients are not that bound and do not derive local damping |
 | Nonlinear mediated rebound or broader pulse estimates | Quantitative remainder or finite-preparation bounds beyond the already admitted finite-kick response. Reopen only for a named response claim outside that scope; do not repeat the closed bounded calculation |
-| Universal law, autonomous support/capacity and hierarchy selection | The active gate asks whether the acquired outer organization has a resolved finite probe response under supplied preparation and support; it does not select that support, universal hierarchy formation, substrate origin or a uniquely selected complete law. The organized capture and auxiliary reservoir's local classification do not supply these premises. Reopen a broader claim only with its own F1-F4 admission; synchronization, passivity and contact eligibility do not select an occurrence law |
+| Universal law, autonomous support/capacity and hierarchy selection | The active gate asks which collective observations identify outer winding with unknown phase origins under a declared state class; it does not select support, universal hierarchy formation, substrate origin or a uniquely selected complete law. The organized capture and auxiliary reservoir's local classification do not supply these premises. Reopen a broader claim only with its own F1-F4 admission; synchronization, passivity and contact eligibility do not select an occurrence law |
 | Approximate physical reduction and data evaluation | Activate only when a named mechanism or information discriminator needs independent confrontation. The [primitive-phase review](PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#primitive-phase-information-boundary) supplies source metadata and obstructions, not admitted data. The [receiver defect certificate](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-defect) propagates declared complete-row errors for its own model; it does not establish source-specific mapped-law bounds. Reopening the direct oscillator route needs a justified preparation/reduction and sensor/clock bridge; more samples do not repair its closure obstruction. No blanket search or response fit is active |
 
 Earlier C4/C8 continuations, C5 itineraries, C6 global-runtime certification,

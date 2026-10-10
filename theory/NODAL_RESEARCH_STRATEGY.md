@@ -280,8 +280,13 @@ are needed to extend the primitive C5 method to actual acquired children.
 The paired zero-common-form source remains outer-unwound. Supplied form
 information and attachment work therefore matter even when child identities
 match. An additional identity and an interaction observable sensitive to it
-are separate results; neither implies autonomous preparation or exhausts the
-properties available to more complex organizations.
+are separate results. The [finite probe comparison](nodal/ORGANIZED_OUTER_RESPONSE.md)
+now resolves a difference between the actual acquired organizations' paired
+receiver responses, with complete nonlinear remainders and signed work.
+The relevant additional information is relational state; this particular
+contrast does not uniquely identify a winding sector. Neither result implies
+autonomous preparation or exhausts the properties available to more complex
+organizations.
 
 ### Ordered geometry connects transfer to formation
 

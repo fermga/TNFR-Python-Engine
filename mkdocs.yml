@@ -111,6 +111,7 @@ nav:
           - "Complete port inherited from an organized C9 source": theory/nodal/ORGANIZED_SOURCE_PORT.md
           - "Full-state capture and collective registration of the organized source": theory/nodal/ORGANIZED_SOURCE_CAPTURE.md
           - "Acquisition of an outer winding by five acquired C9 organizations": theory/nodal/ORGANIZED_OUTER_WINDING.md
+          - "Finite probe response of the acquired outer organization": theory/nodal/ORGANIZED_OUTER_RESPONSE.md
           - "Composition-compatible constitutive laws": theory/nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md
           - "Oriented-interface profile inheritance": theory/nodal/ORIENTED_INTERFACE_PROFILE_INHERITANCE.md
           - "Network-wide organized compatibility": theory/nodal/ORGANIZED_NETWORK_COMPATIBILITY.md

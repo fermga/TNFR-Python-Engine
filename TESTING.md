@@ -381,6 +381,19 @@ exclude the prepared-entry trajectory regressions
 `test_nonflat_corner_response_respects_mean_centered_and_correlated_edge_bounds`; do not
 regenerate frozen response producers for this proof-only owner.
 
+For the [outer-organization response](theory/nodal/ORGANIZED_OUTER_RESPONSE.md),
+select `tests/physics/test_organized_outer_response.py` with the outer-winding,
+isolated-recovery and shared preparation owners. Check the complete phase
+jump, its zero global mean, all unchanged internal differences and both
+signed boundary-work contributions. The control reaches time 200 with its
+actual residuals; it is not reset to its nominal equilibrium. Verify the
+finite nonlinear increment remainder, background motion, paired-source
+association and all four raw observation errors. Work may be negative; the
+absolute budget and each sector's full post-jump storage margin are separate
+checks. Every original allowance must be admitted before source rebuilding;
+failed premises remain unavailable. Keep trajectory and frozen-producer
+guards active for these analytic contracts.
+
 For [identity-preserving assembly work](theory/nodal/ORGANIZED_ASSEMBLY_WORK.md),
 select `tests/physics/test_organized_assembly_work.py` with
 `tests/physics/test_acquired_organized_network_capture.py`,
