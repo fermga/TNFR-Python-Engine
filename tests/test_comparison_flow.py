@@ -1,11 +1,12 @@
 """Exact independent controls for the componentwise comparison exponential."""
 
+from decimal import Decimal, localcontext
 from fractions import Fraction as Q
 from math import factorial
 
 import pytest
 
-from tnfr.mathematics._comparison_flow import comparison_flow_upper
+from tnfr.mathematics._comparison_flow import comparison_flow_upper, scalar_affine_upper
 
 
 def _diagonal(values):
@@ -187,3 +188,42 @@ def test_raw_nonrational_coordinates_are_not_silently_materialized(invalid):
         comparison_flow_upper(_diagonal((invalid, 0, 0, 0)), (0,) * 4, Q(1))
     with pytest.raises(TypeError, match="exact Fraction"):
         comparison_flow_upper(_diagonal((0,) * 4), (0,) * 4, invalid)
+
+
+def _decimal(value):
+    return Decimal(value.numerator) / Decimal(value.denominator)
+
+
+@pytest.mark.parametrize("rate", [Q(-2), Q(-1, 3), Q(0), Q(1, 3), Q(2)])
+def test_scalar_growth_contains_independent_high_precision_solution(rate):
+    radius, duration, defect = Q(1, 7), Q(1, 8), Q(11, 10**6)
+    upper = scalar_affine_upper(radius, rate, duration, defect)
+    with localcontext() as context:
+        context.prec = 100
+        exponential = (_decimal(rate) * _decimal(duration)).exp()
+        integral = (exponential - 1) / _decimal(rate) if rate else _decimal(duration)
+        expected = exponential * _decimal(radius) + integral * _decimal(defect)
+        assert _decimal(upper) >= expected
+        assert _decimal(upper) - expected < Decimal("1e-30")
+
+
+@pytest.mark.parametrize(
+    "arguments",
+    [
+        (True, Q(0), Q(1), Q(0)),
+        (Q(-1), Q(0), Q(1), Q(0)),
+        (Q(0), Q(0), Q(-1), Q(0)),
+        (Q(0), Q(0), Q(1), Q(-1)),
+        (Q(0), Q(2), Q(1), Q(0)),
+        (Q(0), float("nan"), Q(1), Q(0)),
+        (Q(0), Q(0), float("inf"), Q(0)),
+    ],
+)
+def test_scalar_growth_rejects_invalid_primitive_domains(arguments):
+    with pytest.raises((TypeError, ValueError)):
+        scalar_affine_upper(*arguments)
+
+
+def test_zero_duration_retains_initial_uncertainty():
+    upper = scalar_affine_upper(Q(1, 3), Q(-1), Q(0), Q(1))
+    assert Q(1, 3) <= upper < Q(1, 3) + Q(1, 10**30)

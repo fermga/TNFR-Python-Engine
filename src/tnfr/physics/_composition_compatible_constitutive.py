@@ -151,6 +151,20 @@ def _edge_potential_current_bounds(angle, law):
     return potential, jet[0]
 
 
+def _deformation_current_bounds(angle):
+    """Enclose the deformation derivative of current without subtracting laws.
+
+    This is the derivative of the owned factor potential
+    ``cos(delta)*(1-cos(9*delta))**2``. Its factored evaluation retains the
+    high-order target zero that subtraction of separately enclosed currents
+    would discard. The supplied angle is an admitted lift or interval.
+    """
+    phase = I.coerce(angle)
+    sine, cosine = sin(phase), cos(phase)
+    high = 1 - cos(9 * phase)
+    return -sine * high**2 + 18 * cosine * high * sin(9 * phase)
+
+
 @dataclass(frozen=True)
 class _CompositionCompatibleEdge:
     """Static edge potential and current jets in its own constitutive law."""

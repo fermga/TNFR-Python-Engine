@@ -19,11 +19,12 @@ from __future__ import annotations
 from collections.abc import Mapping, Set
 from fractions import Fraction as Q
 
-from .._exact_time import exp_unit_bounds
+from .._exact_time import exact_or_represented_real, exp_unit_bounds
 from ._rational_interval import I
 
 __all__ = (
     "comparison_flow_upper",
+    "scalar_affine_upper",
     "COMPARISON_FLOW_METHOD",
     "MAX_COMPARISON_DIMENSION",
 )
@@ -31,6 +32,35 @@ __all__ = (
 COMPARISON_FLOW_METHOD = "metzler_shift_nonnegative_series32_dyadic128_norm_tail_v1"
 _TERMS = 32
 MAX_COMPARISON_DIMENSION = 24
+
+
+def scalar_affine_upper(radius, rate, duration, defect):
+    """Enclose an affine scalar comparison with signed logarithmic growth.
+
+    Bound ``exp(rate*h)*radius + phi(rate,h)*defect`` for nonnegative
+    radius, duration and forcing. The caller proves the underlying Dini
+    inequality and its whole-time domain. This arithmetic supplies neither
+    a trajectory nor that domain. Both growth and decay retain outward
+    rounding; the admitted numerical range is ``abs(rate*h)<=1``.
+    """
+    radius, rate, duration, defect = (
+        exact_or_represented_real(value, name)
+        for value, name in (
+            (radius, "radius"),
+            (rate, "rate"),
+            (duration, "duration"),
+            (defect, "defect"),
+        )
+    )
+    if min(radius, duration, defect) < 0 or abs(rate * duration) > 1:
+        raise ValueError("comparison requires nonnegative bounds and |rate*h|<=1")
+    if rate == 0:
+        return I(radius + defect * duration).hi
+    exponential = I(*exp_unit_bounds(abs(rate * duration)))
+    if rate < 0:
+        exponential = 1 / exponential
+    phi = (exponential - 1) / rate
+    return (exponential * radius + phi * defect).hi
 
 
 def _exact(value):

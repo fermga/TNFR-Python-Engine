@@ -111,6 +111,7 @@ nav:
           - "Source-preserving receiver enclosure": theory/nodal/ORGANIZED_RECEIVER_ENCLOSURE.md
           - "Regional work and winding retention": theory/nodal/ORGANIZED_REGIONAL_RETENTION.md
           - "Constitutive identity barriers and work": theory/nodal/CONSTITUTIVE_IDENTITY_BARRIERS.md
+          - "Constitutive receiver source and comparison": theory/nodal/CONSTITUTIVE_RECEIVER_COMPARISON.md
           - "Preparation information and acquired modes": theory/nodal/SINE_PREPARATION_MODE_SELECTION.md
           - "Preparation paths, capture and forced phase passage": theory/nodal/SINE_PREPARATION_PATH_SELECTION.md
           - "Terminal restrictions on the same preparation path": theory/nodal/SINE_PREPARATION_PATH_LIMITS.md

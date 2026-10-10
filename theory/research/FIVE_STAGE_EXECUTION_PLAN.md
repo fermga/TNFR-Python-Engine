@@ -154,10 +154,14 @@ and a phase-only invariance obstruction. The preserved donor loss exhausts
 both donor reserves. The
 [constitutive barrier and work theorem](#constitutive-identity-barriers-and-work)
 now proves that exact boundary minima and regional power remain free under
-the matched target and registered inheritance conditions. The sole next task
-is [source-specific outcome across this law interval](#current-g3-gate):
-determine whether that static freedom changes the original source's outcome
-or permits a uniform donor-loss obstruction, with each actual law admitted.
+the matched target and registered inheritance conditions. The
+[own-law source comparison](#constitutive-receiver-source-outcome) now
+certifies receiver winding zero throughout the preserved finite prefix for
+the entire original source and law interval. Its donor endpoint comparison
+is unavailable; the sine donor-loss result remains separate. The sole next
+task is [long-time receiver trapping](#current-g3-gate): determine whether a
+source-valid full-state domain excludes delayed receiver acquisition without
+extending the frozen trajectory or refining the donor endpoint observation.
 The [prepared storage observer](#storage-comparison-producer-admission)
 is retained as an instrument; it has no frozen protocol or reserved response
 and is not the next campaign.
@@ -174,7 +178,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next theoretical admission | [Own-law source and outcome comparison](#current-g3-gate): re-admit the unchanged two-ramp source across the fixed constitutive interval, then establish whether the preserved finite donor-loss obstruction extends uniformly or needs a separate prospective decision |
+| Next theoretical admission | [Long-time receiver trapping](#current-g3-gate): seek a source-valid full-state invariant domain after the certified prefix, or identify the precise obstruction to excluding delayed acquisition |
+| Closed uniform finite comparison | [Own-law source and receiver outcome](#constitutive-receiver-source-outcome): unchanged preparation and fixed constitutive interval retain receiver winding zero through the preserved prefix; changed-law donor endpoint classification remains unavailable |
 | Closed constitutive discrimination | [Identity barriers and regional work](#constitutive-identity-barriers-and-work): exact C9 boundary minima differ despite matched target/local/inheritance properties; regional powers differ at identical complete state and storage, without a transferred acquisition or retention outcome |
 | Closed conditional retention admission | [Identity-preserving interaction](#organized-identity-preserving-interaction): full-state regional work gives sufficient donor prefix budgets and necessary receiver passage work; the frozen original-source loss exhausts donor reserves, and phase-only cells fail over unrestricted forms |
 | Closed finite counterexample | [Source-preserving receiver enclosure](#organized-receiver-prospective-enclosure): the frozen 76-step enclosure certifies whole-family loss of both donor windings by elapsed slow time 19/2; the receiver retains zero winding throughout the validated prefix |
@@ -236,7 +241,7 @@ remain open; no empirical response has passed complete physical admission.
 
 <a id="current-g3-gate"></a>
 <a id="foundational-organized-pattern-admission"></a>
-<a id="constitutive-receiver-source-outcome"></a>
+<a id="constitutive-receiver-long-time-trapping"></a>
 ## Primary plan: foundations tested by organized patterns
 
 Investigate which premises are sufficient, necessary within a declared class,
@@ -256,47 +261,45 @@ to its actual state, scale and execution path before treating a matched
 geometric or response property as sufficient. Retain the distinction between
 defining requirements, supplied hypotheses and derived restrictions.
 
-The next question is: **does the demonstrated constitutive freedom change
-formation with retained donors for the original source, or does that source's
-loss persist throughout the admitted comparison interval?** The
-[barrier and work theorem](../nodal/CONSTITUTIVE_IDENTITY_BARRIERS.md)
-distinguishes static properties while explicitly leaving that dynamical
-question open. This tests a new quantifier over complete laws, rather than
-increasing the precision of the sine response.
+The next question is: **does the same source remain unable to form receiver
+winding at all later times, or is delayed acquisition still dynamically
+accessible?** The [uniform finite comparison](../nodal/CONSTITUTIVE_RECEIVER_COMPARISON.md)
+excludes acquisition only through elapsed slow time `19/2`. A source-valid
+invariant domain would give a different, long-time result; a more precise
+donor endpoint observation would not answer this question.
 
-1. **Keep the comparison fixed.** Use the same potential family on
-   `lambda in [-1/10000,1/10000]`, equal-weight 27-node support, held unit
-   capacities and both declared clocks. Retain the original two-ramp
-   preparation and every coordinate-error direction from its
-   [source owner](../nodal/ORGANIZED_RECEIVER_MECHANISM.md#organized-receiver-source).
-   Keep the original release at structural time 400 and the comparison horizon
-   at elapsed slow time `19/2`. Do not shrink the interval after inspecting an
-   outcome, retune a source or transfer the three-ramp acquisition certificate.
-2. **Rebuild each law's source transport.** Derive uniform own-law bounds for
-   the initial layer, donor/receiver release winding and the retained form or
-   second-order phase defect. Keep the changed current derivatives, initial
-   contact storage and global mean constraints. Equal target jets and geometric
-   barriers cannot replace these hypotheses or supply a source capture claim.
-3. **Admit the finite outcome comparison.** Establish whether a justified
-   residual comparison with the preserved enclosure tubes can certify endpoint
-   loss of both donors and receiver winding zero throughout the same interval
-   for the whole law/source family. Frozen records may be read as reference
-   evidence only after admitting every changed-law residual and accumulated
-   error. If the inequalities are unavailable, record the failed premise and
-   its quantitative deficit; this does not prove a changed outcome. A claim
-   of donor-retaining acquisition needs its own full-state passage and capture
-   evidence under a separately frozen prospective protocol.
-4. **Integrate the foundational decision.** A uniform obstruction would show
-   that the admitted static freedom does not rescue this preparation. A
-   rigorously distinguished outcome would make formation a further law
-   discriminator. An unavailable comparison identifies the next missing
-   bound or prospective obligation; it does not select the preferred law.
+1. **Retain the full model and source.** Keep `lambda in [-1/10000,1/10000]`,
+   the equal-weight 27-node support, held capacities, clocks, original ramp
+   preparation and every admitted error direction. Re-admit the certified
+   endpoint phase family together with the independently justified retained
+   form or velocity bounds. Do not infer an exact endpoint state from its
+   reference center, or attach a sine capture verdict to another law.
+2. **Test a full-state trapping mechanism.** Seek a domain containing that
+   whole family whose actual boundary dynamics excludes receiver winding
+   passage. Retain form, contact storage, correlations and own-law dissipation.
+   Use the [regional work theorem](../nodal/ORGANIZED_REGIONAL_RETENTION.md)
+   and [own-law barriers](../nodal/CONSTITUTIVE_IDENTITY_BARRIERS.md) with
+   their actual hypotheses. A phase-only cell over arbitrary forms is already
+   known not to be invariant. An endpoint below a marginal barrier or a
+   presumed global semicircle is not a substitute for joint admission.
+3. **Make a bounded analytic decision.** Prove all-future receiver retention
+   for the unchanged family if a strict invariant-domain admission closes.
+   Otherwise identify the exact failed boundary or source-inclusion premise
+   and give a quantitative obstruction or counterexample within its scope.
+   Failure of this sufficient trap leaves delayed acquisition unresolved;
+   it does not demonstrate a later passage or prescribe a new law.
+4. **Integrate the mechanism and its limits.** Place reusable bounds with
+   their shared owners and preserve all finite results. Long-time retention
+   would identify a preparation/law basin obstruction; eventual formation
+   would still require actual passage and complete-state capture evidence.
+   Either result remains distinct from autonomous preparation or physical
+   identification.
 
-This gate first admits an analytic comparison. Do not replay or extend the
-frozen trajectory, scan parameters or contacts, introduce a controller, or
-launch an unfrozen response calculation. Preserve the sine artifacts and
-verdict exactly. Source generation, support selection, physical units and
-constituent identification remain independent unresolved obligations.
+This is an analytic gate. Do not extend or replay the frozen trajectory,
+scan laws or contacts, shrink source errors, introduce a controller, or
+launch a new response calculation. Do not make refinement of the unavailable
+donor endpoint the next campaign: it is not required to establish the finite
+receiver exclusion or to formulate the long-time question.
 
 The dependency order for subsequent work is:
 
@@ -322,6 +325,27 @@ examples supply possible controls and discriminators; they do not replace
 the generative objective with imitation of a convenient apparatus. Substrate
 origin, universal laws and recurrence across scales remain open hypotheses.
 
+<a id="constitutive-receiver-source-outcome"></a>
+## Closed uniform comparison: original source and finite receiver exclusion
+
+The [result owner](../nodal/CONSTITUTIVE_RECEIVER_COMPARISON.md)
+rebuilds preparation costs, initial transport, donor/receiver release winding
+and the actual velocity defect for every law in the fixed interval and all
+original source errors. Eight derivative cones within each of the 76 retained
+reference steps give fresh residual and expanded-domain growth bounds, with
+full-dimensional carried error and single endpoint recentering.
+
+Receiver winding remains zero from preparation through elapsed slow time
+`19/2` for the whole law/source family. Thus this constitutive freedom does
+not rescue receiver acquisition on the preserved interval. The donor endpoint
+bound is unavailable, with its deficit recorded by the result owner; it does
+not extend or overturn the separate sine donor-loss certificate. No new
+trajectory, law scan or reserved response was evaluated. The original
+prospective maximum horizon `32` was not reached or reinterpreted as evidence.
+The [active gate](#current-g3-gate) asks whether a full-state trap can exclude
+delayed acquisition, preserving the finite comparison and its unresolved
+donor classification.
+
 <a id="constitutive-identity-barriers-and-work"></a>
 ## Closed constitutive discrimination: identity barriers and work
 
@@ -337,8 +361,9 @@ Increasing the common boundary minimum raises both donor target headroom
 and receiver entry cost. Neither static result establishes a changed source
 outcome. The shared observer now uses the single constitutive evaluator and
 retains the selected law; the previous source assessment remains sine-only.
-The [active gate](#current-g3-gate) returns to actual source transport and
-formation across the fixed law interval, with the frozen sine result preserved.
+The separate [source comparison](#constitutive-receiver-source-outcome)
+rebuilds actual transport across that interval, with the frozen sine result
+preserved. Static freedom alone still supplies no source outcome.
 
 <a id="organized-identity-preserving-interaction"></a>
 ## Closed conditional admission: identity-preserving interaction

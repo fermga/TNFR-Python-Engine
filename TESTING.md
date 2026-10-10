@@ -349,6 +349,21 @@ zero-deformation observation and the sine-only source assessment. Select the
 inherited-interface algebra and oriented-interface controls when changing the
 shared edge evaluator. These checks run no trajectory or frozen producer.
 
+For [constitutive receiver source and comparison](theory/nodal/CONSTITUTIVE_RECEIVER_COMPARISON.md),
+select the source and comparison controls in the theory-to-execution map,
+`tests/test_comparison_flow.py` and the existing receiver geometry and
+read-only evidence checks. Admit the original errors and every law in the
+fixed interval, then independently rebuild source storage, transport and
+actual velocity-defect inequalities. Check the factored current residual,
+forward/backward cone intersections, fresh expanded-domain growth, full
+mean-zero error directions, signed scalar growth and one recentering per
+original step. The module-scoped full-prefix fixture reads only the pinned
+response archive and blocks trajectory/Taylor regeneration. It rebuilds
+consumed endpoint arithmetic; stored Picard and derivative enclosures remain
+declared numerical premises. Cached sine verdicts and radii must not enter
+the changed-law decision. Test receiver retention separately from donor
+endpoint availability; a failed donor margin is not a changed outcome.
+
 For [preparation information and acquired modes](theory/nodal/SINE_PREPARATION_MODE_SELECTION.md),
 select `tests/physics/test_sine_preparation_mode_selection.py` with the shared
 preparation and isolated-class controls above. Reconstruct the Laplacian energy

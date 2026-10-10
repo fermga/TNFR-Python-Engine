@@ -10,7 +10,7 @@ from __future__ import annotations
 from dataclasses import asdict
 from fractions import Fraction as Q
 
-from .._exact_time import exact_or_represented_real, exp_unit_bounds
+from ..mathematics._comparison_flow import scalar_affine_upper as _discrepancy_upper
 from ..mathematics._rational_interval import I, pi_interval
 from ..mathematics._validated_metric import (
     _metric_error_upper,
@@ -83,28 +83,6 @@ def receiver_enclosure_source():
         form_error_bound=policy["form_error_bound"],
         phase_error_bound=policy["phase_error_bound"],
     )
-
-
-def _discrepancy_upper(radius, rate, duration, defect):
-    """Outward scalar comparison, including zero and negative growth rates."""
-    radius, rate, duration, defect = (
-        exact_or_represented_real(value, name)
-        for value, name in (
-            (radius, "radius"),
-            (rate, "rate"),
-            (duration, "duration"),
-            (defect, "defect"),
-        )
-    )
-    if min(radius, duration, defect) < 0 or abs(rate * duration) > 1:
-        raise ValueError("comparison requires nonnegative bounds and |rate*h|<=1")
-    if rate == 0:
-        return I(radius + defect * duration).hi
-    exponential = I(*exp_unit_bounds(abs(rate * duration)))
-    if rate < 0:
-        exponential = 1 / exponential
-    phi = (exponential - 1) / rate
-    return (exponential * radius + phi * defect).hi
 
 
 def _advance_receiver_reference(center, radius, *, time, form_bound):

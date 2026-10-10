@@ -322,6 +322,15 @@ independent nonlinear properties of the supplied law; neither a larger
 geometric barrier nor changed instantaneous work proves a changed formation
 or maintenance outcome for a prepared source.
 
+The [own-law source comparison](nodal/CONSTITUTIVE_RECEIVER_COMPARISON.md)
+rebuilds initial transport and retained velocity bounds across that fixed
+interval. Its residual comparison with the preserved reference certifies
+receiver winding zero throughout the same finite prefix for all original
+source errors and admitted laws. The donor endpoint is unavailable under
+the new bound. Thus this constitutive freedom does not produce receiver
+acquisition during that interval; no permanent nonformation, preferred law
+or restriction on other preparations follows.
+
 Distinct internal geometries need not be distinguishable through every
 contact. The [central-contact obstruction](nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-contact-admission)
 shows that the nominal formed C9 classes can remain invisible to the same
