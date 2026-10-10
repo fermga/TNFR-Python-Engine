@@ -670,6 +670,11 @@ retains that history and its fine deviations under an explicit voltage
 observation. Its phase-free current-amplitude consequence is a testable
 restriction of the supplied law, not a derived material constant; physical
 preparation, sensor and actuator admission remain separate.
+The [uncertain current comparison](nodal/ORGANIZED_ROBUST_CURRENT.md#robust-current-result)
+separates two supplied complete amplitude laws under one common observation,
+retaining nonzero calibration, tracking and sampling errors. This makes the
+conditional models distinguishable; it does not select a law from physical
+data or transfer formation to the alternative.
 
 The [continued-contact classification](nodal/ORGANIZED_CONTACT_MAINTENANCE.md)
 now distinguishes stable constituent retention from preservation of the

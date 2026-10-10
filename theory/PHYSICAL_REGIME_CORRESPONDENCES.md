@@ -277,6 +277,11 @@ through all finite inputs and separates source error from sensor uncertainty.
 An unnormalized current statistic avoids requiring observed initial phases;
 its conditional amplitude restriction still needs independently admitted
 physical calibration, preparation, timing and tracking.
+The [reserved mathematical comparison](nodal/ORGANIZED_ROBUST_CURRENT.md#robust-current-result)
+now separates the fixed and doubled amplitudes under a declared joint
+uncertainty box, with each model's complete history bounded independently.
+The result concerns disjoint prospective record sets. Independent physical
+support for the preparation and measurement premises remains unestablished.
 
 The [two-contact response](nodal/SINE_PAIR_INTERACTION.md#sine-two-contact-orientation-response)
 already establishes orientation-sensitive interaction in a specified finite

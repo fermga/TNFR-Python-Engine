@@ -328,3 +328,46 @@ that corner or executing previous frozen producers.
 The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 owns the result-dependent next gate. No physical observation or claim of
 practical sensor capability follows from evaluating this sufficient bound.
+
+<a id="robust-current-result"></a>
+## 7. Frozen joint-box decision
+
+Declaration, consuming helper and driver were committed at
+`98ccd8686592eea15ad22151802d731d683d70e2` before one assessment.
+The preserved [attempt](../../docs/assets/organized_robust_current/attempt.json)
+and [result](../../docs/assets/organized_robust_current/result.json) record
+verdict `conditional_current_discrimination_admitted`. Both models retain
+all four positive identity/collar margins, their current envelopes are
+strictly separated, and no unresolved condition remains within this
+declared sufficient-bound decision.
+The [read-only evidence controls](../../tests/physics/test_organized_robust_current_evidence.py)
+reconstruct its receipt, coefficient intervals, both laws' errors and
+identity margins, and the strict separation from archived primitives.
+They do not import or rerun the bound, driver or assessor.
+
+The following summaries round outwards. Current quantities are divided by
+the same fixed nominal j0 only for display; the observable itself is (13).
+
+| Uniform quantity | Fixed amplitude, mu=1 | Doubled amplitude, mu=2 |
+| --- | --- | --- |
+| Mean form magnitude at the nominal plateau endpoints | `<0.014922` | `<0.019589` |
+| Phase departure from the nominal command | `<9.290e-6` radians | `<1.220e-5` radians |
+| Total sample error including tracking and aperture | `<1.251e-14` | `<1.300e-14` |
+| Corrected-increment error | `<5.941e-14` | `<1.088e-13` |
+| Radial current-error allowance / j0 | `<0.030580` | `<0.055983` |
+| Necessary observed current norm / j0 | `[0.969420,1.030580]` | `[1.944017,2.055983]` |
+| Minimum outer acute-gap margin | `>0.070775` radians | `>0.070769` radians |
+
+The exact archived gap is greater than `0.913437*j0`. Hence no complete
+valid observation record can be generated under both declared hypotheses
+with their permitted calibration and error boxes. The conclusion is
+uniform over unknown initial phases and all admitted fine deviations;
+the inverse has not supplied hidden phase information to test itself.
+
+This is a finite analytical decision about prospective record sets. It
+generated no trajectory, physical raw record or choice of the true law.
+The preparation class remains a supplied premise under the alternative
+and under calibration changes. The absolute tolerances, inward apertures,
+linear component shapes and delivery bounds still need independent
+physical evidence. Positive mathematical tolerances do not establish that
+an apparatus can meet them, nor select a universal current law.

@@ -583,6 +583,10 @@ and current envelope, integrable tracking during plateaus, inward sampling
 apertures, invalid ratios/errors and unavailable sufficient bounds. Synthetic
 controls must not evaluate the declared single-assessment corner or transfer
 formation and work certificates to the alternative law.
+Use `tests/physics/test_organized_robust_current_evidence.py` to reconstruct
+the frozen source receipt, calibration coefficients, both own-law error and
+identity bounds, and their separation from archived primitives. These
+read-only controls do not import or rerun the consuming bound or assessor.
 
 For [finite interface factorization](theory/nodal/ORGANIZED_INTERFACE_FACTORIZATION.md),
 select `tests/physics/test_organized_slot_registration.py` and
