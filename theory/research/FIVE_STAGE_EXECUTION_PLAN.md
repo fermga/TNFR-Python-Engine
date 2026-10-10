@@ -234,7 +234,7 @@ errors together, while retaining necessary work and time restrictions.
 The [finite interface result](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result)
 excludes a purely multiplicative scalar source/probe factor, retaining actual
 source members and every allowed reading-error correction. The next active
-question is [conserved charge versus spatially resolved response](#organized-charge-response-bridge-admission).
+question is [retained charge and internal electrical state](#organized-charge-internal-state-admission).
 Stationary compatibility in the source chamber remains unresolved for the
 proposed stable-stationary maintenance route, with no continued search active.
 The [prepared storage observer](#storage-comparison-producer-admission)
@@ -253,7 +253,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next property-bridge admission | [Conserved charge versus spatial response](#organized-charge-response-bridge-admission): test one independently justified reference regime and a complete collective observation map, preserving prior physical-source failures |
+| Next complete-state bridge admission | [Charge and internal electrical state](#organized-charge-internal-state-admission): fix one independently justified passive electrical reference and test complete flow, circular state, charge transfer and storage/work together |
+| Closed scoped charge-map obstruction | [Charge versus spatial response](#organized-charge-response-bridge-admission): identical-site conserved observations are affine in form; the full-density map fails unforced Ohmic closure, and homogeneous local edge redistribution cannot close near an acute C9 twist |
 | Closed finite factorization obstruction | [Two normalized interfaces](#organized-interface-factorization-admission): a nonzero true and error-rectified determinant excludes one purely multiplicative scalar source/probe factor throughout the declared source box; it does not identify or exclude physical charge |
 | Closed joint resource admission | [Joint preparation resources](#organized-joint-preparation-resources): one frozen corner admits the whole source/readout box under the same complete sine law; necessary phase-compression, contact-noise and acquisition-work restrictions remain separate |
 | Unresolved maintenance dependency, no active search | [Source-chamber stationary compatibility](../nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md): a certified stable target or a global stationary obstruction in the complete source class remains missing; actual source capture and winding loss are also unresolved |
@@ -409,15 +410,17 @@ and assembly-work floor remain; structural units are not laboratory units.
 The [finite interface obstruction](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result)
 now separates a purely multiplicative scalar factor from structure-dependent
 interaction. It does not identify which independent physical quantity, if
-any, this state could represent. The next gate addresses that mapping before
-adding further probes or coordinates.
+any, this state could represent. The [charge-map result](../nodal/ORGANIZED_CHARGE_OBSERVATION.md)
+now excludes the stated density-only realizations and identifies the need
+to test a reference that retains internal constitutive state. This does not
+authorize inventing that state law from TNFR's desired response.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
 | Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Unresolved stable-stationary maintenance route; no active search.** The finite search is closed without a certificate; other classes do not repair uninterrupted maintenance. Reopen with a constructive target or an analytical certificate mechanism, not more starts |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
-| Fundamental physical properties and independent observation | Separate a conserved additive charge from spatially resolved interaction in one independently specified reference regime; admit the complete TNFR state/geometry/measurement map and an equally informed alternative under [P1-P5](#supporting-measurement-bridge) | **Sole immediate gate** below. No dataset is admitted and no fitting is active. Close at a complete bridge, observational equivalence or a specific mapping/complete-law obstruction |
+| Fundamental physical properties and independent observation | Retain charge and internal constitutive state in one independent passive electrical reference; compare its complete law, circular domain and work/storage with TNFR under [P1-P5](#supporting-measurement-bridge) | **Sole immediate gate** below. The density-only map gate is closed in its stated classes; no dataset or fit is admitted. Close at a complete-law equivalence, scoped obstruction or explicitly nonunique compatible family |
 | Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Conceptually critical**, with no new compatibility scan active. If a countermodel shares all proposed premises, the uniqueness claim fails in that scope |
 | Autonomous preparation, support, capacity and events | Supply actual occurrence and state-evolution laws when claiming autonomous assembly. [Event work](../nodal/RELATIONAL_SUPPORT_EVENTS.md), passivity and [operator descent](../STRUCTURAL_OPERATORS.md) do not select occurrence | **Claim-dependent**. Current contacts and preparation remain supplied. Do not postpone investigation of the existing conditional composite until every origin question is solved |
 | Internal activity and recurrence | Separate preservation of identity from permanent motion; the [positive-loss boundary](../nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission) and alternative-mobility results retain different premises | **Prepared alternative** for a named claim requiring sustained activity. Neither a stationary identity nor finite response establishes recurrence or transfers an invariant measure |
@@ -430,7 +433,7 @@ An added observable earns inclusion by deciding the selected prediction or a
 meaningful minimality obstruction. Existing failed physical-source admissions
 remain failed; more samples cannot repair their complete-law mismatches.
 
-Only charge-versus-spatial-response admission is active. The table is a reassessment
+Only charge-plus-internal-state admission is active. The table is a reassessment
 of dependencies, not a fixed sequence or parallel campaign list. It preserves
 the objective of generated, physically testable organization without identifying
 winding, phase cancellation or storage with material constituents.
@@ -463,51 +466,68 @@ real-part observations of complex products or multichannel descriptions.
 No operational copying, physical charge or new autonomous event is inferred.
 
 <a id="organized-charge-response-bridge-admission"></a>
-### Immediate question: conserved charge versus spatially resolved response
+### Closed charge-versus-spatial-response admission
 
-**Can a collective TNFR observation support a conserved additive charge and
-its spatially resolved interaction in one independently specified physical
-regime?** The target is the distinction between an intrinsic inventory and
-the response of an extended organization, not a claim that physical charge
-must produce a rank-one matrix. Use the
-[charge boundary](../PHYSICAL_REGIME_CORRESPONDENCES.md#charge-and-magnetic-response-boundary)
-and [collective-property ontology](../EMERGENT_ONTOLOGY.md#research-target-physical-properties-of-collective-patterns)
-as owners. This remains an admission question before any empirical campaign.
+The [result owner](../nodal/ORGANIZED_CHARGE_OBSERVATION.md) declares an
+independent unforced Ohmic electroquasistatic reference, a fixed spatial
+charge map and its clock/measurement requirements. Conventional extended
+sources already allow response rank two; the earlier determinant alone
+therefore supplies no physical discriminator.
 
-1. **Specify one reference regime and its actual observables.** Use primary
-   references to define localized charge, additivity, transfer and the chosen
-   quasistatic spatial response, including external preparation and fields.
-   Keep net inventory separate from its spatial distribution. State what a
-   conventional extended-source model predicts under the same information;
-   the TNFR determinant is not itself a physical discriminator.
-2. **Admit the complete observation and geometry map.** A charge candidate
-   may be collective, but must satisfy its declared conservation, composition,
-   reference-origin and circular-phase obligations under the actual complete
-   law. Use existing current and common-origin counterexamples before adding
-   state. Declare what maps to physical position, preparation, clock, sensor
-   and input, with units and errors. Slot registration cannot silently become
-   physical position, and a convenient phase assignment cannot replace an
-   independently justified consumed state or input law.
-3. **Decide the mapping before collecting responses.** Close at a complete
-   mapping with a prospectively reserved discriminator against an equally
-   informed alternative, exact observational equivalence with no discriminator,
-   or a specific incompatibility in the stated map/law class. An obstruction
-   must identify the failing premise or transformation, rather than repeat
-   a general list of missing physical interpretations. Do not fit a desired
-   charge or interaction law and then describe it as derived.
-4. **Preserve prior physical decisions and practical scope.** Audit the
-   [passive-transport admission](PASSIVE_TRANSPORT_PROTOCOL.md) and its archived
-   failures first. Its capacitive P2 construction and evaluated Volts records
-   are not a new route or unseen evidence. No hardware purchase, apparatus
-   operation, data fitting or broad source search is activated. Any later
-   comparison must remain computer-accessible and terrestrial. Boundary-state
-   inference becomes a task only if this bridge identifies a specific missing
-   observation; no automatic third-interface or moment-building campaign.
+For the actual quarter law, every identical-site additive circular invariant
+on the full state domain is affine in form. A fixed co-transforming reference
+permits a signed transported inventory, but equal *complete mapped densities*
+can have different derivatives. This rules out that density-only reference
+map. A separate mode proof excludes smooth autonomous density closure for
+one homogeneous local edge redistribution, even in a full neighborhood of
+an acute C9 twist. Its conservation alone remains valid. No result excludes
+all collective maps, internal material state, other laws or an independently
+justified smaller invariant preparation domain. No physical data or frozen
+producer was evaluated.
 
-This tests a necessary bridge toward a fundamental property without claiming
-elementary-charge quantization, material constituent formation or the emergence
-of electromagnetism. A supporting measurement realization would retain that
-scope. Unique law selection and substrate origin remain separate open questions.
+<a id="organized-charge-internal-state-admission"></a>
+### Immediate question: retain charge and internal electrical state
+
+**Can the complete quarter law admit an independently justified passive
+charge-plus-phase electrical realization, including its storage and work?**
+The purpose is to test the internal-state possibility left by the closed
+charge-map gate, rather than demand that charge density alone predict every
+physical process. Keep the [atlas's electrical comparison boundary](../PHYSICAL_REGIME_CORRESPONDENCES.md#charge-and-magnetic-response-boundary)
+and [collective-property ontology](../EMERGENT_ONTOLOGY.md#research-target-physical-properties-of-collective-patterns).
+
+1. **Fix one independent reference before deriving maps.** Review primary
+   formulations of a passive electrical network with capacitance, dissipation
+   and periodic phase storage, including the atlas's existing Josephson
+   boundary. State the entire charge and internal-phase law, its physical
+   voltage/phase relation, grounding or neutral sector, inputs and domain.
+   Any quantum constitutive relation is a supplied reference premise, not
+   a derivation of quantization from TNFR. Do not select a new material law
+   merely because it reproduces the desired sine term.
+2. **Match full state and work, not just current shape.** Start with the
+   fixed-reference inventory and its exact quarter-law boundary current;
+   keep phase as additional state. Derive the necessary charge, voltage,
+   clock and energy scales and the actual capacitance/dissipation operators.
+   Test physical realizability, reciprocity, common-origin and circular
+   covariance, storage and source/event work on the same support. A formal
+   matrix or inverse Laplacian alone is not an electrostatic geometry.
+3. **Close at a complete-law decision.** Establish an invertible or explicitly
+   lossy map with its complete field relation, or a specific model/map
+   obstruction. If multiple reference realizations remain, expose that
+   freedom. Exact correspondence would be a conditional realization rather
+   than an empirical discriminator or microscopic emergence theorem. Admit
+   any later measured contrast only with an equally informed conventional
+   alternative, source/clock/sensor bounds and reserved evaluation.
+4. **Preserve scope and evidence.** Do not reopen the [P2/Volts route](PASSIVE_TRANSPORT_PROTOCOL.md),
+   rerun acquired responses, launch a trajectory/parameter sweep or operate
+   apparatus. No data fitting or purchase is active. Other collective maps
+   and restricted prepared families remain possibilities, not parallel
+   queues; do not repeat the already excluded local edge-density class.
+
+This is a complete-state constitutive comparison toward the physical goal.
+It does not claim elementary-charge quantization, material formation or
+emergence of electromagnetism. Any physical realization still needs independent
+observation and preparation; unique law selection and substrate origin remain
+separate open questions.
 
 No new stationary search, trajectory campaign or physical-data fitting is
 active. The unresolved maintenance route retains the complete source chamber,
@@ -553,7 +573,7 @@ unspecified, and an explicit same-windings counterexample occupies a different
 class. Existing source bounds place the actual preparation in the product
 class. Uninterrupted cut-free maintenance cannot leave it. This closes the
 domain-admission ambiguity. The stationary question remains open while the
-[current gate](#current-g3-gate) addresses conserved charge versus spatial response.
+[current gate](#current-g3-gate) addresses charge and internal electrical state.
 It identifies no particle property and does not alter previous acquisition,
 finite interaction or outer-zero capture results.
 

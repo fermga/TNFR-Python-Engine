@@ -221,6 +221,18 @@ independently measured electric charge or electromagnetic interaction.
 Any physical comparison must declare its reference regime and its spatial,
 preparation and observation maps before using response rank as a criterion.
 
+The [charge-observation admission](nodal/ORGANIZED_CHARGE_OBSERVATION.md)
+now makes one such comparison explicit. Under the uniform-quarter sine law,
+every conserved identical-site additive circular observation on the full
+domain is affine in total form. A retained reference permits a nonzero
+inventory, but its entire fixed-shape spatial density does not close under
+the declared unforced Ohmic electroquasistatic reference: equal densities
+can have different TNFR derivatives. A homogeneous local edge redistribution
+also fails smooth density closure near the actual acute C9 twist. These are
+map/domain restrictions, not an exclusion of electric charge, polarization
+or a model retaining independent internal material state. The reference's
+ordinary extended-charge response already permits rank two.
+
 The [two-contact response](nodal/SINE_PAIR_INTERACTION.md#sine-two-contact-orientation-response)
 already establishes orientation-sensitive interaction in a specified finite
 experiment with evolving source and probes. The

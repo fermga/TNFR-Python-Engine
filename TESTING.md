@@ -476,6 +476,15 @@ read-only retained evidence, without replaying the frozen corner.
 Changing the prospective source or resource box requires a new declaration,
 not routine test regeneration.
 
+For [charge-observation admission](theory/nodal/ORGANIZED_CHARGE_OBSERVATION.md),
+select `tests/physics/test_organized_charge_observation.py` with the complete
+slot-contact controls. The expected 54 fine rates come from independent edge
+cancellation, retaining quarter mobility on the unequal-degree support,
+opposite boundary reactions, circular phase and common-form covariance.
+These tests check the implemented obstruction; the exhaustive invariant and
+modal projectability proofs belong to the theory owner. They neither execute
+trajectories nor replay frozen evidence, and do not admit a physical sensor.
+
 For [finite interface factorization](theory/nodal/ORGANIZED_INTERFACE_FACTORIZATION.md),
 select `tests/physics/test_organized_slot_registration.py` and
 `tests/physics/test_organized_interface_factorization.py` with the joint-resource,

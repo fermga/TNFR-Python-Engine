@@ -620,6 +620,16 @@ descriptions or real observations of complex amplitudes. The result has no
 physical-charge interpretation without an independent interaction and
 measurement bridge.
 
+The [charge-observation classification](nodal/ORGANIZED_CHARGE_OBSERVATION.md)
+separates regional additivity from the stronger assumption that each
+contribution reads only one node. The latter class cannot retain circular
+phase in a conserved total under the full organized quarter law. A
+phase-dependent collective density can preserve that total, but the declared
+homogeneous edge class still cannot supply smooth autonomous density closure,
+including near an acute C9 twist. This restricts proposed observations;
+it does not erase the organizations' internal state or exclude a physical
+model that retains it. No mapped charge or material constituent is established.
+
 The [continued-contact classification](nodal/ORGANIZED_CONTACT_MAINTENANCE.md)
 now distinguishes stable constituent retention from preservation of the
 additional outer identity. The actual outer-zero control, including all
