@@ -13,6 +13,8 @@ from fractions import Fraction as Q
 from .._exact_time import exact_or_represented_real as _exact
 from ..mathematics._exact_linear_algebra import exact_matrix_inverse
 from ..mathematics._rational_interval import I, cos, pi_interval, sin
+from ._organized_network_compatibility import _EQUAL_CONTROL as _EQUAL
+from ._organized_network_compatibility import _UNEQUAL_CONTROL as _UNEQUAL
 from ._organized_network_compatibility import (
     _derive_organized_triangle,
     _mixings,
@@ -23,8 +25,6 @@ from ._sine_constitutive_recovery import (
     _ConstitutiveRecovery,
 )
 
-_EQUAL = (Q(1, 2),) * 3
-_UNEQUAL = (Q(1, 4), Q(1, 2), Q(3, 4))
 _TARGET_GAP = Q(22, 25)
 _CELL_GAP = Q(2)
 _BREGMAN = Q(3, 20)

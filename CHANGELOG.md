@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Prove a strictly positive [identity-preserving assembly-work floor](theory/nodal/ORGANIZED_ASSEMBLY_WORK.md)
+  for both fixed three-C9 contacts, even with simultaneous full form/phase
+  resets and arbitrary relative origins. Admit every endpoint whose original
+  children retain acute winding one; include all new-edge costs and original
+  recovered-source excess. Passive intermediate actions cannot remove this
+  endpoint deficit. The bound is not a sharp minimum, an event selector or
+  a capture certificate for arbitrary reset endpoints.
 - Prove [capture of the acquired three-object assembly](theory/nodal/ACQUIRED_ORGANIZED_NETWORK_CAPTURE.md)
   under both fixed weighted contact controls. Retain every original source
   residual, all 27 fine nodes and the supplied attachment work; derive the

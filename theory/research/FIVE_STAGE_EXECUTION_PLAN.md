@@ -125,9 +125,13 @@ laws remain valid with the boundary coefficients retained. The separate
 full-state winding retention and convergence from the original independently
 recovered sources for both controls, with their distinct joined targets and
 supplied contact work. The sole next admission is
-[identity-preserving assembly work](#current-g3-gate): determine whether
-simultaneous internal reorganization can fund either attachment while
-retaining the children's declared acute winding-one endpoint identity.
+[joint acquisition on preexisting fine support](#current-g3-gate). The
+[assembly-work theorem](#organized-assembly-work-admission) proves that even
+simultaneous fine-state reorganization cannot passively assemble these
+recovered children within the declared acute winding-one endpoint class.
+The next question is whether the same primitive phase-flat ramps can acquire
+the children and their joint registration together when the final fine
+support is present from preparation, with its complete initial storage paid.
 The [prepared storage observer](#storage-comparison-producer-admission)
 is retained as an instrument; it has no frozen protocol or reserved response
 and is not the next campaign.
@@ -144,7 +148,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next theoretical admission | [Identity-preserving assembly work](#current-g3-gate): establish a required-work bound or a passive counterexample for simultaneous fine-state resets from the actual recovered sources, preserving acute winding-one child endpoints and the two fixed final contact controls |
+| Next theoretical admission | [Joint acquisition on preexisting fine support](#current-g3-gate): re-admit the original primitive phase-flat ramps on both fixed connected supports, including all initial storage, and test full-state formation and capture at the declared structural time and budget |
+| Closed theoretical work admission | [Identity-preserving assembly work](#organized-assembly-work-admission): strictly positive required-work floors survive arbitrary simultaneous fine-state resets with acute winding-one child endpoints under both fixed contacts; passive intermediate actions cannot evade the complete endpoint balance |
 | Closed theoretical capture admission | [Capture of the acquired three-object assembly](#acquired-organized-network-capture): full-state target admission, winding retention and convergence from the original independent recovered sources under both fixed contact controls, with supplied work retained |
 | Closed theoretical network admission | [Network-wide compatibility of organized interactions](#organized-network-compatibility): exact three-C9 collective law; common phase-origin, form and reciprocal maps require zero contact-cycle phase and equal amplitudes, while retained boundary data supports both incompatible controls |
 | Closed theoretical profile admission | [Interface-robust profile inheritance](#interface-robust-profile-inheritance): sine is selected conditionally by unchanged-profile inheritance throughout the declared open weighted-interface interval; the extra profile premise is independent of NFR identity, and nonsine collective laws remain valid with boundary coefficients |
@@ -199,7 +204,7 @@ remain open; no empirical response has passed complete physical admission.
 
 <a id="current-g3-gate"></a>
 <a id="foundational-organized-pattern-admission"></a>
-<a id="organized-assembly-work-admission"></a>
+<a id="organized-joint-acquisition"></a>
 ## Primary plan: foundations tested by organized patterns
 
 Investigate which premises are sufficient, necessary within a declared class,
@@ -219,52 +224,63 @@ to its actual state, scale and execution path before treating a matched
 geometric or response property as sufficient. Retain the distinction between
 defining requirements, supplied hypotheses and derived restrictions.
 
-The next question is: **can an internal reset pay for the assembly while
-retaining the acquired children's declared identity?** The
-[capture theorem](../nodal/ACQUIRED_ORGANIZED_NETWORK_CAPTURE.md) proves that
-the supplied contact can produce a joined organization. Its positive
-attachment work remains a separate premise. The existing
-[reset accounting](../nodal/RELATIONAL_SUPPORT_EVENTS.md#nodal-reorganization-and-contact)
-shows that reorganization can sometimes offset contact cost, but its
-nonminimal small-component witness does not establish this for recovered C9
-organizations. Generic support-law nonselection is already proved there;
-the present question concerns the actual formed objects.
+The next question is: **can the three child identities and their joined
+registration form together on fine support present from preparation?** The
+[assembly-work theorem](../nodal/ORGANIZED_ASSEMBLY_WORK.md) excludes a
+passive late attachment from the recovered sources in its declared endpoint
+class. It does not exclude regional formation on existing fine support.
+The [ontology](../EMERGENT_ONTOLOGY.md#nfr-participation-in-form) admits that
+distinct claim, while the [connection owner](../nodal/RELATIONAL_EFFECTIVE_CONNECTIONS.md#connection-mechanisms-and-mediators)
+already separates effective organization from primitive edge birth.
 
-Retain the three labelled C9 components, all 27 signed forms and phases,
-held unit capacities and the detached weighted reciprocal sine storage.
-The initial support is the three original unit cycles. The final support
-adds exactly the same contacts `(0,1),(1,2),(2,0)` with offsets `{0,1}` and
-weights `1-s_e,s_e`, for `s_e=(1/2,1/2,1/2)` or `(1/4,1/2,3/4)`.
-No original edge is removed or reweighted. Native phase-neighbor semantics
-and registered operator execution remain separate.
+Retain all 27 labelled fine nodes, the three original unit C9 cycles, held
+unit capacities and the same detached reciprocal sine law and structural
+clock `tau=(1023/1024)*t`, with `gamma=1/(1023*pi)`. Both fixed connected
+supports are now present at `tau=0` and remain unchanged: the oriented
+contacts `(0,1),(1,2),(2,0)` use offsets `{0,1}` and weights `1-s_e,s_e`,
+for `s_e=(1/2,1/2,1/2)` or `(1/4,1/2,3/4)`. Every node has weighted
+degree four. Use both actual degree-four evolution rows and the complete
+weighted storage; native neighbor semantics and registered operators remain
+separate. No forcing, state reset, support event or conductance evolution is
+admitted during this preparation.
 
-Use the unchanged original source errors, separate zero component means,
-acquisition and uninterrupted recovery dwell at the declared handoff.
-Carry its full residual budget into the initial storage. Admit hypothetical
-simultaneous finite form and phase resets whose endpoints keep every
-child's internal circular gaps strictly acute with winding one. Relative
-origins and internal shapes may change; do not restrict endpoints to the
-registered family or pretend its target is the actual source. This acute
-endpoint class is an explicit restriction: the capture proof's larger
-transient sector does not establish acuteness at every intermediate time.
+Declare the original primitive class-one ramps anew on this connected
+support: `x_(r,j)(0)=m*(j-4)+delta_x_(r,j)` and
+`theta_(r,j)(0)=delta_theta_(r,j)`, where
+`m=(2046/9)*(355/113)**2`, `r=0,1,2`, and `j=0,...,8`.
+Each form and lifted-phase error is independently bounded in magnitude by
+`10^-10`, with separate exact zero sums within each child. Retain the fixed
+common initial phase origin and every allowed combination of the errors.
+These initial circular phase configurations have winding zero. Only the
+global means remain conserved after connected evolution begins.
 
-Compare complete before/after storage for every endpoint in that class,
-including contemporaneous internal reorganization and all new-edge costs.
-Establish a strictly positive required-work bound, or a valid passive
-counterexample, for each fixed control. Separate a proved lower bound from
-a sharp minimum and keep exact source excess below the interval grid.
-Apply the existing hybrid balance only to test whether passive continuous
-segments or several passive actions with the same admitted endpoints could
-evade that endpoint result; no new schedule or occurrence law is sought.
+Before evaluating a certificate, fix acquisition time `T=200` in `tau`
+(`204800/1023` in original time) and a common whole-network initial storage
+ceiling `10^9`. These are fresh connected-source obligations, not transferred
+isolated-source verdicts. Include the contact form and phase storage already
+present at preparation; a large supplied initial form is neither free work
+nor an autonomous preparation mechanism. Rebuild represented-real source
+admission, all residual bounds and storage with shared exact rational and
+outward dyadic128 arithmetic. No precision, source, time or topology sweep is
+active.
 
-A positive bound would identify work missing from this declared assembly
-class, not rule out attachment earlier during acquisition, an identity
-change, removal of original edges or a separately justified storage or
-reservoir law. A candidate reset is not an admitted registered operator:
-live admission, collective descent and occurrence retain their own
-contracts. Do not transfer the original no-reset capture certificate to
-arbitrary new endpoints. No trajectory, source producer, physical dataset,
-topology search or protocol freeze is active.
+Seek a complete-law analytic bound from this original source to the stated
+deadline. At `T`, certify all three child windings equal one and admit the
+actual full state to the existing joined target's storage barrier under
+each fixed control, including its fine form and phase deviations. The
+[capture owner](../nodal/ACQUIRED_ORGANIZED_NETWORK_CAPTURE.md) supplies
+the targets and conditional full-state barrier, not acquisition from this
+new initial support. Reapply every entry and mean premise; do not replace
+the reached source by an ideal target or by its old `10^-70` recovery bound.
+If a source, storage or entry bound fails, retain that unavailable sufficient
+certificate without retuning this declaration or inferring nonformation.
+
+A positive result would establish conditional joint formation and eventual
+registration on existing fine support, with retained preparation cost. It
+would neither create that support nor derive a reservoir, event selector,
+unique law, laboratory clock or physical bound state. The task is a static
+analytic admission; no trajectory producer, physical dataset, reserved
+response or additional numerical campaign is active.
 
 1. **Declare the object and the claim.** Specify sufficient form/phase state,
    identity, source class, clock, support, capacity, boundaries and observation.
@@ -277,16 +293,16 @@ topology search or protocol freeze is active.
    postconditions. A collective event needs its own descent and occurrence
    analysis even when the continuous collective law closes.
 2. **Specify the proposed discrimination.** Fix the complete three-object
-   support and storage, original source errors and handoff, attachment
-   controls and allowed identity-preserving reset endpoints.
+   support and storage from preparation, primitive phase-flat ramps and
+   original errors, structural deadline and total initial storage ceiling.
    Separate constitutive freedom from supplied preparation and support.
    No controller, fitted sensor or hidden clock adjustment supplies closure.
 3. **Derive a discrimination or obstruction.** Match the declared preparation
    observations, geometry, units, clock and costs under each complete law.
-   Check symmetries, equilibrium boundaries, reachable identities, balances,
-   event occurrence and information loss. Determine whether a storage-passive
-   endpoint in the declared reset class is possible from any admitted
-   recovered source; fixed-support loss alone does not fund an event.
+   Check symmetries, equilibrium boundaries, reachable identities, balances
+   and information loss. Determine whether every admitted initial connected
+   state reaches the declared winding and full-state capture conditions at
+   the fixed deadline, with its own source and preparation storage retained.
    Distinguish a new initial condition from a symmetry copy or a changed law. A
    necessary condition or failed sufficient bound is not a formation theorem.
 4. **Integrate only the justified result.** Preserve useful conditional proofs
@@ -296,8 +312,8 @@ topology search or protocol freeze is active.
    observation and error model are admitted. A controller added to produce a
    desired object is an additional premise, not a derivation of that object.
 
-The gate distinguishes capture on supplied support, simultaneous reset work,
-the identity retained by an event and selection of that event's occurrence.
+The gate distinguishes joint acquisition on supplied fine support from
+capture after separate recovery, simultaneous reset work and support birth.
 Continuous closure does not establish collective event descent or occurrence;
 those require the [operator criterion](../STRUCTURAL_OPERATORS.md#collective-operator-descent).
 State unresolved source, identity or equivalence estimates explicitly rather
@@ -311,7 +327,7 @@ The dependency order for subsequent work is:
 | Complete foundations | State and law choices are explicit; independent selection arguments and surviving countermodels are retained |
 | Formation and identity | Entry from the declared source, stability/maintenance and preparation costs; autonomous preparation and scale/support selection are separately identified |
 | Composite organization | Dynamical attachment/interaction, retained constituent identity and a declared separation/work criterion; negative rectangular storage excess alone is not binding |
-| Inheritance across scales | Network compatibility retains relational data when pairwise charts cannot coexist, and full-state acquired-source capture now holds for the two fixed supplied contacts. A hierarchy still needs compatible repeated composition, justified parameter and clock maps, identity/source control and justified assembly work at every claimed level. Retain necessary hidden state, memory and event contracts through the existing [scale](../TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) and [collective closure](../nodal/DERIVED_FORM_PHASE.md#collective-interaction-closure-and-relational-state) owners. Matching a tangent or re-encoding the full state alone does not establish inheritance |
+| Inheritance across scales | Network compatibility retains relational data when pairwise charts cannot coexist, and full-state acquired-source capture holds for the two fixed supplied contacts. The recovered children's declared identity-preserving assembly now has a positive work floor. A hierarchy still needs compatible repeated composition, justified parameter and clock maps, identity/source control and preparation or assembly work at every claimed level. Retain necessary hidden state, memory and event contracts through the existing [scale](../TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) and [collective closure](../nodal/DERIVED_FORM_PHASE.md#collective-interaction-closure-and-relational-state) owners. Matching a tangent or re-encoding the full state alone does not establish inheritance |
 | Physical interpretation | Derive geometric/measurement transformations and quantitative observables with units, independent preparation and alternatives before identifying a fundamental constituent |
 
 For each subsequent law or hypothesis, record its status, independent
@@ -327,6 +343,36 @@ The physical objective guides which mathematical property matters. Laboratory
 examples supply possible controls and discriminators; they do not replace
 the generative objective with imitation of a convenient apparatus. Substrate
 origin, universal laws and recurrence across scales remain open hypotheses.
+
+<a id="organized-assembly-work-admission"></a>
+## Closed theoretical admission: identity-preserving assembly work
+
+The [complete endpoint theorem](../nodal/ORGANIZED_ASSEMBLY_WORK.md) retains
+three original independently acquired and recovered class-one C9 sources,
+their actual residual radius `epsilon=10^-70` and both fixed final weighted
+contacts. It admits arbitrary simultaneous fine form and phase resets,
+relative origins and internal shapes, provided each original child has
+strictly acute internal circular gaps and winding one at the endpoint.
+The new contact phases need not be acute. No original edge is removed or
+reweighted.
+
+With `rho_e=abs(1-s_e+s_e*exp(2*pi*i/9))`, the complete storage change obeys
+`Delta H >= 9*sum_e(1-rho_e)-12*epsilon**2 > 0` for both controls.
+The nominal parts of these certified floors are approximately `1.628299`
+for equal weights and `1.350489` for unequal weights. The exact source
+correction remains separate from the outward irrational bounds. This is a
+proved lower bound over all admitted endpoints, not a sharp minimum or a
+registered reset action. The hybrid balance shows that passive continuous
+segments and passive intermediate actions with the same initial and final
+endpoint classes cannot remove the required positive supply.
+
+Thus reorganization of these recovered children does not fund the declared
+late attachment while retaining that endpoint identity. Earlier attachment,
+different source or identity classes, removed edges and separately justified
+storage or reservoir laws remain outside this result. Arbitrary reset
+endpoints inherit neither the no-reset capture theorem nor an event selector.
+The [next gate](#current-g3-gate) tests joint acquisition on fine support
+already present in preparation, with all its initial storage included.
 
 <a id="acquired-organized-network-capture"></a>
 ## Closed theoretical admission: capture of the acquired three-object assembly
@@ -346,9 +392,9 @@ edges, while preserving all three windings and converging to the respective
 acute target. No trajectory or new numerical protocol was evaluated.
 Positive supplied attachment work is accounted separately from continuous
 loss. This is conditional assembly from formed children, not autonomous
-contact, passive attachment or physical binding. The
-[next admission](#organized-assembly-work-admission) isolates that work
-question for declared identity-preserving reset endpoints.
+contact, passive attachment or physical binding. The separate
+[work admission](#organized-assembly-work-admission) proves a positive
+required-work floor even for declared identity-preserving reset endpoints.
 
 <a id="organized-network-compatibility"></a>
 ## Closed theoretical admission: network-wide organized compatibility

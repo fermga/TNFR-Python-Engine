@@ -22,6 +22,8 @@ from .phase_response import _admit_relative_phasors
 from .relational_observations import _ordered
 
 _CONTACTS = ((0, 1), (1, 2), (2, 0))
+_EQUAL_CONTROL = (Q(1, 2),) * 3
+_UNEQUAL_CONTROL = (Q(1, 4), Q(1, 2), Q(3, 4))
 _INTERNAL = tuple(
     (9 * r + j, 9 * r + (j + 1) % 9, Q(1)) for r in range(3) for j in range(9)
 )

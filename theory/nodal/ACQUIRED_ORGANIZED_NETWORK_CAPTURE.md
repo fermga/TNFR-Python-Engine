@@ -444,6 +444,13 @@ supply an exact memory-free quotient for arbitrary off-family states,
 a quantitative transient response, autonomous support formation,
 constitutive uniqueness or a physical identification.
 
+The separate [assembly-work obstruction](ORGANIZED_ASSEMBLY_WORK.md) shows
+that even simultaneous internal reorganization cannot make either attachment
+passive from these recovered sources while retaining acute winding-one child
+endpoints. That endpoint class is narrower than the transient cell used here;
+the result neither removes this supplied-work capture theorem nor transfers
+its capture certificate to arbitrary reset endpoints.
+
 The [capture implementation](../../src/tnfr/physics/_acquired_organized_network_capture.py)
 rebuilds the selected rational support, target enclosures, edge resistance
 certificate, original source recovery, support work and full-state barrier.

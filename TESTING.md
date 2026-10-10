@@ -245,6 +245,22 @@ excess below the interval grid. Reject invalid preparation inputs before
 source assessment, and exercise unavailable recovery rather than treating
 it as instability. These controls run no trajectory or frozen producer.
 
+For [identity-preserving assembly work](theory/nodal/ORGANIZED_ASSEMBLY_WORK.md),
+select `tests/physics/test_organized_assembly_work.py` with
+`tests/physics/test_acquired_organized_network_capture.py`,
+`tests/physics/test_organized_network_compatibility.py` and
+`tests/physics/test_sine_constitutive_recovery.py` when shared geometry or
+source admission changes. Check the internal acute winding-one constraint,
+the full weighted contact cost and the outward required-work floor for both
+fixed controls against independent endpoint calculations. Preserve arbitrary
+fine form, internal phase deformation and relative origins; cross-contact
+acuteness is not a premise. Retain the exact recovered-source excess below
+the interval grid, and distinguish unavailable source recovery from a passive
+counterexample. The positive floor is not asserted to be a sharp minimum.
+Check primitive admission before source assessment and retain the earlier
+capture controls; arbitrary reset endpoints inherit no capture verdict.
+These static controls install no event and rerun no frozen producer.
+
 For [preparation information and acquired modes](theory/nodal/SINE_PREPARATION_MODE_SELECTION.md),
 select `tests/physics/test_sine_preparation_mode_selection.py` with the shared
 preparation and isolated-class controls above. Reconstruct the Laplacian energy

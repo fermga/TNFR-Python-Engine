@@ -1081,6 +1081,14 @@ admission, and an actual nodal action can make a positive-cost connection
 compatible with total nonincrease. They are not yet one autonomous trajectory:
 their preparations, candidate access and execution contracts differ.
 
+The [recovered-organization work theorem](ORGANIZED_ASSEMBLY_WORK.md) gives
+a distinct obstruction under the weighted sine comparison: three nearly
+relaxed C9 children cannot fund the two prescribed contact supports through
+any simultaneous reset retaining their acute winding-one endpoints. The
+source storage excess and the forced contact cost are both admitted there.
+Thus the nonminimal small-component witnesses above do not imply that
+internal reorganization can always pay for attachment.
+
 Continuous conductance is another possible model revision, but the native
 phase channel uses support independently of weight. A missing edge is not
 the limit of a present edge with weight approaching zero for that channel.

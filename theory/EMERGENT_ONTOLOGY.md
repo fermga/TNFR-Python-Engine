@@ -251,6 +251,19 @@ residuals remain explicitly bounded and positive attachment work is supplied.
 This proves conditional composition from formed children, not passive or autonomous
 attachment, physical binding or a universal hierarchy.
 
+The [assembly-work theorem](nodal/ORGANIZED_ASSEMBLY_WORK.md) now admits a
+wider event endpoint class: arbitrary fine form, relative origins and internal
+phase shapes, provided every original child retains strictly acute internal
+gaps and winding one. Simultaneous internal reorganization still leaves a
+strictly positive required-work floor for both fixed contacts, after retaining
+the actual recovered-source excess. Cross-contact phases need not be acute.
+Passive intervening flow or actions cannot evade that complete endpoint
+balance. This is a scoped storage obstruction, not a sharp minimum or an
+exclusion of other source, support, identity or storage laws. Regional
+organization on fine support present from preparation remains a distinct
+formation question: its initial contact storage must be admitted, and the
+existing disconnected acquisition proof does not transfer to it.
+
 Distinct internal geometries need not be distinguishable through every
 contact. The [central-contact obstruction](nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-contact-admission)
 shows that the nominal formed C9 classes can remain invisible to the same
