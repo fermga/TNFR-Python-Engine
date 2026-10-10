@@ -455,3 +455,9 @@ support factors still have the exchange symmetry of the original matching
 graph. The result supplies neither a unique grouping nor autonomous scale
 selection, an indefinite lifetime, a binding-energy interpretation, an
 unselected fundamental law or a laboratory measurement bridge.
+
+The separate [continuous-actuation theorem](ORGANIZED_PARENT_CONTINUOUS_ACTUATION.md)
+tests realization of this map through a finite-duration input in the form row.
+Its work includes continuous loss as well as (17). Its scoped obstruction
+does not change the hybrid map, the supplied jump budget or the unforced
+restoring response proved here.

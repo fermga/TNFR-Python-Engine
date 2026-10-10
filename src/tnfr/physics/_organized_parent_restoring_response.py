@@ -10,6 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from fractions import Fraction as Q
 
+from .._exact_time import exact_or_represented_real as _exact
 from ..mathematics._rational_interval import I, cos, pi_interval
 from ._organized_parent_acquisition import (
     _assess_organized_parent_acquisition,
@@ -43,6 +44,27 @@ def _apply_parent_registration_intervention(*, form, phase_offsets):
     values = _vector(form, "form", 36)
     offsets = _vector(phase_offsets, "phase_offsets", 36)
     return values, tuple(value + change for value, change in zip(offsets, _EVENT))
+
+
+def _parent_registration_event_work_bounds(
+    *, inner_gap_bounds, outer_gap_bounds, phase_error_bound
+):
+    """Return nominal work, signed-error radius and actual jump-work bounds.
+
+    The caller supplies freshly proved pre-event reference-gap intervals and
+    the full Euclidean phase-error bound on the matching support. Acquired
+    fine errors need not have zero child means, so the error is signed and
+    linear. This arithmetic admits no source, event occurrence or future flow.
+    """
+    error = _exact(phase_error_bound, "phase_error_bound")
+    if error < 0:
+        raise ValueError("phase_error_bound must be nonnegative")
+    inner, outer = I.coerce(inner_gap_bounds), I.coerce(outer_gap_bounds)
+    nominal = 9 * (cos(inner) - cos(inner + 2 * _KICK)) + 18 * cos(outer) * (
+        1 - cos(I(_KICK))
+    )
+    work_error = 18 * error
+    return nominal, work_error, nominal + I(-work_error, work_error)
 
 
 @dataclass(frozen=True)
@@ -177,14 +199,12 @@ def _assess_organized_parent_restoring_response(
     child_positive = geometry.alpha_bounds.lo - 2 * phase_error
     child_acute = pi_interval().lo / 2 - geometry.alpha_bounds.hi - 2 * phase_error
 
-    # The acquired fine errors need not have zero child means. This event
-    # therefore retains a signed linear error, not the attachment's q^2 cost.
-    work_nominal = 9 * (cos(inner) - cos(inner + 2 * _KICK)) + 18 * cos(outer) * (
-        1 - cos(I(_KICK))
+    work_nominal, work_error, work = _parent_registration_event_work_bounds(
+        inner_gap_bounds=inner,
+        outer_gap_bounds=outer,
+        phase_error_bound=pre_error,
     )
-    work_error = 18 * pre_error
     work_residual = (-work_error, work_error)
-    work = work_nominal + I(*work_residual)
 
     decay_one = _negative_exp_bounds(Q(1))[0]
     decay_four = _negative_exp_bounds(Q(4))[1]

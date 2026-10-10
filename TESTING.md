@@ -283,6 +283,18 @@ work, unavailable sources and all fixed error/work budgets. Shared heat-bound
 arithmetic must preserve the previous acquisition certificate exactly. These
 are analytic and static tests, without replaying frozen trajectories.
 
+For [continuous phase-event actuation](theory/nodal/ORGANIZED_PARENT_CONTINUOUS_ACTUATION.md),
+select `tests/physics/test_organized_parent_continuous_actuation.py` with the
+restoring-response, acquired-parent and original child-source controls above.
+Independently check the forced complete-row storage balance, input and clock
+transformations, exact endpoint displacement and integrated-loss lower bound.
+Keep signed work distinct from input magnitude or positive supplied work.
+Test strict budget obstruction and unavailable source admission separately;
+an unproved realization is not a certified control. The new result must not
+depend on later unforced restoration or readout verdicts. Reusing signed event
+work must preserve the previous restoring-response report exactly. No driven
+trajectory or frozen producer is evaluated by these analytic controls.
+
 For [identity-preserving assembly work](theory/nodal/ORGANIZED_ASSEMBLY_WORK.md),
 select `tests/physics/test_organized_assembly_work.py` with
 `tests/physics/test_acquired_organized_network_capture.py`,

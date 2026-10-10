@@ -214,6 +214,15 @@ equal initial parent means; retaining the child association supplies the missing
 predictive information. This is a conditional response on held support, without
 an inferred occurrence law or physical binding claim.
 
+An admitted hybrid map additionally needs a realization argument if it is
+claimed to follow from continuous actuation. The
+[form-actuation bound](nodal/ORGANIZED_PARENT_CONTINUOUS_ACTUATION.md)
+retains the actual acquired endpoints and separates their storage difference
+from path loss. It excludes every integrable form input under the fixed
+one-unit duration and three-unit work budget. A larger necessary budget or
+duration by itself would still not construct an admissible path or justify
+autonomous occurrence.
+
 ### Ordered geometry connects transfer to formation
 
 The [sine pattern owner](nodal/SINE_PATTERN_DYNAMICS.md) combines entry,

@@ -478,6 +478,15 @@ the subsequent dynamics that fails to close on those means alone. Restoring
 response under held contacts does not establish physical binding or autonomous
 event occurrence.
 
+The [continuous-actuation obstruction](nodal/ORGANIZED_PARENT_CONTINUOUS_ACTUATION.md)
+also distinguishes that hybrid map from a finite-duration realization through
+the form row. Under the unchanged phase law, the phase displacement requires
+continuous loss in addition to the endpoint storage rise. The original source
+cannot realize the same map in one slow unit within the three-unit work budget,
+even allowing arbitrary integrable form inputs. This restricts the declared
+input channel, duration and budget; it neither invalidates the supplied jump
+nor selects an autonomous event or another fundamental law.
+
 Here structural participation does not identify the entire joint state with
 one scalar EPI coordinate. The current representation also retains phase,
 capacity and support; reducing these to a richer form description would need
