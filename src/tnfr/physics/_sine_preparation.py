@@ -40,6 +40,38 @@ def _prepared_form_costs(*, form, weighted_edges):
     return tuple(costs), tuple(gradient)
 
 
+def _prepared_heat_error_radii(
+    *,
+    initial_form_error,
+    initial_phase_error,
+    gamma_upper,
+    phase_growth_upper,
+    form_convolution_factor,
+):
+    """Return full form/phase error radii from an admitted heat-integral proof.
+
+    Callers prove the complete reciprocal rows, mean-zero form difference,
+    spectral/Lipschitz bounds and the whole-time growth factor. Identical
+    additive jumps preserve the difference only when applied to both compared
+    states. No event, source, clock or horizon is selected by this arithmetic.
+    Exact rational errors remain exact even below the interval grid.
+    """
+    form, phase, gamma, growth, convolution = (
+        exact_or_represented_real(value, name)
+        for name, value in (
+            ("initial_form_error", initial_form_error),
+            ("initial_phase_error", initial_phase_error),
+            ("gamma_upper", gamma_upper),
+            ("phase_growth_upper", phase_growth_upper),
+            ("form_convolution_factor", form_convolution_factor),
+        )
+    )
+    if min(form, phase, gamma, convolution) < 0 or growth < 1:
+        raise ValueError("heat error bounds require nonnegative inputs and growth >= 1")
+    phase_radius = (phase + gamma * form) * growth
+    return form + gamma * convolution * phase_radius, phase_radius
+
+
 def _prepared_transit_radii(
     *,
     time,

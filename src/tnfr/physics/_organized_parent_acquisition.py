@@ -21,6 +21,7 @@ from ._sine_constitutive_recovery import (
     _assess_constitutive_recovery,
     _ConstitutiveRecovery,
 )
+from ._sine_preparation import _prepared_heat_error_radii
 from .reversible_eigenmode_reference import _negative_exp_bounds
 
 _RECOVERED_RADIUS = Q(1, 10**70)
@@ -191,8 +192,13 @@ def _assess_organized_parent_acquisition(
     )
     source_ok = all(source_flags)
     # e^(4s) <= e^20 < 3^20 through s=5. Keep sub-grid source errors exact.
-    phase_error = 2 * radius * (1 + gamma.hi) * 3**20
-    form_error = 2 * radius + 24 * gamma.hi * phase_error
+    form_error, phase_error = _prepared_heat_error_radii(
+        initial_form_error=2 * radius,
+        initial_phase_error=2 * radius,
+        gamma_upper=gamma.hi,
+        phase_growth_upper=Q(3**20),
+        form_convolution_factor=Q(24),
+    )
     inner = _nominal_gap_bounds(_INNER_GAP, _ENTRY_TIME, eta.hi)
     outer = _nominal_gap_bounds(_OUTER_GAP, _ENTRY_TIME, eta.hi)
     readout = _nominal_gap_bounds(_OUTER_GAP, _READOUT_TIME, eta.hi)

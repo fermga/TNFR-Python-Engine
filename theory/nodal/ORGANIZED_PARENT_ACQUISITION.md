@@ -213,8 +213,14 @@ in \([\alpha-2Z,\alpha+2Z]\subset(0,\pi/2)\). The closing edge retains
 its original branch integer, and the residual differences telescope to a
 total \(2\pi\). Every child keeps winding one on \(0\le s\le5\).
 
-Subtract the *actual* mean of each parent. For every \(4\le s\le5\),
-the fine residual sup norms satisfy
+Use the residual convention of
+[repeated composition](REPEATED_ORGANIZED_COMPOSITION.md#5-a-full-transverse-domain-and-identity-bound):
+subtract the *actual* parent form mean from form, and subtract the winding
+carrier \(\psi_j\) and actual parent phase mean \(\Phi_g\) from phase.
+Thus \(r_\theta=\max_{g,a,j}|\theta_{g,a,j}-\psi_j-\Phi_g|\), not the
+distance of all primitive phases from a common phase. The carrier has zero
+mean, so the mean of phase offsets equals the mean of these declared phase
+lifts. For every \(4\le s\le5\), the fine residual sup norms satisfy
 
 \[
  r_\theta\le B(4)/2+2Z<1/128+2Z<1/100,
@@ -388,3 +394,9 @@ The matching support is symmetric under exchange of its two binary factors;
 their nominal modes obey the same relaxation law. The different initial
 amplitudes and the marked grouping do not select a unique hierarchy or a
 separation of internal and external timescales.
+
+The separate [restoring-response admission](ORGANIZED_PARENT_RESTORING_RESPONSE.md)
+carries this reached source through one supplied internal phase intervention,
+accounts for its work and tests finite recovery and sufficient predictive state.
+It does not extend this theorem's unchanged-source prediction to an intervened
+state without that additional argument.

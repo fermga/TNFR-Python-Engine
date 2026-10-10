@@ -102,6 +102,7 @@ nav:
           - "Constitutive inheritance through organized interfaces": theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md
           - "Predictive repeated organized composition": theory/nodal/REPEATED_ORGANIZED_COMPOSITION.md
           - "Parent registration acquired from organized children": theory/nodal/ORGANIZED_PARENT_ACQUISITION.md
+          - "Restoring response of an acquired organized parent": theory/nodal/ORGANIZED_PARENT_RESTORING_RESPONSE.md
           - "Composition-compatible constitutive laws": theory/nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md
           - "Oriented-interface profile inheritance": theory/nodal/ORIENTED_INTERFACE_PROFILE_INHERITANCE.md
           - "Network-wide organized compatibility": theory/nodal/ORGANIZED_NETWORK_COMPATIBILITY.md

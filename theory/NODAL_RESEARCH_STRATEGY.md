@@ -206,7 +206,13 @@ means. Its antipodal control retains acquired constituents without acquiring
 the marked parent registration. The two support factors still have identical
 nominal relaxation laws: prepared amplitude differences do not establish
 autonomous hierarchy or timescale selection. A composite's response to loss
-and restoration of its internal registration remains a separate question.
+and restoration of its internal registration needs its own admission. The
+[restoring-response result](nodal/ORGANIZED_PARENT_RESTORING_RESPONSE.md)
+provides it for one supplied internal phase event, with original uncertainty,
+work and child identity retained. Its resolved later interaction distinguishes
+equal initial parent means; retaining the child association supplies the missing
+predictive information. This is a conditional response on held support, without
+an inferred occurrence law or physical binding claim.
 
 ### Ordered geometry connects transfer to formation
 

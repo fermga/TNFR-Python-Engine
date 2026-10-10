@@ -467,6 +467,17 @@ same law never enters. Preparation therefore remains consequential; the marked
 grouping and symmetric support do not select an autonomous hierarchy or a
 separation of internal and external timescales.
 
+The [restoring-response theorem](nodal/ORGANIZED_PARENT_RESTORING_RESPONSE.md)
+then disrupts that acquired registration through one supplied phase event.
+The children persist and parent registration returns within the declared
+finite horizon. Equal parent means at the event nevertheless produce different
+later parent interactions: an internal association mode carries information
+needed by the prediction. Eight child means, with carried fine-error bounds,
+retain it. The event itself descends to the identity on parent means; it is
+the subsequent dynamics that fails to close on those means alone. Restoring
+response under held contacts does not establish physical binding or autonomous
+event occurrence.
+
 Here structural participation does not identify the entire joint state with
 one scalar EPI coordinate. The current representation also retains phase,
 capacity and support; reducing these to a richer form description would need

@@ -271,6 +271,18 @@ exact residual work and the correlated antipodal symmetry without replacing
 pi by a represented angle. These are static analytic controls; no trajectory
 or frozen producer is regenerated.
 
+For [acquired-parent restoring response](theory/nodal/ORGANIZED_PARENT_RESTORING_RESPONSE.md),
+select `tests/physics/test_organized_parent_restoring_response.py` together with
+the acquired-parent, repeated-composition and original child-source controls
+above. Independently reconstruct the supplied phase jump, all three relative
+modes, event work and both clock transformations. Verify unchanged parent means
+at the event, distinct finite parent responses, carried fine errors and strict
+recovery margins. Preserve nonzero reached forms; the post-event source is not
+a fresh zero-velocity preparation. Exercise invalid primitives before source
+work, unavailable sources and all fixed error/work budgets. Shared heat-bound
+arithmetic must preserve the previous acquisition certificate exactly. These
+are analytic and static tests, without replaying frozen trajectories.
+
 For [identity-preserving assembly work](theory/nodal/ORGANIZED_ASSEMBLY_WORK.md),
 select `tests/physics/test_organized_assembly_work.py` with
 `tests/physics/test_acquired_organized_network_capture.py`,
