@@ -258,7 +258,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next finite observation admission | [Observation with finite inputs](#organized-electrical-finite-observation): derive a complete protocol and inverse from carried collective form readings, with actual elapsed time, fine identity and cumulative work |
+| Next fixed-support electrical protocol admission | [Five-child electrical observation protocol](#organized-electrical-fixed-support-protocol): carry the admitted finite-input history into one source-inclusive calibrated specification, with explicit observation, clock, uncertainty and resources |
+| Closed finite observation admission | [Observation with finite inputs](#organized-electrical-finite-observation): new diffusion-corrected form readings identify the initial winding throughout the admitted prior, with actual source inclusion and full finite identity/work bounds |
 | Closed single finite intervention | [Finite-duration phase intervention](#organized-electrical-finite-actuation): one prescribed neutral form pulse retains the actual five-child source and identities with explicit endpoint error and substantial continuous cost |
 | Closed operational identification | [Operational electrical dictionary](#organized-electrical-operational-identification): independent C/G calibration leaves an unfitted current relation only for the supplied fixed law; the literal instantaneous phase word has a finite-work obstruction |
 | Closed collective source admission | [Acquired collective electrical description](#organized-collective-electrical-source-admission): actual same-slot source deviations have an admitted circular observation and uniform finite circuit error, with signed hidden storage, loss and work retained |
@@ -437,7 +438,7 @@ quantum constants from TNFR.
 | Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Unresolved stable-stationary maintenance route; no active search.** The finite search is closed without a certificate; other classes do not repair uninterrupted maintenance. Reopen with a constructive target or an analytical certificate mechanism, not more starts |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
-| Fundamental physical properties and independent observation | Derive a complete observation protocol from finite inputs, retaining actual source state, elapsed time and work before making the conditional electrical relation an experimental protocol | **Sole immediate gate** below. One finite pulse is admitted; its old instantaneous inverse does not transfer. Independent calibration leaves a fixed-law prediction; physical preparation and observation are not admitted. No physical data, fitting or hardware is active |
+| Fundamental physical properties and independent observation | Translate the admitted finite-input observation into a source-inclusive electrical specification on the same five-child support, with independent calibration and an unfitted consequence | **Sole immediate gate** below. Collective winding is conditionally observable; a physical observation, preparation and uncertainty bridge remains unadmitted. No physical data, fitting or hardware is active |
 | Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Conceptually critical**, with no new compatibility scan active. If a countermodel shares all proposed premises, the uniqueness claim fails in that scope |
 | Autonomous preparation, support, capacity and events | Supply actual occurrence and state-evolution laws when claiming autonomous assembly. [Event work](../nodal/RELATIONAL_SUPPORT_EVENTS.md), passivity and [operator descent](../STRUCTURAL_OPERATORS.md) do not select occurrence | **Claim-dependent**. Current contacts and preparation remain supplied. Do not postpone investigation of the existing conditional composite until every origin question is solved |
 | Internal activity and recurrence | Separate preservation of identity from permanent motion; the [positive-loss boundary](../nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission) and alternative-mobility results retain different premises | **Prepared alternative** for a named claim requiring sustained activity. Neither a stationary identity nor finite response establishes recurrence or transfers an invariant measure |
@@ -450,7 +451,7 @@ An added observable earns inclusion by deciding the selected prediction or a
 meaningful minimality obstruction. Existing failed physical-source admissions
 remain failed; more samples cannot repair their complete-law mismatches.
 
-Only finite-input observation admission is active. The table is a reassessment
+Only fixed-support electrical protocol admission is active. The table is a reassessment
 of dependencies, not a fixed sequence or parallel campaign list. It preserves
 the objective of generated, physically testable organization without identifying
 winding, phase cancellation or storage with material constituents.
@@ -568,39 +569,51 @@ are not established. The actual release state, including residual form and
 added elapsed time, cannot inherit the old reading inverse.
 
 <a id="organized-electrical-finite-observation"></a>
-### Immediate question: observation with finite inputs
+### Closed observation with finite inputs
 
-**Can a finite-input observation protocol identify the actual outer identity
-from collective form readings while carrying state, time and work?** This
-tests an operational consequence of the collective electrical description.
-It does not ask for a more precise repetition of the old instantaneous word.
+The [result owner](../nodal/ORGANIZED_FINITE_OBSERVATION.md#finite-observation-result)
+retains freeze `0d46c82f` and one admitted analytical assessment. Fifteen
+finite ramps and fifteen reading windows carry the same actual organization.
+A diffusion correction of 150 primitive mean-form readings gives a new
+inverse: the initial winding is unique for every admitted source and reading
+error, with full finite identity and cumulative work bounds. The shared
+circular algebra applies under its unchanged initial prior; the earlier
+instantaneous reading formula and history are not reused. Neither source
+phases nor the answer label are inputs. Physical observation and autonomous
+actuation remain open.
 
-The [prospective protocol](../nodal/ORGANIZED_FINITE_OBSERVATION.md) fixes
-fifteen finite ramps, fifteen unforced reading windows and a new correction
-for form diffusion. It carries one full history and supplies no measured
-phase or adaptive input; its single source/noise decision follows freeze.
+<a id="organized-electrical-fixed-support-protocol"></a>
+### Immediate question: a five-child electrical observation protocol
 
-1. **Declare one complete protocol before its response.** Start from the same
-   acquired five-child families and retain the whole carried source. Specify
-   marked inputs, finite waveforms, elapsed intervals, observations and
-   release; use the admitted pulse mechanism only within its proved domain.
-   Actual phases and future readings cannot silently control the input.
-2. **Derive the observation and inverse together.** Account for the known
-   input contribution to form, live background drift, hidden deviations and
-   residual form after each pulse. Determine whether the accessible readings
-   distinguish the identity under declared uncertainty, or prove a scoped
-   obstruction. The old twenty-five-reading formula is not already valid.
-3. **Admit the complete history and its resources.** Retain all fine cycles,
-   collars, clock, peak storage, cumulative positive supplied work and loss.
-   Do not add overlapping independent marginal budgets as if they described
-   one realizable history. Freeze any reserved numerical decision before its
-   single assessment; preserve all earlier evidence and failed candidates.
-4. **Close this observation gate before physical evaluation.** A successful
-   inference is conditional on the supplied law and inputs. Independent
-   preparation, component/clock/sensor calibration and physical comparison
-   remain required. Autonomous actuation requires a separate source model;
-   it is not a parallel active campaign. No hardware, physical dataset,
-   support search or P2/Volts replay is active.
+**Can the admitted finite-input history be expressed as one source-inclusive,
+calibrated electrical protocol with an independently testable consequence?**
+Use the already passive five-child C5 collective reference. Adding a donor
+or switching to the wheel is unnecessary for this observation question and
+would introduce a separate state and support-event admission.
+
+1. **Match the complete fixed-support models.** Apply the C5 component
+   dictionary to the actual acquired hosts and the complete finite-input
+   history, retaining both rows, means, fine deviations, input work and
+   signed storage remainder. Transfer methods after proving their C5
+   coefficients; neither the ideal carrier nor the old wheel-source verdict
+   replaces the actual source.
+2. **Specify accessible readings and initialization.** Translate the 150 form
+   readings, their correction and uncertainty into declared electrical
+   observations. Distinguish inferred charge from an independent sensor and
+   retain floating common coordinates. Winding alone does not initialize
+   a complete circuit; state how the available preparation/observation
+   information bounds its initial state, without supplying hidden phases.
+3. **Separate calibration from the reserved consequence.** Retain independent
+   component-shape, capacitance/conductance and clock admission; keep the
+   fixed-law sine-current consequence unfitted. Translate the entire input,
+   time, error and work budgets consistently. Do not extend the electrical
+   map to the preceding acquisition or choose physical noise/bandwidth
+   from the desired outcome without separate premises.
+4. **Close at a complete specification or a scoped obstruction.** Identify
+   which physical preparation, sensor, timing and tracking evidence remains
+   necessary before P1-P5 evaluation. No dataset, apparatus, fitting,
+   autonomous actuator or new support search is active. Preserve the frozen
+   finite protocol; any changed preparation or waveform needs a new decision.
 
 Recovering established physical relations remains the generative objective;
 the test need not predict a deviation from known physics. Independent
@@ -656,8 +669,8 @@ unspecified, and an explicit same-windings counterexample occupies a different
 class. Existing source bounds place the actual preparation in the product
 class. Uninterrupted cut-free maintenance cannot leave it. This closes the
 domain-admission ambiguity. The stationary question remains open while the
-[current gate](#current-g3-gate) addresses observation with finite inputs
-needed by the collective physical comparison.
+[current gate](#current-g3-gate) addresses a fixed-support electrical
+specification of the admitted finite observation.
 It identifies no particle property and does not alter previous acquisition,
 finite interaction or outer-zero capture results.
 

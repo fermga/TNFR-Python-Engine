@@ -556,6 +556,9 @@ reusing the circular kernel and rebuild new full-history errors. Test source
 inclusion through mocked primitives; the single committed driver alone owns
 the reserved source/noise assessment. Never substitute the earlier phase-jump
 inverse, its budgets or its acquired-source response.
+Use `tests/physics/test_organized_finite_observation_evidence.py` to reconstruct
+the frozen receipt, source inclusion, full-history observation errors, cycle
+resolution and resource bounds without importing or rerunning the assessor.
 
 For [finite interface factorization](theory/nodal/ORGANIZED_INTERFACE_FACTORIZATION.md),
 select `tests/physics/test_organized_slot_registration.py` and

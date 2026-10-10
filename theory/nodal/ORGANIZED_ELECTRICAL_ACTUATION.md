@@ -308,7 +308,8 @@ form change. The input is then released without resetting that endpoint.
 This closes one finite-actuation construction. The large continuous cost is
 part of the result; finite realizability does not imply efficient realization.
 Neither the original jump-work budget nor its instantaneous readout inverse
-is restored by this admission. The remaining observation history needs its
-own law, timing, source-transport and inference proof before it can support
-an operational electrical protocol. An autonomous source of the input and
-physical identification remain separate open questions.
+is restored by this admission. The separate
+[finite observation theorem](ORGANIZED_FINITE_OBSERVATION.md#finite-observation-result)
+admits a complete continuing history through a new current correction and
+inverse, retaining its actual state, timing and cumulative work. An autonomous
+source of the input and physical identification remain separate open questions.

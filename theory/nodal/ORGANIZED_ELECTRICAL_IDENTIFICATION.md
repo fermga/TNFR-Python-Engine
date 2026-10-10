@@ -329,7 +329,8 @@ The operational gate closes with an unfitted conditional relation (2)-(4)
 and a specific obstruction (10)-(11) to directly implementing the existing
 instantaneous preparation word. No physical evaluation is admitted. The
 remaining task belongs solely to the [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate):
-one admitted pulse must become a justified finite observation protocol before
-the source-inclusive circuit comparison can support an experimental protocol.
+the [admitted finite observation](ORGANIZED_FINITE_OBSERVATION.md#finite-observation-result)
+still requires a complete physical observation, clock and preparation bridge
+before the circuit comparison can support an experimental protocol.
 The supplied gamma and Josephson constant remain
 independent constitutive premises throughout.

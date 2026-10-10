@@ -658,8 +658,13 @@ admits one externally prescribed neutral form pulse on the actual five-child
 source, retaining its fine state and cycle identities with explicit endpoint
 errors and substantial continuous work costs. The signal uses no hidden-state
 feedback. It is not a newly emerged force: deriving its autonomous occurrence
-would require a retained source and its coupled dynamics. The complete
-finite-input observation protocol and physical calibration remain open.
+would require a retained source and its coupled dynamics. The
+[complete finite-input observation](nodal/ORGANIZED_FINITE_OBSERVATION.md#finite-observation-result)
+now identifies the initial collective winding from 150 form readings on
+one continuing history, with actual-source inclusion and full identity/work
+bounds. Its inverse receives neither hidden phases nor the answer's label.
+This is conditional observability of an organized identity, with physical
+calibration and autonomous input occurrence still open.
 
 The [continued-contact classification](nodal/ORGANIZED_CONTACT_MAINTENANCE.md)
 now distinguishes stable constituent retention from preservation of the

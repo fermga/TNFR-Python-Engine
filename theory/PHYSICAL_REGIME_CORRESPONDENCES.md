@@ -264,6 +264,14 @@ are substantial in structural units; no laboratory energy scale or efficient
 actuator follows. The changed elapsed time and residual form prohibit reusing
 the original instantaneous observation inverse without a new protocol proof.
 
+The [finite-input protocol](nodal/ORGANIZED_FINITE_OBSERVATION.md#finite-observation-result)
+provides that separate proof: diffusion-corrected form readings recover the
+initial collective winding on one continuous history with supplied finite
+inputs. The complete source and work costs remain explicit. Interpreting
+those readings and inputs as a calibrated electrical experiment still
+requires a physical observation, preparation, clock and error model; no
+laboratory response was evaluated.
+
 The [two-contact response](nodal/SINE_PAIR_INTERACTION.md#sine-two-contact-orientation-response)
 already establishes orientation-sensitive interaction in a specified finite
 experiment with evolving source and probes. The
