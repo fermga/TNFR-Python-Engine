@@ -245,6 +245,20 @@ excess below the interval grid. Reject invalid preparation inputs before
 source assessment, and exercise unavailable recovery rather than treating
 it as instability. These controls run no trajectory or frozen producer.
 
+For [predictive repeated composition](theory/nodal/REPEATED_ORGANIZED_COMPOSITION.md),
+select `tests/physics/test_repeated_organized_composition.py` with
+`tests/physics/test_sine_constitutive_inheritance.py` and
+`tests/physics/test_sine_constitutive_recovery.py`. Independently reconstruct
+the 36-node weighted rows, both grouping maps, storage and outer attachment
+work. Verify the ordered-port counterexample against equal parent means and
+internal storage, and retain the difference between exact family restriction
+and the finite full-transverse approximation. Check strict bootstrap margins,
+declared parent/child identity, response resolution and unavailable source
+admission. Rebuild both original parent sources from primitive allowances;
+their relative origins are additional preparation information. Degree-three
+capture does not supply degree-four response or event work. These static
+analytic tests evaluate no trajectory or frozen producer.
+
 For [identity-preserving assembly work](theory/nodal/ORGANIZED_ASSEMBLY_WORK.md),
 select `tests/physics/test_organized_assembly_work.py` with
 `tests/physics/test_acquired_organized_network_capture.py`,
