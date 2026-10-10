@@ -530,6 +530,18 @@ distinguish capacitor energy-time, peak energy and Joule heat, and retain the
 endpoint-charge limitation of the affine equality path. These static checks
 admit neither a finite pulse, the original source history nor a physical dataset.
 
+For [finite electrical actuation](theory/nodal/ORGANIZED_ELECTRICAL_ACTUATION.md),
+select `tests/physics/test_organized_electrical_actuation.py` with the existing
+electrical source, pulse-obstruction and rational-interval controls. Check the
+neutral C5 input against independently assembled matrices, both complete rows,
+full fine-state work balance, endpoint residuals, identity and positive-only
+work bounds. The prescribed offsets alone do not solve the nonlinear law.
+Test source failure through synthetic or nonreserved inputs, retaining the
+five-child recovery and initial unforced prefix; do not consume later
+observation/contact verdicts or run the reserved assessor in tests. The single
+committed analytical instrument owns that assessment. A passing pulse bound
+does not admit the old observation inverse, autonomous forcing or hardware.
+
 For [finite interface factorization](theory/nodal/ORGANIZED_INTERFACE_FACTORIZATION.md),
 select `tests/physics/test_organized_slot_registration.py` and
 `tests/physics/test_organized_interface_factorization.py` with the joint-resource,

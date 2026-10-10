@@ -122,6 +122,7 @@ nav:
           - "Complete-state electrical realization": theory/nodal/ORGANIZED_ELECTRICAL_REALIZATION.md
           - "Actual-source electrical comparison": theory/nodal/ORGANIZED_ELECTRICAL_SOURCE.md
           - "Operational electrical identification": theory/nodal/ORGANIZED_ELECTRICAL_IDENTIFICATION.md
+          - "Finite input on the actual five-child organization": theory/nodal/ORGANIZED_ELECTRICAL_ACTUATION.md
           - "Organized identity under continued external contact": theory/nodal/ORGANIZED_CONTACT_MAINTENANCE.md
           - "Reflection obstruction for full-fine contact identity": theory/nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md
           - "Full-fine stationary contact and marked chambers": theory/nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md

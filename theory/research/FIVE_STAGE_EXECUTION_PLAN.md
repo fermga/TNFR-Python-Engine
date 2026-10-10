@@ -560,6 +560,12 @@ input while retaining the actual source, identity and explicit work?** This
 addresses the identified operational obstruction. It is not another precision
 refinement of the already admitted post-contact approximation.
 
+The [fixed candidate and proof](../nodal/ORGANIZED_ELECTRICAL_ACTUATION.md)
+use one open-loop neutral form pulse on the actual five-child source. Its
+declaration fixes the added duration, endpoint errors and separate continuous
+work/storage budgets. It consumes no hidden-state observation and supplies no
+autonomous actuator. Its single analytical decision must follow source freeze.
+
 1. **Declare the actual source and input.** Use the five-child precontact
    C9-by-C5 source at the relevant point of its history, with its retained
    means and hidden deviations. A neutral uniform-child form input is the
