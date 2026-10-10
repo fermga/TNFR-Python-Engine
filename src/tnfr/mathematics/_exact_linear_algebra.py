@@ -50,7 +50,12 @@ def _require_exact_square_matrix(
     *,
     name: str,
 ) -> ExactSquareMatrix:
-    """Return a closed, nonempty square matrix over exact ``Fraction`` values."""
+    """Admit closed Fraction matrices and normalize their integer payloads.
+
+    A Fraction can retain NumPy numerator/denominator integers, whose fixed-
+    width arithmetic can overflow. Preserve the strict outer scalar contract
+    while rebuilding the admitted rationals with Python integer components.
+    """
 
     if type(matrix) is not tuple:
         raise TypeError(f"{name} must be an exact tuple of tuple rows")
@@ -65,7 +70,13 @@ def _require_exact_square_matrix(
             raise ValueError(f"{name} must be square")
         if any(type(value) is not Fraction for value in row):
             raise TypeError(f"{name} entries must be exact Fraction values")
-    return matrix
+    return tuple(
+        tuple(
+            exact_or_represented_real(value, f"{name}[{i}][{j}]")
+            for j, value in enumerate(row)
+        )
+        for i, row in enumerate(matrix)
+    )
 
 
 def _exact_square_matrix_product_unchecked(

@@ -163,7 +163,7 @@ def validated_taylor_step(
     for value, label in ((duration, "duration"), (time, "time")):
         if type(value) is not int and not isinstance(value, Q):
             raise TypeError(f"{label} must be an exact rational")
-    duration, time = Q(duration), Q(time)
+    duration, time = _exact(duration), _exact(time)
     if duration <= 0 or time < 0:
         raise ValueError("require positive duration and nonnegative time")
     if type(order) is not int or not 1 <= order <= MAX_ORDER:
@@ -244,7 +244,7 @@ def validated_box_taylor_step(
     for value, label in ((duration, "duration"), (time, "time")):
         if type(value) is not int and not isinstance(value, Q):
             raise TypeError(f"{label} must be an exact rational")
-    duration, time = Q(duration), Q(time)
+    duration, time = _exact(duration), _exact(time)
     if duration <= 0 or time < 0:
         raise ValueError("require positive duration and nonnegative time")
     if type(order) is not int or not 1 <= order <= MAX_ORDER:

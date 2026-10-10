@@ -63,8 +63,9 @@ detached sine capture revalidate authoritative stored coefficients through the
 shared relational owner before field arithmetic or writes. Revalidation rejects
 Boolean, nonfinite and out-of-domain values without rescaling the mix again. Exact
 rational proof coefficients retain their values; native outputs also require
-binary64 representability. Field, storage/work and tangent arithmetic consume
-the normalized Python-rational coefficients, including reconstructed NumPy
+binary64 representability. Field, storage/work, tangent and downstream native,
+reflected and detached sine calculations consume the normalized Python-rational
+coefficients, including reconstructed NumPy
 integer payloads; the report retains the supplied model association without
 using its unnormalized payloads for those calculations.
 Reconstructing a model or report does not authenticate

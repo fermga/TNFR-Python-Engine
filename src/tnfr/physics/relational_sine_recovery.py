@@ -17,6 +17,7 @@ from typing import TYPE_CHECKING, Any
 from .._exact_time import exact_or_represented_real
 from ..dynamics.relational import RelationalExchangeModel
 from ..mathematics._rational_interval import INTERVAL_METHOD, I, cos, pi_interval, sqrt
+from ._sine_admission import _sine_model_coefficients
 from ._sine_admission import _admit_sine_source as _admit_sine_source
 from ._sine_admission import _sector_source_admission as _sector_source_admission
 from .phase_cycle_geometry import PhaseCycleGeometry, PhaseCycleState
@@ -562,7 +563,7 @@ def _local_sine_geometry(
     norm = form_norm + phase_norm
     edge_form, edge_phase, hessian = [], [], []
     form_energy = phase_excess = Q(0)
-    beta = Q(model.storage_scale)
+    beta = _sine_model_coefficients(model)[2]
     for (left, right), alpha in zip(edge_indices, edge_angles):
         form_gap, phase_gap = gap(left, right), deviation(left, right)
         # The linear phase term cancels at the exact critical geometry. Bound
@@ -685,7 +686,7 @@ def _certify_recovery(
     )
     failures = (
         ()
-        if common["reference_model"].effective_weights[0] > 0
+        if _sine_model_coefficients(common["reference_model"])[0] > 0
         else ("positive_epi_weight_required",)
     ) + capacity_failures
     unresolved = geometry_unresolved + source_unresolved
@@ -872,7 +873,7 @@ def _certify_sine_sector_set(
         sum(sign * offset for sign, offset in zip(row, offsets))
         for row in geometry.cycle_rows
     )
-    pi, beta = pi_interval(), Q(model.storage_scale)
+    pi, beta = pi_interval(), _sine_model_coefficients(model)[2]
     form_gaps = tuple(I.coerce(value) for value in form_edge_gap_bounds)
     phase_gaps = tuple(
         I.coerce(value) + (2 * offset) * pi
@@ -916,7 +917,7 @@ def _certify_sine_sector_set(
     failures = tuple(
         reason
         for condition, reason in (
-            (model.effective_weights[0] > 0, "positive_epi_weight_required"),
+            (_sine_model_coefficients(model)[0] > 0, "positive_epi_weight_required"),
             (
                 all(
                     value > 0 if value is not None else bounds.lo > 0
@@ -1123,7 +1124,7 @@ def assess_sine_cycle_identity(
     )
     failures = (
         ()
-        if common["reference_model"].effective_weights[0] == 0
+        if _sine_model_coefficients(common["reference_model"])[0] == 0
         else ("zero_epi_weight_required",)
     ) + capacity_failures
     barrier = common["barrier_lower_bound"]

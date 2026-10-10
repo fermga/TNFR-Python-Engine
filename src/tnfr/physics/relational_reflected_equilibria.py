@@ -12,7 +12,10 @@ from dataclasses import dataclass
 from fractions import Fraction as Q
 from functools import lru_cache
 
-from ..dynamics.relational import RelationalExchangeModel
+from ..dynamics.relational import (
+    RelationalExchangeModel,
+    _relational_model_coefficients,
+)
 from ..mathematics._rational_interval import I, cos, pi_interval
 from ._relational_reflected_flow import evaluate_reflected_regular_flow
 from .relational_reflected_transit import _lift_margins
@@ -125,10 +128,10 @@ def certify_relational_reflected_equilibrium(family, *, model, orientation=1):
         or model.phase_domain != "regular"
     ):
         raise ValueError("an explicit regular relational model is required")
-    e, w = map(Q, model.effective_weights)
+    e, w, beta = _relational_model_coefficients(model)
     if e <= 0:
         raise ValueError("the stability certificate requires positive epi_weight")
-    beta, pi = Q(model.storage_scale), pi_interval()
+    pi = pi_interval()
     root = None
     if family == "consensus":
         a = capital_a = I(0)

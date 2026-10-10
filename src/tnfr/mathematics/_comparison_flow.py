@@ -79,7 +79,7 @@ def scalar_affine_upper(radius, rate, duration, defect):
 
 def _exact(value):
     if isinstance(value, Q):
-        return value
+        return exact_or_represented_real(value, "comparison value")
     if type(value) is int:
         return Q(value)
     raise TypeError("comparison flow requires exact Fraction or integer values")

@@ -19,6 +19,31 @@ def _assert_contains_mp(interval, value):
     assert lower <= value <= upper
 
 
+@pytest.mark.parametrize(
+    "stepper", (owner.validated_taylor_step, owner.validated_box_taylor_step)
+)
+def test_exact_clock_components_are_normalized_before_taylor_powers(stepper):
+    np = pytest.importorskip("numpy")
+    duration = Q(1, 2**32)
+    time = Q(2**62, 3)
+    arguments = dict(
+        box=(I(1),), flow=lambda state: (-state[0],), domain=_smooth, order=3
+    )
+    step, failed, reason = stepper(
+        duration=Q(np.int64(1), np.int64(2**32)),
+        time=Q(np.int64(2**62), np.int64(3)),
+        **arguments,
+    )
+    assert step is not None and failed is reason is None
+    assert (step, failed, reason) == stepper(duration=duration, time=time, **arguments)
+    for value in (step.duration, step.time):
+        assert type(value.numerator) is type(value.denominator) is int
+    # Alternating exp(-h) bounds, independent of interval jets/Picard iteration.
+    lower = 1 - duration + duration**2 / 2 - duration**3 / 6
+    upper = lower + duration**4 / 24
+    assert step.endpoint[0].lo <= lower <= upper <= step.endpoint[0].hi
+
+
 def test_uncertain_linear_initial_values_are_enclosed_without_comparison(monkeypatch):
     monkeypatch.setattr(
         owner,

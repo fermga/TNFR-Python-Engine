@@ -3,6 +3,7 @@
 from fractions import Fraction
 from itertools import product
 
+import numpy as np
 import pytest
 
 from tnfr.physics._exact_linear_algebra import (
@@ -39,6 +40,59 @@ def test_exact_square_matrix_power_handles_zero_and_binary_exponentiation() -> N
     assert exact_square_matrix_power(fibonacci, 0) == _matrix((1, 0), (0, 1))
     assert exact_square_matrix_power(fibonacci, 1) == fibonacci
     assert exact_square_matrix_power(fibonacci, 8) == _matrix((34, 21), (21, 13))
+
+
+@pytest.mark.parametrize("exponent", (0, 1, 2, 3))
+def test_exact_powers_normalize_fraction_integer_payloads(exponent: int) -> None:
+    value = Fraction(np.int64(2**32), np.int64(3))
+    matrix = ((value,),)
+    expected = Fraction(2**32, 3) ** exponent
+
+    result = exact_square_matrix_power(matrix, exponent)
+
+    assert result == ((expected,),)
+    assert all(
+        type(entry.numerator) is type(entry.denominator) is int
+        for row in result
+        for entry in row
+    )
+    assert exact_square_matrix_product(matrix, matrix) == ((Fraction(2**64, 9),),)
+
+
+def test_inverse_normalizes_fraction_payloads_before_elimination() -> None:
+    size = 2**32
+    off_diagonal = Fraction(np.int64(size), np.int64(1))
+    matrix = ((Fraction(1), off_diagonal), (off_diagonal, Fraction(1)))
+    determinant = 1 - size**2
+    assert determinant < 0
+    expected = (
+        (Fraction(1, determinant), Fraction(-size, determinant)),
+        (Fraction(-size, determinant), Fraction(1, determinant)),
+    )
+
+    inverse = exact_matrix_inverse(matrix)
+
+    assert inverse == expected
+    assert exact_square_matrix_product(matrix, inverse) == _matrix((1, 0), (0, 1))
+    assert exact_square_matrix_product(inverse, matrix) == _matrix((1, 0), (0, 1))
+    assert all(
+        type(entry.numerator) is type(entry.denominator) is int
+        for row in inverse
+        for entry in row
+    )
+
+
+@pytest.mark.parametrize("strict", (False, True))
+def test_semidefinite_payloads_use_exact_principal_minors(strict: bool) -> None:
+    size = 2**32
+    off_diagonal = Fraction(np.int64(size), np.int64(1))
+    indefinite = ((Fraction(1), off_diagonal), (off_diagonal, Fraction(1)))
+    positive = ((Fraction(1), off_diagonal), (off_diagonal, Fraction(size**2 + 1)))
+
+    assert 1 - size**2 < 0
+    assert exact_symmetric_semidefinite(indefinite, strict=strict) is False
+    # The leading principal minors are 1 and (size**2 + 1) - size**2 = 1.
+    assert exact_symmetric_semidefinite(positive, strict=strict) is True
 
 
 @pytest.mark.parametrize(

@@ -85,6 +85,13 @@ The shared sine field still needs independent edge-sum and jet controls for its
 layouts and held coefficients. Select changed consumers and existing read-only
 evidence audits in addition to these shared tests.
 
+Exact arithmetic controls must include fractions carrying fixed-width integer
+components, alongside ordinary Python integers. Normalize admitted components
+before matrix products, interval rounding, comparison flows and Taylor powers;
+otherwise overflow can invalidate an enclosure or a positivity certificate.
+Equivalent representations must retain the same mathematical bounds without
+widening each kernel's admitted scalar or container domain.
+
 Reuse expensive parsed records and archive bytes through module-scoped fixtures;
 copy a fixture before a mutation test. Pure test helpers must not import other
 test modules' autouse fixtures. Keep no-execution guards scoped and reversible,

@@ -21,6 +21,7 @@ from ..mathematics._phase_resultant_chamber import (
     relative_resultant_rate_bounds,
 )
 from ..mathematics._rational_interval import INTERVAL_METHOD, I, cos, pi_interval, sin
+from ._sine_admission import _sine_model_coefficients
 
 __all__ = (
     "SineExchangeComparison",
@@ -193,7 +194,7 @@ class SineExchangeComparison:
                 boundary.append((i, j) if i in members else (j, i))
         boundary = tuple(boundary)
         rates = source.form_rates
-        e, w = map(Q, source.reference_model.effective_weights)
+        e, w, _ = _sine_model_coefficients(source.reference_model)
         pi = pi_interval()
         diffusion = tuple(e * (source.epi[j] - source.epi[i]) for i, j in boundary)
         sine = tuple(
@@ -609,8 +610,7 @@ class SineMobilityComparison:
         weights = tuple(value / total for value in rho)
         currents = tuple(imag for _, imag in source.relative_resultant)
         cosines = tuple(real for real, _ in source.relative_resultant)
-        w = Q(source.reference_model.effective_weights[1])
-        beta = Q(source.reference_model.storage_scale)
+        _, w, beta = _sine_model_coefficients(source.reference_model)
         pi = pi_interval()
         form_mean_rate = (
             (w * mobility.epsilon)
@@ -891,8 +891,7 @@ def _sine_phase_rate_numerators(reference_model, degrees, gradient, capacity):
     Callers retain source/support provenance and supply already admitted exact
     rows. This kernel performs no capture or implicit hypothetical-state commit.
     """
-    w = Q(reference_model.effective_weights[1])
-    beta = Q(reference_model.storage_scale)
+    _, w, beta = _sine_model_coefficients(reference_model)
     return tuple(
         w * nu * q / (beta * degree)
         for nu, q, degree in zip(capacity, gradient, degrees)
@@ -938,8 +937,7 @@ def _sine_rate_evaluator(
             factor * mobility
             for factor, mobility in zip(exchange_factors, inverse_metric)
         )
-    e, w = map(Q, reference_model.effective_weights)
-    beta = Q(reference_model.storage_scale)
+    e, w, beta = _sine_model_coefficients(reference_model)
     exchange_ratio = w / beta
 
     def evaluate(gradient, phase_currents):
@@ -985,8 +983,7 @@ def _sine_work(
         exchange_factors=exchange_factors,
     )
     form_rates, phase_rates = rates["form_rates"], rates["phase_rates"]
-    e = Q(reference_model.effective_weights[0])
-    beta = Q(reference_model.storage_scale)
+    e, _, beta = _sine_model_coefficients(reference_model)
     dissipation = tuple(
         e * nu * q**2 / degree for nu, q, degree in zip(capacity, gradient, degrees)
     )
@@ -1017,7 +1014,7 @@ def _sine_current_squared_mobility(source, epsilon):
     epsilon = exact_or_represented_real(epsilon, "epsilon")
     if epsilon < 0:
         raise ValueError("epsilon must be nonnegative")
-    if Q(source.reference_model.effective_weights[0]) != 0:
+    if _sine_model_coefficients(source.reference_model)[0] != 0:
         raise ValueError("mobility comparison requires explicit zero form loss")
     currents = tuple(imag for _, imag in source.relative_resultant)
     corrections = tuple(
@@ -1056,7 +1053,7 @@ def _comparison_from_state(state, reference_model):
     edges = tuple((indices[left], indices[right]) for left, right in state.edges)
     form_storage = sum(((state.epi[i] - state.epi[j]) ** 2 / 2 for i, j in edges), Q(0))
     phase_storage = _sine_phase_storage(state.phase, edges)
-    beta = Q(reference_model.storage_scale)
+    beta = _sine_model_coefficients(reference_model)[2]
     return SineExchangeComparison(
         reference_model=reference_model,
         nodes=state.nodes,
@@ -1090,8 +1087,6 @@ def _sine_regional_channel_balance(
     intervals; interval enclosures are retained without midpoint substitution.
     Full rates use the shared sine-law kernel in its original structural t.
     """
-    from ._sine_admission import _sine_model_coefficients
-
     e, w, beta = _sine_model_coefficients(reference_model)
 
     def interval(value, label):
@@ -1228,7 +1223,7 @@ def _regional_storage_balance(source, *, region):
         else:
             boundary.append((i, j) if i in members else (j, i))
     internal, external, boundary = tuple(internal), tuple(external), tuple(boundary)
-    beta = Q(source.reference_model.storage_scale)
+    beta = _sine_model_coefficients(source.reference_model)[2]
 
     def edge_store_and_rate(rows):
         form, rate = Q(0), I(0)

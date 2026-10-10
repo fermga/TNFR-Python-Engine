@@ -40,6 +40,31 @@ def test_zero_uncertainty_is_preserved_exactly():
     assert comparison_flow_upper(matrix, (0, 0, 0, 0), Q(1)) == (0, 0, 0, 0)
 
 
+@pytest.mark.parametrize("duration", (Q(0), Q(1, 3)))
+def test_fixed_width_fraction_components_preserve_nilpotent_flow(duration):
+    np = pytest.importorskip("numpy")
+
+    def payload(value):
+        return Q(np.int64(value.numerator), np.int64(value.denominator))
+
+    matrix = ((Q(0), Q(1, 4)), (Q(0), Q(0)))
+    radii = (Q(1, 7), Q(2**62, 3))
+    result = comparison_flow_upper(
+        tuple(tuple(payload(value) for value in row) for row in matrix),
+        tuple(payload(value) for value in radii),
+        payload(duration),
+    )
+    # M**2=0, hence exp(h*M)r = r+h*M*r, independently of the series kernel.
+    expected = (radii[0] + duration * radii[1] / 4, radii[1])
+    assert all(
+        value <= upper < value + Q(1, 10**15) for value, upper in zip(expected, result)
+    )
+    assert result == comparison_flow_upper(matrix, radii, duration)
+    assert all(
+        type(value.numerator) is type(value.denominator) is int for value in result
+    )
+
+
 def test_negative_diagonal_retains_contraction_instead_of_absolute_growth():
     radii = (Q(1), Q(2), Q(3), Q(4))
     result = comparison_flow_upper(_diagonal((-1,) * 4), radii, Q(1))

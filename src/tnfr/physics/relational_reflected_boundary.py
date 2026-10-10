@@ -11,7 +11,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from fractions import Fraction as Q
 
-from ..dynamics.relational import RelationalExchangeModel
+from ..dynamics.relational import (
+    RelationalExchangeModel,
+    _relational_model_coefficients,
+)
 from ..mathematics._rational_interval import I, arg, pi_interval
 from ._relational_reflected_flow import _reflected_rate_rows
 
@@ -85,8 +88,8 @@ def certify_relational_reflected_boundary_exit(*, model, form_amplitude=1):
     rho = Q(form_amplitude)
     if rho <= 0:
         raise ValueError("form_amplitude must be positive")
-    e, w = map(Q, model.effective_weights)
-    beta, pi = Q(model.storage_scale), pi_interval()
+    e, w, beta = _relational_model_coefficients(model)
+    pi = pi_interval()
     zero, one = I(0), I(1)
     h = arg(I(2), one) / pi
     speed = w * rho / beta

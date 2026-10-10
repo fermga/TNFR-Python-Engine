@@ -13,6 +13,7 @@ from fractions import Fraction as Q
 from functools import lru_cache
 from math import isqrt
 
+from .._exact_time import exact_or_represented_real
 from ._phase_midpoint import _pi_bounds
 from ._phase_resultant_chamber import certified_cosine_bounds
 
@@ -38,7 +39,7 @@ _ATAN_TERMS = 64
 
 def _exact(value):
     if isinstance(value, Q):
-        return value
+        return exact_or_represented_real(value, "interval endpoint")
     if type(value) is int:
         return Q(value)
     raise TypeError("interval endpoints require exact Fraction or integer values")
@@ -58,6 +59,7 @@ class I:  # noqa: E742 - conventional private interval-arithmetic notation
 
     Construction retains the supplied real interval by outward rounding;
     even a single non-dyadic rational can therefore have positive width.
+    Fraction components use Python integers before rounding or arithmetic.
     Floats and booleans require an explicit admission outside this kernel.
     """
 

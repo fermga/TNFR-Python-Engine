@@ -24,6 +24,7 @@ from ..mathematics._phase_resultant_chamber import (
     relative_resultant_bounds,
 )
 from ..mathematics._rational_interval import INTERVAL_METHOD, I, cos, pi_interval, sqrt
+from ._sine_admission import _sine_model_coefficients
 from .phase_cycle_geometry import PhaseCycleState
 from .relational_observations import _ordered
 from .relational_sine_comparison import (
@@ -472,7 +473,7 @@ def assess_sine_replica_scale(graph, *, reference_model, pairs, phase_turns=None
     it neither replaces the fine state nor admits arbitrary proposed tuples.
     """
     comparison = bound_relational_sine_exchange(graph, reference_model=reference_model)
-    if Q(reference_model.effective_weights[0]) != 0:
+    if _sine_model_coefficients(reference_model)[0] != 0:
         raise ValueError(
             "replica inheritance assessment requires explicit zero form loss"
         )
@@ -504,7 +505,7 @@ def assess_sine_replica_scale(graph, *, reference_model, pairs, phase_turns=None
     restoring_currents = [I(0) for _ in pairs]
     coarse_phase_storage = I(0)
     internal_phase_storage = I(0)
-    beta = Q(reference_model.storage_scale)
+    beta = _sine_model_coefficients(reference_model)[2]
     for (i, j), (sine, cosine), factor in zip(edges, edge_trig, factors):
         naive_currents[i] += sine
         naive_currents[j] -= sine
@@ -964,7 +965,7 @@ def assess_sine_replica_equilibria(
     from .relational_sine_recovery import _target_geometry
 
     comparison = bound_relational_sine_exchange(graph, reference_model=reference_model)
-    if Q(reference_model.effective_weights[0]) != 0:
+    if _sine_model_coefficients(reference_model)[0] != 0:
         raise _ReplicaAdmissionError(
             "equilibrium classification requires explicit zero form loss"
         )
@@ -974,7 +975,11 @@ def assess_sine_replica_equilibria(
     # Shared target admission proves the full doubled-C5 order before the
     # integer closure inequality generates the exhaustive candidate list.
     _replica_cycle_target(comparison, pairs, edges, winding=0)
-    n, pi, beta = len(pairs), pi_interval(), Q(reference_model.storage_scale)
+    n, pi, beta = (
+        len(pairs),
+        pi_interval(),
+        _sine_model_coefficients(reference_model)[2],
+    )
     windings = tuple(k for k in range(-(n // 4), n // 4 + 1) if 4 * abs(k) < n)
     targets = []
     for winding in windings:
@@ -1133,10 +1138,10 @@ def assess_sine_replica_persistence(
     phase_radius = angular_factor = angular_speed = turn_time = None
     if not geometry_unresolved:
         pi = pi_interval()
-        beta_root = sqrt(I(Q(reference_model.storage_scale)))
+        beta_root = sqrt(I(_sine_model_coefficients(reference_model)[2]))
         phase_radius = radius / sqrt(I(2))
         angular_factor = common["cosine_lower_bound"] * cos(phase_radius).lo
-        w = Q(reference_model.effective_weights[1])
+        w = _sine_model_coefficients(reference_model)[1]
         clock_numerator = w * replica.pair_capacity[0]
         if beta_root.lo > 0:
             frequency = clock_numerator / (pi * beta_root)
@@ -1160,7 +1165,7 @@ def assess_sine_replica_persistence(
         family_form_coordinate_bounds=I(lower - radius, upper + radius),
         spectral_gap_lower_bound=common["spectral_gap_lower_bound"],
         spectral_gap_method=target_fields["spectral_gap_method"],
-        target_storage_bounds=Q(reference_model.storage_scale)
+        target_storage_bounds=_sine_model_coefficients(reference_model)[2]
         * target_fields["target_phase_storage_bounds"],
         radius_angle_bounds=common["radius_angle_bounds"],
         acute_radius_margin_bounds=common["acute_radius_margin_bounds"],
@@ -1369,7 +1374,7 @@ def assess_sine_mobility_geometry(
         excess_ceiling=ceiling,
         spectral_gap_lower_bound=common["spectral_gap_lower_bound"],
         spectral_gap_method=target_fields["spectral_gap_method"],
-        target_storage_bounds=Q(reference_model.storage_scale)
+        target_storage_bounds=_sine_model_coefficients(reference_model)[2]
         * target_fields["target_phase_storage_bounds"],
         radius_angle_bounds=common["radius_angle_bounds"],
         acute_radius_margin_bounds=common["acute_radius_margin_bounds"],
@@ -1578,7 +1583,7 @@ def _capacity_family(comparison, data, mean, *, radius, ceiling, lower, upper, w
         family_form_coordinate_bounds=I(lower - form_radius.hi, upper + form_radius.hi),
         spectral_gap_lower_bound=common["spectral_gap_lower_bound"],
         spectral_gap_method=target_fields["spectral_gap_method"],
-        target_storage_bounds=Q(comparison.reference_model.storage_scale)
+        target_storage_bounds=_sine_model_coefficients(comparison.reference_model)[2]
         * target_fields["target_phase_storage_bounds"],
         acute_radius_margin_bounds=common["acute_radius_margin_bounds"],
         cosine_lower_bound=common["cosine_lower_bound"],
@@ -1657,7 +1662,7 @@ def _assess_sine_replica_capacity_comparison(
 ):
     """Reuse one admitted full capture without another graph read."""
     reference_model = comparison.reference_model
-    if Q(reference_model.effective_weights[0]) != 0:
+    if _sine_model_coefficients(reference_model)[0] != 0:
         raise _ReplicaAdmissionError(
             "capacity replica assessment requires explicit zero form loss"
         )
@@ -1773,7 +1778,7 @@ def _assess_sine_replica_capacity_comparison(
                 qi * ti - pi * (1 - ri**2),
             )
         )
-    beta = Q(reference_model.storage_scale)
+    beta = _sine_model_coefficients(reference_model)[2]
     gradients = tuple(
         (I(4 * q_i), -4 * beta * ri * si, I(4 * degree * u_i), 4 * beta * sine * ci)
         for q_i, ri, si, degree, u_i, sine, ci in zip(
@@ -2735,7 +2740,7 @@ def _joint_pairing_projection(phase_window):
     )
     comparison = phase_window.comparison
     nodes, x, theta = comparison.nodes, comparison.epi, comparison.phase
-    beta = Q(comparison.reference_model.storage_scale)
+    beta = _sine_model_coefficients(comparison.reference_model)[2]
     initial = observe_joint_pairs(
         nodes=nodes, forms=x, phases=theta, storage_scale=beta
     )
@@ -2884,7 +2889,7 @@ def _pairing_window_from_comparison(
     end = exact_or_represented_real(window_end, "window_end")
     if not 0 <= start < end:
         raise ValueError("require 0<=window_start<window_end")
-    if Q(reference_model.effective_weights[0]) != 0:
+    if _sine_model_coefficients(reference_model)[0] != 0:
         raise ValueError("pairing window requires explicit zero form loss")
     size = len(comparison.nodes)
     if size > 64:
@@ -2896,7 +2901,7 @@ def _pairing_window_from_comparison(
     neighbors = _comparison_neighbors(comparison)
     nu = comparison.capacity
     pi = pi_interval()
-    w, beta = Q(reference_model.effective_weights[1]), Q(reference_model.storage_scale)
+    _, w, beta = _sine_model_coefficients(reference_model)
     a, b = w / pi.lo, w / (beta * pi.lo)
     speed = tuple(a * capacity for capacity in nu)
     rate_error = tuple(
@@ -3108,8 +3113,7 @@ def assess_sine_joint_pairing_window(
         raise ValueError("reference interpair phase lift must be certified below pi")
     nonzero = raw_gap != 0 or gap_turns != 0
     _, cosine = _pi_shifted_trig(raw_gap, int(2 * gap_turns))
-    beta = Q(reference_model.storage_scale)
-    w = Q(reference_model.effective_weights[1])
+    _, w, beta = _sine_model_coefficients(reference_model)
     nu = comparison.capacity[0]
     raw_separation = 2 * beta * (1 - cosine)
     separation = I(max(Q(0), raw_separation.lo), max(Q(0), raw_separation.hi))
@@ -3297,7 +3301,7 @@ def assess_sine_pair_support_symmetry(
 def _assess_sine_pair_support_symmetry(comparison, pairs, witness_pair=None):
     """Reuse one authoritative capture for symmetry and dependent observations."""
     reference_model = comparison.reference_model
-    if Q(reference_model.effective_weights[0]) != 0:
+    if _sine_model_coefficients(reference_model)[0] != 0:
         raise ValueError("pair support symmetry requires explicit zero form loss")
     if len(set(comparison.capacity)) != 1 or comparison.capacity[0] <= 0:
         raise ValueError("pair support symmetry requires common positive held capacity")

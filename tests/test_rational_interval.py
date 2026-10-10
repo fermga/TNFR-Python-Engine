@@ -73,6 +73,23 @@ def test_construction_rounds_outward_and_is_immutable():
         enclosure.lo = Q(0)
 
 
+@pytest.mark.parametrize("numerator,denominator", ((1, 3), (-1, 7), (2**62, 3)))
+def test_fixed_width_fraction_components_preserve_exact_enclosures(
+    numerator, denominator
+):
+    np = pytest.importorskip("numpy")
+    source = Q(np.int64(numerator), np.int64(denominator))
+    exact = Q(numerator, denominator)
+    enclosure = I(source)
+    assert enclosure.lo <= exact <= enclosure.hi
+    assert enclosure.width <= Q(1, 1 << INTERVAL_BITS)
+    assert enclosure == I(exact)
+    assert enclosure.contains(source)
+    assert (enclosure * source).contains(exact**2)
+    for endpoint in (enclosure.lo, enclosure.hi):
+        assert type(endpoint.numerator) is type(endpoint.denominator) is int
+
+
 @pytest.mark.parametrize("value", (True, 1.0, "1", None))
 def test_no_implicit_inexact_scalar_admission(value):
     with pytest.raises(TypeError):

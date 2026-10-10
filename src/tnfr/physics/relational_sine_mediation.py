@@ -19,6 +19,7 @@ from ..mathematics._phase_resultant_chamber import (
     relative_resultant_bounds,
 )
 from ..mathematics._rational_interval import INTERVAL_METHOD, I, pi_interval, sqrt
+from ._sine_admission import _sine_model_coefficients
 from .relational_sine_comparison import (
     SineExchangeComparison,
     _capture_sine_state,
@@ -146,8 +147,7 @@ def _mediated_pressure(comparison, *, mediator):
     y, mu = epi[hidden], capacity[hidden]
     mean_form = sum((epi[i] for i in port_indices), Q(0)) / k
     contrast = y - mean_form
-    e, w = map(Q, comparison.reference_model.effective_weights)
-    beta = Q(comparison.reference_model.storage_scale)
+    e, w, beta = _sine_model_coefficients(comparison.reference_model)
     pi = pi_interval()
     phase_gain = mu * w / (beta * pi)
     memory_phase_gain = mu**2 * w**2 / (beta * pi**2 * k)
@@ -450,7 +450,7 @@ def bound_relational_sine_mediation(graph, *, mediator, reference_model):
         phase_storage += 1 - I(
             *certified_cosine_bounds(state.phase[j] - state.phase[i])
         )
-    beta = Q(reference_model.storage_scale)
+    beta = _sine_model_coefficients(reference_model)[2]
     field = _sine_work(
         reference_model,
         degrees,

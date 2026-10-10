@@ -11,7 +11,10 @@ from dataclasses import dataclass
 from fractions import Fraction as Q
 from functools import lru_cache
 
-from ..dynamics.relational import RelationalExchangeModel
+from ..dynamics.relational import (
+    RelationalExchangeModel,
+    _relational_model_coefficients,
+)
 from ..mathematics._comparison_flow import _exact, _ordered
 from ..mathematics._rational_interval import I, arg, cos, pi_interval
 from ..mathematics._validated_taylor import ValidatedTaylorStep, validated_taylor_step
@@ -164,8 +167,7 @@ def certify_relational_reflected_barrier(initial_box, *, model):
     ):
         raise ValueError("an explicit regular relational model is required")
     state = tuple(I.coerce(value) for value in _ordered(initial_box, "state"))
-    e, w = map(Q, model.effective_weights)
-    beta = Q(model.storage_scale)
+    e, w, beta = _relational_model_coefficients(model)
     field = evaluate_reflected_regular_flow(
         state, epi_weight=e, phase_weight=w, storage_scale=beta
     )
@@ -219,8 +221,7 @@ def certify_relational_reflected_transit(
     box = initial_box = tuple(
         I.coerce(value) for value in _ordered(initial_box, "state")
     )
-    e, w = map(Q, model.effective_weights)
-    beta = Q(model.storage_scale)
+    e, w, beta = _relational_model_coefficients(model)
 
     @lru_cache(maxsize=32)
     def field(state):

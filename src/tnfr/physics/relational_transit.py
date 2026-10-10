@@ -11,6 +11,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from fractions import Fraction as Q
 
+from ..dynamics.relational import _relational_model_coefficients
 from ..mathematics._interval_taylor import Jet
 from ..mathematics._interval_taylor import atan_ratio as jet_atan_ratio
 from ..mathematics._interval_taylor import cos as jet_cos
@@ -244,8 +245,7 @@ def certify_relational_transit_capture(
     initial = certify_relational_capture(graph, model=model, cycles=cycles)
     A, B, a, b = initial.coordinates
     box = initial_box = tuple(I(value) for value in (3 * A - B, 2 * B - A, a, b))
-    e, w = map(Q, initial.field.model.effective_weights)
-    beta = Q(initial.field.model.storage_scale)
+    e, w, beta = _relational_model_coefficients(initial.field.model)
     reasons = []
     if not initial.exact_symmetry:
         reasons.append("exact_copy_reflection_required")

@@ -29,6 +29,7 @@ from ..dynamics.relational import (
     _epi,
     _finite,
     _raw,
+    _relational_model_coefficients,
     evaluate_relational_exchange,
 )
 from ..mathematics._phase_midpoint import _affine_interval, _pi_bounds
@@ -274,7 +275,8 @@ def certify_relational_capture(
     )
     symmetry = not any((*copy_form, *copy_phase, *reflection_form, *reflection_phase))
     unit_capacity = all(value == 1.0 for value in field.capacity)
-    positive_epi = field.model.epi_weight > 0.0
+    e, _, beta = _relational_model_coefficients(field.model)
+    positive_epi = e > 0
     a, b = coordinates[2:]
     pi_bounds = _pi_bounds()
     candidate_bounds = _capture_rectangle_candidates(
@@ -295,7 +297,6 @@ def certify_relational_capture(
     rectangle = bool(selected)
     rectangle_kind = _capture_rectangle_kind(rectangle_sector)
     phase_bounds = _phase_storage_bounds(field)
-    beta = Q(field.model.storage_scale)
     energy_bounds = tuple(field.form_storage + beta * value for value in phase_bounds)
     threshold = 7 * beta
     energy = energy_bounds[1] < threshold
@@ -414,8 +415,9 @@ def certify_relational_consensus_capture(
     form = field.form_storage
     ceiling = Q(9)
     consensus = len(set(map(Q, field.phase))) == 1
-    coefficients = tuple(map(Q, field.model.effective_weights)) == (Q(1, 2), Q(1, 2))
-    unit_beta = Q(field.model.storage_scale) == 1
+    e, w, beta = _relational_model_coefficients(field.model)
+    coefficients = (e, w) == (Q(1, 2), Q(1, 2))
+    unit_beta = beta == 1
     reasons = tuple(
         reason
         for condition, reason in (
@@ -545,8 +547,9 @@ def certify_relational_consensus_formation_obstruction(
     form, ceiling = field.form_storage, Q(9)
     consensus = len(set(map(Q, field.phase))) == 1
     unit_capacity = all(Q(value) == 1 for value in field.capacity)
-    coefficients = tuple(map(Q, field.model.effective_weights)) == (Q(1, 2), Q(1, 2))
-    unit_beta = Q(field.model.storage_scale) == 1
+    e, w, beta = _relational_model_coefficients(field.model)
+    coefficients = (e, w) == (Q(1, 2), Q(1, 2))
+    unit_beta = beta == 1
     reasons = tuple(
         reason
         for condition, reason in (
@@ -866,7 +869,7 @@ def certify_relational_local_capture(
     radius_threshold = Q(9, 800)
     radius = quotient_bounds[1] < radius_threshold
     phase_bounds = _phase_storage_bounds(field)
-    beta = Q(field.model.storage_scale)
+    e, _, beta = _relational_model_coefficients(field.model)
     storage_bounds = tuple(field.form_storage + beta * value for value in phase_bounds)
     reference_storage = (
         _twist_storage_bounds(pi_bounds) if target_sector else (Q(0), Q(0))
@@ -879,7 +882,7 @@ def certify_relational_local_capture(
     energy = excess_bounds[1] < energy_threshold
     unit_capacity = all(value == 1.0 for value in field.capacity)
     unit_beta = beta == 1
-    positive_epi = field.model.epi_weight > 0.0
+    positive_epi = e > 0
     reasons = tuple(
         reason
         for admitted, reason in (
@@ -1259,17 +1262,18 @@ def certify_relational_sector_capture(
     """
     _require_sector(target_sector)
     field = evaluate_relational_exchange(graph, model=model)
+    e, _, beta = _relational_model_coefficients(field.model)
     geometry = _sector_geometry(
         field.nodes,
         field.edges,
         field.epi,
         field.phase,
-        field.model.storage_scale,
+        beta,
         cycles,
         target_sector,
     )
     positive_capacity = all(value > 0.0 for value in field.capacity)
-    positive_epi = field.model.epi_weight > 0.0
+    positive_epi = e > 0
     reasons = (
         tuple(
             reason
@@ -1403,14 +1407,14 @@ def _cycle_capture_from_field(field, cycle, target_sector):
     gaps, periods = _acute_period_evidence(field.edges, phase, (cycle,), pi_bounds)
     sector = periods[0] == target_sector
     phase_bounds = _phase_storage_bounds(field)
-    beta = Q(field.model.storage_scale)
+    e, _, beta = _relational_model_coefficients(field.model)
     storage_bounds = tuple(field.form_storage + beta * value for value in phase_bounds)
     cosine, geometric = _cycle_barrier_constants(pi_bounds)
     barrier = tuple(beta * value for value in geometric)
     margin = barrier[0] - storage_bounds[1]
     energy = margin > 0
     positive_capacity = all(value > 0 for value in field.capacity)
-    positive_epi = field.model.epi_weight > 0
+    positive_epi = e > 0
     reasons = tuple(
         reason
         for admitted, reason in (
@@ -1542,9 +1546,8 @@ def observe_relational_detachment(
     for component in components:
         for node, data in _detached_graph(component.field).nodes(data=True):
             detached.nodes[node].update(data)
-    reset = observe_relational_reset(
-        source, detached, storage_scale=model.storage_scale
-    )
+    _, _, beta = _relational_model_coefficients(model)
+    reset = observe_relational_reset(source, detached, storage_scale=beta)
     reversed_changes = _field_changes(
         tuple(component.field for component in components), before
     )

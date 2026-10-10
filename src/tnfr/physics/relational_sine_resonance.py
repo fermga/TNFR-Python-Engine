@@ -501,7 +501,7 @@ def certify_sine_recovery_resonance(recovery, *, port) -> SineRecoveryResonance:
         value if value is not None else bounds.hi
         for value, bounds in zip(exact, mobility)
     )
-    e = Q(rebuilt.reference_model.effective_weights[0])
+    e = _sine_model_coefficients(rebuilt.reference_model)[0]
     return SineRecoveryResonance(
         recovery=rebuilt,
         port=port,
@@ -1523,8 +1523,7 @@ def assess_sine_mediated_response(
             for row in vectors
         )
 
-    e, w = map(Q, rebuilt.reference_model.effective_weights)
-    beta = Q(rebuilt.reference_model.storage_scale)
+    e, w, beta = _sine_model_coefficients(rebuilt.reference_model)
     product = mobility[donor[0]] * mobility[hidden] * mobility[receiver[0]]
     return SineMediatedResponse(
         recovery=rebuilt,
@@ -1657,8 +1656,7 @@ def assess_sine_pair_pulse(graph, *, reference_model) -> SinePairPulseAssessment
     u = comparison.epi[0] - comparison.epi[1]
     delta = comparison.phase[1] - comparison.phase[0]
     sigma = sum(comparison.capacity, Q(0))
-    e, w = map(Q, reference_model.effective_weights)
-    beta = Q(reference_model.storage_scale)
+    e, w, beta = _sine_model_coefficients(reference_model)
     exact_energy = comparison.form_storage if delta == 0 else None
     exact_ratio = exact_energy / beta if exact_energy is not None else None
     # Divide exact form storage before outward projection. This keeps a tiny
@@ -1840,7 +1838,7 @@ def assess_sine_path_memory(
     reference_x = exact_or_represented_real(consensus_form, "consensus_form")
     reference_theta = exact_or_represented_real(consensus_phase, "consensus_phase")
     comparison = bound_relational_sine_exchange(graph, reference_model=reference_model)
-    e, w = map(Q, reference_model.effective_weights)
+    e, w, _ = _sine_model_coefficients(reference_model)
     if e != 0:
         raise ValueError("conservative path memory requires explicitly zero EPI weight")
     if len(comparison.nodes) != 3 or len(comparison.edges) != 2:
@@ -1861,7 +1859,7 @@ def assess_sine_path_memory(
         raise ValueError(
             "conservative P3 memory requires positive common held capacity"
         )
-    beta = Q(reference_model.storage_scale)
+    beta = _sine_model_coefficients(reference_model)[2]
     transport = tuple(
         tuple(
             nu * (len(row) if i == j else -int(j in row)) / len(row) for j in range(3)
@@ -2035,7 +2033,7 @@ def assess_sine_recurrence(
     if lower >= upper:
         raise ValueError("form_mean_bounds must have strictly positive width")
     comparison = bound_relational_sine_exchange(graph, reference_model=reference_model)
-    e = Q(reference_model.effective_weights[0])
+    e = _sine_model_coefficients(reference_model)[0]
     if e != 0:
         raise ValueError("nonlinear recurrence admission requires zero EPI weight")
     if any(nu <= 0 for nu in comparison.capacity):

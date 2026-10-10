@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING, Any
 from .._exact_time import exact_or_represented_real
 from ..dynamics.relational import RelationalExchangeModel
 from ..mathematics._rational_interval import INTERVAL_METHOD, I, cos, sin
+from ._sine_admission import _sine_model_coefficients
 from .relational_observations import _ordered
 from .relational_sine_comparison import (
     _capture_sine_state,
@@ -450,7 +451,8 @@ def _bound_sine_pattern_from_rows(
         reference_phase_rate_bounds=phases[anchor],
         form_storage_bounds=form_storage,
         phase_storage_bounds=phase_storage,
-        storage_bounds=form_storage + Q(reference_model.storage_scale) * phase_storage,
+        storage_bounds=form_storage
+        + _sine_model_coefficients(reference_model)[2] * phase_storage,
         continuous_loss_bounds=I.coerce(work["continuous_loss"]),
         storage_rate_bounds=work["storage_rate"],
         balance_residual_bounds=work["balance_residual"],

@@ -14,6 +14,7 @@ from fractions import Fraction as Q
 from ..dynamics.relational import (
     RelationalExchangeField,
     RelationalExchangeModel,
+    _relational_model_coefficients,
     evaluate_relational_exchange,
 )
 from ..mathematics._phase_resultant_chamber import (
@@ -80,7 +81,7 @@ def observe_relational_regularity(graph, *, model):
         phase_upper += 1 - lo
     neighbors = tuple(tuple(row) for row in rows)
     degrees = tuple(map(len, neighbors))
-    beta = Q(model.storage_scale)
+    _, _, beta = _relational_model_coefficients(model)
     storage = (
         field.form_storage + beta * phase_lower,
         field.form_storage + beta * phase_upper,

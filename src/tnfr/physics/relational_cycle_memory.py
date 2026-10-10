@@ -17,7 +17,10 @@ from fractions import Fraction as Q
 from numbers import Integral
 
 from .._exact_time import exact_or_represented_real
-from ..dynamics.relational import RelationalExchangeModel
+from ..dynamics.relational import (
+    RelationalExchangeModel,
+    _relational_model_coefficients,
+)
 from ..mathematics._rational_interval import (
     INTERVAL_METHOD,
     I,
@@ -132,8 +135,7 @@ def bound_relational_cycle_memory(
     preserving the local asymptotic coefficient. No finite-amplitude error,
     valid binary64 realization, graph support or recovery time is certified.
     """
-    if not isinstance(model, RelationalExchangeModel):
-        raise TypeError("model must be a RelationalExchangeModel")
+    e, w, beta = _relational_model_coefficients(model)
     _require_sector(target_sector)
     form = _direction(form_direction, "form_direction")
     phase = _direction(phase_direction, "phase_direction")
@@ -141,7 +143,6 @@ def bound_relational_cycle_memory(
     radius = exact_or_represented_real(amplitude_radius, "amplitude_radius")
     if nu <= 0 or radius <= 0:
         raise ValueError("capacity and amplitude_radius must be strictly positive")
-    e, w, beta = map(Q, (model.epi_weight, model.phase_weight, model.storage_scale))
     if e <= 0:
         raise ValueError("cycle memory requires positive epi_weight")
 

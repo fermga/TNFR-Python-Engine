@@ -1,7 +1,8 @@
 """Coefficient freedom and identification in the conditional relational law."""
 
 import math
-from copy import deepcopy
+from copy import copy, deepcopy
+from dataclasses import replace
 from fractions import Fraction as Q
 
 import mpmath as mp
@@ -24,6 +25,195 @@ from tnfr.physics.phase_response import (
 )
 from tnfr.physics.relational_observations import bound_relational_coefficient_from_jet
 from tnfr.physics.support_transport import observe_support_transport
+
+
+def _reconstructed_models(coefficient, numerator, denominator):
+    model = copy(RelationalExchangeModel(2, phase_domain="regular"))
+    reference = copy(model)
+    raw = (
+        np.int64(numerator)
+        if denominator == 1
+        else Q(np.int64(numerator), np.int64(denominator))
+    )
+    object.__setattr__(model, coefficient, raw)
+    object.__setattr__(reference, coefficient, Q(numerator, denominator))
+    return model, reference
+
+
+@pytest.mark.parametrize(
+    "coefficient,numerator,denominator",
+    (("storage_scale", 2**62, 1), ("epi_weight", 1, 2), ("phase_weight", 1, 2)),
+)
+@pytest.mark.parametrize("observation", ("regional", "regularity", "capture"))
+@pytest.mark.filterwarnings("error:overflow encountered")
+def test_native_consumers_keep_normalized_coefficients_after_field_admission(
+    coefficient, numerator, denominator, observation
+):
+    from tnfr.physics.relational_capture import certify_relational_cycle_capture
+    from tnfr.physics.relational_observations import observe_relational_pattern
+    from tnfr.physics.relational_regularity import observe_relational_regularity
+
+    model, reference = _reconstructed_models(coefficient, numerator, denominator)
+    graph = nx.cycle_graph(5)
+    for node in graph:
+        graph.nodes[node].update(EPI=node / 64, theta=node / 20, nu_f=1)
+    saved = deepcopy(graph)
+
+    def observe(selected):
+        if observation == "regional":
+            return observe_relational_pattern(
+                graph,
+                model=selected,
+                reference_phase={node: 0 for node in graph},
+                regions=((0, 1),),
+            )
+        if observation == "regularity":
+            return observe_relational_regularity(graph, model=selected)
+        return certify_relational_cycle_capture(
+            graph, model=selected, cycle=tuple(graph), target_sector=1
+        )
+
+    expected = observe(reference)
+    actual = observe(model)
+    assert actual.field.model is model
+    assert replace(actual.field, model=reference) == expected.field
+    assert replace(actual, field=expected.field) == expected
+    assert nx.utils.graphs_equal(graph, saved)
+    if observation == "regularity":
+        # Five-cycle minimum degree is two. A fixed-width raw numerator used
+        # to wrap this strictly positive 2*beta threshold to a negative value.
+        beta = Q(numerator, denominator) if coefficient == "storage_scale" else Q(2)
+        assert actual.regularity_storage_threshold == 2 * beta
+        assert actual.regularity_certified is True
+
+
+def _reflected_certificate(kind, model):
+    from tnfr.physics.relational_reflected_boundary import (
+        certify_relational_reflected_boundary_exit,
+    )
+    from tnfr.physics.relational_reflected_equilibria import (
+        certify_relational_reflected_equilibrium,
+    )
+    from tnfr.physics.relational_reflected_transit import (
+        certify_relational_reflected_barrier,
+        certify_relational_reflected_transit,
+    )
+
+    if kind == "boundary":
+        return certify_relational_reflected_boundary_exit(model=model)
+    if kind == "equilibrium":
+        return certify_relational_reflected_equilibrium("consensus", model=model)
+    state = (Q(0),) * 8
+    if kind == "barrier":
+        return certify_relational_reflected_barrier(state, model=model)
+    return certify_relational_reflected_transit(
+        state, model=model, horizon=Q(1, 128), time_step=Q(1, 128), order=2
+    )
+
+
+@pytest.mark.parametrize(
+    "coefficient,numerator,denominator",
+    (("storage_scale", 2**62, 1), ("epi_weight", 1, 2), ("phase_weight", 1, 2)),
+)
+@pytest.mark.parametrize("kind", ("boundary", "equilibrium", "barrier"))
+@pytest.mark.filterwarnings("error:overflow encountered")
+def test_reflected_certificates_use_normalized_model_arithmetic(
+    coefficient, numerator, denominator, kind
+):
+    model, reference = _reconstructed_models(coefficient, numerator, denominator)
+    expected = _reflected_certificate(kind, reference)
+    actual = _reflected_certificate(kind, model)
+    assert actual.model is model
+    assert replace(actual, model=reference) == expected
+    if kind == "barrier":
+        assert actual.barrier_storage.lo > 0
+
+
+@pytest.mark.parametrize(
+    "coefficient,value",
+    (
+        ("storage_scale", True),
+        ("storage_scale", -1),
+        ("epi_weight", True),
+        ("epi_weight", -1),
+        ("phase_weight", True),
+        ("phase_weight", 0),
+    ),
+)
+@pytest.mark.parametrize("kind", ("boundary", "equilibrium", "barrier", "transit"))
+def test_reflected_certificates_readmit_model_before_computing(
+    monkeypatch, coefficient, value, kind
+):
+    from tnfr.physics import relational_reflected_boundary as boundary
+    from tnfr.physics import relational_reflected_equilibria as equilibria
+    from tnfr.physics import relational_reflected_transit as transit
+
+    model = copy(RelationalExchangeModel(2, phase_domain="regular"))
+    object.__setattr__(model, coefficient, value)
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("invalid model reached reflected field or transit evaluation")
+
+    monkeypatch.setattr(boundary, "_reflected_rate_rows", forbidden)
+    monkeypatch.setattr(equilibria, "evaluate_reflected_regular_flow", forbidden)
+    monkeypatch.setattr(transit, "evaluate_reflected_regular_flow", forbidden)
+    monkeypatch.setattr(transit, "validated_taylor_step", forbidden)
+    with pytest.raises((TypeError, ValueError)):
+        _reflected_certificate(kind, model)
+
+
+@pytest.mark.parametrize("phase_domain", ("acute", "positive_resultant", "regular"))
+@pytest.mark.parametrize(
+    "coefficient,numerator,denominator",
+    (("storage_scale", 2**62, 1), ("epi_weight", 1, 2), ("phase_weight", 1, 2)),
+)
+@pytest.mark.filterwarnings("error:overflow encountered")
+def test_cycle_memory_keeps_normalized_coefficients_and_all_declared_phase_domains(
+    coefficient, numerator, denominator, phase_domain
+):
+    from tnfr.physics.relational_cycle_memory import bound_relational_cycle_memory
+
+    model, reference = _reconstructed_models(coefficient, numerator, denominator)
+    for candidate in (model, reference):
+        object.__setattr__(candidate, "phase_domain", phase_domain)
+    primitives = dict(
+        form_direction=(1, -1, 0, 0, 0),
+        phase_direction=(0, 1, -1, 0, 0),
+        capacity=1,
+        amplitude_radius=Q(1, 1000),
+    )
+    actual = bound_relational_cycle_memory(model=model, **primitives)
+    expected = bound_relational_cycle_memory(model=reference, **primitives)
+    assert actual.model is model
+    assert replace(actual, model=reference) == expected
+    assert actual.quadratic_phase_shift_coefficient_bounds[0] > 0
+
+
+@pytest.mark.parametrize(
+    "coefficient,value",
+    (
+        ("storage_scale", True),
+        ("epi_weight", True),
+        ("phase_weight", True),
+        ("storage_scale", 0),
+        ("epi_weight", 0),
+        ("phase_weight", 0),
+        ("phase_domain", "unrecognized"),
+    ),
+)
+def test_cycle_memory_readmits_model_before_a_basin_or_memory_claim(coefficient, value):
+    from tnfr.physics.relational_cycle_memory import bound_relational_cycle_memory
+
+    model = copy(RelationalExchangeModel(1))
+    object.__setattr__(model, coefficient, value)
+    with pytest.raises((TypeError, ValueError)):
+        bound_relational_cycle_memory(
+            model=model,
+            form_direction=(1, -1, 0, 0, 0),
+            phase_direction=(0, 1, -1, 0, 0),
+            capacity=1,
+            amplitude_radius=Q(1, 1000),
+        )
 
 
 def _path(forms=(0.0, 0.0, 0.0), phases=(0.0, 0.0, 0.0), capacities=(1, 0.5, 2)):

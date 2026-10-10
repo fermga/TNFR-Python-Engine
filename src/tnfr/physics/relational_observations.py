@@ -23,6 +23,7 @@ from ..dynamics.relational import (
     RelationalExchangeField,
     RelationalExchangeModel,
     _phase_edge_storage,
+    _relational_model_coefficients,
     evaluate_relational_exchange,
 )
 from ..utils.numeric import angle_diff
@@ -1237,9 +1238,7 @@ def _regional_work(field, indices):
 def _regional_boundary(field, cut, degrees):
     indices = cut.region_indices
     current = cut.outward_cut_current
-    e = Fraction(field.model.epi_weight)
-    w = Fraction(field.model.phase_weight)
-    beta = Fraction(field.model.storage_scale)
+    e, w, beta = _relational_model_coefficients(field.model)
     source = sum(
         (w * degrees[i] * Fraction(field.phase_source[i]) for i in indices),
         Fraction(0),
@@ -1322,7 +1321,8 @@ def _regional_phase_response(field, cut):
         sum((a * q for a, q in zip(centered_mobility, centered_gradient)), Fraction(0))
         / n
     )
-    k = Fraction(field.model.phase_weight) / Fraction(field.model.storage_scale)
+    _, w, beta = _relational_model_coefficients(field.model)
+    k = w / beta
     boundary_rate = k * mean_mobility * cut.outward_cut_current
     covariance_rate = k * n * covariance
     squared_bound = k * k * n * n * mobility_variance * gradient_variance
@@ -1399,16 +1399,15 @@ def observe_relational_pattern(
         _ordered(cycle, "cycle") for cycle in _ordered(cycles, "cycles")
     )
     detached = _detached_graph(field)
+    e, w, _ = _relational_model_coefficients(model)
     unavailable = (
         "zero_capacity_in_full_support"
         if any(capacity == 0.0 for capacity in field.capacity)
-        else ("zero_epi_weight" if model.epi_weight == 0.0 else None)
+        else ("zero_epi_weight" if e == 0 else None)
     )
     source = observe_support_transport(detached)
     degrees = tuple(len(row) for row in source.support_neighbors)
-    forcing = tuple(
-        Fraction(model.phase_weight) * Fraction(value) for value in field.phase_source
-    )
+    forcing = tuple(w * Fraction(value) for value in field.phase_source)
     observed = []
     for indices in selections:
         nodes = tuple(field.nodes[i] for i in indices)
@@ -1424,7 +1423,7 @@ def observe_relational_pattern(
         )
         transport = (
             observe_regional_support_balance(
-                source, nodes, epi_weight=Fraction(model.epi_weight), forcing=forcing
+                source, nodes, epi_weight=e, forcing=forcing
             )
             if reason is None
             else None
