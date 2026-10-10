@@ -463,6 +463,14 @@ campaign is active. Existing finite response and control capture results
 remain valid. The geometric question addresses persistence; it does not
 replace the independent property-first physical comparison above.
 
+The [bounded stationary protocol](../nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md)
+selects one finite search in the preparation's marked-cycle chamber. It
+retains 53 relative coordinates without reflection constraints. The fifteen
+declared windings leave 32 additional cycle-space directions unspecified;
+an exact counterexample separates the broader identity class from this
+cut-free component. Only a root and full-Hessian certificate can admit a
+stable target, and the fixed 24-start budget is not an exhaustive search.
+
 For each subsequent law or hypothesis, record its status, independent
 premises, consequences, countermodels and decision in the existing definition
 or proof owner and parameter ledger. Close or revise the active gate before

@@ -485,6 +485,16 @@ entire declared reflection sector. Preserve unavailable actual-source fate
 and the no-trajectory/frozen-producer guard; no candidate or precision scan
 belongs to this fixed illustration.
 
+For [full-fine stationary contact](theory/nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md),
+select `tests/physics/test_organized_stationary_certificate.py`,
+`tests/physics/test_organized_contact_chamber.py` and
+`tests/physics/test_organized_contact_search.py`, with the shared rational
+interval and exact linear-algebra tests. Check independent analytic roots,
+bad preconditioners, compensated negative edges, failed inclusion and
+unresolved zero directions. Exact marked-cycle counterexamples distinguish
+the fifteen observations from the full cut-free component. Test optimizer
+wiring with fakes; do not regenerate the frozen candidate campaign.
+
 For [identity-preserving assembly work](theory/nodal/ORGANIZED_ASSEMBLY_WORK.md),
 select `tests/physics/test_organized_assembly_work.py` with
 `tests/physics/test_acquired_organized_network_capture.py`,

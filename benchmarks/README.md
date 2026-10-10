@@ -13,6 +13,7 @@ research campaign, and a filename containing `emergent` proves no emergence.
 
 | Question | Instruments | Owner and scope |
 | --- | --- | --- |
+| Can the joined contact law retain its marked identity at a stable stationary target? | [Bounded full-fine search](organized_contact_stationary_search.py) | [Frozen chamber protocol and certificate](../theory/nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md); 53 free phase coordinates, one marked cycle class, exclusive first outcome. Optimization is not physical evolution; a finite nonfinding is not exclusion |
 | Does a held source retain information absent from regional contrast/rate? | [Source-relative response](source_relative_form_response.py) | [Derived form](../theory/nodal/DERIVED_FORM_PHASE.md#source-relative-future-response); supplied affine law and zero-source ablation |
 | How do supplied joint form/phase laws differ? | [Constitutive probes](phase_form_exchange_comparison.py), [cotangent C8](cotangent_phase_exchange.py) | [Relational exchange](../theory/nodal/RELATIONAL_RESPONSE_IDENTIFICATION.md#finite-modal-exchange-discriminator), [cotangent scope](../theory/TNFR_VARIATIONAL_PRINCIPLE.md#cotangent-c8-finite-response); probes and trajectories are distinct |
 | How does capacity change the response? | [Capacity producer](relational_capacity_response.py), [record audit](relational_capacity_audit.py) | [Capacity response](../theory/nodal/RELATIONAL_RESPONSE_IDENTIFICATION.md#finite-capacity-intervention-response); the audit does not rerun trajectories |
