@@ -453,6 +453,12 @@ or identify the coefficient with electric charge. Existing counterexamples
 already exclude winding-only response and moment-only closure; repeating
 those onset calculations would not close this gate.
 
+The [prospective declaration](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#prospective-interface-declaration)
+fixes cyclic offsets `2*(c-2) mod 9`, the same acquired resource box and a
+single finite matrix assessment. Both the true determinant and the enlarged
+error-rectification determinant must exclude zero. The declared comparison
+remains unevaluated until its source and protocol are committed.
+
 1. **Declare two interfaces before evaluation.** Retain the admitted joint
    resource box, the same C9 donor, clock, horizon, readings and event budgets.
    Use the existing same-slot contact and one fixed childwise cyclic slot
@@ -477,7 +483,8 @@ those onset calculations would not close this gate.
 4. **Keep the quantifiers and physical boundary.** Same-source counterfactuals
    are not operational copies. Independently prepared records require their
    preparation uncertainty explicitly. A rank obstruction rules out one real
-   scalar factor, not complex, vector, tensor, multichannel or memory-dependent
+   scalar factor, not real-part observations of complex products, vector,
+   tensor, multichannel or memory-dependent
    descriptions, and not TNFR. It specifies information needed for a future
    independent preparation, clock and measurement bridge.
 

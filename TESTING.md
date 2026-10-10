@@ -476,6 +476,20 @@ read-only retained evidence, without replaying the frozen corner.
 Changing the prospective source or resource box requires a new declaration,
 not routine test regeneration.
 
+For [finite interface factorization](theory/nodal/ORGANIZED_INTERFACE_FACTORIZATION.md),
+select `tests/physics/test_organized_slot_registration.py` and
+`tests/physics/test_organized_interface_factorization.py` with the joint-resource,
+external-interaction, relative-origin and shared rational-interval controls.
+Rebuild the complete support and both rows from independent edge sums;
+slot permutations must preserve the exact mean correlations, not replace the
+fine source by its carrier. Check modulo seams, both quadratures, work,
+all retained cycles and source admission before any rank conclusion.
+Distinguish true rank, observed rank and the full allowed error-correction
+box; noisy rank alone is not evidence against a true scalar product.
+Use original source budgets for synthetic dependency tests, and
+`tests/research/test_single_analytic_assessment.py` for fake-only instrument
+lifecycle checks. Do not replay the single declared finite comparison.
+
 For [continued-contact identity](theory/nodal/ORGANIZED_CONTACT_MAINTENANCE.md),
 select `tests/physics/test_organized_contact_maintenance.py` with external
 interaction, relative-origin registration, outer-winding, sequential-observation
