@@ -114,6 +114,13 @@ measurement model.
   declared preparations on
   nine-node cycles reach [two nonzero winding classes](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-pair).
   Their internal phase geometry produces a [different response to the same probe](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-response).
+- **Collective identity and observation:** five acquired cycles can form a
+  larger NFR with an [additional winding](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/ORGANIZED_OUTER_WINDING.md)
+  in their mutual relations. Prescribed probes and collective form readings
+  can [identify that winding along one continuing history](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/ORGANIZED_SEQUENTIAL_OBSERVATION.md)
+  without supplying the observer with the constituent phase origins. The
+  proof retains the complete constituent state, probe work and finite identity
+  bounds; the winding alone does not predict every future interaction.
 - **Retention and recovery:** admitted patterns remain in protected regions
   and recover after bounded inputs. [Repeated joined interaction](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/SINE_CLASS_REPEATED_INTERACTION.md)
   retains each branch's state, accumulated means and work under its supplied
@@ -139,7 +146,9 @@ particles, autonomous substrate birth or selection of their own preparation.
 
 The [formed-object SDK workflow](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/guides/relational/SINE_PATTERNS.md#formed-object-sdk-workflow)
 explains how to use their mathematical interfaces and preserve exact evidence
-through the shared exporter.
+through the shared exporter. The [regional guide](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/guides/REGIONAL_AND_RELATIONAL.md#detached-collective-organization-instruments)
+separately routes the private analytical instruments for collective identity
+and observation; they are not public SDK execution methods.
 
 ### How pulse, resonance and fractality fit together
 

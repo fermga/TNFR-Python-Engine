@@ -536,58 +536,49 @@ absent from all child means. The actual acquired host and recovered donor
 are admitted at attachment with unchanged residuals, not projected to that
 family. This source is not the previous auxiliary scalar law.
 
-The [full-state capture theorem](nodal/ORGANIZED_SOURCE_CAPTURE.md) separately
-admits the entire acquired source to an invariant acute winding domain and
-proves convergence to one common registration. All five child windings persist.
-For the same reached source without the donor contact, separately conserved
-component means exclude that common registration. This is a conditional
-organization-dependent relational property: the connected whole acquires a
-shared registration absent from the disconnected control, while the child
-windings already existed. It supplies no finite settling time, new primitive
-law, autonomous contact occurrence or general classification of larger objects.
+Collective identity needs its own formation and maintenance argument. In the
+[organized-source model](nodal/ORGANIZED_SOURCE_CAPTURE.md), all five acquired
+child windings persist while the connected source converges to a common
+registration; separately conserved component means exclude that alignment
+for the same source without the donor contact. In the distinct
+[five-child product model](nodal/ORGANIZED_OUTER_WINDING.md), all nine outer
+cycles acquire an initially absent winding and subsequently retain it while
+preserving all five constituent windings. All eighty original relative
+preparation directions are carried. The paired
+source without child-common form differences remains outer-unwound. These
+results retain supplied preparation and contact work; they establish neither
+finite settling time nor autonomous contact or hierarchy selection.
 
-The [outer-winding theorem](nodal/ORGANIZED_OUTER_WINDING.md) supplies a
-different conditional property on a five-child cycle: the whole acquires an
-initially absent outer winding while preserving each acquired C9 winding.
-It covers all nine fine outer cycles, all original relative preparation
-directions and subsequent maintenance. The matched source without supplied
-child-common form differences remains in outer winding zero. This is an
-additional relational identity, not a sum of constituent winding labels.
-Its preparation information and positive contact work remain premises;
-acquiring this identity does not by itself prove a new interaction law,
-autonomous hierarchy formation or identification with physical matter.
+Identity, response and sufficient state are different obligations. The
+[finite outer-response comparison](nodal/ORGANIZED_OUTER_RESPONSE.md) resolves
+different incremental responses to the same probe despite equal constituent
+winding labels and global means. Its full nonlinear bounds retain actual
+fine errors, background motion and signed event work. The additional
+information is relational state, not another independent force assigned to
+the same constituents. Winding alone does not determine every response,
+prove a resonance spectrum or establish fractality at arbitrary scales.
 
-The [finite outer-response theorem](nodal/ORGANIZED_OUTER_RESPONSE.md)
-separately establishes a consequence of the two actual acquired organizations.
-Their incremental receiver responses to the same phase probe are distinguishable
-with the declared observation allowance, while their constituent winding labels
-and global means match. Full nonlinear bounds retain background evolution,
-original fine uncertainty, signed probe work and every respective identity.
-Here the information absent from a list of constituent identities is their
-relational state. The result does not make response a function of winding
-alone, prove a resonance spectrum or establish fractality at arbitrary scales.
+Observation can identify that relational identity without reconstructing
+the complete state. The [matched-source inverse](nodal/ORGANIZED_OUTER_OBSERVATION.md)
+and [single-history inverse](nodal/ORGANIZED_SEQUENTIAL_OBSERVATION.md) infer
+outer winding without supplied child phase origins under their respective
+preparation and error contracts. The latter carries background evolution,
+probe backaction and cumulative work through one continuing object. Reversing
+a phase command does not restore an earlier state. Their common initial class
+contains the earlier acquired sources; generic members are not thereby proved
+formed, and a singleton necessary sector does not authenticate arbitrary
+records or prove their joint realizability.
 
-The [outer-observation theorem](nodal/ORGANIZED_OUTER_OBSERVATION.md)
-adds a conditional identification contract: fifteen collective form readings
-under fixed opposite probes determine all nine outer windings without giving
-the inverse the child phase origins. The broader admitted state class contains
-the earlier acquired families, but its generic members are not proved formed.
-Its same-source observation, finite work and identity premises remain explicit.
-A singleton necessary sector is not authentication of an arbitrary record.
-
-The [sequential observation theorem](nodal/ORGANIZED_SEQUENTIAL_OBSERVATION.md)
-removes the matched-copy premise: twenty-five readings along one continuing
-history identify the initial winding while retaining all respective identities
-through its prescribed probes. Cancelling a commanded phase offset does not
-undo the evolved state. The proof carries the induced motion, unknown
-background and cumulative event work; it establishes neither autonomous
-sensing nor a laboratory readout model.
-
-The specified five-child organization can therefore be described as a
-collective NFR with declared membership, acquired identity and interaction,
-while retaining its constituent state and boundary relations. Its observable
-winding labels one aspect of identity; it does not supply a complete scalar
-EPI description or replace the state required by the full evolution law.
+The five-child organization can therefore be described as a collective NFR
+with declared membership, acquired identity and interaction, retaining its
+constituent and boundary state. Its inferred winding is not an endpoint
+reconstruction or a complete scalar EPI description. A subsequent contact
+must consume the actual carried state or a separately justified enclosure;
+neither a winding label nor the old support's certificate supplies it. The
+sequential observation proves identity only through its declared word and
+does not inherit the earlier smaller probe's all-future capture. Supplied
+jumps still require their own operator descent and occurrence if claimed as
+registered actions. Physical calibration and identification remain open.
 
 Here structural participation does not identify the entire joint state with
 one scalar EPI coordinate. The current representation also retains phase,

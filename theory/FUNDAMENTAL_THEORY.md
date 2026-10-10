@@ -49,8 +49,8 @@ does not supply an oscillator or select its frequency.
 The engine's structural triad distinguishes three attributes:
 
 1. **Form (EPI)**: coherent structural configuration in a declared state space. A Banach-space formulation and the engine's signed scalar chart are representations whose scope must be stated; the nodal equation alone does not choose their dimension. Named operators use their jump contracts; declared solvers use the shared nodal integrator.
-2. **Capacity ($\nu_f$)**: nonnegative reorganization rate relative to the declared clock; $\nu_f=0$ suppresses continuous EPI flow, without necessarily erasing stored form. A held capacity is not automatically the frequency of a periodic trajectory.
-3. **Phase ($\phi$ or $\theta$)**: circular synchronization coordinate; coupling uses $|\mathrm{wrap}(\phi_i-\phi_j)|\leq\Delta\phi_{\max}$. The EPI equation alone supplies no phase clock.
+2. **Capacity ($\nu_f$)**: nonnegative reorganization rate relative to the declared clock; $\nu_f=0$ suppresses the unforced nodal form row, without erasing stored form or freezing the complete state. A separately declared input such as Gamma retains its own law. A held capacity is not automatically the frequency of a periodic trajectory.
+3. **Phase ($\phi$ or $\theta$)**: circular synchronization coordinate. Registered Coupling and Resonance use wrapped differences and the [shared U3 admission](UNIFIED_GRAMMAR_RULES.md#4-u3-resonant-coupling); a continuous model declares its own phase domain and evolution. The EPI equation alone supplies no phase clock.
 
 ### 2.3 Integrated Form and Stability Criterion
 

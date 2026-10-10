@@ -284,6 +284,9 @@ The sine layer shares four boundaries:
    work and resultant kinematics. Mobility and regional/mediated readers reuse
    these primitives while retaining their own complete-law identifiers.
 3. `_sine_preparation.py` supplies weighted preparation and uncertainty bounds.
+   It also owns exact bounded-length admission of ordered coordinate rows;
+   observation and composition consumers share that admission without loading
+   one another's acquisition machinery.
    Its report reader re-admits original source primitives before the shared
    row calculation. Fixed-source consumers can use that calculation after
    admitting their law, support, capacities and exact rows, without constructing
@@ -292,6 +295,23 @@ The sine layer shares four boundaries:
    coordinates, hidden initialization and original error associations.
 4. `sdk/relational_reports.py` delegates reports and projects exact JSON values;
    it neither installs a solver nor authenticates an evaluated response.
+
+The private `_organized_*` instruments are fixed-model analytical assessors,
+not public SDK dispatch or native evolution methods. Their
+[matched-source](src/tnfr/physics/_organized_outer_observation.py) and
+[single-history](src/tnfr/physics/_organized_sequential_observation.py) winding
+readers share initial-moment interval geometry and cycle inference, while
+each owns its finite-motion, noise, work and identity premises. Reading an
+unknown record does not load or execute the organized acquisition/recovery chain.
+The separate source-inclusion check admits its original primitives before
+loading and rebuilding the acquisition evidence. These import boundaries
+are checked in isolated processes rather than inferred from warm caches.
+
+An inferred sector is partial information, not an evolved source for a later
+interaction. The next consumer still needs actual carried coordinates or an
+admitted endpoint enclosure, the complete joined law and its contact work.
+The [regional instrument guide](docs/guides/REGIONAL_AND_RELATIONAL.md#detached-collective-organization-instruments)
+routes these conditional interfaces without presenting them as SDK methods.
 
 `relational_sine_pair.py` owns exact global pair state, cancellation
 observations and finite exchange/receiver certificates. It depends directly on

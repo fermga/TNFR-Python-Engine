@@ -19,8 +19,7 @@ from ..mathematics._rational_interval import (
     pi_interval,
     sin,
 )
-from ._organized_outer_winding import _assess_organized_outer_winding
-from ._repeated_organized_composition import _vector
+from ._sine_preparation import _prepared_coordinate_vector as _vector
 from ._sine_preparation import _prepared_degree_four_probe_remainder
 
 _FORM_BOUND = Q(1, 100)
@@ -437,6 +436,8 @@ def _assess_outer_observation_source_inclusion(
     rt = _vector(phase_error_bounds, "phase_error_bounds", 5)
     if min(*rx, *rt) < 0 or max(*rx, *rt) > _ORIGINAL_ALLOWANCE:
         raise ValueError("original errors must belong to frozen [0, 1e-10]")
+    from ._organized_outer_winding import _assess_organized_outer_winding
+
     acquisition = _assess_organized_outer_winding(
         form_error_bounds=rx, phase_error_bounds=rt
     )

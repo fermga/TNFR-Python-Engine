@@ -23,7 +23,7 @@ from ._organized_outer_observation import (
     _infer_outer_quadrature_cycle,
     _outer_observation_inverse_geometry,
 )
-from ._repeated_organized_composition import _vector
+from ._sine_preparation import _prepared_coordinate_vector as _vector
 from .relational_observations import _ordered
 
 _BLOCK_DURATION = 4 * _DELAY

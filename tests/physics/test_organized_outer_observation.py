@@ -492,7 +492,7 @@ def test_actual_acquired_source_inclusion_is_separate_from_public_inference(
     def forbidden(*args, **kwargs):
         pytest.fail("public inverse tried to recover hidden acquired source")
 
-    monkeypatch.setattr(owner, "_assess_organized_outer_winding", forbidden)
+    monkeypatch.setattr(owner, "_assess_outer_observation_source_inclusion", forbidden)
     result = owner._infer_organized_outer_winding(
         unprobed_means=(Q(0),) * 5,
         positive_probe_means=(Q(0),) * 5,

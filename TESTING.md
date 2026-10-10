@@ -420,6 +420,17 @@ inverse must neither consume hidden phases nor rebuild an acquired source;
 conditional necessary compatibility cannot authenticate a supplied history.
 Retain the no-trajectory and frozen-producer guards.
 
+Both winding readers share exact coordinate admission and initial-moment
+inference; these mechanisms must remain independent of source acquisition.
+For dependency changes also select
+`tests/physics/test_organized_observation_dependencies.py`. Its fresh-process
+import guards reject acquisition/composition imports even when the surrounding
+test session has already loaded them. Invalid source primitives must reject
+before loading the optional source-inclusion assessor. Shared coordinate
+admission additionally needs the repeated-composition and preparation-reuse
+controls; it preserves ordered finite-length input, exact represented values
+and rejection of unsupported scalar types without float coercion.
+
 For [identity-preserving assembly work](theory/nodal/ORGANIZED_ASSEMBLY_WORK.md),
 select `tests/physics/test_organized_assembly_work.py` with
 `tests/physics/test_acquired_organized_network_capture.py`,

@@ -570,7 +570,6 @@ def test_public_inverse_never_recovers_hidden_acquisition_or_a_matched_branch(
     monkeypatch.setattr(
         previous, "_assess_outer_observation_source_inclusion", forbidden
     )
-    monkeypatch.setattr(previous, "_assess_organized_outer_winding", forbidden)
     monkeypatch.setattr(previous, "_infer_organized_outer_winding", forbidden)
     result = owner._infer_sequential_outer_winding(readings=records)
     assert result.identified_winding == 1

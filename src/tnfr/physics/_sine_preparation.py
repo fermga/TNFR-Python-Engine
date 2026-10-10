@@ -22,6 +22,21 @@ from .reversible_eigenmode_reference import _negative_exp_bounds
 from .structural_diffusion import _exact_flow_gap_from_rationals
 
 
+def _prepared_coordinate_vector(values, label, size):
+    """Admit a registered ordered state or observation row exactly.
+
+    The caller declares the coordinate count and meaning. This helper retains
+    represented real values without float materialization, consumes at most
+    one excess item, and supplies no state-class or provenance certificate.
+    """
+    raw = _ordered(values, label, limit=size + 1)
+    if len(raw) != size:
+        raise ValueError(f"{label} requires {size} registered coordinates")
+    return tuple(
+        exact_or_represented_real(value, f"{label}[{i}]") for i, value in enumerate(raw)
+    )
+
+
 def _prepared_form_costs(*, form, weighted_edges):
     """Return exact edge storage and its nodal gradient for admitted data.
 

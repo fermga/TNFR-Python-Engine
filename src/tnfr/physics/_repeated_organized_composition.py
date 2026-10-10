@@ -16,8 +16,8 @@ from .._exact_time import exp_unit_bounds
 from ..mathematics._comparison_flow import scalar_affine_upper
 from ..mathematics._rational_interval import I, cos, pi_interval, sin, sqrt
 from ._sine_constitutive_inheritance import _assess_acquired_constitutive_inheritance
+from ._sine_preparation import _prepared_coordinate_vector as _vector
 from ._sine_preparation import _prepared_form_costs
-from .relational_observations import _ordered
 
 _SIZE = 36
 _HORIZON = Q(1)
@@ -32,13 +32,6 @@ def _interface(value):
     if type(value) is not str or value not in _INTERFACES:
         raise ValueError("interface must be 'matching' or 'symmetric'")
     return value
-
-
-def _vector(values, label, size):
-    raw = _ordered(values, label, limit=size + 1)
-    if len(raw) != size:
-        raise ValueError(f"{label} requires {size} registered coordinates")
-    return tuple(_exact(value, f"{label}[{i}]") for i, value in enumerate(raw))
 
 
 def _radii(form_radius, phase_radius):

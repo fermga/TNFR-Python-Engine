@@ -18,6 +18,26 @@ Choose the execution owner and kind of evidence, then follow its scoped SDK work
 
 Existing section links remain available through this index. The [execution plan](../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) alone assigns research work.
 
+## Detached collective-organization instruments
+
+The [collective NFR ontology](../../theory/EMERGENT_ONTOLOGY.md#generative-bound-organization)
+and [theory-to-execution map](../../theory/README.md#theory-to-execution) route
+acquired composite identities to their private analytical assessors and tests.
+These fixed-protocol instruments assess the stated complete smooth-sine law;
+they are separate from public SDK report dispatch and native relational
+execution. Constituent state, boundary relations and original source errors
+remain part of the model after an identity has been acquired or observed.
+
+Choose the [matched-source observation](../../theory/nodal/ORGANIZED_OUTER_OBSERVATION.md)
+when its repeated initial-state premise is supplied, or the
+[single-history observation](../../theory/nodal/ORGANIZED_SEQUENTIAL_OBSERVATION.md)
+for its prescribed continuing sequence of probes and readings. Each inverse
+consumes its own primitive records and error contract. A reversed phase command
+does not reset the evolved state or cancel earlier work. A unique winding is
+conditional on the declared source, law, clock and observation premises;
+it neither authenticates arbitrary readings nor replaces the state needed
+to predict a later interaction.
+
 ## Section link directory
 
 These aliases route existing citations to their substantive owner.
