@@ -80,8 +80,11 @@ def test_original_history_control_keeps_finite_error_layers_and_same_source(asse
         assert observed == true + I(-2 * eta, 2 * eta)
         assert rectified == true + I(-4 * eta, 4 * eta)
         for error, correction in product((-2 * eta, 2 * eta), repeat=2):
-            possible = true + error + correction
-            assert rectified.lo <= possible.lo <= possible.hi <= rectified.hi
+            # The theorem encloses exact errors, not extra rounding produced
+            # by two successive interval additions in this test.
+            low = true.lo + error + correction
+            high = true.hi + error + correction
+            assert rectified.lo <= low <= high <= rectified.hi
     assert report.true_determinant_bounds == owner._determinant(
         report.true_response_matrix
     )

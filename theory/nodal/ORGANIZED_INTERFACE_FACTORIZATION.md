@@ -329,3 +329,56 @@ establish that every physical interaction must satisfy (14). An unresolved
 test would remain a finite admission result. Neither outcome selects a
 unique TNFR law, supplies indefinite outer-one maintenance or initiates a
 new hierarchy of closure moments.
+
+<a id="finite-interface-factorization-result"></a>
+## 7. Retained finite factorization obstruction
+
+The declaration and complete consumer were committed at `9548b8e1` before
+the single assessment. The [attempt](../../docs/assets/organized_interface_factorization/attempt.json)
+retains the committed source inventory, declaration and arithmetic. The
+[first result](../../docs/assets/organized_interface_factorization/result.json)
+is **`finite_scalar_factorization_excluded`**. Both complete supports and
+all acquisition, observation, work, storage and finite-identity prerequisites
+pass. The true and error-rectification determinant intervals both exclude
+zero. No alternative registration, trajectory or second candidate was run.
+
+The following outward decimal summaries enclose the recorded exact-rational
+true increments; rows share actual precontact source members, not merely
+winding labels:
+
+| Acquired host | Same-slot contact | Registered contact |
+| --- | --- | --- |
+| Outer zero | `[-3.893e-7, -3.886e-7]` | `[4.109e-8, 4.169e-8]` |
+| Outer one | `[5.130e-9, 5.730e-9]` | `[-3.834e-7, -3.827e-7]` |
+
+The larger response belongs to different organizations in the two columns.
+This change cannot be explained by multiplying both source responses by
+one common probe gain. More precisely, the retained outward bounds satisfy
+
+\[
+ \mathcal D(T)\subset[1.4852,1.4902]\,10^{-13},\qquad
+ \mathcal D(K)\subset[1.4525,1.5230]\,10^{-13}.
+\]
+
+These have squared form units. The second bound includes both the eight
+actual raw-reading errors and every correction consistent with their error
+model, as defined in (15)--(16). It does not substitute the nonzero rank of
+a noisy point matrix for a true-response argument.
+
+The work and present-storage ceilings remain below 90.003 and 169.740,
+respectively, for every contact (the outer-zero storage bound is smaller).
+All six internal and nine old outer windings survive through `h=1e-3`.
+Actual contact work need not agree between interfaces. Each counterfactual
+history retains its earlier preparation and observation payments; summing
+them does not define an executed four-contact experiment.
+
+Thus the single purely multiplicative source/probe factor is excluded
+uniformly over the declared full preparation and noise box. The claim is
+stronger than different winding labels having different onsets: the source
+factor was allowed to depend on the complete actual host state, and the
+decision concerns finite continuations with retained uncertainty and work.
+It does not exclude an affine response, a nonlinear scalar encoding, real
+observations of complex products, or a richer retained boundary description.
+It does not derive physical charge, spin, a quantum state or a unique law.
+The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns the reassessment and next task.

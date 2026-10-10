@@ -489,6 +489,9 @@ box; noisy rank alone is not evidence against a true scalar product.
 Use original source budgets for synthetic dependency tests, and
 `tests/research/test_single_analytic_assessment.py` for fake-only instrument
 lifecycle checks. Do not replay the single declared finite comparison.
+Select `tests/physics/test_organized_interface_factorization_evidence.py` to
+reconstruct the retained support, phase boxes, all three matrix enclosures
+and source prerequisites without calling the assessor or producer.
 
 For [continued-contact identity](theory/nodal/ORGANIZED_CONTACT_MAINTENANCE.md),
 select `tests/physics/test_organized_contact_maintenance.py` with external

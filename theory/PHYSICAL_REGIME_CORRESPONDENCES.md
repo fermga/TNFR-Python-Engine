@@ -212,6 +212,15 @@ total follows from centering; it is not evidence of physical neutrality or
 charge quantization. Equal inventory also need not give equal subsequent
 interaction. The balance is a reusable mechanism, not an electromagnetic law.
 
+The [finite normalized-interface comparison](nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result)
+further excludes a purely multiplicative scalar source/probe description
+for its acquired sine-law families, even after all allowed reading-error
+corrections. The changing contacts consume different retained phase
+correlations. This is a TNFR factorization obstruction, not a test of an
+independently measured electric charge or electromagnetic interaction.
+Any physical comparison must declare its reference regime and its spatial,
+preparation and observation maps before using response rank as a criterion.
+
 The [two-contact response](nodal/SINE_PAIR_INTERACTION.md#sine-two-contact-orientation-response)
 already establishes orientation-sensitive interaction in a specified finite
 experiment with evolving source and probes. The
@@ -238,7 +247,7 @@ units. It must predict the force or field behavior of the claimed regime;
 see the [electromagnetic force and field relations](https://www.feynmanlectures.caltech.edu/II_01.html).
 Supplying those physical laws as extra equations is a constitutive model,
 not their emergence from TNFR. These obligations refine the common research
-target without opening a separate charge or magnetism campaign.
+target; the execution plan alone activates a charge or magnetism comparison.
 
 <a id="quantum-emergence-obligations"></a>
 

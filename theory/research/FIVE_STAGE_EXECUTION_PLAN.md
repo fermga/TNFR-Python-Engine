@@ -231,7 +231,10 @@ additional mixed-cycle information required by uninterrupted maintenance.
 The [joint resource result](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result)
 admits wider primitive errors, a shorter recovery dwell and larger reading
 errors together, while retaining necessary work and time restrictions.
-The next active question is [finite coupling across normalized interfaces](#organized-interface-factorization-admission).
+The [finite interface result](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result)
+excludes a purely multiplicative scalar source/probe factor, retaining actual
+source members and every allowed reading-error correction. The next active
+question is [conserved charge versus spatially resolved response](#organized-charge-response-bridge-admission).
 Stationary compatibility in the source chamber remains unresolved for the
 proposed stable-stationary maintenance route, with no continued search active.
 The [prepared storage observer](#storage-comparison-producer-admission)
@@ -250,7 +253,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next theoretical admission | [Finite coupling across normalized interfaces](#organized-interface-factorization-admission): decide whether one intrinsic real scalar per actual organization can factor its finite response across two prospectively fixed probe interfaces |
+| Next property-bridge admission | [Conserved charge versus spatial response](#organized-charge-response-bridge-admission): test one independently justified reference regime and a complete collective observation map, preserving prior physical-source failures |
+| Closed finite factorization obstruction | [Two normalized interfaces](#organized-interface-factorization-admission): a nonzero true and error-rectified determinant excludes one purely multiplicative scalar source/probe factor throughout the declared source box; it does not identify or exclude physical charge |
 | Closed joint resource admission | [Joint preparation resources](#organized-joint-preparation-resources): one frozen corner admits the whole source/readout box under the same complete sine law; necessary phase-compression, contact-noise and acquisition-work restrictions remain separate |
 | Unresolved maintenance dependency, no active search | [Source-chamber stationary compatibility](../nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md): a certified stable target or a global stationary obstruction in the complete source class remains missing; actual source capture and winding loss are also unresolved |
 | Closed finite stationary search and chamber audit | [Full-fine contact search](#organized-contact-stationary-search): all 24 prescribed attempts stopped near an imposed margin with nonzero current; no target certificate or global exclusion. An exact counterexample shows that the fifteen windings omit mixed-cycle information required by uninterrupted maintenance |
@@ -402,15 +406,18 @@ twelve primitive allowances through `1e-6`, recovery dwell `8e10` and larger
 errors in both reading stages. Earlier preparations and evidence retain
 their original budgets. The supplied common-form offsets reaching `+/-8184`
 and assembly-work floor remain; structural units are not laboratory units.
-The next missing property is finite transferability across independently
-normalized interfaces, beyond invariance under a rigid relative origin.
+The [finite interface obstruction](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result)
+now separates a purely multiplicative scalar factor from structure-dependent
+interaction. It does not identify which independent physical quantity, if
+any, this state could represent. The next gate addresses that mapping before
+adding further probes or coordinates.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
 | Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Unresolved stable-stationary maintenance route; no active search.** The finite search is closed without a certificate; other classes do not repair uninterrupted maintenance. Reopen with a constructive target or an analytical certificate mechanism, not more starts |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
-| Transferable collective coupling | Decide finite source/probe factorization across two independently normalized interfaces with the same actual source member, complete history and bounded errors | **Sole immediate gate** below. This tests a specific intrinsic scalar-coupling hypothesis; it does not identify charge or derive a physical interaction |
-| Fundamental physical properties and independent observation | Start with a precisely defined property of fundamental physics: its symmetry, conservation/composition rules and measurable response. Determine which mathematical obligations TNFR meets or lacks, then admit a discriminating signature with preparation, clock, sensor, calibration/reserved separation and equally informed alternatives under [P1-P5](#supporting-measurement-bridge) | **Essential and eligible** once a concrete property, signature and bridge are specified; it need not wait for unique law selection or substrate origin. No current dataset has complete admission. Close at an admitted bridge, equivalence without a discriminator, or a scoped mapping/uncertainty obstruction |
+| Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
+| Fundamental physical properties and independent observation | Separate a conserved additive charge from spatially resolved interaction in one independently specified reference regime; admit the complete TNFR state/geometry/measurement map and an equally informed alternative under [P1-P5](#supporting-measurement-bridge) | **Sole immediate gate** below. No dataset is admitted and no fitting is active. Close at a complete bridge, observational equivalence or a specific mapping/complete-law obstruction |
 | Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Conceptually critical**, with no new compatibility scan active. If a countermodel shares all proposed premises, the uniqueness claim fails in that scope |
 | Autonomous preparation, support, capacity and events | Supply actual occurrence and state-evolution laws when claiming autonomous assembly. [Event work](../nodal/RELATIONAL_SUPPORT_EVENTS.md), passivity and [operator descent](../STRUCTURAL_OPERATORS.md) do not select occurrence | **Claim-dependent**. Current contacts and preparation remain supplied. Do not postpone investigation of the existing conditional composite until every origin question is solved |
 | Internal activity and recurrence | Separate preservation of identity from permanent motion; the [positive-loss boundary](../nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission) and alternative-mobility results retain different premises | **Prepared alternative** for a named claim requiring sustained activity. Neither a stationary identity nor finite response establishes recurrence or transfers an invariant measure |
@@ -423,7 +430,7 @@ An added observable earns inclusion by deciding the selected prediction or a
 meaningful minimality obstruction. Existing failed physical-source admissions
 remain failed; more samples cannot repair their complete-law mismatches.
 
-Only finite interface-factorization admission is active. The table is a reassessment
+Only charge-versus-spatial-response admission is active. The table is a reassessment
 of dependencies, not a fixed sequence or parallel campaign list. It preserves
 the objective of generated, physically testable organization without identifying
 winding, phase cancellation or storage with material constituents.
@@ -442,51 +449,65 @@ reading/horizon and winding/work bounds do not establish optimality or
 laboratory attainability. The exact fixed-ramp work floor remains material.
 
 <a id="organized-interface-factorization-admission"></a>
-### Immediate question: can an intrinsic scalar coupling transfer across probes?
+### Closed finite coupling factorization admission
 
-**Can one real coefficient belonging to an actual organized source, multiplied
-by a probe-only coefficient, represent its finite interaction across two
-independently normalized interfaces?** This is a precise structural obligation
-for the [intrinsic-property comparison](../EMERGENT_ONTOLOGY.md#research-target-physical-properties-of-collective-patterns).
-It does not assume that all physical interactions admit this factorization
-or identify the coefficient with electric charge. Existing counterexamples
-already exclude winding-only response and moment-only closure; repeating
-those onset calculations would not close this gate.
+The [result owner](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result)
+retains declaration/source revision `9548b8e1` and the one assessed pair of
+unit-contact registrations. All complete source, support, work and finite
+identity premises pass. Both the true determinant and the enlarged
+error-correction determinant exclude zero. The source factor was allowed
+to depend on the full actual host state; the obstruction is to the purely
+multiplicative form `R(s,p)=a(s)*b(p)`, not intrinsic properties generally.
+It does not exclude affine response, arbitrary nonlinear scalar dependence,
+real-part observations of complex products or multichannel descriptions.
+No operational copying, physical charge or new autonomous event is inferred.
 
-The [prospective declaration](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#prospective-interface-declaration)
-fixes cyclic offsets `2*(c-2) mod 9`, the same acquired resource box and a
-single finite matrix assessment. Both the true determinant and the enlarged
-error-rectification determinant must exclude zero. The declared comparison
-remains unevaluated until its source and protocol are committed.
+<a id="organized-charge-response-bridge-admission"></a>
+### Immediate question: conserved charge versus spatially resolved response
 
-1. **Declare two interfaces before evaluation.** Retain the admitted joint
-   resource box, the same C9 donor, clock, horizon, readings and event budgets.
-   Use the existing same-slot contact and one fixed childwise cyclic slot
-   registration. Both have 45 unit donor contacts, host/donor degrees 5/7
-   and unchanged internal and host-outer edges. Derive and freeze the second
-   registration and decision criterion before any response assessment; no
-   registration scan is active. Equal total conductance alone does not prove
-   response equivalence or carry a source certificate to changed support.
-2. **Re-admit the complete finite history.** Rebuild each contact's phase
-   correlations, both reactions and mean equations. Justify transfer of the
-   degree-based nonlinear remainder, exact mean correlations, paid event work,
-   storage and all fifteen finite-window identities. Retain both structural
-   state channels even when the selected readout is a mean-form increment.
-3. **Decide finite factorization.** Form a two-by-two response matrix: rows
-   are the acquired outer-zero and outer-one organizations; columns are the
-   two interfaces. Each row uses one retained precontact source member in two
-   counterfactual contacts. Propagate all source and reading uncertainty. A
-   determinant interval excluding zero rules out `R(s,p)=a(s)*b(p)` in this
-   declared domain. Exact factorization with controlled finite error would
-   admit it; an unresolved determinant identifies an unavailable test, not
-   permission for an unbounded sweep. Leading-order rank alone is insufficient.
-4. **Keep the quantifiers and physical boundary.** Same-source counterfactuals
-   are not operational copies. Independently prepared records require their
-   preparation uncertainty explicitly. A rank obstruction rules out one real
-   scalar factor, not real-part observations of complex products, vector,
-   tensor, multichannel or memory-dependent
-   descriptions, and not TNFR. It specifies information needed for a future
-   independent preparation, clock and measurement bridge.
+**Can a collective TNFR observation support a conserved additive charge and
+its spatially resolved interaction in one independently specified physical
+regime?** The target is the distinction between an intrinsic inventory and
+the response of an extended organization, not a claim that physical charge
+must produce a rank-one matrix. Use the
+[charge boundary](../PHYSICAL_REGIME_CORRESPONDENCES.md#charge-and-magnetic-response-boundary)
+and [collective-property ontology](../EMERGENT_ONTOLOGY.md#research-target-physical-properties-of-collective-patterns)
+as owners. This remains an admission question before any empirical campaign.
+
+1. **Specify one reference regime and its actual observables.** Use primary
+   references to define localized charge, additivity, transfer and the chosen
+   quasistatic spatial response, including external preparation and fields.
+   Keep net inventory separate from its spatial distribution. State what a
+   conventional extended-source model predicts under the same information;
+   the TNFR determinant is not itself a physical discriminator.
+2. **Admit the complete observation and geometry map.** A charge candidate
+   may be collective, but must satisfy its declared conservation, composition,
+   reference-origin and circular-phase obligations under the actual complete
+   law. Use existing current and common-origin counterexamples before adding
+   state. Declare what maps to physical position, preparation, clock, sensor
+   and input, with units and errors. Slot registration cannot silently become
+   physical position, and a convenient phase assignment cannot replace an
+   independently justified consumed state or input law.
+3. **Decide the mapping before collecting responses.** Close at a complete
+   mapping with a prospectively reserved discriminator against an equally
+   informed alternative, exact observational equivalence with no discriminator,
+   or a specific incompatibility in the stated map/law class. An obstruction
+   must identify the failing premise or transformation, rather than repeat
+   a general list of missing physical interpretations. Do not fit a desired
+   charge or interaction law and then describe it as derived.
+4. **Preserve prior physical decisions and practical scope.** Audit the
+   [passive-transport admission](PASSIVE_TRANSPORT_PROTOCOL.md) and its archived
+   failures first. Its capacitive P2 construction and evaluated Volts records
+   are not a new route or unseen evidence. No hardware purchase, apparatus
+   operation, data fitting or broad source search is activated. Any later
+   comparison must remain computer-accessible and terrestrial. Boundary-state
+   inference becomes a task only if this bridge identifies a specific missing
+   observation; no automatic third-interface or moment-building campaign.
+
+This tests a necessary bridge toward a fundamental property without claiming
+elementary-charge quantization, material constituent formation or the emergence
+of electromagnetism. A supporting measurement realization would retain that
+scope. Unique law selection and substrate origin remain separate open questions.
 
 No new stationary search, trajectory campaign or physical-data fitting is
 active. The unresolved maintenance route retains the complete source chamber,
@@ -532,7 +553,7 @@ unspecified, and an explicit same-windings counterexample occupies a different
 class. Existing source bounds place the actual preparation in the product
 class. Uninterrupted cut-free maintenance cannot leave it. This closes the
 domain-admission ambiguity. The stationary question remains open while the
-[current gate](#current-g3-gate) addresses finite coupling across interfaces.
+[current gate](#current-g3-gate) addresses conserved charge versus spatial response.
 It identifies no particle property and does not alter previous acquisition,
 finite interaction or outer-zero capture results.
 
@@ -2141,7 +2162,7 @@ the unavailable donor endpoint is activated by retaining this question.
 | General partial observation and internal-state recovery | General joint noisy record/state compatibility and a uniform sufficient derivative order remain deferred. The [fixed-law endpoint certificate](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-readout), [one-unknown-coefficient test](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-two-time) and [two-unknown-coefficient separation](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-two-law) cover only their named binary families and bounded preparation/readout errors. Reopen broader recovery only when a selected response needs it; reuse [sample admission](../nodal/SINE_ENVIRONMENTAL_MEMORY.md#sine-finite-sample-admission), [regular internal observability](../nodal/SINE_PAIR_STATE.md#sine-replica-internal-observability) and [cancellation classification](../nodal/SINE_PAIR_STATE.md#sine-pair-cancellation-observability) |
 | Controlled slow bridge reduction | Preparation, hidden source and time-domain approximation error. Reopen only when a selected response needs reduction of its [exact causal memory](../nodal/RESONANCE_FOUNDATIONS.md#sine-bridge-causal-memory); fix the preparation, domain and finite horizon, then bound the actual full/reduced trajectories. Existing reactive coefficients are not that bound and do not derive local damping |
 | Nonlinear mediated rebound or broader pulse estimates | Quantitative remainder or finite-preparation bounds beyond the already admitted finite-kick response. Reopen only for a named response claim outside that scope; do not repeat the closed bounded calculation |
-| Universal law, autonomous support/capacity and hierarchy selection | The active gate studies acquired identity under continued supplied contact; it does not select support, universal hierarchy formation, substrate origin or a uniquely selected complete law. The organized capture and auxiliary reservoir's local classification do not supply these premises. Reopen a broader claim only with its own F1-F4 admission; synchronization, passivity and contact eligibility do not select an occurrence law |
+| Universal law, autonomous support/capacity and hierarchy selection | The conditional organization and interface results do not select support, universal hierarchy formation, substrate origin or a uniquely selected complete law. The organized capture and auxiliary reservoir's local classification do not supply these premises. Reopen a broader claim only with its own F1-F4 admission; synchronization, passivity and contact eligibility do not select an occurrence law |
 | Approximate physical reduction and data evaluation | Activate only when a named mechanism or information discriminator needs independent confrontation. The [primitive-phase review](PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#primitive-phase-information-boundary) supplies source metadata and obstructions, not admitted data. The [receiver defect certificate](../nodal/SINE_PAIR_INTERACTION.md#sine-pair-receiver-defect) propagates declared complete-row errors for its own model; it does not establish source-specific mapped-law bounds. Reopening the direct oscillator route needs a justified preparation/reduction and sensor/clock bridge; more samples do not repair its closure obstruction. No blanket search or response fit is active |
 
 Earlier C4/C8 continuations, C5 itineraries, C6 global-runtime certification,

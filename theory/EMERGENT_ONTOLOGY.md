@@ -610,6 +610,16 @@ restrictions remain. Such robustness supports a usable mathematical object;
 it does not establish an intrinsic scalar interaction coefficient, autonomous
 preparation or a laboratory realization.
 
+The [finite interface comparison](nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result)
+now excludes a purely multiplicative scalar source/probe factor across two
+fixed, independently normalized contacts. It retains the same actual source
+members, finite nonlinear evolution and all admissible reading-error
+corrections. This identifies information in how an organization meets its
+environment; it does not exclude intrinsic properties, nonlinear scalar
+descriptions or real observations of complex amplitudes. The result has no
+physical-charge interpretation without an independent interaction and
+measurement bridge.
+
 The [continued-contact classification](nodal/ORGANIZED_CONTACT_MAINTENANCE.md)
 now distinguishes stable constituent retention from preservation of the
 additional outer identity. The actual outer-zero control, including all
