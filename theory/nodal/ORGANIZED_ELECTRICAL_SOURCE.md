@@ -268,3 +268,46 @@ TNFR has not derived elementary charge, microscopic constituents or quantum
 behavior. An equivalence cannot empirically discriminate against the very
 same conventional circuit. Independent sensors, laboratory clock,
 preparation and physical constitutive evidence remain separate obligations.
+
+<a id="source-electrical-admission-result"></a>
+## 7. Frozen source-inclusive result
+
+Declaration and consuming source were committed at
+`10bf3e1003d2bb864d8bbbb9f2e2900957923c39` before the exclusive assessment.
+The [attempt](../../docs/assets/organized_electrical_source/attempt.json)
+records that source inventory and budget; the
+[result](../../docs/assets/organized_electrical_source/result.json) retains
+the exact report. Its verdict is `finite_collective_electrical_source_admitted`.
+All eleven prerequisite flags and twenty-five history margins pass. This
+is one analytical assessment, without a trajectory or physical experiment.
+
+The following displayed bounds are rounded conservatively; the evidence
+retains exact fractions and outward trigonometric endpoints.
+
+| Quantity, uniform unless integrated | Certified bound in declared structural units |
+| --- | --- |
+| Hidden form norm A | `<4.05e-8` |
+| Hidden phase norm B | `<7.01e-8` |
+| Strict circular collar margin | `>1.57079618` radians |
+| Collective closure defect, l1 norm | `<2.55e-19` |
+| Ideal-comparator form error, Euclidean norm | `<2.55e-22` |
+| Ideal-comparator phase error, consistent-lift Euclidean norm | `<1.19e-28` radians |
+| Signed hidden storage R_H | `-2.46e-14 < R_H < 3.27e-14` |
+| Integrated hidden loss | `<4.10e-17` |
+| Absolute integrated collective hidden-work correction | `<2.55e-23` |
+
+The form-error bound is below the unchanged `1e-9` raw-reading allowance.
+It bounds every member of both original acquired source families on
+`0<=tau<=1e-3`, when the ideal comparator starts at that member's actual
+collective means. It is not a measured error or a relative error guarantee;
+the phase and storage bounds are not extra laboratory observations. Smaller
+actual reading errors do not change the declared resolution threshold.
+
+This closes the finite source-departure obligation: internal deviations do
+not obstruct this particular conditional collective electrical description.
+The hidden term remains present, and exact aggregate passivity, all-future
+maintenance, source switching and empirical identification remain unproved.
+The [read-only evidence controls](../../tests/physics/test_organized_electrical_source_evidence.py)
+reconstruct the arithmetic and source associations without rerunning the
+assessment. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns the next dependency.

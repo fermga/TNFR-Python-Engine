@@ -561,9 +561,10 @@ has an exact formal passive-energy representation with retained phase. The
 declared direct fine-node charge/phase interpretation on C9 and the same-slot
 54-node contact fails the physical capacitance sign test, including its
 grounded and statically reduced variants. The exact six-child carrier admits
-the explicitly constructed passive collective circuit (22)-(25). Extending
-that collective result to actual off-carrier prepared families requires new
-observation and complete-law error bounds. No elementary-charge quantization, microscopic
+the explicitly constructed passive collective circuit (22)-(25). The
+[source-inclusive comparison](ORGANIZED_ELECTRICAL_SOURCE.md#source-electrical-admission-result)
+extends that collective result to actual prepared families with circular
+observation and uniform finite error bounds. No elementary-charge quantization, microscopic
 constituent formation, electromagnetic emergence or empirical validation
 follows from either conclusion.
 
@@ -656,10 +657,10 @@ The loss and mean storage obey
 \]
 
 Equations (27)-(33) isolate the actual observation, closure and hidden-work
-obligations. They supply no evaluated finite bound, trajectory approximation,
-physical calibration or support-event model. The
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#organized-collective-electrical-source-admission)
-owns the prospective source-inclusive gate. The
+obligations. The [source-inclusive owner](ORGANIZED_ELECTRICAL_SOURCE.md)
+uses them to prove and assess the finite comparison on the acquired families,
+retaining hidden storage and work. Physical calibration and support events
+remain separate obligations. The
 [exact algebra and field controls](../../tests/physics/test_organized_electrical_realization.py)
 verify the carrier construction and fine obstruction without replaying a
 frozen producer; the general conditional proofs remain in this owner.

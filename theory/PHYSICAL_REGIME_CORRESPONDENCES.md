@@ -240,9 +240,12 @@ same-slot 54-node contact. In contrast, the exact six-child helical carrier
 has an explicit passive lumped-circuit realization: aggregate charge and
 circular registration phase obey the full reference law, with the variable
 storage and total loss matched. Its dense capacitor/resistor wiring is part
-of the construction. This is a conditional collective realization; actual
-off-carrier source errors, sensor calibration and physical preparation have
-not been admitted. The Josephson relations and their constants remain
+of the construction. The [source-inclusive comparison](nodal/ORGANIZED_ELECTRICAL_SOURCE.md#source-electrical-admission-result)
+admits actual off-carrier preparation errors on the unchanged finite contact
+horizon, with explicit hidden current, storage and work bounds. It remains
+conditional on actual initial collective coordinates, not their recovery
+from existing form readings. Sensor calibration, physical preparation and
+support switching have not been admitted. The Josephson relations and their constants remain
 supplied physics, and the result does not derive quantum behavior.
 
 The [two-contact response](nodal/SINE_PAIR_INTERACTION.md#sine-two-contact-orientation-response)

@@ -314,6 +314,72 @@ def test_zero_readout_budget_does_not_certify_a_nonzero_closure_error(
     )
 
 
+def test_boolean_recovered_radius_is_rejected_before_concatenation(
+    assess, original_source
+):
+    with pytest.raises((ValueError, TypeError)):
+        assess(replace(original_source, recovered_radius=True))
+
+
+@pytest.mark.parametrize("margin", (Q(-1), Q(1)))
+def test_new_nonresponse_history_premises_are_not_silently_discarded(
+    assess, original_source, margin
+):
+    source = replace(
+        original_source,
+        sufficient_margins=original_source.sufficient_margins
+        + (("additional_history_premise", margin),),
+    )
+    report = assess(source)
+    assert dict(report.prerequisite_margins)["additional_history_premise"] == margin
+    assert report.admitted is (margin > 0)
+    assert ("additional_history_premise" in report.unresolved_conditions) is (
+        margin <= 0
+    )
+
+
+def test_host_law_must_match_the_transported_observation_model(assess, original_source):
+    outer = original_source.outer_resources
+    source = replace(
+        original_source,
+        outer_resources=replace(
+            outer, geometry=replace(outer.geometry, clock_factor=Q(1, 5))
+        ),
+    )
+    report = assess(source)
+    assert not report.admitted
+    assert "complete_observation_law" in report.unresolved_conditions
+
+
+def test_host_support_must_retain_every_edge_during_observation(
+    assess, original_source
+):
+    outer = original_source.outer_resources
+    source = replace(
+        original_source,
+        outer_resources=replace(
+            outer,
+            geometry=replace(
+                outer.geometry, weighted_edges=outer.geometry.weighted_edges[:-1]
+            ),
+        ),
+    )
+    report = assess(source)
+    assert not report.admitted
+    assert "complete_observation_support" in report.unresolved_conditions
+
+
+def test_observation_amplitude_is_part_of_the_complete_word(assess, original_source):
+    report = assess(
+        replace(
+            original_source,
+            observation=replace(original_source.observation, probe_amplitude=Q(1, 5)),
+        )
+    )
+    assert not report.admitted
+    assert "complete_observation_word" in report.unresolved_conditions
+
+
 @pytest.mark.parametrize(
     "parameter", ("source", "slot_offsets", "horizon", "readout_error", "trajectory")
 )

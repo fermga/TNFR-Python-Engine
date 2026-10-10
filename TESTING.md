@@ -512,6 +512,8 @@ hidden work and loss distinct. The finite approximation does not prove exact
 aggregate passivity, phase recovery from earlier form readings or physical
 component calibration. Use the shared fake-only lifecycle controls; do not
 rerun the single declared assessment.
+Use `tests/physics/test_organized_electrical_source_evidence.py` to reconstruct
+the exact retained bounds, fixed protocol and source receipts read-only.
 
 For [finite interface factorization](theory/nodal/ORGANIZED_INTERFACE_FACTORIZATION.md),
 select `tests/physics/test_organized_slot_registration.py` and

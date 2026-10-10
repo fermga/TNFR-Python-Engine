@@ -233,8 +233,10 @@ admits wider primitive errors, a shorter recovery dwell and larger reading
 errors together, while retaining necessary work and time restrictions.
 The [finite interface result](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result)
 excludes a purely multiplicative scalar source/probe factor, retaining actual
-source members and every allowed reading-error correction. The next active
-question is [the acquired collective electrical description](#organized-collective-electrical-source-admission).
+source members and every allowed reading-error correction. The
+[source-inclusive electrical bound](#organized-collective-electrical-source-admission)
+now retains actual internal deviations throughout the original finite contact.
+The next active question is [independent physical identification](#organized-electrical-operational-identification).
 Stationary compatibility in the source chamber remains unresolved for the
 proposed stable-stationary maintenance route, with no continued search active.
 The [prepared storage observer](#storage-comparison-producer-admission)
@@ -253,7 +255,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next collective source admission | [Acquired collective electrical description](#organized-collective-electrical-source-admission): retain actual same-slot source deviations, circular observation, finite closure error, storage and net transfer around the exact passive collective realization |
+| Next physical identification admission | [Operational electrical dictionary](#organized-electrical-operational-identification): identify independent observations and scales, and a prospective cross-preparation constraint or its absence, before admitting any physical data |
+| Closed collective source admission | [Acquired collective electrical description](#organized-collective-electrical-source-admission): actual same-slot source deviations have an admitted circular observation and uniform finite circuit error, with signed hidden storage, loss and work retained |
 | Closed complete-state constitutive comparison | [Charge and internal electrical state](#organized-charge-internal-state-admission): a direct fine-island map fails passive capacitance signs; the exact six-child carrier admits a constructive ideal passive circuit with matched variable energy and loss |
 | Closed scoped charge-map obstruction | [Charge versus spatial response](#organized-charge-response-bridge-admission): identical-site conserved observations are affine in form; the full-density map fails unforced Ohmic closure, and homogeneous local edge redistribution cannot close near an acute C9 twist |
 | Closed finite factorization obstruction | [Two normalized interfaces](#organized-interface-factorization-admission): a nonzero true and error-rectified determinant excludes one purely multiplicative scalar source/probe factor throughout the declared source box; it does not identify or exclude physical charge |
@@ -414,16 +417,18 @@ interaction. It does not identify which independent physical quantity, if
 any, this state could represent. The [charge-map result](../nodal/ORGANIZED_CHARGE_OBSERVATION.md)
 excludes the stated density-only realizations. The [retained-state comparison](../nodal/ORGANIZED_ELECTRICAL_REALIZATION.md)
 now supplies an exact passive electrical representation of the six-child
-carrier while excluding the direct fine-island map. Actual source deviations
-remain the immediate issue; a supplied Josephson reference is not a TNFR
-derivation of its material law or quantum constants.
+carrier while excluding the direct fine-island map. The
+[actual-source comparison](../nodal/ORGANIZED_ELECTRICAL_SOURCE.md#source-electrical-admission-result)
+now controls internal deviations throughout the declared contact. Independent
+physical identification remains the immediate issue; a supplied Josephson
+reference is not a TNFR derivation of its material law or quantum constants.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
 | Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Unresolved stable-stationary maintenance route; no active search.** The finite search is closed without a certificate; other classes do not repair uninterrupted maintenance. Reopen with a constructive target or an analytical certificate mechanism, not more starts |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
-| Fundamental physical properties and independent observation | Test whether the exact passive collective realization remains a justified finite description of the existing acquired same-slot families, with actual hidden deviations and complete work/observation accounting | **Sole immediate gate** below. The ideal carrier result is conditional; no physical source, calibration or fit is admitted. Close at a source-inclusive finite bound or a specific obstruction to the proposed collective description |
+| Fundamental physical properties and independent observation | Identify what independently measured charge/phase relation the admitted collective description predicts after separate scale calibration, beyond a freely configured equivalent circuit | **Sole immediate gate** below. Close at an operational prospective constraint or a specific identification obstruction before physical data, fitting or hardware. Approximation error is not a TNFR-only signal |
 | Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Conceptually critical**, with no new compatibility scan active. If a countermodel shares all proposed premises, the uniqueness claim fails in that scope |
 | Autonomous preparation, support, capacity and events | Supply actual occurrence and state-evolution laws when claiming autonomous assembly. [Event work](../nodal/RELATIONAL_SUPPORT_EVENTS.md), passivity and [operator descent](../STRUCTURAL_OPERATORS.md) do not select occurrence | **Claim-dependent**. Current contacts and preparation remain supplied. Do not postpone investigation of the existing conditional composite until every origin question is solved |
 | Internal activity and recurrence | Separate preservation of identity from permanent motion; the [positive-loss boundary](../nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission) and alternative-mobility results retain different premises | **Prepared alternative** for a named claim requiring sustained activity. Neither a stationary identity nor finite response establishes recurrence or transfers an invariant measure |
@@ -436,7 +441,7 @@ An added observable earns inclusion by deciding the selected prediction or a
 meaningful minimality obstruction. Existing failed physical-source admissions
 remain failed; more samples cannot repair their complete-law mismatches.
 
-Only acquired collective electrical-description admission is active. The table is a reassessment
+Only operational physical-identification admission is active. The table is a reassessment
 of dependencies, not a fixed sequence or parallel campaign list. It preserves
 the objective of generated, physically testable organization without identifying
 winding, phase cancellation or storage with material constituents.
@@ -509,43 +514,54 @@ free, the Josephson relations are supplied physics and no measured material
 property or elementary-charge quantization has been derived.
 
 <a id="organized-collective-electrical-source-admission"></a>
-### Immediate question: an electrical description of the acquired organizations
+### Closed electrical description of the acquired organizations
 
-**Does the ideal collective description remain justified for the existing
-acquired same-slot interaction, including its actual internal deviations?**
-The exact carrier is an invariant conditional model; the frozen source is
-near it and cannot be reset to it. This gate must decide the resulting
-finite error and information obligations, rather than repeat circuit synthesis
-or improve a previously evaluated response's precision.
+The [source-inclusive result](../nodal/ORGANIZED_ELECTRICAL_SOURCE.md#source-electrical-admission-result)
+retains both actual source families, their entire observation history and the
+independent donor. Orthogonal hidden-state transport proves circular phase
+availability and a uniform finite approximation by the ideal collective
+circuit initialized at actual means. The declared one-time assessment passes
+the original form-reading resolution policy. Signed hidden storage, extra
+loss, endogenous closure work and regional charge transfer remain explicit.
+This does not reconstruct phase from the earlier form readings, establish
+exact aggregate passivity or certify electrical support switching.
 
-1. **Admit the observation on the actual source.** Apply the
-   [retained-reference charge and circular collar observation](../nodal/ORGANIZED_ELECTRICAL_REALIZATION.md#collective-electrical-departure-identities)
-   to the existing source family, including its unavailable domain; do not
-   replace it by an unqualified mean of angles. Retain marking, preparation,
-   conserved origins and the clock. Reuse the actual six-child source and
-   complete same-slot law; no new source, contact or parameter search.
-2. **Transport actual hidden deviations.** Use the existing recovery,
-   observation and contact bounds to retain each prepared state. Reuse the
-   owner's exact mean rows, quadratic sine-covariance bound and signed
-   storage/loss identities rather than re-deriving their nominal carrier.
-   Establish collar validity and a uniform finite error on the original
-   contact horizon before interpreting the passive circuit approximation.
-   A leading tangent, a nominal carrier or repeated mean measurements do
-   not establish this claim. Freeze any new numerical decision/budget before
-   a reserved assessment and preserve the original evaluated responses.
-3. **Keep physical and structural work explicit.** Match net charge transfer
-   for unions of children and the supplied uniform form-drive work pairing
-   where admitted. Dense electrical wires need not preserve individual fine
-   edge currents or regional energy allocations. Distinguish hidden storage
-   and closure-defect work from an external source. The contact's actual
-   switching/capacitance change needs separate accounting; the earlier TNFR
-   event budget is not an electrical occurrence or passivity certificate.
-4. **Close with a bounded decision.** Retain a source-inclusive conditional
-   finite description, or identify the observation, defect or work premise
-   that prevents it. An abstract circuit equivalence gives no empirical
-   discriminator against that same conventional circuit. Sensor, physical
-   preparation, laboratory clock and component tolerances remain independent
-   later obligations. No hardware, data fitting or P2/Volts replay is active.
+<a id="organized-electrical-operational-identification"></a>
+### Immediate question: an independently testable physical dictionary
+
+**Which relations between measurable physical quantities follow from the
+collective description after independent calibration, and which were supplied
+by choosing the reference circuit and its constitutive laws?** The finite
+source gate is closed. Improving its already sufficient approximation does
+not answer this P1 identification question.
+
+1. **Fix the physical property and observations.** Start with conserved
+   aggregate inventory, circular phase and their complete current/voltage
+   relation. Specify independently meaningful sensor, preparation, input and
+   laboratory-clock models. Preserve actual origins, retained state, hidden
+   initialization, preparation work and the finite identity horizon. Do not
+   identify structural form with a sensor merely by renaming it.
+2. **Separate calibration from consequences.** Inventory the free scales
+   `kappa,b`, reference/background choices, initial coordinates and component
+   tolerances. Keep the Josephson relations and `a_0=hbar/(2e)` explicitly
+   supplied. Determine what can be calibrated without consuming the response
+   proposed for evaluation, and which parameter combinations remain
+   unidentifiable. Account separately for any proposed physical switching.
+3. **Seek an unfitted relation across preparations or organizations.** Derive
+   a prospective constraint that survives those freedoms, or prove that the
+   admitted comparison supplies only an equivalent description. Compare
+   equally informed conventional models and retained constitutive alternatives.
+   Reproducing established physics is a valid generative aim; a deviation from
+   it is not required. A configured equivalent circuit or an upper error bound
+   alone supplies neither a TNFR-specific signal nor an independently derived
+   physical relation.
+4. **Close admission before a campaign.** Assess preparation time/work,
+   feasible independent readings and required tolerances under one terrestrial
+   laboratory-scale or workstation-accessible protocol. Close at a concrete
+   independently testable relation and its remaining prerequisites, or a scoped
+   identification/feasibility obstruction. Freeze a numerical decision before
+   any reserved assessment. No hardware, data fitting, new source sweep or
+   P2/Volts replay is active.
 
 The shifted registration is outside this first zero-frustration realization:
 its effective phase biases cannot be silently gauged away or identified with
@@ -596,7 +612,7 @@ unspecified, and an explicit same-windings counterexample occupies a different
 class. Existing source bounds place the actual preparation in the product
 class. Uninterrupted cut-free maintenance cannot leave it. This closes the
 domain-admission ambiguity. The stationary question remains open while the
-[current gate](#current-g3-gate) addresses the acquired collective electrical description.
+[current gate](#current-g3-gate) addresses independent physical identification of the collective description.
 It identifies no particle property and does not alter previous acquisition,
 finite interaction or outer-zero capture results.
 

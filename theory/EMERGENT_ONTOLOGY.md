@@ -637,8 +637,12 @@ six whole C9 objects on their exact same-slot carrier admit an ideal passive
 electrical representation. This follows from their inherited complete law
 and wheel geometry, with aggregate inventory and storage retained. It is a
 restricted effective description, not physical charge emerging merely from
-renaming nodes. Its extension to actual prepared deviations and independent
-measurements remains an obligation.
+renaming nodes. The [source-inclusive bounds](nodal/ORGANIZED_ELECTRICAL_SOURCE.md#source-electrical-admission-result)
+extend the description to both actual acquired families on the original
+finite contact horizon, with circular phase availability and signed hidden
+storage/work retained. The ideal comparator starts at actual collective
+means; these are not inferred from earlier form readings. Independent
+physical measurements and component switching remain obligations.
 
 The [continued-contact classification](nodal/ORGANIZED_CONTACT_MAINTENANCE.md)
 now distinguishes stable constituent retention from preservation of the
