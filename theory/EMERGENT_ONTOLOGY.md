@@ -612,6 +612,17 @@ actual outer-one source's eventual fate remains open. Constituent windings,
 internal shape and collective identity therefore require separate maintenance
 arguments on the actual interface and law. None is yet a particle identity.
 
+The [reflection obstruction](nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md)
+separates the shape of a stationary organization from the identities it
+retains. With the declared rim reflection and phase inversion about the hub,
+stationary balance and the fifteen winding-one constraints force relative
+origins to be constant along the odd internal cycles. Every resulting
+retained-outer-winding equilibrium is unstable, even allowing nonacute gaps
+and nonuniform internal profiles. An exact saddle nevertheless retains all
+fifteen windings. Stable stationary identity would therefore need to lie
+outside that reflection sector; this does not derive spontaneous symmetry
+breaking or determine the actual acquired source's fate.
+
 Here structural participation does not identify the entire joint state with
 one scalar EPI coordinate. The current representation also retains phase,
 capacity and support; reducing these to a richer form description would need

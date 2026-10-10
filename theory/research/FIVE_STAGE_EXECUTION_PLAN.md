@@ -221,8 +221,12 @@ The boundary moment remains incomplete state. The
 now proves all-future capture of the actual outer-zero control at supplied
 zero donor origin, and a different obstruction for outer winding one.
 Its exact carrier must exit the old acute cell; full-fine stable retention
-there requires substantial internal redistribution. The sole next question
-is [full-fine organization beyond that obstruction](#current-g3-gate), before
+there requires substantial internal redistribution. The
+[reflection obstruction](#organized-contact-reflection-admission) also
+excludes stable stationary retention in the declared full-fine reflection
+sector, even on nonacute charts. An exact retained-identity saddle separates
+existence from stability. The sole next question is
+[stationary identity outside that sector](#current-g3-gate), before
 claiming continued retention or loss of the actual outer-one source.
 The [prepared storage observer](#storage-comparison-producer-admission)
 is retained as an instrument; it has no frozen protocol or reserved response
@@ -240,7 +244,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next theoretical admission | [Full-fine outer identity under contact](#current-g3-gate): determine whether internal reorganization beyond the proved instability domain can support a stable stationary outer identity on the same interface; existence, source entry and actual winding loss remain separate |
+| Next theoretical admission | [Full-fine outer identity outside reflection](#current-g3-gate): decide stationary compatibility on the same interface without the excluded reflection restriction; existence, full-state stability, source entry and actual winding loss remain separate |
+| Closed scoped stationary obstruction | [Reflected contact identity](#organized-contact-reflection-admission): constituent winding, odd C9 length and stationary currents force slot-independent relative origins; negative full-state cuts exclude stability throughout the declared reflection sector, including nonacute charts. An exact nonacute saddle retains all fifteen windings |
 | Closed theoretical contact classification | [Continued-contact geometry and control capture](#organized-contact-maintenance-admission): stable aligned target, antipodal saddle, carrier acute-chart exit, a full-fine near-carrier instability obstruction and all-future capture of the actual zero-origin outer-zero control |
 | Closed theoretical capability admission | [Relative-origin external port](#organized-external-port-registration-admission): every outer-one source has a uniformly small finite response; each outer-zero source has a larger response at some origin, with nonlinear error, two raw reading errors, contact work and fifteen finite identities retained |
 | Closed theoretical external interaction | [Carried composite contact](#organized-composite-interaction-admission): finite external mean-form contrast on the enlarged 54-node support, with both reactions, supplied registration, all original errors, separate contact work and fifteen marked identities; mean coordinates and an instantaneous contact moment do not close future response |
@@ -365,6 +370,17 @@ shape, not proof that the composite winding disappears. Whether a stable
 reorganized fine state exists is the immediate missing geometric premise.
 Neither source entry nor a loss deadline follows from the obstruction.
 
+The [reflection theorem](../nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md)
+excludes another complete stationary sector without a small-defect or acute
+gap assumption. Under the declared wheel reflection with phase inversion
+about the hub, the marked constituent windings and odd cycle length force
+slot-independent relative origins. Every retained-outer-winding stationary
+state then has a negative full-state Hessian direction. The exact cubic
+saddle shows that existence itself is possible. Any stable target must lie
+outside every reflection sector of this form; neither an invariant source
+symmetry nor spontaneous symmetry breaking has been established. This is a
+new structural restriction, not a refinement of an observation threshold.
+
 The original primitive allowances remain `1e-10`; `q=1e-70` is a derived
 recovery residual, not a required initial or sensor precision. Nevertheless,
 the supplied recovery dwell `2*10^13`, outer common-form offsets reaching
@@ -375,7 +391,7 @@ capabilities or demonstrated physical impossibilities.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
-| Composite identity under interaction | Determine whether the full fine state can reorganize beyond the proved instability domain while retaining a stable stationary outer identity on the same `C9 x W6` support | **Sole immediate gate** below. Close at certified existence/stability, a scoped obstruction, or a precise missing premise. The captured outer-zero control does not settle this; stable targets alone still do not establish source entry |
+| Composite identity under interaction | Decide whether a stationary target outside the excluded reflection sectors can retain all fifteen windings and be stable on the same `C9 x W6` support | **Sole immediate gate** below. Close at certified existence/stability, a scoped obstruction, or a precise missing premise. The reflected saddle and captured outer-zero control do not settle this; stable targets alone still do not establish source entry |
 | Operational preparation, work and timescales | Admit a coupled resource domain for a named maintained interaction: source width, dwell, work and readout error together, or a necessary-bound obstruction | **Next operational dependency** for the intended maintained collective identity. The positive outer-zero control does not transfer that identity or resolve its source history. Optimizing one sufficient constant without changing a capability is insufficient |
 | Fundamental physical properties and independent observation | Start with a precisely defined property of fundamental physics: its symmetry, conservation/composition rules and measurable response. Determine which mathematical obligations TNFR meets or lacks, then admit a discriminating signature with preparation, clock, sensor, calibration/reserved separation and equally informed alternatives under [P1-P5](#supporting-measurement-bridge) | **Essential and eligible** once a concrete property, signature and bridge are specified; it need not wait for unique law selection or substrate origin. No current dataset has complete admission. Close at an admitted bridge, equivalence without a discriminator, or a scoped mapping/uncertainty obstruction |
 | Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Conceptually critical**, with no new compatibility scan active. If a countermodel shares all proposed premises, the uniqueness claim fails in that scope |
@@ -395,13 +411,15 @@ of dependencies, not a fixed sequence or parallel campaign list. It preserves
 the objective of generated, physically testable organization without identifying
 winding, phase cancellation or storage with material constituents.
 
-### Immediate question: can internal reorganization preserve the outer identity?
+### Immediate question: can a target outside reflection retain the outer identity?
 
 **Does the same joined law admit a stable full-fine stationary organization
-with the marked outer winding, beyond the proved near-carrier obstruction?**
-The [contact theorem](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md) identifies
-where a robust stationary target cannot lie, while leaving this alternative
-open. Its actual outer-zero capture is a separate positive control. Retain
+with the marked windings outside the excluded reflection sectors?**
+The [contact theorem](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md) and
+[reflection obstruction](../nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md)
+identify domains where a stable target cannot lie. The actual outer-zero
+capture is a separate positive control; the nonacute cubic example is a
+stationary saddle. Neither resolves this remaining alternative. Retain
 the supplied unit support, complete law, capacity and clock; do not change
 contact weights or select another law merely to recover a desired answer.
 
@@ -411,13 +429,18 @@ contact weights or select another law merely to recover a desired answer.
    the proposed domain keeps those charts acute or permits nonacute gaps
    short of a winding cut. A conclusion on a restricted chart must remain
    restricted to it. Retain all fine coordinates and the neutral common modes.
+   Do not impose another unproved symmetry to simplify the remaining problem.
 2. **Decide stationary compatibility before a new source campaign.** Seek a
    certified stationary state and full-state stability, or a scoped geometric
    obstruction, accounting for the necessary internal redistribution when
    the outer charts stay acute. A carrier ansatz, a positive storage budget,
    negative edge weights or a numerically small residual alone cannot decide
-   full-fine existence or stability. Any numerical enclosure needs its own
-   frozen domain, precision and budget before evaluation.
+   full-fine existence or stability. Before numerical candidate generation,
+   freeze its domain, initialization rule, precision, finite work budget and
+   the meaning of an incomplete search. A successful candidate needs root
+   inclusion and a full relative-Hessian certificate. Positive definiteness
+   suffices; extra zero directions require further analysis, not an automatic
+   instability verdict. Failure to find a candidate is not global exclusion.
 3. **Keep geometry and actual preparation separate.** If a stable target is
    admitted, source inclusion from the original acquired and observed family
    becomes a named subsequent obligation, with every residual and supplied
@@ -434,9 +457,11 @@ This tests whether interaction can require a different internal organization
 while preserving a collective identity. It serves the eventual physical
 question of persistence and transformation of interacting objects, without
 identifying these windings with particles or predicting a measured lifetime.
-No full-fine reorganized target, actual outer-one capture or winding-loss
-result has yet been assessed. No new trajectory or physical-data campaign is
-active. Existing finite response and control capture results remain valid.
+No stable target outside the reflected sectors, actual outer-one capture or
+winding-loss result has been established. No new trajectory or physical-data
+campaign is active. Existing finite response and control capture results
+remain valid. The geometric question addresses persistence; it does not
+replace the independent property-first physical comparison above.
 
 For each subsequent law or hypothesis, record its status, independent
 premises, consequences, countermodels and decision in the existing definition
@@ -457,6 +482,27 @@ quantity alone does not identify electric charge, and internal phase rotation
 alone does not identify physical spin. Laboratory examples supply controls
 and discriminators without replacing the generative objective. Substrate
 origin, universal laws and recurrence across scales remain open hypotheses.
+
+<a id="organized-contact-reflection-admission"></a>
+## Closed scoped obstruction: stationary identity with reflection
+
+The [result owner](../nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md)
+keeps the complete contact law and all fifteen winding-one identities.
+Stationarity, paired winding sums and odd internal length rule out
+slot-dependent relative origins in the declared reflection sector, without
+requiring acute internal or outer gaps. The remaining wheel equations have
+a strictly negative full-state cut whenever the outer identity is retained.
+The complete two-row pencil therefore excludes stable stationary targets in
+that sector, including nonuniform internal profiles.
+
+An exact cubic construction admits a nonacute stationary state with all
+fifteen windings and a centered cut below `-27/4`. It establishes that
+stationary existence is different from stability. Its fixed algebraic
+enclosure was declared in `9c7c3ef4`; it assesses no prepared source and
+runs no trajectory. The theorem does not assert an invariant reflection
+sector, symmetry breaking, actual source capture or winding loss. The
+[remaining gate](#current-g3-gate) concerns targets outside those sectors
+under the same law and support.
 
 <a id="organized-contact-maintenance-admission"></a>
 ## Closed theoretical admission: stationary contact and actual control capture
@@ -482,8 +528,9 @@ retention of its fifteen marked windings and convergence to the aligned
 target. New attachment work is below `8.714e-14`; historical preparation
 and observation costs remain separate. This is an analytic control-source
 result, without a trajectory, settling deadline or transfer to other origins.
-The [next gate](#current-g3-gate) asks whether a different internal shape can
-support stable outer identity on the same law and interface.
+The [reflection classification](#organized-contact-reflection-admission)
+excludes a broader stationary sector; the [remaining gate](#current-g3-gate)
+retains the same law and interface outside that restriction.
 
 <a id="organized-external-port-registration-admission"></a>
 ## Closed theoretical admission: relative-origin interaction capability

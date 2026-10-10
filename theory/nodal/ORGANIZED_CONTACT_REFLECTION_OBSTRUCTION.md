@@ -380,3 +380,46 @@ owns the next admission and the property-first physical comparison.
 This conditional obstruction changes neither the earlier finite response
 nor the separately captured aligned outer-zero control, and identifies
 no fundamental physical property.
+
+## 6. Fixed algebraic enclosure and implementation boundary
+
+The declaration and analytic proof were committed as `9c7c3ef4` before
+evaluating the numerical illustration. The
+[detached implementation](../../src/tnfr/physics/_organized_contact_reflection.py)
+encloses only the root in (16), using exactly the declared 128 rational
+bisections. It then uses the shared outward square-root and argument
+owners to reconstruct (17), and the existing complete contact geometry
+and sine edge-field kernel for all 54 nodes and 144 edges. It admits no
+incoming report, alternate root, source or numerical-budget override.
+
+The resulting root bracket retains exact rational endpoints and opposite
+polynomial signs; the derivative stays positive throughout the original
+bracket. Materialization on the dyadic128 grid remains separate from that
+root isolation. The resulting principal-gap enclosures establish all
+fifteen marked windings one, including the five nonacute outer gaps.
+Their shared exact branch identities fix the winding sums; interval
+overlap alone would not determine an integer winding.
+
+The full-edge quadratic enclosure satisfies the conservative displayed
+bound
+
+\[
+ -7.030 < v^TMv < -7.029 < -27/4,
+ \tag{22}
+\]
+
+where v is the centered fixed-rim cut. The independently evaluated
+stationary-current boxes all contain zero and have absolute upper bounds
+below `5e-37`. These residuals check the implemented arithmetic; the
+cubic and trigonometric identities (16)--(18) prove stationarity. A
+passing residual flag cannot replace those identities or certify an
+arbitrary numerical candidate. A failed arithmetic audit makes the
+combined implementation certificate unavailable.
+
+The [dedicated tests](../../tests/physics/test_organized_contact_reflection.py)
+independently build edge fields, winding sums and the full negative cut,
+check exact root signs and the fixed budget, and retain the source-free
+and immutable-report boundaries. No trajectory or frozen source producer
+is invoked. This one illustrated saddle is not the proof of the general
+reflection-sector obstruction in Sections 2--3, and no actual acquired
+source is substituted by it.

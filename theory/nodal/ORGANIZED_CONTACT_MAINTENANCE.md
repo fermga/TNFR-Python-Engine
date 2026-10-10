@@ -592,6 +592,13 @@ owns that decision and the property-first physical comparison; none of
 the present bounds identifies mass, charge or another fundamental physical
 property.
 
+The [reflection classification](ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md)
+adds a separate obstruction without an acute-gap or small-defect premise.
+Its static reflection sector includes nonuniform internal profiles; no
+stable stationary state there retains all fifteen winding-one identities.
+An explicit nonacute saddle shows that stationary existence remains distinct
+from stability. Neither result supplies the actual outer-one source's fate.
+
 ## 8. Detached implementation and verification boundary
 
 The [maintenance owner](../../src/tnfr/physics/_organized_contact_maintenance.py)

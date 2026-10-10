@@ -473,6 +473,18 @@ acute face before claiming all-future capture. Rejected inputs and unavailable
 sources cannot pass through the old fixed-origin comparison verdict. No
 trajectory, origin scan or frozen-source regeneration is needed.
 
+For [reflected stationary contact identity](theory/nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md),
+select `tests/physics/test_organized_contact_reflection.py` with contact
+maintenance, external interaction and `tests/test_rational_interval.py`.
+Check the fixed cubic root bracket, all fifteen marked winding sums and
+branch margins, full fine stationary rows and the centered negative cut
+against independent edge calculations. Zero-enclosing residuals are an
+arithmetic audit; the exact cubic identities prove stationarity. The
+illustration covers one nonacute saddle, while the analytic proof owns the
+entire declared reflection sector. Preserve unavailable actual-source fate
+and the no-trajectory/frozen-producer guard; no candidate or precision scan
+belongs to this fixed illustration.
+
 For [identity-preserving assembly work](theory/nodal/ORGANIZED_ASSEMBLY_WORK.md),
 select `tests/physics/test_organized_assembly_work.py` with
 `tests/physics/test_acquired_organized_network_capture.py`,
