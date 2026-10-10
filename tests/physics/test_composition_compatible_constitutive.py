@@ -6,6 +6,7 @@ import mpmath
 import pytest
 
 from tests.sine_evidence_helpers import forbid_sine_regeneration
+from tnfr.mathematics._rational_interval import I, cos, sin
 from tnfr.physics import _composition_compatible_constitutive as owner
 
 
@@ -162,6 +163,37 @@ def test_exact_quarter_turn_separates_laws_despite_identical_target_jets(deforma
         -1 - 485 * deformation,
         5904 * deformation,
     )
+
+
+@pytest.mark.parametrize("deformation", (Q(-1, 324), Q(0), Q(1, 324)))
+@pytest.mark.parametrize("angle", (Q(0), Q(-31, 7), Q(1), Q(17, 3)))
+def test_continuous_lift_adapter_encloses_the_factored_own_potential_and_current(
+    deformation, angle, mp
+):
+    law = owner._derive_composition_compatible_law(deformation=deformation)
+    potential, current = owner._edge_potential_current_bounds(I(angle), law)
+    value, eps = _mp(mp, angle), _mp(mp, deformation)
+    _contains(mp, potential, _potential(mp, value, eps))
+    _contains(mp, current, _current(mp, value, eps))
+    if deformation == 0:
+        assert potential == 1 - cos(I(angle))
+        assert current == sin(I(angle))
+
+
+@pytest.mark.parametrize("deformation", (Q(-1, 324), Q(1, 324)))
+def test_interval_adapter_encloses_correlated_phasors_without_assuming_unit_corners(
+    deformation, mp
+):
+    law = owner._derive_composition_compatible_law(deformation=deformation)
+    angle = I(Q(3, 5), Q(7, 10))
+    potential, current = owner._edge_potential_current_bounds(angle, law)
+    eps = _mp(mp, deformation)
+    for value in (Q(3, 5), Q(5, 8), Q(13, 20), Q(7, 10)):
+        point = _mp(mp, value)
+        assert (
+            _mp(mp, potential.lo) <= _potential(mp, point, eps) <= _mp(mp, potential.hi)
+        )
+        assert _mp(mp, current.lo) <= _current(mp, point, eps) <= _mp(mp, current.hi)
 
 
 @pytest.mark.parametrize("deformation", (Q(-1, 324), Q(1, 324)))

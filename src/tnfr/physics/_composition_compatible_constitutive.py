@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from fractions import Fraction as Q
 
 from .._exact_time import exact_or_represented_real as _exact
-from ..mathematics._rational_interval import I
+from ..mathematics._rational_interval import I, cos, sin
 from ._sine_constitutive_inheritance import (
     _ConstitutiveInheritance,
     _derive_constitutive_inheritance,
@@ -132,6 +132,23 @@ def _edge_values(phasor, law):
     """Retain the original potential/current-jet view of the shared evaluator."""
     potential, jet, _, _ = _registered_edge_components(phasor, law)
     return potential, jet
+
+
+def _edge_potential_current_bounds(angle, law):
+    """Enclose potential/current for an admitted phase lift or interval.
+
+    The caller admits the primitive law and angle before using this internal
+    adapter. The outward sine/cosine rectangle encloses every corresponding
+    phasor; polynomial evaluation reuses the exact Fourier owner without
+    requiring independent rectangle corners to lie on the unit circle.
+    The zero member preserves the existing sine observation arithmetic.
+    """
+    phase = I.coerce(angle)
+    cosine, sine = cos(phase), sin(phase)
+    if law.deformation == 0:
+        return 1 - cosine, sine
+    potential, jet = _edge_values((cosine, sine), law)
+    return potential, jet[0]
 
 
 @dataclass(frozen=True)

@@ -333,6 +333,22 @@ alone cannot establish it. Select the read-only enclosure evidence audit when
 checking the inherited donor-loss consequence. No control regenerates a frozen
 response or substitutes endpoint work for an all-prefix bound.
 
+For [constitutive identity barriers and work](theory/nodal/CONSTITUTIVE_IDENTITY_BARRIERS.md),
+select `tests/physics/test_constitutive_identity_barriers.py`,
+`tests/physics/test_organized_regional_retention.py` and
+`tests/physics/test_composition_compatible_constitutive.py`. Independently
+evaluate the factored potential, the first-boundary minimizing configurations
+and the strict exclusion/convexity margins used by the global proof. A few
+sampled configurations are not a proof of minimality. Retain the narrower
+barrier domain separately from the valid constitutive domain, leaving absent
+minima unavailable. Check actual equal-network fine-edge target jets and
+same-state regional powers, both complete rows, contact storage and loss under
+each law. Exact quarter-turn phasors and represented phase lifts are distinct
+inputs; rounded pi cannot establish an exact witness identity. Preserve the
+zero-deformation observation and the sine-only source assessment. Select the
+inherited-interface algebra and oriented-interface controls when changing the
+shared edge evaluator. These checks run no trajectory or frozen producer.
+
 For [preparation information and acquired modes](theory/nodal/SINE_PREPARATION_MODE_SELECTION.md),
 select `tests/physics/test_sine_preparation_mode_selection.py` with the shared
 preparation and isolated-class controls above. Reconstruct the Laplacian energy

@@ -539,6 +539,13 @@ open interface interval select sine within this class. The other currents
 still inherit exact boundary-dependent laws, so that conditional selector
 does not follow from the NFR ontology or invalidate the present counterfamily.
 
+The [regional barrier and work comparison](CONSTITUTIVE_IDENTITY_BARRIERS.md)
+gives a further consequence of this same counterfamily on its admitted
+interval: even its true winding-boundary storage minima are not fixed by
+the matched target and composition properties. Regional powers can also
+differ at identical complete state and storage. This does not transfer a
+source outcome or select a preferred law.
+
 ## Implementation and independent controls
 
 The detached static owner
@@ -552,6 +559,10 @@ It reuses the shared registered-interface geometry and complete chart
 data without transferring a sine acquisition certificate. It represents
 the explicit stronger counterfamily, not a decision procedure for global
 nonnegativity of every analytic series in the classification.
+Its interval-angle adapter reuses the same finite harmonic evaluator for
+the full-state regional work observer. The sine member retains its original
+observation arithmetic; phase intervals enclose phasors rather than asserting
+that every corner of the sine/cosine rectangle lies on the unit circle.
 
 Its [independent controls](../../tests/physics/test_composition_compatible_constitutive.py)
 rebuild the potential and derivatives, target moments, exact nonsine

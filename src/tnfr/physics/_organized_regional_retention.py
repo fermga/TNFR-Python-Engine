@@ -1,8 +1,8 @@
 """Detached regional storage and conditional identity-retention budgets.
 
 ORGANIZED_REGIONAL_RETENTION.md owns the first-exit theorem. The observer
-evaluates the actual degree-four sine law at supplied complete state; the
-assessment rebuilds release bounds and tests a supplied all-prefix budget.
+evaluates the actual degree-four admitted law at supplied complete state; the
+assessment rebuilds sine release bounds and tests a supplied all-prefix budget.
 Neither operation observes a trajectory or authenticates accumulated work.
 """
 
@@ -12,8 +12,14 @@ from dataclasses import dataclass
 from fractions import Fraction as Q
 
 from .._exact_time import exact_or_represented_real as _exact
-from ..mathematics._rational_interval import I, cos, pi_interval, sin
+from ..mathematics._rational_interval import I, cos, pi_interval
 from ..types import require_finite_real_scalar_epi
+from ._composition_compatible_constitutive import (
+    _amplitude,
+    _CompositionCompatibleLaw,
+    _derive_composition_compatible_law,
+    _edge_potential_current_bounds,
+)
 from ._organized_network_compatibility import (
     _EQUAL_CONTROL,
     _derive_organized_triangle,
@@ -153,8 +159,13 @@ class _OrganizedRegionalWork:
     including uniform-real BEPI. Phase values are admitted continuous lifts,
     not means inferred from circular observations. All calculations use the
     returned normalized primitive state.
+
+    Geometry supplies fixed support, clock and reciprocal coefficient only;
+    ``law`` supplies every current and potential. Sine-reference geometry
+    fields do not transfer source or capture certificates to another member.
     """
 
+    law: _CompositionCompatibleLaw
     geometry: _OrganizedTriangle
     form: tuple[Q, ...]
     phase_lifts: tuple[Q, ...]
@@ -180,7 +191,8 @@ class _OrganizedRegionalWork:
     accumulated_work_observed: bool = False
     scope: tuple[str, ...] = (
         "supplied_complete_27_node_state_on_fixed_equal_contact_support",
-        "held_unit_capacity_actual_degree_four_sine_law_in_tau_clock",
+        "held_unit_capacity_actual_degree_four_admitted_law_in_tau_clock",
+        "geometry_supplies_support_clock_and_gamma_not_source_or_capture",
         "both_actual_rows_and_all_internal_and_contact_storage_retained",
         "regional_boundary_power_has_no_prescribed_sign",
         "instantaneous_balance_is_not_accumulated_work_or_a_closed_regional_law",
@@ -188,8 +200,11 @@ class _OrganizedRegionalWork:
     )
 
 
-def _observe_organized_regional_work(*, form, phase) -> _OrganizedRegionalWork:
+def _observe_organized_regional_work(
+    *, form, phase, deformation=0
+) -> _OrganizedRegionalWork:
     """Admit all primitive values before constructing support or doing algebra."""
+    coefficient = _amplitude(deformation)
     raw_form = _ordered(form, "form", limit=28)
     raw_phase = _ordered(phase, "phase", limit=28)
     if len(raw_form) != 27 or len(raw_phase) != 27:
@@ -199,6 +214,7 @@ def _observe_organized_regional_work(*, form, phase) -> _OrganizedRegionalWork:
         for i, value in enumerate(raw_form)
     )
     phases = tuple(_exact(value, f"phase[{i}]") for i, value in enumerate(raw_phase))
+    law = _derive_composition_compatible_law(deformation=coefficient)
     geometry = _derive_organized_triangle(mixing=_EQUAL_CONTROL)
     edges = geometry.weighted_edges
     internal_edges = tuple(edge for edge in edges if edge[0] // 9 == edge[1] // 9)
@@ -212,8 +228,9 @@ def _observe_organized_regional_work(*, form, phase) -> _OrganizedRegionalWork:
     contact_potential = I(0)
     for a, b, weight in edges:
         angle = I(phases[b] - phases[a])
-        current = weight * sin(angle)
-        potential = weight * (1 - cos(angle))
+        edge_potential, edge_current = _edge_potential_current_bounds(angle, law)
+        current = weight * edge_current
+        potential = weight * edge_potential
         internal = a // 9 == b // 9
         channel = internal_current if internal else contact_current
         channel[a] += current
@@ -291,6 +308,7 @@ def _observe_organized_regional_work(*, form, phase) -> _OrganizedRegionalWork:
         I(0),
     )
     return _OrganizedRegionalWork(
+        law=law,
         geometry=geometry,
         form=values,
         phase_lifts=phases,

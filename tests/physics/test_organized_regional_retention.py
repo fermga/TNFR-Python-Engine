@@ -36,6 +36,19 @@ def _contains(mp, bounds, expected):
     assert _mp(mp, bounds.width) < mp.mpf("1e-28")
 
 
+def _potential(mp, angle, deformation):
+    return (
+        1 - mp.cos(angle) + deformation * mp.cos(angle) * (1 - mp.cos(9 * angle)) ** 2
+    )
+
+
+def _current(mp, angle, deformation):
+    high = 1 - mp.cos(9 * angle)
+    return mp.sin(angle) + deformation * (
+        -mp.sin(angle) * high**2 + 18 * mp.cos(angle) * high * mp.sin(9 * angle)
+    )
+
+
 def _support():
     return tuple(
         (9 * region + j, 9 * region + (j + 1) % 9, Q(1))
@@ -68,12 +81,18 @@ def source_reports():
     }
 
 
-@pytest.fixture(scope="module")
-def arbitrary_state():
+@pytest.fixture(scope="module", params=(Q(-1, 324), Q(0), Q(1, 324)))
+def arbitrary_state(request):
     # Dyadic forms make the expected consumed state independent of rounding.
     form = tuple(Q((11 * i) % 17 - 8, 16) for i in range(27))
     phase = tuple(Q((7 * i) % 19 - 9, 5) for i in range(27))
-    return form, phase, owner._observe_organized_regional_work(form=form, phase=phase)
+    return (
+        form,
+        phase,
+        owner._observe_organized_regional_work(
+            form=form, phase=phase, deformation=request.param
+        ),
+    )
 
 
 def test_complete_rows_and_regional_contact_balances_match_edge_differentiation(
@@ -86,9 +105,12 @@ def test_complete_rows_and_regional_contact_balances_match_edge_differentiation(
     edges = _support()
     gradient, current = [mp.mpf(0)] * 27, [mp.mpf(0)] * 27
     gamma = 1 / (1023 * mp.pi)
+    deformation = _mp(mp, report.law.deformation)
     for a, b, weight in edges:
         w = _mp(mp, weight)
-        flow, sine = w * (x[a] - x[b]), w * mp.sin(theta[b] - theta[a])
+        flow, sine = w * (x[a] - x[b]), w * _current(
+            mp, theta[b] - theta[a], deformation
+        )
         gradient[a] += flow
         gradient[b] -= flow
         current[a] += sine
@@ -117,16 +139,17 @@ def test_complete_rows_and_regional_contact_balances_match_edge_differentiation(
             w = _mp(mp, weight)
             difference, angle = x[b] - x[a], theta[b] - theta[a]
             form_energy += w * difference**2 / 2
-            phase_energy += w * (1 - mp.cos(angle))
+            phase_energy += w * _potential(mp, angle, deformation)
             # Direct edge differentiation uses both full rows, independently
             # of the regional power cancellation used by the implementation.
             rate += w * (
-                difference * (dx[b] - dx[a]) + mp.sin(angle) * (dtheta[b] - dtheta[a])
+                difference * (dx[b] - dx[a])
+                + _current(mp, angle, deformation) * (dtheta[b] - dtheta[a])
             )
             local_gradient[a] -= w * difference
             local_gradient[b] += w * difference
-            local_current[a] += w * mp.sin(angle)
-            local_current[b] -= w * mp.sin(angle)
+            local_current[a] += w * _current(mp, angle, deformation)
+            local_current[b] -= w * _current(mp, angle, deformation)
         storage_groups.append(form_energy + phase_energy)
         rate_groups.append(rate)
         form_groups.append(form_energy)
@@ -173,6 +196,73 @@ def test_complete_rows_and_regional_contact_balances_match_edge_differentiation(
     ):
         assert residual.contains(0)
     assert not report.accumulated_work_observed
+
+
+def test_default_member_preserves_explicit_sine_observation():
+    form = tuple(Q(i % 9 - 4, 8) for i in range(27))
+    phase = tuple(Q(i % 7 - 3, 8) for i in range(27))
+    default = owner._observe_organized_regional_work(form=form, phase=phase)
+    explicit = owner._observe_organized_regional_work(
+        form=form, phase=phase, deformation=Q(0)
+    )
+    assert default == explicit
+    assert default.law.deformation == 0
+
+
+@pytest.mark.parametrize("deformation", (Q(-1, 324), Q(1, 324)))
+def test_same_complete_state_discriminates_regional_power_with_same_phase_row_and_loss(
+    deformation, mp
+):
+    form, phase = list(_ZERO), list(_ZERO)
+    form[9], phase[0] = Q(1, 8), Q(1)
+    sine = owner._observe_organized_regional_work(form=form, phase=phase)
+    changed = owner._observe_organized_regional_work(
+        form=form, phase=phase, deformation=deformation
+    )
+    kappa, gamma, eps = mp.mpf(1) / 8, 1 / (1023 * mp.pi), _mp(mp, deformation)
+    current = _current(mp, mp.mpf(1), eps)
+    assert changed.law.deformation == deformation
+    assert changed.form == sine.form and changed.phase_lifts == sine.phase_lifts
+    assert changed.phase_rate_bounds == sine.phase_rate_bounds
+    assert changed.storage_rate == sine.storage_rate == -Q(19, 256)
+    _contains(
+        mp, changed.regions[0].boundary_power_bounds, -gamma * kappa * current / 8
+    )
+    _contains(
+        mp,
+        changed.regions[1].boundary_power_bounds,
+        -(kappa**2) + gamma * kappa * current / 8,
+    )
+    _contains(mp, changed.regions[2].boundary_power_bounds, mp.mpf(0))
+    _contains(
+        mp, changed.storage_bounds, 2 * kappa**2 + 4 * _potential(mp, mp.mpf(1), eps)
+    )
+    difference = (
+        changed.regions[0].boundary_power_bounds - sine.regions[0].boundary_power_bounds
+    )
+    expected = -gamma * kappa * (current - mp.sin(1)) / 8
+    _contains(mp, difference, expected)
+    assert difference.hi < 0 if deformation > 0 else difference.lo > 0
+    assert changed.form_rate_bounds[0] != sine.form_rate_bounds[0]
+
+
+@pytest.mark.parametrize(
+    "value", (True, float("nan"), float("inf"), "0", Q(1, 324) + Q(1, 10**80))
+)
+def test_invalid_deformation_rejects_before_geometry(value, monkeypatch):
+    def forbidden(**kwargs):
+        pytest.fail("invalid law primitive reached support construction")
+
+    monkeypatch.setattr(owner, "_derive_organized_triangle", forbidden)
+    with pytest.raises((TypeError, ValueError)):
+        owner._observe_organized_regional_work(
+            form=_ZERO, phase=_ZERO, deformation=value
+        )
+
+
+def test_sine_source_assessment_does_not_transfer_to_another_law():
+    with pytest.raises(TypeError):
+        _assess(deformation=Q(1, 324))
 
 
 def test_global_loss_does_not_make_each_regional_store_decrease(mp):

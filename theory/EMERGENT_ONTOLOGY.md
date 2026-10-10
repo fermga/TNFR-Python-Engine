@@ -312,6 +312,16 @@ invariant over unrestricted forms. These results retain form and contact state
 as identity-relevant information; they neither forbid alternative preparations
 nor establish receiver acquisition, eventual regeneration or a physical identity.
 
+The [constitutive barrier comparison](nodal/CONSTITUTIVE_IDENTITY_BARRIERS.md)
+shows that the matched target, local fields and registered composition
+properties do not fix the minimum storage on an internal winding boundary.
+In the admitted comparison family, that minimum changes for donors and
+receivers together. Regional power can also change at identical complete
+state and storage while total instantaneous loss stays equal. These are
+independent nonlinear properties of the supplied law; neither a larger
+geometric barrier nor changed instantaneous work proves a changed formation
+or maintenance outcome for a prepared source.
+
 Distinct internal geometries need not be distinguishable through every
 contact. The [central-contact obstruction](nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-contact-admission)
 shows that the nominal formed C9 classes can remain invisible to the same

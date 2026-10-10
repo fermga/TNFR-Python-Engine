@@ -323,6 +323,12 @@ it does not supply a measured history or establish its premise. The
 companion stored-state work observer rebuilds the regional powers from
 primitive form and phase and checks the instantaneous partition balance.
 A state observation is not an integrated work certificate.
+The observer's optional constitutive parameter is admitted by the shared
+[composition-compatible law](COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md);
+zero preserves the sine calculation. Its own-law extension and distinct
+geometric barriers belong to the
+[constitutive comparison](CONSTITUTIVE_IDENTITY_BARRIERS.md). The source
+assessment above remains sine-only and supplies no changed-law release bound.
 
 These results identify the missing mathematical obligation: control of
 the actual distribution of contact work, together with directional
