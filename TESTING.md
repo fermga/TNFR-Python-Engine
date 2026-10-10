@@ -319,6 +319,20 @@ and whole-step donor margins. An unavailable donor corridor must not prevent
 later certified endpoint loss. Audit retained records without regenerating
 them; preserve first attempts, failed-step records and every valid prefix.
 
+For [regional work and winding retention](theory/nodal/ORGANIZED_REGIONAL_RETENTION.md),
+select `tests/physics/test_organized_regional_retention.py` with the receiver
+mechanism and slow-admission controls above. Rebuild release bounds from
+primitive source errors; a supplied all-prefix work budget tests a conditional
+inequality and never becomes observed history. Exercise missing budgets,
+strict equality, failed source admission and representation boundaries.
+Check regional and contact storage, powers and both actual evolution rows
+against independent fine-edge calculations. Include a state with increasing
+regional storage despite complete loss, and opposite form states with opposite
+normal phase rates. The proof owns the first-exit barrier; static examples
+alone cannot establish it. Select the read-only enclosure evidence audit when
+checking the inherited donor-loss consequence. No control regenerates a frozen
+response or substitutes endpoint work for an all-prefix bound.
+
 For [preparation information and acquired modes](theory/nodal/SINE_PREPARATION_MODE_SELECTION.md),
 select `tests/physics/test_sine_preparation_mode_selection.py` with the shared
 preparation and isolated-class controls above. Reconstruct the Laplacian energy

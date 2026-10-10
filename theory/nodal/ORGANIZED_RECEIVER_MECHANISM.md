@@ -11,11 +11,15 @@ coordinate in the direction of the donors' winding profile. Thus the
 fast form layer does not copy the missing preparation into the receiver;
 any eventual acquisition needs a later nonlinear phase mechanism.
 
-This is a complete-law mechanism and delay result. Eventual receiver
-acquisition, donor retention during that later evolution, and joined
-full-state capture remain unresolved. The delay is a proved consequence
-of the frozen source and law, not a response horizon chosen after a
-trajectory. No trajectory or reserved response is evaluated here.
+This is a complete-law mechanism and delay result. It alone does not
+establish eventual receiver acquisition, continued donor retention or
+joined full-state capture. The subsequent
+[frozen enclosure](ORGANIZED_RECEIVER_ENCLOSURE.md#organized-receiver-enclosure-result)
+certifies donor loss for this source while the receiver retains zero
+winding throughout its validated interval. Later acquisition or regeneration
+remains unresolved. The delay is a proved consequence of the frozen source
+and law, not a response horizon chosen after a trajectory. This mechanism
+assessment evaluates no trajectory or reserved response.
 
 <a id="organized-receiver-source"></a>
 ## Complete source and its preparation cost
@@ -324,9 +328,14 @@ change while retaining its form memory and work. They do not yet show
 that the receiver reaches winding one before a donor loses its own
 identity, or that the complete state reaches the
 [joined trapping sublevel](ACQUIRED_ORGANIZED_NETWORK_CAPTURE.md#organized-network-capture-barrier).
-That remaining nonlinear basin and transport estimate is the precise
-missing obligation. Its resolution must use this two-ramp source;
-neither the three-ramp certificate nor an equilibrium tangent supplies it.
+The subsequent [frozen full-source enclosure](ORGANIZED_RECEIVER_ENCLOSURE.md#organized-receiver-enclosure-result)
+resolves that transfer question negatively on its validated interval: both
+donors lose winding while the receiver retains zero winding. The
+[regional retention theorem](ORGANIZED_REGIONAL_RETENTION.md)
+turns (26) into a conditional all-prefix work budget and derives its exhaustion
+at each donor's first boundary contact. Neither the three-ramp certificate
+nor an equilibrium tangent supplies an alternative two-ramp retention result.
+Later acquisition or regeneration remains unresolved.
 
 The [implementation](../../src/tnfr/physics/_organized_receiver_mechanism.py)
 re-admits primitive error allowances, rebuilds the support and complete

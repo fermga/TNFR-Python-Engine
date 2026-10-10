@@ -14,9 +14,13 @@ For every later time, the complete phase velocity differs from the sine
 descent field by less than \(11\times10^{-6}\) in Euclidean norm. This
 uniform velocity bound does not identify the full trajectory with a
 phase-only trajectory. It supplies a source-aware differential inclusion
-and a precise corridor and terminal-capture contract. Eventual receiver
-winding, continued donor retention and joined capture remain unresolved;
-no reference trajectory or reserved response is evaluated here.
+and a precise corridor and terminal-capture contract. These estimates alone
+do not establish receiver acquisition, continued donor retention or joined
+capture. The subsequent
+[frozen enclosure](ORGANIZED_RECEIVER_ENCLOSURE.md#organized-receiver-enclosure-result)
+certifies loss of both donors while the receiver stays at winding zero
+throughout the validated interval. Later acquisition or regeneration remains
+unresolved. This admission evaluates no reference trajectory or reserved response.
 
 ## Retained source, law and identity
 

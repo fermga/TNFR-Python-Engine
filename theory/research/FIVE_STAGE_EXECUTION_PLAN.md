@@ -147,10 +147,14 @@ zero. The subsequent [frozen enclosure](#organized-receiver-prospective-enclosur
 certifies loss of both donor windings for the entire unchanged source family,
 while the receiver retains winding zero throughout the validated interval.
 This excludes donor-retaining transfer under this preparation and law;
-eventual regeneration remains unresolved. The sole next task is
-[full-state retention under interaction](#current-g3-gate): determine what
-restriction on boundary work, form memory or phase velocity can protect
-donor identity while permitting receiver acquisition.
+eventual regeneration remains unresolved. The
+[regional retention theorem](#organized-identity-preserving-interaction)
+now supplies conditional donor work budgets, necessary receiver-passage work
+and a phase-only invariance obstruction. The preserved donor loss exhausts
+both donor reserves. The sole next task is
+[constitutive freedom of identity barriers and work](#current-g3-gate):
+determine whether the already matched organization and inheritance conditions
+also determine resistance to winding loss and regional power.
 The [prepared storage observer](#storage-comparison-producer-admission)
 is retained as an instrument; it has no frozen protocol or reserved response
 and is not the next campaign.
@@ -167,7 +171,8 @@ remain open; no empirical response has passed complete physical admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next theoretical admission | [Identity-preserving interaction](#current-g3-gate): derive full-state donor-retention conditions from regional work and winding-boundary motion, then test their compatibility with receiver acquisition under the unchanged complete law |
+| Next theoretical admission | [Constitutive identity barriers and regional work](#current-g3-gate): determine whether the admitted target-matched, composition-compatible laws fix the actual C9 first-boundary storage minima and regional powers |
+| Closed conditional retention admission | [Identity-preserving interaction](#organized-identity-preserving-interaction): full-state regional work gives sufficient donor prefix budgets and necessary receiver passage work; the frozen original-source loss exhausts donor reserves, and phase-only cells fail over unrestricted forms |
 | Closed finite counterexample | [Source-preserving receiver enclosure](#organized-receiver-prospective-enclosure): the frozen 76-step enclosure certifies whole-family loss of both donor windings by elapsed slow time 19/2; the receiver retains zero winding throughout the validated prefix |
 | Closed theoretical slow admission | [Controlled slow receiver evolution](#organized-receiver-slow-capture-admission): exact second-order phase closure, uniform source-inclusive first-order defect after time 400, actual receiver phase-rate signs and a differential-inclusion capture contract; the separate finite enclosure resolves donor loss for this source |
 | Closed theoretical mechanism admission | [Locally unprepared receiver](#organized-receiver-mechanism-admission): complete two-ramp source cost, time-200 donor/receiver winding distinction, receiver exclusion from preparation to the proved necessary timescale, exact regional work and slow memory; eventual receiver acquisition and joined capture remain unresolved |
@@ -227,7 +232,7 @@ remain open; no empirical response has passed complete physical admission.
 
 <a id="current-g3-gate"></a>
 <a id="foundational-organized-pattern-admission"></a>
-<a id="organized-identity-preserving-interaction"></a>
+<a id="constitutive-identity-barriers-and-work"></a>
 ## Primary plan: foundations tested by organized patterns
 
 Investigate which premises are sufficient, necessary within a declared class,
@@ -247,56 +252,50 @@ to its actual state, scale and execution path before treating a matched
 geometric or response property as sufficient. Retain the distinction between
 defining requirements, supplied hypotheses and derived restrictions.
 
-The next question is: **what full-state restriction can preserve formed
-constituents during interaction while permitting an unprepared receiver to
-acquire organization?** The [frozen result](../nodal/ORGANIZED_RECEIVER_ENCLOSURE.md#organized-receiver-enclosure-result)
-provides a whole-family counterexample to inferring that outcome from initial
-receiver motion toward donor phases, a joined target and positive storage loss.
-Both donor windings are zero at the certified endpoint, while the receiver
-has remained at zero winding throughout the validated prefix. An unavailable
-intermediate donor corridor is distinct from that robust endpoint loss.
+The next question is: **do equal organized targets, local response and
+registered profile inheritance determine an organization's resistance to
+winding loss and the work exchanged during interaction?** The
+[regional retention theorem](../nodal/ORGANIZED_REGIONAL_RETENTION.md)
+identifies these complete-state obligations. The
+[composition-compatible class](../nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md#composition-compatible-counterfamily)
+already supplies positive-storage nonsine alternatives satisfying the earlier
+matching conditions. Their existence does not transfer the sine source's
+formation, slow admission or frozen donor-loss verdict.
 
-Keep the unchanged two-ramp source, fixed equal-weight 27-node support, held
-capacities, complete sine law, clocks and error family with their
-[source owner](../nodal/ORGANIZED_RECEIVER_MECHANISM.md#organized-receiver-source).
-The prior three-ramp acquisition and recovered-source joined capture remain
-valid in their own domains. Neither transfers a retention certificate to this
-preparation. The [ontology](../EMERGENT_ONTOLOGY.md#nfr-participation-in-form)
-allows collective acquisition as a question; it does not promise it.
+1. **Admit the actual comparison.** Retain the fixed equal-weight 27-node
+   support, unit capacities, signed forms, lifted phases and declared clocks.
+   Re-establish both fine evolution rows, complete loss and regional power
+   for the existing analytic potential family. Retain the exact scope of
+   inheritance under its two registered interfaces; do not assume that a
+   different contact inherits their coefficients or verdicts.
+2. **Test the first-boundary obstruction.** Define the actual minimum of
+   internal C9 phase storage over the first branch boundary for initial
+   winding zero and one. Prove an invariance or exhibit a rigorously admitted
+   parameter interval with distinct minima despite unchanged target storage,
+   tangent and quadratic fields. A changed cost at one boundary configuration,
+   a sampled minimum or a weaker sufficient bound does not establish a changed
+   minimum. Sharpening the sine barrier serves this discrimination, not a
+   rerun at greater numerical precision.
+3. **Retain the work and receiver constraints.** Compare regional power at
+   the same complete state and keep incident contact storage. Separate a
+   donor's target-to-boundary margin from the receiver's necessary entry cost;
+   raising a common barrier need not improve acquisition. Any result concerns
+   a constitutive restriction or freedom, not a demonstrated viable transfer
+   source. Source-valid prefix work and directional capture remain separate
+   obligations.
+4. **Integrate the decision.** Record the theorem or obstruction with its
+   admitted law interval, boundary cases and independent algebraic controls.
+   Decide whether identity maintenance supplies a new independent selection
+   premise or remains undetermined by the existing matching requirements.
+   Preserve conditional results and countermodels from each original law.
 
-1. **Retain the sufficient state.** Use the full form/phase law or the exact
-   second-order phase representation, including initial velocity, regional
-   work and global mean constraints. A reduced phase field or instantaneous
-   current sign cannot replace the form memory.
-2. **Derive a retention condition.** Reuse the
-   [regional work identity](../nodal/ORGANIZED_RECEIVER_MECHANISM.md#organized-receiver-work)
-   and derive a first-exit lower bound for internal C9 phase storage. Turn
-   it into a conditional no-slip budget for cumulative boundary work and
-   regional loss, retaining the admitted release form and phase errors.
-   Also compute the normal motion at donor winding boundaries. Determine
-   whether a proposed phase-only cell can be invariant over its admitted
-   form states, or whether an explicit velocity, storage or boundary-work
-   restriction is necessary. Preserve counterexamples to stronger claims;
-   global dissipation alone is not a regional identity budget.
-3. **Check joint compatibility.** Apply any justified full-state retention
-   condition to receiver progress under the same law, source and support.
-   Establish a conditional compatible domain or a scoped obstruction.
-   A sufficient condition failing at this source does not prove that no
-   alternative condition or preparation can work. Distinguish protecting
-   donors, receiver formation, joined capture and eventual regeneration.
-4. **Integrate the decision.** Put definitions and proofs with their owners,
-   reuse shared mathematical kernels, and test boundary counterexamples and
-   full-state hypotheses independently. State which extra premise is supplied
-   and which restriction follows from the actual complete law. Only after
-   this admission may a new prospective comparison be selected here.
-
-This gate is analytic. Do not replay or extend the frozen response, increase
-its precision, tune the source, scan contacts, introduce a controller or
-launch a physical-data campaign. A changed support, event or constitutive
-law would define a separate model and needs its own justification. No finite
-result here derives an autonomous reservoir, support selector, physical clock
-or constituent identification. Eventual receiver formation or donor
-regeneration beyond the retained interval remains open.
+This gate is analytic. Do not replay or extend the frozen response, tune a
+source, scan contacts, introduce a controller or launch a physical-data
+campaign. In particular, do not seek a passing retention budget for the
+unchanged original source over its already certified donor-loss interval.
+Any new law needs its own preparation, transport and capture admission before
+a prospective response can be selected. Autonomous preparation, support
+selection, physical units and constituent identification remain unresolved.
 
 The dependency order for subsequent work is:
 
@@ -322,6 +321,27 @@ examples supply possible controls and discriminators; they do not replace
 the generative objective with imitation of a convenient apparatus. Substrate
 origin, universal laws and recurrence across scales remain open hypotheses.
 
+<a id="organized-identity-preserving-interaction"></a>
+## Closed conditional admission: identity-preserving interaction
+
+The [regional retention owner](../nodal/ORGANIZED_REGIONAL_RETENTION.md)
+derives a first-boundary storage barrier and full-source release reserves.
+All-prefix net regional work strictly below a donor reserve suffices for
+continuous retention; receiver first passage needs its own reserve and still
+requires direction and capture. The exact regional/contact balance keeps
+both evolution rows and the original form memory. Opposite admissible forms
+give opposite normal velocities at the same boundary phase, excluding a
+phase-only invariant cell over unrestricted forms.
+
+The preserved whole-source donor loss proves exhaustion of both donor
+reserves at their first boundary contacts. This is a necessary-work consequence
+of existing evidence, not a new work measurement. The assessment rebuilds
+primitive source bounds and labels supplied budgets as conditional; the
+stored-state observer measures no accumulated work. Other preparations or
+laws are not excluded, and no viable donor-retaining acquisition source is
+established. The [active gate](#current-g3-gate) tests which of these identity
+constraints the existing constitutive matching conditions actually determine.
+
 <a id="organized-receiver-prospective-enclosure"></a>
 ## Closed finite result: source-preserving receiver enclosure
 
@@ -336,8 +356,8 @@ loss, not failure of an enclosure or evidence from the nominal reference alone.
 The result rules out donor-retaining acquisition for this unchanged source
 and law. It neither invalidates the separate three-ramp acquisition theorem
 nor excludes later receiver formation, donor regeneration or other explicitly
-admitted preparations. The [next gate](#current-g3-gate) asks what full-state
-retention condition is missing; it does not repeat this experiment.
+admitted preparations. The [regional retention result](#organized-identity-preserving-interaction)
+derives a work consequence of this loss without repeating the experiment.
 
 <a id="organized-receiver-slow-capture-admission"></a>
 ## Closed theoretical admission: controlled slow receiver evolution

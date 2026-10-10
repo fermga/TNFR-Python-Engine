@@ -284,8 +284,8 @@ transport. At time 200 its noncentral mixed-coordinate currents point toward
 the donor ramp. Complete source storage,
 regional boundary work and the exact memory of the retained form are
 accounted for. Interaction-induced motion is therefore present without
-already establishing a new identity. Eventual receiver acquisition, donor
-retention and entry to joined capture remain separate unresolved claims.
+already establishing a new identity. Receiver acquisition, donor retention
+and entry to joined capture require separate evidence.
 
 The [slow receiver admission](nodal/ORGANIZED_RECEIVER_SLOW_ADMISSION.md)
 derives an exact second-order phase description on the conserved global
@@ -299,6 +299,18 @@ winding zero. This strengthens the causal mechanism without establishing
 acquisition. The source-inclusive differential-inclusion contract retains
 donor branch margins and complete-state capture; the nominal reflection
 symmetry cannot remove the family's nonsymmetric perturbations.
+
+The [frozen full-source enclosure](nodal/ORGANIZED_RECEIVER_ENCLOSURE.md#organized-receiver-enclosure-result)
+subsequently certifies loss of both donor windings while the receiver remains
+at winding zero throughout the validated interval. The
+[regional retention theorem](nodal/ORGANIZED_REGIONAL_RETENTION.md)
+relates a first winding-boundary contact to accumulated regional work minus
+internal loss. A strict all-prefix budget suffices for retention; the original
+source exhausts both donor reserves. The same boundary phase admits opposite
+normal velocities at opposite forms, so a phase-only winding cell is not
+invariant over unrestricted forms. These results retain form and contact state
+as identity-relevant information; they neither forbid alternative preparations
+nor establish receiver acquisition, eventual regeneration or a physical identity.
 
 Distinct internal geometries need not be distinguishable through every
 contact. The [central-contact obstruction](nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-contact-admission)
