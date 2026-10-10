@@ -344,6 +344,17 @@ information leaf does not imply attraction to one point across different
 leaves. An unresolved root or margin remains unavailable, and a local trap
 does not certify capture of the previously acquired source.
 
+For the [organized source port](theory/nodal/ORGANIZED_SOURCE_PORT.md), select
+`tests/physics/test_organized_source_port.py` with the repeated-composition,
+parent-acquisition and isolated-recovery owners. Independently sum the actual
+45-node support, retain uniform normalization despite differing degrees, and
+check both port channels, donor reaction, regional storage and contact work.
+Distinguish exact carrier closure with retained conserved totals from a
+scalar-source obstruction and fine-state mean nonclosure. Re-admit all ten
+preparation allowances before rebuilding either source; transform both donor
+rows and its complete formation/recovery clock. Initial winding and bounded
+attachment work certify neither future retention nor a selected event.
+
 For [identity-preserving assembly work](theory/nodal/ORGANIZED_ASSEMBLY_WORK.md),
 select `tests/physics/test_organized_assembly_work.py` with
 `tests/physics/test_acquired_organized_network_capture.py`,

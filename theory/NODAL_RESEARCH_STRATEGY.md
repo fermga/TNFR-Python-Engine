@@ -253,6 +253,15 @@ traps; it does not promote an equilibrium family to a preparation mechanism.
 Thus a shared sign of storage loss does not select stable organization or
 erase the information consumed by the complete dynamics.
 
+The [organized-source port](nodal/ORGANIZED_SOURCE_PORT.md) then derives
+interaction from an existing constituent rather than supplying a scalar
+reservoir row. Both form and phase reactions and the new contact storage
+remain explicit. Its exact carrier restriction can reconstruct donor means
+from host means and conserved preparation totals; general fine means still
+lose interaction-relevant correlations. This establishes which description
+is sufficient under which hypotheses, without transferring auxiliary-source
+equilibria or claiming finite maintenance of the attached acquired objects.
+
 ### Ordered geometry connects transfer to formation
 
 The [sine pattern owner](nodal/SINE_PATTERN_DYNAMICS.md) combines entry,

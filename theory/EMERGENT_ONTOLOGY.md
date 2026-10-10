@@ -518,6 +518,16 @@ Original positive leakage admits local attraction to the registered
 equilibrium. The full-state traps are conditional initial neighborhoods, not
 capture of the earlier acquired source or emergence of the auxiliary scalar.
 
+The [organized C9 source port](nodal/ORGANIZED_SOURCE_PORT.md) instead derives
+the interaction of an additional constituent under a supplied attachment.
+Its complete law changes both host channels and retains source reaction and
+contact storage. Conserved preparation totals can eliminate donor means on
+the exact carrier family; arbitrary fine states still retain correlations
+absent from all child means. The actual acquired host and recovered donor
+are admitted at attachment with unchanged residuals, not projected to that
+family. Their subsequent maintenance and the contact's occurrence remain
+separate obligations; this source is not the previous auxiliary scalar law.
+
 Here structural participation does not identify the entire joint state with
 one scalar EPI coordinate. The current representation also retains phase,
 capacity and support; reducing these to a richer form description would need
