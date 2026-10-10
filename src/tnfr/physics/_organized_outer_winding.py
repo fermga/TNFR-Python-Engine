@@ -11,6 +11,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from fractions import Fraction as Q
 
+from .._exact_time import exact_or_represented_real as _exact
 from ..dynamics.relational import RelationalExchangeModel
 from ..mathematics._rational_interval import I, cos, pi_interval, sqrt
 from ._repeated_organized_composition import _bounded_sine_edge_fields, _vector
@@ -290,38 +291,74 @@ class _OrganizedOuterWinding:
     )
 
 
-def _assess_organized_outer_winding(*, form_error_bounds, phase_error_bounds):
-    """Assess the frozen proof after admitting ten allowances in [0, 1e-10].
+@dataclass(frozen=True)
+class _OrganizedOuterResourceBounds:
+    """Conditional product bounds, without a reached-source certificate."""
 
-    Smaller allowances select subsets of the frozen source family. Larger
-    allowances are outside this protocol even if isolated recovery could
-    certify them; reject every unsupported primitive before source rebuilding.
+    geometry: _OrganizedOuterWindingGeometry
+    primitive_entry: SinePreparedEntry
+    recovered_child_norm_bound: Q
+    initial_full_form_error_upper_bound: Q
+    initial_full_phase_error_upper_bound: Q
+    full_form_error_upper_bound: Q
+    full_phase_error_upper_bound: Q
+    fine_error_growth_upper_bound: Q
+    fine_error_convolution_factor: Q
+    form_laplacian_gap_lower_bound: Q
+    target_storage_bounds: I
+    internal_cycle_minimum_bounds: I
+    outer_cycle_minimum_bounds: I
+    internal_positive_face_storage_bounds: I
+    internal_negative_face_storage_bounds: I
+    outer_positive_face_storage_bounds: I
+    internal_boundary_excess_bounds: I
+    outer_boundary_excess_bounds: I
+    boundary_energy_lower_bound: Q
+    signed_face_excess_lower_bounds: tuple[Q | None, ...]
+    signed_face_feasible: tuple[bool, ...]
+    endpoint_nominal_excess_upper_bound: Q
+    endpoint_residual_excess_upper_bound: Q
+    endpoint_excess_upper_bound: Q
+    capture_margin: Q
+    initial_internal_phase_gap_bounds: I
+    transit_internal_phase_gap_bounds: I
+    initial_outer_phase_gap_bounds: I
+    endpoint_oriented_outer_phase_gap_bounds: tuple[I, ...]
+    attachment_nominal_work: Q
+    attachment_residual_work_upper_bound: Q
+    attachment_work_upper_bound: Q
+    attachment_work_margin: Q
+    initial_storage_upper_bound: Q
+    initial_storage_margin: Q
+    primitive_law_and_clock_certified: bool
+    fine_error_certified: bool
+    barrier_certified: bool
+    attachment_budget_certified: bool
+    initial_outer_zero_winding_certified: bool
+    child_winding_retained_during_transit: bool
+    child_transit_cell_certified: bool
+    outer_cell_certified: bool
+    conditional_outer_entry_certified: bool
+    conditional_capture_certified: bool
+    control_initial_excess_upper_bound: Q
+    control_boundary_energy_lower_bound: Q
+    control_capture_margin: Q
+    control_conditional_capture_certified: bool
+
+
+def _derive_organized_outer_resource_bounds(*, recovered_radius):
+    """Rebuild the fixed carrier and full-fine bounds for an admitted radius.
+
+    This changes only the sufficient error allowance in the product proof.
+    No isolated source, recovery dwell, event or trajectory is certified.
+    A consumer must establish the original childwise zero means and that
+    each actual recovered form and phase norm is at most this radius.
     """
-    rx = _vector(form_error_bounds, "form_error_bounds", 5)
-    rt = _vector(phase_error_bounds, "phase_error_bounds", 5)
-    if min(*rx, *rt) < 0:
-        raise ValueError("original preparation errors must be nonnegative")
-    if max(*rx, *rt) > _PREPARATION_ALLOWANCE:
-        raise ValueError("original preparation errors must not exceed frozen 1e-10")
-    children = tuple(
-        _assess_constitutive_recovery(
-            deformation=0, form_error_bound=a, phase_error_bound=b
-        )
-        for a, b in zip(rx, rt)
-    )
+    q = _exact(recovered_radius, "recovered_radius")
+    if q < 0:
+        raise ValueError("recovered_radius must be nonnegative")
     geometry = _derive_organized_outer_winding()
     gamma, pi = geometry.gamma_bounds, pi_interval()
-    q = _RECOVERED_RADIUS
-    source_flags = tuple(
-        child.recovery_certified
-        and child.endpoint_form_norm_squared_upper_bound is not None
-        and child.endpoint_phase_norm_squared_upper_bound is not None
-        and child.endpoint_form_norm_squared_upper_bound < q**2
-        and child.endpoint_phase_norm_squared_upper_bound < q**2
-        for child in children
-    )
-    source_ok = all(source_flags)
-
     # This shared consumer re-admits primitive state, law, capacity and Gamma,
     # rebuilding all derived fields. No incoming C5 verdict is consumed.
     primitive = certify_sine_prepared_entry(
@@ -343,8 +380,8 @@ def _assess_organized_outer_winding(*, form_error_bounds, phase_error_bounds):
         and primitive.capture.edge_turn_offsets == _PRIMITIVE_TURNS
     )
     # A=L/4, ||L||<=8 and gap(L)>1/3. The heat-integral phase
-    # estimate has growth exp(2 gamma^2 tau)<2. Keep q exact, below
-    # the interval grid, and use sqrt(5)<3 only as a norm bound.
+    # estimate has growth exp(2 gamma^2 tau)<2. Keep q exact, including
+    # values below the interval grid; sqrt(5)<3 is only a norm bound.
     fine_ok = (
         (2 - 2 * cos(geometry.alpha_bounds)).lo > Q(1, 3)
         and (2 - 2 * cos(geometry.outer_target_angle_bounds)).lo > Q(1, 3)
@@ -417,9 +454,7 @@ def _assess_organized_outer_winding(*, form_error_bounds, phase_error_bounds):
     conditional_entry = (
         law_ok and fine_ok and initial_zero and child_transit and outer_cell
     )
-    entry = source_ok and budget_ok and conditional_entry
     conditional_capture = conditional_entry and barrier_ok and margin > 0
-    capture = source_ok and budget_ok and conditional_capture
     control_excess = 40 * q**2
     control_boundary = min(internal_excess.lo, Q(1))
     control_margin = control_boundary - control_excess
@@ -429,46 +464,10 @@ def _assess_organized_outer_winding(*, form_error_bounds, phase_error_bounds):
         and initial_zero
         and control_margin > 0
     )
-    control_ok = source_ok and control_candidate
-    control = _OrganizedOuterWindingControl(
-        initial_excess_upper_bound=control_excess,
-        boundary_energy_lower_bound=control_boundary,
-        capture_margin=control_margin,
-        source_certified=source_ok,
-        conditional_capture_certified=control_candidate,
-        capture_certified=control_ok,
-        outer_zero_winding_retained=control_ok,
-        child_winding_retained=control_ok,
-        converges_to_target=control_ok,
-    )
-    checks = (
-        (source_ok, "original_child_recoveries_not_certified"),
-        (law_ok, "primitive_C5_complete_law_or_clock_not_certified"),
-        (fine_ok, "full_fine_heat_comparison_not_certified"),
-        (budget_ok, "attachment_work_or_initial_storage_budget_not_certified"),
-        (initial_zero, "initial_outer_zero_winding_not_certified"),
-        (child_transit, "child_winding_retention_during_transit_not_certified"),
-        (outer_cell, "nine_outer_cycle_entry_not_certified"),
-        (barrier_ok, "complete_product_boundary_not_certified"),
-        (margin > 0, "complete_fine_endpoint_capture_margin_not_positive"),
-        (control_ok, "paired_zero_form_control_not_certified"),
-    )
-    unresolved = tuple(label for passed, label in checks if not passed)
-    admitted = not unresolved
-    return _OrganizedOuterWinding(
-        form_error_bounds=rx,
-        phase_error_bounds=rt,
-        child_sources=children,
+    return _OrganizedOuterResourceBounds(
         geometry=geometry,
         primitive_entry=primitive,
-        control=control,
-        relative_preparation_dimension=sum(
-            c.source.preparation_dimension for c in children
-        ),
-        original_preparation_storage_upper_bound=sum(
-            (c.source.initial_storage_upper_bounds[0] for c in children), Q(0)
-        ),
-        recovered_source_flags=source_flags,
+        recovered_child_norm_bound=q,
         initial_full_form_error_upper_bound=3 * q,
         initial_full_phase_error_upper_bound=3 * q,
         full_form_error_upper_bound=full_x,
@@ -501,21 +500,142 @@ def _assess_organized_outer_winding(*, form_error_bounds, phase_error_bounds):
         attachment_work_margin=work_margin,
         initial_storage_upper_bound=initial_storage,
         initial_storage_margin=initial_margin,
-        source_certified=source_ok,
         primitive_law_and_clock_certified=law_ok,
         fine_error_certified=fine_ok,
         barrier_certified=barrier_ok,
         attachment_budget_certified=budget_ok,
-        initial_outer_zero_winding_certified=source_ok and initial_zero,
-        child_winding_retained_during_transit=source_ok and fine_ok and child_transit,
+        initial_outer_zero_winding_certified=initial_zero,
+        child_winding_retained_during_transit=fine_ok and child_transit,
+        child_transit_cell_certified=child_transit,
+        outer_cell_certified=outer_cell,
         conditional_outer_entry_certified=conditional_entry,
-        outer_entry_certified=entry,
         conditional_capture_certified=conditional_capture,
-        capture_certified=capture,
-        outer_winding_retained=capture,
-        child_winding_retained=capture,
-        converges_to_target=capture,
-        admitted=admitted,
-        status="certified_organized_outer_winding" if admitted else "unavailable",
-        unresolved_conditions=unresolved,
+        control_initial_excess_upper_bound=control_excess,
+        control_boundary_energy_lower_bound=control_boundary,
+        control_capture_margin=control_margin,
+        control_conditional_capture_certified=control_candidate,
+    )
+
+
+def _assess_organized_outer_winding(*, form_error_bounds, phase_error_bounds):
+    """Assess the frozen proof after admitting ten allowances in [0, 1e-10].
+
+    Smaller allowances select subsets of the frozen source family. Larger
+    allowances are outside this protocol even if isolated recovery could
+    certify them; reject every unsupported primitive before source rebuilding.
+    """
+    rx = _vector(form_error_bounds, "form_error_bounds", 5)
+    rt = _vector(phase_error_bounds, "phase_error_bounds", 5)
+    if min(*rx, *rt) < 0:
+        raise ValueError("original preparation errors must be nonnegative")
+    if max(*rx, *rt) > _PREPARATION_ALLOWANCE:
+        raise ValueError("original preparation errors must not exceed frozen 1e-10")
+    children = tuple(
+        _assess_constitutive_recovery(
+            deformation=0, form_error_bound=a, phase_error_bound=b
+        )
+        for a, b in zip(rx, rt)
+    )
+    q = _RECOVERED_RADIUS
+    resources = _derive_organized_outer_resource_bounds(recovered_radius=q)
+    source_flags = tuple(
+        child.recovery_certified
+        and child.endpoint_form_norm_squared_upper_bound is not None
+        and child.endpoint_phase_norm_squared_upper_bound is not None
+        and child.endpoint_form_norm_squared_upper_bound < q**2
+        and child.endpoint_phase_norm_squared_upper_bound < q**2
+        for child in children
+    )
+    source_ok = all(source_flags)
+    control_ok = source_ok and resources.control_conditional_capture_certified
+    control = _OrganizedOuterWindingControl(
+        initial_excess_upper_bound=resources.control_initial_excess_upper_bound,
+        boundary_energy_lower_bound=resources.control_boundary_energy_lower_bound,
+        capture_margin=resources.control_capture_margin,
+        source_certified=source_ok,
+        conditional_capture_certified=resources.control_conditional_capture_certified,
+        capture_certified=control_ok,
+        outer_zero_winding_retained=control_ok,
+        child_winding_retained=control_ok,
+        converges_to_target=control_ok,
+    )
+    checks = (
+        (source_ok, "original_child_recoveries_not_certified"),
+        (
+            resources.primitive_law_and_clock_certified,
+            "primitive_C5_complete_law_or_clock_not_certified",
+        ),
+        (resources.fine_error_certified, "full_fine_heat_comparison_not_certified"),
+        (
+            resources.attachment_budget_certified,
+            "attachment_work_or_initial_storage_budget_not_certified",
+        ),
+        (
+            resources.initial_outer_zero_winding_certified,
+            "initial_outer_zero_winding_not_certified",
+        ),
+        (
+            resources.child_transit_cell_certified,
+            "child_winding_retention_during_transit_not_certified",
+        ),
+        (resources.outer_cell_certified, "nine_outer_cycle_entry_not_certified"),
+        (resources.barrier_certified, "complete_product_boundary_not_certified"),
+        (
+            resources.capture_margin > 0,
+            "complete_fine_endpoint_capture_margin_not_positive",
+        ),
+        (control_ok, "paired_zero_form_control_not_certified"),
+    )
+    unresolved = tuple(label for passed, label in checks if not passed)
+    admitted = not unresolved
+    entry = (
+        source_ok
+        and resources.attachment_budget_certified
+        and resources.conditional_outer_entry_certified
+    )
+    capture = (
+        source_ok
+        and resources.attachment_budget_certified
+        and resources.conditional_capture_certified
+    )
+    bounds = {
+        name: value
+        for name, value in vars(resources).items()
+        if not name.startswith("control_")
+        and name not in ("outer_cell_certified", "child_transit_cell_certified")
+    }
+    return _OrganizedOuterWinding(
+        **(
+            bounds
+            | dict(
+                form_error_bounds=rx,
+                phase_error_bounds=rt,
+                child_sources=children,
+                control=control,
+                relative_preparation_dimension=sum(
+                    c.source.preparation_dimension for c in children
+                ),
+                original_preparation_storage_upper_bound=sum(
+                    (c.source.initial_storage_upper_bounds[0] for c in children), Q(0)
+                ),
+                recovered_source_flags=source_flags,
+                source_certified=source_ok,
+                initial_outer_zero_winding_certified=(
+                    source_ok and resources.initial_outer_zero_winding_certified
+                ),
+                child_winding_retained_during_transit=(
+                    source_ok and resources.child_winding_retained_during_transit
+                ),
+                outer_entry_certified=entry,
+                capture_certified=capture,
+                outer_winding_retained=capture,
+                child_winding_retained=capture,
+                converges_to_target=capture,
+                admitted=admitted,
+                status=(
+                    "certified_organized_outer_winding" if admitted else "unavailable"
+                ),
+                unresolved_conditions=unresolved,
+            )
+        )
     )

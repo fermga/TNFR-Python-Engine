@@ -739,3 +739,59 @@ def test_reports_and_retuned_protocol_values_cannot_replace_primitives(extra):
 def test_reports_are_immutable(report):
     with pytest.raises(FrozenInstanceError):
         report.capture_certified = False
+
+
+def test_resource_bounds_rebuild_the_carrier_without_isolated_sources(
+    report, monkeypatch
+):
+    def forbidden(*args, **kwargs):
+        pytest.fail("conditional resource arithmetic tried to certify a source")
+
+    monkeypatch.setattr(owner, "_assess_constitutive_recovery", forbidden)
+    resources = owner._derive_organized_outer_resource_bounds(recovered_radius=_Q)
+    for name, value in vars(resources).items():
+        if not name.startswith("control_") and name not in (
+            "outer_cell_certified",
+            "child_transit_cell_certified",
+        ):
+            assert value == getattr(report, name)
+    assert resources.attachment_nominal_work == 90 * 4092**2
+    assert resources.control_capture_margin == report.control.capture_margin
+    assert not hasattr(resources, "source_certified")
+    with pytest.raises(FrozenInstanceError):
+        resources.recovered_child_norm_bound = Q(0)
+
+
+def test_resource_radius_scales_both_full_rows_and_quadratic_work():
+    radius = 3 * _Q
+    resources = owner._derive_organized_outer_resource_bounds(recovered_radius=radius)
+    g = resources.geometry.gamma_bounds.hi
+    expected_phase = 6 * radius * (1 + g)
+    expected_form = 3 * radius + 24 * g * expected_phase
+    assert resources.full_phase_error_upper_bound == expected_phase
+    assert resources.full_form_error_upper_bound == expected_form
+    assert resources.attachment_residual_work_upper_bound == 20 * radius**2
+    assert resources.control_initial_excess_upper_bound == 40 * radius**2
+    assert resources.recovered_child_norm_bound == radius
+
+
+def test_a_large_valid_radius_is_an_unavailable_conditional_capture():
+    resources = owner._derive_organized_outer_resource_bounds(recovered_radius=1)
+    assert resources.primitive_law_and_clock_certified
+    assert resources.fine_error_certified
+    assert not resources.child_winding_retained_during_transit
+    assert not resources.conditional_capture_certified
+    assert not resources.control_conditional_capture_certified
+
+
+@pytest.mark.parametrize(
+    "bad", (True, "0", None, float("nan"), float("inf"), complex(0), -_Q)
+)
+def test_resource_radius_admission_precedes_carrier_and_geometry(bad, monkeypatch):
+    def forbidden(*args, **kwargs):
+        pytest.fail("invalid radius reached carrier or geometry arithmetic")
+
+    monkeypatch.setattr(owner, "_derive_organized_outer_winding", forbidden)
+    monkeypatch.setattr(owner, "_primitive_outer_source", forbidden)
+    with pytest.raises((TypeError, ValueError)):
+        owner._derive_organized_outer_resource_bounds(recovered_radius=bad)

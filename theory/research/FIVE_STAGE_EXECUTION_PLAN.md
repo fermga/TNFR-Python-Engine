@@ -438,6 +438,11 @@ The [finite external interaction](../nodal/ORGANIZED_EXTERNAL_INTERACTION.md),
 supply the capability whose resources are to be assessed. This gate does not
 assume indefinite outer-one retention or change the interface to recover it.
 
+The [prospective resource declaration](../nodal/ORGANIZED_JOINT_RESOURCES.md#prospective-resource-declaration)
+fixes one maximum corner before evaluation. Its analytical owner jointly
+retains the complete history and supplies separate necessary bounds; no
+result for the changed preparation is presumed by the declaration.
+
 1. **Trace the joint dependency.** Identify where the original twelve source
    allowances, recovered residual, recovery dwell, acquisition and observation
    work, finite contact window and reading error enter the current proof.

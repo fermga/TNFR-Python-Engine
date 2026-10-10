@@ -460,6 +460,20 @@ finite identities must hold uniformly; static examples certify no trajectory.
 Reused cosine quadratures must come from that fresh source reconstruction;
 their reuse does not admit externally supplied or stale reports.
 
+For [joint preparation resources](theory/nodal/ORGANIZED_JOINT_RESOURCES.md),
+select `tests/physics/test_organized_joint_resources.py` and
+`tests/physics/test_sine_recovery_resources.py` with outer-winding,
+sequential-observation, external-interaction, relative-origin registration,
+constitutive-acquisition, shared Lyapunov and rational-interval controls.
+Check all twelve primitive allowances before dependencies, actual class-one
+trapping, the two-row half/quarter clock conversion, and every coupled source,
+work, identity and observation margin. Necessary bounds do not certify entry.
+Keep the original fixed consumers unchanged; use their admitted original
+budgets and synthetic failures for wiring. Test the single-corner instrument
+with fakes and inspect retained evidence without replaying the frozen corner.
+Changing the prospective source or resource box requires a new declaration,
+not routine test regeneration.
+
 For [continued-contact identity](theory/nodal/ORGANIZED_CONTACT_MAINTENANCE.md),
 select `tests/physics/test_organized_contact_maintenance.py` with external
 interaction, relative-origin registration, outer-winding, sequential-observation

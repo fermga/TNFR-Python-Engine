@@ -660,3 +660,74 @@ def test_reports_keep_normalized_immutable_primitive_records(mp, protocol):
         result.identified_winding = 1
     with pytest.raises(FrozenInstanceError):
         protocol.status = "forged"
+
+
+def test_resource_noise_changes_only_reading_and_information_budgets(protocol):
+    noisy = owner._assess_organized_sequential_observation_resources(
+        raw_readout_error=2 * _NOISE
+    )
+    assert noisy.raw_readout_error_upper_bound == 2 * _NOISE
+    assert noisy.odd_readout_error_upper_bound == Q(32, 3) * _NOISE
+    assert noisy.even_readout_error_upper_bound == 12 * _NOISE
+    assert noisy.odd_total_error_upper_bound - protocol.odd_total_error_upper_bound == (
+        Q(16, 3) * _NOISE
+    )
+    assert (
+        noisy.even_total_error_upper_bound - protocol.even_total_error_upper_bound
+        == (6 * _NOISE)
+    )
+    kc, ks = protocol.cosine_inverse_factor_bounds, protocol.sine_inverse_factor_bounds
+    c0 = protocol.cosine_prior_lower_bound
+    slope = 5 * (12 * (ks.hi + ks.width) / c0 + Q(32, 3) * (kc.hi + kc.width) / c0**2)
+    assert noisy.cycle_sum_width_upper_bound - protocol.cycle_sum_width_upper_bound == (
+        slope * _NOISE
+    )
+    assert noisy.total_absolute_event_work_upper_bound == (
+        protocol.total_absolute_event_work_upper_bound
+    )
+    assert (
+        noisy.continuous_edge_drift_upper_bound
+        == protocol.continuous_edge_drift_upper_bound
+    )
+    assert noisy.internal_positive_gap_margin == protocol.internal_positive_gap_margin
+    assert noisy.outer_acute_gap_margin == protocol.outer_acute_gap_margin
+
+
+def test_resource_noise_failure_does_not_discard_work_or_identity(protocol):
+    noisy = owner._assess_organized_sequential_observation_resources(
+        raw_readout_error=1
+    )
+    assert not noisy.uniform_identification_certified
+    assert not noisy.admitted
+    assert noisy.work_certified and noisy.finite_identity_certified
+    assert noisy.unresolved_conditions == ("complete_cycle_winding_resolution",)
+    assert noisy.event_multipliers == protocol.event_multipliers
+    assert noisy.total_elapsed_scaled_time == protocol.total_elapsed_scaled_time
+
+
+def test_frozen_protocol_wrapper_still_supplies_only_its_original_noise(
+    protocol, monkeypatch
+):
+    seen = []
+
+    def resource(*, raw_readout_error):
+        seen.append(raw_readout_error)
+        return protocol
+
+    monkeypatch.setattr(
+        owner, "_assess_organized_sequential_observation_resources", resource
+    )
+    assert owner._assess_organized_sequential_observation_protocol() is protocol
+    assert seen == [_NOISE]
+
+
+@pytest.mark.parametrize(
+    "bad", (True, "0", None, float("nan"), float("inf"), complex(0), -_NOISE)
+)
+def test_resource_noise_admission_precedes_interval_arithmetic(bad, monkeypatch):
+    def forbidden(*args, **kwargs):
+        pytest.fail("invalid reading allowance reached interval arithmetic")
+
+    monkeypatch.setattr(owner, "pi_interval", forbidden)
+    with pytest.raises((TypeError, ValueError)):
+        owner._assess_organized_sequential_observation_resources(raw_readout_error=bad)

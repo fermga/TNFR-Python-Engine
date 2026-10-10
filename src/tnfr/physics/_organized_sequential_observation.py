@@ -11,6 +11,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from fractions import Fraction as Q
 
+from .._exact_time import exact_or_represented_real as _exact
 from ..mathematics._rational_interval import I, cos, pi_interval, sin
 from ._organized_outer_observation import (
     _ANGLE_ARITHMETIC_ALLOWANCE,
@@ -130,6 +131,21 @@ class _OrganizedSequentialObservationProtocol:
 
 def _assess_organized_sequential_observation_protocol():
     """Rebuild the frozen full-history information, work and identity bounds."""
+    return _assess_organized_sequential_observation_resources(
+        raw_readout_error=_RAW_ERROR
+    )
+
+
+def _assess_organized_sequential_observation_resources(*, raw_readout_error):
+    """Bound the same word and state class for an admitted raw-error budget.
+
+    Only the reading allowance varies. The fixed inference entry point keeps
+    its original protocol and never silently consumes these alternative bounds.
+    The caller must establish that actual readings obey the supplied allowance.
+    """
+    noise = _exact(raw_readout_error, "raw_readout_error")
+    if noise < 0:
+        raise ValueError("raw_readout_error must be nonnegative")
     pi = pi_interval()
     gamma = Q(1, 1023) / pi
     g, h, epsilon = gamma.hi, _DELAY, _EPSILON
@@ -155,8 +171,8 @@ def _assess_organized_sequential_observation_protocol():
     fc = g * h * sin(I(epsilon)).hi / 2
     fs = g * h * (1 - cos(I(epsilon))).hi / 2
     odd_transport, even_transport = fc * drift, fs * drift
-    odd_error = odd_finite + Q(16, 3) * _RAW_ERROR + odd_transport
-    even_error = even_finite + 6 * _RAW_ERROR + even_transport
+    odd_error = odd_finite + Q(16, 3) * noise + odd_transport
+    even_error = even_finite + 6 * noise + even_transport
     geometry = _outer_observation_inverse_geometry(
         gamma=gamma, odd_error=odd_error, even_error=even_error
     )
@@ -188,6 +204,9 @@ def _assess_organized_sequential_observation_protocol():
     admitted = identity_ok and work_ok and information_ok
     return _OrganizedSequentialObservationProtocol(
         gamma_bounds=gamma,
+        raw_readout_error_upper_bound=noise,
+        odd_readout_error_upper_bound=Q(16, 3) * noise,
+        even_readout_error_upper_bound=6 * noise,
         **vars(geometry),
         observation_form_upper_bound=form_bound,
         baseline_third_derivative_upper_bound=m3,
