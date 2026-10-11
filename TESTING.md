@@ -609,6 +609,21 @@ membership in the larger inference class is not acquisition. These proof
 controls install no solver, run no source assessor or frozen response, and
 admit no physical preparation.
 
+For [finite constituent-memory compression](theory/nodal/ORGANIZED_COMPRESSED_MEMORY.md),
+select `tests/physics/test_organized_compressed_memory.py` with
+`tests/physics/test_organized_constituent_memory.py`,
+`tests/physics/test_organized_electrical_protocol_theory.py`,
+`tests/physics/test_exact_linear_algebra.py` and `tests/test_rational_interval.py`.
+Check the five frozen interface statistics, hidden drift, propagated nonlinear
+error and uncertainty allowance against independent edge calculations and
+shared transport. Retain the unchanged input/work map and distinguish the
+approximation's weighted storage from actual signed hidden exchange. The
+envelope improvement assumes admitted initial statistics and collective
+phases; common source norm bounds cannot supply them. Compare intrinsic
+approximation envelopes at matched initialization, not total preparation or
+measurement accuracy. These static controls preserve frozen evidence and
+execute no trajectory, acquired-source assessment or reserved response.
+
 For [current discrimination under uncertainty](theory/nodal/ORGANIZED_ROBUST_CURRENT.md),
 select `tests/physics/test_organized_robust_current.py` and
 `tests/physics/test_organized_robust_current_theory.py` with finite observation

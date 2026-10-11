@@ -323,7 +323,11 @@ the existing source transport remains the conditional norm owner.
 
 These results distinguish a derived nonlinear feedback mechanism from a
 supplied matrix law without identifying a physical force or selecting a
-unique fundamental dynamics. The [sole queue](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-owns the next obligation. Predicting a finite interaction with compressed
-memory still requires a declared retained state, initial information,
-nonlinear remainder and identity/observation domain under the same fine law.
+unique fundamental dynamics. The
+[finite compression result](ORGANIZED_COMPRESSED_MEMORY.md#organized-compressed-memory-result)
+retains five initial interface variances and propagates their nonlinear
+forecast error under the same fine law. Its conditional intrinsic improvement
+does not supply those statistics or initial phases from source norm bounds,
+nor reduce measurement uncertainty. The
+[sole queue](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns the remaining initialization obligation.

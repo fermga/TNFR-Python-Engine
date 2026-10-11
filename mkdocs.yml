@@ -126,6 +126,7 @@ nav:
           - "Observing collective winding with finite form inputs": theory/nodal/ORGANIZED_FINITE_OBSERVATION.md
           - "Five-child electrical observation protocol": theory/nodal/ORGANIZED_ELECTRICAL_PROTOCOL.md
           - "Collective response inherited from constituents": theory/nodal/ORGANIZED_CONSTITUENT_MEMORY.md
+          - "Finite collective prediction with frozen variances": theory/nodal/ORGANIZED_COMPRESSED_MEMORY.md
           - "Current discrimination under uncertainty": theory/nodal/ORGANIZED_ROBUST_CURRENT.md
           - "Physical feasibility of organized current observation": theory/research/ORGANIZED_ELECTRICAL_FEASIBILITY.md
           - "Collective state and matrix response": theory/nodal/ORGANIZED_EFFECTIVE_LAW.md
