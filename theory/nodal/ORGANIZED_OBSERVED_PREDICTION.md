@@ -352,3 +352,52 @@ bridge remains open. The [sole execution queue](../research/FIVE_STAGE_EXECUTION
 owns any subsequent work; this owner creates no parallel campaign.
 
 <!-- FROZEN DECLARATION AND PROOF END: append evaluated results only below. -->
+
+<a id="organized-observed-prediction-result"></a>
+## Retained static certificate
+
+The single assessment declared at
+`de5b500f70b1626d75f12484af0e6381fc9d93af` certified the prospective
+diameter. Its [attempt](../../docs/assets/organized_observed_prediction/attempt.json),
+[exact response archive](../../docs/assets/organized_observed_prediction/response.zip)
+and [content receipt](../../docs/assets/organized_observed_prediction/receipt.json)
+retain all 150-by-15 observation coefficients, the future matrix, rational
+weights, 2,145 compact step witnesses and source/backend associations.
+There are 143 fixed cells per column. No nonlinear target history, source
+producer or physical response was evaluated.
+
+The displayed decimals summarize retained outward/exact rational quantities:
+
+| Certificate quantity | Result |
+| --- | ---: |
+| Maximum coefficient radius | `4.38345956e-20`, below `1e-12` |
+| Phase-weight row norm k | `499.5434372` |
+| Future-weight row norm w | `3.025122144` |
+| Inverse initial / phasor defects | `1.55604e-11` / `3.48244e-10` |
+| Future initial / phasor defects | `6.36647e-12` / `2.01118e-11` |
+| Positive bootstrap denominator d | `0.8161673611` |
+| Carrier future gain G | `3.9317888454` |
+| Fine future diameter upper bound | `<7.866e-14` |
+| Margin below the fixed `2e-13` target | `>1.2134e-13` |
+
+Thus the coordinate midrange of any nonempty jointly compatible future set
+has radius less than `3.933e-14`. A future sensor reading adds `eta`, giving
+less than `4.933e-14` against that abstract forecast. This is a uniform
+conditional statement over the declared unknown-initialization class,
+not only the earlier known attachment state. It neither identifies all
+hidden coordinates nor selects one constitutive law.
+
+The certified diameter is also below `1e-13`. Consequently any *certified
+member* of the true feasible-future set would itself be accurate within
+that policy radius; finding its exact coordinate midrange is unnecessary.
+Computing and certifying such a member from a raw record is still separate
+work. A fitted phase vector or the dual expression `W*y` does not discharge
+that obligation. A carrier-only candidate additionally needs explicit
+source/model error and record-feasibility accounting.
+
+Read-only evidence tests verify the source associations, fixed grid,
+sample/endpoint reconstruction from compact witnesses, error recurrences
+and independently rebuilt dual residuals. The Taylor derivative enclosure
+continues to rely on the proved shared kernel and declared forcing law;
+receipts are content associations, not execution authentication. Preserve
+this response and the declaration prefix without replaying the producer.

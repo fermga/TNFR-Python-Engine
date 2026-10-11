@@ -669,6 +669,15 @@ Routine tests must not compute the declared static design or invoke its
 assessor. Numerical proposals have no proof status until interval residuals
 and the nonlinear bootstrap have been checked.
 
+Use `tests/physics/test_organized_observed_prediction_evidence.py` for the
+retained certificate. It verifies source/archive associations, all compact
+column-step recurrences, sampled and future matrix reconstruction, common
+form transmission and independently rebuilt rational dual residuals. It
+blocks static integration, proposal generation and response assessors.
+Those arithmetic checks retain the kernel's smooth forcing/Taylor premises;
+they do not authenticate arbitrary interval matrices or compute a raw-record
+forecast. Preserve the frozen declaration prefix and response bytes.
+
 For [current discrimination under uncertainty](theory/nodal/ORGANIZED_ROBUST_CURRENT.md),
 select `tests/physics/test_organized_robust_current.py` and
 `tests/physics/test_organized_robust_current_theory.py` with finite observation
