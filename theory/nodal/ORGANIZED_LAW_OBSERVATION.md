@@ -14,8 +14,11 @@ finite identity and numerical growth bounds. It also proves a local
 obstruction: two distinct admitted initial phase gaps under the two endpoint
 laws have exactly the same two ideal frozen-current quadratures. An admitted
 adjacent gap can also match the three ideal receiver currents. Neither local
-test uniformly selects the law. This does not prove overlap of the complete
-continuing 150-reading records.
+test uniformly selects the law. The complete 150-by-35 formal sampled map
+is injective, but a direction with exact low-order cancellations obstructs
+every global scalar or positive block bootstrap using the retained unconstrained
+coefficient and remainder bounds. These results establish neither separation
+nor overlap of the complete noisy nonlinear record sets.
 
 | Item | Retained analytical scope |
 | --- | --- |
@@ -24,7 +27,7 @@ continuing 150-reading records.
 | Initial class | `abs(x_i)<=X=1/100`; `theta=psi+R*Phi+z`, `psi_j=2*pi*(j-4)/9`, child-zero hidden means, `abs(z_i)<=1e-6`, `||u||2<=31/10^9`, `||z||2<=601/10^10`; principal collective gaps at most `7/5`, winding in `{-1,0,1}` |
 | Input/clock | Original fifteen ramps and plateaus, exact command, `tau=(1023/1024)*t`, local time `v=tau-200`, horizon `T=16` |
 | Actual observations | Original thirty five-form readings, arbitrary coordinate errors at most `eta=1e-14`; no primitive phase or initial-state label is observed |
-| Information result | Exact collision of two ideal quadratures and, with an admitted adjacent gap, all three frozen receiver currents; separate injectivity of a continuously observed formal harmonic design |
+| Information result | Exact local frozen-current collisions; exact rank 35 of the unchanged finite formal design; obstruction to its unconstrained global scalar/block bootstrap |
 | Outstanding distinction | Separation or overlap of the actual finite joint record sets, including each complete nonlinear history and its own source error |
 | Evidence | Analytical proofs and independent static arithmetic/field controls; no fit, response trajectory, sampled coefficient design, physical data or frozen producer is evaluated |
 
@@ -389,17 +392,374 @@ of 6 therefore implies
 \]
 
 The old 15-column gain does not certify (16)-(18). A finite joint test must
-retain these harmonic blocks, their physical phase constraints, the two
-own-law source errors and every sample correlation. The local collision
-and continuous formal injectivity leave that actual finite test unresolved.
+retain these harmonic blocks, their constitutive phase constraints, the two
+own-law source errors and every sample correlation. The finite-rank and
+relaxation results below distinguish information in the formal design from
+what this global remainder can certify about the nonlinear pair.
 
-## 5. Shared implementation and verification
+<a id="organized-law-finite-formal-rank"></a>
+## 5. Exact rank of the actual finite formal design
+
+**The 150-by-35 sampled map of (16), at the original thirty observation
+times, has column rank 35.** This is an exact statement about the formal
+linear heat response. It supplies neither a quantitative inverse bound nor
+a noisy or nonlinear law discriminator. No sampled matrix is evaluated in
+the proof.
+
+### The recorded plateaus and first ramps determine scalar moments
+
+Suppose a coefficient vector produces zero V at every recorded time.
+The first reading gives `V(0)=0`, eliminating all five initial-form
+coefficients. Write `A=L5/4`. On each plateau its forcing is a constant
+vector f, and the two recorded endpoints satisfy
+
+\[
+ 0=e^{-hA}0+\left(\int_0^h e^{-sA}\,ds\right)f.
+ \tag{19}
+\]
+
+The integral matrix is positive definite: its eigenvalues are h for the
+constant mode and `(1-exp(-h*mu))/mu>0` for every positive eigenvalue mu of A.
+Thus f is zero on each of the fifteen plateaus. At command zero, this
+means that all baseline edge currents `sum_n b_s,n,e` equal one circulation,
+because the kernel of the oriented C5 incidence matrix is the constant
+edge vector.
+
+For an edge e define its command-dependent increments
+
+\[
+ E_e(q)=\sum_n b_{s,n,e}(\cos(nq)-1),\qquad
+ O_e(q)=\sum_n b_{c,n,e}\sin(nq),\qquad n\in\{1,9,18\}.
+ \tag{20}
+\]
+
+When a child is marked, only its two incident edges have nonzero commands,
+with opposite signs. The other three edges retain the baseline circulation.
+Zero divergence at the two nonzero plateau levels therefore gives
+`E_e(epsilon)+O_e(epsilon)=E_e(epsilon)-O_e(epsilon)=0` on each incident edge.
+Every edge is incident to a marked child, so
+
+\[
+ E_e(\epsilon)=O_e(\epsilon)=0\quad\hbox{for every edge e}.
+ \tag{21}
+\]
+
+Every child's first ramp starts at the recorded endpoint of its zero-level
+plateau and ends at the recorded beginning of its positive-level plateau.
+Both V values are zero. This includes child 4; its first ramp ends before
+the last reading. With local ramp time `t in [0,1]`, put
+`q(t)=epsilon*t^2*(3-2*t)`. After subtracting the zero-divergence baseline,
+the forcing is supported on the two incident incidence columns.
+
+The two distinct nonzero eigenvalues of A are
+
+\[
+ \mu_1=(5-\sqrt5)/8,\qquad \mu_2=(5+\sqrt5)/8.
+ \tag{22}
+\]
+
+Each has a real two-dimensional Fourier eigenspace. The projections of
+two adjacent incidence columns onto either eigenspace are linearly
+independent: in complex Fourier coordinates their ratio is
+`exp(plus_or_minus 2*pi*i*k/5)`, for k equal to 1 or 2, which is not real.
+The zero ramp endpoint consequently forces each incident edge's weighted
+forcing integral to vanish separately for each mu.
+
+Each edge is probed once from each endpoint in two child blocks. Their
+first ramps use the same q(t) and reverse that edge's command sign.
+Adding and subtracting the two integral equations therefore gives
+
+\[
+ \int_0^1 e^{-\mu_j(1-t)}E_e(q(t))\,dt=0,\qquad
+ \int_0^1 e^{-\mu_j(1-t)}O_e(q(t))\,dt=0,
+ \quad j=1,2.
+ \tag{23}
+\]
+
+Only recorded endpoints and the known linear response between them were
+used. Neither derivatives nor extra within-ramp observations are supplied.
+Equations (21)-(23) reduce coefficient recovery on every edge to two
+three-by-three homogeneous systems. Their common matrix construction is
+
+\[
+ M_f=\begin{pmatrix}
+ f_1(\epsilon)&f_9(\epsilon)&f_{18}(\epsilon)\\
+ \int_0^1 w_1(t)f_1(q(t))dt&\int_0^1 w_1(t)f_9(q(t))dt&
+       \int_0^1 w_1(t)f_{18}(q(t))dt\\
+ \int_0^1 w_2(t)f_1(q(t))dt&\int_0^1 w_2(t)f_9(q(t))dt&
+       \int_0^1 w_2(t)f_{18}(q(t))dt
+ \end{pmatrix},\qquad w_j(t)=e^{-\mu_j(1-t)},
+ \tag{24}
+\]
+
+using either `f_n(q)=sin(nq)` or `f_n(q)=1-cos(nq)`. The latter differs
+from (20) only by a common minus sign. Both matrices are nonsingular, as
+the following argument proves without computing their entries.
+
+### Strict independence of both trigonometric triples
+
+For `|z|<pi`, the analytic function `h(z)=z*cot(z)` has expansion
+
+\[
+ h(z)=1-\sum_{m\ge1}a_m z^{2m},\qquad
+ a_1=1/3,\qquad
+ (2m+1)a_m=\sum_{k=1}^{m-1}a_k a_{m-k}>0\quad(m\ge2).
+ \tag{25}
+\]
+
+The recurrence follows directly from `z*h'=h-h^2-z^2`; the first poles
+are at plus and minus pi. Thus for every positive d,
+
+\[
+ H_d(\sigma)=\sqrt\sigma\cot(d\sqrt\sigma)
+ =\frac1d-\sum_{m\ge1}a_m d^{2m-1}\sigma^m
+ \quad\Longrightarrow\quad H_d'<0,\quad H_d''<0
+ \tag{26}
+\]
+
+on `0<d*sqrt(sigma)<pi`, where the derivatives are with respect to sigma.
+Termwise differentiation is valid inside that convergence domain.
+
+First take `f_n(q)=sin(nq)`, with `0<q<=epsilon=1/10` and n equal to
+1, 9 or 18. Every f_n is positive because `18*epsilon=1.8<pi`.
+For `sigma=n^2`, its logarithmic derivative and normalized second
+derivative are `f_n'/f_n=H_q(sigma)` and `f_n''/f_n=-sigma`.
+The first two-column Wronskian is negative by the strict decrease in
+(26). Factoring the positive functions from the three-column Wronskian
+leaves
+
+\[
+ \det\begin{pmatrix}
+ 1&1&1\\
+ H_q(1)&H_q(81)&H_q(324)\\
+ -1&-81&-324
+ \end{pmatrix}\ne0,
+ \tag{27}
+\]
+
+because strict concavity makes the three points on the graph of H_q
+noncollinear.
+
+For `g_n(q)=1-cos(nq)=2*sin(nq/2)^2`, every g_n is also positive and
+
+\[
+ g_n'/g_n=H_{q/2}(\sigma)=H,\qquad
+ g_n''/g_n=(H^2-\sigma)/2.
+ \tag{28}
+\]
+
+Again its first two-column Wronskian is negative. Invert the strictly
+decreasing map in (26) locally as `sigma=sigma(H)`. Throughout the interval
+between its three values,
+
+\[
+ \sigma''(H)=-H_{q/2}''(\sigma)/(H_{q/2}'(\sigma))^3<0,
+ \qquad \frac{d^2}{dH^2}(H^2-\sigma(H))>0.
+ \tag{29}
+\]
+
+The three-column Wronskian is therefore nonzero by strict convexity of
+the last row in (28) as a function of the middle row.
+
+These Wronskian conditions imply that each triple has a nonzero evaluation
+determinant at any three distinct q values in `(0,epsilon]`. One direct
+Rolle argument is to divide a proposed three-zero linear combination by
+its positive first function. Put `r=f_9/f_1` and `s=f_18/f_1`; r' never
+vanishes, and `(s'/r')'` is the three-column Wronskian divided by
+`f_1^3*(r')^2`, hence never zero. Applying Rolle twice forces the
+combination to be trivial. The evaluation determinant
+has a constant nonzero sign on the connected domain of ordered triples.
+
+### The two weighted moments retain that independence
+
+Expanding (24) and interchanging its finite integrals gives exactly
+
+\[
+ \det M_f=\int_{0<t<u<1}
+ [w_1(t)w_2(u)-w_1(u)w_2(t)]
+ \det\begin{pmatrix}
+ f_1(\epsilon)&f_9(\epsilon)&f_{18}(\epsilon)\\
+ f_1(q(t))&f_9(q(t))&f_{18}(q(t))\\
+ f_1(q(u))&f_9(q(u))&f_{18}(q(u))
+ \end{pmatrix}\,dt\,du.
+ \tag{30}
+\]
+
+The weight bracket is strictly positive: `mu2>mu1` and
+`w2(t)/w1(t)=exp(-(mu2-mu1)*(1-t))` strictly increases. Also q(t) strictly
+increases on `(0,1)`, so `0<q(t)<q(u)<epsilon` on the integration domain.
+The evaluation determinant consequently has a constant nonzero sign.
+Thus (30) is nonzero for both bases. Equations (21)-(24) force all thirty
+edge coefficients to vanish. Together with the five initial forms this
+proves the claimed rank 35.
+
+This finite theorem strengthens the continuous formal injectivity result;
+it does not make the local collision in section 3 into a complete-history
+collision or transfer formal linear identifiability to nonlinear dynamics.
+No determinant lower bound, inverse norm, finite-error separation or
+numerical budget verdict follows from strict nonvanishing alone.
+
+<a id="organized-law-relaxation-obstruction"></a>
+## 6. Why the unconstrained global bootstrap cannot close the question
+
+This obstruction concerns a specified proof method, not the actual laws'
+record sets. It needs no coefficient-matrix evaluation, proposed inverse,
+nonlinear history or choice of an unknown initial state.
+
+### One formal direction with a uniformly small response
+
+Set the five initial-form coefficients and all b_c coefficients to zero.
+Repeat the same b_s coefficients on every edge:
+
+\[
+ (a_1,a_9,a_{18})=(1,-323/19683,20/19683),\qquad
+ b=(1,323/19683,20/19683).
+ \tag{31}
+\]
+
+The vector b lists their three block infinity norms. Direct rational
+algebra gives
+
+\[
+ \sum_n a_n n^2=\sum_n a_n n^4=0,\qquad
+ \sum_n|a_n|n^6=1+8721+34560=43282.
+ \tag{32}
+\]
+
+The command-zero current is a constant circulation and has zero divergence.
+At any instant only one child c is marked, with scalar command q satisfying
+`|q|<=epsilon`. The two changed edge commands are opposite; cosine is even.
+Consequently the complete formal forcing is exactly
+
+\[
+ F(q)(e_{c-1}-e_{c+1}),\qquad
+ F(q)=\sum_n a_n(\cos(nq)-1).
+ \tag{33}
+\]
+
+Taylor's theorem through degree five, with (32), gives for the entire
+command range
+
+\[
+ |F(q)|\le f_*:=\frac{43282\epsilon^6}{720}.
+ \tag{34}
+\]
+
+The dipole in (33) has zero sum and Euclidean norm sqrt(2). The smallest
+nonzero eigenvalue of `L5/4` is greater than 1/3. Variation of constants,
+including every change of marked child, therefore yields
+
+\[
+ \sup_v\|V(v)\|_\infty
+ \le\sqrt2 f_*\int_0^\infty e^{-s/3}\,ds
+ <\frac92 f_*
+ =:m=\frac{21641}{80000000}.
+ \tag{35}
+\]
+
+This bounds the complete formal history and hence every actual sample.
+It does not assert a zero response; it is consistent with rank 35.
+The retained elementary remainder coefficient is strictly larger:
+
+\[
+ a=18D>m,\qquad D=4gX+2g^2J_1T.
+ \tag{36}
+\]
+
+All quantities in (31)-(36) are fixed rational bounds. In particular,
+`m=0.0002705125`, whereas `18D>0.000304`.
+
+### Both scalar and block recovery inherit the obstruction
+
+Let M denote the exact sampled formal map. Any proposed recovery K of all
+thirty harmonic coefficients has row norm k and harmonic residual block
+norm e for `J=[0 I]-KM`. Applying that identity to (31), whose initial
+forms vanish and harmonic infinity norm is one, gives
+
+\[
+ 1\le e+k\|Mp\|_\infty\le e+km.
+ \tag{37}
+\]
+
+A scalar bootstrap with remainder coefficient at least a would require
+`1-e-k*a>0`. Equations (36)-(37) exclude this for every K, even one obtained
+from an exact inverse. Taking upper residual bounds cannot improve it.
+
+Keeping separate harmonic block norms also does not rescue this particular
+global envelope. Write `B_n=max(||b_s,n||infinity,||b_c,n||infinity)` for an
+arbitrary actual pair, and `U_*=sup||u||infinity`. Its last preceding sample
+is at most two units earlier, including the final unobserved ramp and tail.
+The static force and (17) then give
+
+\[
+ cU_*\le\delta+6\sum_n(1+nD)B_n,\qquad c=1-2g^2T>0.
+\]
+\[
+ R_*:=\sup\|u-V\|_\infty\le\sum_n A_nB_n+B_0\delta,
+ \quad A_n=18nD+\frac{36g^2T(1+nD)}c,\quad
+ B_0=\frac{6g^2T}c.
+ \tag{38}
+\]
+
+Here `delta=2*eta+E_0+E_1` retains both own-law source errors. For arbitrary
+block recovery matrices K_n, let k_n be their row norms and E_nm the
+nonnegative row-norm bounds of their residuals on harmonic block m.
+Their proposed componentwise bootstrap has feedback matrix
+
+\[
+ H=E+kA^T.
+ \tag{39}
+\]
+
+Using the formal witness instead of an actual pair in the exact recovery
+identities gives `b<=E*b+k*m`. But `A^T*b>=A_1>18D>m`, so
+
+\[
+ Hb\ge b,\qquad b>0.
+ \tag{40}
+\]
+
+Thus `I-H` cannot have a nonnegative inverse: otherwise multiplying
+`(I-H)b<=0` by that inverse would imply `b<=0`. This excludes the positive
+block bootstrap for every choice of dual weights and their certified
+residual bounds. Positive diagonal changes of coefficient units preserve
+the same obstruction. A more accurate matrix or a different inverse cannot
+repair (38)-(39); a sharper correlated remainder or constrained argument
+is a different method and is not excluded.
+
+### The obstruction is not an admitted cross-law history
+
+An actual alternative has ninth and eighteenth phasor radii
+`r9=gamma/(4*2187)` and `r18=r9/2`. In complex notation
+`z_n=b_c,n+i*b_s,n`, its coefficients on each edge satisfy
+
+\[
+ z_9=-r_9e^{9ia},\qquad z_{18}=(r_9/2)e^{18ia}
+       =z_9^2/(2r_9).
+ \tag{41}
+\]
+
+Both are tied to the same phase a that occurs in the fundamental
+cross-law difference. On each edge the witness has phasor modulus ratio
+`323/20`, instead of 2, so even rescaling it cannot produce these actual
+coefficients. This uses its zero b_c coordinates; general block infinity
+norms need not have the same ratio as phasor moduli.
+It also supplies no pair of initial cycle phases or nonlinear histories.
+Its role is to prove a limitation introduced by allowing independent formal
+coefficients and independent norm remainders. Finite formal rank, exact
+local ambiguity and this proof-method obstruction leave the joint noisy
+nonlinear separation/overlap question open. The
+[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#organized-law-state-identifiability)
+retains the constrained continuation under the same word, noise and horizon.
+
+## 7. Shared implementation and verification
 
 The [detached consumer](../../src/tnfr/physics/_organized_law_observation.py)
 reuses the canonical potential/current, product geometry, hidden transport,
 interval/jet arithmetic and waveform. It supplies own-law analytical bounds,
-an actual carrier field and ideal local quadratures; it installs no runtime
-law and evaluates no trajectory. The shared prescribed-time validator remains
+an actual carrier field, ideal local quadratures and the exact analytical
+relaxation bounds; it installs no runtime law and evaluates no trajectory.
+The shared prescribed-time validator remains
 the execution owner for any separately declared future numerical test.
 
 [Admission and field controls](../../tests/physics/test_organized_law_observation.py)
@@ -408,4 +768,12 @@ derivative bounds, source denominators and identity/growth margins.
 [Information controls](../../tests/physics/test_organized_law_observation_information.py)
 compare actual-current quadratures with independently expanded harmonics
 and verify the interval sign witnesses used by the analytical obstruction.
+[Finite-rank controls](../../tests/physics/test_organized_law_observation_rank.py)
+check the actual endpoint schedule, reversed edge probes and C5 spectral
+independence used in section 5.
+[Relaxation controls](../../tests/physics/test_organized_law_observation_relaxation.py)
+check moment cancellation, actual forcing orientation, the dipole heat bound,
+own-law remainder constants and the obstruction's constitutive exclusion.
+These controls exercise proof premises; the proofs establish their stated
+mathematical conclusions.
 No root search, fit, sampled coefficient assessment or frozen producer is run.

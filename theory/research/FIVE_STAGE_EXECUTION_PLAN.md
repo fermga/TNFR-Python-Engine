@@ -89,8 +89,10 @@ a computable conditional future without generating-state input. The
 **single active gate** is [law versus initial-state identifiability](#organized-law-state-identifiability):
 determine whether the fixed joint observations distinguish two retained
 constitutive laws when each has its own unknown initialization. Own-law
-admission is established; the exact local-current collision requires using
-the complete record rather than a single receiver's compressed statistic.
+admission and finite sampled injectivity of the formal harmonic comparison
+are established. The local-current collision and a proved obstruction to
+the unconstrained global remainder bound require retaining the laws' joint
+phase relations and temporal information in the next certificate.
 
 No 45-node acquisition, physical readout or source certificate transfers to
 the supplied positive-r matrix law by default. Earlier frozen protocols,
@@ -107,7 +109,7 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Active law versus initial-state identifiability | [Two-law record admission](#organized-law-state-identifiability): own-law carrier/error/identity admission and a local-current ambiguity are established; complete finite-record separation or overlap remains unresolved |
+| Active law versus initial-state identifiability | [Two-law record admission](#organized-law-state-identifiability): own-law admission and finite formal injectivity are established; a proved obstruction excludes the unconstrained global bootstrap. Constrained nonlinear finite-record separation or overlap remains unresolved |
 | Closed operational observation-based forecast | [Certified forecast from a joint record](#organized-observed-forecast-construction): one archived synthetic record yields a carried conditional endpoint within the fixed policy, without generating-state input |
 | Closed observation-to-prediction sufficiency | [Unknown collective initialization](#organized-observed-prediction-admission): a uniform complete-history future diameter below the fixed target retains joint noisy records and source uncertainty |
 | Closed computable prospective-prediction admission | [Carried reduced reference](#organized-computable-prediction-admission): a fixed-budget validated forecast separates the post-observation endpoint from the omitted-input control with numerical, source and reading errors retained |
@@ -679,12 +681,23 @@ supports, preparations and budgets.
    explicit jointly compatible cross-law witness. Match all samples from
    one continuous history per law, retaining correlations and source errors.
    A failed sufficient bound is unavailable evidence, not record overlap.
-   The formal harmonic comparison has 35 coefficients and an own-law drift
-   remainder. Continuous formal injectivity does not establish rank or
-   conditioning at the actual sample times. Retain harmonic circle/cycle
-   constraints instead of treating free formal coefficients as feasible states.
-3. A finite sampled certificate or compatible-history construction must
-   discharge those joint obligations. Any numerical discriminator must
+   The [finite-sample theorem](../nodal/ORGANIZED_LAW_OBSERVATION.md#organized-law-finite-formal-rank)
+   proves rank 35 for the unchanged sample schedule without evaluating its
+   coefficient matrix. Its proof supplies no useful noisy inverse bound.
+   The [relaxation obstruction](../nodal/ORGANIZED_LAW_OBSERVATION.md#organized-law-relaxation-obstruction)
+   excludes every scalar or positive block bootstrap based on independent
+   formal coefficients and the retained global remainder envelope; selecting
+   different inverse weights or computing that matrix more accurately cannot
+   repair this certificate.
+3. **Next construction:** retain the shared underlying phases, fixed ninth
+   and eighteenth harmonic circles and their cross-harmonic relation, both
+   cycle constraints, and phase drift driven by each carried form history.
+   Derive a joint constrained separation criterion or compatible-history
+   witness under the same word, noise and horizon. The formal cancellation
+   witness violates these constitutive coefficient constraints and is not a
+   two-law overlap witness. A new bound must avoid that excluded relaxation;
+   ideal local-current or zero-noise rank results alone do not close the gate.
+   Any numerical discriminator must
    declare its record/source choice, alternatives, budgets and prospective
    criterion before evaluation. No additional fit, parameter scan, waveform
    tuning, longer horizon or precision increase is activated here. Do not

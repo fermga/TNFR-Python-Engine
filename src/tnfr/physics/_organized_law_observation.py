@@ -243,3 +243,97 @@ def _organized_law_carrier_field(
         ) + tuple(q * gamma / 4 for q in gradient)
 
     return flow
+
+
+@dataclass(frozen=True)
+class _OrganizedLawRelaxationObstruction:
+    harmonics: tuple[int, ...]
+    uniform_edge_sine_coefficients: tuple[Q, ...]
+    block_norms: tuple[Q, ...]
+    second_moment: Q
+    fourth_moment: Q
+    sixth_absolute_moment: Q
+    forcing_upper: Q
+    dipole_heat_factor: Q
+    sampled_response_upper: Q
+    edge_drift_upper: Q
+    continuous_sample_margin: Q
+    remainder_block_factors: tuple[Q, ...]
+    remainder_record_factor: Q
+    elementary_first_block_factor: Q
+    elementary_gap: Q
+    block_feedback_gap: Q
+    source_errors: tuple[Q, Q]
+    historical_pair_error: Q
+    obstruction_established: bool
+    command_gap_upper: Q = _EPSILON
+    reading_error: Q = Q(1, 10**14)
+    scope: str = (
+        "formal_global_and_block_bootstrap_obstruction_not_nonlinear_record_overlap"
+    )
+
+
+def _bound_organized_law_relaxation_obstruction() -> _OrganizedLawRelaxationObstruction:
+    """Bound one near-circulation witness without computing a sampled matrix.
+
+    Initial forms and all cosine coefficients are zero; each listed sine
+    coefficient is repeated on all five edges. The witness cancels the second
+    and fourth even moments. It obstructs the declared norm relaxation, not
+    the constitutively constrained cross-law comparison.
+    """
+    sine = _bound_organized_observation_law(deformation=0)
+    alternative = _bound_organized_observation_law(deformation=1)
+    harmonics = (1, 9, 18)
+    coefficients = (Q(1), -Q(323, 19683), Q(20, 19683))
+    blocks = tuple(map(abs, coefficients))
+    second, fourth = (
+        sum((a * n**degree for n, a in zip(harmonics, coefficients)), Q(0))
+        for degree in (2, 4)
+    )
+    sixth = sum((a * n**6 for n, a in zip(harmonics, blocks)), Q(0))
+    forcing = sixth * _EPSILON**6 / 720
+    # The zero-sum C5 heat spectral gap exceeds 1/3; the active forcing is
+    # F(q)*(e_previous-e_next), with dipole Euclidean norm sqrt(2)<3/2.
+    heat_factor = Q(9, 2)
+    sampled = heat_factor * forcing
+    drift = 4 * _G * _FORM_BOUND + 2 * _G**2 * alternative.current_upper * _DURATION
+    margin = 1 - 2 * _G**2 * _DURATION
+    factors = tuple(
+        18 * n * drift + 36 * _G**2 * _DURATION * (1 + n * drift) / margin
+        for n in harmonics
+    )
+    record_factor = 6 * _G**2 * _DURATION / margin
+    elementary = 18 * drift
+    elementary_gap = elementary - sampled
+    block_gap = sum((a * b for a, b in zip(factors, blocks)), Q(0)) - sampled
+    errors = (sine.source_form_error_upper, alternative.source_form_error_upper)
+    pair_error = 2 * Q(1, 10**14) + sum(errors)
+    established = (
+        sine.admitted
+        and alternative.admitted
+        and second == fourth == 0
+        and margin > 0
+        and elementary_gap > 0
+        and block_gap > 0
+    )
+    return _OrganizedLawRelaxationObstruction(
+        harmonics,
+        coefficients,
+        blocks,
+        second,
+        fourth,
+        sixth,
+        forcing,
+        heat_factor,
+        sampled,
+        drift,
+        margin,
+        factors,
+        record_factor,
+        elementary,
+        elementary_gap,
+        block_gap,
+        errors,
+        pair_error,
+        established,
+    )
