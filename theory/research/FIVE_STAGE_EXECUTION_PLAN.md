@@ -590,7 +590,8 @@ route. No frozen response, trajectory or source assessor was evaluated.
 finite forecast with a complete, useful error budget?** The exact-solution
 theorem now has initialization. Its much smaller intrinsic error is not a
 reason to compute every digit or pursue otherwise unnecessary hidden state.
-The bounded target is the five mean forms at `tau=216`, after the existing
+The [fixed declaration](../nodal/ORGANIZED_COMPUTABLE_PREDICTION.md) targets
+the five mean forms at `tau=216`, after the existing
 word releases at `tau=215.00015` and evolves unforced for `0.99985`. It tests
 prediction of the state retained after observation and its backaction, not
 another identification of the same winding. Freeze the full protocol and

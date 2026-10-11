@@ -67,14 +67,29 @@ def _jet_rows(values, size, order):
     return rows
 
 
-def flow_jets(box, order, flow):
-    """Enclose normalized solution derivatives through the declared order."""
+def flow_jets(box, order, flow, *, prescribed_time=None):
+    """Enclose normalized solution derivatives through the declared order.
+
+    An optional prescribed time is a point or interval of possible expansion
+    origins. Its solution jet has first derivative one and higher derivatives
+    zero. The field then takes ``(time_jet, state_jets)``; time is not an
+    uncertain state coordinate or an independently perturbed initial value.
+    """
     if type(order) is not int or not 0 <= order <= MAX_ORDER + 1:
         raise ValueError("solution Taylor order outside the shared jet domain")
     coefficients = [[I.coerce(value)] for value in _ordered(box, "state")]
+    clock = None if prescribed_time is None else I.coerce(prescribed_time)
     for index in range(1, order + 1):
+        variables = tuple(Jet(tuple(row)) for row in coefficients)
+        if clock is None:
+            values = flow(variables)
+        else:
+            time_coefficients = (clock,) + tuple(
+                I(int(degree == 1)) for degree in range(1, index)
+            )
+            values = flow(Jet(time_coefficients), variables)
         rows = _jet_rows(
-            flow(tuple(Jet(tuple(row)) for row in coefficients)),
+            values,
             len(coefficients),
             index - 1,
         )
@@ -83,45 +98,60 @@ def flow_jets(box, order, flow):
     return tuple(tuple(row) for row in coefficients)
 
 
-def interval_jacobian(tube, flow):
-    """Enclose every signed derivative of the admitted whole-tube field."""
+def interval_jacobian(tube, flow, *, prescribed_time=None):
+    """Enclose signed state derivatives, holding any prescribed time fixed.
+
+    A time interval covers every common time in the step. Its seed is zero
+    in every state derivative, so no fictitious clock uncertainty enters the
+    same-time variational equation.
+    """
     tube = tuple(I.coerce(value) for value in _ordered(tube, "Jacobian tube"))
     size = len(tube)
     if not 1 <= size <= MAX_COMPARISON_DIMENSION:
         raise ValueError("Jacobian dimension outside the shared comparison domain")
     columns = []
+    clock = (
+        None if prescribed_time is None else Jet.constant(I.coerce(prescribed_time), 1)
+    )
     for column in range(size):
         variables = tuple(
             Jet((value, I(int(index == column)))) for index, value in enumerate(tube)
         )
-        rows = _jet_rows(flow(variables), size, 1)
+        values = flow(variables) if clock is None else flow(clock, variables)
+        rows = _jet_rows(values, size, 1)
         columns.append(tuple(row.coeffs[1] for row in rows))
     return tuple(tuple(columns[j][i] for j in range(size)) for i in range(size))
 
 
-def comparison_matrix(tube, flow):
+def comparison_matrix(tube, flow, *, prescribed_time=None):
     """One-sided diagonal and absolute off-diagonal Jacobian upper bounds."""
-    jacobian = interval_jacobian(tube, flow)
+    jacobian = interval_jacobian(tube, flow, prescribed_time=prescribed_time)
     return tuple(
         tuple(value.hi if i == j else value.abs_max for j, value in enumerate(row))
         for i, row in enumerate(jacobian)
     )
 
 
-def picard_tube(box, duration, flow, domain, *, domain_failure):
-    """Strict first-exit inclusion; inflation alone never certifies a tube."""
+def picard_tube(box, duration, flow, domain, *, domain_failure, prescribed_time=None):
+    """Strict first-exit inclusion on a state box and optional time interval.
+
+    The caller supplies the entire prescribed time interval for this step.
+    Both the field and the domain reader consume that same interval.
+    Inflation alone never certifies a tube.
+    """
     tube = box
+    clock = None if prescribed_time is None else I.coerce(prescribed_time)
     epsilon = Q(1, 1 << 90)
     for _ in range(16):
         try:
+            margins = domain(tube) if clock is None else domain(clock, tube)
             lower = tuple(
-                _exact(value) for value in _ordered(domain(tube), "domain margins")
+                _exact(value) for value in _ordered(margins, "domain margins")
             )
             if not lower or min(lower) <= 0:
                 return None, tube, domain_failure
-            rate = tuple(
-                I.coerce(value) for value in _ordered(flow(tube), "field rates")
-            )
+            values = flow(tube) if clock is None else flow(clock, tube)
+            rate = tuple(I.coerce(value) for value in _ordered(values, "field rates"))
             if len(rate) != len(box):
                 raise ValueError("field dimension differs from state")
             image = tuple(x + f * I(0, duration) for x, f in zip(box, rate))

@@ -639,6 +639,17 @@ two solutions in its declared larger class; overlapping outer bounds
 alone are insufficient. Preserve frozen declarations and evidence, and run
 no source assessor, trajectory or physical evaluation.
 
+For
+[computable post-observation prediction](theory/nodal/ORGANIZED_COMPUTABLE_PREDICTION.md),
+select `tests/physics/test_organized_computable_prediction.py` and
+`tests/mathematics/test_validated_prescribed_time.py` with the existing
+metric, direct-box and comparison Taylor controls, finite-observation waveform
+controls and preparation-aware initialization tests. Use independent polynomial
+and nonautonomous solutions for the shared clock mechanism. Check exact switch
+alignment, both transformed rows, conserved means and interval separation with
+source, numerical and reading allowances counted once. Do not invoke the fixed
+forecast assessor or replay any frozen source in routine tests.
+
 For [current discrimination under uncertainty](theory/nodal/ORGANIZED_ROBUST_CURRENT.md),
 select `tests/physics/test_organized_robust_current.py` and
 `tests/physics/test_organized_robust_current_theory.py` with finite observation

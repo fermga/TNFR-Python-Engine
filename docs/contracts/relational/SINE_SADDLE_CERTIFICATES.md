@@ -175,6 +175,17 @@ An output box never becomes the next metric radius. Complete center-solution
 rounding and truncation error are added in the same metric, using a scaled
 norm calculation to avoid losing small squared errors to the interval grid.
 
+The shared kernel also admits an explicit `time_dependent=True` mode for
+other declared consumers, including the
+[post-observation forecast](../../../theory/nodal/ORGANIZED_COMPUTABLE_PREDICTION.md).
+Its field receives `(prescribed_time, state)`. Picard admission uses the
+whole time interval, solution jets include time derivative one, and the
+same-time state Jacobian holds that clock fixed. Only the physical-state
+metric ball propagates; an uncertain extra clock coordinate cannot replace
+this contract. Consumers split every nonsmooth input switch and supply
+their own common-time growth proof. This does not add forcing to the
+autonomous saddle model described here.
+
 Both `duration` and `time_step` use **original structural time**. Exact
 integer `direction=+1` or `-1` selects the forward or reversed autonomous
 field, with positive elapsed duration. Every phase in every Picard tube

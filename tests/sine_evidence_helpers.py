@@ -79,6 +79,10 @@ _TARGETS = (
 
 _ORGANIZED_RESPONSE_TARGETS = (
     (
+        "tnfr.physics._organized_computable_prediction",
+        ("_assess_organized_computable_prediction",),
+    ),
+    (
         "tnfr.physics._organized_finite_observation_source",
         ("_assess_organized_finite_observation",),
     ),

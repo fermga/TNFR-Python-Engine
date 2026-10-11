@@ -22,6 +22,25 @@ METRIC_TAYLOR_METHOD = "retained_spd_ball_picard_taylor_dyadic128_scalar_growth_
 METRIC_TAYLOR_LMI_METHOD = (
     "retained_spd_ball_picard_taylor_dyadic128_tube_lmi_growth_v1"
 )
+PRESCRIBED_TIME_METRIC_TAYLOR_METHOD = (
+    "prescribed_time_retained_spd_ball_picard_taylor_dyadic128_scalar_growth_v1"
+)
+PRESCRIBED_TIME_METRIC_TAYLOR_LMI_METHOD = (
+    "prescribed_time_retained_spd_ball_picard_taylor_dyadic128_tube_lmi_growth_v1"
+)
+_AUTONOMOUS_PREMISES = (
+    "flow_is_the_declared_smooth_autonomous_complete_field_on_the_whole_tube",
+    "domain_margins_certify_all_consumed_model_and_growth_bound_hypotheses",
+    "supremum_of_the_metric_logarithmic_Jacobian_norm_on_the_convex_tube_is_at_most_growth_rate",
+    "initial_uncertainty_is_the_declared_metric_ball_not_its_coordinate_projection",
+)
+_PRESCRIBED_TIME_PREMISES = (
+    "flow_is_the_declared_smooth_prescribed_time_complete_field_on_the_whole_step",
+    "domain_margins_certify_all_consumed_model_and_growth_bound_hypotheses",
+    "supremum_of_the_same_time_metric_logarithmic_state_Jacobian_norm_on_the_time_state_tube_is_at_most_growth_rate",
+    "initial_uncertainty_is_the_declared_metric_ball_not_its_coordinate_projection",
+    "clock_and_inputs_are_prescribed_exactly_and_switches_bound_separate_steps",
+)
 
 
 @dataclass(frozen=True)
@@ -40,6 +59,7 @@ class MetricLogarithmicBound:
     slack_matrix: tuple[tuple[Q, ...], ...]
     certified: bool
     reason: str | None
+    prescribed_time_interval: I | None = None
 
 
 @dataclass(frozen=True)
@@ -70,12 +90,8 @@ class ValidatedMetricTaylorStep:
     endpoint: tuple[I, ...]
     growth_certificate: MetricLogarithmicBound | None = None
     method: str = METRIC_TAYLOR_METHOD
-    conditional_premises: tuple[str, ...] = (
-        "flow_is_the_declared_smooth_autonomous_complete_field_on_the_whole_tube",
-        "domain_margins_certify_all_consumed_model_and_growth_bound_hypotheses",
-        "supremum_of_the_metric_logarithmic_Jacobian_norm_on_the_convex_tube_is_at_most_growth_rate",
-        "initial_uncertainty_is_the_declared_metric_ball_not_its_coordinate_projection",
-    )
+    conditional_premises: tuple[str, ...] = _AUTONOMOUS_PREMISES
+    prescribed_time_interval: I | None = None
 
 
 def _admit_metric(metric, dimension):
@@ -101,7 +117,9 @@ def _admit_rate_search(rate_bounds, bisections):
     return values
 
 
-def certify_metric_logarithmic_bound(tube, metric, flow, *, rate_bounds, bisections=8):
+def certify_metric_logarithmic_bound(
+    tube, metric, flow, *, rate_bounds, bisections=8, prescribed_time=None
+):
     """Certify a whole-tube rate by exact PSD tests within a fixed bracket.
 
     For the symmetric interval S=J.T W+W J, its midpoint C plus the diagonal
@@ -114,6 +132,9 @@ def certify_metric_logarithmic_bound(tube, metric, flow, *, rate_bounds, bisecti
     successful bisection retains an exactly verified upper bound; the lower
     endpoint is a search parameter, not a claimed lower bound on the norm.
     The smooth-field and interval derivative contracts remain caller premises.
+    With prescribed time, the field consumes ``(time, state)`` and the
+    Jacobian differentiates state only while enclosing every common time in
+    the supplied interval.
     """
     rates = _admit_rate_search(rate_bounds, bisections)
     tube = tuple(I.coerce(value) for value in _ordered(tube, "metric growth tube"))
@@ -121,7 +142,8 @@ def certify_metric_logarithmic_bound(tube, metric, flow, *, rate_bounds, bisecti
     if not 1 <= dimension <= MAX_COMPARISON_DIMENSION:
         raise ValueError("metric growth dimension outside the shared comparison domain")
     metric = _admit_metric(metric, dimension)
-    jacobian = interval_jacobian(tube, flow)
+    clock = None if prescribed_time is None else I.coerce(prescribed_time)
+    jacobian = interval_jacobian(tube, flow, prescribed_time=clock)
     weighted = tuple(
         tuple(
             sum(
@@ -185,6 +207,7 @@ def certify_metric_logarithmic_bound(tube, metric, flow, *, rate_bounds, bisecti
         slack_matrix=matrix,
         certified=certified,
         reason=None if certified else "declared_growth_upper_endpoint_not_certified",
+        prescribed_time_interval=clock,
     )
 
 
@@ -226,6 +249,7 @@ def validated_metric_taylor_step(
     growth_bisections=8,
     order,
     time=Q(0),
+    time_dependent=False,
     domain_failure="whole_tube_domain_not_admitted",
 ):
     """Return a retained-ball step, or a failed tube and explicit reason.
@@ -246,7 +270,18 @@ def validated_metric_taylor_step(
     The latter contains the full Taylor remainder and outward arithmetic,
     including rounding an exact nondyadic initial center. No observation box
     is converted back to a radius, and no tube intersection shrinks the ball.
+
+    With ``time_dependent=True``, ``flow(time, state)`` and
+    ``domain(time_interval, state_box)`` consume a prescribed external clock.
+    The first argument is a solution jet for Taylor recurrence, an interval
+    for Picard admission, and a constant-time jet for the state Jacobian.
+    The same-time growth premise ranges over the whole time/state tube;
+    no clock coordinate, clock uncertainty or input uncertainty is invented.
+    The declared field must be smooth on the entire step: callers split at
+    every nonsmooth input switch and retain the state/radius across it.
     """
+    if type(time_dependent) is not bool:
+        raise TypeError("time_dependent must be a Boolean")
     center = tuple(_exact(value) for value in _ordered(center, "center"))
     dimension = len(center)
     if not 1 <= dimension <= MAX_COMPARISON_DIMENSION:
@@ -270,6 +305,7 @@ def validated_metric_taylor_step(
         growth_rate = _exact(growth_rate)
         growth = _growth_upper(growth_rate * duration)
     metric = _admit_metric(metric, dimension)
+    clock = I(time, time + duration) if time_dependent else None
     inverse = exact_matrix_inverse(metric)
     projection = tuple(sqrt(I(inverse[i][i])).hi for i in range(dimension))
     box = tuple(
@@ -277,7 +313,12 @@ def validated_metric_taylor_step(
         for value, factor in zip(center, projection)
     )
     admission, failed, reason = picard_tube(
-        box, duration, flow, domain, domain_failure=domain_failure
+        box,
+        duration,
+        flow,
+        domain,
+        domain_failure=domain_failure,
+        prescribed_time=clock,
     )
     if admission is None:
         return None, failed, reason
@@ -291,15 +332,21 @@ def validated_metric_taylor_step(
                 flow,
                 rate_bounds=growth_rate_bounds,
                 bisections=growth_bisections,
+                prescribed_time=clock,
             )
             if not certificate.certified:
                 return None, tube, certificate.reason
             growth_rate = certificate.growth_rate_upper_bound
             growth = _growth_upper(growth_rate * duration)
-        series = flow_jets(tuple(I(value) for value in center), order, flow)
+        series = flow_jets(
+            tuple(I(value) for value in center),
+            order,
+            flow,
+            prescribed_time=I(time) if time_dependent else None,
+        )
         remainder = tuple(
             row[-1] * duration ** (order + 1)
-            for row in flow_jets(tube, order + 1, flow)
+            for row in flow_jets(tube, order + 1, flow, prescribed_time=clock)
         )
         polynomial = []
         for row in series:
@@ -352,10 +399,22 @@ def validated_metric_taylor_step(
             endpoint=endpoint,
             growth_certificate=certificate,
             method=(
-                METRIC_TAYLOR_METHOD
-                if certificate is None
-                else METRIC_TAYLOR_LMI_METHOD
+                (
+                    PRESCRIBED_TIME_METRIC_TAYLOR_METHOD
+                    if certificate is None
+                    else PRESCRIBED_TIME_METRIC_TAYLOR_LMI_METHOD
+                )
+                if time_dependent
+                else (
+                    METRIC_TAYLOR_METHOD
+                    if certificate is None
+                    else METRIC_TAYLOR_LMI_METHOD
+                )
             ),
+            conditional_premises=(
+                _PRESCRIBED_TIME_PREMISES if time_dependent else _AUTONOMOUS_PREMISES
+            ),
+            prescribed_time_interval=clock,
         ),
         None,
         None,

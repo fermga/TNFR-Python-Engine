@@ -128,6 +128,7 @@ nav:
           - "Collective response inherited from constituents": theory/nodal/ORGANIZED_CONSTITUENT_MEMORY.md
           - "Finite collective prediction with frozen variances": theory/nodal/ORGANIZED_COMPRESSED_MEMORY.md
           - "Preparation-aware collective initialization": theory/nodal/ORGANIZED_MEMORY_INITIALIZATION.md
+          - "Computable post-observation prediction": theory/nodal/ORGANIZED_COMPUTABLE_PREDICTION.md
           - "Current discrimination under uncertainty": theory/nodal/ORGANIZED_ROBUST_CURRENT.md
           - "Physical feasibility of organized current observation": theory/research/ORGANIZED_ELECTRICAL_FEASIBILITY.md
           - "Collective state and matrix response": theory/nodal/ORGANIZED_EFFECTIVE_LAW.md
