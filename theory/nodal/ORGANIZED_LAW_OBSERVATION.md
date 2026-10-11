@@ -1092,7 +1092,136 @@ when using the contrasts in section 7: a small reconstruction error does
 not justify replacing the reconstructed motion by zero. Implementing and
 certifying their combined history-dependent test is still an obligation.
 
-## 9. Shared implementation and verification
+<a id="organized-law-three-ramp-contrasts"></a>
+## 9. The observed middle ramp supplies a second command shape
+
+The middle ramp also has recorded endpoints in blocks c=1,2 and c=2,3.
+For the continuation below select edge 2 and blocks c=2,3, whose complete
+ramps lie between local times 6.00007 and 12.00012. No final unobserved
+return ramp or additional reading is used. Translation of the child labels
+preserves the C5 projector and frozen-kernel algebra in section 7.
+
+Write F_c,i(w)=w(b_c,i)-exp(-mu)w(a_c,i). Retain the first-minus-third
+functional T in (43), and define
+
+\[
+ {\cal Q}_{c,\mu,e}(w)=-R_{c,\mu,e}
+ [F_{c,1}(w)+F_{c,3}(w)-2F_{c,2}(w)].
+\]
+
+All three intervals have unit duration. The coefficients sum to zero,
+so constant forcing cancels. At centered ramp coordinate r, their commands
+are respectively epsilon/2+xi(r), -2xi(r), and -epsilon/2+xi(r).
+Combining the two marked-child orientations gives
+
+\[
+ W_{E,\mu}=e^{\mu/2}({\cal Q}_{3,\mu,2}+{\cal Q}_{2,\mu,2})/8,\qquad
+ W_{O,\mu}=e^{\mu/2}({\cal Q}_{3,\mu,2}-{\cal Q}_{2,\mu,2})/8.
+\]
+
+Their frozen harmonic coefficients are respectively
+
+\[
+ L_{D,n}=\cos(n\epsilon/2)D_{\mu,n}-D_{\mu,2n},\qquad
+ L_{C,n}=\cos(n\epsilon/2)C_{\mu,n}+C_{\mu,2n}.
+\]
+
+Thus E_mu-alpha_E W_E,mu and O_mu-alpha_O W_O,mu cancel the
+fundamental at a single mode when alpha_E and alpha_O take the ratios
+declared below. The signed high-harmonic coefficients still obey one common
+phase-circle relation. The new functional retains existing samples; it
+changes the analysis of their information, not the preparation or waveform.
+Actual phase motion and cross-law transport still require their own bounds.
+
+### Prospective scalar-moment evaluation
+
+This is one analytical assessment of the scalar kernels, not a record,
+trajectory, fit, law selection or complete nonlinear separation. Commit this
+declaration, the helper and its exclusive driver before evaluation. Preserve
+the attempt and exact interval report; do not retry or change numerical
+budgets after observing it. The following choices are fixed:
+
+| Item | Declaration |
+| --- | --- |
+| Kernel set | Both exact C5 modes `mu=(5-sqrt(5))/8,(5+sqrt(5))/8`; harmonics `1,2,9,18,36`; twenty scalar `C,D` integrals total |
+| Arithmetic | Shared outward rational dyadic128 intervals; exact rational polynomial coefficients and antiderivatives; shared interval square root and trigonometry |
+| Fixed series | Twenty terms in each hyperbolic and trigonometric series, giving odd degrees through 39 and even degrees through 38 |
+| Kernel budget | Every complete `C,D` enclosure must have radius at most `1e-28`; zero-crossing elimination denominators give unavailable arithmetic |
+| Derived quantities | Original across-mode contrasts and the three-ramp contrast at each mode, retaining signed coefficients and the full observation-noise multipliers |
+| Selected continuation | Mode 2 is selected before evaluation; mode 1 and the old construction are retained controls, not candidates in a result-dependent search |
+| No additional evaluation | No response, reconstructed phase history, nonlinear fit, sampled matrix, frozen source producer or physical observation is evaluated |
+
+Since `xi(r)=r*(3/20-r^2/5)`, define exact rational polynomial moments
+
+\[
+ J_{m,k}=\sum_{j=0}^{k}\binom{k}{j}(3/20)^{k-j}(-1/5)^j
+ \frac{(1/2)^{m+k+2j+1}}{m+k+2j+1}.
+\]
+
+Integrate the finite products by substituting `J` into
+
+\[
+ C^{[20]}_{\mu,n}=\sum_{p,q=0}^{19}
+ \frac{\mu^{2p+1}(-1)^qn^{2q+1}J_{2p+1,2q+1}}
+ {(2p+1)!(2q+1)!},
+\]
+
+\[
+ D^{[20]}_{\mu,n}=\sum_{p,q=0}^{19}
+ \frac{\mu^{2p}(-1)^qn^{2q}J_{2p,2q}}{(2p)!(2q)!}.
+\]
+
+Combine each rational coefficient, including the exact `J`, before interval
+multiplication by a power of mu. The finite sums and every subsequent
+operation retain outward arithmetic rounding. On this domain
+`abs(mu*r)<=1/2` and `abs(n*xi)<=9/5`. Uniform omitted-series bounds are
+
+\[
+ E_{sh}=\frac{(1/2)^{41}}{41!}\frac1{1-1/(4\cdot42\cdot43)},\quad
+ E_{ch}=\frac{(1/2)^{40}}{40!}\frac1{1-1/(4\cdot41\cdot42)},
+\]
+
+\[
+ E_s=(9/5)^{41}/41!,\qquad E_c=(9/5)^{40}/40!.
+\]
+
+The hyperbolic tails use the decreasing positive-term ratio; the
+trigonometric bounds use Taylor's theorem with derivatives bounded by one.
+Every hyperbolic partial sum is below two and the actual sine/cosine has
+absolute value at most one. Consequently append the symmetric integrated
+product tails `(E_sh+2*E_s)/2` and `(E_ch+2*E_c)/2` to C and D respectively.
+These are product errors, not derivative or trajectory error estimates.
+
+For a single mode put `s_n=sin(n/20)`, `c_n=cos(n/20)` and
+
+\[
+ \alpha_E=\frac{s_1C_{\mu,1}}{c_1D_{\mu,1}-D_{\mu,2}},\qquad
+ \alpha_O=\frac{s_1D_{\mu,1}}{c_1C_{\mu,1}+C_{\mu,2}}.
+\]
+
+The signed remaining coefficients are
+
+\[
+ K_{E,n}=s_nC_{\mu,n}-\alpha_E(c_nD_{\mu,n}-D_{\mu,2n}),\qquad
+ K_{O,n}=s_nD_{\mu,n}-\alpha_O(c_nC_{\mu,n}+C_{\mu,2n}),
+ \quad n=9,18.
+\]
+
+Their raw common-record uncertainty allowances are respectively
+`sqrt(10)*cosh(mu/2)*(1+2*abs(alpha_E))*delta` and the same expression with
+alpha_O. The factor two retains the doubled absolute ramp weights in the
+`first+third-2*second` functional. Evaluate cosh with the same fixed positive
+series and its admitted tail. Kernel arithmetic admission alone supplies no
+bound on the actual-history departure from these frozen coefficients.
+
+`benchmarks/organized_law_contrast_kernels.py` uses the existing exclusive
+analytical runner: it requires a committed source/declaration, writes the
+source inventory, configuration, backend and pre-evaluation attempt, then
+writes the exact rational interval report. The reported scope is
+`moment_kernel_arithmetic_only_not_a_record_verdict`.
+
+
+## 10. Shared implementation and verification
 
 The [detached consumer](../../src/tnfr/physics/_organized_law_observation.py)
 reuses the canonical potential/current, product geometry, hidden transport,
