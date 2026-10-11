@@ -442,6 +442,9 @@ supplies a conditional state/law/identity domain. It does not turn its
 bounded additive observation error into a sensor or establish operational
 preparation. This gate admits a prospective design or proves a scoped
 obstruction; it evaluates no physical response.
+The [fixed loaded-window candidate](ORGANIZED_FINITE_WINDOW_DESIGN.md#loaded-window-design-declaration)
+declares a passive sensor state, its initialization and backreaction, a finite
+average, and a same-calibration phase-blind control before any response evaluation.
 
 - Declare one observation mechanism with sensor state, transfer, input,
   clock, finite support and loading; distinguish deterministic error bounds
