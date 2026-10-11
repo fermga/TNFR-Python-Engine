@@ -41,9 +41,14 @@ accuracy, a resolved nonzero signal or an observed physical response.
 
 The improvement comes from retaining initial phase dispersion and bounding
 its subsequent drift with the exact hidden-history identity. No hidden
-state is evolved in the approximation. Formation currently supplies only
-norm bounds: availability of the five statistics, their stated uncertainty
-and the initial collective phases remains a separate obligation.
+state is evolved in the approximation. The declaration's coarse norm prior
+does not supply the five estimates or exact collective initialization.
+The subsequent [preparation-aware result](ORGANIZED_MEMORY_INITIALIZATION.md#organized-memory-initialization-result)
+recovers the existing preparation's separate form and phase bounds, which
+do admit zero estimates with the required uncertainty. A carrier prediction
+carried from the known attachment means also avoids requiring an observed
+microstate at the start of the word. This source-specific conclusion does
+not change the frozen declaration or the containing-class obstruction below.
 
 ## 1. Retained state and approximate law
 
@@ -273,8 +278,14 @@ inequalities and initialization obstruction. Frozen evidence and producers
 are preserved. No response has been replayed and no new runtime law or
 public solver has been installed.
 
-The conditional reduction meets its state and error criteria. An operational
-forecast still needs independently admitted collective initialization and
-variance estimates; the [sole queue](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-owns that next decision. Neither additional internal phase information nor
-this approximation identifies a physical force or material constituent.
+The conditional reduction meets its state and error criteria. The
+[initialization result](ORGANIZED_MEMORY_INITIALIZATION.md#organized-memory-initialization-result)
+separately admits a carrier forecast for the actual prepared source by
+retaining information lost in this comparison's coarse norm prior. At that
+resolution, no additional five-statistic measurement is required. The
+larger-class observation obstruction remains scoped to its own prior;
+independent physical preparation, sensors and numerical execution retain
+their separate obligations. The
+[sole queue](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns further work. Neither result identifies a physical force or material
+constituent.

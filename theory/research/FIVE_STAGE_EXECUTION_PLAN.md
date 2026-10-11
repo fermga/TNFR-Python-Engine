@@ -74,16 +74,21 @@ inheritance of the supplied positive-r matrix law. The subsequent
 [conditional compression](#organized-predictive-compression-admission)
 retains ten evolving coordinates and five initial interface statistics,
 with a propagated intrinsic error envelope below one hundredth of the
-carrier bound. Their required initialization is not supplied by formation.
+carrier bound. The [initialization result](#organized-compressed-initialization-admission)
+recovers stronger separate bounds already implied by preparation: zero
+variance estimates are sufficient, and a ten-coordinate reference started
+at attachment predicts the complete formation-and-observation history with
+intrinsic mean-form error below `1.6e-24`. The larger observation class still
+has indistinguishable records with incompatible variance targets.
 The **single active gate** is now
-[compressed-state initialization](#organized-compressed-initialization-admission):
-decide whether admitted preparation or finite observations supply that
-information, or establish a scoped information obstruction.
+[computable prospective prediction](#organized-computable-prediction-admission):
+admit a numerical realization and a new forecast with a total error budget
+matched to its observation, without fitting or replaying a frozen response.
 
 No 45-node acquisition, physical readout or source certificate transfers to
 the supplied positive-r matrix law by default. Earlier frozen protocols,
-negative results and responses retain their original premises. The unresolved stationary
-maintenance route has no active search; the prepared storage observer
+negative results and responses retain their original premises. The unresolved
+stationary maintenance route has no active search; the prepared storage observer
 remains an instrument without a frozen response campaign. No new source
 replay, numerical scan, physical-data evaluation or fitting is active.
 Physical constituent emergence, autonomous preparation and unique law
@@ -95,7 +100,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Active compressed-state initialization admission | [Preparation and finite observation](#organized-compressed-initialization-admission): decide whether the five variance statistics and collective initialization can be independently supplied with the forecast's required joint uncertainty; retain an obstruction outcome |
+| Active computable prospective-prediction admission | [Carried reduced reference](#organized-computable-prediction-admission): realize the prepared ten-coordinate prediction with a numerical residual and a prospectively chosen observable, horizon and total-error criterion |
+| Closed conditional initialization admission | [Preparation versus observation](#organized-compressed-initialization-admission): retained recovery bounds admit zero variance estimates and a carried reference from exact attachment means; the old noisy records do not uniformly recover the variances on the larger containing class |
 | Closed conditional predictive-compression admission | [Finite constituent-memory prediction](#organized-predictive-compression-admission): ten evolving means and five frozen interface variances have a propagated intrinsic error envelope below one hundredth of the carrier bound; the required statistics are not an acquired-source observation |
 | Closed theoretical inherited-response admission | [Constituent feedback](#organized-inherited-response-admission): carrier tangent decoupling coexists with nonlinear covariance feedback; same-observation derivative collisions and the unchanged input map obstruct instantaneous and positive-r closures in their declared scopes |
 | Closed scoped recovery-area physical admission | [Operational review](#organized-sensitive-loaded-response): direct-area method specifications do not certify the frozen error; voltage-only initialization cannot bound the required relative phases. Physical status remains not admitted, evaluation not tested |
@@ -269,7 +275,7 @@ response has not been derived from the earlier acquired constituents.
 | Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Unresolved stable-stationary maintenance route; no active search.** The finite search is closed without a certificate; other classes do not repair uninterrupted maintenance. Reopen with a constructive target or an analytical certificate mechanism, not more starts |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
-| Sufficient collective state and inherited response | Independently admit the preparation or observation information consumed by the conditional compressed forecast, with joint initialization uncertainty | **Sole active foundational gate** below. Response inheritance and finite conditional compression are closed; neither norm certificates nor the forecast itself provide the initial variances |
+| Sufficient collective state and inherited response | Turn the source-initialized reduced reference into a computable prospective observable with a complete numerical and observation error budget | **Sole active gate** below. Initialization is conditionally closed by retained preparation information; improving an already negligible intrinsic bound or measuring unnecessary hidden statistics is not the next task |
 | Fundamental physical properties and independent observation | Independently admit full preparation and joint physical measurement coverage before evaluating a response | **Closed scoped recovery-area review, unresolved physical dependency.** The reviewed direct-area route is not admitted; neither improved voltage precision nor clock rescaling alone repairs the missing premises. No further apparatus search is active |
 | Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Conceptually critical**, with no new compatibility scan active. If a countermodel shares all proposed premises, the uniqueness claim fails in that scope |
 | Autonomous preparation, support, capacity and events | Supply actual occurrence and state-evolution laws when claiming autonomous assembly. [Event work](../nodal/RELATIONAL_SUPPORT_EVENTS.md), passivity and [operator descent](../STRUCTURAL_OPERATORS.md) do not select occurrence | **Claim-dependent**. Current contacts and preparation remain supplied. Do not postpone investigation of the existing conditional composite until every origin question is solved |
@@ -283,7 +289,7 @@ An added observable earns inclusion by deciding the selected prediction or a
 meaningful minimality obstruction. Existing failed physical-source admissions
 remain failed; more samples cannot repair their complete-law mismatches.
 
-Only the [compressed-state initialization admission](#organized-compressed-initialization-admission) is active.
+Only the [computable prospective-prediction admission](#organized-computable-prediction-admission) is active.
 The table assesses dependencies, not a fixed sequence or parallel campaigns. It preserves
 the objective of generated, physically testable organization without identifying
 winding, phase cancellation or storage with material constituents.
@@ -546,44 +552,73 @@ carrier envelope. This is a reduction in evolved state, not measured runtime
 or physical accuracy. Actual work and fine identity keep their original
 owners; the approximation has its own weighted storage.
 
-The five statistics and exact initial means remain conditional information.
-A larger-class pair shares means and norm certificates but has incompatible
-variance initialization at the declared tolerance. This does not establish
-that both states were acquired or exclude additional finite observations.
+Under its coarse prior the five statistics and exact initial means remain
+conditional information. The following initialization result retains stronger
+source information and removes the need for five measured statistics for
+this prepared family. The generic larger-class counterexamples remain valid.
 The existing raw reading allowance exceeds both intrinsic error envelopes.
 No source assessor, trajectory or reserved response was evaluated.
 
 <a id="organized-compressed-initialization-admission"></a>
-### Immediate question: admitting compressed-state initialization
+### Closed conditional compressed-state initialization
 
-**Can independent preparation or the already admitted finite observations
-supply the information that makes the compressed forecast useful?** This
-gate addresses predictive state and information access, rather than further
-precision in the conditional evolution bound.
+The [fixed comparison and result](../nodal/ORGANIZED_MEMORY_INITIALIZATION.md#organized-memory-initialization-result)
+separate preparation information from noisy-record identifiability. The
+unchanged class-one trap, recovery dwell and dyadic decay imply conservative
+separate handoff radii `q_x=1e-9`, `q_theta=2e-12`. Their carried phase bound
+over formation plus observation is `Z=1.4e-11`; consequently five zero
+variance estimates have joint error below `8.72e-23`, within `1e-17`.
+No tighter supplied preparation or new measurement is used.
 
-- Start from the unchanged fine law, actual source preparation and finite
-  observation word. Specify whether a claim concerns the acquired-source
-  image or its larger inference class; norm enclosures alone do not equate
-  those sets. Keep the five interface statistics, natural mean/lift
-  initialization and their error correlations explicit.
-- First test the information content of existing preparation certificates
-  and primitive form records, with their existing error allowance. A shared
-  record compatible with different required statistics can prove a scoped
-  obstruction without replaying source producers or evaluating a new response.
-  Reading an unobserved microstate from a simulator is not independent access.
-- If a constructive initialization is proposed, derive its joint uncertainty
-  and carry it through the compressed forecast's full error formula. Initial
-  phase/form error may dominate the intrinsic gain. Supply a prospective
-  declaration before any new finite-response assessment, retaining observation
-  backaction, history, clock, work and identity under the same law.
-- Close with admitted initialization that meets a useful total prediction
-  criterion, or a precise information obstruction and the missing kind of
-  preparation/observation. Do not silently tighten the old measurement error,
-  fit the statistics to a reserved response or start a precision campaign.
+The isolated zero-sum conditions also give exact attachment means. One
+ten-coordinate carrier can start there and carry the complete history,
+without a post-formation reset, with intrinsic mean-form error below
+`1.6e-24`. The gain comes from retaining previously discarded information,
+not from observing a nonzero constituent correction. Numerical realization
+and independently justified physical preparation remain separate.
 
-No new acquisition replay, fine law, apparatus search or physical response
-campaign is active. Independent physical preparation and measurement remain
-dependencies; the conditional approximation supplies neither by itself.
+On the larger containing class, a pair has jointly overlapping complete
+150-reading records but variance separation above twice the target error.
+This obstructs a uniform observation-only inverse, even with known initial
+means; it neither invalidates the winding inverse nor excludes the prepared
+route. No frozen response, trajectory or source assessor was evaluated.
+
+<a id="organized-computable-prediction-admission"></a>
+### Immediate question: computable prospective prediction
+
+**Can the prepared reduced reference produce an independently checkable
+finite forecast with a complete, useful error budget?** The exact-solution
+theorem now has initialization. Its much smaller intrinsic error is not a
+reason to compute every digit or pursue otherwise unnecessary hidden state.
+The bounded target is the five mean forms at `tau=216`, after the existing
+word releases at `tau=215.00015` and evolves unforced for `0.99985`. It tests
+prediction of the state retained after observation and its backaction, not
+another identification of the same winding. Freeze the full protocol and
+computation budget before evaluating that new endpoint.
+
+- Retain the prospective endpoint after the existing word's actual release
+  and its unforced continuation. Keep the carried state and measurement
+  backaction; do not reset to an ideal target or call an in-word fit a forecast.
+  Freeze preparation, branch, laws, clock, observation, a relevant comparison
+  and total tolerance before evaluating the reserved response. The numerical
+  target should be useful against the existing `1e-14` reading allowance.
+- Admit a computable continuation of the same prepared reference using the
+  shared execution or detached enclosure owners. Account separately for
+  source uncertainty, numerical residual, observation and any input/clock
+  error. Transfer the source theorem only within its proved horizon, or derive
+  the required extension before evaluating the new prediction.
+- Set the numerical budget from the selected observable and tolerance,
+  rather than the tiny intrinsic bound. A point trajectory or agreement
+  between two solvers is not a validated enclosure. Reuse existing kernels
+  and integrate a new mechanism only when its actual consumer requires it.
+- Close with a prospective forecast whose total bounds decide the named
+  distinction, or a scoped obstruction showing the missing numerical,
+  preparation or observation premise. Preserve all frozen producers and
+  responses; no parameter scan, source retry or automatic precision escalation.
+
+This is a structural prediction gate. Physical preparation, calibration and
+apparatus admission remain unresolved; there is no parallel apparatus search
+or physical-data campaign, and no unique fundamental law is presumed.
 
 Recovering established physical relations remains the objective; the test
 need not predict a deviation from known physics. An equivalent circuit

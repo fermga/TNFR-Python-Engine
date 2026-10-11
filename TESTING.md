@@ -619,10 +619,25 @@ error and uncertainty allowance against independent edge calculations and
 shared transport. Retain the unchanged input/work map and distinguish the
 approximation's weighted storage from actual signed hidden exchange. The
 envelope improvement assumes admitted initial statistics and collective
-phases; common source norm bounds cannot supply them. Compare intrinsic
-approximation envelopes at matched initialization, not total preparation or
-measurement accuracy. These static controls preserve frozen evidence and
+phases; the declared coarse source norm bounds cannot supply them. Compare
+intrinsic approximation envelopes at matched initialization, not total
+preparation or measurement accuracy. These static controls preserve frozen evidence and
 execute no trajectory, acquired-source assessment or reserved response.
+
+For [preparation-aware collective initialization](theory/nodal/ORGANIZED_MEMORY_INITIALIZATION.md),
+select `tests/physics/test_organized_memory_initialization.py` with
+`tests/physics/test_organized_compressed_memory.py`,
+`tests/physics/test_organized_constituent_memory.py`,
+`tests/physics/test_sine_lyapunov.py` and
+`tests/physics/test_sine_preparation_reuse.py`. Rebuild the separate recovered
+form and phase bounds from primitive inequalities and the unchanged decay
+budget, then retain exact child means at attachment and the complete
+formation-plus-observation history. Check zero variance estimates and total
+carrier error without treating a containing norm class as the source image.
+The observation obstruction must give one jointly compatible raw record for
+two solutions in its declared larger class; overlapping outer bounds
+alone are insufficient. Preserve frozen declarations and evidence, and run
+no source assessor, trajectory or physical evaluation.
 
 For [current discrimination under uncertainty](theory/nodal/ORGANIZED_ROBUST_CURRENT.md),
 select `tests/physics/test_organized_robust_current.py` and

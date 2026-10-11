@@ -327,7 +327,10 @@ unique fundamental dynamics. The
 [finite compression result](ORGANIZED_COMPRESSED_MEMORY.md#organized-compressed-memory-result)
 retains five initial interface variances and propagates their nonlinear
 forecast error under the same fine law. Its conditional intrinsic improvement
-does not supply those statistics or initial phases from source norm bounds,
-nor reduce measurement uncertainty. The
+does not supply those statistics or initial phases from the coarse source
+norm bounds, nor reduce measurement uncertainty. The
+[preparation-aware initialization](ORGANIZED_MEMORY_INITIALIZATION.md#organized-memory-initialization-result)
+retains the original separate recovery bounds and known attachment means
+to admit a carried carrier prediction for the actual prepared family. The
 [sole queue](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-owns the remaining initialization obligation.
+owns its numerical realization and prospective forecast.

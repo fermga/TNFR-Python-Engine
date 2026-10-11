@@ -130,6 +130,12 @@ Every bound concerns the uninterrupted reached state; q is a derived
 recovery enclosure, not a primitive accuracy requirement. All six separate
 sources must pass (2)--(5) before any joined-source conclusion is admitted.
 
+The two return bounds in (5) retain more information than the common q
+enclosure. The [preparation-aware initialization proof](ORGANIZED_MEMORY_INITIALIZATION.md#organized-memory-initialization-result)
+uses their separate form and phase allowances to bound constituent variances
+and carry a collective forecast from attachment. It preserves this source,
+dwell and decay budget; it neither infers a microstate nor replays the assessor.
+
 ### Actual outer acquisition and observation-class inclusion
 
 The exact same carrier, support and clock as the outer-acquisition owner
