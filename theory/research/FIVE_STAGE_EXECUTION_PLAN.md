@@ -471,6 +471,10 @@ prepared organization beyond a calibrated phase-blind reference?** The
 [result owner's question](ORGANIZED_FINITE_WINDOW_DESIGN.md#organization-sensitive-next-question)
 identifies the missing distinction. This is a new prospective admission,
 not a repetition of the same short pulse at higher arithmetic precision.
+The [fixed recovery-area candidate](ORGANIZED_RECOVERY_OBSERVATION.md#recovery-area-declaration)
+retains the pulse and sensor and declares a finite signed integral through
+unforced recovery. Its whole-preparation separation and physical admission
+remain to be established under that declaration.
 
 - Freeze the state and complete preparation sets, both candidate laws and
   the phase-blind alternative before evaluating the discriminating response.
