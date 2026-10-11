@@ -112,8 +112,8 @@ def _late_grid() -> tuple[Q, Q, Q, tuple[Q, ...], tuple[tuple[tuple[Q, Q], ...],
     for child, block in zip((2, 3), blocks):
         if block[0].start - origin != 3 * child * (1 + h):
             raise ArithmeticError("late contrast requires the declared block times")
-        for cell in block[::2]:
-            if cell.duration != h or cell.increment != 0:
+        for cell, base in zip(block[::2], (Q(0), Q(1, 10), Q(-1, 10))):
+            if cell.duration != h or cell.increment != 0 or cell.base != base:
                 raise ArithmeticError("late readings require constant short plateaus")
         ramps = block[1::2]
         if any(

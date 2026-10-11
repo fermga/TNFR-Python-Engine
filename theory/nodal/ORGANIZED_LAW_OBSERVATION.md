@@ -3,11 +3,17 @@
 <a id="organized-law-observation-admission"></a>
 ## Analytical scope and result
 
-The [record-only forecast](ORGANIZED_OBSERVED_FORECAST.md#organized-observed-forecast-result)
-predicts under one supplied law. It does not select that law. The
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#organized-law-state-identifiability)
-asks whether the unchanged joint observations distinguish the sine law from
-its retained analytic countermodel when initialization is unknown under each.
+The unchanged joint form observations distinguish the sine law from its
+retained analytic countermodel throughout the declared initial class, even
+when initialization is independently unknown under each law. The
+[whole-record theorem](#organized-law-record-separation-theorem) proves that
+their complete finite noisy record sets are disjoint. Its
+[retained strict certificate](#organized-law-record-separation-result)
+includes both nonlinear histories and each law's fine-source error.
+This is a conditional information result; no measured record or physical
+law is selected. The earlier
+[record-only forecast](ORGANIZED_OBSERVED_FORECAST.md#organized-observed-forecast-result)
+still predicts under its supplied sine law.
 
 This owner establishes the alternative's own carrier, hidden-state error,
 finite identity and numerical growth bounds. It also proves a local
@@ -17,15 +23,19 @@ adjacent gap can also match the three ideal receiver currents. Neither local
 test uniformly selects the law. The complete 150-by-35 formal sampled map
 is injective, but a direction with exact low-order cancellations obstructs
 every global scalar or positive block bootstrap using the retained unconstrained
-coefficient and remainder bounds. These results establish neither separation
-nor overlap of the complete noisy nonlinear record sets.
+coefficient and remainder bounds. Those preliminary results alone establish
+neither separation nor overlap of the complete noisy nonlinear record sets.
 
 A constrained continuation uses the actual shared harmonic phase. Two
 long-ramp contrasts cancel the fundamental without dividing by the short
 plateau duration, and their ideal joint signal has a uniform positive
-phase-circle margin. A separate heat bridge through the existing form
-readings bounds historical carrier phase-increment error below `2.8e-8`.
-Kernel magnitudes and a combined rephasing/error certificate remain open.
+phase-circle margin. The middle ramp supplies stronger same-mode contrasts.
+Joint observations also force equal winding and bound the fundamental
+phasor difference. These restrictions, actual late-time heat decay and
+correlated phase transport close the nonlinear separation theorem.
+A separate heat bridge through the same readings retains its historical
+phase-increment error bound below `2.8e-8`; the final theorem does not need
+to reconstruct an individual record's phase history.
 
 | Item | Retained analytical scope |
 | --- | --- |
@@ -34,9 +44,9 @@ Kernel magnitudes and a combined rephasing/error certificate remain open.
 | Initial class | `abs(x_i)<=X=1/100`; `theta=psi+R*Phi+z`, `psi_j=2*pi*(j-4)/9`, child-zero hidden means, `abs(z_i)<=1e-6`, `||u||2<=31/10^9`, `||z||2<=601/10^10`; principal collective gaps at most `7/5`, winding in `{-1,0,1}` |
 | Input/clock | Original fifteen ramps and plateaus, exact command, `tau=(1023/1024)*t`, local time `v=tau-200`, horizon `T=16` |
 | Actual observations | Original thirty five-form readings, arbitrary coordinate errors at most `eta=1e-14`; no primitive phase or initial-state label is observed |
-| Information result | Local frozen-current collisions, finite formal rank 35 and the unconstrained-bootstrap obstruction; constrained long-ramp contrasts and record-conditioned historical phase transport |
-| Outstanding distinction | Separation or overlap of the actual finite joint record sets, including each complete nonlinear history and its own source error |
-| Evidence | Analytical proofs and independent static arithmetic/field controls; no fit, response trajectory, sampled coefficient design, physical data or frozen producer is evaluated |
+| Information result | The two complete finite noisy record sets are disjoint under the fixed premises; local collisions and the unconstrained-bootstrap obstruction retain their smaller scopes |
+| Retained limitations | No selection within the whole constitutive family, identification of a particular record, alternative-law acquisition, apparatus admission or physical law selection |
+| Evidence | Analytical proofs, one fixed scalar-moment assessment and one strict interval certificate using its retained primitives; no fit, response trajectory, sampled coefficient design, physical data or earlier frozen producer is evaluated |
 
 The [ontology](../EMERGENT_ONTOLOGY.md#generative-bound-organization)
 requires retained constituent and boundary information. An invariant carrier
@@ -754,10 +764,10 @@ norms need not have the same ratio as phasor moduli.
 It also supplies no pair of initial cycle phases or nonlinear histories.
 Its role is to prove a limitation introduced by allowing independent formal
 coefficients and independent norm remainders. Finite formal rank, exact
-local ambiguity and this proof-method obstruction leave the joint noisy
-nonlinear separation/overlap question open. The
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#organized-law-state-identifiability)
-retains the constrained continuation under the same word, noise and horizon.
+local ambiguity and this obstruction do not by themselves decide the joint
+question. The [constrained theorem](#organized-law-record-separation-theorem)
+resolves it under the same word, noise and horizon using additional joint
+phase restrictions and stronger contrasts.
 
 <a id="organized-law-long-ramp-contrasts"></a>
 ## 7. Constrained contrasts from recorded long-ramp endpoints
@@ -765,8 +775,9 @@ retains the constrained continuation under the same word, noise and horizon.
 The following construction avoids dividing a form difference by the short
 plateau duration. It cancels the formal initial-form response, constant
 forcing and fundamental harmonic before using the alternative's shared
-phase. It supplies a conditional finite separation criterion; the required
-kernel magnitudes and actual-history error bounds remain unresolved.
+phase. It supplies a conditional finite separation criterion. The complete
+certificate in sections 9-11 instead uses the middle ramp as well, while
+retaining this construction as a control and reusable conditional result.
 
 ### An explicit functional of the unchanged readings
 
@@ -934,15 +945,16 @@ for the actual record sets is then
  \tag{52}
 \]
 
-This is a conditional criterion, not a passing verdict. It still needs
-certified kernel magnitudes and actual-history departures from one shared
-reference phase. Reconstructing phase increments accurately does not make
+This criterion alone supplies no passing verdict: it requires certified
+kernel magnitudes and actual-history departures from one shared reference
+phase. Reconstructing phase increments accurately does not make
 those increments zero: even known nonzero endogenous drift changes the
 frozen kernels. It must be incorporated into the contrasts or bounded,
 together with the uncertainty of the reconstruction and both laws' source
 errors. Local resetting must also retain transport between the two child
-blocks. No numerical kernel, trajectory, fit or reserved response is
-evaluated by this construction.
+blocks. The same-mode extension in sections 9-11 meets those obligations
+with stronger kernels and a common late-time reference. No trajectory,
+fit or reserved response is evaluated by either construction.
 
 <a id="organized-law-historical-phase-transport"></a>
 ## 8. The same form readings constrain historical phase transport
@@ -1089,8 +1101,10 @@ mean-phase source error; individual hidden constituent phases remain
 unobserved. Neither version identifies the initial phase, its winding or
 the law. In particular, the nonzero common reference d_hat must be retained
 when using the contrasts in section 7: a small reconstruction error does
-not justify replacing the reconstructed motion by zero. Implementing and
-certifying their combined history-dependent test is still an obligation.
+not justify replacing the reconstructed motion by zero. The complete
+theorem in section 11 instead bounds actual motion about one late-time
+reference directly and retains relative transport from the same two form
+histories. This bridge remains a separate conditional reconstruction bound.
 
 <a id="organized-law-three-ramp-contrasts"></a>
 ## 9. The observed middle ramp supplies a second command shape
@@ -1412,123 +1426,246 @@ escalation, source replay or additional response calculation is admitted.
 
 ### Endpoint functional and ideal coefficients
 
-Write h=1e-5, s_c=3c(1+h), and use all three ramps i=1,2,3 in c=2,3.
-Every ramp has length one and two observed endpoints. Let
-F_ci(w)=w(b_ci)-exp(-mu)w(a_ci), mu=mu2=(5+sqrt(5))/8. For the spectral
-left-inverse row R selecting edge 2 define
+Put \(h=10^{-5}\), \(s_c=3c(1+h)\) and
+\(\mu=\mu_2=(5+\sqrt5)/8\). Use all three unit ramps in each of
+children \(c=2,3\); every endpoint is an existing reading. With the
+spectral left-inverse row \(R_c\) selecting edge \(2\to3\), define
 
-T_c=-R_c(F_c1-F_c3), Q_c=-R_c(F_c1+F_c3-2F_c2).
+\[
+ F_{c,i}(w)=w(b_{c,i})-e^{-\mu}w(a_{c,i}),\qquad
+ \mathcal T_c=-R_c(F_{c,1}-F_{c,3}),\qquad
+ \mathcal Q_c=-R_c(F_{c,1}+F_{c,3}-2F_{c,2}).
+\]
 
-Use E0=-exp(mu/2)(T3+T2)/8, O0=exp(mu/2)(T3-T2)/8,
-W_E=exp(mu/2)(Q3+Q2)/8 and W_O=exp(mu/2)(Q3-Q2)/8.
-The target command has positive sign in child 3 and negative in child 2.
-The centered commands are eps/2+xi, -2xi, -eps/2+xi.
-Consequently E0 and O0 have coefficients sin(n eps/2) C_n and
-sin(n eps/2) D_n, while W_E and W_O have coefficients
+The two parity pairs are
 
-L_E,n=cos(n eps/2)D_n-D_2n,
-L_O,n=cos(n eps/2)C_n+C_2n.
+\[
+ \mathcal E_0=-\frac{e^{\mu/2}}8(\mathcal T_3+\mathcal T_2),\qquad
+ \mathcal O_0=\frac{e^{\mu/2}}8(\mathcal T_3-\mathcal T_2),
+\]
 
-The selected alpha_E=sin(eps/2)C_1/L_E,1 and
-alpha_O=sin(eps/2)D_1/L_O,1 exactly annihilate the fundamental in
-E=E0-alpha_E W_E, O=O0-alpha_O W_O. K_E,n and K_O,n are rebuilt
-from these formulas; neither their signs nor their magnitude are assumed.
-Both higher harmonics belong to the same phase theta=9*a_1(s3).
-Thus the existing conditional circle theorem applies with these K and
-fully inclusive error budgets.
+\[
+ W_E=\frac{e^{\mu/2}}8(\mathcal Q_3+\mathcal Q_2),\qquad
+ W_O=\frac{e^{\mu/2}}8(\mathcal Q_3-\mathcal Q_2).
+\]
 
-The old noise bounds remain valid:
-N_E <= sqrt(10)cosh(mu/2)(1+2|alpha_E|)delta,
-N_O <= sqrt(10)cosh(mu/2)(1+2|alpha_O|)delta,
-where delta=2eta+E0_source+E1_source.
+The target command is positive in child 3 and negative in child 2.
+The centered ramp profiles are \(\epsilon/2+\xi,-2\xi,-\epsilon/2+\xi\).
+Suppressing the fixed mode index, the frozen harmonic coefficients of
+\(\mathcal E_0,\mathcal O_0\) are
+\(\sin(n\epsilon/2)C_n,\sin(n\epsilon/2)D_n\), while those of
+\(W_E,W_O\) are
+
+\[
+ L_{E,n}=\cos(n\epsilon/2)D_n-D_{2n},\qquad
+ L_{O,n}=\cos(n\epsilon/2)C_n+C_{2n}.
+\]
+
+The ratios declared in section 9 therefore cancel the fundamental in
+
+\[
+ \mathcal E=\mathcal E_0-\alpha_EW_E,\qquad
+ \mathcal O=\mathcal O_0-\alpha_OW_O,
+\]
+
+\[
+ K_{E,n}=\sin(n\epsilon/2)C_n-\alpha_EL_{E,n},\qquad
+ K_{O,n}=\sin(n\epsilon/2)D_n-\alpha_OL_{O,n}.
+\]
+
+Both higher harmonics retain the same alternative-law phase
+\(\theta=9a_1(s_3)\) on the selected edge. The coefficients are rebuilt
+from the primitive intervals; their signs and magnitudes are not assumed.
+With \(\delta=2\eta+E_0+E_1\) from (13), the observation allowances are
+
+\[
+ N_E=\sqrt{10}\cosh(\mu/2)(1+2|\alpha_E|)\delta,\qquad
+ N_O=\sqrt{10}\cosh(\mu/2)(1+2|\alpha_O|)\delta.
+\]
 
 ### Uniform actual phase motion on the late blocks
 
-Set I=[s2,s4], t*=s3 and L=3(1+h)=3.00003. The common-record phase lemma
-proves P(v)=gamma|exp(i a0(v))-exp(i a1(v))|/4 <20 r9 at ALL historical
-times, where r9=gamma/(4*2187). It follows initially from equal winding,
-the first plateau, the acute gap prior and the actual two-law deformation;
-the old absolute drift bound then preserves this containing amplitude.
+Set \(\mathcal I=[s_2,s_4]\), \(t_*=s_3\) and
+\(L=3(1+h)=3.00003\). For each edge, let
+\(a_\lambda(v)=(B^T\Psi_\lambda(v))_e\). Section 10 proves
 
-For each law write its command-removed phase increment as a homogeneous
-heat contribution plus a forced contribution. Since Y'=-AY-(gamma/4)B j,
+\[
+ P(v):=\frac\gamma4\max_e
+ |e^{ia_{0,e}(v)}-e^{ia_{1,e}(v)}|<20r_9,
+ \qquad r_9=\frac\gamma{4\cdot2187},
+\]
 
-d_heat(v)=gamma B^T(I-exp(-v A))Y(0),
-d_forced'(v)=-gamma^2 integral_0^v A_edge^2 exp(-(v-s)A_edge)j(s) ds.
+at every historical time. Equal winding, the first plateau and the acute
+initial gap prior first bound the initial amplitude; the absolute phase
+drift bound then preserves this containing bound.
 
-The second identity uses the C5 incidence intertwining; A_edge=B^T B/4
-is the same cycle generator in edge order. Its positive projectors obey
-||P_mu||infinity=(2+2sqrt(5))/5<13/10 and mu1+mu2=5/4. Hence
+For either law, decompose the command-removed edge-phase increment into
+homogeneous heat and forced contributions. The row
+\(Y'=-AY-(\gamma/4)Bj\) gives
 
-integral_0^infinity ||A_edge^2 exp(-s A_edge)||infinity ds <13/8,
-|d_forced'(v)|infinity <= (13/8)gamma^2 J1.
+\[
+ d_{\mathrm{heat}}(v)=\gamma B^T(I-e^{-vA})Y(0),\qquad
+ d_{\mathrm{forced}}'(v)=-\gamma^2\int_0^v
+ A_{\mathrm{edge}}^2e^{-(v-s)A_{\mathrm{edge}}}j(s)\,ds.
+\]
 
-The exact edge-row norms for homogeneous heat are
-||row(B^T P_mu1)||1=1+1/sqrt(5)<29/20,
-||row(B^T P_mu2)||1=1+3/sqrt(5)<47/20.
-On either side of t*, each scalar heat difference is monotone; its largest
-absolute value is at the corresponding endpoint of I. It suffices to bound
-the larger of the two sums of these row norms times
-|exp(-mu t)-exp(-mu t*)|, and multiply by gamma X.
-Adding (13/8)gamma^2 J1 L proves D_late<1e-6. This can be checked using
-gamma<1/3200 (pi>3.14) and the existing rational exponential owner; it does
-not evaluate a nonlinear response. For an elementary coarse check, the
-left heat row is <1.45*(.127-.044)+2.35*.005=.1321<.14; the right is
-<1.45*.045+2.35*.001=.0676<.14. Thus the complete bound is less than
-.14 X/3200+(13/8)J1 L/3200^2<1e-6.
+Here \(A_{\mathrm{edge}}=B^TB/4\) is the same C5 generator in edge
+order; incidence intertwining gives the second identity. Its positive-mode
+projectors satisfy
+\(\|P_\mu\|_\infty=(2+2\sqrt5)/5<13/10\), and
+\(\mu_1+\mu_2=5/4\). Consequently
 
-This bounds actual motion about t*; no reconstructed phase increment is
-silently set to zero. Each law retains its own phase throughout.
+\[
+ \int_0^\infty\|A_{\mathrm{edge}}^2e^{-sA_{\mathrm{edge}}}\|_\infty\,ds
+ <\frac{13}{8},\qquad
+ \|d_{\mathrm{forced}}'(v)\|_\infty\le\frac{13}{8}\gamma^2J_1.
+\]
+
+The exact homogeneous edge-row norms are
+
+\[
+ \|\operatorname{row}(B^TP_{\mu_1})\|_1
+ =1+\frac1{\sqrt5}<\frac{29}{20},\qquad
+ \|\operatorname{row}(B^TP_{\mu_2})\|_1
+ =1+\frac3{\sqrt5}<\frac{47}{20}.
+\]
+
+Each spectral exponential difference is monotone away from \(t_*\).
+Thus the larger endpoint sum of these row norms times
+\(|e^{-\mu t}-e^{-\mu t_*}|\), multiplied by \(\gamma X\), bounds
+the homogeneous motion throughout \(\mathcal I\). Adding the forced
+allowance \((13/8)\gamma^2J_1L\) gives
+
+\[
+ \sup_{v\in\mathcal I}
+ \|d_\lambda(v)-d_\lambda(t_*)\|_\infty
+ \le D_{\mathrm{late}}<10^{-6},\qquad \lambda=0,1.
+\]
+
+The shared rational exponential owner verifies this without a nonlinear
+response. An elementary coarse bound uses \(\bar\gamma=1/3200>\gamma\),
+from \(\pi>3.14\). The left heat row is below
+\(1.45(0.127-0.044)+2.35(0.005)=0.1321<0.14\); the right is below
+\(1.45(0.045)+2.35(0.001)=0.0676<0.14\). Hence
+
+\[
+ D_{\mathrm{late}}
+ <\frac{0.14X}{3200}+\frac{13J_1L}{8\cdot3200^2}<10^{-6}.
+\]
+
+Both laws retain their actual phase motion about the common reference;
+no reconstructed increment is set to zero.
 
 ### Joint difference and nonlinear current remainder
 
-Let u=Y0-Y1 and U=sup_I||u||infinity. The actual instantaneous fundamental
-phasor difference is <20r9, and the two additional harmonics total at most
-(3/2)r9. Each node has two incident edges, so the exact pair forcing has
-infinity norm <43r9. Every historical cell is bracketed by readings and has
-length <=1. Duhamel contraction from the preceding reading yields
+Let \(u=Y_0-Y_1\) and \(U=\sup_{\mathcal I}\|u\|_\infty\).
+The actual fundamental phasor difference is below \(20r_9\), and the
+additional harmonics total at most \(3r_9/2\) per edge. Each node has two
+incident edges, so the exact pair forcing has infinity norm below
+\(43r_9\). Every historical cell has length at most one and two observed
+endpoints. Heat contraction from its preceding reading yields
 
-U <= delta+43r9 <44r9.
+\[
+ U\le\delta+43r_9<44r_9.
+\]
 
-The phase difference is constrained by the SAME pair of histories:
-||(d0(v)-d0(t*))-(d1(v)-d1(t*))||infinity <=2 gamma L U.
-Here ||B^T A||infinity=2. Freezing both laws at t*, the exact complex-phasor
-identity gives a per-edge fundamental error bounded by
-20r9 D_late+(gamma/4)*2 gamma L U. The ninth and eighteenth errors total
-at most (9r9+18r9/2)D_late=18r9 D_late. Therefore
+Since \(\|B^TA\|_\infty=2\), the same pair of histories satisfies
 
-current_remainder <= r9[38*1e-6+22 gamma^2 L] <46e-6 r9.
+\[
+ \|[d_0(v)-d_0(t_*)]-[d_1(v)-d_1(t_*)]\|_\infty
+ \le2\gamma LU.
+\]
 
-This retains the correlation between relative phase drift and form
-differences. It neither imports the failed unconstrained remainder nor
-treats the two laws' phase motions independently.
+Freezing both laws at \(t_*\), the complex-phasor difference identity
+bounds the fundamental current error by
+\(20r_9D_{\mathrm{late}}+(\gamma/4)2\gamma LU\) per edge. The two
+higher-harmonic errors total at most
+\((9r_9+18r_9/2)D_{\mathrm{late}}=18r_9D_{\mathrm{late}}\).
+The resulting uniform current remainder is therefore bounded by
+
+\[
+ \mathcal R
+ :=r_9\bigl(38\cdot10^{-6}+22\bar\gamma^2L\bigr)
+ <46\cdot10^{-6}r_9.
+\]
+
+This bound retains the correlation between relative phase motion and form
+differences. It does not use the unconstrained remainder excluded in
+section 6.
 
 ### Exact contrast operator bounds
 
-At mode two, R_c B has entries, up to cyclic order and reflection,
-(1,0,-1,phi,-phi), phi=(1+sqrt(5))/2. Its row norm is 3+sqrt(5).
-Let q_mu=(1-exp(-mu))/mu. The final E weights at each child are
-(1+alpha_E,-2alpha_E,alpha_E-1); the final O weights, up to overall
-and child signs, are (1-alpha_O,2alpha_O,-1-alpha_O).
-Let S_E,S_O be their respective sums of absolute values. There are two
-child blocks and the normalization is exp(mu/2)/8, so
+At mode two, \(R_cB\) has entries, up to cyclic order and reflection,
+\((1,0,-1,\varphi,-\varphi)\), where \(\varphi=(1+\sqrt5)/2\).
+Its row norm is \(3+\sqrt5\). Put
+\(q_\mu=(1-e^{-\mu})/\mu\). The final ramp weights at each child are,
+up to the overall and child signs in the odd contrast,
 
-H_E=exp(mu/2)q_mu(3+sqrt(5))S_E/4,
-H_O=exp(mu/2)q_mu(3+sqrt(5))S_O/4.
+\[
+ w_E=(1+\alpha_E,-2\alpha_E,\alpha_E-1),\qquad
+ w_O=(1-\alpha_O,2\alpha_O,-1-\alpha_O).
+\]
 
-These formulas remain valid for interval/signed alpha. The retained domain
-0<alpha_E<1<alpha_O simplifies S_E=2+2alpha_E and S_O=4alpha_O.
-The fixed final calculation uses the full formulas without trusting those
-cached classifications. Its errors are
+Writing \(S_E=\|w_E\|_1\), \(S_O=\|w_O\|_1\), the two child
+blocks and normalization \(e^{\mu/2}/8\) give
 
-epsilon_E=H_E*current_remainder, epsilon_O=H_O*current_remainder,
-total_E=N_E+epsilon_E, total_O=N_O+epsilon_O.
+\[
+ H_E=\frac{e^{\mu/2}q_\mu(3+\sqrt5)}4S_E,\qquad
+ H_O=\frac{e^{\mu/2}q_\mu(3+\sqrt5)}4S_O.
+\]
 
-Rebuild the shared phase-circle certificate using (K_O9,K_O18),
-(K_E9,K_E18), total_O,total_E. Passing its strict squared comparison
-contradicts the existence of any common raw record. Hidden source errors
-are already in delta; fine phases, sensor equality with EPI, acquisition
-and alternative-law formation are not additional inferred conclusions.
+These bounds allow signed interval coefficients. The retained inequalities
+\(0<\alpha_E<1<\alpha_O\) simplify them to
+\(S_E=2+2\alpha_E\), \(S_O=4\alpha_O\); the consumer instead
+rebuilds the full absolute-value sums. The inclusive error budgets are
+
+\[
+ T_E=N_E+H_E\mathcal R,\qquad T_O=N_O+H_O\mathcal R.
+\]
+
+For nonzero high-harmonic denominators define
+
+\[
+ m=1-2\max\left\{
+ \left|\frac{K_{E,9}}{K_{E,18}}\right|,
+ \left|\frac{K_{O,9}}{K_{O,18}}\right|\right\},\qquad
+ e^2=\left(\frac{2T_E}{r_9|K_{E,18}|}\right)^2
+     +\left(\frac{2T_O}{r_9|K_{O,18}|}\right)^2.
+\]
+
+The shared phase-circle theorem excludes a common record whenever the
+outward bounds satisfy \(m_{\mathrm{lower}}>0\) and
+\(e^2_{\mathrm{upper}}<m_{\mathrm{lower}}^2\). Equality does not
+certify separation. Both hidden source errors are already included in
+\(\delta\).
+
+<a id="organized-law-record-separation-result"></a>
+### Result: the two complete noisy record sets are disjoint
+
+The single final assessment, declared at
+`b9b2e49a8146d6544407eed55a395377d91504c4`, passed the strict squared
+comparison. Its [attempt](../../docs/assets/organized_law_record_separation/attempt.json)
+and [exact result](../../docs/assets/organized_law_record_separation/result.json)
+retain the source, input receipts, primitive moment intervals and rebuilt
+history/error bounds. Conservative outward summaries are
+
+\[
+ D_{\mathrm{late}}<8.737\cdot10^{-7},\qquad
+ e^2_{\mathrm{upper}}<(0.337)^2<(0.716)^2<m_{\mathrm{lower}}^2.
+\]
+
+The decision uses the retained rational squared inequality, not rounded
+display values. This closes the stated distinction: under the unchanged
+initial class, complete laws, waveform, clock and noise allowance, no
+150-coordinate raw record is compatible with both endpoint laws, even when
+each law may start from a different admitted state and have its own hidden
+constituent deviations.
+
+The conclusion concerns these two supplied models and this protocol. It
+does not identify a law of nature, select a unique member of the wider
+constitutive family, reconstruct all initial phases, or prove acquisition
+under the alternative law. No raw record, nonlinear trajectory, physical
+observation or frozen source producer was evaluated in the assessment.
 
 
 ## 12. Shared implementation and verification
@@ -1549,6 +1686,17 @@ phase reconstruction. Neither consumer installs a runtime law or evaluates
 a trajectory. The shared prescribed-time validator remains
 the execution owner for any separately declared future numerical test.
 
+The [joint phase owner](../../src/tnfr/physics/_organized_law_joint_bounds.py)
+rebuilds the necessary shared-record conditions from the same source and
+plateau premises. The
+[complete certificate](../../src/tnfr/physics/_organized_law_record_separation.py)
+re-admits primitive moments and rebuilds the late grid, decay, contrast and
+strict exclusion. The [read-only input owner](../../src/tnfr/research/_organized_law_record_inputs.py)
+binds those moments to the retained kernel assessment without consuming its
+cached contrasts or verdict. The current consumer additionally rejects
+incorrect plateau levels; the evaluated source and original result remain
+recoverable at the frozen declaration revision.
+
 [Admission and field controls](../../tests/physics/test_organized_law_observation.py)
 check invalid domains, the fine/carrier projection, both clock rows,
 derivative bounds, source denominators and identity/growth margins.
@@ -1566,6 +1714,15 @@ check shared-phase synthetic cases, strict margins and primitive rejection.
 [Phase-transport controls](../../tests/physics/test_organized_law_phase_transport.py)
 check the actual historical domain, exact C5 norms, independent scalar Green
 and constant-forcing cases, and separate reading/source/command budgets.
+[Joint phase controls](../../tests/physics/test_organized_law_joint_bounds.py)
+check the trapezoid, cycle and phasor arguments.
+[Complete theorem controls](../../tests/physics/test_organized_law_record_separation.py)
+independently check C5 projector/dual norms, exponential bounds, three-ramp
+parities and primitive admission. The
+[evidence controls](../../tests/physics/test_organized_law_record_separation_evidence.py)
+rebuild the strict inequality and source associations without producer replay;
+[input controls](../../tests/research/test_organized_law_record_inputs.py)
+separate fixed-byte admission from scientific inference.
 These controls exercise proof premises; the proofs establish their stated
 mathematical conclusions.
 No root search, fit, sampled coefficient assessment or frozen producer is run.

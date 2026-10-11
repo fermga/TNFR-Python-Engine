@@ -116,6 +116,15 @@ extra supplies a third-party plugin only when explicitly requested.
 
 ### Freeze before evaluating a reserved response
 
+The [two-law observation theorem](../theory/nodal/ORGANIZED_LAW_OBSERVATION.md#organized-law-record-separation-result)
+retains two completed analytical instruments:
+`organized_law_contrast_kernels` encloses the fixed scalar moments, and
+`organized_law_record_separation` reads that immutable evidence to check the
+complete nonlinear error budget. Both use the shared exclusive analytical
+runner and committed declarations; neither evolves a trajectory or reads a
+physical response. Their archived attempts and results are the regression
+inputs. Do not rerun these completed assessments for routine verification.
+
 The following producers accept `--prepare --output PATH`; evaluation uses the
 same command and path without `--prepare`:
 

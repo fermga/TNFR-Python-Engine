@@ -49,6 +49,24 @@ def test_late_blocks_use_all_recorded_ramps_and_keep_the_reference(late):
     assert late.interval_end < max(raw_times)
 
 
+@pytest.mark.parametrize("child", (2, 3))
+@pytest.mark.parametrize("plateau_index", (0, 1, 2))
+def test_late_grid_rejects_a_changed_constant_plateau_level(
+    monkeypatch, child, plateau_index
+):
+    cells = list(separation._historical_cells())
+    selected = [
+        index
+        for index, cell in enumerate(cells)
+        if cell.child == child and cell.name == "plateau"
+    ]
+    index = selected[plateau_index]
+    cells[index] = replace(cells[index], base=Q(1, 5))
+    monkeypatch.setattr(separation, "_historical_cells", lambda: tuple(cells))
+    with pytest.raises(ArithmeticError, match="constant short plateaus"):
+        separation._late_grid()
+
+
 @pytest.mark.parametrize(
     "mu,duration", ((Q(0), Q(16)), (Q(1, 3), Q(7)), (Q(9, 10), Q(12)))
 )

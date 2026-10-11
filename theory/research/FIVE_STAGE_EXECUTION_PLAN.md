@@ -86,16 +86,14 @@ with certified numerical and source error below the reading allowance.
 The [whole-record information bound](#organized-observed-prediction-admission)
 and [operational forecast](#organized-observed-forecast-construction) now admit
 a computable conditional future without generating-state input. The
-**single active gate** is [law versus initial-state identifiability](#organized-law-state-identifiability):
-determine whether the fixed joint observations distinguish two retained
-constitutive laws when each has its own unknown initialization. Own-law
-admission and finite sampled injectivity of the formal harmonic comparison
-are established. The local-current collision and a proved obstruction to
-the unconstrained global remainder bound require retaining the laws' joint
-phase relations and temporal information in the next certificate. Constrained
-long-ramp contrasts and a historical phase-transport bound now supply its
-separate observation and state-estimation ingredients; their joint nonlinear
-error admission remains open.
+[law versus initial-state gate](#organized-law-state-identifiability) is now
+closed: the unchanged 150-reading record sets for the two retained harmonic
+laws are disjoint throughout the independently unknown initial class.
+Necessary joint phase constraints, all three recorded ramps and actual
+late-time motion close the strict nonlinear certificate. This selects no
+physical law or unique member of the wider constitutive family. The next
+bounded task is the [post-identifiability premise review](#post-identifiability-premise-review),
+which must select a new scientific dependency before another calculation.
 
 No 45-node acquisition, physical readout or source certificate transfers to
 the supplied positive-r matrix law by default. Earlier frozen protocols,
@@ -112,7 +110,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Active law versus initial-state identifiability | [Two-law record admission](#organized-law-state-identifiability): constrained long-ramp contrasts and record-conditioned phase transport are established as separate ingredients. Kernel magnitudes and their joint rephasing/error certificate remain unresolved |
+| Next bounded premise review | [Post-identifiability decision](#post-identifiability-premise-review): distinguish remaining law-selection premises from physical observation/preparation requirements before selecting another campaign |
+| Closed two-law record identifiability | [Complete nonlinear record separation](#organized-law-state-identifiability): the fixed noisy records distinguish the retained harmonic endpoints despite independently unknown initial states; the wider family and physical law remain unselected |
 | Closed operational observation-based forecast | [Certified forecast from a joint record](#organized-observed-forecast-construction): one archived synthetic record yields a carried conditional endpoint within the fixed policy, without generating-state input |
 | Closed observation-to-prediction sufficiency | [Unknown collective initialization](#organized-observed-prediction-admission): a uniform complete-history future diameter below the fixed target retains joint noisy records and source uncertainty |
 | Closed computable prospective-prediction admission | [Carried reduced reference](#organized-computable-prediction-admission): a fixed-budget validated forecast separates the post-observation endpoint from the omitted-input control with numerical, source and reading errors retained |
@@ -292,7 +291,7 @@ response has not been derived from the earlier acquired constituents.
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
 | Sufficient collective state and inherited response | Construct and certify a forecast from a joint finite noisy record without known collective initialization | **Closed operational software case.** The whole-record bound and one candidate forecast are certified; arbitrary-record convergence and physical measurement remain unproved |
 | Fundamental physical properties and independent observation | Independently admit full preparation and joint physical measurement coverage before evaluating a response | **Closed scoped recovery-area review, unresolved physical dependency.** The reviewed direct-area route is not admitted; neither improved voltage precision nor clock rescaling alone repairs the missing premises. No further apparatus search is active |
-| Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Sole active analytical gate:** joint law/initial-state identifiability below. A two-law distinction would not establish uniqueness among all admissible laws |
+| Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Closed pairwise record distinction; next premise review.** Independently unknown initialization cannot hide the retained pair under the fixed protocol. Uniqueness among all admissible laws and physical selection remain open |
 | Autonomous preparation, support, capacity and events | Supply actual occurrence and state-evolution laws when claiming autonomous assembly. [Event work](../nodal/RELATIONAL_SUPPORT_EVENTS.md), passivity and [operator descent](../STRUCTURAL_OPERATORS.md) do not select occurrence | **Claim-dependent**. Current contacts and preparation remain supplied. Do not postpone investigation of the existing conditional composite until every origin question is solved |
 | Internal activity and recurrence | Separate preservation of identity from permanent motion; the [positive-loss boundary](../nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission) and alternative-mobility results retain different premises | **Prepared alternative** for a named claim requiring sustained activity. Neither a stationary identity nor finite response establishes recurrence or transfers an invariant measure |
 
@@ -304,7 +303,7 @@ An added observable earns inclusion by deciding the selected prediction or a
 meaningful minimality obstruction. Existing failed physical-source admissions
 remain failed; more samples cannot repair their complete-law mismatches.
 
-Only [law versus initial-state identifiability](#organized-law-state-identifiability) is active.
+The sole next task is the [post-identifiability premise review](#post-identifiability-premise-review).
 The table assesses dependencies, not a fixed sequence or parallel campaigns. It preserves
 the objective of generated, physically testable organization without identifying
 winding, phase cancellation or storage with material constituents.
@@ -318,13 +317,12 @@ Support, capacity or operator-occurrence laws become necessary when a claim
 requires their autonomous evolution; finite forecasting holds them declared.
 The operational result removes generating-state input from one software
 forecast. It does not repair the physical reviews' independent preparation,
-joint measurement coverage or component-law incompatibilities. Law
-discrimination therefore takes priority over another apparatus search or
-precision increase. The retained countermodels share organized targets and
-local dynamics, but their earlier response discriminator uses a different
-preparation and measurement budget; it cannot settle the present record's
-law ambiguity. The selected analytical gate retains the current hidden-state
-and exact-clock priors and starts no parallel physical campaign.
+joint measurement coverage or component-law incompatibilities. The completed
+two-law theorem now resolves the present protocol's pairwise ambiguity while
+retaining its hidden-state and exact-clock premises. Earlier discrimination
+results keep their separate preparation and measurement budgets. The next
+premise review must decide which remaining scientific dependency warrants
+work; no additional law-comparison or physical campaign is active.
 
 <a id="organized-joint-preparation-resources"></a>
 ### Closed joint preparation-resource admission
@@ -658,70 +656,54 @@ was replayed. This is an operational conditional software case, not an
 independent response, exact fine-feasible witness or universal fitting theorem.
 
 <a id="organized-law-state-identifiability"></a>
-### Immediate question: distinguish law from unknown initialization
+### Closed two-law identifiability with unknown initialization
 
-**Can the same complete noisy form record be compatible with both retained
-laws when their initial states are independently unknown?** The successful
-single-law forecast does not decide this. Use only the endpoint currents
-`j_0(delta)=sin(delta)` and
-`j_1(delta)=sin(delta)+(sin(9*delta)-sin(18*delta)/2)/2187` from the
-[constitutive countermodel owner](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-complete-law).
-Their old organized-target and finite-response results retain their own
-supports, preparations and budgets.
+The [whole-record theorem](../nodal/ORGANIZED_LAW_OBSERVATION.md#organized-law-record-separation-theorem)
+and [retained certificate](../nodal/ORGANIZED_LAW_OBSERVATION.md#organized-law-record-separation-result)
+close the question under the unchanged support, word, 30 five-form readings,
+noise `eta=1e-14`, horizon and initial class. The sine law and its ninth/eighteenth
+harmonic alternative cannot admit a common complete noisy record, even when
+each law has its own unknown initial forms and phases. This is a uniform
+conditional information theorem, not classification of a measured record.
 
-1. **Closed analytical prerequisite:** the
-   [own-law admission and information owner](../nodal/ORGANIZED_LAW_OBSERVATION.md)
-   establishes each carrier, hidden/source bounds, finite identity and
-   numerical growth on the present `C9 x C5` support. Its local collision
-   proves that distinct laws and distinct admitted gaps can share the two
-   ideal quadratures, and an admitted adjacent gap can also match the three
-   frozen receiver currents. This does not supply a common continuing record.
-   Internal C9 target matching does not match the C5 outer tangent.
-2. **Active joint information question:** retain all thirty times, 150
-   readings, `eta=1e-14` and the existing horizon.
-   Allow each law its own admitted initial form and circular phase state.
-   Seek either a separation of their complete admitted record sets or an
-   explicit jointly compatible cross-law witness. Match all samples from
-   one continuous history per law, retaining correlations and source errors.
-   A failed sufficient bound is unavailable evidence, not record overlap.
-   The [finite-sample theorem](../nodal/ORGANIZED_LAW_OBSERVATION.md#organized-law-finite-formal-rank)
-   proves rank 35 for the unchanged sample schedule without evaluating its
-   coefficient matrix. Its proof supplies no useful noisy inverse bound.
-   The [relaxation obstruction](../nodal/ORGANIZED_LAW_OBSERVATION.md#organized-law-relaxation-obstruction)
-   excludes every scalar or positive block bootstrap based on independent
-   formal coefficients and the retained global remainder envelope; selecting
-   different inverse weights or computing that matrix more accurately cannot
-   repair this certificate.
-3. **Closed constrained ingredients:** the
-   [long-ramp construction](../nodal/ORGANIZED_LAW_OBSERVATION.md#organized-law-long-ramp-contrasts)
-   retains the actual harmonic circles and shared phase. It uses recorded
-   endpoints and has observation allowances below `8*delta`, without dividing
-   by the short plateau duration. The
-   [historical heat bridge](../nodal/ORGANIZED_LAW_OBSERVATION.md#organized-law-historical-phase-transport)
-   bounds each law's carrier edge-phase increment error below `2.8e-8` from
-   the same form record; initial phase remains unknown and its last unobserved
-   ramp/tail are excluded. Neither ingredient is a complete discriminator.
-4. **Next construction:** retain the nonzero record-conditioned phase motion
-   in the contrasts, with one common reference across both child blocks.
-   Establish the kernel magnitudes and joint reading, source, reconstruction
-   and nonlinear rephasing budgets needed by the strict circle criterion.
-   Any proposed state/history witness must retain both initial cycle and form
-   constraints. The excluded formal cancellation direction is not such a
-   witness. Seek constrained separation or an admitted common continuing
-   history under the unchanged word, noise and horizon. Do not insert the
-   small transport error in place of the actual transported phase motion.
-   Any numerical discriminator must
-   declare its record/source choice, alternatives, budgets and prospective
-   criterion before evaluation. No additional fit, parameter scan, waveform
-   tuning, longer horizon or precision increase is activated here. Do not
-   use the archived future as a target for selecting a law or initialization.
+The moment declaration `0b21a040` precedes one fixed scalar-kernel assessment;
+`b9b2e49a` precedes the final strict comparison using its retained primitives.
+Joint readings force equal winding and a bounded fundamental phasor difference.
+Three-ramp contrasts at the preselected second C5 mode, a shared late-time
+reference and correlated phase transport give normalized error below `0.337`
+against a uniform circle margin above `0.716`. Both fine-source errors remain
+included. No nonlinear response, fit, additional measurement, precision
+escalation or earlier frozen producer was evaluated.
 
-A two-law separation would distinguish only this pair in its declared domain;
-an overlap witness would identify remaining observational freedom and the
-kind of independent information still needed. Neither outcome selects a
-unique fundamental law. Physical preparation, calibration and apparatus
-admission remain unresolved; the closed electrical/area reviews are not
-reopened by record-only software inference.
+Local current collisions, formal rank 35 and the unconstrained-bootstrap
+obstruction remain valid in their own scopes. The final proof uses stronger
+joint restrictions and therefore does not overturn those counterexamples.
+The historical heat bridge remains a reusable conditional bound; the final
+certificate bounds actual late-time phase motion directly. No transfer of
+acquisition, apparatus capability, exact input/clock admission or uniqueness
+within the continuous constitutive family follows.
+
+<a id="post-identifiability-premise-review"></a>
+### Next bounded task: reassess the remaining scientific dependency
+
+With this pairwise comparison closed, reassess the premises before proposing
+another precision increment, waveform or alternative. Revisit the existing
+complete-law admission owners and the physical-property comparison map to
+choose one next question:
+
+1. Identify which independently justified information, composition or
+   boundary premise could further restrict the constitutive freedom. State
+   the premise separately from a desired output or a fitted observation.
+2. Determine whether a specific derived collective property already admits
+   an independent physical preparation, clock and measurement bridge. Retain
+   the closed electrical feasibility limitations and alternative explanations.
+3. Select one discriminating consequence or obstruction with an explicit
+   stopping rule in this queue before activating further numerical work.
+
+This review is the next task, not authorization for another sweep, physical
+response evaluation or repetition of the closed identifiability test. It
+must explain which foundational or physical dependency the selected work
+resolves beyond the result just established.
 
 Recovering established physical relations remains the objective; the test
 need not predict a deviation from known physics. An equivalent circuit

@@ -717,6 +717,12 @@ select `tests/physics/test_organized_law_observation.py` and
 `tests/physics/test_organized_law_observation_constrained.py` and
 `tests/physics/test_organized_law_phase_transport.py`, with the shared
 constitutive-current, hidden-transport, interval/jet and waveform controls.
+The complete record theorem additionally selects
+`tests/physics/test_organized_law_contrast_kernels.py`,
+`tests/physics/test_organized_law_joint_bounds.py`,
+`tests/physics/test_organized_law_record_separation.py`,
+`tests/physics/test_organized_law_record_separation_evidence.py` and
+`tests/research/test_organized_law_record_inputs.py`.
 Use independent 45-node sums to check the actual carrier and both clock rows;
 retain the counterexample to outer-tangent transfer. Check law and command
 admission, own-law source denominators, identity and growth bounds. Ideal
@@ -738,9 +744,17 @@ signed coefficients and unavailable domains without evaluating the scientific
 moment kernels. The phase-transport controls must derive the historical grid
 from actual reads, retain both own-law source errors, and check the heat bridge
 and Green bound separately. No reading beyond the last sample is supplied.
-The resulting circle and transport bounds remain conditional ingredients;
-they do not establish a shared raw record, source acquisition or completed
-nonlinear law discrimination.
+The isolated circle and transport bounds remain conditional ingredients.
+The complete theorem must additionally check the diffusion trapezoid error,
+same-winding implication, initial current range and all-time fundamental
+phasor bound, then the late C5 heat/projector norms, actual phase motion and
+correlated history difference. Independently exercise all three ramp signs
+and weights, endpoint provenance, plateau bases and strict interval admission.
+Read the two frozen assessments without replaying either producer. Rebuild
+the exclusion from primitive moments and inclusive errors; test source and
+cross-record byte associations separately. The passing result separates the
+two declared noisy record sets; it supplies no acquired source, measured
+record classification or physical law selection.
 
 For [current discrimination under uncertainty](theory/nodal/ORGANIZED_ROBUST_CURRENT.md),
 select `tests/physics/test_organized_robust_current.py` and
