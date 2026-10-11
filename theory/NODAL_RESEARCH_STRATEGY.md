@@ -80,12 +80,16 @@ origin. The plan selects the next bounded question from these dependencies.
 The [electrical feasibility audit](research/ORGANIZED_ELECTRICAL_FEASIBILITY.md)
 provides such a foundational question: additional ring capacitance changes
 the collective form row by a matrix while leaving the voltage-phase row
-unchanged. The priority is to determine the sufficient state and complete
-law of that changed organization before designing its physical readout.
-This uses an explicit counterexample to scalar calibration; it does not
+unchanged. Such a change requires its own sufficient state, complete law and
+storage before a physical readout can use it. The
+[loaded-observation comparison](research/ORGANIZED_FINITE_WINDOW_DESIGN.md)
+also distinguishes matrix sensitivity from sensitivity to organized phase
+feedback: a calibrated phase-blind reference can remain unresolved even
+when two response matrices are distinguishable. This uses explicit
+countermodels to test what an observation establishes; it does not
 promote the electrical realization to a universal TNFR law or replace the
 earlier conditional organizations with prepared ideal circuits. Gate status,
-acceptance and the conditions for returning to finite-window observation
+acceptance and the selection of further observation questions
 remain in the [sole queue](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).
 
 | Question | Required distinction | Owner |

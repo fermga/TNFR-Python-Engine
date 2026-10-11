@@ -1,0 +1,65 @@
+{
+  "schema": "tnfr.organized-finite-window-design.method-sources.v1",
+  "scope": "Primary method review for a supplied passive RC observation candidate with a finite output average, including loading, sensor state, clock and calibration obligations.",
+  "owner": "theory/research/ORGANIZED_FINITE_WINDOW_DESIGN.md",
+  "physical_dataset_selected": false,
+  "measured_arrays_downloaded": false,
+  "response_fit_performed": false,
+  "reserved_response_evaluated": false,
+  "physical_apparatus_admitted": false,
+  "reviewed_on_local_date": "2026-10-11",
+  "review_timezone": "Europe/Madrid",
+  "review_scope": "Only the identified method and definition sections were reviewed. No source figure or response was selected as TNFR data. The earlier organized electrical feasibility receipt remains unchanged.",
+  "provenance_scope": "Web text review only. No independently retrieved source bytes, archived source files or byte hashes are claimed. Source associations do not authenticate a physical calibration or establish the candidate model.",
+  "sources": [
+    {
+      "id": "keithley-low-level-handbook-7",
+      "title": "Keithley Low Level Measurements Handbook, 7th Edition",
+      "source_type": "manufacturer_measurement_method_handbook",
+      "canonical_url": "https://download.tek.com/document/LowLevelHandbook_7Ed.pdf",
+      "requested_url": "https://download.tek.com/document/LowLevelHandbook_7Ed.pdf",
+      "reviewed_sections": [
+        "Section 2.2.1, printed pp. 2-3 to 2-4: input resistance and bias current",
+        "Section 2.2.1, printed pp. 2-8 to 2-10: shunt capacitance loading and guarding",
+        "Section 2.6.4, printed pp. 2-56 to 2-59: response speed, bandwidth and settling",
+        "Section 3.2.8, printed pp. 3-12 to 3-13: line-cycle integration",
+        "Sections 1.4.2 to 1.4.4, printed pp. 1-11 to 1-17: accuracy, uncertainty, drift and noise rejection"
+      ],
+      "factual_paraphrase": "Finite input resistance, bias current and instrument/cable capacitance load voltage measurements. The handbook models capacitive charging, transferred charge and bandwidth-dependent settling, while noting higher-order settling effects. It describes finite voltage integration and distinguishes accuracy, calibration conditions, probabilistic uncertainty, drift and noise rejection.",
+      "inference_limits": "These methods motivate the supplied RC candidate; they do not certify its exact one-pole transfer, complete loaded matrix, sensor initialization, full C5 phase preparation or joint error bounds. The retained-state and finite-window consequences in the owner are our conditional derivations, not manufacturer claims.",
+      "reviewed_on_local_date": "2026-10-11",
+      "review_timezone": "Europe/Madrid",
+      "review_status": "reviewed_primary_source_sections",
+      "review_method": "web_source_text",
+      "retrieval_status": "web_review_only",
+      "direct_byte_retrieval_status": "not_attempted_for_this_receipt",
+      "retrieved_at_utc": null,
+      "bytes": null,
+      "sha256": null,
+      "optional_local_cache_path": null
+    },
+    {
+      "id": "nist-si-section-2",
+      "title": "NIST Special Publication 330, Section 2: The International System of Units",
+      "source_type": "authoritative_SI_definition",
+      "canonical_url": "https://www.nist.gov/pml/special-publication-330/sp-330-section-2",
+      "requested_url": "https://www.nist.gov/pml/special-publication-330/sp-330-section-2",
+      "reviewed_sections": [
+        "Section 2.2, defining constants and Table 1",
+        "Section 2.2.1, definition versus practical realization"
+      ],
+      "factual_paraphrase": "The SI fixes h=6.62607015e-34 joule seconds and e=1.602176634e-19 coulombs exactly. Defining a unit through a constant remains distinct from its practical realization.",
+      "inference_limits": "The supplied constants support the reference conversion a0=h/(4*pi*e). They are not derived from TNFR and do not certify a Josephson realization, independent phase preparation, clock, loading or measurement calibration for the candidate apparatus.",
+      "reviewed_on_local_date": "2026-10-11",
+      "review_timezone": "Europe/Madrid",
+      "review_status": "reviewed_primary_source_sections",
+      "review_method": "web_source_text",
+      "retrieval_status": "web_review_only",
+      "direct_byte_retrieval_status": "not_attempted_for_this_receipt",
+      "retrieved_at_utc": null,
+      "bytes": null,
+      "sha256": null,
+      "optional_local_cache_path": null
+    }
+  ]
+}

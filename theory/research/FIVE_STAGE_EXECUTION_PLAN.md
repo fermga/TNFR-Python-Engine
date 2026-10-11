@@ -51,10 +51,15 @@ collective response; scalar calibration cannot absorb it. The subsequent
 [prepared-reference theorem](#organized-effective-law-admission) admits
 own-law identity retention and a finite response discriminator for that
 supplied C5 matrix law, while proving that form, winding and storage alone
-do not close its predictive state. The **single active gate** is now
-[finite-window collective electrical observation design](#organized-electrical-finite-window-design):
-admit an independent preparation/measurement bridge with its actual loading,
-sensor dynamics, work and clock before any physical response evaluation.
+do not close its predictive state. The
+[loaded finite-window design](#organized-electrical-finite-window-design)
+retains identity and distinguishes matrix response, but its permitted
+records overlap those of a matched phase-blind linear reference. It does
+not admit an organization-sensitive physical test. The **single active
+gate** is now [organization-sensitive loaded-response admission](#organized-sensitive-loaded-response):
+declare a new observation and preparation that resolve an unfitted
+consequence beyond the calibrated phase-blind reference, with the actual
+sensor dynamics, loading, work and clock retained.
 
 No 45-node acquisition, physical readout or source certificate transfers to
 that changed law by default. Earlier frozen protocols, negative results and
@@ -71,7 +76,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Active finite-window collective electrical observation design | [Observation design](#organized-electrical-finite-window-design): admit sensor dynamics, actual matrix loading, complete preparation, work, clock and independently supported feasibility; no physical response campaign |
+| Active organization-sensitive loaded-response admission | [Loaded-response question](#organized-sensitive-loaded-response): freeze complete preparation, laws, loaded observation and a calibrated phase-blind reference; admit separation or a scoped obstruction before physical evaluation |
+| Closed scoped finite-window design admission | [Loaded-window result](#organized-electrical-finite-window-design): identity and matrix-response separation survive passive sensing, but phase-blind record overlap and missing complete preparation prevent physical admission |
 | Closed conditional collective effective-law admission | [Prepared matrix response](#organized-effective-law-admission): own-law identity retention and finite record separation under the fixed declaration; form, winding, means and storage do not close the state |
 | Closed scoped physical feasibility review | [Independent physical admission](#organized-electrical-physical-feasibility): no reviewed apparatus admits the frozen endpoint-voltage protocol; clock-independent precision/aperture demand, junction-capacitance shape mismatch and missing complete preparation remain distinct |
 | Closed conditional electrical discrimination | [Current-amplitude discrimination](#organized-electrical-robust-current-test): one frozen joint-box assessment separates two own-law current envelopes under one input/statistic, with nonzero calibration, tracking and aperture error |
@@ -221,10 +227,13 @@ The [prepared matrix-response result](../nodal/ORGANIZED_EFFECTIVE_LAW.md#prepar
 now supplies own-law identity retention and a finite whole-preparation
 response bound under declaration `a205a8fe`. It also excludes closing the
 state with form, winding, means and storage while discarding phase shape.
-The next missing premise is operational: a sensor's state, transfer and
-loading must be admitted with complete preparation and a laboratory clock.
-The prepared collective result supplies no acquisition or inherited fine
-source, and its additive observation allowance is not an apparatus model.
+The [loaded-window result](ORGANIZED_FINITE_WINDOW_DESIGN.md#loaded-window-design-result)
+retains an actual passive sensor and resolves matrix response, yet does not
+resolve the phase-dependent organization against a matched linear reference.
+The next observation must earn that distinction while retaining independent
+complete preparation, sensor admission and a laboratory clock. The prepared
+collective result supplies no acquisition or inherited fine source, and a
+conditional sensor equation is not an apparatus calibration.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
@@ -232,7 +241,7 @@ source, and its additive observation allowance is not an apparatus model.
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
 | Sufficient collective state and inherited response | The [prepared-reference theorem](../nodal/ORGANIZED_EFFECTIVE_LAW.md#prepared-matrix-response-result) retains identity, finite response and own-law work; an explicit equal-storage collision requires phase information | **Closed in the declared domain.** Acquisition, fine-source inheritance and physical realization remain separate; no further response scan is active |
-| Fundamental physical properties and independent observation | Admit complete preparation, actual matrix loading, sensor state/transfer, clock and an independently measurable finite-window consequence | **Sole active design gate** below. Close with a supported prospective design or scoped obstruction before calibration and reserved evaluation; the old endpoint-voltage protocol remains unadmitted |
+| Fundamental physical properties and independent observation | Resolve an organization-sensitive loaded consequence beyond the calibrated phase-blind reference, with complete preparation, sensor state, clock and work | **Sole active design gate** below. Freeze a new discriminating question and close with separation or a scoped obstruction. Independent physical preparation, calibration and joint coverage remain unresolved; both earlier electrical protocols remain unadmitted as physical tests |
 | Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Conceptually critical**, with no new compatibility scan active. If a countermodel shares all proposed premises, the uniqueness claim fails in that scope |
 | Autonomous preparation, support, capacity and events | Supply actual occurrence and state-evolution laws when claiming autonomous assembly. [Event work](../nodal/RELATIONAL_SUPPORT_EVENTS.md), passivity and [operator descent](../STRUCTURAL_OPERATORS.md) do not select occurrence | **Claim-dependent**. Current contacts and preparation remain supplied. Do not postpone investigation of the existing conditional composite until every origin question is solved |
 | Internal activity and recurrence | Separate preservation of identity from permanent motion; the [positive-loss boundary](../nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission) and alternative-mobility results retain different premises | **Prepared alternative** for a named claim requiring sustained activity. Neither a stationary identity nor finite response establishes recurrence or transfers an invariant measure |
@@ -245,7 +254,7 @@ An added observable earns inclusion by deciding the selected prediction or a
 meaningful minimality obstruction. Existing failed physical-source admissions
 remain failed; more samples cannot repair their complete-law mismatches.
 
-Only the [finite-window observation design](#organized-electrical-finite-window-design) is active.
+Only the [organization-sensitive loaded-response admission](#organized-sensitive-loaded-response) is active.
 The table assesses dependencies, not a fixed sequence or parallel campaigns. It preserves
 the objective of generated, physically testable organization without identifying
 winding, phase cancellation or storage with material constituents.
@@ -433,40 +442,61 @@ cannot be discarded as an exact state reduction. Acquisition, fine-source
 inheritance, law selection and physical preparation/measurement remain open.
 
 <a id="organized-electrical-finite-window-design"></a>
-### Immediate question: finite-window collective electrical observation design
+### Closed scoped finite-window observation design
 
-**Can an independently admitted finite-window observation preserve an
-unfitted consequence of the prepared collective law with its actual
-physical loading?** The [prepared-reference result](../nodal/ORGANIZED_EFFECTIVE_LAW.md#prepared-matrix-response-result)
-supplies a conditional state/law/identity domain. It does not turn its
-bounded additive observation error into a sensor or establish operational
-preparation. This gate admits a prospective design or proves a scoped
-obstruction; it evaluates no physical response.
-The [fixed loaded-window candidate](ORGANIZED_FINITE_WINDOW_DESIGN.md#loaded-window-design-declaration)
-declares a passive sensor state, its initialization and backreaction, a finite
-average, and a same-calibration phase-blind control before any response evaluation.
+The [result owner](ORGANIZED_FINITE_WINDOW_DESIGN.md#loaded-window-design-result)
+retains declaration revision `34baddca`. The actual passive RC-loaded law
+preserves the prepared identity and separates positive-r matrix response
+from r=0 by more than `2^-21` throughout the declared preparation and error
+class. Its difference
+from a same-r, same-initial-form/sensor, same-input/clock/sensor phase-blind
+linear reference is below `2^-44`, less than `eta/100`; the permitted
+records therefore overlap. Matrix discrimination alone does not resolve
+the organization's phase-dependent contribution in this protocol.
 
-- Declare one observation mechanism with sensor state, transfer, input,
-  clock, finite support and loading; distinguish deterministic error bounds
-  from joint statistical coverage. No tested amplitude or inferred phase
-  may calibrate itself.
-- Match both dynamical rows, the actual matrix input channel, storage and
-  any eliminated-state memory to the loaded model. Retain positive
-  ring-capacitance shape and the sensor's backreaction; scalar calibration
-  cannot absorb them. Begin with the prepared collective reference, whose
-  full form and phase preparation must be independently bounded. A winding
-  label or equal storage does not establish the declared preparation;
-  energy-based inclusion needs its own domain and coercivity proof. Transfer
-  from a formed fine organization requires its own law, map and error proof.
-- Establish laboratory-unit conditioning with windows, preparation, work,
-  component defects and independent terrestrial method evidence before a
-  campaign. Retain the complete preparation cost and supplied input work;
-  an excess-storage allowance is not an autonomous energy source. Close
-  with a supported prospective design or a scoped obstruction; relaxed old
-  error allowances do not admit a new apparatus.
-- A passing design still needs separate calibration and reserved data under
-  P1-P5. No hardware purchase, deployment, source replay, numerical scan,
-  response fitting or physical-data evaluation is active.
+The preparation audit also exhibits states with the same zero form and
+sensor readings, winding one and exact target energy outside the required
+phase collar. Those observations cannot certify the full preparation.
+The candidate is not admitted as an organization-sensitive physical test;
+this scoped obstruction rejects neither the complete law nor other
+observations. No physical response, trajectory or dataset was evaluated.
+The source receipt and analytical controls preserve the independent
+preparation, loaded calibration and joint-coverage gaps.
+
+<a id="organized-sensitive-loaded-response"></a>
+### Immediate question: organization-sensitive loaded-response admission
+
+**Can a new loaded observation resolve an unfitted consequence of the
+prepared organization beyond a calibrated phase-blind reference?** The
+[result owner's question](ORGANIZED_FINITE_WINDOW_DESIGN.md#organization-sensitive-next-question)
+identifies the missing distinction. This is a new prospective admission,
+not a repetition of the same short pulse at higher arithmetic precision.
+
+- Freeze the state and complete preparation sets, both candidate laws and
+  the phase-blind alternative before evaluating the discriminating response.
+  Declare which initial states and independently calibrated coefficients
+  are matched; do not use an evaluated amplitude or inferred phase to
+  calibrate itself. Retain all response-relevant phases and sensor state.
+- Specify the loaded observation, finite windows, clock, input, work and
+  identity criterion. Match every evolution row, the actual matrix input
+  channel and any eliminated-state memory; positive ring capacitance and
+  sensor backreaction cannot be absorbed into scalar calibration.
+- Prove separation under the declared uncertainties or a scoped obstruction.
+  Include calibration-compatible phase-blind responses in the alternative
+  record set, not merely another response matrix. Changing the question,
+  preparation or observation requires its own declaration before evaluation.
+- Independently admit full physical preparation, laboratory conditioning,
+  loaded transfer/matrices, delivery, clock and error interpretation. Winding,
+  zero voltage or equal storage do not supply the missing phase collar;
+  energy-based inclusion requires a valid domain and coercivity proof.
+  Distinguish deterministic bounds from joint statistical coverage, and
+  retain the complete preparation cost and supplied input work. The method
+  evidence must remain terrestrial and workstation- or laboratory-accessible.
+
+A passing conditional design still needs separate calibration and reserved
+data under P1-P5. Transfer from a formed fine organization requires its own
+law, map and error proof. No hardware purchase, deployment, source replay,
+numerical scan, response fitting or physical-data evaluation is active.
 
 Recovering established physical relations remains the objective; the test
 need not predict a deviation from known physics. An equivalent circuit

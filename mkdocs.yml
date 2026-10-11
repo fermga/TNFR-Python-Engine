@@ -128,6 +128,7 @@ nav:
           - "Current discrimination under uncertainty": theory/nodal/ORGANIZED_ROBUST_CURRENT.md
           - "Physical feasibility of organized current observation": theory/research/ORGANIZED_ELECTRICAL_FEASIBILITY.md
           - "Collective state and matrix response": theory/nodal/ORGANIZED_EFFECTIVE_LAW.md
+          - "Loaded finite-window collective observation": theory/research/ORGANIZED_FINITE_WINDOW_DESIGN.md
           - "Organized identity under continued external contact": theory/nodal/ORGANIZED_CONTACT_MAINTENANCE.md
           - "Reflection obstruction for full-fine contact identity": theory/nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md
           - "Full-fine stationary contact and marked chambers": theory/nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md

@@ -634,6 +634,18 @@ execute no trajectory or frozen assessment, and supply no acquired-source
 identity or formation certificate. Existing frozen producers and evidence
 remain unchanged.
 
+For the [loaded finite-window observation](theory/research/ORGANIZED_FINITE_WINDOW_DESIGN.md),
+select `tests/physics/test_organized_window_observation.py` with the
+matrix-response, electrical-feasibility and shared rational-interval controls.
+Rebuild the loaded storage and passive reference, sensor convolution and
+finite-average gain independently. Check actual permitted-record overlap
+against the matched phase-blind model separately from matrix separation;
+overlapping outer enclosures alone would not establish that obstruction.
+Retain sensor initialization, work, both losses, phase-preparation domain,
+representation boundaries and independent physical-unit scaling. These
+analytical checks evaluate no trajectory or physical response and admit no
+apparatus. Existing source archives and frozen evidence remain unchanged.
+
 For [finite interface factorization](theory/nodal/ORGANIZED_INTERFACE_FACTORIZATION.md),
 select `tests/physics/test_organized_slot_registration.py` and
 `tests/physics/test_organized_interface_factorization.py` with the joint-resource,
