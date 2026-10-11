@@ -341,18 +341,23 @@ source bytes, measured arrays, admitted apparatus or an evaluated response.
 ### Reusable consequence and remaining question
 
 The [detached exact bound](../../src/tnfr/physics/_organized_window_observation.py)
-re-admits primitives and rebuilds (3)-(13). Its
+uses [shared loaded-pulse admission](../../src/tnfr/physics/_organized_loaded_pulse.py)
+for the pulse and preparation primitives, sensor energy, forced growth and
+identity bound.
+It separately admits the observation error and short-window norm denominator,
+then rebuilds the response bounds in (3)-(13). Its
 [independent controls](../../tests/physics/test_organized_window_observation.py)
 check matrix gain, sensor storage, convolution coefficients, arithmetic
 domains, preparation obstruction and the physical scaling. This private
 proof consumer installs no runtime law or SDK pathway. Earlier frozen
 protocols and responses retain their original models and budgets.
 
-The unresolved scientific question is which independently prepared and
-observed property distinguishes organized phase feedback from the same
-calibrated passive linear response. A new candidate needs its complete
-loaded laws, preparation, input/work, clock, identity and observation/error
-contract before assessment. The present pulse supplies a scoped obstruction
-and reusable sensor accounting; repeating it with tighter arithmetic would
-not answer that question. The sole active task and its acceptance conditions
-remain in the [execution plan](FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).
+The short-window mean supplies a scoped obstruction and reusable sensor
+accounting. The subsequent [recovery-area result](ORGANIZED_RECOVERY_OBSERVATION.md#recovery-area-result)
+conditionally distinguishes restoring phase feedback from the same calibrated
+passive linear response under a separately declared observation and error
+contract. It does not identify a unique restoring law or supply independent
+physical preparation and measurement. Repeating the short-window mean with
+tighter arithmetic does not supply those missing premises. The sole active
+task and its acceptance conditions remain in the
+[execution plan](FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).

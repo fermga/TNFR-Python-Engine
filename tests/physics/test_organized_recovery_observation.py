@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from tests.sine_evidence_helpers import forbid_sine_regeneration
+from tests.sine_evidence_helpers import forbid_organized_response_evaluation
 from tnfr.mathematics._exact_linear_algebra import (
     exact_matrix_inverse,
     exact_square_matrix_power,
@@ -42,7 +42,7 @@ def preserve_frozen_evidence_and_producers():
         )
     )
     before = tuple(hashlib.sha256(path.read_bytes()).digest() for path in paths)
-    with forbid_sine_regeneration():
+    with forbid_organized_response_evaluation():
         yield
     assert tuple(hashlib.sha256(path.read_bytes()).digest() for path in paths) == before
 
@@ -282,16 +282,23 @@ def test_fixed_finite_declaration_separates_actual_permitted_records(recovery_bo
 def test_recovery_rebuilds_the_fixed_pulse_without_inheriting_changed_defaults(
     monkeypatch,
 ):
-    original = recovery_owner.bound_loaded_window_observation
+    from tnfr import _exact_time
+    from tnfr.physics import _organized_window_observation as window_owner
+
+    original = recovery_owner.bound_loaded_c5_pulse
     declarations = []
 
     def observe_declaration(**kwargs):
         declarations.append(kwargs)
         return original(**kwargs)
 
-    monkeypatch.setattr(
-        recovery_owner, "bound_loaded_window_observation", observe_declaration
-    )
+    def forbidden(*args, **kwargs):
+        pytest.fail("recovery evaluated an unrelated short-window observation")
+
+    monkeypatch.setattr(recovery_owner, "bound_loaded_c5_pulse", observe_declaration)
+    monkeypatch.setattr(window_owner, "bound_loaded_window_observation", forbidden)
+    monkeypatch.setattr(window_owner, "exp_unit_bounds", forbidden)
+    monkeypatch.setattr(_exact_time, "exp_unit_bounds", forbidden)
     short = recovery_owner.bound_recovery_area_observation(recovery_duration=0)
     long = recovery_owner.bound_recovery_area_observation(recovery_duration=Q(2**40))
     expected = {
@@ -302,7 +309,6 @@ def test_recovery_rebuilds_the_fixed_pulse_without_inheriting_changed_defaults(
         "preparation_radius": Q(1, 2**26),
         "sensor_preparation_radius": Q(1, 2**26),
         "sensor_coupling": Q(1, 64),
-        "observation_error": Q(0),
     }
     assert declarations == [expected, expected]
     assert short.pulse_duration == long.pulse_duration == expected["horizon"]

@@ -12,11 +12,7 @@ from dataclasses import dataclass
 from fractions import Fraction as Q
 
 from .._exact_time import exact_or_represented_real, exp_unit_bounds
-from ._organized_c5_preparation import (
-    IDENTITY_RADIUS,
-    STORAGE_BARRIER,
-    prepared_c5_initial_energy_upper,
-)
+from ._organized_loaded_pulse import bound_loaded_c5_pulse
 
 
 @dataclass(frozen=True)
@@ -93,51 +89,25 @@ def bound_loaded_window_observation(
     components; other admitted reals denote their binary64 representations.
     Cached reports, fitted responses and evaluated evidence are not used.
     """
-    names = (
-        "response_lower",
-        "response_upper",
-        "amplitude",
-        "horizon",
-        "preparation_radius",
-        "sensor_preparation_radius",
-        "sensor_coupling",
-        "observation_error",
+    eta = exact_or_represented_real(observation_error, "observation_error")
+    if eta < 0:
+        raise ValueError("observation error must be nonnegative")
+    pulse = bound_loaded_c5_pulse(
+        response_lower=response_lower,
+        response_upper=response_upper,
+        amplitude=amplitude,
+        horizon=horizon,
+        preparation_radius=preparation_radius,
+        sensor_preparation_radius=sensor_preparation_radius,
+        sensor_coupling=sensor_coupling,
     )
-    rlo, rhi, a, duration, delta, sensor_delta, k, eta = (
-        exact_or_represented_real(value, name)
-        for value, name in zip(
-            (
-                response_lower,
-                response_upper,
-                amplitude,
-                horizon,
-                preparation_radius,
-                sensor_preparation_radius,
-                sensor_coupling,
-                observation_error,
-            ),
-            names,
-        )
-    )
-    if not 0 < rlo <= rhi:
-        raise ValueError("response interval requires 0 < lower <= upper")
-    if a <= 0:
-        raise ValueError("amplitude must be strictly positive")
-    if duration <= 0:
-        raise ValueError("horizon must be strictly positive")
-    if k <= 0:
-        raise ValueError("sensor coupling must be strictly positive")
-    if min(delta, sensor_delta, eta) < 0:
-        raise ValueError("preparation radii and observation error must be nonnegative")
+    rlo, rhi = pulse.response_lower, pulse.response_upper
+    a, duration = pulse.amplitude, pulse.horizon
+    delta, sensor_delta = pulse.preparation_radius, pulse.sensor_preparation_radius
+    k = pulse.sensor_coupling
     if (2 + 20 * k) * duration >= 1:
         raise ValueError("horizon and sensor coupling require (2 + 20*k)*T < 1")
 
-    rho, barrier = IDENTITY_RADIUS, STORAGE_BARRIER
-    initial_energy = (
-        prepared_c5_initial_energy_upper(response_upper=rhi, preparation_radius=delta)
-        + k * duration * sensor_delta**2 / 2
-    )
-    energy = initial_energy + 2 * a**2 * duration
     state_norm = (delta + 2 * a * duration + 2 * k * duration * sensor_delta) / (
         1 - (2 + 20 * k) * duration
     )
@@ -185,10 +155,10 @@ def bound_loaded_window_observation(
         sensor_preparation_radius=sensor_delta,
         sensor_coupling=k,
         observation_error=eta,
-        identity_radius=rho,
-        storage_barrier=barrier,
-        initial_energy_upper=initial_energy,
-        energy_upper=energy,
+        identity_radius=pulse.identity_radius,
+        storage_barrier=pulse.storage_barrier,
+        initial_energy_upper=pulse.initial_energy_upper,
+        energy_upper=pulse.energy_upper,
         state_norm_upper=state_norm,
         form_rate_remainder_upper=rate_remainder,
         response_remainder=remainder,
@@ -201,7 +171,7 @@ def bound_loaded_window_observation(
         pulse_absolute_work_upper=8 * a * duration * state_norm,
         pulse_loss_upper=4 * duration * state_norm**2,
         sensor_loss_upper=k * duration * (sensor_delta + 10 * state_norm) ** 2,
-        identity_certified=2 * delta < rho and energy < barrier,
+        identity_certified=pulse.identity_certified,
         response_separated=gap > 0,
         phase_blind_difference_upper=phase_blind_difference,
         phase_blind_records_overlap=phase_blind_difference <= 2 * eta,

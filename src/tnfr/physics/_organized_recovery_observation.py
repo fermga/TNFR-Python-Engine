@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from fractions import Fraction as Q
 
 from .._exact_time import exact_or_represented_real
-from ._organized_window_observation import bound_loaded_window_observation
+from ._organized_loaded_pulse import bound_loaded_c5_pulse
 
 
 @dataclass(frozen=True)
@@ -90,7 +90,7 @@ def bound_recovery_area_observation(
 
     # Rebuild the fixed pulse's own loaded storage bound from its primitive
     # declaration. The subsequent raw-area error is a different observation.
-    pulse = bound_loaded_window_observation(
+    pulse = bound_loaded_c5_pulse(
         response_lower=Q(1, 100),
         response_upper=Q(1, 10),
         amplitude=Q(1, 16),
@@ -98,7 +98,6 @@ def bound_recovery_area_observation(
         preparation_radius=Q(1, 2**26),
         sensor_preparation_radius=Q(1, 2**26),
         sensor_coupling=Q(1, 64),
-        observation_error=Q(0),
     )
     if not pulse.identity_certified or 320 * pulse.energy_upper >= Q(1, 2**7):
         raise ValueError("the fixed pulse does not meet the recovery proof premises")

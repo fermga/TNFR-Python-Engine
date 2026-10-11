@@ -14,12 +14,13 @@ from pathlib import Path
 
 import pytest
 
-from tests.sine_evidence_helpers import forbid_sine_regeneration
+from tests.sine_evidence_helpers import forbid_organized_response_evaluation
 from tnfr.mathematics._exact_linear_algebra import (
     exact_matrix_inverse,
     exact_square_matrix_power,
 )
 from tnfr.mathematics._rational_interval import I, cos, pi_interval, sqrt
+from tnfr.physics._organized_loaded_pulse import bound_loaded_c5_pulse
 from tnfr.physics._organized_window_observation import bound_loaded_window_observation
 from tnfr.utils.io import json_loads
 
@@ -42,7 +43,7 @@ def preserve_frozen_evidence_and_producers():
         )
     )
     before = tuple(hashlib.sha256(path.read_bytes()).digest() for path in paths)
-    with forbid_sine_regeneration():
+    with forbid_organized_response_evaluation():
         yield
     assert tuple(hashlib.sha256(path.read_bytes()).digest() for path in paths) == before
 
@@ -85,6 +86,135 @@ def _matrices(cycle, response):
 @pytest.fixture(scope="module")
 def window_bound():
     return bound_loaded_window_observation()
+
+
+@pytest.fixture
+def pulse_parameters():
+    return {
+        "response_lower": Q(1, 100),
+        "response_upper": Q(1, 10),
+        "amplitude": Q(1, 16),
+        "horizon": Q(1, 1024),
+        "preparation_radius": Q(1, 2**26),
+        "sensor_preparation_radius": Q(1, 2**26),
+        "sensor_coupling": Q(1, 64),
+    }
+
+
+def test_shared_pulse_retains_independent_sensor_energy_and_forcing_bound(
+    pulse_parameters, window_bound
+):
+    # At zero form/phase preparation, all initial storage is in the loaded
+    # sensor. This checks its factor and held time constant independently.
+    parameters = pulse_parameters | {"preparation_radius": Q(0)}
+    pulse = bound_loaded_c5_pulse(**parameters)
+    k, duration = parameters["sensor_coupling"], parameters["horizon"]
+    z0, amplitude = parameters["sensor_preparation_radius"], parameters["amplitude"]
+    sensor_energy = k * duration * z0**2 / 2
+    assert pulse.initial_energy_upper == sensor_energy > 0
+    forcing = tuple(amplitude * v for v in _PORT)
+    maximum_growth_rate = _dot(forcing, forcing)
+    for gradient in (
+        tuple(2 * f for f in forcing),
+        tuple(Q(value, 17) for value in (3, -2, 1, -5, 3)),
+    ):
+        work_minus_form_loss = _dot(gradient, forcing) - _dot(gradient, gradient) / 4
+        residual = tuple(q - 2 * f for q, f in zip(gradient, forcing))
+        assert (
+            work_minus_form_loss == maximum_growth_rate - _dot(residual, residual) / 4
+        )
+        assert work_minus_form_loss <= maximum_growth_rate
+    assert pulse.energy_upper == sensor_energy + duration * maximum_growth_rate
+    assert pulse.identity_certified
+    # Both consumers must retain the common law's energy and identity fields.
+    pulse = bound_loaded_c5_pulse(**pulse_parameters)
+    for name in ("initial_energy_upper", "energy_upper", "identity_certified"):
+        assert getattr(pulse, name) == getattr(window_bound, name)
+
+
+def test_shared_pulse_admits_long_energy_windows_without_observation_denominator(
+    pulse_parameters,
+):
+    parameters = pulse_parameters | {
+        "horizon": Q(16),
+        "amplitude": Q(1, 1024),
+        "preparation_radius": Q(0),
+        "sensor_preparation_radius": Q(0),
+    }
+    pulse = bound_loaded_c5_pulse(**parameters)
+    assert pulse.initial_energy_upper == 0
+    assert pulse.energy_upper == Q(1, 32768) < pulse.storage_barrier
+    assert pulse.identity_certified
+    with pytest.raises(ValueError, match="horizon and sensor coupling"):
+        bound_loaded_window_observation(**parameters)
+    energetic = bound_loaded_c5_pulse(**(parameters | {"amplitude": Q(1)}))
+    assert energetic.energy_upper == 32 and not energetic.identity_certified
+
+
+@pytest.mark.parametrize(
+    "parameter",
+    (
+        "response_lower",
+        "response_upper",
+        "amplitude",
+        "horizon",
+        "preparation_radius",
+        "sensor_preparation_radius",
+        "sensor_coupling",
+    ),
+)
+def test_shared_pulse_requires_and_readmits_every_primitive(
+    parameter, pulse_parameters
+):
+    missing = pulse_parameters.copy()
+    del missing[parameter]
+    with pytest.raises(TypeError, match=parameter):
+        bound_loaded_c5_pulse(**missing)
+    for invalid in (True, float("nan"), float("inf"), "1"):
+        with pytest.raises((TypeError, ValueError)):
+            bound_loaded_c5_pulse(**(pulse_parameters | {parameter: invalid}))
+
+
+@pytest.mark.parametrize(
+    "overrides",
+    (
+        {"response_lower": 0},
+        {"response_lower": Q(1, 5)},
+        {"response_upper": -1},
+        {"amplitude": 0},
+        {"horizon": 0},
+        {"preparation_radius": -1},
+        {"sensor_preparation_radius": -1},
+        {"sensor_coupling": 0},
+        {"sensor_coupling": -1},
+    ),
+)
+def test_shared_pulse_rejects_invalid_energy_domains(overrides, pulse_parameters):
+    with pytest.raises(ValueError):
+        bound_loaded_c5_pulse(**(pulse_parameters | overrides))
+
+
+def test_shared_pulse_normalizes_large_fraction_payloads_before_energy_arithmetic(
+    pulse_parameters,
+):
+    np = pytest.importorskip("numpy")
+    parameters = pulse_parameters | {
+        "amplitude": Q(np.int64(2**32), np.int64(3)),
+        "preparation_radius": Q(0),
+        "sensor_preparation_radius": Q(0),
+    }
+    result = bound_loaded_c5_pulse(**parameters)
+    assert result.initial_energy_upper == 0
+    assert result.energy_upper == Q(2**55, 9)
+    assert not result.identity_certified
+    for field in fields(result):
+        value = getattr(result, field.name)
+        if isinstance(value, Q):
+            assert type(value.numerator) is type(value.denominator) is int
+    with pytest.raises((TypeError, ValueError)):
+        bound_loaded_c5_pulse(
+            **(pulse_parameters | {"sensor_coupling": np.bool_(True)})
+        )
 
 
 @pytest.mark.parametrize("response", (Q(1, 100), Q(1, 50), Q(1, 10), Q(2)))

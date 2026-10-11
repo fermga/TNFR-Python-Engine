@@ -88,10 +88,14 @@ The common preparation calculation
 `(4+32*r_max)*delta^2`, collar radius and barrier now have one
 [shared owner](../../src/tnfr/physics/_organized_c5_preparation.py).
 The unloaded and loaded consumers retain distinct observations, gains,
-sensor terms and balances. The recovery calculation rebuilds the loaded
-pulse from its primitive declaration. It does not pass H as the short-pulse
-horizon: that would change the sensor time constant and exceed that bound's
-domain. Sensor time remains `tau_s=T=2^-10` throughout recovery.
+sensor terms and balances. A separate
+[loaded-pulse owner](../../src/tnfr/physics/_organized_loaded_pulse.py)
+re-admits the seven pulse primitives and rebuilds sensor energy, forced
+growth and identity. Both observation consumers use this energy calculation;
+recovery requires no short-window gain or mean-response interval. The energy
+bound itself does not require the short-window norm denominator to be positive.
+Passing H as the pulse horizon would change the supplied pulse and sensor law:
+sensor time remains `tau_s=T=2^-10` throughout recovery.
 
 ### A decay estimate that retains the sensor
 
@@ -316,8 +320,8 @@ mechanism test and a reusable loaded recovery bound, not an empirical result.
 ### Implementation and verification boundary
 
 The [detached recovery consumer](../../src/tnfr/physics/_organized_recovery_observation.py)
-rebuilds the pulse bounds, admits recovery duration and integral error, and
-calculates (8)-(14) with normalized exact arithmetic. Its fixed law and pulse
+rebuilds the shared pulse energy bounds, admits recovery duration and integral
+error, and calculates (8)-(14) with normalized exact arithmetic. Its fixed law and pulse
 are explicit; changing them requires a new proof. A shorter duration or larger
 error can leave separation unavailable without proving a physical collision.
 The [independent controls](../../tests/physics/test_organized_recovery_observation.py)

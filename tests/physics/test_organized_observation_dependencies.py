@@ -100,6 +100,91 @@ def test_registered_vector_retains_exact_and_represented_values():
 
 
 @pytest.mark.parametrize(
+    "path", ("preparation", "prepared", "pulse", "window", "recovery")
+)
+def test_cold_collective_proofs_keep_acquisition_and_observation_boundaries(
+    path, source_tree_environment
+):
+    # Run outside any evidence fixture: preloaded research modules would hide
+    # accidental dependencies, and a generic guard deliberately imports them.
+    script = """
+import importlib.abc
+import sys
+from fractions import Fraction as Q
+
+mode = sys.argv[1]
+attempted = []
+forbidden = (
+    'tnfr.research',
+    'tnfr.mathematics._validated',
+    'tnfr.physics._sine_flow',
+    'tnfr.physics._organized_finite_observation_source',
+    'tnfr.physics._organized_robust_current',
+    'tnfr.physics._organized_outer_winding',
+)
+detached_owners = {
+    'prepared': 'tnfr.physics._organized_effective_law',
+    'pulse': 'tnfr.physics._organized_loaded_pulse',
+    'window': 'tnfr.physics._organized_window_observation',
+    'recovery': 'tnfr.physics._organized_recovery_observation',
+}
+allowed = {'preparation': (), 'prepared': ('prepared',), 'pulse': ('pulse',),
+           'window': ('pulse', 'window'), 'recovery': ('pulse', 'recovery')}[mode]
+forbidden += tuple(module for name, module in detached_owners.items() if name not in allowed)
+
+class WithoutScientificDependencies(importlib.abc.MetaPathFinder):
+    def find_spec(self, fullname, path=None, target=None):
+        if fullname.startswith(forbidden):
+            attempted.append(fullname)
+            raise AssertionError('detached proof imported an unrelated owner: ' + fullname)
+
+sys.meta_path.insert(0, WithoutScientificDependencies())
+assert not any(name.startswith(forbidden) for name in sys.modules)
+from tnfr import _exact_time
+if mode != 'window':
+    def no_exponential(*args, **kwargs):
+        raise AssertionError('energy or raw-area proof evaluated an exponential bound')
+    _exact_time.exp_unit_bounds = no_exponential
+
+if mode == 'preparation':
+    from tnfr.physics._organized_c5_preparation import prepared_c5_initial_energy_upper
+    assert prepared_c5_initial_energy_upper(response_upper=Q(1, 8), preparation_radius=Q(1, 4)) == Q(1, 2)
+elif mode == 'prepared':
+    from tnfr.physics._organized_effective_law import bound_prepared_matrix_response
+    result = bound_prepared_matrix_response()
+    assert result.identity_certified and result.response_separated
+elif mode == 'pulse':
+    from tnfr.physics._organized_loaded_pulse import bound_loaded_c5_pulse
+    result = bound_loaded_c5_pulse(
+        response_lower=Q(1, 100), response_upper=Q(1, 10),
+        amplitude=Q(1, 1024), horizon=Q(16), preparation_radius=0,
+        sensor_preparation_radius=0, sensor_coupling=Q(1, 64),
+    )
+    assert result.identity_certified and result.energy_upper == Q(1, 32768)
+elif mode == 'window':
+    from tnfr.physics._organized_window_observation import bound_loaded_window_observation
+    result = bound_loaded_window_observation()
+    assert result.identity_certified and result.response_separated
+    assert result.phase_blind_records_overlap
+else:
+    from tnfr.physics._organized_recovery_observation import bound_recovery_area_observation
+    result = bound_recovery_area_observation()
+    assert result.identity_certified and result.response_gap > Q(1, 2**14)
+assert not attempted
+assert not any(name.startswith(forbidden) for name in sys.modules)
+"""
+    completed = subprocess.run(
+        [sys.executable, "-c", script, path],
+        cwd=Path(__file__).resolve().parents[2],
+        env=source_tree_environment,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+
+
+@pytest.mark.parametrize(
     "bad", (True, "0", None, float("nan"), float("inf"), complex(0), Decimal("0.125"))
 )
 def test_registered_vector_rejects_invalid_primitive(bad):

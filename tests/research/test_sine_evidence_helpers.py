@@ -31,6 +31,65 @@ def test_importing_helper_does_not_import_research_owners(monkeypatch):
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     assert callable(module.forbid_sine_regeneration)
+    assert callable(module.forbid_organized_response_evaluation)
+
+
+def test_organized_guard_blocks_assessors_and_restores_without_evaluation(monkeypatch):
+    targets = [
+        (importlib.import_module(name), attribute)
+        for name, attributes in guard._ORGANIZED_RESPONSE_TARGETS
+        for attribute in attributes
+    ]
+    calls = []
+
+    def sentinel(*args, **kwargs):
+        calls.append((args, kwargs))
+        pytest.fail("frozen response assessor was executed")
+
+    for module, name in targets:
+        monkeypatch.setattr(module, name, sentinel)
+    # The opt-in extension must not change synthetic tests' generic contract.
+    with guard.forbid_sine_regeneration():
+        assert all(getattr(module, name) is sentinel for module, name in targets)
+    with pytest.raises(RuntimeError, match="synthetic"):
+        with guard.forbid_organized_response_evaluation():
+            for module, name in targets:
+                with pytest.raises(pytest.fail.Exception, match="frozen organized"):
+                    getattr(module, name)()
+            raise RuntimeError("synthetic proof failure")
+    assert not calls
+    assert all(getattr(module, name) is sentinel for module, name in targets)
+
+
+def test_organized_consumers_resolve_before_generic_patches(monkeypatch):
+    original = object()
+    kernel = SimpleNamespace(field=original)
+    producer = object()
+    consumers = {}
+
+    def lazy_import(name):
+        if name == "synthetic.kernel":
+            return kernel
+        assert name == "synthetic.organized"
+        assert name not in consumers
+        consumer = SimpleNamespace(imported_field=kernel.field, assess=producer)
+        consumers[name] = consumer
+        return consumer
+
+    monkeypatch.setattr(guard, "_TARGETS", (("synthetic.kernel", ("field",)),))
+    monkeypatch.setattr(
+        guard, "_ORGANIZED_RESPONSE_TARGETS", (("synthetic.organized", ("assess",)),)
+    )
+    monkeypatch.setattr(guard.importlib, "import_module", lazy_import)
+    with guard.forbid_organized_response_evaluation():
+        consumer = consumers["synthetic.organized"]
+        assert consumer.imported_field is original
+        with pytest.raises(pytest.fail.Exception, match="frozen organized"):
+            consumer.assess()
+        with pytest.raises(pytest.fail.Exception, match="regeneration"):
+            kernel.field()
+    assert consumer.imported_field is kernel.field is original
+    assert consumer.assess is producer
 
 
 def test_all_declared_generators_aliases_and_restoration_are_guarded_and_restored():

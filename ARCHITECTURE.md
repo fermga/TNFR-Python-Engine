@@ -313,6 +313,16 @@ admitted endpoint enclosure, the complete joined law and its contact work.
 The [regional instrument guide](docs/guides/REGIONAL_AND_RELATIONAL.md#detached-collective-organization-instruments)
 routes these conditional interfaces without presenting them as SDK methods.
 
+The separate [prepared C5 matrix law](theory/nodal/ORGANIZED_EFFECTIVE_LAW.md)
+supplies collective state directly; it inherits no acquired fine-source
+certificate. `_organized_c5_preparation.py` shares its initial energy bound,
+while `_organized_loaded_pulse.py` admits the loaded pulse and bounds its
+energy and identity. The window and recovery observation consumers share
+that owner without depending on one another's response calculation. Their
+mean and signed-area errors have different units, and extending recovery
+does not change the pulse or sensor time constant. These private proofs
+install no runtime law or SDK execution path.
+
 `relational_sine_pair.py` owns exact global pair state, cancellation
 observations and finite exchange/receiver certificates. It depends directly on
 shared scalar, phasor and rational-interval admission. The larger

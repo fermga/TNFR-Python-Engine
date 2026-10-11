@@ -77,6 +77,40 @@ _TARGETS = (
     ("tnfr.research.frozen_source", ("restore_frozen_source",)),
 )
 
+_ORGANIZED_RESPONSE_TARGETS = (
+    (
+        "tnfr.physics._organized_finite_observation_source",
+        ("_assess_organized_finite_observation",),
+    ),
+    (
+        "tnfr.physics._organized_robust_current",
+        ("_bound_organized_robust_current",),
+    ),
+)
+
+
+@contextmanager
+def forbid_organized_response_evaluation():
+    """Exclude earlier frozen organized-response assessors in detached proof audits.
+
+    The generic guard remains usable by synthetic response-owner tests. Resolve
+    these additional consumers before entering it: imports may bind aliases of
+    functions that the generic guard subsequently replaces.
+    """
+    targets = tuple(
+        (importlib.import_module(name), attributes)
+        for name, attributes in _ORGANIZED_RESPONSE_TARGETS
+    )
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("detached proof attempted frozen organized response evaluation")
+
+    with forbid_sine_regeneration(), pytest.MonkeyPatch.context() as patch:
+        for module, attributes in targets:
+            for attribute in attributes:
+                patch.setattr(module, attribute, forbidden)
+        yield
+
 
 @contextmanager
 def forbid_sine_regeneration(*, git_root=None, git_base=None):

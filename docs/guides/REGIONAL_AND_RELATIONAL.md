@@ -22,8 +22,8 @@ Existing section links remain available through this index. The [execution plan]
 
 The [collective NFR ontology](../../theory/EMERGENT_ONTOLOGY.md#generative-bound-organization)
 and [theory-to-execution map](../../theory/README.md#theory-to-execution) route
-acquired composite identities to their private analytical assessors and tests.
-These fixed-protocol instruments assess the stated complete smooth-sine law;
+acquired composite identities and prepared references to their private
+analytical assessors and tests. Each consumes its own complete-law contract;
 they are separate from public SDK report dispatch and native relational
 execution. Constituent state, boundary relations and original source errors
 remain part of the model after an identity has been acquired or observed.
@@ -49,6 +49,16 @@ for stationary geometry and the separately declared zero-origin outer-zero
 control. A finite envelope or a stationary target does not supply actual
 source capture; other origins and outer-one maintenance remain unavailable.
 These readers accept no incoming report as a substitute for primitive premises.
+
+The [prepared C5 matrix comparison](../../theory/nodal/ORGANIZED_EFFECTIVE_LAW.md)
+has its own supplied collective form/phase preparation and retains no acquired
+fine-source certificate by default. Its loaded observations also require
+sensor initialization: use the [finite-window owner](../../theory/research/ORGANIZED_FINITE_WINDOW_DESIGN.md)
+for a mean over the pulse, or the [recovery owner](../../theory/research/ORGANIZED_RECOVERY_OBSERVATION.md)
+for raw signed area through later unforced evolution. An area-error allowance
+cannot replace a mean-error allowance. The recovery window extends the
+observation while keeping the pulse and sensor time constant fixed. These
+conditional proofs supply neither physical preparation nor a public SDK method.
 
 ## Section link directory
 

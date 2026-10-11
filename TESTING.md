@@ -624,9 +624,9 @@ For the [collective matrix-response comparison](theory/nodal/ORGANIZED_EFFECTIVE
 select `tests/physics/test_organized_effective_law.py` with
 `tests/physics/test_exact_linear_algebra.py` and the electrical-feasibility
 controls. Rebuild the C5 Laplacian from edges and check the complete driven
-rows, zero-loading limit, common modes, own storage and work, and both rows
-under the charge-like chart. Positive definiteness does not imply entrywise
-nonnegative response. Wrong-input and wrong-chart controls must fail the
+rows, the `r=0` response-matrix limit, common modes, own storage and work, and
+both rows under the charge-like chart. Positive definiteness does not imply
+entrywise nonnegative response. Wrong-input and wrong-chart controls must fail the
 claimed balance; the old storage can increase while the new storage decreases.
 These are detached exact algebra controls, using rational gamma probes for
 identities independent of its fixed model value. They install no runtime law,
@@ -640,6 +640,22 @@ energy bound against independently reconstructed nonzero form and phase
 storage, including zero-response/zero-radius boundaries, rejected primitives
 and normalized fixed-width Fraction components. Sharing that preparation
 bound does not merge the consumers' different gains, sensors or observations.
+
+Changes to `_organized_loaded_pulse.py` require both observation consumers
+with its shared pulse controls in `tests/physics/test_organized_window_observation.py`.
+Check primitive normalization, initial sensor energy, forced growth and
+identity separately from observation-specific admission. The energy bound
+remains available beyond the short-window response denominator's domain;
+it supplies no finite-response certificate.
+
+For changed dependency or no-evaluation boundaries, also select
+`tests/physics/test_organized_observation_dependencies.py` and
+`tests/research/test_sine_evidence_helpers.py`. Cold-process controls must
+retain the private C5 consumers' independence from acquired-source machinery;
+recovery uses shared pulse admission without evaluating the short-window
+response. The opt-in organized-response guard additionally blocks frozen
+finite-observation and robust-current analytical assessments, not just
+trajectory producers. Its patches must remain scoped and reversible.
 
 For the [loaded finite-window observation](theory/research/ORGANIZED_FINITE_WINDOW_DESIGN.md),
 select `tests/physics/test_organized_window_observation.py` with the

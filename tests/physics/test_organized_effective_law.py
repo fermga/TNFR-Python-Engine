@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from tests.sine_evidence_helpers import forbid_sine_regeneration
+from tests.sine_evidence_helpers import forbid_organized_response_evaluation
 from tnfr.mathematics._exact_linear_algebra import (
     exact_matrix_inverse,
     exact_square_matrix_power,
@@ -41,7 +41,7 @@ def preserve_frozen_evidence_and_producers():
         )
     )
     before = tuple(hashlib.sha256(path.read_bytes()).digest() for path in paths)
-    with forbid_sine_regeneration():
+    with forbid_organized_response_evaluation():
         yield
     assert tuple(hashlib.sha256(path.read_bytes()).digest() for path in paths) == before
 
