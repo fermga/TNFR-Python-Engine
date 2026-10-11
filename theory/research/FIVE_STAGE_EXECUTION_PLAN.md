@@ -430,6 +430,9 @@ supplied, not selected by the nodal row or inherited from the 45-node source.
    clock, input, horizon and observation. Begin with the prepared collective
    reference; a fine-node extension or a laboratory sensor would add premises
    and is not silently part of this gate.
+   The [fixed analytical declaration](../nodal/ORGANIZED_EFFECTIVE_LAW.md#prepared-matrix-response-declaration)
+   now specifies the positive-r interval, full preparation, pulse, observation
+   error and identity/separation criteria. No response has been evaluated.
 2. **Use the complete law and its own storage.** Check the proposed domain,
    joint symmetries, input work, boundary and retained coordinates against the
    owner. Primitive scalar capacity, a collective response matrix and a

@@ -195,3 +195,31 @@ nonlinear residuals, hidden initialization and forcing where consumed;
 rationalizing gamma would specify a different coefficient, not certify
 the exact comparison above. A nonlinear reduction needs its own proof.
 Generic runtime integration is justified only by a proved consumer contract.
+
+<a id="prepared-matrix-response-declaration"></a>
+## 5. Declared finite prepared-reference question
+
+The analytical comparison fixes the following domain before evaluating any
+response. It concerns (2) alone, without a fine-node extension, source replay,
+physical sensor or numerical trajectory. The two models match their complete
+initial coordinates and prescribed input; their initial storages need not match.
+
+| Primitive | Declaration |
+| --- | --- |
+| Response | Fixed `r in [1/100,1/10]`; separate reference `r=0` |
+| Prepared identity | Either C5 winding `w=+1` or `w=-1` |
+| Phase chart | `Phi_i=2*pi*w*i/5+theta_i`, with a continuous perturbation lift and `sum(theta)=0`; the closing oriented edge retains its `2*pi*w` offset |
+| Full preparation | `sum(U)=0`, `||U(0)||_2+||theta(0)||_2 <= delta=2^-26` |
+| Input | `f=a*v` for `0<=tau<=T`, zero afterwards; `a=1/16`, `v=(1,-1,0,0,0)` |
+| Clock and horizon | The existing structural tau; `T=1/1024` |
+| Observation | `y=v^T*U(T)` with separate additive error bounded by `eta=2^-26` |
+| Identity criterion | Every oriented phase gap stays within `rho=1/10` of `2*pi*w/5` during the pulse and its unforced continuation |
+| Finite prediction criterion | Whole-preparation observed record intervals for the positive-r family and r=0 are disjoint, with separation strictly greater than `2^-21` |
+| Calculation | Exact rational inequalities and certified transcendental bounds; no integration, parameter scan, precision search or response fitting |
+
+The prediction must retain both evolution rows, the full preparation bound,
+the input channel `M_r*f`, and the law's own storage and supplied work. A
+separate state-sufficiency control tests whether identical forms, winding,
+conserved means and storage can still conceal different form derivatives.
+Neither success condition would derive acquisition of this preparation,
+constitutive selection, a laboratory clock or a physical measurement map.
