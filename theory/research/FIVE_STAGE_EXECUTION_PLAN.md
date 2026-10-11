@@ -608,6 +608,11 @@ remain. Frozen evidence is inspected without rerunning the producer.
 <a id="organized-observed-prediction-admission"></a>
 ### Immediate question: predictive sufficiency of finite observations
 
+The [prospective proof and fixed static certificate](../nodal/ORGANIZED_OBSERVED_PREDICTION.md)
+use all readings, formal circular edge phasors and a uniform nonlinear
+remainder. The declared calculation evaluates design coefficients only;
+it supplies no new nonlinear response or source initialization.
+
 **Can the existing form records support a useful future prediction without
 known collective initialization?** Keeping the exact attachment means would
 make this redundant: the previous forecast already covers the prepared family

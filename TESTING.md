@@ -657,6 +657,18 @@ recurrences, and the final separated reading boxes. This is a read-only
 arithmetic audit; it neither regenerates Taylor coefficients nor integrates
 the target again. Keep the archived report bytes and declaration prefix fixed.
 
+For [joint observation predictive sufficiency](theory/nodal/ORGANIZED_OBSERVED_PREDICTION.md),
+select `tests/physics/test_organized_observed_prediction.py` and
+`tests/mathematics/test_validated_linear_forcing.py` with the interval/jet,
+comparison-flow and existing waveform controls. Verify source transport,
+the entire reading schedule, edge orientation, zero-sum forcing and both
+dual residual blocks using independent synthetic matrices. Exercise the
+linear forcing kernel against exact polynomial and coupled solutions;
+reject unsupported generators, dimensions and derivative evidence.
+Routine tests must not compute the declared static design or invoke its
+assessor. Numerical proposals have no proof status until interval residuals
+and the nonlinear bootstrap have been checked.
+
 For [current discrimination under uncertainty](theory/nodal/ORGANIZED_ROBUST_CURRENT.md),
 select `tests/physics/test_organized_robust_current.py` and
 `tests/physics/test_organized_robust_current_theory.py` with finite observation
