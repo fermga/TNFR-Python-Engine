@@ -709,6 +709,19 @@ residual/error decision. The retained Taylor-derivative premises remain
 explicit; do not replay the fit or treat synthetic evidence as independent
 physical validation. Preserve the declaration prefix and all archive bytes.
 
+For [law versus unknown initialization](theory/nodal/ORGANIZED_LAW_OBSERVATION.md),
+select `tests/physics/test_organized_law_observation.py` and
+`tests/physics/test_organized_law_observation_information.py` with the shared
+constitutive-current, hidden-transport, interval/jet and waveform controls.
+Use independent 45-node sums to check the actual carrier and both clock rows;
+retain the counterexample to outer-tangent transfer. Check law and command
+admission, own-law source denominators, identity and growth bounds. Ideal
+quadratures must match the actual receiver orientation and independently
+expanded harmonics. Endpoint signs and uniform bounds support the analytical
+local collision without locating a root or simulating a response. Do not
+promote that local witness or continuous formal injectivity to finite joint
+record compatibility; no fit or sampled 35-column evaluation belongs here.
+
 For [current discrimination under uncertainty](theory/nodal/ORGANIZED_ROBUST_CURRENT.md),
 select `tests/physics/test_organized_robust_current.py` and
 `tests/physics/test_organized_robust_current_theory.py` with finite observation

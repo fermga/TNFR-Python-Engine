@@ -88,7 +88,9 @@ and [operational forecast](#organized-observed-forecast-construction) now admit
 a computable conditional future without generating-state input. The
 **single active gate** is [law versus initial-state identifiability](#organized-law-state-identifiability):
 determine whether the fixed joint observations distinguish two retained
-constitutive laws when each has its own unknown initialization.
+constitutive laws when each has its own unknown initialization. Own-law
+admission is established; the exact local-current collision requires using
+the complete record rather than a single receiver's compressed statistic.
 
 No 45-node acquisition, physical readout or source certificate transfers to
 the supplied positive-r matrix law by default. Earlier frozen protocols,
@@ -105,7 +107,7 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Active law versus initial-state identifiability | [Two-law record admission](#organized-law-state-identifiability): re-admit the complete alternative and determine whether unknown initialization can mask its constitutive difference under the fixed observations |
+| Active law versus initial-state identifiability | [Two-law record admission](#organized-law-state-identifiability): own-law carrier/error/identity admission and a local-current ambiguity are established; complete finite-record separation or overlap remains unresolved |
 | Closed operational observation-based forecast | [Certified forecast from a joint record](#organized-observed-forecast-construction): one archived synthetic record yields a carried conditional endpoint within the fixed policy, without generating-state input |
 | Closed observation-to-prediction sufficiency | [Unknown collective initialization](#organized-observed-prediction-admission): a uniform complete-history future diameter below the fixed target retains joint noisy records and source uncertainty |
 | Closed computable prospective-prediction admission | [Carried reduced reference](#organized-computable-prediction-admission): a fixed-budget validated forecast separates the post-observation endpoint from the omitted-input control with numerical, source and reading errors retained |
@@ -662,19 +664,27 @@ single-law forecast does not decide this. Use only the endpoint currents
 Their old organized-target and finite-response results retain their own
 supports, preparations and budgets.
 
-1. Re-admit each complete fine law on the present `C9 x C5` support, with the
-   same held capacities, prescribed input, structural clock and observation
-   map. Keep the original unknown-initialization domain explicit. Derive the
-   alternative's carrier, source/hidden-state transport, identity and derivative
-   bounds; no sine gain, Taylor remainder or acquisition certificate transfers
-   merely because target or tangent dynamics agree.
-2. Retain all thirty times, 150 readings, `eta=1e-14` and the existing horizon.
+1. **Closed analytical prerequisite:** the
+   [own-law admission and information owner](../nodal/ORGANIZED_LAW_OBSERVATION.md)
+   establishes each carrier, hidden/source bounds, finite identity and
+   numerical growth on the present `C9 x C5` support. Its local collision
+   proves that distinct laws and distinct admitted gaps can share the two
+   ideal quadratures, and an admitted adjacent gap can also match the three
+   frozen receiver currents. This does not supply a common continuing record.
+   Internal C9 target matching does not match the C5 outer tangent.
+2. **Active joint information question:** retain all thirty times, 150
+   readings, `eta=1e-14` and the existing horizon.
    Allow each law its own admitted initial form and circular phase state.
    Seek either a separation of their complete admitted record sets or an
    explicit jointly compatible cross-law witness. Match all samples from
    one continuous history per law, retaining correlations and source errors.
    A failed sufficient bound is unavailable evidence, not record overlap.
-3. Begin with analytical admission. Any later numerical discriminator must
+   The formal harmonic comparison has 35 coefficients and an own-law drift
+   remainder. Continuous formal injectivity does not establish rank or
+   conditioning at the actual sample times. Retain harmonic circle/cycle
+   constraints instead of treating free formal coefficients as feasible states.
+3. A finite sampled certificate or compatible-history construction must
+   discharge those joint obligations. Any numerical discriminator must
    declare its record/source choice, alternatives, budgets and prospective
    criterion before evaluation. No additional fit, parameter scan, waveform
    tuning, longer horizon or precision increase is activated here. Do not
