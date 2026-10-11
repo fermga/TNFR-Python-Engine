@@ -701,6 +701,14 @@ synthetic compact witnesses and reject invalid archive associations; they
 must not run the actual declared fit or old response producers. The fixed
 benchmark is a single research evaluation, not a routine test command.
 
+Use `tests/physics/test_organized_observed_forecast_evidence.py` for the
+archived software result. With proposal, validation and original producers
+blocked, rebuild the source/gain inputs, exact candidate/record association,
+all 143 compact steps, independent Picard inclusion, sample bounds and final
+residual/error decision. The retained Taylor-derivative premises remain
+explicit; do not replay the fit or treat synthetic evidence as independent
+physical validation. Preserve the declaration prefix and all archive bytes.
+
 For [current discrimination under uncertainty](theory/nodal/ORGANIZED_ROBUST_CURRENT.md),
 select `tests/physics/test_organized_robust_current.py` and
 `tests/physics/test_organized_robust_current_theory.py` with finite observation

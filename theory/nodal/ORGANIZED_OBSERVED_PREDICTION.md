@@ -390,10 +390,11 @@ hidden coordinates nor selects one constitutive law.
 The certified diameter is also below `1e-13`. Consequently any *certified
 member* of the true feasible-future set would itself be accurate within
 that policy radius; finding its exact coordinate midrange is unnecessary.
-Computing and certifying such a member from a raw record is still separate
-work. A fitted phase vector or the dual expression `W*y` does not discharge
-that obligation. A carrier-only candidate additionally needs explicit
-source/model error and record-feasibility accounting.
+Computing and certifying such a member from a raw record is a separate
+obligation. A fitted phase vector or the dual expression `W*y` does not
+discharge it. The [operational record-only result](ORGANIZED_OBSERVED_FORECAST.md#organized-observed-forecast-result)
+instead validates one source-tolerant carrier forecast with explicit model
+and numerical error; it does not claim exact fine-feasible membership.
 
 Read-only evidence tests verify the source associations, fixed grid,
 sample/endpoint reconstruction from compact witnesses, error recurrences

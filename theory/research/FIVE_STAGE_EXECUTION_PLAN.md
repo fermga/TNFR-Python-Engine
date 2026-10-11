@@ -84,19 +84,18 @@ The [computable forecast](#organized-computable-prediction-admission)
 now separates the post-observation endpoint from the omitted-input control,
 with certified numerical and source error below the reading allowance.
 The [whole-record information bound](#organized-observed-prediction-admission)
-now certifies future ambiguity below the fixed target without known collective
-initialization. The **single active gate** is
-[constructive observation-based prediction](#organized-observed-forecast-construction):
-admit a computable candidate and forecast from a joint record, retaining all
-source and numerical allowances without replaying frozen producers.
+and [operational forecast](#organized-observed-forecast-construction) now admit
+a computable conditional future without generating-state input. The
+**single active gate** is [law versus initial-state identifiability](#organized-law-state-identifiability):
+determine whether the fixed joint observations distinguish two retained
+constitutive laws when each has its own unknown initialization.
 
 No 45-node acquisition, physical readout or source certificate transfers to
 the supplied positive-r matrix law by default. Earlier frozen protocols,
 negative results and responses retain their original premises. The unresolved
 stationary maintenance route has no active search; the prepared storage observer
 remains an instrument without a frozen response campaign. No new source
-replay, numerical scan or physical-data evaluation is active. The single
-record-only software fit below is the only declared numerical proposal.
+replay, numerical scan, physical-data evaluation or further fitting is active.
 Physical constituent emergence, autonomous preparation and unique law
 selection remain open. No empirical response has passed complete physical
 admission.
@@ -106,7 +105,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Active constructive observation-based prediction | [Certified forecast from a joint record](#organized-observed-forecast-construction): turn information sufficiency into candidate admission and a computable endpoint without generating-state access |
+| Active law versus initial-state identifiability | [Two-law record admission](#organized-law-state-identifiability): re-admit the complete alternative and determine whether unknown initialization can mask its constitutive difference under the fixed observations |
+| Closed operational observation-based forecast | [Certified forecast from a joint record](#organized-observed-forecast-construction): one archived synthetic record yields a carried conditional endpoint within the fixed policy, without generating-state input |
 | Closed observation-to-prediction sufficiency | [Unknown collective initialization](#organized-observed-prediction-admission): a uniform complete-history future diameter below the fixed target retains joint noisy records and source uncertainty |
 | Closed computable prospective-prediction admission | [Carried reduced reference](#organized-computable-prediction-admission): a fixed-budget validated forecast separates the post-observation endpoint from the omitted-input control with numerical, source and reading errors retained |
 | Closed conditional initialization admission | [Preparation versus observation](#organized-compressed-initialization-admission): retained recovery bounds admit zero variance estimates and a carried reference from exact attachment means; the old noisy records do not uniformly recover the variances on the larger containing class |
@@ -283,9 +283,9 @@ response has not been derived from the earlier acquired constituents.
 | Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Unresolved stable-stationary maintenance route; no active search.** The finite search is closed without a certificate; other classes do not repair uninterrupted maintenance. Reopen with a constructive target or an analytical certificate mechanism, not more starts |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
-| Sufficient collective state and inherited response | Construct and certify a forecast from a joint finite noisy record without known collective initialization | **Sole active gate** below. The whole-record diameter is certified; candidate admission and endpoint computation must retain the same uncertainty without reconstructing every hidden coordinate |
+| Sufficient collective state and inherited response | Construct and certify a forecast from a joint finite noisy record without known collective initialization | **Closed operational software case.** The whole-record bound and one candidate forecast are certified; arbitrary-record convergence and physical measurement remain unproved |
 | Fundamental physical properties and independent observation | Independently admit full preparation and joint physical measurement coverage before evaluating a response | **Closed scoped recovery-area review, unresolved physical dependency.** The reviewed direct-area route is not admitted; neither improved voltage precision nor clock rescaling alone repairs the missing premises. No further apparatus search is active |
-| Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Conceptually critical**, with no new compatibility scan active. If a countermodel shares all proposed premises, the uniqueness claim fails in that scope |
+| Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Sole active analytical gate:** joint law/initial-state identifiability below. A two-law distinction would not establish uniqueness among all admissible laws |
 | Autonomous preparation, support, capacity and events | Supply actual occurrence and state-evolution laws when claiming autonomous assembly. [Event work](../nodal/RELATIONAL_SUPPORT_EVENTS.md), passivity and [operator descent](../STRUCTURAL_OPERATORS.md) do not select occurrence | **Claim-dependent**. Current contacts and preparation remain supplied. Do not postpone investigation of the existing conditional composite until every origin question is solved |
 | Internal activity and recurrence | Separate preservation of identity from permanent motion; the [positive-loss boundary](../nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission) and alternative-mobility results retain different premises | **Prepared alternative** for a named claim requiring sustained activity. Neither a stationary identity nor finite response establishes recurrence or transfers an invariant measure |
 
@@ -297,22 +297,27 @@ An added observable earns inclusion by deciding the selected prediction or a
 meaningful minimality obstruction. Existing failed physical-source admissions
 remain failed; more samples cannot repair their complete-law mismatches.
 
-Only [constructive observation-based prediction](#organized-observed-forecast-construction) is active.
+Only [law versus initial-state identifiability](#organized-law-state-identifiability) is active.
 The table assesses dependencies, not a fixed sequence or parallel campaigns. It preserves
 the objective of generated, physically testable organization without identifying
 winding, phase cancellation or storage with material constituents.
 
-The present law and source bounds suffice for this conditional construction;
-it does not wait for a unique fundamental law or autonomous substrate origin.
+The completed single-law construction did not require a unique fundamental
+law or autonomous substrate origin.
 Completing the interpretation still requires independent justification or
 discrimination of the law, formation and maintenance under any changed
 interaction, retained state across scales, and physical preparation/readout.
 Support, capacity or operator-occurrence laws become necessary when a claim
 requires their autonomous evolution; finite forecasting holds them declared.
-After the operational gate, reassess law discrimination and the independent
-physical bridge before expanding precision or horizon. Use the existing
-owners and activation conditions above; this checkpoint starts no parallel
-campaign and does not remove the current hidden-state or exact-clock priors.
+The operational result removes generating-state input from one software
+forecast. It does not repair the physical reviews' independent preparation,
+joint measurement coverage or component-law incompatibilities. Law
+discrimination therefore takes priority over another apparatus search or
+precision increase. The retained countermodels share organized targets and
+local dynamics, but their earlier response discriminator uses a different
+preparation and measurement budget; it cannot settle the present record's
+law ambiguity. The selected analytical gate retains the current hidden-state
+and exact-clock priors and starts no parallel physical campaign.
 
 <a id="organized-joint-preparation-resources"></a>
 ### Closed joint preparation-resource admission
@@ -635,42 +640,52 @@ no nonlinear response or physical data. This is information sufficiency,
 not an implemented individual-record predictor or exact hidden-state inverse.
 
 <a id="organized-observed-forecast-construction"></a>
-### Immediate question: a computable forecast from a joint record
+### Closed operational forecast from a joint record
 
-**Can a supplied raw record produce a certified future without access to
-its generating collective initialization?** Turn the proved information
-bound into an operational consumer, retaining the same law, class, waveform,
-noise, clock, horizon and `1e-13` true-output policy.
+The [result owner](../nodal/ORGANIZED_OBSERVED_FORECAST.md#organized-observed-forecast-result)
+retains declaration `53917ac7` and the one record-only fit and validated
+forecast. All 150 historical readings feed one candidate whose 143 carried
+steps certify a true-form radius below `1e-13`. The record was extracted
+from published synthetic evidence after protocol freeze; no source producer
+was replayed. This is an operational conditional software case, not an
+independent response, exact fine-feasible witness or universal fitting theorem.
 
-- [Analytical candidate admission](../nodal/ORGANIZED_OBSERVED_FORECAST.md)
-  now supplies the sufficient conditions. Retain the distinction between
-  a complete record-compatible history and a source-tolerant carrier forecast,
-  with unknown common form and phase gauge explicit. A fit or independently
-  compatible marginal states cannot certify joint compatibility.
-- Implement the admitted candidate and carried-endpoint test with its
-  numerical and model allowances; abstain when it cannot certify a result.
-  The whole-record bound avoids requiring optimization of the nonlinear
-  feasible-set midrange or identification of every hidden coordinate.
-- Reuse shared waveform, source transport, validated integration and evidence
-  readers. Separate proposal generation from interval feasibility and forecast
-  certification; accept no generating state, future output or evaluated
-  source-specific verdict as an inference input.
-- Freeze any numerical proposal/validation protocol, record provenance and
-  budget before a new evaluation. Select or construct its record only after
-  checking existing evidence and independence obligations. Do not replay
-  frozen producers, tune the input/noise, scan parameters or claim a physical
-  validation. The immediate work is constructive admission, not another
-  precision increase or an unrestricted trajectory campaign.
-  A synthetic record may be extracted from existing certified forecast
-  evidence, but remains a software control rather than independent validation;
-  the [fixed operational protocol](../nodal/ORGANIZED_OBSERVED_FORECAST.md#organized-observed-forecast-protocol)
-  now declares that extraction, one historical fit and one validated forecast.
-  Source/protocol freeze precedes actual record extraction and evaluation;
-  no actual record or new candidate has yet been evaluated.
+<a id="organized-law-state-identifiability"></a>
+### Immediate question: distinguish law from unknown initialization
 
-This is a structural information gate. Physical preparation, calibration and
-apparatus admission remain unresolved; there is no parallel apparatus search
-or physical-data campaign, and no unique fundamental law is presumed.
+**Can the same complete noisy form record be compatible with both retained
+laws when their initial states are independently unknown?** The successful
+single-law forecast does not decide this. Use only the endpoint currents
+`j_0(delta)=sin(delta)` and
+`j_1(delta)=sin(delta)+(sin(9*delta)-sin(18*delta)/2)/2187` from the
+[constitutive countermodel owner](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-complete-law).
+Their old organized-target and finite-response results retain their own
+supports, preparations and budgets.
+
+1. Re-admit each complete fine law on the present `C9 x C5` support, with the
+   same held capacities, prescribed input, structural clock and observation
+   map. Keep the original unknown-initialization domain explicit. Derive the
+   alternative's carrier, source/hidden-state transport, identity and derivative
+   bounds; no sine gain, Taylor remainder or acquisition certificate transfers
+   merely because target or tangent dynamics agree.
+2. Retain all thirty times, 150 readings, `eta=1e-14` and the existing horizon.
+   Allow each law its own admitted initial form and circular phase state.
+   Seek either a separation of their complete admitted record sets or an
+   explicit jointly compatible cross-law witness. Match all samples from
+   one continuous history per law, retaining correlations and source errors.
+   A failed sufficient bound is unavailable evidence, not record overlap.
+3. Begin with analytical admission. Any later numerical discriminator must
+   declare its record/source choice, alternatives, budgets and prospective
+   criterion before evaluation. No additional fit, parameter scan, waveform
+   tuning, longer horizon or precision increase is activated here. Do not
+   use the archived future as a target for selecting a law or initialization.
+
+A two-law separation would distinguish only this pair in its declared domain;
+an overlap witness would identify remaining observational freedom and the
+kind of independent information still needed. Neither outcome selects a
+unique fundamental law. Physical preparation, calibration and apparatus
+admission remain unresolved; the closed electrical/area reviews are not
+reopened by record-only software inference.
 
 Recovering established physical relations remains the objective; the test
 need not predict a deviation from known physics. An equivalent circuit

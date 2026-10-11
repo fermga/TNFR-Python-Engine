@@ -300,3 +300,50 @@ before extraction; exact record, proposal and validated response follow in
 the result. Archive those bytes and receipt for read-only verification.
 
 <!-- FROZEN DECLARATION AND PROOF END: append evaluated results only below. -->
+
+<a id="organized-observed-forecast-result"></a>
+## Retained operational software result
+
+The single evaluation of declaration/source
+`53917ac7d05c4fd9c79c8ce37ed1c95c25587f50` returned
+`conditional_record_only_forecast_certified`. Its
+[attempt](../../docs/assets/organized_observed_forecast/attempt.json),
+[exact response archive](../../docs/assets/organized_observed_forecast/response.zip)
+and [receipt](../../docs/assets/organized_observed_forecast/receipt.json)
+retain the extracted record, input associations, represented candidate,
+proposal backend and all 143 validated steps. No old producer was replayed.
+
+| Quantity | Evaluated value, displayed approximately |
+| --- | ---: |
+| Historical readings / optimizer forward calls | `150 / 3` |
+| Maximum archived extraction allowance | `1.489381e-21`, below `eta=1e-14` |
+| Whole-record validated residual rho | `2.827128e-19` |
+| Rebuilt carrier gain G | `3.9317888454` |
+| Containing-class source bound E_0 | `2.164623e-18` |
+| Candidate endpoint numerical radius r_T | `9.775683e-24` |
+| Certified true-form radius R | `3.932968e-14`, below `1e-13` |
+| Certified future-reading radius R+eta | `4.932968e-14` |
+
+The five forecast centers at `tau=216`, in child order and structural form
+units, are approximately
+`(3.256469903e-6, 1.645762162e-6, -1.253943082e-7, -1.973615505e-6, -2.803222251e-6)`.
+Use the exact archived centers and outward bounds for calculations. The
+binary64 optimizer's residual is only a diagnostic; the policy decision uses
+the separate validated history's upper residual and exact transfer arithmetic.
+
+This establishes a computable conditional forecast for the selected record
+without privileged generating-state coordinates or future response. The
+first five raw readings initialize the form proposal; generating phases
+are not supplied. All retained historical enclosures belong to one candidate. It does
+not establish global optimizer convergence, exact fine-feasible membership,
+or an independently observed prediction: the record is extracted from an
+already published synthetic trajectory. The assumed law, source class,
+input and ideal clock still carry the scientific interpretation.
+
+The [read-only evidence audit](../../tests/physics/test_organized_observed_forecast_evidence.py)
+rebuilds source/gain inputs, candidate/sample associations, compact radius
+propagation and the forecast bounds without fitting or integrating another
+trajectory. Retained Picard/Taylor witnesses keep their source proof premises.
+The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#organized-law-state-identifiability)
+now asks whether unknown initialization can also mask a changed constitutive
+law; further precision is not the next gate.
