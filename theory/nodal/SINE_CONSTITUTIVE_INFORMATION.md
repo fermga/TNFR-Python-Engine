@@ -936,6 +936,223 @@ additive, odd and conservative under its supplied companion law, but consumes
 information beyond the first moment. The next control exposes exactly that
 discarded information, rather than merely comparing two unequal laws.
 
+<a id="minimal-regular-boundary-information"></a>
+
+#### Minimal regular information for every relative registration
+
+The preceding classification prescribes the first moment in advance. A
+different question leaves the statistic free: how many regular real
+coordinates must an interface retain to answer its current query at every
+relative registration? The following theorem answers this instantaneous
+question for a declared finite odd Fourier current, without imposing linear
+decoding or selecting a preferred law.
+
+**Boundary and representation premises.** Fix
+
+\[
+j(\delta)=\sum_{n\in\mathcal N}b_n\sin(n\delta),\qquad
+\mathcal N\subset\mathbb N_{>0}\ \text{finite},\qquad
+b_n\in\mathbb R\setminus\{0\}.
+\]
+
+For every degree \(d\), admit all unit-weight circular gap lists
+\(A=(\delta_1,\ldots,\delta_d)\), including repeated gaps at distinct
+incident nodes, and define
+
+\[
+J_A(\varphi)=\sum_{a=1}^d j(\delta_a-\varphi).
+\]
+
+The law, degree, root state and already admitted marked contacts are known
+separately. They are held fixed in each comparison; they do not conceal
+variable phase information. A common registration query changes
+\(\varphi\), not the preparation, support, contact matching, clock or
+execution law. In particular, reordering this incident list is distinct
+from independently permuting its constituent ports or rewiring contacts.
+Every list used below is realized on a finite simple star with unit edges;
+no continuously variable contact weights are introduced.
+
+Seek one dimension \(m\), independent of degree, with permutation-invariant
+\(C^1\) summaries
+\(S_d:(\mathbb R/2\pi\mathbb Z)^d\to\mathbb R^m\) chosen before the
+query. For each \(\varphi\), require a decoder \(D_{d,\varphi}\) such that
+\(J_A(\varphi)=D_{d,\varphi}(S_d(A))\). The decoder is \(C^1\) locally
+on open neighborhoods of the summary image in \(\mathbb R^m\); it may be
+nonlinear. These regularity and all-degree premises define the representation
+class, not a universal information axiom for NFRs. Neither additivity nor
+rotation covariance is required for the lower bound.
+
+**Theorem.** The exact minimum dimension in this class is
+
+\[
+\boxed{m_{\min}=2|\mathcal N|.}
+\]
+
+The attaining summary is additive under disjoint union of incident lists
+and covariant under common circular rotations. If \(j\equiv0\), take
+\(\mathcal N=\varnothing\): the empty summary in \(\mathbb R^0\)
+attains the minimum zero.
+
+**Sufficiency.** Retain both real quadratures of every active moment,
+
+\[
+Z_n(A)=\sum_{a=1}^d e^{\mathrm i n\delta_a},\qquad
+S_d(A)=(\operatorname{Re}Z_n,\operatorname{Im}Z_n)_{n\in\mathcal N}.
+\]
+
+These are smooth, permutation-invariant functions on the full phase torus,
+including cancellation states. For every query,
+
+\[
+J_A(\varphi)=\sum_{n\in\mathcal N}
+ b_n\operatorname{Im}\!\left(e^{-\mathrm i n\varphi}Z_n(A)\right).
+\]
+
+This decoder is linear and defined on all of \(\mathbb R^{2|\mathcal N|}\).
+The identities
+\(Z_n(A\sqcup B)=Z_n(A)+Z_n(B)\) and
+\(Z_n(A+\alpha)=e^{\mathrm i n\alpha}Z_n(A)\) prove the asserted
+aggregation and covariance. They make the summary useful for composition
+of admitted boundaries without changing their contact associations.
+This rotates the relative gaps; a common absolute phase shift of the root
+and all incident nodes instead leaves every gap and moment unchanged.
+
+**Necessity with nonlinear decoding.** Suppose \(\mathcal N\ne\varnothing\),
+put \(M=\max\mathcal N\), and choose an integer \(q>2M\). At the
+degree-\(q\) list and the \(q\) fixed queries
+
+\[
+\delta_a^*=\frac{2\pi a}{q},\qquad
+\varphi_\ell=\frac{2\pi\ell}{q},\qquad 0\le a,\ell<q,
+\]
+
+consider the response vector
+\(F(A)=(J_A(\varphi_0),\ldots,J_A(\varphi_{q-1}))\).
+Vary the gaps independently in a local circular chart. Its Jacobian is the
+real symmetric circulant matrix
+
+\[
+\mathsf J_{\ell a}
+=j'\!\left(\frac{2\pi(a-\ell)}q\right)
+=\sum_{n\in\mathcal N}n b_n
+             \cos\!\left(\frac{2\pi n(a-\ell)}q\right).
+\]
+
+The discrete Fourier vectors diagonalize this matrix. The elementary
+identity
+\(\sum_{a=0}^{q-1}e^{2\pi\mathrm i k a/q}=0\) unless \(q\mid k\),
+when the sum is \(q\), gives its eigenvalues
+
+\[
+\lambda_k=
+\begin{cases}
+q n b_n/2,&k=n\ \text{or}\ k=q-n,\quad n\in\mathcal N,\\
+0,&\text{otherwise}.
+\end{cases}
+\]
+
+Because \(q>2M\), these \(2|\mathcal N|\) frequency indices are distinct,
+and all their eigenvalues are nonzero. Equivalently, each active frequency
+has an independent real cosine/sine pair. Hence
+\(\operatorname{rank}_{\mathbb R}\mathsf J=2|\mathcal N|\).
+All witness gaps are distinct, so permutation invariance does not remove
+any local phase directions: their unordered neighborhood has a labeled
+local chart.
+
+Combine the \(q\) proposed decoders into \(D\) on the intersection of
+their open neighborhoods at \(S_q(A^*)\). The factorization
+\(F=D\circ S_q\) and the ordinary chain rule give
+
+\[
+2|\mathcal N|
+=\operatorname{rank}\mathsf J
+\le\operatorname{rank}(dS_q)\le m.
+\]
+
+This proves necessity even for a nonadditive summary and nonlinear decoders.
+It uses one finite unit-weight boundary, not a space of freely weighted
+measures or a sampled trajectory. Together with the sufficient construction
+it proves the exact minimum for all degrees.
+
+**Declared-law consequences.** The counts refer to fixed coefficients known
+to the decoder, with only exact zero coefficients removed from the active
+set.
+
+| Declared current | Active frequencies | Minimum real coordinates | One lower-bound degree |
+| --- | --- | --- | --- |
+| Sine \(j(\delta)=\sin\delta\) | \(\{1\}\) | 2 | 3 |
+| [Organized-target family](ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-information-boundary), \(0<\lambda\le1\) | \(\{1,9,18\}\) | 6 | 37 |
+| [Composition-compatible counterfamily](COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md#composition-compatible-counterfamily), \(0<\lvert\epsilon\rvert\le1/324\) | \(\{1,8,10,17,19\}\) | 10 | 39 |
+
+In the organized-target family,
+\(j_\lambda(\delta)=\sin\delta+
+ (\lambda/2187)[\sin9\delta-\tfrac12\sin18\delta]\).
+Its \(\lambda=0\) member needs two coordinates. In the separate
+composition-compatible family the coefficient of the first harmonic is
+\(1-3\epsilon/2\), which is nonzero throughout its admitted interval;
+each of its other four coefficients is nonzero exactly when
+\(\epsilon\ne0\). Its \(\epsilon=0\) member also needs two coordinates.
+These families retain their own support, law and source hypotheses. The
+coordinate count transfers neither acquisition nor capture certificates,
+and introduces no alternative preparation into the frozen record protocol.
+
+**Storage and units.** If the supplied unscaled periodic potential obeys
+\(U'=j\), with \(U(0)=0\), the same moments and separately retained degree
+also recover its instantaneous incident sum:
+
+\[
+\sum_a U(\delta_a-\varphi)
+=d\sum_{n\in\mathcal N}\frac{b_n}{n}
+ -\sum_{n\in\mathcal N}\frac{b_n}{n}
+       \operatorname{Re}\!\left(e^{-\mathrm i n\varphi}Z_n(A)\right).
+\]
+
+Thus requesting this potential sum as well does not increase the minimum
+when the current queries remain required. This algebraic primitive does
+not establish nonnegative storage, a whole-network balance or a physical
+energy. Declared dimensional current, pressure and storage scales remain
+separate; the moment coordinates are dimensionless and supply no laboratory
+unit or structural-to-laboratory clock bridge.
+
+**Limits of the conclusion.** A known single query permits the scalar
+summary \(J_A(\varphi_0)\); a query-independent summary valid for every
+angle is the different obligation proved here. The lower bound is uniform
+over arbitrary finite degrees. It does not assert six independent local
+phase directions at a degree-four node, or the same minimum on a restricted
+preparation family. Discontinuous encodings, nonsmooth decoders, unknown
+law parameters, approximate responses and noise tolerance are outside the
+theorem. In particular, an arbitrarily small nonzero harmonic still counts
+for exact representation; this says nothing about its experimental
+resolvability.
+
+Minimum dimension alone does not select a fundamental law. Even the
+single-harmonic laws \(j(\delta)=\sin(n\delta)/n\) each have minimum two
+and unit consensus slope, although they differ globally. The conditional
+first-resultant theorem fixes which statistic is retained; the present
+theorem does not derive that premise. Nor does an instantaneous sufficient
+statistic close its own evolution: differentiating \(Z_n\) consumes
+phase/rate associations, as the
+[motion-information owner](#phase-motion-information) shows. Constituent
+identity, boundary evolution, memory, events, formation and physical
+identification retain their separate obligations under the
+[NFR ontology](../EMERGENT_ONTOLOGY.md#research-target-physical-properties-of-collective-patterns).
+
+The [shared static owner](../../src/tnfr/physics/_phase_boundary_information.py)
+re-admits finite Fourier coefficients, removes only exact zeros, and returns
+the theorem's dimension and symbolic signed grid spectrum. Its separate
+response reader rebuilds active moments and the unnormalized current from
+primitive exact unit phasors; it consumes neither cached moments nor a prior
+verdict. The 128-row, order-128 and 128-gap implementation budgets do not
+restrict the theorem's all-degree statement. The symbolic witness can exceed
+the response reader's gap budget and is not a materialized irrational grid.
+[Independent controls](../../tests/physics/test_phase_boundary_information.py)
+exercise rational Jacobian ranks, exact expansions, rotation, aggregation,
+degeneracy and invalid inputs. The
+[law integration controls](../../tests/physics/test_phase_boundary_law_integration.py)
+compare the response to both existing owned law evaluators, preserving the
+distinct counterfamilies and the lack of a noise guarantee. No law is installed,
+no trajectory is evolved and no frozen scientific assessment is replayed.
+
 <a id="balanced-neighborhood-information-admission"></a>
 
 #### Balanced geometry does not independently select the phase current

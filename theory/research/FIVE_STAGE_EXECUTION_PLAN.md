@@ -94,10 +94,11 @@ late-time motion close the strict nonlinear certificate. This selects no
 physical law or unique member of the wider constitutive family. The
 [premise review](#post-identifiability-premise-review) is also closed: no
 reviewed independent principle selects a unique law, and no complete physical
-bridge is admitted. The sole active analytical question is
-[minimal boundary information](#minimal-boundary-information): determine what
-each declared current requires an interface to retain, without assuming
-that the smallest representation is the fundamental law.
+bridge is admitted. The [minimal boundary-information question](#minimal-boundary-information)
+is now closed by a sharp dimension theorem, including nonlinear regular
+decoders. It does not select the law or supply an autonomous collective state.
+The next bounded task is [applicability to an existing organization](#boundary-information-applicability),
+which must identify a concrete unmet dependency before further calculation.
 
 No 45-node acquisition, physical readout or source certificate transfers to
 the supplied positive-r matrix law by default. Earlier frozen protocols,
@@ -114,7 +115,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Active boundary-information minimality | [Regular response summaries](#minimal-boundary-information): prove the necessary and sufficient information dimension for every relative-phase current, or supply a counterexample in the declared class |
+| Next bounded applicability decision | [An existing organized boundary](#boundary-information-applicability): separate what its retained port/state already predicts from one missing premise for a new discriminating property |
+| Closed boundary-information minimality | [Regular response summaries](#minimal-boundary-information): exact minimum two real coordinates per active Fourier harmonic; neither unique-law selection nor autonomous state follows |
 | Closed post-identifiability premise review | [Selection and physical-admission boundaries](#post-identifiability-premise-review): existing conditional selectors retain additional premises; preparation and complete physical measurement remain unadmitted |
 | Closed two-law record identifiability | [Complete nonlinear record separation](#organized-law-state-identifiability): the fixed noisy records distinguish the retained harmonic endpoints despite independently unknown initial states; the wider family and physical law remain unselected |
 | Closed operational observation-based forecast | [Certified forecast from a joint record](#organized-observed-forecast-construction): one archived synthetic record yields a carried conditional endpoint within the fixed policy, without generating-state input |
@@ -296,7 +298,7 @@ response has not been derived from the earlier acquired constituents.
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
 | Sufficient collective state and inherited response | Construct and certify a forecast from a joint finite noisy record without known collective initialization | **Closed operational software case.** The whole-record bound and one candidate forecast are certified; arbitrary-record convergence and physical measurement remain unproved |
 | Fundamental physical properties and independent observation | Independently admit full preparation and joint physical measurement coverage before evaluating a response | **Closed scoped recovery-area review, unresolved physical dependency.** The reviewed direct-area route is not admitted; neither improved voltage precision nor clock rescaling alone repairs the missing premises. No further apparatus search is active |
-| Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Closed pairwise distinction and premise review.** The active boundary-information question measures a chosen law's requirements; it does not assume minimal information selects the law. Uniqueness and physical selection remain open |
+| Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Closed pairwise distinction and information minimum.** Regular information cost is now derived, but even two coordinates and unit consensus slope leave nonsine laws. Uniqueness and physical selection remain open |
 | Autonomous preparation, support, capacity and events | Supply actual occurrence and state-evolution laws when claiming autonomous assembly. [Event work](../nodal/RELATIONAL_SUPPORT_EVENTS.md), passivity and [operator descent](../STRUCTURAL_OPERATORS.md) do not select occurrence | **Claim-dependent**. Current contacts and preparation remain supplied. Do not postpone investigation of the existing conditional composite until every origin question is solved |
 | Internal activity and recurrence | Separate preservation of identity from permanent motion; the [positive-loss boundary](../nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission) and alternative-mobility results retain different premises | **Prepared alternative** for a named claim requiring sustained activity. Neither a stationary identity nor finite response establishes recurrence or transfers an invariant measure |
 
@@ -308,7 +310,7 @@ An added observable earns inclusion by deciding the selected prediction or a
 meaningful minimality obstruction. Existing failed physical-source admissions
 remain failed; more samples cannot repair their complete-law mismatches.
 
-The sole active task is [boundary-information minimality](#minimal-boundary-information).
+The sole next task is the [organized-boundary applicability decision](#boundary-information-applicability).
 The table assesses dependencies, not a fixed sequence or parallel campaigns. It preserves
 the objective of generated, physically testable organization without identifying
 winding, phase cancellation or storage with material constituents.
@@ -326,10 +328,11 @@ joint measurement coverage or component-law incompatibilities. The completed
 two-law theorem now resolves the present protocol's pairwise ambiguity while
 retaining its hidden-state and exact-clock premises. Earlier discrimination
 results keep their separate preparation and measurement budgets. The closed
-premise review selects a regular-information minimality theorem because it
-can determine an interface's requirements without a fitted response or a
-new selection axiom. No additional trajectory comparison, moment-hierarchy
-campaign or physical response evaluation is active.
+premise review led to the regular-information minimum without a fitted
+response or a new selection axiom. Its application must respect the actual
+organization's restricted state and marked boundary, rather than transfer
+an all-degree minimum as a fixed-support state count. No additional trajectory
+comparison, moment-hierarchy campaign or physical response evaluation is active.
 
 <a id="organized-joint-preparation-resources"></a>
 ### Closed joint preparation-resource admission
@@ -708,7 +711,7 @@ Three candidate continuations were compared:
 | --- | --- |
 | Repeat a conditional sine selector or compare another trajectory | Not selected: first-resultant and profile selectors already have proofs, and the noisy two-law record distinction is closed |
 | Reopen a physical apparatus or recovery-area campaign | Not selected: the existing preparation, full-law, clock and observation gaps have not been repaired; older apparatus verdicts concern different protocols |
-| Determine the minimal regular information required by a boundary response | Selected below: a sharp lower bound can distinguish necessary interface information from a merely convenient moment list, without assuming a preferred law |
+| Determine the minimal regular information required by a boundary response | Selected and now closed below: matching lower and upper bounds distinguish required regular information from a convenient moment list, without selecting a preferred law |
 
 The selected question concerns the constituent information needed by a
 collective description. Its answer can constrain future state and measurement
@@ -716,67 +719,57 @@ designs, but neither a small information dimension nor a supplied summary
 constitutes an independent preparation or physical identification.
 
 <a id="minimal-boundary-information"></a>
-### Active analytical question: minimal regular boundary information
+### Closed analytical question: minimal regular boundary information
 
-**For a declared additive phase current, what is the smallest regular summary
-that determines its instantaneous response at every relative registration?**
-Use the existing sine and ninth/eighteenth-harmonic kernels, without changing
-their coefficients. The boundary class is every finite list of unit-weight
-circular gaps `A=(delta_1,...,delta_d)`, with degree `d` retained separately.
-Repeated gaps denote distinct incident nodes. Define the unscaled response
+The [sharp theorem](../nodal/SINE_CONSTITUTIVE_INFORMATION.md#minimal-regular-boundary-information)
+closes the question declared at `1a7dd5e5`. For a supplied finite odd Fourier
+current, a query-independent regular summary over arbitrary finite unit-weight
+boundary lists needs exactly two real coordinates per active harmonic. The
+lower bound covers arbitrary `C1` summaries and nonlinear local `C1` decoders;
+active complex moments attain it with additive aggregation and rotation
+covariance. Degree and independent marked/root data remain fixed separately.
 
-\[
- J_A(\varphi)=\sum_{a=1}^d j(\delta_a-\varphi).
-\]
+The sine current needs two coordinates, the nonzero ninth/eighteenth-harmonic
+alternative six, and the distinct nonzero composition-compatible counterfamily
+ten. A zero deformation in either family restores two. The proof uses a finite
+unit-grid Jacobian and exact Fourier orthogonality; the shared static consumer
+rebuilds active support, symbolic eigenvalues and exact rational-phasor current
+queries. Independent algebraic controls retain current signs, nonlinear rank,
+degenerate states, exact tiny coefficients and both actual law owners. No
+trajectory, raw record, physical response or frozen producer was evaluated.
 
-This is an algebraic current query on the actual incident gaps. The common
-relative rotation `varphi` changes the query; it does not execute an attachment
-event or supply a dynamical input. Marked contact data must be retained before
-forming this list. Independently permuting source and target ports or rewiring
-contacts is outside the query's equivalence class.
+This establishes an information requirement, not a preference for the least
+costly law: `sin(n*delta)/n` has minimum two and unit consensus slope for every
+positive integer n. The result gives neither a sensor count, a noise guarantee,
+a fixed-degree state dimension nor autonomous evolution of the summary.
+In particular, six universal coordinates do not imply six independent local
+phase directions at a degree-four node of the frozen protocol. Existing
+phase/rate and marked-port counterexamples retain their exact scopes.
 
-1. **Representation and lower-bound class.** Seek a number `m` independent of
-   degree. For each degree, admit a permutation-invariant `C1` summary of the
-   phase list in `R^m`, chosen independently of the later query angle, with
-   `C1` decoding of `J_A(varphi)` for every angle, defined locally on open
-   neighborhoods of the summary image. Decoders may be nonlinear. Root state,
-   law, degree and separately known contact data are held fixed in each
-   lower-bound witness. Do not silently replace the unit lists by continuously
-   weighted measures. `C1` regularity is an explicit representation premise,
-   not an axiom about all possible NFRs.
-2. **Sufficient construction.** Require the proposed attaining summary to
-   aggregate additively over disjoint incident lists and transform covariantly
-   under common phase rotations. Test the real and imaginary parts of the
-   active Fourier moments. The candidate dimensions are two for sine and six
-   for the retained `{1,9,18}` current; these are targets to prove minimal,
-   not previously certified lower bounds. Prove necessity against the larger
-   regular class in item 1, not only against linear readouts.
-3. **Discriminating argument and controls.** Seek an exact rank witness or
-   another analytical lower bound on an admitted finite phase list, together
-   with the sufficient construction. Use the distinct
-   [composition-compatible counterfamily](../nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md#composition-compatible-counterfamily)
-   as a nonselection control: its finite harmonic representation does not
-   justify a minimum-information preference. Do not transfer its source or
-   dynamics to the two-law record protocol.
-4. **Stopping rule.** Close on a necessary-and-sufficient dimension theorem
-   for the declared kernels, or on an explicit smaller regular construction
-   or obstruction that revises the proposed statement. Publish the scope and
-   independent algebraic controls in the
-   [constitutive information owner](../nodal/SINE_CONSTITUTIVE_INFORMATION.md).
-   No trajectory, sampled response fit, precision escalation, acquisition
-   transfer or physical-response evaluation is needed or activated.
+<a id="boundary-information-applicability"></a>
+### Next bounded task: apply the information boundary to an existing object
 
-This is different from the existing first-resultant theorem: the statistic is
-not prescribed in advance, and minimality must cover nonlinear decoding.
-It is also different from the finite-record theorem: the response is queried
-over arbitrary finite boundaries, not inferred from the frozen time series.
-In particular, a universal six-coordinate bound would not imply six
-independent local degrees of freedom at a degree-four node of `C9 x C5`.
-Restricted preparations and small supports may admit smaller descriptions.
-An instantaneous summary does not close its own evolution: phase/rate
-association, hidden initialization, boundary state and derived memory retain
-their existing owners. Stop after the stated decision rather than adding an
-unbounded hierarchy of moments or a new dynamical closure campaign.
+Use the [acquired host and its marked external contact](../nodal/ORGANIZED_EXTERNAL_INTERACTION.md)
+as the concrete applicability case, retaining its full source, support, both
+reaction rows, clock and finite identity horizon. Reuse its existing
+instantaneous port formula, twelve-coordinate carrier and proved failure of
+moment-only autonomous closure; do not repeat their derivations or its frozen
+response assessment.
+
+Determine which response-relevant data that model already retains and whether
+one new proposed collective property requires additional preparation,
+observation or dynamical information. Compare that obligation with the
+[physical-property requirements](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena)
+without promoting an internal current to physical charge or current. The
+two/six/ten theorem applies only after checking its boundary and query domain;
+it is not a replacement for the contact's full-state or source certificate.
+
+Close this decision with one concrete unmet premise and one prospective
+consequence or obstruction, or show that the proposed question is already
+answered and select a different named dependency in this queue. This is a
+bounded applicability decision, not a new hierarchy, a general autonomous
+closure search, further precision work or an apparatus campaign. Any later
+calculation requires its own declared model and stopping rule.
 
 Recovering established physical relations remains the objective; the test
 need not predict a deviation from known physics. An equivalent circuit

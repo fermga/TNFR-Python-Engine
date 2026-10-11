@@ -209,6 +209,21 @@ registration in ninth-moment-only observations and unavailable source/budget
 premises. Algebraic parameter extension does not transfer formation, and
 invariance of the organized family does not prove its generic attraction.
 
+For [minimal regular boundary information](theory/nodal/SINE_CONSTITUTIVE_INFORMATION.md#minimal-regular-boundary-information),
+select `tests/physics/test_phase_boundary_information.py` and
+`tests/physics/test_phase_boundary_law_integration.py`, with the existing
+phase-moment information/motion controls and composition-compatible law owner.
+Rebuild exact active support without floating thresholds. Check current sums
+against independent gapwise expansions and the actual owned law kernels;
+retain the negative query sign, degree, repeated incidences and all active
+quadratures. Exercise exact rational Jacobian ranks and signed grid spectra,
+rotation, additive composition, degenerate preparations and bounded admission.
+Zero laws still admit every supplied primitive. A symbolic grid spectrum does
+not evaluate a trajectory or its irrational witness; a reported universal
+minimum is neither pointwise rank nor a fixed-degree or noise certificate.
+Retain arbitrarily small exact coefficients and the two-coordinate nonsine
+control. These are static proof controls, not another frozen response campaign.
+
 For [composition-compatible constitutive laws](theory/nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md),
 select `tests/physics/test_composition_compatible_constitutive.py` together
 with `tests/physics/test_sine_constitutive_inheritance_algebra.py`. Check

@@ -1013,7 +1013,13 @@ the boundary class, regularity, retained degree, allowed decoding and phase
 transformation. An explicit sufficient moment list alone does not prove a
 lower bound on all descriptions in that class. Universal finite-boundary
 claims also need not give the minimum on a fixed small-degree support or
-an invariant prepared family.
+an invariant prepared family. The
+[regular boundary-information theorem](nodal/SINE_CONSTITUTIVE_INFORMATION.md#minimal-regular-boundary-information)
+now supplies such a sharp bound for finite odd Fourier currents, including
+nonlinear decoders. It measures the information required by a supplied law;
+even the minimum two is shared by different single-harmonic laws with the
+same consensus slope. Neither finite dimension nor a two-coordinate
+preference by itself selects the fundamental sine harmonic.
 
 This distinction connects law admission to the information a collective
 interface consumes, while retaining two existing obstructions.
