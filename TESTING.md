@@ -484,6 +484,19 @@ reusing the complete-state pass. Across the contact, registration and
 maintenance consumers, exercise each failed source premise and retain its
 shared reason without allowing a consumer-specific verdict to certify it.
 
+For the [organized-boundary information specialization](theory/nodal/ORGANIZED_EXTERNAL_INTERACTION.md#organized-boundary-information-applicability),
+select `tests/physics/test_organized_boundary_information.py` with
+`tests/physics/test_phase_boundary_information.py`,
+`tests/physics/test_phase_boundary_law_integration.py` and
+`tests/physics/test_composition_compatible_constitutive.py`.
+Check all 45 marked contact incidences and the 1/9 mean normalization against
+the owned laws: ideal fivefold cancellation for the retained pair, the
+separate family's surviving tenth harmonic, a departure from exact
+organization and changed donor/host association. Finite interval controls
+must be narrow as well as contain the independent expected value. Preserve
+the no-source/no-response guards: these static checks neither replay the
+old contact assessment nor certify an acquired alternative-law host.
+
 For [relative-origin interaction capability](theory/nodal/ORGANIZED_EXTERNAL_REGISTRATION.md),
 select `tests/physics/test_organized_external_registration.py` with the fixed
 external-interaction owner and its source dependencies above. Independently

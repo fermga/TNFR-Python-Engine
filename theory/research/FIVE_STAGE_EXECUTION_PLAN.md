@@ -97,8 +97,12 @@ reviewed independent principle selects a unique law, and no complete physical
 bridge is admitted. The [minimal boundary-information question](#minimal-boundary-information)
 is now closed by a sharp dimension theorem, including nonlinear regular
 decoders. It does not select the law or supply an autonomous collective state.
-The next bounded task is [applicability to an existing organization](#boundary-information-applicability),
-which must identify a concrete unmet dependency before further calculation.
+The [organized-boundary applicability decision](#boundary-information-applicability)
+is also closed: the sine contact already retains sufficient instantaneous
+information, and ideal fivefold cancellation does not distinguish the two
+retained laws. The next bounded task is
+[own-law outer acquisition](#organized-alternative-outer-acquisition) under
+the endpoint alternative, before any new acquired-contact comparison.
 
 No 45-node acquisition, physical readout or source certificate transfers to
 the supplied positive-r matrix law by default. Earlier frozen protocols,
@@ -115,7 +119,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next bounded applicability decision | [An existing organized boundary](#boundary-information-applicability): separate what its retained port/state already predicts from one missing premise for a new discriminating property |
+| Next bounded source admission | [Alternative-law outer acquisition](#organized-alternative-outer-acquisition): admit or obstruct formation and full-state retention of the original five-child host at lambda=1 with unchanged preparation, deadline and budgets |
+| Closed organized-boundary applicability | [Existing contact information](#boundary-information-applicability): sine already has the required port data; ideal fivefold cancellation is shared by the retained pair, while the alternative's acquired host remains uncertified |
 | Closed boundary-information minimality | [Regular response summaries](#minimal-boundary-information): exact minimum two real coordinates per active Fourier harmonic; neither unique-law selection nor autonomous state follows |
 | Closed post-identifiability premise review | [Selection and physical-admission boundaries](#post-identifiability-premise-review): existing conditional selectors retain additional premises; preparation and complete physical measurement remain unadmitted |
 | Closed two-law record identifiability | [Complete nonlinear record separation](#organized-law-state-identifiability): the fixed noisy records distinguish the retained harmonic endpoints despite independently unknown initial states; the wider family and physical law remain unselected |
@@ -310,7 +315,7 @@ An added observable earns inclusion by deciding the selected prediction or a
 meaningful minimality obstruction. Existing failed physical-source admissions
 remain failed; more samples cannot repair their complete-law mismatches.
 
-The sole next task is the [organized-boundary applicability decision](#boundary-information-applicability).
+The sole next task is [alternative-law outer acquisition](#organized-alternative-outer-acquisition).
 The table assesses dependencies, not a fixed sequence or parallel campaigns. It preserves
 the objective of generated, physically testable organization without identifying
 winding, phase cancellation or storage with material constituents.
@@ -329,9 +334,11 @@ two-law theorem now resolves the present protocol's pairwise ambiguity while
 retaining its hidden-state and exact-clock premises. Earlier discrimination
 results keep their separate preparation and measurement budgets. The closed
 premise review led to the regular-information minimum without a fitted
-response or a new selection axiom. Its application must respect the actual
-organization's restricted state and marked boundary, rather than transfer
-an all-degree minimum as a fixed-support state count. No additional trajectory
+response or a new selection axiom. Its [application](#boundary-information-applicability)
+respects the actual organization's restricted state and marked boundary,
+rather than transferring an all-degree minimum as a fixed-support state count.
+It identifies own-law outer acquisition as the next missing source premise.
+No additional trajectory
 comparison, moment-hierarchy campaign or physical response evaluation is active.
 
 <a id="organized-joint-preparation-resources"></a>
@@ -747,29 +754,63 @@ phase directions at a degree-four node of the frozen protocol. Existing
 phase/rate and marked-port counterexamples retain their exact scopes.
 
 <a id="boundary-information-applicability"></a>
-### Next bounded task: apply the information boundary to an existing object
+### Closed applicability decision: an existing organized boundary
 
-Use the [acquired host and its marked external contact](../nodal/ORGANIZED_EXTERNAL_INTERACTION.md)
-as the concrete applicability case, retaining its full source, support, both
-reaction rows, clock and finite identity horizon. Reuse its existing
-instantaneous port formula, twelve-coordinate carrier and proved failure of
-moment-only autonomous closure; do not repeat their derivations or its frozen
-response assessment.
+The [result owner](../nodal/ORGANIZED_EXTERNAL_INTERACTION.md#organized-boundary-information-applicability)
+closes the decision declared at `6dcfb0b0`. The acquired host and marked
+external contact already retain the sine moment, full reaction state and
+source bounds needed by their certified finite all-registration response.
+The universal dimension theorem supplies no new minimum on that correlated
+family and does not repair the already proved moment-only nonclosure.
 
-Determine which response-relevant data that model already retains and whether
-one new proposed collective property requires additional preparation,
-observation or dynamical information. Compare that obligation with the
-[physical-property requirements](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena)
-without promoting an internal current to physical charge or current. The
-two/six/ten theorem applies only after checking its boundary and query domain;
-it is not a replacement for the contact's full-state or source certificate.
+At an ideal fivefold host the aggregate current retains only harmonics
+divisible by five. Both retained endpoint laws therefore cancel for every
+registration; their different universal information costs do not distinguish
+this static property. A separate existing counterfamily has a surviving
+tenth harmonic, so cancellation is not a topology-only universal law. This
+is a static identity and control, not a reached state or a finite response.
 
-Close this decision with one concrete unmet premise and one prospective
-consequence or obstruction, or show that the proposed question is already
-answered and select a different named dependency in this queue. This is a
-bounded applicability decision, not a new hierarchy, a general autonomous
-closure search, further precision work or an apparatus campaign. Any later
-calculation requires its own declared model and stopping rule.
+The proposed new collective property is robustness of organization-dependent
+interaction suppression under the retained alternative law. Its first missing
+premise is formation and retention of that law's actual five-child host.
+Isolated C9 acquisition, invariant carriers and the two-law observation
+containing class do not supply it. No frozen response, source producer,
+physical record or trajectory was evaluated. Later observation-history and
+contact admission remain separate dependencies after the source decision.
+
+<a id="organized-alternative-outer-acquisition"></a>
+### Next bounded task: own-law formation of the five-child host
+
+Determine whether the endpoint alternative `lambda=1` generates the existing
+outer-one identity from the original five acquired C9 preparations. Reuse
+the [outer source declaration](../nodal/ORGANIZED_OUTER_WINDING.md)
+and [own-law isolated recovery](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-carried-handoff);
+the original sine result remains the retained comparison, not a producer to
+replay or a transferable certificate.
+
+| Item | Fixed decision boundary |
+| --- | --- |
+| Full support and state | Original 45-node unit C9 x C5, all 90 edges, all forms and primitive phases; held unit capacities and full-circle phase domain |
+| Complete law and clock | `x_tau=(-Lx+gamma*S_1(theta))/4`, `theta_tau=gamma*Lx/4`, `gamma=1/(1023*pi)`, using the existing `j_1=V_1'` and `tau=(1023/1024)*t` in both rows; no input or later event after the supplied attachment |
+| Actual preparation | Five independent original class-one ramps with the original zero-sum form/phase errors at most `1e-10`, all 80 relative error directions, primitive common form shifts `M_c=4092*(c-2)` and common zero phase origins; paired zero-shift control |
+| Isolated recovery | Re-admit the existing own-law C9 result and transform both rows to the quarter-factor clock: formation duration 200, recovery dwell `2*10^13`, retained residual allowance `q=1e-70`; no reset to the ideal profile |
+| Attachment and storage | Add the original 45 outer edges with coordinates unchanged; use actual `V_1` in all storage and event costs, retaining separate `2*10^9` ceilings on attachment work and joined initial storage |
+| Identity and deadline | Keep all five internal winding-one cycles through `0<=tau<=200`; starting from outer winding zero, assess all nine outer slot windings at the original deadline 200, their subsequent full-state trapping/retention and the paired control's outcome; no finite convergence deadline is added |
+| Analytical mechanism | Reuse carrier restriction, heat/phase transport and full product-cell barriers after deriving their actual-law bounds; matching the internal C9 target transfers neither outer C5 stiffness nor source entry |
+| Budget and stopping rule | One analytical admission at the existing outward dyadic128 precision: prove complete source entry and retention, prove an obstruction, or name the exact unavailable sufficient margin. No trajectory, scan, longer horizon, smaller error allowance, changed preparation or precision escalation |
+
+The candidate outer-one target remains `x=0`,
+`theta[c,j]=2*pi*(j-4)/9+2*pi*(c-2)/5` on the zero global mean leaf.
+Its own-law equilibrium, regularity and complete trapping domain require
+checking. A target or a carrier-only result does not certify the actual
+source. An unavailable bound is not evidence that formation fails.
+
+A positive result would establish robustness of this acquired organization
+across the retained laws, not select one of them or prove the later contact
+property. The old observation word, donor/contact history and their finite
+identity, work and response margins remain unadmitted for the alternative
+until separately justified. No third-law formation, new autonomous closure,
+stationary search, apparatus campaign or physical response evaluation is active.
 
 Recovering established physical relations remains the objective; the test
 need not predict a deviation from known physics. An equivalent circuit
