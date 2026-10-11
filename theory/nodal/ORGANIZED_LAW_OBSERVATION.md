@@ -1221,7 +1221,317 @@ writes the exact rational interval report. The reported scope is
 `moment_kernel_arithmetic_only_not_a_record_verdict`.
 
 
-## 10. Shared implementation and verification
+<a id="organized-law-joint-phase-bounds"></a>
+## 10. Necessary joint phase bounds from a shared complete record
+
+These are necessary conditions for two admitted histories sharing one noisy
+record. No record is constructed or evaluated. Write `r=gamma/4`,
+`r9=r/2187`, `g=1/3000`, `h=1e-5` and retain the own-law source errors in
+`delta=2*eta+E0+E1<2.01e-14`. Since `pi<22/7`, `gamma>1/3300`.
+For each endpoint law the command-removed carrier obeys
+
+\[
+ Y'=-AY+rS_\lambda,\qquad \Psi'=\gamma AY,
+ \qquad A=L_5/4.
+\]
+
+The infinity norm of A is one and that of each row of `B^T A` is two.
+Thus on the entire horizon,
+
+\[
+ \|Y\|_\infty\le M_\lambda=X+gJ_\lambda T/2<.013,
+ \quad
+ \|B^T(\Psi(v)-\Psi(0))\|_\infty
+ \le D_\lambda=4gX+2g^2J_\lambda T<17\cdot10^{-6}.
+\]
+
+On a plateau the command is constant. Therefore
+
+\[
+ \|Y'\|_\infty\le M_\lambda+gJ_\lambda/2,
+ \qquad
+ \|Y''\|_\infty\le
+ M_\lambda+gJ_\lambda/2+g^2L_\lambda M_\lambda
+ =:M_{2,\lambda}<3/200.
+\]
+
+### The same winding follows before a detailed phase inverse
+
+For one plateau with endpoint forms P,Q, use the original diffusion-corrected
+combination, now vector-valued,
+
+\[
+ D(P,Q)=Q-P+\frac h2 A(P+Q).
+\]
+
+For the difference of two carriers its receiver coordinate has absolute
+value at most `(2+h/2)*delta`: the coefficients are `-1+h/4`, `1+h/4`
+and four neighboring coefficients `-h/8`. Integrating the form equation
+gives
+
+\[
+ D(Y(a),Y(a+h))
+ =r\int_a^{a+h}S_\lambda(v)\,dv+\mathcal R_\lambda,
+ \qquad
+ |\mathcal R_{\lambda,i}|\le M_{2,\lambda}h^3/12.
+\]
+
+The error is the trapezoid error of the diffusion integral `A int Y`,
+not a trapezoid approximation of the current. Dividing by h gives an
+`h^2/12` term per law, hence `(M20+M21)*h^2/12`, bounded by
+`(3/200)*h^2/6`, in the cross-law force estimate. No observed derivative
+or unknown intermediate state is inserted.
+
+At any of the three levels q in a marked-child block, each of the two
+receiver edge gaps departs from its initial gap plus the stipulated command
+by at most D_lambda. Its current consequently departs by at most
+`2*L_lambda*D_lambda`. A shared record therefore requires the two ideal
+initial receiver currents at that q to differ by at most
+
+\[
+ \kappa=\frac{4}{\gamma_{lo}}
+ \left\{\frac{(2+h/2)\delta}{h}
+ +\frac{M_{2,0}+M_{2,1}}{12}h^2
+ +\frac g2(L_0D_0+L_1D_1)\right\}<\frac1{7500},
+ \qquad \gamma_{lo}=1/3300.
+\]
+
+Taking the second three-level contrast cancels the adjacent baseline.
+If a0,a1 are the two initial gaps of that edge, its ideal sine quadratures
+obey
+
+\[
+ |S_0(a_0)-S_1(a_1)|
+ \le\frac{2\kappa}{1-\cos(.1)}<3/50.
+\]
+
+The alternative quadrature deformation has magnitude less than `3/26`:
+write `s9=(1-cos(.9))/(2187*(1-cos(.1)))<1/26`; the eighteenth coefficient
+is `(1+cos(.9))*s9<2*s9`. Thus
+
+\[
+ |\sin a_0-\sin a_1|<3/50+3/26.
+\]
+
+On the admitted interval `[-7/5,7/5]`, cosine is larger than `1/6`.
+For example its alternating Taylor lower bound
+`1-A^2/2+A^4/24-A^6/720` at `A=7/5` is larger than `1/6`.
+The mean-value theorem gives `|a0-a1|<342/325`. Both initial gap cycles
+sum to `2*pi*w`, so
+
+\[
+ 2\pi|w_0-w_1|\le\sum_e|a_{0,e}-a_{1,e}|
+ <342/65<6<2\pi.
+\]
+
+Hence the two histories must have the same initial outer winding.
+This is a necessary compatibility statement, not a reconstruction of it.
+
+### Initial current balance bounds the fundamental phasor
+
+At the first plateau there is no preceding command. Replace D_lambda in
+the preceding force estimate by the tighter direct increment bound
+`2*g*M_lambda*h`. Then, with
+
+\[
+ b_{s,e}=r(\sin a_{0,e}-\sin a_{1,e}),\qquad
+ f_e=b_{s,e}-r_9\{\sin(9a_{1,e})-\tfrac12\sin(18a_{1,e})\},
+\]
+
+the necessary initial force estimate is
+
+\[
+ \|Bf\|_\infty\le\zeta:={ (2+h/2)\delta\over h}
+ +{M_{2,0}+M_{2,1}\over12}h^2
+ +g^2h(L_0M_0+L_1M_1)<4.1\cdot10^{-9}.
+\]
+
+Adjacent f values differ by at most zeta. The five-cycle has diameter two,
+so `max f-min f<=2*zeta`. The deformation's range is at most `3*r9`.
+Equal winding and monotonicity of sine on the initial gap domain imply
+`min b_s<=0<=max b_s`. Consequently
+
+\[
+ \|b_s\|_\infty\le2\zeta+3r_9<\frac{13}{4}r_9.
+\]
+
+The last strict inequality follows using `r9>1/(3300*4*2187)`.
+For `m=(a0+a1)/2`, the fundamental phasor identity gives
+
+\[
+ r|e^{ia_0}-e^{ia_1}|=
+ {|b_s|\over\cos m}<6|b_s|<\frac{39}{2}r_9.
+\]
+
+At any later common reference time in the admitted horizon, removing the
+common command, the change in this phasor difference is at most
+`r*(D0+D1)`. Hence its magnitude P_ref satisfies
+
+\[
+ \boxed{P_{ref}<\{39/2+2187\cdot34\cdot10^{-6}\}r_9<20r_9.}
+\]
+
+This bound uses all sampled blocks to establish equal winding and the
+initial plateau to constrain the fundamental. The 9th and 18th harmonic
+radii retain their exact common-phase relation. No nonlinear record
+separation verdict follows from these bounds alone.
+
+
+<a id="organized-law-record-separation-theorem"></a>
+## 11. Late-block whole-record separation theorem
+
+This proof keeps the complete laws, initial class, 30 five-form readings,
+noise, clock, command and horizon in ORGANIZED_LAW_OBSERVATION unchanged.
+The kernel calculation is the retained single assessment. No further moment,
+trajectory, record, inverse or fitted state is evaluated.
+
+### Frozen final assessment declaration
+
+Consume only the five retained mode-two primitive C,D enclosures at
+harmonics 1,2,9,18,36. Re-admit their labels and common C5 eigenvalue, rebuild
+the same-mode three-ramp contrasts, including alpha and K, and rebuild all
+own-law and common-record analytical bounds below. Use children 2 and 3,
+edge 2 -> 3, and the shared reference s3=9.00009. No selection or retry is
+allowed. The final decision is the shared circle check's STRICT squared
+inequality, including both observation and nonlinear-history errors.
+An unsafe denominator, nonpositive margin or failing strict inequality is
+unavailable, not an overlap witness. A passing comparison establishes
+disjointness of the two complete finite noisy record sets under the declared
+premises, not physical identification or uniqueness of the family.
+
+The input is the immutable mode-two kernel evidence declared at `0b21a040`,
+in `docs/assets/organized_law_contrast_kernels/`. The read-only input owner
+checks its byte receipts; the theorem consumes primitive C,D intervals,
+not cached coefficients, margins or verdicts. Arithmetic remains outward
+dyadic128. Exponentials use the shared exact-time rational series, with
+sixteen equal argument subdivisions for decay on `[0,16]`. There is one
+assessment through `benchmarks/organized_law_record_separation.py`, archived
+in a fresh `docs/assets/organized_law_record_separation/` directory after
+this declaration and all consumed source are committed. No precision
+escalation, source replay or additional response calculation is admitted.
+
+### Endpoint functional and ideal coefficients
+
+Write h=1e-5, s_c=3c(1+h), and use all three ramps i=1,2,3 in c=2,3.
+Every ramp has length one and two observed endpoints. Let
+F_ci(w)=w(b_ci)-exp(-mu)w(a_ci), mu=mu2=(5+sqrt(5))/8. For the spectral
+left-inverse row R selecting edge 2 define
+
+T_c=-R_c(F_c1-F_c3), Q_c=-R_c(F_c1+F_c3-2F_c2).
+
+Use E0=-exp(mu/2)(T3+T2)/8, O0=exp(mu/2)(T3-T2)/8,
+W_E=exp(mu/2)(Q3+Q2)/8 and W_O=exp(mu/2)(Q3-Q2)/8.
+The target command has positive sign in child 3 and negative in child 2.
+The centered commands are eps/2+xi, -2xi, -eps/2+xi.
+Consequently E0 and O0 have coefficients sin(n eps/2) C_n and
+sin(n eps/2) D_n, while W_E and W_O have coefficients
+
+L_E,n=cos(n eps/2)D_n-D_2n,
+L_O,n=cos(n eps/2)C_n+C_2n.
+
+The selected alpha_E=sin(eps/2)C_1/L_E,1 and
+alpha_O=sin(eps/2)D_1/L_O,1 exactly annihilate the fundamental in
+E=E0-alpha_E W_E, O=O0-alpha_O W_O. K_E,n and K_O,n are rebuilt
+from these formulas; neither their signs nor their magnitude are assumed.
+Both higher harmonics belong to the same phase theta=9*a_1(s3).
+Thus the existing conditional circle theorem applies with these K and
+fully inclusive error budgets.
+
+The old noise bounds remain valid:
+N_E <= sqrt(10)cosh(mu/2)(1+2|alpha_E|)delta,
+N_O <= sqrt(10)cosh(mu/2)(1+2|alpha_O|)delta,
+where delta=2eta+E0_source+E1_source.
+
+### Uniform actual phase motion on the late blocks
+
+Set I=[s2,s4], t*=s3 and L=3(1+h)=3.00003. The common-record phase lemma
+proves P(v)=gamma|exp(i a0(v))-exp(i a1(v))|/4 <20 r9 at ALL historical
+times, where r9=gamma/(4*2187). It follows initially from equal winding,
+the first plateau, the acute gap prior and the actual two-law deformation;
+the old absolute drift bound then preserves this containing amplitude.
+
+For each law write its command-removed phase increment as a homogeneous
+heat contribution plus a forced contribution. Since Y'=-AY-(gamma/4)B j,
+
+d_heat(v)=gamma B^T(I-exp(-v A))Y(0),
+d_forced'(v)=-gamma^2 integral_0^v A_edge^2 exp(-(v-s)A_edge)j(s) ds.
+
+The second identity uses the C5 incidence intertwining; A_edge=B^T B/4
+is the same cycle generator in edge order. Its positive projectors obey
+||P_mu||infinity=(2+2sqrt(5))/5<13/10 and mu1+mu2=5/4. Hence
+
+integral_0^infinity ||A_edge^2 exp(-s A_edge)||infinity ds <13/8,
+|d_forced'(v)|infinity <= (13/8)gamma^2 J1.
+
+The exact edge-row norms for homogeneous heat are
+||row(B^T P_mu1)||1=1+1/sqrt(5)<29/20,
+||row(B^T P_mu2)||1=1+3/sqrt(5)<47/20.
+On either side of t*, each scalar heat difference is monotone; its largest
+absolute value is at the corresponding endpoint of I. It suffices to bound
+the larger of the two sums of these row norms times
+|exp(-mu t)-exp(-mu t*)|, and multiply by gamma X.
+Adding (13/8)gamma^2 J1 L proves D_late<1e-6. This can be checked using
+gamma<1/3200 (pi>3.14) and the existing rational exponential owner; it does
+not evaluate a nonlinear response. For an elementary coarse check, the
+left heat row is <1.45*(.127-.044)+2.35*.005=.1321<.14; the right is
+<1.45*.045+2.35*.001=.0676<.14. Thus the complete bound is less than
+.14 X/3200+(13/8)J1 L/3200^2<1e-6.
+
+This bounds actual motion about t*; no reconstructed phase increment is
+silently set to zero. Each law retains its own phase throughout.
+
+### Joint difference and nonlinear current remainder
+
+Let u=Y0-Y1 and U=sup_I||u||infinity. The actual instantaneous fundamental
+phasor difference is <20r9, and the two additional harmonics total at most
+(3/2)r9. Each node has two incident edges, so the exact pair forcing has
+infinity norm <43r9. Every historical cell is bracketed by readings and has
+length <=1. Duhamel contraction from the preceding reading yields
+
+U <= delta+43r9 <44r9.
+
+The phase difference is constrained by the SAME pair of histories:
+||(d0(v)-d0(t*))-(d1(v)-d1(t*))||infinity <=2 gamma L U.
+Here ||B^T A||infinity=2. Freezing both laws at t*, the exact complex-phasor
+identity gives a per-edge fundamental error bounded by
+20r9 D_late+(gamma/4)*2 gamma L U. The ninth and eighteenth errors total
+at most (9r9+18r9/2)D_late=18r9 D_late. Therefore
+
+current_remainder <= r9[38*1e-6+22 gamma^2 L] <46e-6 r9.
+
+This retains the correlation between relative phase drift and form
+differences. It neither imports the failed unconstrained remainder nor
+treats the two laws' phase motions independently.
+
+### Exact contrast operator bounds
+
+At mode two, R_c B has entries, up to cyclic order and reflection,
+(1,0,-1,phi,-phi), phi=(1+sqrt(5))/2. Its row norm is 3+sqrt(5).
+Let q_mu=(1-exp(-mu))/mu. The final E weights at each child are
+(1+alpha_E,-2alpha_E,alpha_E-1); the final O weights, up to overall
+and child signs, are (1-alpha_O,2alpha_O,-1-alpha_O).
+Let S_E,S_O be their respective sums of absolute values. There are two
+child blocks and the normalization is exp(mu/2)/8, so
+
+H_E=exp(mu/2)q_mu(3+sqrt(5))S_E/4,
+H_O=exp(mu/2)q_mu(3+sqrt(5))S_O/4.
+
+These formulas remain valid for interval/signed alpha. The retained domain
+0<alpha_E<1<alpha_O simplifies S_E=2+2alpha_E and S_O=4alpha_O.
+The fixed final calculation uses the full formulas without trusting those
+cached classifications. Its errors are
+
+epsilon_E=H_E*current_remainder, epsilon_O=H_O*current_remainder,
+total_E=N_E+epsilon_E, total_O=N_O+epsilon_O.
+
+Rebuild the shared phase-circle certificate using (K_O9,K_O18),
+(K_E9,K_E18), total_O,total_E. Passing its strict squared comparison
+contradicts the existence of any common raw record. Hidden source errors
+are already in delta; fine phases, sensor equality with EPI, acquisition
+and alternative-law formation are not additional inferred conclusions.
+
+
+## 12. Shared implementation and verification
 
 The [detached consumer](../../src/tnfr/physics/_organized_law_observation.py)
 reuses the canonical potential/current, product geometry, hidden transport,

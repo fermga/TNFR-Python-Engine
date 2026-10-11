@@ -144,4 +144,6 @@ docs/assets/organized_observed_prediction/*.zip binary
 docs/assets/organized_observed_forecast/*.json -text
 docs/assets/organized_observed_forecast/*.zip binary
 docs/assets/organized_robust_current/*.json -text
+docs/assets/organized_law_contrast_kernels/*.json -text
+docs/assets/organized_law_record_separation/*.json -text
 theory/research/archive/DEVELOPMENT_LOG_PRE_0.0.3.6_2026-09-19.txt -text -whitespace
