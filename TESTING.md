@@ -595,6 +595,20 @@ of a winding result. The phase-free current statistic and loose source
 inequalities are mathematical controls; they neither rerun frozen assessors
 nor admit physical sensors, hidden-phase initialization or a different law.
 
+For [inherited constituent response and memory](theory/nodal/ORGANIZED_CONSTITUENT_MEMORY.md),
+select `tests/physics/test_organized_constituent_memory.py` with
+`tests/physics/test_exact_linear_algebra.py`, `tests/test_rational_interval.py`
+and the electrical-protocol and theory controls. Reconstruct the unchanged
+C9-by-C5 fine rows and mean projection independently. Check the retained
+hidden initialization, invariant carrier and zero tangent kernel separately
+from quadratic nonlinear feedback and its cubic state-error bound. The
+same-mean/current/storage/loss counterexample must have different analytical
+current derivatives without relying on finite differences or a trajectory.
+Retain the input and work map when testing the positive-r obstruction;
+membership in the larger inference class is not acquisition. These proof
+controls install no solver, run no source assessor or frozen response, and
+admit no physical preparation.
+
 For [current discrimination under uncertainty](theory/nodal/ORGANIZED_ROBUST_CURRENT.md),
 select `tests/physics/test_organized_robust_current.py` and
 `tests/physics/test_organized_robust_current_theory.py` with finite observation

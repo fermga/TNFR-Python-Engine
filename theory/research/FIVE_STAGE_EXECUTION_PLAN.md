@@ -65,10 +65,15 @@ uniquely identify sine dynamics or winding. The subsequent
 physical admission: clock-independent area demands exceed the reviewed
 instrument's published error coverage, and voltage-only checks cannot
 certify the initial relative phases even within the known collar.
-The **single active gate** is now
-[inherited collective response and memory](#organized-inherited-response-admission):
-determine what the existing fine dynamics actually derives, rather than
-identifying its acquired organization with a supplied positive-r matrix law.
+The [inherited-response result](#organized-inherited-response-admission)
+derives nonlinear constituent feedback despite a zero collective memory
+kernel at carrier tangent order. Equal means, instantaneous correction,
+storage and loss do not determine its next derivative in the declared
+inference class; the unchanged input channel also excludes exact all-input
+inheritance of the supplied positive-r matrix law. The **single active gate**
+is now [controlled predictive compression](#organized-predictive-compression-admission):
+retain enough constituent information for a useful finite forecast with
+propagated nonlinear error and an explicit reduction criterion.
 
 No 45-node acquisition, physical readout or source certificate transfers to
 that changed law by default. Earlier frozen protocols, negative results and
@@ -85,7 +90,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Active inherited collective-response admission | [Fine-to-collective question](#organized-inherited-response-admission): distinguish a derived instantaneous response from hidden-state forcing or memory under the unchanged fine law, with actual input and work retained |
+| Active controlled predictive-compression admission | [Finite constituent-memory prediction](#organized-predictive-compression-admission): declare a useful reduction in retained state, online work or history, then prove a finite nonlinear forecast bound or an obstruction under the unchanged fine law |
+| Closed theoretical inherited-response admission | [Constituent feedback](#organized-inherited-response-admission): carrier tangent decoupling coexists with nonlinear covariance feedback; same-observation derivative collisions and the unchanged input map obstruct instantaneous and positive-r closures in their declared scopes |
 | Closed scoped recovery-area physical admission | [Operational review](#organized-sensitive-loaded-response): direct-area method specifications do not certify the frozen error; voltage-only initialization cannot bound the required relative phases. Physical status remains not admitted, evaluation not tested |
 | Closed scoped finite-window design admission | [Loaded-window result](#organized-electrical-finite-window-design): identity and matrix-response separation survive passive sensing, but phase-blind record overlap and missing complete preparation prevent physical admission |
 | Closed conditional collective effective-law admission | [Prepared matrix response](#organized-effective-law-admission): own-law identity retention and finite record separation under the fixed declaration; form, winding, means and storage do not close the state |
@@ -257,7 +263,7 @@ response has not been derived from the earlier acquired constituents.
 | Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Unresolved stable-stationary maintenance route; no active search.** The finite search is closed without a certificate; other classes do not repair uninterrupted maintenance. Reopen with a constructive target or an analytical certificate mechanism, not more starts |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
-| Sufficient collective state and inherited response | Derive the response of the existing fine organization in its declared collective coordinates, distinguishing instantaneous input response, internal state and memory | **Sole active foundational gate** below. The prepared positive-r theorem remains closed in its own domain; it supplies no fine-source inheritance |
+| Sufficient collective state and inherited response | Predict finite constituent feedback with a declared reduction and propagated nonlinear error, retaining hidden initialization, input, work and observation domain | **Sole active foundational gate** below. The inherited-response derivation is closed; an implicit hidden history or full covariance matrix alone is not a useful compressed forecast |
 | Fundamental physical properties and independent observation | Independently admit full preparation and joint physical measurement coverage before evaluating a response | **Closed scoped recovery-area review, unresolved physical dependency.** The reviewed direct-area route is not admitted; neither improved voltage precision nor clock rescaling alone repairs the missing premises. No further apparatus search is active |
 | Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Conceptually critical**, with no new compatibility scan active. If a countermodel shares all proposed premises, the uniqueness claim fails in that scope |
 | Autonomous preparation, support, capacity and events | Supply actual occurrence and state-evolution laws when claiming autonomous assembly. [Event work](../nodal/RELATIONAL_SUPPORT_EVENTS.md), passivity and [operator descent](../STRUCTURAL_OPERATORS.md) do not select occurrence | **Claim-dependent**. Current contacts and preparation remain supplied. Do not postpone investigation of the existing conditional composite until every origin question is solved |
@@ -271,7 +277,7 @@ An added observable earns inclusion by deciding the selected prediction or a
 meaningful minimality obstruction. Existing failed physical-source admissions
 remain failed; more samples cannot repair their complete-law mismatches.
 
-Only the [inherited collective-response admission](#organized-inherited-response-admission) is active.
+Only the [controlled predictive-compression admission](#organized-predictive-compression-admission) is active.
 The table assesses dependencies, not a fixed sequence or parallel campaigns. It preserves
 the objective of generated, physically testable organization without identifying
 winding, phase cancellation or storage with material constituents.
@@ -502,46 +508,58 @@ and joint measurement error remain obligations of any future physical test.
 Other protocols require their own declaration; this candidate is not revised.
 
 <a id="organized-inherited-response-admission"></a>
-### Immediate question: inherited collective response and memory
+### Closed theoretical inherited-response admission
 
-**Which response terms are generated by the retained constituents under the
-existing fine law, and which require a new supplied law?** The
-[fixed analytical comparison](../nodal/ORGANIZED_CONSTITUENT_MEMORY.md#organized-constituent-memory-declaration)
-declares the law, source/domain and input/observation boundary. The ontology
-requires a collective NFR to remain part of the same configuration in which
-it acts. The positive-r prepared C5 comparison does not yet establish that
-generative link. Before another sensor design, distinguish inherited response
-from the constitutive matrix introduced for that separate comparison.
+The [fixed comparison and result](../nodal/ORGANIZED_CONSTITUENT_MEMORY.md#organized-constituent-memory-result)
+derive the exact hidden-history dependence under the unchanged C9-by-C5 law.
+The invariant carrier has decoupled collective and hidden tangents, while
+off-carrier phase covariance produces quadratic feedback with a pointwise
+cubic remainder. Equal means, current correction, full storage and loss can
+have different next collective derivatives in the declared larger inference
+class. Even full second moments can lose an instantaneous cubic correction.
+These counterexamples establish missing information, not acquisition of
+either state by the existing source.
 
-- Start from the unchanged fixed-support fine law and five-child organization
-  of the [electrical protocol](../nodal/ORGANIZED_ELECTRICAL_PROTOCOL.md), with
-  its actual means, constituent deviations, phase lifts, clock and supplied
-  input. Freeze the selected source/domain and input/observation map before
-  any new response assessment. Preserve all earlier formation and responses.
-- Derive the collective input channel and work pairing directly from the fine
-  rows. Use the existing exact carrier and departure identities; do not
-  rename a regular coordinate change as a new matrix mobility or silently
-  insert `I+r*L^2` into the fine dynamics.
-- Determine whether internal deviations can be absorbed into a fixed
-  instantaneous response on the declared domain, or require additional
-  state, history and hidden initialization. The existing sine-covariance
-  remainder, its quadratic bound and the uniform-child input/work pairing
-  are starting results in the [departure owner](../nodal/ORGANIZED_ELECTRICAL_REALIZATION.md#collective-electrical-departure-identities)
-  and [source owner](../nodal/ORGANIZED_ELECTRICAL_SOURCE.md); rederiving them
-  does not close this gate. Characterize the remainder's dependence on
-  collective history, supplied input and hidden initialization, or prove
-  a fixed-matrix equivalence/obstruction on the declared source/domain.
-  A tangent kernel is not a nonlinear closure or a source certificate.
-- Close with a derived response/memory term and its explicit domain, or an
-  equivalence/obstruction separating it from the supplied matrix law. Retain
-  storage, source uncertainty, identity and forcing on the same model; any
-  finite prediction needs its own residual and prospective declaration.
+The unchanged uniform-child input channel excludes exact all-input
+inheritance of the supplied positive-r matrix in the same means and clock,
+including at an acquired state. The hidden storage balance retains actual
+work; no force, passive damping or physical identity is inferred. Static
+edge and derivative controls evaluate no trajectory or frozen response.
 
-This gate tests a missing foundational link useful to formation, composition
-and physical comparison. It admits no new fine pressure, acquisition replay,
-precision scan, fitted response or physical experiment. Independent physical
-preparation and measurement remain dependencies, without a parallel apparatus
-campaign or a presumption that the matrix law must emerge.
+<a id="organized-predictive-compression-admission"></a>
+### Immediate question: controlled predictive compression
+
+**Can a smaller constituent-memory description predict a finite collective
+interaction usefully under the unchanged fine law?** The closed result gives
+an exact implicit history and a pointwise quadratic approximation, but
+neither propagates a compressed forecast's nonlinear error. This gate
+connects the derived mechanism to predictive use of the organized object.
+
+- Retain the [electrical protocol's](../nodal/ORGANIZED_ELECTRICAL_PROTOCOL.md)
+  complete fine law, natural means, clock and uniform-child input/work map.
+  Declare the retained coordinates or history, their initialization and
+  discarded information. Distinguish the actual acquired-source image from
+  a containing inference class; a class counterexample is not a reached pair.
+- Before any finite response assessment, freeze source/domain, input,
+  observable, horizon, tolerance and numerical budget. State the reduction
+  criterion in retained state, online work or history, and a quantitative
+  forecast improvement over the existing carrier approximation and available
+  quadratic envelope. A full 90-by-90 second-moment matrix is not by itself
+  compression; renaming the full hidden dynamics does not satisfy the gate.
+- Derive a propagated nonlinear error under the coupled collective history,
+  with hidden form-phase initialization and source uncertainty retained.
+  Preserve the circular observation, relevant identities and signed work
+  over the declared horizon. Reuse the shared transport and exact arithmetic
+  owners; an actual reusable consumer must justify any new engine kernel.
+- Close with a finite forecast meeting the declared reduction and error
+  criteria, or an obstruction showing that the proposed retained information
+  or budget cannot do so. Do not substitute an unbounded moment hierarchy,
+  another generic memory identity or a precision scan for this decision.
+
+No source replay, changed fine pressure or physical response campaign is
+active. Independent physical preparation and measurement remain dependencies;
+this gate neither selects a new constitutive law nor assumes the supplied
+matrix model must emerge.
 
 Recovering established physical relations remains the objective; the test
 need not predict a deviation from known physics. An equivalent circuit

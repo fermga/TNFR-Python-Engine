@@ -16,6 +16,11 @@ elimination and error-propagation methods below. Its hidden generator and
 nonlinear sources have their own admission; reversible kernel positivity,
 P5 truncation formulas and REMESH equivalence do not transfer automatically.
 
+The [five-child constituent result](nodal/ORGANIZED_CONSTITUENT_MEMORY.md)
+retains nonlinear hidden initialization even though its mean tangent kernel
+vanishes. Its quadratic feedback and cubic state-error bound use the supplied
+C9-by-C5 law; they do not follow from reversible kernel positivity here.
+
 ## 1. What is derived, and from what
 
 The microscopic dynamics is the existing pure-EPI channel of the TNFR nodal
