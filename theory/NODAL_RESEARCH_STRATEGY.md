@@ -145,6 +145,15 @@ freedom, as the [mobility countermodels](nodal/SINE_PAIR_MOBILITY.md#sine-replic
 show. A useful next discriminator must reach beyond the premises those
 countermodels already share.
 
+The [boundary-information audit](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#law-selection-and-boundary-information)
+distinguishes an independently justified restriction from the cost of a
+chosen law's representation. Determining the minimum information needed for
+every relative-phase response can constrain collective interfaces without
+assuming that nature selects the least costly law. Such a result needs a
+lower bound as well as a sufficient representation, and must retain marked
+contacts. It does not supply autonomous evolution of the summary or replace
+the independent preparation, clock and measurement obligations.
+
 ### Present interaction and sufficient future state
 
 Instantaneous current, a sufficient state and a history-based description

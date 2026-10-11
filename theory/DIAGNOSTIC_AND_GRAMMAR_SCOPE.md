@@ -960,6 +960,72 @@ separation with an admitted error budget.
 The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 selects the investigation; this admission criterion creates no parallel queue.
 
+<a id="law-selection-and-boundary-information"></a>
+### Law distinction, independent premises and retained boundary information
+
+The [complete noisy-record separation](nodal/ORGANIZED_LAW_OBSERVATION.md#organized-law-record-separation-result)
+establishes that two supplied laws are distinguishable under one declared
+protocol despite independently unknown initialization. It neither chooses a
+law from a measured response nor supplies a new constitutive axiom. The
+following premise audit separates restrictions already justified by their
+owners from restrictions that would need an additional argument.
+
+Circular phase, odd reciprocal currents, the nodal row and an exact work/loss
+balance still admit the [storage alternatives](nodal/SINE_CONSTITUTIVE_INFORMATION.md#phase-storage-selection-boundary).
+Fixing cosine storage can conditionally select its matching current, but it
+would assume the storage whose uniqueness is in question. Likewise,
+[first-resultant sufficiency](nodal/SINE_CONSTITUTIVE_INFORMATION.md#first-phase-moment-sufficiency)
+selects sine in its stated additive information class; universal
+[balanced-neighborhood cancellation](nodal/SINE_CONSTITUTIVE_INFORMATION.md#balanced-neighborhood-information-admission)
+restates that restriction rather than independently justifying it. Repeating
+these conditional uniqueness proofs cannot remove their premises.
+
+The [C9 composition classification](nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md#composition-compatible-classification)
+admits nonsine profiles with matched target storage, tangent and quadratic
+field. Requiring an unchanged profile across the
+[oriented interface interval](nodal/ORIENTED_INTERFACE_PROFILE_INHERITANCE.md)
+is a stronger conditional selector. The
+[NFR requirements](EMERGENT_ONTOLOGY.md#12-can-nfr-properties-justify-a-joint-law)
+also permit retained boundary-dependent laws and derived memory; they do
+not require that stronger profile premise. Acquisition from one supplied
+source and local stability remain useful conditional results, while
+[operator descent](STRUCTURAL_OPERATORS.md#collective-operator-descent)
+has separate event, target, history, admission and occurrence obligations.
+None of these reviewed results supplies an independently justified unique
+law selector.
+
+The [physical comparison atlas](PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena)
+contains no completely admitted physical identification. Its retained
+[electrical review](research/ORGANIZED_ELECTRICAL_FEASIBILITY.md#organized-electrical-physical-admission)
+and [recovery-area review](research/ORGANIZED_RECOVERY_OBSERVATION.md#recovery-operational-admission)
+expose preparation, observation and complete-law gaps. They concern different
+laws and protocols from the new harmonic record theorem: their apparatus
+bounds and uncertainty certificates do not transfer to it. What remains
+common is the obligation to admit preparation, loading, clock and measurement
+under the actual model. This is a review of the repository's admitted
+bridges, not a claim that no physical realization can exist.
+
+An information requirement can be studied without assuming that nature
+minimizes it. For a declared additive current and marked boundary, distinguish
+the data sufficient for an instantaneous response at every relative phase
+from the state needed to evolve those data. A minimality theorem must name
+the boundary class, regularity, retained degree, allowed decoding and phase
+transformation. An explicit sufficient moment list alone does not prove a
+lower bound on all descriptions in that class. Universal finite-boundary
+claims also need not give the minimum on a fixed small-degree support or
+an invariant prepared family.
+
+This distinction connects law admission to the information a collective
+interface consumes, while retaining two existing obstructions.
+[Repeated composition](nodal/REPEATED_ORGANIZED_COMPOSITION.md)
+can require the child-to-port association; aggregate marginal observations
+do not authorize its removal. And
+[phase-moment motion](nodal/SINE_CONSTITUTIVE_INFORMATION.md#phase-motion-information)
+depends on phase/rate association, so an instantaneous response summary
+need not be an autonomous dynamical state. Finite information, exact
+aggregation or fewer channels must not be promoted to fundamental selection
+principles without an independent argument.
+
 ### Cross-channel foundation audit
 
 The follow-through is centralized in
