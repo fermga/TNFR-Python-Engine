@@ -634,6 +634,13 @@ execute no trajectory or frozen assessment, and supply no acquired-source
 identity or formation certificate. Existing frozen producers and evidence
 remain unchanged.
 
+Changes to `_organized_c5_preparation.py` require the matrix-response,
+loaded-window and recovery-area owners together. Check the shared initial
+energy bound against independently reconstructed nonzero form and phase
+storage, including zero-response/zero-radius boundaries, rejected primitives
+and normalized fixed-width Fraction components. Sharing that preparation
+bound does not merge the consumers' different gains, sensors or observations.
+
 For the [loaded finite-window observation](theory/research/ORGANIZED_FINITE_WINDOW_DESIGN.md),
 select `tests/physics/test_organized_window_observation.py` with the
 matrix-response, electrical-feasibility and shared rational-interval controls.
@@ -645,6 +652,19 @@ Retain sensor initialization, work, both losses, phase-preparation domain,
 representation boundaries and independent physical-unit scaling. These
 analytical checks evaluate no trajectory or physical response and admit no
 apparatus. Existing source archives and frozen evidence remain unchanged.
+
+For the [integrated recovery observation](theory/research/ORGANIZED_RECOVERY_OBSERVATION.md),
+select `tests/physics/test_organized_recovery_observation.py` with the loaded
+window and matrix-response controls. Independently derive both raw signed
+area identities, retaining initial and terminal phase/form/sensor terms;
+endpoint-corrected areas are different observables. Check the complete loaded
+Lyapunov derivative, finite dyadic decay tails, whole-preparation separation,
+zero or insufficient recovery, arithmetic work limits and invalid area-error
+admission. Changing recovery duration must keep the pulse and sensor time
+constant fixed. Exercise the matched quadratic restoring reference to retain
+the limit on identifying sine or winding from this statistic. These checks
+admit no laboratory horizon, drift allowance, preparation or apparatus and
+evaluate no numerical trajectory or frozen producer.
 
 For [finite interface factorization](theory/nodal/ORGANIZED_INTERFACE_FACTORIZATION.md),
 select `tests/physics/test_organized_slot_registration.py` and

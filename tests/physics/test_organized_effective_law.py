@@ -20,6 +20,7 @@ from tnfr.mathematics._exact_linear_algebra import (
 )
 from tnfr.mathematics._comparison_flow import scalar_affine_upper
 from tnfr.mathematics._rational_interval import I, cos, pi_interval, sin
+from tnfr.physics._organized_c5_preparation import prepared_c5_initial_energy_upper
 from tnfr.physics._organized_effective_law import bound_prepared_matrix_response
 
 
@@ -318,6 +319,50 @@ def test_identity_collar_has_independent_cosine_coercivity(winding):
     potential_excess = sum((cos(kappa) - cos(kappa + gap) for gap in differences), I(0))
     coercive_bound = sum(gap**2 for gap in differences) / 10
     assert potential_excess.lo >= coercive_bound >= Q(1, 1000)
+
+
+@pytest.mark.parametrize("response", (Q(0), Q(1, 10)))
+def test_shared_preparation_bound_covers_actual_form_and_phase_storage(
+    cycle_laplacian, response
+):
+    radius = Q(1, 32)
+    form = tuple(radius * value / 4 for value in (1, -1, 0, 0, 0))
+    phase = tuple(radius * value / 8 for value in (1, 0, -1, 0, 0))
+    assert sum(form) == sum(phase) == 0
+    # The joint l1 bound independently suffices for the admitted l2 radii.
+    assert sum(map(abs, form)) + sum(map(abs, phase)) < radius
+    metric, _ = _response_matrices(cycle_laplacian, response)
+    form_energy = _dot(form, _action(cycle_laplacian, _action(metric, form))) / 2
+    kappa = 2 * pi_interval() / 5
+    phase_energy = sum(
+        (cos(kappa) - cos(kappa + phase[j] - phase[i]) for i, j in _EDGES),
+        I(0),
+    )
+    bound = prepared_c5_initial_energy_upper(
+        response_upper=response, preparation_radius=radius
+    )
+    assert form_energy > 0 and phase_energy.lo > 0
+    assert form_energy + phase_energy.hi < bound
+
+
+@pytest.mark.parametrize("parameter", ("response_upper", "preparation_radius"))
+@pytest.mark.parametrize("invalid", (True, Q(-1), float("inf"), float("nan"), "1"))
+def test_shared_preparation_bound_rejects_invalid_primitives(parameter, invalid):
+    arguments = {"response_upper": Q(0), "preparation_radius": Q(0)}
+    arguments[parameter] = invalid
+    with pytest.raises((TypeError, ValueError)):
+        prepared_c5_initial_energy_upper(**arguments)
+
+
+def test_shared_preparation_admits_zero_and_normalizes_fraction_components():
+    np = pytest.importorskip("numpy")
+    assert prepared_c5_initial_energy_upper(response_upper=0, preparation_radius=0) == 0
+    radius = Q(np.int64(2**40), np.int64(3))
+    result = prepared_c5_initial_energy_upper(
+        response_upper=Q(np.int64(1), np.int64(8)), preparation_radius=radius
+    )
+    assert result == Q(2**83, 9)
+    assert type(result.numerator) is type(result.denominator) is int
 
 
 def test_declared_finite_budgets_pass_without_a_response_evaluation(prepared_bound):

@@ -86,9 +86,15 @@ storage before a physical readout can use it. The
 also distinguishes matrix sensitivity from sensitivity to organized phase
 feedback: a calibrated phase-blind reference can remain unresolved even
 when two response matrices are distinguishable. This uses explicit
-countermodels to test what an observation establishes; it does not
-promote the electrical realization to a universal TNFR law or replace the
-earlier conditional organizations with prepared ideal circuits. Gate status,
+countermodels to test what an observation establishes. The
+[recovery-area identity](research/ORGANIZED_RECOVERY_OBSERVATION.md)
+connects phase recovery, sensor memory and an accumulated observation. Its
+own-law decay bound converts that relation into a finite comparison without
+long trajectory stepping. Another restoring law can share the same signature,
+so mechanism discrimination and unique constitutive identification remain
+different questions. This does not promote the electrical realization to a
+universal TNFR law or replace earlier conditional organizations with prepared
+ideal circuits. Gate status,
 acceptance and the selection of further observation questions
 remain in the [sole queue](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).
 

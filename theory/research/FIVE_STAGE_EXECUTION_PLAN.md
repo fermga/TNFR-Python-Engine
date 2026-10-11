@@ -55,11 +55,15 @@ do not close its predictive state. The
 [loaded finite-window design](#organized-electrical-finite-window-design)
 retains identity and distinguishes matrix response, but its permitted
 records overlap those of a matched phase-blind linear reference. It does
-not admit an organization-sensitive physical test. The **single active
-gate** is now [organization-sensitive loaded-response admission](#organized-sensitive-loaded-response):
-declare a new observation and preparation that resolve an unfitted
-consequence beyond the calibrated phase-blind reference, with the actual
-sensor dynamics, loading, work and clock retained.
+not admit an organization-sensitive physical test. The
+[finite recovery-area result](ORGANIZED_RECOVERY_OBSERVATION.md#recovery-area-result)
+does separate restoring phase feedback from that calibrated phase-blind
+reference, using an exact signed integral and a loaded nonlinear decay bound.
+A quadratic restoring law shares the area signature, so the result does not
+uniquely identify sine dynamics or winding. The **single active gate** is now
+[operational recovery-area admission](#organized-sensitive-loaded-response):
+establish independent preparation and a laboratory integral/error protocol,
+or prove a scoped obstruction, before any physical response evaluation.
 
 No 45-node acquisition, physical readout or source certificate transfers to
 that changed law by default. Earlier frozen protocols, negative results and
@@ -76,7 +80,7 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Active organization-sensitive loaded-response admission | [Loaded-response question](#organized-sensitive-loaded-response): freeze complete preparation, laws, loaded observation and a calibrated phase-blind reference; admit separation or a scoped obstruction before physical evaluation |
+| Active operational recovery-area admission | [Loaded-response question](#organized-sensitive-loaded-response): finite conditional separation from the phase-blind reference is proved; independent preparation, laboratory integral error and calibration remain unadmitted |
 | Closed scoped finite-window design admission | [Loaded-window result](#organized-electrical-finite-window-design): identity and matrix-response separation survive passive sensing, but phase-blind record overlap and missing complete preparation prevent physical admission |
 | Closed conditional collective effective-law admission | [Prepared matrix response](#organized-effective-law-admission): own-law identity retention and finite record separation under the fixed declaration; form, winding, means and storage do not close the state |
 | Closed scoped physical feasibility review | [Independent physical admission](#organized-electrical-physical-feasibility): no reviewed apparatus admits the frozen endpoint-voltage protocol; clock-independent precision/aperture demand, junction-capacitance shape mismatch and missing complete preparation remain distinct |
@@ -230,10 +234,13 @@ state with form, winding, means and storage while discarding phase shape.
 The [loaded-window result](ORGANIZED_FINITE_WINDOW_DESIGN.md#loaded-window-design-result)
 retains an actual passive sensor and resolves matrix response, yet does not
 resolve the phase-dependent organization against a matched linear reference.
-The next observation must earn that distinction while retaining independent
-complete preparation, sensor admission and a laboratory clock. The prepared
-collective result supplies no acquisition or inherited fine source, and a
-conditional sensor equation is not an apparatus calibration.
+The [finite recovery area](ORGANIZED_RECOVERY_OBSERVATION.md#recovery-area-result)
+earns that narrower phase-feedback distinction through exact endpoint
+identities and own-law decay. Its area error and full preparation are still
+mathematical premises. The prepared collective result supplies no acquisition
+or inherited fine source, and a conditional sensor equation is not an
+apparatus calibration. A local quadratic restoring alternative also shares
+the area signature; a stronger constitutive claim would need another test.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
@@ -241,7 +248,7 @@ conditional sensor equation is not an apparatus calibration.
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
 | Sufficient collective state and inherited response | The [prepared-reference theorem](../nodal/ORGANIZED_EFFECTIVE_LAW.md#prepared-matrix-response-result) retains identity, finite response and own-law work; an explicit equal-storage collision requires phase information | **Closed in the declared domain.** Acquisition, fine-source inheritance and physical realization remain separate; no further response scan is active |
-| Fundamental physical properties and independent observation | Resolve an organization-sensitive loaded consequence beyond the calibrated phase-blind reference, with complete preparation, sensor state, clock and work | **Sole active design gate** below. Freeze a new discriminating question and close with separation or a scoped obstruction. Independent physical preparation, calibration and joint coverage remain unresolved; both earlier electrical protocols remain unadmitted as physical tests |
+| Fundamental physical properties and independent observation | Independently admit preparation and the raw recovery-area measurement/error model after its conditional separation from the calibrated phase-blind reference | **Sole active operational gate** below. Close with a supported prospective physical protocol or scoped obstruction. The statistic does not distinguish all restoring laws; earlier electrical protocols remain unadmitted as physical tests |
 | Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Conceptually critical**, with no new compatibility scan active. If a countermodel shares all proposed premises, the uniqueness claim fails in that scope |
 | Autonomous preparation, support, capacity and events | Supply actual occurrence and state-evolution laws when claiming autonomous assembly. [Event work](../nodal/RELATIONAL_SUPPORT_EVENTS.md), passivity and [operator descent](../STRUCTURAL_OPERATORS.md) do not select occurrence | **Claim-dependent**. Current contacts and preparation remain supplied. Do not postpone investigation of the existing conditional composite until every origin question is solved |
 | Internal activity and recurrence | Separate preservation of identity from permanent motion; the [positive-loss boundary](../nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission) and alternative-mobility results retain different premises | **Prepared alternative** for a named claim requiring sustained activity. Neither a stationary identity nor finite response establishes recurrence or transfers an invariant measure |
@@ -254,7 +261,7 @@ An added observable earns inclusion by deciding the selected prediction or a
 meaningful minimality obstruction. Existing failed physical-source admissions
 remain failed; more samples cannot repair their complete-law mismatches.
 
-Only the [organization-sensitive loaded-response admission](#organized-sensitive-loaded-response) is active.
+Only the [operational recovery-area admission](#organized-sensitive-loaded-response) is active.
 The table assesses dependencies, not a fixed sequence or parallel campaigns. It preserves
 the objective of generated, physically testable organization without identifying
 winding, phase cancellation or storage with material constituents.
@@ -464,38 +471,42 @@ The source receipt and analytical controls preserve the independent
 preparation, loaded calibration and joint-coverage gaps.
 
 <a id="organized-sensitive-loaded-response"></a>
-### Immediate question: organization-sensitive loaded-response admission
+### Immediate question: operational recovery-area admission
 
-**Can a new loaded observation resolve an unfitted consequence of the
-prepared organization beyond a calibrated phase-blind reference?** The
-[result owner's question](ORGANIZED_FINITE_WINDOW_DESIGN.md#organization-sensitive-next-question)
-identifies the missing distinction. This is a new prospective admission,
-not a repetition of the same short pulse at higher arithmetic precision.
-The [fixed recovery-area candidate](ORGANIZED_RECOVERY_OBSERVATION.md#recovery-area-declaration)
-retains the pulse and sensor and declares a finite signed integral through
-unforced recovery. Its whole-preparation separation and physical admission
-remain to be established under that declaration.
+**Can independent preparation and a physical measurement of signed sensor
+area realize the admitted conditional mechanism test?** Declaration
+`46df23f1` fixes the [recovery-area candidate](ORGANIZED_RECOVERY_OBSERVATION.md#recovery-area-declaration).
+Its [finite theorem](ORGANIZED_RECOVERY_OBSERVATION.md#recovery-area-result)
+retains the short pulse and sensor, preserves identity and separates the full
+law from the calibrated phase-blind reference by more than `2^-14` over the
+whole declared preparation. Exact integrated rows and a new loaded nonlinear
+decay estimate establish this without a trajectory campaign. That conditional
+part is complete; a longer or more precise simulation is not required.
 
-- Freeze the state and complete preparation sets, both candidate laws and
-  the phase-blind alternative before evaluating the discriminating response.
-  Declare which initial states and independently calibrated coefficients
-  are matched; do not use an evaluated amplitude or inferred phase to
-  calibrate itself. Retain all response-relevant phases and sensor state.
-- Specify the loaded observation, finite windows, clock, input, work and
-  identity criterion. Match every evolution row, the actual matrix input
-  channel and any eliminated-state memory; positive ring capacitance and
-  sensor backreaction cannot be absorbed into scalar calibration.
-- Prove separation under the declared uncertainties or a scoped obstruction.
-  Include calibration-compatible phase-blind responses in the alternative
-  record set, not merely another response matrix. Changing the question,
-  preparation or observation requires its own declaration before evaluation.
-- Independently admit full physical preparation, laboratory conditioning,
-  loaded transfer/matrices, delivery, clock and error interpretation. Winding,
-  zero voltage or equal storage do not supply the missing phase collar;
-  energy-based inclusion requires a valid domain and coercivity proof.
-  Distinguish deterministic bounds from joint statistical coverage, and
-  retain the complete preparation cost and supplied input work. The method
-  evidence must remain terrestrial and workstation- or laboratory-accessible.
+The area distinguishes restoring feedback in this comparison. A distinct
+local quadratic restoring law with the same tangent admits overlapping area
+records. The statistic therefore does not select sine nonlinearity, winding,
+material constituents or a unique fundamental law.
+
+- Independently admit the complete physical preparation, including the local
+  phase chart and sensor state. Zero voltage, winding and equal storage cannot
+  certify the missing collar; any energy-based inclusion needs its own domain
+  and independent observation. Acquisition from a fine source does not transfer.
+- Translate the fixed pulse, recovery duration and raw integral together under
+  the laboratory clock. Retain actual loading, matrix input, supplied work and
+  sensor memory. Use the owner's clock-independent voltage-area conversion;
+  instantaneous or mean-reading error does not imply integrated-error coverage.
+- Check terrestrial method evidence for offset, drift, complete calibration,
+  delivery and timing over the admitted duration. Propagate their effects on
+  both candidate records before physical evaluation. Typical resolution or
+  separate marginal uncertainties cannot substitute for the required joint
+  error statement. Keep all response-relevant preparation state independently
+  bounded, without calibrating it from the reserved response.
+- Close with a supported prospective physical protocol or a scoped obstruction.
+  Preserve the mathematical result and its restoring-law ambiguity. Any new
+  preparation, forcing, observation, error allowance or stronger constitutive
+  question needs its own declaration before evaluating a response; it cannot
+  silently replace this candidate after assessing its feasibility.
 
 A passing conditional design still needs separate calibration and reserved
 data under P1-P5. Transfer from a formed fine organization requires its own

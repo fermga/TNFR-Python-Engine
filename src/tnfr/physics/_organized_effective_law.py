@@ -13,6 +13,11 @@ from dataclasses import dataclass
 from fractions import Fraction as Q
 
 from .._exact_time import exact_or_represented_real
+from ._organized_c5_preparation import (
+    IDENTITY_RADIUS,
+    STORAGE_BARRIER,
+    prepared_c5_initial_energy_upper,
+)
 
 
 @dataclass(frozen=True)
@@ -106,8 +111,10 @@ def bound_prepared_matrix_response(
     if min(delta, eta) < 0:
         raise ValueError("preparation radius and observation error must be nonnegative")
 
-    rho, barrier = Q(1, 10), Q(1, 1000)
-    initial_energy = (4 + 32 * rhi) * delta**2
+    rho, barrier = IDENTITY_RADIUS, STORAGE_BARRIER
+    initial_energy = prepared_c5_initial_energy_upper(
+        response_upper=rhi, preparation_radius=delta
+    )
     energy = initial_energy + 2 * a**2 * duration
     state_norm = (delta + 2 * a * duration) / (1 - 2 * duration)
     remainder = 2 * delta + 2 * duration * state_norm

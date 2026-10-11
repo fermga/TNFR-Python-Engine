@@ -425,6 +425,10 @@ rebuilds (8), (10)-(16) from admitted primitive budgets. It reports identity
 and record separation separately: a failed sufficient bound is not a
 trajectory failure or an impossibility theorem. Its variable-budget interface
 supports arithmetic controls, not a new search or evaluation campaign.
+The [shared C5 preparation owner](../../src/tnfr/physics/_organized_c5_preparation.py)
+evaluates (8) and supplies this collar's radius and barrier to the unloaded,
+loaded-sensor and recovery consumers. It admits primitive budgets without
+inferring that a supplied state belongs to the preparation.
 The [independent controls](../../tests/physics/test_organized_effective_law.py)
 use edge-built matrices, symbolic polynomial identities, direct sine sums,
 boundary coercivity and deliberate loss of admission. They preserve the
