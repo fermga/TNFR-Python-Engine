@@ -678,6 +678,17 @@ Those arithmetic checks retain the kernel's smooth forcing/Taylor premises;
 they do not authenticate arbitrary interval matrices or compute a raw-record
 forecast. Preserve the frozen declaration prefix and response bytes.
 
+For [candidate forecast admission](theory/nodal/ORGANIZED_OBSERVED_FORECAST.md),
+select `tests/mathematics/test_prediction_transfer.py` with the retained
+observation-certificate evidence audit. Exact affine histories saturate the
+sample-to-future bound and independently check reading, historical model
+error, future model error and endpoint uncertainty. Include intersecting-box
+counterexamples, retained common form and nonfinite/Boolean admission.
+The arithmetic result has no trajectory-admission flag: a model consumer
+must separately establish one continuous candidate and revalidate the gain,
+source domain, clock and complete record. Do not regenerate frozen responses
+or turn supplied intervals into a joint-feasibility assertion.
+
 For [current discrimination under uncertainty](theory/nodal/ORGANIZED_ROBUST_CURRENT.md),
 select `tests/physics/test_organized_robust_current.py` and
 `tests/physics/test_organized_robust_current_theory.py` with finite observation

@@ -130,6 +130,7 @@ nav:
           - "Preparation-aware collective initialization": theory/nodal/ORGANIZED_MEMORY_INITIALIZATION.md
           - "Computable post-observation prediction": theory/nodal/ORGANIZED_COMPUTABLE_PREDICTION.md
           - "Predictive sufficiency of joint observations": theory/nodal/ORGANIZED_OBSERVED_PREDICTION.md
+          - "Admission of an observation-based forecast": theory/nodal/ORGANIZED_OBSERVED_FORECAST.md
           - "Current discrimination under uncertainty": theory/nodal/ORGANIZED_ROBUST_CURRENT.md
           - "Physical feasibility of organized current observation": theory/research/ORGANIZED_ELECTRICAL_FEASIBILITY.md
           - "Collective state and matrix response": theory/nodal/ORGANIZED_EFFECTIVE_LAW.md

@@ -301,6 +301,18 @@ The table assesses dependencies, not a fixed sequence or parallel campaigns. It 
 the objective of generated, physically testable organization without identifying
 winding, phase cancellation or storage with material constituents.
 
+The present law and source bounds suffice for this conditional construction;
+it does not wait for a unique fundamental law or autonomous substrate origin.
+Completing the interpretation still requires independent justification or
+discrimination of the law, formation and maintenance under any changed
+interaction, retained state across scales, and physical preparation/readout.
+Support, capacity or operator-occurrence laws become necessary when a claim
+requires their autonomous evolution; finite forecasting holds them declared.
+After the operational gate, reassess law discrimination and the independent
+physical bridge before expanding precision or horizon. Use the existing
+owners and activation conditions above; this checkpoint starts no parallel
+campaign and does not remove the current hidden-state or exact-clock priors.
+
 <a id="organized-joint-preparation-resources"></a>
 ### Closed joint preparation-resource admission
 
@@ -629,15 +641,15 @@ its generating collective initialization?** Turn the proved information
 bound into an operational consumer, retaining the same law, class, waveform,
 noise, clock, horizon and `1e-13` true-output policy.
 
-- First derive a sufficient candidate/record admission test. A carrier fit
-  must retain source error on both the historical residual and future output;
-  it need not identify hidden variances. A numerical fit, approximate dual
-  weights or independently compatible marginal states cannot certify one
-  complete history. Keep unknown common form and the phase gauge explicit.
-- Use the certified diameter below `1e-13` to avoid unnecessary optimization
-  of the entire nonlinear feasible-set midrange. Determine whether one
-  rigorously admitted candidate and its carried endpoint suffice, including
-  numerical and model allowances. If no candidate is certified, abstain.
+- [Analytical candidate admission](../nodal/ORGANIZED_OBSERVED_FORECAST.md)
+  now supplies the sufficient conditions. Retain the distinction between
+  a complete record-compatible history and a source-tolerant carrier forecast,
+  with unknown common form and phase gauge explicit. A fit or independently
+  compatible marginal states cannot certify joint compatibility.
+- Implement the admitted candidate and carried-endpoint test with its
+  numerical and model allowances; abstain when it cannot certify a result.
+  The whole-record bound avoids requiring optimization of the nonlinear
+  feasible-set midrange or identification of every hidden coordinate.
 - Reuse shared waveform, source transport, validated integration and evidence
   readers. Separate proposal generation from interval feasibility and forecast
   certification; accept no generating state, future output or evaluated
@@ -648,6 +660,9 @@ noise, clock, horizon and `1e-13` true-output policy.
   frozen producers, tune the input/noise, scan parameters or claim a physical
   validation. The immediate work is constructive admission, not another
   precision increase or an unrestricted trajectory campaign.
+  A synthetic record may be extracted from existing certified forecast
+  evidence, but remains a software control rather than independent validation;
+  protocol declaration, record selection and numerical evaluation are pending.
 
 This is a structural information gate. Physical preparation, calibration and
 apparatus admission remain unresolved; there is no parallel apparatus search
