@@ -713,7 +713,9 @@ For [law versus unknown initialization](theory/nodal/ORGANIZED_LAW_OBSERVATION.m
 select `tests/physics/test_organized_law_observation.py` and
 `tests/physics/test_organized_law_observation_information.py`, plus
 `tests/physics/test_organized_law_observation_rank.py` and
-`tests/physics/test_organized_law_observation_relaxation.py`, with the shared
+`tests/physics/test_organized_law_observation_relaxation.py`,
+`tests/physics/test_organized_law_observation_constrained.py` and
+`tests/physics/test_organized_law_phase_transport.py`, with the shared
 constitutive-current, hidden-transport, interval/jet and waveform controls.
 Use independent 45-node sums to check the actual carrier and both clock rows;
 retain the counterexample to outer-tangent transfer. Check law and command
@@ -729,6 +731,16 @@ gap independently of a sampled matrix. That direction violates the actual
 cross-harmonic constraints. Neither local collisions, finite formal rank nor
 failure of the unconstrained bootstrap prove nonlinear record compatibility;
 no fit or sampled 35-column evaluation belongs here.
+For constrained contrasts, re-admit coefficients and total error budgets;
+unsafe denominators or equality at the strict margin cannot certify exclusion.
+Independent synthetic phase pairs exercise the common-phase requirement,
+signed coefficients and unavailable domains without evaluating the scientific
+moment kernels. The phase-transport controls must derive the historical grid
+from actual reads, retain both own-law source errors, and check the heat bridge
+and Green bound separately. No reading beyond the last sample is supplied.
+The resulting circle and transport bounds remain conditional ingredients;
+they do not establish a shared raw record, source acquisition or completed
+nonlinear law discrimination.
 
 For [current discrimination under uncertainty](theory/nodal/ORGANIZED_ROBUST_CURRENT.md),
 select `tests/physics/test_organized_robust_current.py` and

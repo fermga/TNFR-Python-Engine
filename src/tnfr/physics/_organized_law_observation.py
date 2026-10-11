@@ -337,3 +337,112 @@ def _bound_organized_law_relaxation_obstruction() -> _OrganizedLawRelaxationObst
         pair_error,
         established,
     )
+
+
+@dataclass(frozen=True)
+class _OrganizedPhaseCircleCertificate:
+    odd_coefficients: tuple[I, I]
+    even_coefficients: tuple[I, I]
+    raw_error_bounds: tuple[Q, Q]
+    ninth_radius: I
+    normalized_ratios: tuple[I, I] | None
+    ratio_upper: Q | None
+    margin_lower: Q | None
+    normalized_error_bounds: tuple[Q, Q] | None
+    error_square_upper: Q | None
+    available: bool
+    exclusion_certified: bool
+    reason: str
+    scope: str = "conditional_shared_phase_contrast_exclusion_not_a_record_verdict"
+
+
+def _certify_organized_phase_circle(
+    *, odd_coefficients: Any, even_coefficients: Any, odd_error: Any, even_error: Any
+) -> _OrganizedPhaseCircleCertificate:
+    """Certify a supplied finite-contrast implication, without evaluating data.
+
+    Premises are fundamental cancellation and two contrasts with the SAME
+    phase theta: r9*(-a9*cos(theta)+a18*cos(2*theta)/2) and
+    r9*(-b9*sin(theta)+b18*sin(2*theta)/2). Supplied absolute errors must
+    include all measurement, source, numerical and nonlinear transport terms.
+    The conclusion excludes simultaneous membership in the two supplied
+    zero-centered error bands.
+    This function checks coefficient/error arithmetic, not those premises.
+    """
+
+    def pair(raw: Any, label: str) -> tuple[I, I]:
+        values = _ordered(raw, label, limit=3)
+        if len(values) != 2:
+            raise ValueError(f"{label} requires ninth and eighteenth coefficients")
+        admitted = tuple(
+            (
+                I(value.lo, value.hi)
+                if isinstance(value, I)
+                else I(exact_or_represented_real(value, label))
+            )
+            for value in values
+        )
+        return admitted[0], admitted[1]
+
+    odd = pair(odd_coefficients, "odd coefficients")
+    even = pair(even_coefficients, "even coefficients")
+    errors = (
+        exact_or_represented_real(odd_error, "odd error"),
+        exact_or_represented_real(even_error, "even error"),
+    )
+    if any(error < 0 for error in errors):
+        raise ValueError("contrast error budgets must be nonnegative")
+    radius = _derive_organized_outer_winding().gamma_bounds / (4 * 2187)
+    if odd[1].contains(0) or even[1].contains(0):
+        return _OrganizedPhaseCircleCertificate(
+            odd,
+            even,
+            errors,
+            radius,
+            None,
+            None,
+            None,
+            None,
+            None,
+            False,
+            False,
+            "high_harmonic_denominator_contains_zero",
+        )
+    ratios = (2 * odd[0] / odd[1], 2 * even[0] / even[1])
+    ratio_upper = max(ratio.abs_max for ratio in ratios)
+    if ratio_upper >= 1:
+        return _OrganizedPhaseCircleCertificate(
+            odd,
+            even,
+            errors,
+            radius,
+            ratios,
+            ratio_upper,
+            None,
+            None,
+            None,
+            False,
+            False,
+            "no_positive_uniform_circle_margin",
+        )
+    margin = 1 - ratio_upper
+    normalized = tuple(
+        2 * error / (radius.lo * min(abs(coefficient.lo), abs(coefficient.hi)))
+        for error, coefficient in zip(errors, (odd[1], even[1]))
+    )
+    error_square = sum(error**2 for error in normalized)
+    excluded = error_square < margin**2
+    return _OrganizedPhaseCircleCertificate(
+        odd,
+        even,
+        errors,
+        radius,
+        ratios,
+        ratio_upper,
+        margin,
+        (normalized[0], normalized[1]),
+        error_square,
+        True,
+        excluded,
+        "strict_conditional_exclusion" if excluded else "error_budget_not_strict",
+    )

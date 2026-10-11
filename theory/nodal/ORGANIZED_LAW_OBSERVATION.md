@@ -20,6 +20,13 @@ every global scalar or positive block bootstrap using the retained unconstrained
 coefficient and remainder bounds. These results establish neither separation
 nor overlap of the complete noisy nonlinear record sets.
 
+A constrained continuation uses the actual shared harmonic phase. Two
+long-ramp contrasts cancel the fundamental without dividing by the short
+plateau duration, and their ideal joint signal has a uniform positive
+phase-circle margin. A separate heat bridge through the existing form
+readings bounds historical carrier phase-increment error below `2.8e-8`.
+Kernel magnitudes and a combined rephasing/error certificate remain open.
+
 | Item | Retained analytical scope |
 | --- | --- |
 | Support/state | Unit `C9 x C5`, nodes `9*c+j`, 90 edges, signed form and primitive circular phase; held unit capacities |
@@ -27,7 +34,7 @@ nor overlap of the complete noisy nonlinear record sets.
 | Initial class | `abs(x_i)<=X=1/100`; `theta=psi+R*Phi+z`, `psi_j=2*pi*(j-4)/9`, child-zero hidden means, `abs(z_i)<=1e-6`, `||u||2<=31/10^9`, `||z||2<=601/10^10`; principal collective gaps at most `7/5`, winding in `{-1,0,1}` |
 | Input/clock | Original fifteen ramps and plateaus, exact command, `tau=(1023/1024)*t`, local time `v=tau-200`, horizon `T=16` |
 | Actual observations | Original thirty five-form readings, arbitrary coordinate errors at most `eta=1e-14`; no primitive phase or initial-state label is observed |
-| Information result | Exact local frozen-current collisions; exact rank 35 of the unchanged finite formal design; obstruction to its unconstrained global scalar/block bootstrap |
+| Information result | Local frozen-current collisions, finite formal rank 35 and the unconstrained-bootstrap obstruction; constrained long-ramp contrasts and record-conditioned historical phase transport |
 | Outstanding distinction | Separation or overlap of the actual finite joint record sets, including each complete nonlinear history and its own source error |
 | Evidence | Analytical proofs and independent static arithmetic/field controls; no fit, response trajectory, sampled coefficient design, physical data or frozen producer is evaluated |
 
@@ -752,14 +759,355 @@ nonlinear separation/overlap question open. The
 [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#organized-law-state-identifiability)
 retains the constrained continuation under the same word, noise and horizon.
 
-## 7. Shared implementation and verification
+<a id="organized-law-long-ramp-contrasts"></a>
+## 7. Constrained contrasts from recorded long-ramp endpoints
+
+The following construction avoids dividing a form difference by the short
+plateau duration. It cancels the formal initial-form response, constant
+forcing and fundamental harmonic before using the alternative's shared
+phase. It supplies a conditional finite separation criterion; the required
+kernel magnitudes and actual-history error bounds remain unresolved.
+
+### An explicit functional of the unchanged readings
+
+Orient each edge as `e -> e+1`, with incidence column
+`b_e=e_(e+1)-e_e`. Choose edge `1 -> 2` and its two marked-child blocks,
+`c=1,2`. Let `h_p=1e-5` and `s_c=3*c*(1+h_p)`. The first and third ramps
+have recorded endpoints
+
+\[
+ a_{c,1}=s_c+h_p,\quad b_{c,1}=a_{c,1}+1,\qquad
+ a_{c,3}=s_c+2+3h_p,\quad b_{c,3}=a_{c,3}+1.
+ \tag{42}
+\]
+
+The third endpoint is the next child's zero-level plateau beginning. All
+eight endpoints in this construction belong to the existing thirty times.
+Use command-removed form Y, or a difference u of two carrier forms, for
+which the common command already cancels.
+
+For either positive eigenvalue mu in (22), let P_mu be its orthogonal
+spectral projector. Put `Q_c,mu=[P_mu*b_(c-1),P_mu*b_c]` and let R_c,mu,e
+be the row of its left inverse selecting edge `e=1`. Define
+
+\[
+ \mathcal T_{c,\mu,e}(w)=-R_{c,\mu,e}
+ [w(b_{c,1})-e^{-\mu}w(a_{c,1})
+       -w(b_{c,3})+e^{-\mu}w(a_{c,3})].
+ \tag{43}
+\]
+
+The row already lies in the range of P_mu. Its norm is explicit: the Gram
+matrix of Q has diagonal `d=8*mu/5` and off-diagonal `d*(1-2*mu)`, with
+`d*(1-(1-2*mu)^2)=1/2`. Hence `||R_c,mu,e||2=sqrt(2)` for both modes.
+Coordinate errors at most delta in the four inputs to (43) change its
+value by at most `2*sqrt(10)*(1+exp(-mu))*delta`.
+
+For the frozen formal equation (16), the first-minus-third ramp difference
+cancels every constant edge current. Only the marked child's two incident
+edges remain, so (43) extracts their separate weighted current contrasts.
+The command on edge 1 is positive when child 2 is marked and negative
+when child 1 is marked. Therefore define its two parity moments by
+
+\[
+ \mathcal E_\mu(w)=-\frac{e^{\mu/2}}8
+       [\mathcal T_{2,\mu,1}(w)+\mathcal T_{1,\mu,1}(w)],\qquad
+ \mathcal O_\mu(w)=\frac{e^{\mu/2}}8
+       [\mathcal T_{2,\mu,1}(w)-\mathcal T_{1,\mu,1}(w)].
+ \tag{44}
+\]
+
+Each has observation error at most `sqrt(10)*cosh(mu/2)*delta<4*delta`.
+This bound uses the recorded forms themselves, without estimating a
+plateau derivative or an unknown initial form.
+
+### Positive kernels after removing the fundamental
+
+Write the centered ramp coordinate as `r=t-1/2` and put
+`xi(r)=epsilon*(3*r/2-2*r^3)`. On `0<=r<=1/2`, xi increases from zero
+to `epsilon/2`. The first and third commands are `epsilon/2+xi(r)` and
+`-epsilon/2+xi(r)`. Their trigonometric difference gives the exact kernels
+
+\[
+ C_{\mu,n}=\int_0^{1/2}\sinh(\mu r)\sin(n\xi(r))\,dr,\qquad
+ D_{\mu,n}=\int_0^{1/2}\cosh(\mu r)\cos(n\xi(r))\,dr.
+ \tag{45}
+\]
+
+For the formal history, (44) equals respectively
+`sum_n b_s,n,e*sin(n*epsilon/2)*C_mu,n` and
+`sum_n b_c,n,e*sin(n*epsilon/2)*D_mu,n`. Set
+
+\[
+ \alpha_E=C_{\mu_1,1}/C_{\mu_2,1},\qquad
+ \alpha_O=D_{\mu_1,1}/D_{\mu_2,1},\qquad 0<\alpha_E,\alpha_O<1,
+\]
+\[
+ \mathcal E=\mathcal E_{\mu_1}-\alpha_E\mathcal E_{\mu_2},\qquad
+ \mathcal O=\mathcal O_{\mu_1}-\alpha_O\mathcal O_{\mu_2}.
+ \tag{46}
+\]
+
+The fundamental coefficients vanish exactly. The remaining coefficients are
+
+\[
+ K_{E,n}=\sin(n\epsilon/2)(C_{\mu_1,n}-\alpha_E C_{\mu_2,n}),\qquad
+ K_{O,n}=\sin(n\epsilon/2)(D_{\mu_1,n}-\alpha_O D_{\mu_2,n}),
+ \quad n=9,18.
+ \tag{47}
+\]
+
+All four are strictly positive. Indeed, each numerator in (47) is an
+ordered double integral of a weight determinant times a function
+determinant. Both weight ratios
+`sinh(mu2*r)/sinh(mu1*r)` and `cosh(mu2*r)/cosh(mu1*r)` strictly increase
+for positive r. Both function ratios `sin(n*x)/sin(x)` and
+`cos(n*x)/cos(x)` strictly decrease for `0<x<=epsilon/2`, where
+`18*x<=.9<pi/2`. Consequently both determinants have the same positive
+orientation. This proves strict positivity without evaluating an integral.
+
+The same positive representation bounds their frequency ratios. For
+`0<x<y<=epsilon/2`, the sine determinant
+`sin(n*x)*sin(y)-sin(x)*sin(n*y)` is `(n^2-1)*sin(y)` times the positive
+Dirichlet Green integral of `sin(n*s)` on `[0,y]`, with operator
+`-d^2/ds^2-1`. Since `sin(18*s)=2*sin(9*s)*cos(9*s)`, its n=9 to n=18
+ratio is at most `40/(323*cos(.45))`. For the cosine determinant use
+
+\[
+ \left(\frac{\cos(ns)}{\cos s}\right)'
+ =-\frac{n^2-1}{\cos^2s}\int_0^s\cos(nt)\cos t\,dt.
+ \tag{48}
+\]
+
+The n=9 to n=18 ratio is at most `80/(323*cos(.9))`. Multiplying in each
+case by `sin(.45)/sin(.9)=1/(2*cos(.45))` gives
+
+\[
+ 0<\rho_E:=K_{E,9}/K_{E,18}
+ \le\frac{20}{323\cos^2(.45)}<\frac1{12},\qquad
+ 0<\rho_O:=K_{O,9}/K_{O,18}
+ \le\frac{40}{323\cos(.9)\cos(.45)}<\frac14.
+ \tag{49}
+\]
+
+The strict rational comparisons already follow from
+`cos(.45)>719/800` and `cos(.9)>119/200`. No sampled coefficient matrix
+or kernel magnitude is computed here.
+
+### A finite certificate with explicit remaining obligations
+
+Let `theta=9*a` for the alternative's edge gap at one common reference
+time, and let `r9=gamma/(4*2187)`. Retaining its actual coefficients (41)
+in the frozen contrasts gives
+
+\[
+ \frac{2\mathcal E_{\rm fr}}{K_{E,18}}
+ =r_9(\sin2\theta-2\rho_E\sin\theta),\qquad
+ \frac{2\mathcal O_{\rm fr}}{K_{O,18}}
+ =r_9(\cos2\theta-2\rho_O\cos\theta).
+ \tag{50}
+\]
+
+The Euclidean norm of this pair is at least
+`r9*(1-2*max(rho_E,rho_O))>r9/2`. This conclusion uses the shared phase
+and fixed radii, not independent bounds on two harmonic blocks.
+
+For two histories sharing a noisy record, (13) bounds every input to (43)
+by delta. Their two final observation allowances are
+
+\[
+ N_E=\sqrt{10}[\cosh(\mu_1/2)+\alpha_E\cosh(\mu_2/2)]\delta<8\delta,
+ \quad
+ N_O=\sqrt{10}[\cosh(\mu_1/2)+\alpha_O\cosh(\mu_2/2)]\delta<8\delta.
+ \tag{51}
+\]
+
+Suppose uniform, own-law arguments additionally establish
+`|mathcal E(u)-mathcal E_fr|<=epsilon_E` and
+`|mathcal O(u)-mathcal O_fr|<=epsilon_O`. A sufficient separation criterion
+for the actual record sets is then
+
+\[
+ \sqrt{\left(\frac{2(N_E+\epsilon_E)}{K_{E,18}}\right)^2+
+             \left(\frac{2(N_O+\epsilon_O)}{K_{O,18}}\right)^2}
+ <\frac{r_9}{2}.
+ \tag{52}
+\]
+
+This is a conditional criterion, not a passing verdict. It still needs
+certified kernel magnitudes and actual-history departures from one shared
+reference phase. Reconstructing phase increments accurately does not make
+those increments zero: even known nonzero endogenous drift changes the
+frozen kernels. It must be incorporated into the contrasts or bounded,
+together with the uncertainty of the reconstruction and both laws' source
+errors. Local resetting must also retain transport between the two child
+blocks. No numerical kernel, trajectory, fit or reserved response is
+evaluated by this construction.
+
+<a id="organized-law-historical-phase-transport"></a>
+## 8. The same form readings constrain historical phase transport
+
+The exact carrier phase row depends on the observed form history, not on
+an independently chosen phase velocity. This allows the initial phases to
+remain unknown while bounding their increments more tightly. This section
+uses only the historical interval
+`0<=v<=t_last=14+15/100000`; it does not reconstruct the unobserved return
+ramp or the tail to time 16.
+
+Put `A=L5/4` and `w_lambda=gamma*S_lambda,5/4` in (7). Then
+
+\[
+ Y'=-AY+w_\lambda,\qquad \Psi'=\gamma AY,\qquad
+ \|Y\|_\infty\le M_\lambda:=X+gJ_\lambda T/2.
+ \tag{53}
+\]
+
+At each reading the commanded form offset vanishes, so the raw fine-mean
+reading y differs from this law's carrier Y by at most
+`epsilon_lambda=eta+E_lambda` in each coordinate. Both compared laws use
+the same raw record if one is jointly compatible; this is a conditional
+argument for any such record, without evaluating one.
+
+### A bridge that retains arbitrary heat relaxation
+
+On each interval of length h between successive readings, define
+
+\[
+ Q(s)=\int_0^s e^{-rA}\,dr,\qquad V_h(s)=Q(s)Q(h)^{-1},\qquad
+ \widehat Y(s)=(I-V_h(s))y_i+V_h(s)y_{i+1}.
+ \tag{54}
+\]
+
+The matrix Q(h) is positive definite, including its constant-mode
+eigenvalue h. The eigenvalues of V_h(s) lie in `[0,1]`. This bridge exactly
+reproduces every solution with constant forcing, including arbitrary
+initial heat relaxation. It is an observation-based interpolation, not a
+new supplied evolution law. It need not reproduce the actual current.
+Joining the intervals yields one continuous form interpolant. Define
+the common edge-phase increment reference
+
+\[
+ \widehat d(v)=\gamma B^TA\int_0^v\widehat Y(s)\,ds.
+ \tag{55}
+\]
+
+The initial circular edge phase is not reconstructed. For each law its
+actual carrier increment `d_lambda=B^T(Psi_lambda(v)-Psi_lambda(0))` is
+compared with this same reference.
+
+With exact carrier endpoints, `e=Y-hat Y` obeys
+`e''+Ae'=w_lambda'`, with zero values at both cell endpoints. For a
+spectral value `0<=mu<=1`, let `q_mu(s)=(1-exp(-mu*s))/mu`, using s when
+mu is zero. The absolute scalar Dirichlet Green kernel is
+
+\[
+ G_\mu(t,s)=
+ \frac{q_\mu(\min(t,s))q_\mu(h-\max(t,s))}{q_\mu(h)}
+ e^{-\mu\max(t-s,0)}.
+\]
+
+For h at most one, `q_mu(r)<=r` and
+`mu*h/(1-exp(-mu*h))<=1/(1-exp(-1))<8/5`, with the continuous value one
+at mu zero. Consequently
+
+\[
+ 0\le G_\mu(t,s)\le\frac85G_0(t,s),\qquad
+ \int_0^hG_0(t,s)\,dt=\frac{s(h-s)}2.
+ \tag{56}
+\]
+
+The C5 geometry gives `||B||2<=2`, `||A||2<=1`, and each row of
+`B^T A` has squared Euclidean norm `5/4`. The actual current derivative
+therefore satisfies, when the marked command level is q,
+
+\[
+ \|w_\lambda'\|_2\le
+ \frac{\gamma L_\lambda}{2}
+ (\sqrt2|q'|+2\gamma\sqrt5 M_\lambda).
+ \tag{57}
+\]
+
+The bound uses `B^T H'`, which has exactly two nonzero entries of opposite
+sign, and the complete phase row in (53). It is an own-law estimate, not
+an observed derivative.
+
+### Separate reading, command and endogenous errors
+
+For a cubic ramp of amplitude a and duration h,
+`q'=6*a*s*(h-s)/h^3`, so integrating its absolute value against the
+weight in (56) gives `|a|*h^2/10`. Combining (56)-(57) with the edge-row
+norm gives at most `sqrt(10)*gamma^2*L_lambda*|a|*h^2/25` in phase
+increment error. Use `sqrt(10)<19/6`. The endogenous contribution is at
+most `gamma^3*L_lambda*M_lambda*h^3/3`.
+
+Endpoint perturbations have Euclidean norm at most
+`sqrt(5)*epsilon_lambda`. Both spectral bridge weights have norm at most
+one. After applying `gamma*B^T A` and integrating, their contribution
+is at most `5*g*epsilon_lambda*h` per cell. No derivative estimate
+divides these errors by the short plateau duration.
+
+Thus a uniform historical bound is
+
+\[
+ \|d_\lambda(v)-\widehat d(v)\|_\infty\le R_\lambda,
+\]
+\[
+ R_\lambda=
+ 5g\epsilon_\lambda t_{last}
+ +\frac{19}{150}g^2L_\lambda\sum_{\rm cells}|a|h^2
+ +\frac{g^3L_\lambda M_\lambda}{3}\sum_{\rm cells}h^3.
+ \tag{58}
+\]
+
+There are exactly fourteen observed ramps and fifteen short plateaus:
+
+\[
+ \sum|a|h^2=19/10,\qquad
+ \sum h^3=14+15\cdot10^{-15}.
+ \tag{59}
+\]
+
+The last return ramp has no right endpoint reading and is excluded.
+Summing only completed cells and the full nonnegative allowance for the
+current cell gives a valid bound also at interior times. In particular,
+for both endpoint laws (and uniformly through `0<=lambda<=1`),
+
+\[
+ R_\lambda<2.8\cdot10^{-8}.
+ \tag{60}
+\]
+
+The report retains the three error contributions and cumulative cell
+allowances separately. Unlike the old absolute drift D, the interpolation
+error has no term of order `g*X`; initial form enters only the much smaller
+endogenous term of order `g^3*X`. This uses additional information already
+present in the same record, without tightening its noise allowance.
+
+This is a carrier edge-phase increment bound. A statement about the fine
+collective mean-phase increment must additionally retain twice the own-law
+mean-phase source error; individual hidden constituent phases remain
+unobserved. Neither version identifies the initial phase, its winding or
+the law. In particular, the nonzero common reference d_hat must be retained
+when using the contrasts in section 7: a small reconstruction error does
+not justify replacing the reconstructed motion by zero. Implementing and
+certifying their combined history-dependent test is still an obligation.
+
+## 9. Shared implementation and verification
 
 The [detached consumer](../../src/tnfr/physics/_organized_law_observation.py)
 reuses the canonical potential/current, product geometry, hidden transport,
 interval/jet arithmetic and waveform. It supplies own-law analytical bounds,
 an actual carrier field, ideal local quadratures and the exact analytical
-relaxation bounds; it installs no runtime law and evaluates no trajectory.
-The shared prescribed-time validator remains
+relaxation bounds. Its conditional phase-circle checker re-admits coefficient
+and total-error primitives and excludes simultaneous membership in two
+zero-centered error bands only under the declared shared-phase contrast
+premises. Unsafe denominators and nonpositive circle margins are unavailable;
+equality at the squared error threshold does not certify exclusion.
+The [phase-transport bound](../../src/tnfr/physics/_organized_law_phase_transport.py)
+rebuilds the historical grid, current variation and both own-law source
+budgets. It consumes no raw record and does not implement an individual
+phase reconstruction. Neither consumer installs a runtime law or evaluates
+a trajectory. The shared prescribed-time validator remains
 the execution owner for any separately declared future numerical test.
 
 [Admission and field controls](../../tests/physics/test_organized_law_observation.py)
@@ -774,6 +1122,11 @@ independence used in section 5.
 [Relaxation controls](../../tests/physics/test_organized_law_observation_relaxation.py)
 check moment cancellation, actual forcing orientation, the dipole heat bound,
 own-law remainder constants and the obstruction's constitutive exclusion.
+[Constrained-contrast controls](../../tests/physics/test_organized_law_observation_constrained.py)
+check shared-phase synthetic cases, strict margins and primitive rejection.
+[Phase-transport controls](../../tests/physics/test_organized_law_phase_transport.py)
+check the actual historical domain, exact C5 norms, independent scalar Green
+and constant-forcing cases, and separate reading/source/command budgets.
 These controls exercise proof premises; the proofs establish their stated
 mathematical conclusions.
 No root search, fit, sampled coefficient assessment or frozen producer is run.

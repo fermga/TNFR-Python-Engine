@@ -92,7 +92,10 @@ constitutive laws when each has its own unknown initialization. Own-law
 admission and finite sampled injectivity of the formal harmonic comparison
 are established. The local-current collision and a proved obstruction to
 the unconstrained global remainder bound require retaining the laws' joint
-phase relations and temporal information in the next certificate.
+phase relations and temporal information in the next certificate. Constrained
+long-ramp contrasts and a historical phase-transport bound now supply its
+separate observation and state-estimation ingredients; their joint nonlinear
+error admission remains open.
 
 No 45-node acquisition, physical readout or source certificate transfers to
 the supplied positive-r matrix law by default. Earlier frozen protocols,
@@ -109,7 +112,7 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Active law versus initial-state identifiability | [Two-law record admission](#organized-law-state-identifiability): own-law admission and finite formal injectivity are established; a proved obstruction excludes the unconstrained global bootstrap. Constrained nonlinear finite-record separation or overlap remains unresolved |
+| Active law versus initial-state identifiability | [Two-law record admission](#organized-law-state-identifiability): constrained long-ramp contrasts and record-conditioned phase transport are established as separate ingredients. Kernel magnitudes and their joint rephasing/error certificate remain unresolved |
 | Closed operational observation-based forecast | [Certified forecast from a joint record](#organized-observed-forecast-construction): one archived synthetic record yields a carried conditional endpoint within the fixed policy, without generating-state input |
 | Closed observation-to-prediction sufficiency | [Unknown collective initialization](#organized-observed-prediction-admission): a uniform complete-history future diameter below the fixed target retains joint noisy records and source uncertainty |
 | Closed computable prospective-prediction admission | [Carried reduced reference](#organized-computable-prediction-admission): a fixed-budget validated forecast separates the post-observation endpoint from the omitted-input control with numerical, source and reading errors retained |
@@ -689,14 +692,24 @@ supports, preparations and budgets.
    formal coefficients and the retained global remainder envelope; selecting
    different inverse weights or computing that matrix more accurately cannot
    repair this certificate.
-3. **Next construction:** retain the shared underlying phases, fixed ninth
-   and eighteenth harmonic circles and their cross-harmonic relation, both
-   cycle constraints, and phase drift driven by each carried form history.
-   Derive a joint constrained separation criterion or compatible-history
-   witness under the same word, noise and horizon. The formal cancellation
-   witness violates these constitutive coefficient constraints and is not a
-   two-law overlap witness. A new bound must avoid that excluded relaxation;
-   ideal local-current or zero-noise rank results alone do not close the gate.
+3. **Closed constrained ingredients:** the
+   [long-ramp construction](../nodal/ORGANIZED_LAW_OBSERVATION.md#organized-law-long-ramp-contrasts)
+   retains the actual harmonic circles and shared phase. It uses recorded
+   endpoints and has observation allowances below `8*delta`, without dividing
+   by the short plateau duration. The
+   [historical heat bridge](../nodal/ORGANIZED_LAW_OBSERVATION.md#organized-law-historical-phase-transport)
+   bounds each law's carrier edge-phase increment error below `2.8e-8` from
+   the same form record; initial phase remains unknown and its last unobserved
+   ramp/tail are excluded. Neither ingredient is a complete discriminator.
+4. **Next construction:** retain the nonzero record-conditioned phase motion
+   in the contrasts, with one common reference across both child blocks.
+   Establish the kernel magnitudes and joint reading, source, reconstruction
+   and nonlinear rephasing budgets needed by the strict circle criterion.
+   Any proposed state/history witness must retain both initial cycle and form
+   constraints. The excluded formal cancellation direction is not such a
+   witness. Seek constrained separation or an admitted common continuing
+   history under the unchanged word, noise and horizon. Do not insert the
+   small transport error in place of the actual transported phase motion.
    Any numerical discriminator must
    declare its record/source choice, alternatives, budgets and prospective
    criterion before evaluation. No additional fit, parameter scan, waveform
