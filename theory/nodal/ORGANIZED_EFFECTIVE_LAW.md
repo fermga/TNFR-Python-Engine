@@ -7,8 +7,10 @@
 This owner specifies one complete collective comparison for the foundational
 question raised by the [physical feasibility review](../research/ORGANIZED_ELECTRICAL_FEASIBILITY.md).
 The law below is a supplied constitutive choice. Its balance and coordinate
-identities are conditional algebra; a finite identity/prediction certificate,
-formation under this law and physical realization remain unestablished.
+identities are conditional algebra. The [prepared-reference theorem](#prepared-matrix-response-result)
+adds own-law identity retention, a finite response separation and a precise
+state-reduction obstruction. Acquisition of this preparation, fine-source
+inheritance and physical realization remain unestablished.
 The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 alone selects work and acceptance conditions.
 
@@ -167,7 +169,9 @@ support events also need their storage/work and occurrence laws.
 
 ## 4. Identity, scale and implementation boundary
 
-The state in (2) is sufficient for this declared ten-coordinate ODE.
+The state in (2) is sufficient for this declared ten-coordinate ODE. The
+[finite theorem below](#prepared-matrix-response-result) uses a bounded
+preparation of these same coordinates, including the relative phases.
 It is not a proof that ten coordinates predict the full acquired source.
 The [same-slot source remainder](ORGANIZED_ELECTRICAL_PROTOCOL.md#fixed-support-electrical-protocol),
 its hidden transport, constituent identities and acquisition use another
@@ -223,3 +227,213 @@ separate state-sufficiency control tests whether identical forms, winding,
 conserved means and storage can still conceal different form derivatives.
 Neither success condition would derive acquisition of this preparation,
 constitutive selection, a laboratory clock or a physical measurement map.
+
+<a id="prepared-matrix-response-result"></a>
+## 6. Own-law identity and finite prediction
+
+Declaration revision `a205a8fe` fixes Section 5. The result is analytical:
+no measured or simulated response is used to set its constants or decide
+between the laws. Write `kappa=2*pi*w/5`, let D take the five oriented
+cyclic differences, and use the declared closing-edge offset. All norms
+below are Euclidean except the explicitly marked maximum norm.
+The mixed form/phase norm uses numerical coordinates in the fixed normalized
+chart of Section 1; it is not an invariant metric or a laboratory calibration.
+
+### 6.1 Identity uses the actual storage
+
+On the centered form leaf, define excess storage relative to the prepared
+twist by
+
+\[
+ E_r=H_r-V_* =\tfrac12 U^TLW_rU+
+ V(\Phi_w^*+\theta)-V_*,\qquad
+ V_*=5[1-\cos(2\pi/5)].
+ \tag{6}
+\]
+
+The full preparation cost includes V_*; E_r is not total storage or a
+budget that supplies the external input. Consider the convex relative
+phase cell `||D theta||_infinity <= rho=1/10`, `sum(theta)=0`.
+Here `cos(kappa+d)>1/5` for every `|d|<=rho`: cosine is 1-Lipschitz and
+`cos(2*pi/5)=(sqrt(5)-1)/4>3/10`. The first variation of V at the twist
+vanishes because `sum(D theta)=0`. Taylor's integral remainder and
+`LW_r>=0` therefore give
+
+\[
+ E_r\ge\tfrac1{10}\|D\theta\|^2.
+ \tag{7}
+\]
+
+Every first contact with this cell's boundary requires `E_r>=1/1000`.
+Also `||L||<=4`, as follows directly from the edge-square bound
+`sum_edges(z_j-z_i)^2<=4||z||^2`. The initial preparation consequently obeys
+
+\[
+ E_r(0)\le2(1+16r_{\max})\|U(0)\|^2+2\|\theta(0)\|^2
+ \le(4+32r_{\max})\delta^2=\tfrac{36}{5}\,2^{-52}.
+ \tag{8}
+\]
+
+The bound also holds for the r=0 reference. Initial cell admission follows
+from `||D theta(0)||_infinity<=2 delta<rho`. Completing the square in the
+own-law balance (4), rather than transferring H0 decay, yields
+
+\[
+ E_r'=-\tfrac14\|LU-2f\|^2+\|f\|^2\le\|f\|^2.
+ \tag{9}
+\]
+
+During the declared pulse, `||f||^2=2a^2`. Thus
+
+\[
+ E_r(\tau)\le\overline E=\tfrac{36}{5}\,2^{-52}+2^{-17}
+ <2^{-16}<\tfrac1{1000}\quad(0\le\tau\le T).
+ \tag{10}
+\]
+
+Continuity excludes a first boundary contact. After T the input is zero
+and E_r is nonincreasing, so the same identity survives for all future
+times. In particular the gaps remain strictly acute with the original
+winding. The smooth periodic sine term and constant positive-definite
+W_r give global continuation; there is no hidden event at pulse release.
+
+On the fixed-mean lift, the intersection of `E_r<=overline E` with the
+closed relative cell is compact and contained in its interior. Zero
+dissipation requires `LU=0`, hence `U=0`; remaining invariant trajectories
+also require `S=0`. The potential is strictly convex on this relative cell
+by the cosine Hessian bound used in (7), so its only critical point is the prepared twist.
+The invariant-set argument therefore gives convergence to that twist after
+the pulse for each fixed r. It supplies no uniform settling time, acquisition
+from another winding sector or indefinite external activity.
+
+### 6.2 A finite response with both rows live
+
+Let `z(tau)=||U(tau)||+||theta(tau)||`. For every phase state, the sine-source
+Jacobian is an incidence matrix times a diagonal cosine matrix times its
+transpose; hence `||S(Phi_w^*+theta)||<=4||theta||`. Also `||M_r||<=1` and
+the exact `gamma=1/(1023*pi)<1`. Both rows of (2) give
+
+\[
+ D^+z\le2z+2a,\qquad
+ \sup_{0\le\tau\le T}z(\tau)\le
+ Z=\frac{\delta+2aT}{1-2T}.
+ \tag{11}
+\]
+
+The rational bound follows by taking the supremum in the integrated
+inequality, using `T<1/2`; it is not a numerical exponential or a frozen
+phase approximation. Integrating the form row and taking its v projection
+gives the finite prediction
+
+\[
+ y=aT h(r)+R,\quad h(r)=v^TM_rv,
+ \quad |R|\le\mathcal R=2\delta+2TZ.
+ \tag{12}
+\]
+
+The remainder retains initial form, unknown initial phase shape, damping
+and the phase response throughout the pulse. Here `||v||=sqrt(2)<2` and
+`||M_r(-LU+gamma S)/4||<=z` supply (12).
+It is not a tangent trajectory or a finite difference at time zero.
+
+On the neutral C5 space, `L^2-5L+5I=0`. With `d(r)=1+15r+25r^2`,
+
+\[
+ M_r=\frac{(1+20r)I-5rL}{d(r)},\qquad
+ h(r)=\frac{2(1+5r)}{d(r)},\qquad
+ h'(r)=-\frac{20+100r+250r^2}{d(r)^2}<0.
+ \tag{13}
+\]
+
+The formula for M_r here is restricted to the neutral space; its common
+mode remains one. Since `v^Tv=2` and `v^TLv=6`, it determines h exactly
+throughout the parameter interval, not merely at sampled endpoints.
+Write `b=mathcal R+eta`. The observed record sets are contained in
+
+\[
+ \mathcal Y_+=\left[aT\tfrac{12}{11}-b,\;
+                         aT\tfrac{840}{461}+b\right],\qquad
+ \mathcal Y_0=[2aT-b,\;2aT+b].
+ \tag{14}
+\]
+
+For the fixed declaration, exact arithmetic gives
+
+\[
+ Z=\frac{8193}{66977792},\qquad
+ \mathcal R=\frac{9215}{34292629504},\qquad
+ \inf\mathcal Y_0-\sup\mathcal Y_+
+ =\frac{40665805}{3952225550336}>2^{-21}.
+ \tag{15}
+\]
+
+An independent, coarser spectral bound also suffices: `L>=I` on the neutral
+space implies `h(r)<=2/(1+r)`, so the separation is at least
+`2aT/101-2b=555365/865888894976>2^-21`. Thus the conclusion does not depend
+on fitting the exact response gain or on the last digits of a trajectory.
+
+The pulse's actual supplied work and continuous loss are separately bounded:
+
+\[
+ \int_0^T |(LU)^Tf|\,d\tau\le8aTZ
+ =\frac{8193}{137170518016},\qquad
+ \int_0^T\tfrac14\|LU\|^2\,d\tau\le4TZ^2.
+ \tag{16}
+\]
+
+Equation (4) still retains the signed work. The `2a^2 T` allowance in (10)
+is an energy-growth inequality, not an equality for delivered work or an
+autonomous reservoir. No hardware or observation mechanism is inferred
+from the bounded additive error in (14).
+
+## 7. Why form, winding and storage do not close the state
+
+This comparison also admits a constructive obstruction inside its prepared
+domain. Fix `w=+1`, one node i, `s=delta/2>0`, and two states
+
+\[
+ U_+=U_-=0,\qquad \theta_\pm=\pm s(e_i-\mathbf1/5).
+ \tag{17}
+\]
+
+They have the same complete form vector, both conserved means, winding and
+own storage `V_*+2*cos(2*pi/5)*(1-cos(s))`. Their changed edge gaps are the
+same pair `kappa-s,kappa+s` in opposite positions; all other gaps equal
+kappa. Both states satisfy the full preparation radius.
+
+At the same independently specified input, direct edge summation gives
+
+\[
+ (U_i')_\pm=(M_rf)_i\mp\tfrac\gamma2
+ (M_{ii}-M_{i,i+1})\cos(2\pi/5)\sin s,\qquad
+ M_{ii}-M_{i,i+1}=\frac{1+5r}{d(r)}>0.
+ \tag{18}
+\]
+
+Reflection symmetry makes the two adjacent entries of M equal; their even
+terms cancel in this node's response. The two rates are strictly different.
+Therefore form, even augmented by winding, means and storage, is not an
+exact autonomous state on this class. The finite envelope (12) remains
+valid because it retains a bound on the discarded phase information.
+This obstruction does not exclude a controlled approximation or a memory
+description retaining hidden initialization and the supplied input.
+
+## 8. Executable certificate and remaining scope
+
+The [detached arithmetic owner](../../src/tnfr/physics/_organized_effective_law.py)
+rebuilds (8), (10)-(16) from admitted primitive budgets. It reports identity
+and record separation separately: a failed sufficient bound is not a
+trajectory failure or an impossibility theorem. Its variable-budget interface
+supports arithmetic controls, not a new search or evaluation campaign.
+The [independent controls](../../tests/physics/test_organized_effective_law.py)
+use edge-built matrices, symbolic polynomial identities, direct sine sums,
+boundary coercivity and deliberate loss of admission. They preserve the
+existing frozen evidence and execute no reserved response.
+
+This closes the declared prepared-reference identity/prediction question.
+It does not select r, derive this law from the nodal identity, inherit it
+from the 45-node source, or supply acquisition, operational preparation,
+physical identification or a sensor/clock model. The exact state and work
+requirements now constrain the separate finite-window observation question;
+only the [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+activates that work.

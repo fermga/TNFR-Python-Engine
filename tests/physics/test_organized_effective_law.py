@@ -1,4 +1,4 @@
-"""Exact algebra controls for a supplied collective matrix-response law.
+"""Independent algebra and finite-bound controls for the collective comparison.
 
 Rational gamma values test identities valid for every positive gamma. They
 are neither replacements for the model's fixed gamma nor physical bounds.
@@ -18,6 +18,9 @@ from tnfr.mathematics._exact_linear_algebra import (
     exact_square_matrix_product,
     exact_symmetric_semidefinite,
 )
+from tnfr.mathematics._comparison_flow import scalar_affine_upper
+from tnfr.mathematics._rational_interval import I, cos, pi_interval, sin
+from tnfr.physics._organized_effective_law import bound_prepared_matrix_response
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -142,6 +145,9 @@ def test_complete_rows_balance_storage_and_transform_the_driven_input(
     work = _dot(gradient, forcing)
     assert loss > 0 and work != 0
     assert derivative == -loss + work
+    assert derivative == _dot(forcing, forcing) - sum(
+        (q - 2 * f) ** 2 / 4 for q, f in zip(gradient, forcing)
+    )
     assert _action(metric, form_rate) == tuple(a + b for a, b in zip(unforced, forcing))
 
     wrong_input_rate = tuple(
@@ -238,3 +244,200 @@ def test_old_storage_can_increase_while_own_storage_decreases(
     assert own_derivative == -_dot(gradient, gradient) / 4 < 0
     extra_storage = ratio * _dot(gradient, _edge_form_gradient(gradient)) / 2
     assert extra_storage > 0
+
+
+@pytest.fixture(scope="module")
+def prepared_bound():
+    return bound_prepared_matrix_response()
+
+
+def test_neutral_polynomial_and_spectral_bounds_hold_as_matrix_identities(
+    cycle_laplacian,
+):
+    laplacian = cycle_laplacian
+    square = exact_square_matrix_power(laplacian, 2)
+    projection = tuple(tuple(value - Q(1, 5) for value in row) for row in _IDENTITY)
+    assert all(
+        square[i][j] - 5 * laplacian[i][j] + 5 * projection[i][j] == 0
+        for i in range(5)
+        for j in range(5)
+    )
+    assert exact_symmetric_semidefinite(
+        tuple(
+            tuple(laplacian[i][j] - projection[i][j] for j in range(5))
+            for i in range(5)
+        )
+    )
+    assert exact_symmetric_semidefinite(
+        tuple(
+            tuple(4 * _IDENTITY[i][j] - laplacian[i][j] for j in range(5))
+            for i in range(5)
+        ),
+        strict=True,
+    )
+    # Polynomial coefficient comparison proves the inverse formula for every r,
+    # rather than only the numerical parameter points in the following control.
+    linear = tuple(
+        tuple(20 * projection[i][j] - 5 * laplacian[i][j] for j in range(5))
+        for i in range(5)
+    )
+    quadratic = exact_square_matrix_product(square, linear)
+    assert all(
+        square[i][j] + linear[i][j] == 15 * projection[i][j]
+        and quadratic[i][j] == 25 * projection[i][j]
+        for i in range(5)
+        for j in range(5)
+    )
+
+
+@pytest.mark.parametrize("response", (Q(1, 100), Q(1, 50), Q(1, 10), Q(2)))
+def test_gain_comes_from_actual_matrix_input(cycle_laplacian, response):
+    bound = bound_prepared_matrix_response(
+        response_lower=response, response_upper=response
+    )
+    _, inverse = _response_matrices(cycle_laplacian, response)
+    pulse = (Q(1), Q(-1), Q(0), Q(0), Q(0))
+    gain = _dot(pulse, _action(inverse, pulse))
+    assert gain == bound.response_gain_lower == bound.response_gain_upper
+    assert 0 < gain < _dot(pulse, pulse)
+    # Omitting M_r on the input incorrectly makes this gain equal to r=0.
+    assert gain != 2
+
+
+@pytest.mark.parametrize("winding", (-1, 1))
+def test_identity_collar_has_independent_cosine_coercivity(winding):
+    kappa = winding * 2 * pi_interval() / 5
+    rho = Q(1, 10)
+    assert cos(kappa + I(-rho, rho)).lo > Q(1, 5)
+    assert (1 / (1023 * pi_interval())).hi < 1
+    assert 2 * pi_interval().hi / 5 + rho < pi_interval().lo / 2
+    boundary = (rho / 2, -rho / 2, Q(0), Q(0), Q(0))
+    differences = tuple(boundary[j] - boundary[i] for i, j in _EDGES)
+    assert sum(boundary) == sum(differences) == 0
+    assert max(map(abs, differences)) == rho
+    potential_excess = sum((cos(kappa) - cos(kappa + gap) for gap in differences), I(0))
+    coercive_bound = sum(gap**2 for gap in differences) / 10
+    assert potential_excess.lo >= coercive_bound >= Q(1, 1000)
+
+
+def test_declared_finite_budgets_pass_without_a_response_evaluation(prepared_bound):
+    bound = prepared_bound
+    assert bound.identity_certified and bound.response_separated
+    assert bound.energy_upper < Q(1, 2**16) < bound.storage_barrier
+    assert bound.response_gap > Q(1, 2**21)
+    assert bound.positive_observation_bounds[1] < bound.control_observation_bounds[0]
+    # Independent positive-series exponential bound for the norm inequality.
+    exponential_upper = scalar_affine_upper(
+        bound.preparation_radius, 2, bound.horizon, 2 * bound.amplitude
+    )
+    assert exponential_upper <= bound.state_norm_upper < Q(1, 2**12)
+    assert bound.pulse_absolute_work_upper < Q(1, 2**20)
+    # A coarser spectral bound, independent of the rational C5 gain, suffices.
+    coarse_gap = 2 * bound.amplitude * bound.horizon / 101 - 2 * (
+        bound.response_remainder + bound.observation_error
+    )
+    assert Q(1, 2**21) < coarse_gap < bound.response_gap
+
+
+def test_identity_and_response_flags_keep_separate_sufficient_claims(prepared_bound):
+    noisy = bound_prepared_matrix_response(observation_error=Q(1))
+    assert noisy.identity_certified and not noisy.response_separated
+    assert noisy.energy_upper == prepared_bound.energy_upper
+    assert noisy.pulse_absolute_work_upper == prepared_bound.pulse_absolute_work_upper
+    assert noisy.response_gap < 0
+    # High pulse energy can defeat this sufficient barrier while the finite
+    # response intervals remain disjoint. Neither failure proves identity loss.
+    energetic = bound_prepared_matrix_response(amplitude=Q(1))
+    assert not energetic.identity_certified and energetic.response_separated
+    assert energetic.energy_upper > energetic.storage_barrier
+    broad_source = bound_prepared_matrix_response(preparation_radius=Q(1, 20))
+    assert not broad_source.identity_certified and not broad_source.response_separated
+
+
+@pytest.mark.parametrize("response", (Q(0), Q(1, 100), Q(1, 10)))
+def test_equal_form_means_winding_and_storage_hide_opposite_live_rates(
+    cycle_laplacian, response
+):
+    delta = Q(1, 2**26)
+    shift = delta / 2
+    plus = tuple(shift * (Q(i == 0) - Q(1, 5)) for i in range(5))
+    minus = tuple(-value for value in plus)
+    assert sum(plus) == sum(minus) == 0
+    assert sum(value**2 for value in plus) < delta**2
+    gap_plus = tuple(plus[j] - plus[i] for i, j in _EDGES)
+    gap_minus = tuple(minus[j] - minus[i] for i, j in _EDGES)
+    # The gap multisets coincide exactly: the full potential and winding do
+    # too, without testing one stored energy literal against another.
+    assert sorted(gap_plus) == sorted(gap_minus)
+    _, inverse = _response_matrices(cycle_laplacian, response)
+    kappa = 2 * pi_interval() / 5
+    gamma = 1 / (1023 * pi_interval())
+
+    def live_rate(gaps):
+        source = [I(0) for _ in range(5)]
+        for (i, j), gap in zip(_EDGES, gaps):
+            current = sin(kappa + gap)
+            source[i] += current
+            source[j] -= current
+        # Equal prescribed inputs add the same M_r*f and cancel in the rate
+        # difference. This evaluates the actual edge-sine pressure contribution.
+        return gamma * sum((m * s for m, s in zip(inverse[0], source)), I(0)) / 4
+
+    positive, negative = live_rate(gap_plus), live_rate(gap_minus)
+    assert positive.hi < 0 < negative.lo
+    predicted_magnitude = (
+        gamma * (inverse[0][0] - inverse[0][1]) * cos(kappa) * sin(I(shift)) / 2
+    )
+    assert predicted_magnitude.lo > 0
+    assert (positive + predicted_magnitude).contains(0)
+    assert (negative - predicted_magnitude).contains(0)
+
+
+@pytest.mark.parametrize(
+    "parameter",
+    (
+        "response_lower",
+        "response_upper",
+        "amplitude",
+        "horizon",
+        "preparation_radius",
+        "observation_error",
+    ),
+)
+@pytest.mark.parametrize("invalid", (True, float("nan"), float("inf"), "1"))
+def test_budget_scalars_are_admitted_before_arithmetic(parameter, invalid):
+    with pytest.raises((TypeError, ValueError)):
+        bound_prepared_matrix_response(**{parameter: invalid})
+
+
+@pytest.mark.parametrize(
+    "overrides",
+    (
+        {"response_lower": 0},
+        {"response_lower": Q(1, 5)},
+        {"response_upper": -1},
+        {"amplitude": 0},
+        {"horizon": 0},
+        {"horizon": Q(1, 2)},
+        {"preparation_radius": -1},
+        {"observation_error": -1},
+    ),
+)
+def test_invalid_proof_domains_reject(overrides):
+    with pytest.raises(ValueError):
+        bound_prepared_matrix_response(**overrides)
+
+
+def test_normalized_exact_budgets_preserve_the_declared_certificate(prepared_bound):
+    np = pytest.importorskip("numpy")
+    payload = Q(np.int64(1), np.int64(2**26))
+    assert bound_prepared_matrix_response(preparation_radius=payload) == prepared_bound
+    assert (
+        bound_prepared_matrix_response(observation_error=float(payload))
+        == prepared_bound
+    )
+    zero_source = bound_prepared_matrix_response(
+        preparation_radius=0, observation_error=0
+    )
+    assert zero_source.identity_certified and zero_source.response_separated
+    assert zero_source.response_gap > prepared_bound.response_gap

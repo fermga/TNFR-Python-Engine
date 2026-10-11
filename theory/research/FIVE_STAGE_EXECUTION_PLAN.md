@@ -47,12 +47,14 @@ organized equilibria do not uniquely select the dynamics.
 The [electrical feasibility review](#organized-electrical-physical-feasibility)
 closed without admitting an apparatus for the frozen endpoint-voltage
 protocol. In particular, positive ring capacitance changes the complete
-collective response; scalar calibration cannot absorb it. This motivates
-the **single active foundational gate**:
-[collective state and inherited response](#organized-effective-law-admission).
-It starts from the declared C5 comparison and asks for own-law identity and
-finite predictive sufficiency before reopening
-[finite-window physical observation](#organized-electrical-finite-window-design).
+collective response; scalar calibration cannot absorb it. The subsequent
+[prepared-reference theorem](#organized-effective-law-admission) admits
+own-law identity retention and a finite response discriminator for that
+supplied C5 matrix law, while proving that form, winding and storage alone
+do not close its predictive state. The **single active gate** is now
+[finite-window collective electrical observation design](#organized-electrical-finite-window-design):
+admit an independent preparation/measurement bridge with its actual loading,
+sensor dynamics, work and clock before any physical response evaluation.
 
 No 45-node acquisition, physical readout or source certificate transfers to
 that changed law by default. Earlier frozen protocols, negative results and
@@ -69,8 +71,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Active collective effective-law admission | [State and inherited response](#organized-effective-law-admission): admit identity and finite predictive state for the supplied matrix-response comparison under its own law, storage, preparation and clock |
-| Deferred finite-window collective electrical observation | [Observation design](#organized-electrical-finite-window-design): reopen after effective-law admission; retain sensor dynamics, physical loading, finite windows and independent feasibility before a new response |
+| Active finite-window collective electrical observation design | [Observation design](#organized-electrical-finite-window-design): admit sensor dynamics, actual matrix loading, complete preparation, work, clock and independently supported feasibility; no physical response campaign |
+| Closed conditional collective effective-law admission | [Prepared matrix response](#organized-effective-law-admission): own-law identity retention and finite record separation under the fixed declaration; form, winding, means and storage do not close the state |
 | Closed scoped physical feasibility review | [Independent physical admission](#organized-electrical-physical-feasibility): no reviewed apparatus admits the frozen endpoint-voltage protocol; clock-independent precision/aperture demand, junction-capacitance shape mismatch and missing complete preparation remain distinct |
 | Closed conditional electrical discrimination | [Current-amplitude discrimination](#organized-electrical-robust-current-test): one frozen joint-box assessment separates two own-law current envelopes under one input/statistic, with nonzero calibration, tracking and aperture error |
 | Closed conditional fixed-support electrical specification | [Five-child electrical observation protocol](#organized-electrical-fixed-support-protocol): complete C5 dictionary, actual-source departure, primitive voltage observation and supplied-work translation; physical preparation, timing and tracking remain unadmitted |
@@ -215,21 +217,22 @@ are closed in their declared models; physical feasibility is not admitted.
 The supplied Josephson reference does not derive its material law or quantum
 constants from TNFR.
 
-The missing matrix response exposed by that audit is a concrete foundational
-question, rather than a reason to repeat the same experiment more precisely.
-The [new complete-law owner](../nodal/ORGANIZED_EFFECTIVE_LAW.md) supplies its
-state, two rows and storage/work identity. Those algebraic results do not
-supply acquisition or a finite identity/prediction certificate. Closing that
-gap tests how sufficient state, inherited response and storage fit together
-before a sensor model is added.
+The [prepared matrix-response result](../nodal/ORGANIZED_EFFECTIVE_LAW.md#prepared-matrix-response-result)
+now supplies own-law identity retention and a finite whole-preparation
+response bound under declaration `a205a8fe`. It also excludes closing the
+state with form, winding, means and storage while discarding phase shape.
+The next missing premise is operational: a sensor's state, transfer and
+loading must be admitted with complete preparation and a laboratory clock.
+The prepared collective result supplies no acquisition or inherited fine
+source, and its additive observation allowance is not an apparatus model.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
 | Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Unresolved stable-stationary maintenance route; no active search.** The finite search is closed without a certificate; other classes do not repair uninterrupted maintenance. Reopen with a constructive target or an analytical certificate mechanism, not more starts |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
-| Sufficient collective state and inherited response | Decide own-law identity and finite predictive sufficiency for the declared matrix-response comparison; distinguish scalar capacity, response geometry and eliminated-state memory | **Sole active gate** below. Exact balance and invertible coordinates alone do not close it; a finite consequence or scoped obstruction is required |
-| Fundamental physical properties and independent observation | Admit complete preparation, loading and an independently measurable finite-window consequence after the collective law is admitted | **Deferred dependency.** The endpoint-voltage feasibility review is closed without physical admission; conditional record separation remains intact |
+| Sufficient collective state and inherited response | The [prepared-reference theorem](../nodal/ORGANIZED_EFFECTIVE_LAW.md#prepared-matrix-response-result) retains identity, finite response and own-law work; an explicit equal-storage collision requires phase information | **Closed in the declared domain.** Acquisition, fine-source inheritance and physical realization remain separate; no further response scan is active |
+| Fundamental physical properties and independent observation | Admit complete preparation, actual matrix loading, sensor state/transfer, clock and an independently measurable finite-window consequence | **Sole active design gate** below. Close with a supported prospective design or scoped obstruction before calibration and reserved evaluation; the old endpoint-voltage protocol remains unadmitted |
 | Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Conceptually critical**, with no new compatibility scan active. If a countermodel shares all proposed premises, the uniqueness claim fails in that scope |
 | Autonomous preparation, support, capacity and events | Supply actual occurrence and state-evolution laws when claiming autonomous assembly. [Event work](../nodal/RELATIONAL_SUPPORT_EVENTS.md), passivity and [operator descent](../STRUCTURAL_OPERATORS.md) do not select occurrence | **Claim-dependent**. Current contacts and preparation remain supplied. Do not postpone investigation of the existing conditional composite until every origin question is solved |
 | Internal activity and recurrence | Separate preservation of identity from permanent motion; the [positive-loss boundary](../nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission) and alternative-mobility results retain different premises | **Prepared alternative** for a named claim requiring sustained activity. Neither a stationary identity nor finite response establishes recurrence or transfers an invariant measure |
@@ -242,7 +245,7 @@ An added observable earns inclusion by deciding the selected prediction or a
 meaningful minimality obstruction. Existing failed physical-source admissions
 remain failed; more samples cannot repair their complete-law mismatches.
 
-Only the [effective-law gate](#organized-effective-law-admission) is active.
+Only the [finite-window observation design](#organized-electrical-finite-window-design) is active.
 The table assesses dependencies, not a fixed sequence or parallel campaigns. It preserves
 the objective of generated, physically testable organization without identifying
 winding, phase cancellation or storage with material constituents.
@@ -416,67 +419,48 @@ The source receipt and static algebra controls retain this review without
 changing any frozen declaration, producer or analytical result.
 
 <a id="organized-effective-law-admission"></a>
-### Immediate question: collective state and inherited response
+### Closed prepared-reference identity and matrix response
 
-**Can a prepared organized reference retain a declared identity and a finite
-predictive response when its collective form dynamics has a matrix response?**
-Use the [complete C5 comparison](../nodal/ORGANIZED_EFFECTIVE_LAW.md), with
-fixed `W_r=I+r*L^2`, as the bounded test case. Its two-row law, storage/work
-balance and chart controls are admitted conditional algebra. Its law is
-supplied, not selected by the nodal row or inherited from the 45-node source.
-
-1. **Fix the question before evaluating a response.** Declare a bounded
-   parameter interval with nonzero r, preparation class, identity criterion,
-   clock, input, horizon and observation. Begin with the prepared collective
-   reference; a fine-node extension or a laboratory sensor would add premises
-   and is not silently part of this gate.
-   The [fixed analytical declaration](../nodal/ORGANIZED_EFFECTIVE_LAW.md#prepared-matrix-response-declaration)
-   now specifies the positive-r interval, full preparation, pulse, observation
-   error and identity/separation criteria. No response has been evaluated.
-2. **Use the complete law and its own storage.** Check the proposed domain,
-   joint symmetries, input work, boundary and retained coordinates against the
-   owner. Primitive scalar capacity, a collective response matrix and a
-   coordinate change have different meanings. The old storage can increase
-   under this law, so old decay or acquisition bounds cannot be reused.
-3. **Close a finite identity and prediction question.** Prove own-law identity
-   retention and a controlled response on the declared domain, or establish
-   a scoped obstruction. Show which state the prediction consumes and what
-   would be lost by a proposed reduction. Add derived memory only if actual
-   elimination calls for it, retaining hidden initialization and forcing.
-   An invertible rewriting, a common equilibrium or a more precise version
-   of the old response is not sufficient closure.
-4. **Integrate only a justified reusable mechanism.** Reuse shared exact
-   algebra, reduction and integrator owners when their contracts apply.
-   Any reserved numerical response requires a newly frozen preparation,
-   complete law, observation and budget before evaluation. Transfer of
-   acquired child identities or source transport would need its own fine
-   law, map and error proof; it is not an acceptance shortcut.
-
-Close with a canonical theorem/counterexample and its meaningful controls,
-then reassess the dependency below. This gate does not require a unique
-fundamental law, autonomous origin or universal scale selection to be solved.
-It does require stating what is supplied and what has actually been derived.
+The [result owner](../nodal/ORGANIZED_EFFECTIVE_LAW.md#prepared-matrix-response-result)
+retains declaration revision `a205a8fe`. Under the supplied complete C5 law,
+the whole prepared class retains its winding identity through the prescribed
+pulse and subsequent unforced evolution. Finite observed response envelopes
+separate the declared positive-r family from r=0 with the fixed error
+allowance. Own-law storage and work bound the actual two-row dynamics;
+no trajectory or response fit supplies the result. Equal forms, winding,
+means and storage can still conceal distinct form rates, so phase shape
+cannot be discarded as an exact state reduction. Acquisition, fine-source
+inheritance, law selection and physical preparation/measurement remain open.
 
 <a id="organized-electrical-finite-window-design"></a>
-### Deferred: finite-window collective electrical observation
+### Immediate question: finite-window collective electrical observation design
 
-Reopen after the active gate supplies an admitted state/law/identity domain
-or a scoped obstruction that changes the physical comparison. The question
-remains whether an independently measurable finite-window response preserves
-an unfitted consequence with physically declared loading. This would be a
-new protocol, not another evaluation of the old endpoint-voltage corner.
+**Can an independently admitted finite-window observation preserve an
+unfitted consequence of the prepared collective law with its actual
+physical loading?** The [prepared-reference result](../nodal/ORGANIZED_EFFECTIVE_LAW.md#prepared-matrix-response-result)
+supplies a conditional state/law/identity domain. It does not turn its
+bounded additive observation error into a sensor or establish operational
+preparation. This gate admits a prospective design or proves a scoped
+obstruction; it evaluates no physical response.
 
 - Declare one observation mechanism with sensor state, transfer, input,
   clock, finite support and loading; distinguish deterministic error bounds
   from joint statistical coverage. No tested amplitude or inferred phase
   may calibrate itself.
-- Match both dynamical rows, storage and any eliminated-state memory to the
-  admitted model. Retain positive ring-capacitance shape and distinguish a
-  prepared collective reference from a formed fine organization.
+- Match both dynamical rows, the actual matrix input channel, storage and
+  any eliminated-state memory to the loaded model. Retain positive
+  ring-capacitance shape and the sensor's backreaction; scalar calibration
+  cannot absorb them. Begin with the prepared collective reference, whose
+  full form and phase preparation must be independently bounded. A winding
+  label or equal storage does not establish the declared preparation;
+  energy-based inclusion needs its own domain and coercivity proof. Transfer
+  from a formed fine organization requires its own law, map and error proof.
 - Establish laboratory-unit conditioning with windows, preparation, work,
   component defects and independent terrestrial method evidence before a
-  campaign. Close with a supported prospective design or a scoped obstruction;
-  relaxed old error allowances do not admit a new apparatus.
+  campaign. Retain the complete preparation cost and supplied input work;
+  an excess-storage allowance is not an autonomous energy source. Close
+  with a supported prospective design or a scoped obstruction; relaxed old
+  error allowances do not admit a new apparatus.
 - A passing design still needs separate calibration and reserved data under
   P1-P5. No hardware purchase, deployment, source replay, numerical scan,
   response fitting or physical-data evaluation is active.
