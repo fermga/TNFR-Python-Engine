@@ -80,10 +80,13 @@ variance estimates are sufficient, and a ten-coordinate reference started
 at attachment predicts the complete formation-and-observation history with
 intrinsic mean-form error below `1.6e-24`. The larger observation class still
 has indistinguishable records with incompatible variance targets.
-The **single active gate** is now
-[computable prospective prediction](#organized-computable-prediction-admission):
-admit a numerical realization and a new forecast with a total error budget
-matched to its observation, without fitting or replaying a frozen response.
+The [computable forecast](#organized-computable-prediction-admission)
+now separates the post-observation endpoint from the omitted-input control,
+with certified numerical and source error below the reading allowance.
+The **single active gate** is
+[observation-to-prediction sufficiency](#organized-observed-prediction-admission):
+decide how well the same finite records determine a later observable when
+the collective initialization is unknown, without replaying the frozen endpoint.
 
 No 45-node acquisition, physical readout or source certificate transfers to
 the supplied positive-r matrix law by default. Earlier frozen protocols,
@@ -100,7 +103,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Active computable prospective-prediction admission | [Carried reduced reference](#organized-computable-prediction-admission): realize the prepared ten-coordinate prediction with a numerical residual and a prospectively chosen observable, horizon and total-error criterion |
+| Active observation-to-prediction sufficiency | [Unknown collective initialization](#organized-observed-prediction-admission): bound future observable ambiguity of complete histories compatible with the same finite noisy record, without requiring hidden-state reconstruction |
+| Closed computable prospective-prediction admission | [Carried reduced reference](#organized-computable-prediction-admission): a fixed-budget validated forecast separates the post-observation endpoint from the omitted-input control with numerical, source and reading errors retained |
 | Closed conditional initialization admission | [Preparation versus observation](#organized-compressed-initialization-admission): retained recovery bounds admit zero variance estimates and a carried reference from exact attachment means; the old noisy records do not uniformly recover the variances on the larger containing class |
 | Closed conditional predictive-compression admission | [Finite constituent-memory prediction](#organized-predictive-compression-admission): ten evolving means and five frozen interface variances have a propagated intrinsic error envelope below one hundredth of the carrier bound; the required statistics are not an acquired-source observation |
 | Closed theoretical inherited-response admission | [Constituent feedback](#organized-inherited-response-admission): carrier tangent decoupling coexists with nonlinear covariance feedback; same-observation derivative collisions and the unchanged input map obstruct instantaneous and positive-r closures in their declared scopes |
@@ -275,7 +279,7 @@ response has not been derived from the earlier acquired constituents.
 | Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Unresolved stable-stationary maintenance route; no active search.** The finite search is closed without a certificate; other classes do not repair uninterrupted maintenance. Reopen with a constructive target or an analytical certificate mechanism, not more starts |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
-| Sufficient collective state and inherited response | Turn the source-initialized reduced reference into a computable prospective observable with a complete numerical and observation error budget | **Sole active gate** below. Initialization is conditionally closed by retained preparation information; improving an already negligible intrinsic bound or measuring unnecessary hidden statistics is not the next task |
+| Sufficient collective state and inherited response | Bound the future mean-form diameter of complete histories compatible with the same finite noisy readings, without known collective initialization | **Sole active gate** below. The preparation-based computable forecast is closed; the next question removes an information premise, rather than increasing precision or requiring hidden-state reconstruction |
 | Fundamental physical properties and independent observation | Independently admit full preparation and joint physical measurement coverage before evaluating a response | **Closed scoped recovery-area review, unresolved physical dependency.** The reviewed direct-area route is not admitted; neither improved voltage precision nor clock rescaling alone repairs the missing premises. No further apparatus search is active |
 | Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Conceptually critical**, with no new compatibility scan active. If a countermodel shares all proposed premises, the uniqueness claim fails in that scope |
 | Autonomous preparation, support, capacity and events | Supply actual occurrence and state-evolution laws when claiming autonomous assembly. [Event work](../nodal/RELATIONAL_SUPPORT_EVENTS.md), passivity and [operator descent](../STRUCTURAL_OPERATORS.md) do not select occurrence | **Claim-dependent**. Current contacts and preparation remain supplied. Do not postpone investigation of the existing conditional composite until every origin question is solved |
@@ -289,7 +293,7 @@ An added observable earns inclusion by deciding the selected prediction or a
 meaningful minimality obstruction. Existing failed physical-source admissions
 remain failed; more samples cannot repair their complete-law mismatches.
 
-Only the [computable prospective-prediction admission](#organized-computable-prediction-admission) is active.
+Only [observation-to-prediction sufficiency](#organized-observed-prediction-admission) is active.
 The table assesses dependencies, not a fixed sequence or parallel campaigns. It preserves
 the objective of generated, physically testable organization without identifying
 winding, phase cancellation or storage with material constituents.
@@ -584,40 +588,60 @@ means; it neither invalidates the winding inverse nor excludes the prepared
 route. No frozen response, trajectory or source assessor was evaluated.
 
 <a id="organized-computable-prediction-admission"></a>
-### Immediate question: computable prospective prediction
+### Closed computable prospective prediction
 
-**Can the prepared reduced reference produce an independently checkable
-finite forecast with a complete, useful error budget?** The exact-solution
-theorem now has initialization. Its much smaller intrinsic error is not a
-reason to compute every digit or pursue otherwise unnecessary hidden state.
-The [fixed declaration](../nodal/ORGANIZED_COMPUTABLE_PREDICTION.md) targets
-the five mean forms at `tau=216`, after the existing
-word releases at `tau=215.00015` and evolves unforced for `0.99985`. It tests
-prediction of the state retained after observation and its backaction, not
-another identification of the same winding. Freeze the full protocol and
-computation budget before evaluating that new endpoint.
+The [result owner](../nodal/ORGANIZED_COMPUTABLE_PREDICTION.md#organized-computable-prediction-result)
+preserves declaration `8f5a28c5` and its single fixed-budget calculation.
+The ten-coordinate reference carries exact attachment means through outer
+formation, the existing finite observation word and the unforced continuation
+to `tau=216`. Both continuations share one certified formation prefix; neither
+is reset. Their 1,886 distinct step witnesses have numerical radius below
+`1.5e-21`. With source and reading errors included, the finite-word and
+omitted-word endpoint records are disjoint by the declared rule.
 
-- Retain the prospective endpoint after the existing word's actual release
-  and its unforced continuation. Keep the carried state and measurement
-  backaction; do not reset to an ideal target or call an in-word fit a forecast.
-  Freeze preparation, branch, laws, clock, observation, a relevant comparison
-  and total tolerance before evaluating the reserved response. The numerical
-  target should be useful against the existing `1e-14` reading allowance.
-- Admit a computable continuation of the same prepared reference using the
-  shared execution or detached enclosure owners. Account separately for
-  source uncertainty, numerical residual, observation and any input/clock
-  error. Transfer the source theorem only within its proved horizon, or derive
-  the required extension before evaluating the new prediction.
-- Set the numerical budget from the selected observable and tolerance,
-  rather than the tiny intrinsic bound. A point trajectory or agreement
-  between two solvers is not a validated enclosure. Reuse existing kernels
-  and integrate a new mechanism only when its actual consumer requires it.
-- Close with a prospective forecast whose total bounds decide the named
-  distinction, or a scoped obstruction showing the missing numerical,
-  preparation or observation premise. Preserve all frozen producers and
-  responses; no parameter scan, source retry or automatic precision escalation.
+This closes numerical realization of the preparation-based prediction.
+It establishes conditional retained backaction, not a constitutive-law
+selection or an acquired physical response. The source and identity proofs
+extend through the suffix; exact clock/input and all preparation premises
+remain. Frozen evidence is inspected without rerunning the producer.
 
-This is a structural prediction gate. Physical preparation, calibration and
+<a id="organized-observed-prediction-admission"></a>
+### Immediate question: predictive sufficiency of finite observations
+
+**Can the existing form records support a useful future prediction without
+known collective initialization?** Keeping the exact attachment means would
+make this redundant: the previous forecast already covers the prepared family
+far below reading error. Instead declare an observation-start containing
+class at `tau=200` with unknown collective forms and phases. Retain the same
+law, support, clock, word and all 150 readings with error `eta=1e-14`.
+
+- Start from the original finite-observation class: `abs(x_i)<=.01`,
+  `theta=psi+R*Phi+z`, child-zero hidden means, `abs(z_i)<=1e-6`, principal
+  mean gaps at most `1.4`, and winding in `{-1,0,1}`. Retain the coarse hidden
+  norm bounds `||u||<=31e-9`, `||z||<=601e-10` and the circular collar.
+  The acquired sources are included; acquisition of every class member is
+  not claimed. Declare the common-form prior and phase gauge explicitly.
+- For two valid complete histories, ask whether overlap of their **joint**
+  150-reading record sets implies five-coordinate future mean-form diameter
+  at most `2e-13` at `tau=216`. This prospective policy corresponds to a
+  coordinate-midrange forecast radius at most `1e-13`; a future reading
+  adds its own `1e-14` allowance. Keep the raw noise and target fixed.
+  The last reading is at `214.00015`, so extrapolation includes the last
+  ramp and spans `1.99985` units, not only the unforced release tail.
+- Reuse the existing uniform carrier error on the 16-unit history, rebuilding
+  its premises and including it on both historical readings and future
+  outputs. Exact hidden variance identification is not required. The earlier
+  variance counterexample has negligible future mean-form separation and
+  does not itself obstruct this prediction target.
+- First seek an analytical observation-to-future bound, or one counterexample
+  with jointly compatible full records and future separation above the target.
+  Handle circular branches, conserved means and correlations explicitly;
+  independent marginal overlaps or a local Jacobian alone are insufficient.
+  A loose bound is unavailable evidence, not an impossibility theorem.
+  Freeze any further numerical protocol before new evaluation; no replay,
+  parameter scan, tighter noise or post hoc target relaxation is active.
+
+This is a structural information gate. Physical preparation, calibration and
 apparatus admission remain unresolved; there is no parallel apparatus search
 or physical-data campaign, and no unique fundamental law is presumed.
 

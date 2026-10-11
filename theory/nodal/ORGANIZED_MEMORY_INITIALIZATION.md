@@ -272,7 +272,9 @@ The [static controls](../../tests/physics/test_organized_memory_initialization.p
 reuse the modified-energy, heat-error and exact-arithmetic owners. They
 check the recovery constants, anisotropic transport, mean initialization,
 joint error inequalities and record-overlap obstruction without source
-replay, trajectories or frozen-response evaluation. No new solver or
-parallel source assessor is installed. The
+replay, trajectories or frozen-response evaluation. The separate
+[computable forecast](ORGANIZED_COMPUTABLE_PREDICTION.md#organized-computable-prediction-result)
+uses this initialization with shared validated integration and preserves
+source, numerical and observation errors separately. The
 [sole queue](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-owns the remaining numerical and prospective-prediction decision.
+owns the next observation-to-prediction question.

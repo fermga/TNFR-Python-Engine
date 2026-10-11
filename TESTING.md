@@ -650,6 +650,13 @@ alignment, both transformed rows, conserved means and interval separation with
 source, numerical and reading allowances counted once. Do not invoke the fixed
 forecast assessor or replay any frozen source in routine tests.
 
+Use `tests/physics/test_organized_computable_prediction_evidence.py` for the
+saved step witnesses. It checks exact archive/source receipts, all three
+continuous step chains, independently rebuilt Picard images and error
+recurrences, and the final separated reading boxes. This is a read-only
+arithmetic audit; it neither regenerates Taylor coefficients nor integrates
+the target again. Keep the archived report bytes and declaration prefix fixed.
+
 For [current discrimination under uncertainty](theory/nodal/ORGANIZED_ROBUST_CURRENT.md),
 select `tests/physics/test_organized_robust_current.py` and
 `tests/physics/test_organized_robust_current_theory.py` with finite observation

@@ -137,5 +137,7 @@ applications/factorization-lab/notebooks/archive/spectral_history_legacy_2026_09
 docs/assets/organized_electrical_source/*.json -text
 docs/assets/organized_electrical_actuation/*.json -text
 docs/assets/organized_finite_observation/*.json -text
+docs/assets/organized_computable_prediction/*.json -text
+docs/assets/organized_computable_prediction/*.zip binary
 docs/assets/organized_robust_current/*.json -text
 theory/research/archive/DEVELOPMENT_LOG_PRE_0.0.3.6_2026-09-19.txt -text -whitespace

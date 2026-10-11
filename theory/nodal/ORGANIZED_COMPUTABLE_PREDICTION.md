@@ -251,3 +251,53 @@ protocol, response or source producer and activates no physical campaign.
 <!-- FROZEN DECLARATION AND PROOF END: append evaluated results only below. -->
 
 <a id="organized-computable-prediction-result"></a>
+
+## Result: the carried endpoint separates the two input histories
+
+The single assessment under declaration/source revision `8f5a28c5` completed
+all 1,886 distinct steps: 1,600 shared formation steps and 143 steps in each
+continuation. Both branches reach `tau=216` without a state reset or a
+changed numerical budget. The retained Euclidean radii are
+`1.48883e-21` or less for the finite-word branch and `1.47905e-21` or less
+for the omitted-word branch, below the declared `1e-15` limit.
+
+The certified maximum coordinate separation of their numerical intervals is
+greater than `6.32174272689e-7`. The required separation, including both
+source and reading allowances, is less than `2.000000001e-14`. Hence the
+two admitted endpoint-record boxes are disjoint by the predeclared rule.
+Each complete endpoint-record radius is below `1.000001e-14`; reading
+uncertainty dominates the numerical and source errors.
+
+| Child | Finite-word mean-form center | Omitted-word mean-form center |
+| --- | --- | --- |
+| 0 | `3.2564699029529785e-6` | `3.4353965238619072e-6` |
+| 1 | `1.6457621619214067e-6` | `1.7177138516426278e-6` |
+| 2 | `-1.2539430823153328e-7` | `0` |
+| 3 | `-1.9736155054707554e-6` | `-1.7177138516426278e-6` |
+| 4 | `-2.803222251172097e-6` | `-3.4353965238619072e-6` |
+
+These centers are display approximations. The
+[lossless report archive](../../docs/assets/organized_computable_prediction/response.zip)
+retains exact rational centers, all step witnesses, numerical intervals and
+expanded future-record bounds. Its
+[receipt](../../docs/assets/organized_computable_prediction/receipt.json)
+associates the archive and original report bytes; the
+[attempt](../../docs/assets/organized_computable_prediction/attempt.json)
+records the declaration, source inventory, runtime and fixed arithmetic.
+The local uncompressed report remains in `artifacts/organized_computable_prediction/`.
+
+All four continued identity margins are positive; the smallest exceeds
+`0.07077`. Both histories retain winding one after formation. The result
+therefore distinguishes finite retained input backaction even though the
+command offsets have returned to zero and the final suffix is unforced.
+It resolves neither a nonzero hidden correction nor a competing constitutive
+law, and it evaluates no physical response. Exact input/clock and the
+conditional independent preparation remain necessary premises.
+
+The [read-only evidence controls](../../tests/physics/test_organized_computable_prediction_evidence.py)
+rebuild every stored Picard inclusion, time/step chain and metric-error
+recurrence, then the complete source/reading separation. They do not
+regenerate Taylor coefficients or rerun a trajectory; those coefficients
+remain supported by the shared enclosure proof, frozen implementation and
+independent analytic kernel tests. Byte receipts are content associations,
+not authentication of physical acquisition or execution.
