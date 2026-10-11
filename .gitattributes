@@ -141,5 +141,7 @@ docs/assets/organized_computable_prediction/*.json -text
 docs/assets/organized_computable_prediction/*.zip binary
 docs/assets/organized_observed_prediction/*.json -text
 docs/assets/organized_observed_prediction/*.zip binary
+docs/assets/organized_observed_forecast/*.json -text
+docs/assets/organized_observed_forecast/*.zip binary
 docs/assets/organized_robust_current/*.json -text
 theory/research/archive/DEVELOPMENT_LOG_PRE_0.0.3.6_2026-09-19.txt -text -whitespace

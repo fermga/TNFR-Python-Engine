@@ -689,6 +689,18 @@ must separately establish one continuous candidate and revalidate the gain,
 source domain, clock and complete record. Do not regenerate frozen responses
 or turn supplied intervals into a joint-feasibility assertion.
 
+For the fixed record-only consumer, also select
+`tests/physics/test_organized_forecast_proposal.py`,
+`tests/physics/test_organized_observed_forecast.py` and
+`tests/research/test_organized_forecast_inputs.py`, with the shared
+prescribed-time and waveform controls above. Check analytic sensitivities
+against independent differences, common-form retention, ordered admission,
+historical-only proposal inputs, exact candidate clipping, one carried
+history and explicit failure without retry. Input-reader tests rebuild
+synthetic compact witnesses and reject invalid archive associations; they
+must not run the actual declared fit or old response producers. The fixed
+benchmark is a single research evaluation, not a routine test command.
+
 For [current discrimination under uncertainty](theory/nodal/ORGANIZED_ROBUST_CURRENT.md),
 select `tests/physics/test_organized_robust_current.py` and
 `tests/physics/test_organized_robust_current_theory.py` with finite observation

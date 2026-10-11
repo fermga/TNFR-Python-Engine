@@ -6,10 +6,10 @@
 The [retained observation-to-future certificate](ORGANIZED_OBSERVED_PREDICTION.md#organized-observed-prediction-result)
 bounds differences between complete histories without supplying their unknown
 initialization. This owner derives the contract for using one proposed carrier
-history as a forecast. The analytical admission is established below; it does
-not supply a record proposal, a validated candidate trajectory or a new
-evaluated prediction. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-owns the status of that operational work.
+history as a forecast. Sections 1-4 establish its analytical admission;
+section 5 declares one operational test on archived synthetic readings.
+The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns its evaluation status and subsequent dependencies.
 
 Retain the complete fine law, source class, command, support, held capacities,
 structural clock and sample schedule in the
@@ -190,3 +190,113 @@ certify their trajectories, provenance, record membership or model identity.
 The shared prescribed-time integrator and retained evidence readers remain
 the applicable owners for those obligations. No new nonlinear trajectory,
 raw response or physical experiment is evaluated by this analytical result.
+
+<a id="organized-observed-forecast-protocol"></a>
+## 5. Fixed record-only software protocol
+
+This protocol fixes one synthetic record, one deterministic proposal and one
+validated candidate history before extraction or numerical evaluation. Its
+purpose is to make the conditional forecast operational without supplying
+generating-state coordinates. The historical archive and its future are
+already public: this is a software demonstration, not a reserved response,
+independent validation, law comparison or physical experiment.
+
+### Record and prior evidence
+
+The [read-only input owner](../../src/tnfr/research/_organized_forecast_inputs.py)
+pins the following complete archive associations, including their attempt,
+result, source-tree and source-inventory hashes:
+
+| Input | Frozen producer revision | SHA-256 of `response.zip` |
+| --- | --- | --- |
+| [Known-preparation carrier history](../../docs/assets/organized_computable_prediction/receipt.json) | `8f5a28c58f23ab1586cc91ac36d49e6ddd9bbce0` | `c4fca529593dbfdf445d314508b78f3f188cd3fa3dce3388fa52df3a1581e4d3` |
+| [Static observation certificate](../../docs/assets/organized_observed_prediction/receipt.json) | `de5b500f70b1626d75f12484af0e6381fc9d93af` | `49febee9897b4acf738d803d37128d5e9652a19e59cb082c284de780a66e3592` |
+
+Re-admit the thirty absolute sample times and the first five coordinates of
+the original `observed` branch's endpoint centers, beginning with its initial
+center at `tau=200`. Use all 150 signed rational readings in time-major,
+child-order `0..4`; do not round, add noise or select a subset. The last
+reading is at `tau=214.00015`. The command form is zero at these times, so
+the archived Y centers observe U. Rebuild the original source correction
+and carried metric radii through that last reading and require their sum
+to be at most `eta=1e-14` at every sample. Retain extraction errors and
+endpoint associations as provenance, outside the proposal interface.
+
+Rebuild the static observation/future matrices from all 2,145 retained
+coefficient steps, then reconstruct the dual residuals, positive bootstrap
+margin, G and containing-class E_0. The saved verdict or scalar gain cannot
+replace this arithmetic. These readers retain the original smooth-field,
+Taylor-derivative and source proof premises. Digests associate contents;
+they do not authenticate execution or prove arbitrary saved derivatives.
+No original coefficient or response producer is rerun.
+
+### One untrusted numerical proposal
+
+The [proposal owner](../../src/tnfr/physics/_organized_forecast_proposal.py)
+receives only the thirty times, 150 readings and static `150 x 15` observation
+matrix. The law, command and clock are declared model information. Source
+phases, source initialization, extraction errors, truth labels and future
+values are not inference arguments. The fixed algorithm is:
+
+1. Solve the midpoint linear design with NumPy `linalg.lstsq`, `rcond=None`,
+   requiring rank 15. Initialize oriented edge angles with `atan2` of its
+   formal sine/cosine coefficients. Fix `Phi_0=0` and obtain the other four
+   phase representatives by cumulative sums of the first four edge angles.
+   Initialize forms from the first five readings clipped to binary64
+   `[-.01,.01]`, preserving the unknown common form.
+2. Fit five forms and four phase representatives with one SciPy
+   `least_squares` call: method `trf`, `max_nfev=80`, `ftol=None`, `gtol=None`,
+   `xtol=1e-13`, `x_scale=(.01,.01,.01,.01,.01,1,1,1,1)` and residual scale
+   `1e-4`. Form bounds are binary64 `[-.01,.01]`; phase lifts are unbounded.
+   Require optimizer success. Cache paired residual/Jacobian requests at
+   identical parameters; there is no restart or alternative initializer.
+3. Each trial carries the full ten-coordinate command-removed sine state and
+   its analytic `10 x 9` sensitivities. Use DOP853 with `rtol=1e-11`,
+   `atol=1e-17`, `max_step=1/8`, splitting every prescribed input stage.
+   Integrate only the 15 plateaus and first 14 ramps, stopping at the last
+   reading. Both rows retain the same structural clock; no state coordinate
+   is reset at a stage boundary. This is a detached numerical proposal,
+   not validated trajectory evidence.
+4. Convert the returned finite binary64 coordinates to exact represented
+   rationals. Clip the five forms again to the exact interval `[-1/100,1/100]`
+   and set initial `Phi_0=0` exactly. This represented state is the sole
+   candidate. Retain the numerical start, optimizer status, evaluation and
+   forward-call counts, diagnostic residual and numerical backend metadata.
+   Backend metadata includes NumPy/SciPy versions, compiler/build architecture,
+   BLAS/LAPACK configuration and integer widths, and available SIMD features;
+   omit machine paths, commands and environment values.
+
+### One validated forecast and decision
+
+The [candidate consumer](../../src/tnfr/physics/_organized_observed_forecast.py)
+re-admits the record and exact candidate before integration. Run one carried
+candidate from `tau=200` to `216` through the complete word and released tail,
+using the shared prescribed-time metric Taylor kernel, order 16, outward
+128-bit dyadic intervals, identity metric and growth bound `g=1/3000`.
+Split at every stage and use maximum step `1/8`: 143 successful steps cover
+the fixed horizon. The initial candidate radius is zero and the propagated
+numerical radius may not exceed `1e-15`. Keep every compact tube, polynomial,
+remainder, growth and endpoint witness. No refinement or retry follows failure.
+
+Construct all sample enclosures from this single fresh history and calculate
+the upper residual (4), then (6) with the rebuilt G, containing-class E_0
+and `eta=1e-14`. Admit only if the trajectory is complete and the true-form
+radius is at most `1e-13`. Report the five endpoint centers with their true-form
+bounds and separate future-reading bounds enlarged by `eta`. Do not inspect
+the archived future as an acceptance criterion. The stronger exact feasible
+witness in section 3 is not part of this protocol.
+
+Failure of proposal, enclosure or policy yields explicit unavailability
+without a new candidate, budget, tolerance or source choice. Malformed inputs
+reject before use; unexpected software errors retain an incomplete attempt.
+A successful case establishes one operational conditional forecast, not
+optimizer convergence for every admissible record, source-class membership
+for arbitrary data, or a uniquely justified evolution law.
+
+Run [the single fixed instrument](../../benchmarks/organized_observed_forecast.py)
+only after committing this declaration and all consumed source. Its shared
+exclusive assessment lifecycle records the source inventory and attempt
+before extraction; exact record, proposal and validated response follow in
+the result. Archive those bytes and receipt for read-only verification.
+
+<!-- FROZEN DECLARATION AND PROOF END: append evaluated results only below. -->

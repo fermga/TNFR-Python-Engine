@@ -95,7 +95,8 @@ the supplied positive-r matrix law by default. Earlier frozen protocols,
 negative results and responses retain their original premises. The unresolved
 stationary maintenance route has no active search; the prepared storage observer
 remains an instrument without a frozen response campaign. No new source
-replay, numerical scan, physical-data evaluation or fitting is active.
+replay, numerical scan or physical-data evaluation is active. The single
+record-only software fit below is the only declared numerical proposal.
 Physical constituent emergence, autonomous preparation and unique law
 selection remain open. No empirical response has passed complete physical
 admission.
@@ -662,7 +663,10 @@ noise, clock, horizon and `1e-13` true-output policy.
   precision increase or an unrestricted trajectory campaign.
   A synthetic record may be extracted from existing certified forecast
   evidence, but remains a software control rather than independent validation;
-  protocol declaration, record selection and numerical evaluation are pending.
+  the [fixed operational protocol](../nodal/ORGANIZED_OBSERVED_FORECAST.md#organized-observed-forecast-protocol)
+  now declares that extraction, one historical fit and one validated forecast.
+  Source/protocol freeze precedes actual record extraction and evaluation;
+  no actual record or new candidate has yet been evaluated.
 
 This is a structural information gate. Physical preparation, calibration and
 apparatus admission remain unresolved; there is no parallel apparatus search
