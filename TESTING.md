@@ -682,6 +682,15 @@ the limit on identifying sine or winding from this statistic. These checks
 admit no laboratory horizon, drift allowance, preparation or apparatus and
 evaluate no numerical trajectory or frozen producer.
 
+The same recovery controls cover its
+[scoped physical admission](theory/research/ORGANIZED_RECOVERY_OBSERVATION.md#recovery-operational-admission):
+derive the pulse/total-duration clock restriction from input delivery, not
+sampling; check sharp offset/drift accumulation and joint error budgets.
+Retain the local voltage-only preparation counterexample and independently
+bounded phase/voltage/sensor certificate. Exact SI conversions and the source
+receipt support only the stated specification comparison, not observed error,
+a universal noise floor or a calibrated apparatus. Earlier receipts stay frozen.
+
 For [finite interface factorization](theory/nodal/ORGANIZED_INTERFACE_FACTORIZATION.md),
 select `tests/physics/test_organized_slot_registration.py` and
 `tests/physics/test_organized_interface_factorization.py` with the joint-resource,

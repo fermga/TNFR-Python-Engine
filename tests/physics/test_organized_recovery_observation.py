@@ -22,6 +22,7 @@ from tnfr.mathematics._rational_interval import I, cos, pi_interval, sin
 import tnfr.physics._organized_recovery_observation as recovery_owner
 from tnfr.physics._organized_recovery_observation import bound_recovery_area_observation
 from tnfr.physics._organized_window_observation import bound_loaded_window_observation
+from tnfr.utils.io import json_loads
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -39,6 +40,7 @@ def preserve_frozen_evidence_and_producers():
             "benchmarks/organized_robust_current.py",
             "src/tnfr/physics/_organized_robust_current.py",
             "docs/assets/organized_finite_window_design/method-sources-v1.json",
+            "docs/assets/organized_recovery_observation/method-sources-v1.json",
         )
     )
     before = tuple(hashlib.sha256(path.read_bytes()).digest() for path in paths)
@@ -512,3 +514,215 @@ def test_fixed_width_fraction_normalization_and_exact_input_boundaries(recovery_
                 assert type(scalar.numerator) is type(scalar.denominator) is int
     exact = bound_recovery_area_observation(area_error=0)
     assert exact.response_separated and exact.response_gap > recovery_bound.response_gap
+
+
+def test_fixed_clock_ratio_links_input_delivery_and_total_observation(recovery_bound):
+    pulse, total = recovery_bound.pulse_duration, recovery_bound.total_horizon
+    ratio = total / pulse
+    assert ratio == 2**50 + 1
+    for clock in (Q(3, 7), Q(11), Q(10**9)):
+        physical_pulse = pulse / clock
+        physical_total = total / clock
+        assert physical_total == ratio * physical_pulse
+        assert recovery_bound.sensor_time_constant / clock == physical_pulse
+    # This constraint uses the delivered input and model clock. It assumes
+    # neither digitized samples during the pulse nor a sample-rate limit.
+
+
+@pytest.mark.parametrize("side", (-1, 0, 1))
+def test_independent_delivery_and_duration_limits_have_an_exact_clock_boundary(
+    recovery_bound, side
+):
+    pulse, total = recovery_bound.pulse_duration, recovery_bound.total_horizon
+    minimum_pulse = Q(3, 1000)
+    maximum_duration = (total / pulse) * minimum_pulse + side * minimum_pulse / 7
+    clock_lower = total / maximum_duration
+    clock_upper = pulse / minimum_pulse
+    assert (clock_lower <= clock_upper) is (side >= 0)
+    assert (total * minimum_pulse <= pulse * maximum_duration) is (side >= 0)
+    if side >= 0:
+        clock = (clock_lower + clock_upper) / 2
+        assert pulse / clock >= minimum_pulse
+        assert total / clock <= maximum_duration
+    else:
+        # The fastest clock allowed by delivery already exceeds the duration
+        # limit. Every slower allowed clock makes that conflict larger.
+        assert total / clock_upper > maximum_duration
+    if side == 0:
+        assert clock_lower == clock_upper
+
+
+def test_offset_and_drift_area_bounds_are_sharp_without_a_noise_model():
+    duration, offset_bound, slope_bound = Q(7, 3), Q(2, 13), Q(3, 17)
+    budget = offset_bound * duration + slope_bound * duration**2 / 2
+    for sign in (-1, 1):
+        coefficients = (sign * offset_bound, sign * slope_bound)
+        exact_area = sum(
+            coefficient * duration ** (degree + 1) / (degree + 1)
+            for degree, coefficient in enumerate(coefficients)
+        )
+        assert abs(exact_area) == budget
+    # An opposite-sign drift can cancel its integral. The worst-case bound
+    # does not assert coherent accumulation for every possible error history.
+    canceling_coefficients = (offset_bound, -2 * offset_bound / duration)
+    assert (
+        sum(
+            coefficient * duration ** (degree + 1) / (degree + 1)
+            for degree, coefficient in enumerate(canceling_coefficients)
+        )
+        == 0
+    )
+    # Giving two independent error sources the entire budget each is unsafe.
+    allowance = Q(5, 19)
+    allowed_offset = allowance / duration
+    allowed_drift = 2 * allowance / duration**2
+    assert allowed_offset * duration == allowance
+    assert allowed_drift * duration**2 / 2 == allowance
+    assert allowed_offset * duration + allowed_drift * duration**2 / 2 > allowance
+
+
+def test_si_voltage_area_budget_and_delivery_offset_product(recovery_bound):
+    # NIST SI defining constants are exact; no apparatus uncertainty or
+    # Josephson realization is inferred from these arithmetic conversions.
+    planck = Q(662607015, 10**42)
+    elementary_charge = Q(1602176634, 10**28)
+    pi = pi_interval()
+    area_unit_lower = planck / (16 * 1023 * pi.hi**2 * elementary_charge)
+    area_unit_upper = planck / (16 * 1023 * pi.lo**2 * elementary_charge)
+    budget_lower = area_unit_lower * recovery_bound.area_error
+    budget_upper = area_unit_upper * recovery_bound.area_error
+    assert Q(9765, 10**29) < budget_lower < budget_upper < Q(9766, 10**29)
+    ratio = recovery_bound.total_horizon / recovery_bound.pulse_duration
+    assert Q(8673, 10**44) < budget_lower / ratio
+    assert budget_upper / ratio < Q(8674, 10**44)
+    # If actual delivery independently needs at least p_min, a constant
+    # residual offset consumes e0*R*p_min even at the shortest allowed run.
+    minimum_pulse = Q(1, 10**12)
+    shortest_run = ratio * minimum_pulse
+    offset_upper = budget_upper / shortest_run
+    assert offset_upper * minimum_pulse == budget_upper / ratio
+    assert shortest_run > 1000
+    assert offset_upper < Q(9, 10**29)
+
+
+def test_zero_voltage_does_not_admit_even_the_local_phase_preparation(
+    recovery_bound,
+):
+    delta = recovery_bound.preparation_radius
+    theta = tuple(2 * delta * value for value in _PORT)
+    differences = tuple(theta[j] - theta[i] for i, j in _EDGES)
+    assert sum(theta) == sum(differences) == 0
+    assert max(map(abs, differences)) == 4 * delta < Q(1, 10)
+    assert _dot(theta, theta) == 8 * delta**2 > delta**2
+    kappa = 2 * pi_interval() / 5
+    for difference in differences:
+        gap = kappa + difference
+        assert 0 < gap.lo < gap.hi < pi_interval().lo
+    # U=z=0 gives the same zero voltages as the prepared twist. All five
+    # gaps remain on the winding-one branch, but its phase radius fails.
+    # This witness does not claim equal energy; that obstruction is separate.
+
+
+def test_independent_voltage_phase_and_sensor_bounds_can_certify_preparation(
+    cycle, recovery_bound
+):
+    delta, sensor_delta = (
+        recovery_bound.preparation_radius,
+        recovery_bound.sensor_preparation_radius,
+    )
+    projector = tuple(tuple(Q(i == j) - Q(1, 5) for j in range(5)) for i in range(5))
+    regularized_inverse = exact_matrix_inverse(
+        tuple(tuple(value + Q(1, 5) for value in row) for row in cycle)
+    )
+    centered_inverse = tuple(
+        tuple(value - Q(1, 5) for value in row) for row in regularized_inverse
+    )
+    assert exact_symmetric_semidefinite(centered_inverse)
+    assert exact_symmetric_semidefinite(
+        tuple(
+            tuple(p - inverse for p, inverse in zip(prow, irow))
+            for prow, irow in zip(projector, centered_inverse)
+        )
+    )
+    voltage_scale, scale_lower = Q(7, 3), Q(2)
+    form = tuple(delta * value / 20 for value in (2, -1, -1, 0, 0))
+    theta = tuple(delta * value / 20 for value in (0, 1, -1, 0, 0))
+    voltage = tuple(voltage_scale * value for value in _action(cycle, form))
+    assert _action(centered_inverse, voltage) == tuple(
+        voltage_scale * value for value in form
+    )
+    voltage_error = tuple(delta * value / 100 for value in _PORT)
+    phase_error = tuple(delta * value / 200 for value in (1, 0, -1, 0, 0))
+    voltage_radius, phase_radius = delta / 50, delta / 100
+    assert _dot(voltage_error, voltage_error) <= voltage_radius**2
+    assert _dot(phase_error, phase_error) <= phase_radius**2
+    measured_voltage = tuple(
+        value + error + Q(3, 5) for value, error in zip(voltage, voltage_error)
+    )
+    measured_phase = tuple(value + error for value, error in zip(theta, phase_error))
+    # L1 bounds conservatively enclose the measured Euclidean norms. The
+    # common voltage origin drops out; the neutral form leaf and centered
+    # phase chart are independently supplied premises, not inferred here.
+    form_bound = (
+        sum(map(abs, _action(projector, measured_voltage))) + voltage_radius
+    ) / scale_lower
+    phase_bound = sum(map(abs, measured_phase)) + phase_radius
+    sensor_state = sensor_delta / 10
+    measured_sensor = voltage_scale * sensor_state + sensor_delta / 100
+    sensor_bound = (abs(measured_sensor) + sensor_delta / 50) / scale_lower
+    assert voltage_scale >= scale_lower
+    assert _dot(form, form) <= form_bound**2
+    assert _dot(theta, theta) <= phase_bound**2
+    assert abs(sensor_state) <= sensor_bound
+    assert form_bound + phase_bound <= delta
+    assert sensor_bound <= sensor_delta
+
+
+def test_operational_receipt_retains_review_scope_and_specification_limit(
+    recovery_bound,
+):
+    root = Path(__file__).resolve().parents[2]
+    receipt = json_loads(
+        (
+            root / "docs/assets/organized_recovery_observation/method-sources-v1.json"
+        ).read_bytes()
+    )
+    assert receipt["schema"] == "tnfr.organized-recovery-observation.method-sources.v1"
+    assert (root / receipt["owner"]).is_file()
+    assert receipt["declaration_revision"] == "46df23f1"
+    assert receipt["physical_status"] == "not_admitted"
+    assert receipt["experimental_evaluation"] == "not_tested"
+    for name in (
+        "physical_dataset_selected",
+        "measured_arrays_downloaded",
+        "response_fit_performed",
+        "reserved_response_evaluated",
+        "physical_apparatus_admitted",
+        "hardware_purchased",
+    ):
+        assert receipt[name] is False
+    sources = {source["id"]: source for source in receipt["sources"]}
+    assert set(sources) == {
+        "lakeshore-480-manual-r2-3",
+        "lakeshore-480-dc-specifications",
+        "keithley-low-level-handbook-7",
+        "nist-si-section-2",
+    }
+    for source in sources.values():
+        assert source["review_method"] == "web_source_text"
+        assert source["retrieval_status"] == "web_review_only"
+        assert source["reviewed_sections"] and source["inference_limits"]
+        assert source["bytes"] is source["sha256"] is None
+    # Compare the documented allowance with an independently rebuilt upper
+    # bound. This checks the scoped inference, not actual instrument error.
+    planck, charge = Q(662607015, 10**42), Q(1602176634, 10**28)
+    budget_upper = (
+        planck
+        * recovery_bound.area_error
+        / (16 * 1023 * pi_interval().lo ** 2 * charge)
+    )
+    specified = sources["lakeshore-480-dc-specifications"][
+        "reviewed_specification_values"
+    ]
+    offset_allowance = Q(specified["dc_offset_area_magnitude_Vs"])
+    assert offset_allowance > 10**20 * budget_upper

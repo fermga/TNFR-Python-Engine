@@ -305,17 +305,178 @@ and its corresponding error requirement are
 \]
 
 Changing b rescales duration and voltage together; it does not change this
-area conversion. A bounded constant readout offset e_V contributes up to
-`e_V*H/b` to area error. Hence its allowance alone would require
-`e_V*H/b<=a0*gamma*eta_A/4`. Unknown offset, drift, clock, delivery and matrix
-errors cannot be discarded because the mathematical trajectory decays.
-The integral allowance is a new observation premise with different units
-from the short-window mean-error allowance. Neither implies the other.
+area conversion. The integral allowance is a new observation premise with
+different units from the short-window mean-error allowance. Neither implies
+the other.
 
-Independent phase preparation is still required; the earlier equal-energy
-counterexample remains valid. No apparatus, full calibration, drift coverage
-or physical data has been admitted. The theorem supplies a finite conditional
-mechanism test and a reusable loaded recovery bound, not an empirical result.
+<a id="recovery-operational-admission"></a>
+### Operational admission of the frozen candidate
+
+**Physical status: not admitted. Experimental evaluation: not tested.**
+The review below concerns direct voltage-area measurement with the supplied
+Josephson conversion and voltage-only initialization checks. Its published
+instrument error allowance does not certify the frozen integral error, while
+those initialization checks cannot establish the full phase preparation.
+These are separate scoped obstructions. They preserve the conditional
+theorem and do not establish a universal physical impossibility or an
+experimental rejection of either law.
+
+#### Clock, duration and joint residual error
+
+Let p denote the laboratory pulse duration and h the total observation
+duration, avoiding confusion with Planck's constant h_P. The unchanged
+candidate and sensor imply
+
+\[
+ p=T/b,\qquad h=H/b=Rp,\qquad
+ R=H/T=1+2^{50},\qquad (\tau_s)_{\rm lab}=p.
+ \tag{16}
+\]
+
+If an independently admitted input-delivery mode requires `p>=p_min>0`,
+and preparation, calibration and measurement coverage hold only through
+`h_max`, any compatible b must satisfy
+
+\[
+ H/h_{\max}\le b\le T/p_{\min},\qquad Rp_{\min}\le h_{\max}.
+ \tag{17}
+\]
+
+This constrains delivery of the actual input, not sampling of its short
+pulse. A continuous integrator need not resolve that pulse in separate
+samples. Conversely, a finite rise time requires a justified input-error
+bound; a nominal pulse-width setting does not realize the ideal rectangular
+current exactly.
+
+For the supplied conversion `a0=h_P/(4*pi*e)`, the
+[SI defining constants](https://www.nist.gov/pml/special-publication-330/sp-330-section-2)
+give `h_P=6.62607015e-34 J s` and `e=1.602176634e-19 C` exactly. Then
+
+\[
+ C_A=\frac{a_0\gamma}{4}
+     =\frac{h_P}{16(1023)\pi^2e},\qquad
+ B_A=C_A\eta_A=\frac{h_P}{1023\,2^{22}\pi^2e}
+     \simeq9.7658568\,10^{-26}\ {\rm V\,s}.
+ \tag{18}
+\]
+
+The nominal phase-blind area is `C_A/2048`, approximately
+`1.2500297e-23 V s`; the proved structural gap corresponds to more than
+`1.5625371e-24 V s`. These are unit translations, not measured responses.
+The physical constants and Josephson reference remain supplied premises.
+
+Suppose an independent residual-error model after calibration has
+`|offset(0)|<=e0` and `|offset'(t)|<=d0`. Over [0,h], its sharp worst-case
+absolute integrated error is `e0*h+d0*h^2/2`, attained by aligned affine
+offset and drift. Allocating the entire integral allowance to these errors
+would require
+
+\[
+ e_0h+\tfrac12d_0h^2\le B_A,
+ \qquad e_0Rp_{\min}+\tfrac12d_0(Rp_{\min})^2\le B_A.
+ \tag{19}
+\]
+
+For constant offset alone, `e0*p_min<=B_A/R`, approximately
+`8.6738233e-41 V s`. As a scale illustration only, a 1 ns minimum delivered
+pulse entails an observation longer than `1.1258999e6 s` and requires a
+residual constant-offset bound below `8.6738233e-32 V` even if it consumes
+the whole allowance. Neither value is a hardware specification or a
+fundamental noise floor. This calculation assumes the stated error class;
+it does not assert that all noise accumulates coherently.
+
+Independent calibration can subtract a known offset, but its residual and
+drift still need joint coverage. A final small voltage cannot certify a
+small accumulated error. A gain error, gate-timing error, sensor loading,
+input tracking or uncertain matrix changes further terms and cannot be
+assigned the same full allowance simultaneously. Finite-time calibration
+uncertainty is not an admitted perturbation of the exact dynamical law.
+Changing the horizon, using paired pulses or resetting/subtracting part of
+the response requires a new observation or input declaration and proof.
+
+#### Independent preparation information
+
+The voltage map `V=v0*L*U` and sensor voltage `V_s=v0*z` contain no initial
+relative-phase information. This fails even locally: at U=z=0, both
+`theta=0` and `theta=2*delta*(e_0-e_1)` have identical voltage readings and
+winding and lie in the retained collar, while only the first satisfies
+`||U||+||theta||<=delta`. The
+[equal-energy counterexample](ORGANIZED_FINITE_WINDOW_DESIGN.md#loaded-window-design-result)
+separately prevents zero voltage, winding and target storage from globally
+certifying the collar. Allowing the reference law to omit phase does not
+remove the full law's preparation obligation.
+
+A phase-sensitive measurement or independently validated preparation process
+must therefore bound the missing relative coordinates without using the
+reserved recovery area. Any reading's loading, disturbance, uncertainty and
+transport to pulse start belong to that certificate. A winding label does
+not replace the four relative phases, and an acquired 45-node source does
+not transfer to this supplied C5 matrix law without its own reduction and
+state-error proof. Common phase origin can be quotiented; response-relevant
+relative phase cannot.
+
+For example, admit the neutral form leaf, a calibrated `v0>=v_min>0`,
+projected nodal voltage estimate Vhat, sensor estimate Vshat and an
+independently admitted centered perturbation lift thetahat. Let their joint
+errors at pulse start be bounded in the respective Euclidean/absolute norms
+by eps_V, eps_s and eps_theta. Since `||L^+||_2<1` on C5, sufficient bounds are
+
+\[
+ B_U=\frac{\|P\widehat V\|+\varepsilon_V}{v_{\min}},\qquad
+ B_\theta=\|\widehat\theta\|+\varepsilon_\theta,\qquad
+ B_s=\frac{|\widehat V_s|+\varepsilon_s}{v_{\min}},
+ \quad B_U+B_\theta\le\delta,\quad B_s\le\delta_s.
+ \tag{20}
+\]
+
+This is a sufficient information contract, not a constructed phase sensor.
+Alternatively, independently admitted oriented phase gaps around the chosen
+twist give `d=Dtheta`; after checking their circular branches and cycle
+consistency, `L>=I` on the neutral space yields `||theta||<=||d||`.
+A bound on their estimate and joint error can therefore supply B_theta.
+The phase origin need not be measured, but neither a winding integer nor a
+single gap replaces the full relative-state bound. Separate marginal
+confidence statements are not the joint coverage required by (20).
+
+#### Reviewed direct-area method and scope of the decision
+
+The [Lake Shore 480 manual](https://www.lakeshore.com/docs/default-source/product-downloads/manuals/480_manual.pdf?sfvrsn=d25b3964_1),
+Sections 2.1.1 and 4.6.1, describes continuous voltage integration in DC
+non-peak mode. Section 8.9.6 calibrates it using an independently measured
+terminal voltage and the specified burst duration. This is a relevant direct-area method.
+Sections 5.9.1 and 5.9.3 distinguish pre-run drift estimation from DriftTrak,
+which treats sufficiently small changes as drift. Unmodeled tracking can
+therefore remove a slow contribution of the intended recovery signal.
+Resetting, taking peaks or using AC RMS also changes the frozen statistic;
+these modes do not automatically preserve its signed integral.
+
+The [published DC specifications](https://www.lakeshore.com/products/categories/specification/magnetic-products/fluxmeter/model-480-fluxmeter)
+give an offset allowance of `+/-10 microvolt seconds` plus integrator drift
+and a gain allowance of `+/-0.25%` of reading below `10 V s/s`.
+The quoted drift, `+/-1 microvolt second/minute`, applies on the 300 mV s
+range with 100 kilohms input resistance at constant temperature. The offset
+allowance alone is more than `10^20` times B_A. This published error envelope
+cannot establish the frozen requirement; it is not a lower bound on actual
+error or all possible instruments. No long-term drift extrapolation is used.
+The ground-referenced, finite-resistance input also requires a loading and
+grounding model when attached to the retained sensor.
+
+The [Keithley measurement handbook](https://download.tek.com/document/LowLevelHandbook_7Ed.pdf),
+Sections 3.2.3-3.2.4, 3.2.8 and 3.3.2, separately explains application zero,
+drift, periodic-noise rejection and reversal/offset-compensated sequences.
+These methods do not supply joint coverage of this uninterrupted signed area.
+In particular, treating the predicted late signal as a measured zero would
+use the reserved response to calibrate away a candidate difference.
+
+The [source receipt](../../docs/assets/organized_recovery_observation/method-sources-v1.json)
+records reviewed primary sections and their limits. This is web-text review,
+not archived source bytes, measured arrays or an apparatus calibration.
+The reviewed direct-area route supplies neither the required error coverage
+nor independent complete preparation. The local preparation counterexample
+also survives arbitrary improvement of voltage precision. Thus the scoped
+operational review closes without admitting a physical evaluation.
+Other independently justified observation/preparation methods remain possible;
+they cannot inherit this candidate's admission or alter its frozen premises.
 
 ### Implementation and verification boundary
 
@@ -329,7 +490,12 @@ check the complete modified-energy derivative, sensor endpoint factors,
 nonlinear collar constants, alternative restoring law, arithmetic boundaries
 and laboratory-unit cancellation. Frozen producers and responses are not run.
 
-The [sole queue](FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) retains operational
-preparation and observation admission as the outstanding part of the research
-question. The conditional comparison is complete; more trajectory precision
-would not supply those missing physical premises.
+The same controls check the clock-independent requirements, sharp residual
+offset/drift bounds and preparation-information obstruction. They do not
+evaluate an instrument or turn a published specification into a measured
+error. Frozen producers and earlier source receipts remain unchanged.
+
+The [sole queue](FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) records this
+scoped closure and selects the next foundational question. Physical
+preparation and observation remain dependencies of a future physical test;
+more trajectory precision would not supply those missing premises.
