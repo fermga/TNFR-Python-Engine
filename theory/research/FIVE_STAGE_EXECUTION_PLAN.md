@@ -114,10 +114,13 @@ force the same nonlinear interaction.
 is now closed: all 96 internal directions are invisible to first variation,
 but explicit phase/form disturbances generate quadratic response while
 preserving the initial marked windings. Exact reflection protection is a
-stronger condition. The next task is a
-[foundational priority review](#post-contact-foundation-review), using this
-distinction to select a missing premise rather than automatically extending
-the contact expansion or its numerical precision.
+stronger condition. The [foundational priority review](#post-contact-foundation-review)
+is now closed: continued-contact stationary maintenance is the selected
+generative dependency, but no existing proof covers its complete marked
+class. The next task is [analytical certificate admission](#contact-maintenance-certificate-admission):
+develop a constructive target mechanism or a full-class stationary
+obstruction before reopening numerical work. Another contact expansion
+does not supply this missing premise.
 
 No 45-node acquisition, physical readout or source certificate transfers to
 the supplied positive-r matrix law by default. Earlier frozen protocols,
@@ -134,7 +137,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next bounded decision | [Post-contact foundational review](#post-contact-foundation-review): identify the next unresolved premise and one discriminating protocol; no further response campaign is active |
+| Next bounded analytical admission | [Maintenance certificate mechanism](#contact-maintenance-certificate-admission): seek a constructive target or a candidate-independent stationary obstruction in the full source-compatible class; no numerical search is admitted |
+| Closed post-contact foundational review | [Dependency decision](#post-contact-foundation-review): contact response and hidden-mode results do not supply independent law selection, indefinite maintenance or a physical bridge; the missing maintenance certificate mechanism is explicit |
 | Closed full-fine preparation sensitivity | [Hidden internal modes](#organized-contact-preparation-sensitivity): all-time first-order invisibility, opposite-mode quadratic coupling and explicit winding-admissible leakage distinguish exact reflection protection from a linear observation kernel |
 | Closed ideal dynamical cancellation | [Complete-law origin classification](#organized-contact-dynamic-cancellation): reflection protects both laws at beta=m*pi/5; elsewhere sine regenerates donor response at order nine and the alternative at order three or five, within the original derivative budget |
 | Closed alternative-law interaction admission | [Own-law finite contact](#organized-alternative-contact-admission): the actual acquired organizations retain the original all-registration contrast, with their complete intervention history, work/storage budgets and fifteen finite identities |
@@ -334,7 +338,7 @@ An added observable earns inclusion by deciding the selected prediction or a
 meaningful minimality obstruction. Existing failed physical-source admissions
 remain failed; more samples cannot repair their complete-law mismatches.
 
-The sole next task is [dynamical protection of cancellation](#organized-contact-dynamic-cancellation).
+The [queue status](#2-one-status-board-and-dependency-chain) owns task activation.
 The table assesses dependencies, not a fixed sequence or parallel campaigns. It preserves
 the objective of generated, physically testable organization without identifying
 winding, phase cancellation or storage with material constituents.
@@ -359,10 +363,12 @@ rather than transferring an all-degree minimum as a fixed-support state count.
 Its identified own-law outer source premise and subsequent finite-contact
 comparison are now certified with their own bounds; the old sine inverse is
 unchanged. This establishes a robust finite contrast for the retained pair,
-but does not establish an exact interaction constraint. The next mechanism
-question tests that distinction through symmetry and a bounded analytical
-derivative calculation, without another law, trajectory comparison, moment
-hierarchy or physical response evaluation.
+but does not establish an exact interaction constraint. The closed dynamical
+and preparation theorems now distinguish exact reflection protection,
+law-dependent onset and quadratic hidden-state leakage. The
+[foundation decision](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#post-contact-foundation-decision)
+explains why further response refinement would leave the maintenance,
+independent-law and physical-admission premises unresolved.
 
 <a id="organized-joint-preparation-resources"></a>
 ### Closed joint preparation-resource admission
@@ -878,29 +884,58 @@ finite noisy discrimination and acquired-source residual distributions
 remain outside the conclusion. No trajectory or frozen source was replayed.
 
 <a id="post-contact-foundation-review"></a>
-### Next bounded decision: which foundational premise now blocks progress?
+### Closed post-contact foundational review
 
-Reassess the research priority before extending the contact calculations.
-Own-law formation and finite interaction are established for the retained
-pair. The new results separate shared symmetry, law-dependent ideal onset
-and hidden preparation effects. They do not independently justify either
-law, maintain the organization indefinitely or provide a physical bridge.
-Another response coefficient is useful only if it decides one of those
-missing obligations.
+The [decision owner](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#post-contact-foundation-decision)
+closes the review declared at `6fc83d05`, using existing owners and proofs
+only. Shared identity, ideal response onset and full-fine first-variation
+invisibility have different premises. Neither the mathematical two-law
+discriminator nor additional covariance coordinates supplies independent
+law selection or the missing physical preparation/measurement certificate.
 
-| Review obligation | Required decision |
+The selected generative dependency is stable stationary maintenance during
+continued contact in the original complete marked class. The existing
+curvature and reflection obstructions leave nonacute, reflection-breaking
+states open; the frozen stationary search supplies acceptance tools without
+a target or a global exclusion. No execution campaign is ready. The missing
+admission is a constructive analytical mechanism or a candidate-independent
+inequality covering that class. The next protocol addresses that gap without
+repeating local starts, source histories or contact derivatives.
+
+<a id="contact-maintenance-certificate-admission"></a>
+### Next bounded task: analytical maintenance-certificate admission
+
+Determine whether the existing full-state stationarity and curvature tools
+can support one analytical certificate mechanism for the source-compatible
+stationary question. This is a method-admission task, not a resumed numerical
+search or a claim of complete long-time maintenance. Its prospective scope is:
+
+| Stage | Fixed contract |
 | --- | --- |
-| Consolidated premises | Match the two complete laws, actual-source certificates, ideal contact proofs and full-fine variation domain. Identify which properties follow from support symmetry, which consume the chosen constitutive law, and which require extra preparation information; do not promote conditional targets to actual sources |
-| Prior-work exclusion | Compare any proposed information/closure task with [constituent memory](../nodal/ORGANIZED_CONSTITUENT_MEMORY.md), [finite compression](../nodal/ORGANIZED_COMPRESSED_MEMORY.md) and [law/state identifiability](#organized-law-state-identifiability). A new covariance representation must supply a missing predictive capability, not repeat a known nonclosure example or improve only precision |
-| Candidate dependencies | Assess independent constitutive justification, source-compatible continued-contact maintenance, and an independently prepared/measured collective property. Retain the [premise review](#post-identifiability-premise-review), stationary obstructions and failed physical-admission boundaries. An attractive interpretation or another compatible law is insufficient to reopen a route |
-| Selection criterion | Choose one concrete unresolved premise with a result that would change a foundational or generative claim, an existing usable mathematical tool or a justified new one, and a bounded proof/discrimination criterion. Explain what favorable and unfavorable outcomes would establish and why an already-closed gate cannot answer it |
-| Stopping and evidence budget | Review existing owners and proofs only; no source replay, trajectory, parameter scan, new physical record or response fitting. Close this decision by recording one justified next protocol in this sole queue, with preparation, complete law, observation and budget fixed before evaluation. If no candidate is ready, name the missing admission instead of opening an ungrounded calculation |
+| F1: state and domain | All 54 nodes and 144 unit edges of the original `C9 x W6` support; signed forms, full circular phases, held unit capacities, zero total form and the conserved phase-lift mean. Use the [complete product marked class](../nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md#marked-cycle-information-and-connected-chambers), not just fifteen windings. Retain all 53 relative phases, including relative donor origin, nonacute gaps, reflection-breaking states and every cut-free margin strip |
+| F2: complete law | Original sine law only: `x'=(-Lx+gamma*S(theta))/4`, `theta'=gamma*Lx/4`, `gamma=1/(1023*pi)`, prime in `tau=(1023/1024)*t`; no forcing, later event, altered support, phase bias or fitted coefficient. Retain `H=x^T L x/2+sum_e(1-cos(delta_e))` and `H'=-||Lx||^2/4`. At stationarity connectedness and the fixed form mean require `x=0` and `S(theta)=0` |
+| F3: mechanism and coverage | Develop one explicit analytical target construction or a candidate-independent full-Hessian inequality, using the existing [curvature implication](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#5-a-full-fine-obstruction-to-stable-retention-near-the-carrier) and [stationary acceptance](../nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md#root-and-stability-acceptance). State every reduction hypothesis. A restricted construction can establish existence only with original class membership and full relative stability; a global obstruction cannot replace class coverage with a carrier, reflection or acute-collar restriction |
+| F4: discriminating criterion | A constructive route must identify a center and prove that strict root inclusion, complete marked-class admission and positive relative Hessian can be certified. An obstruction route must cover every stationary point and establish a negative relative Hessian direction; exclusion of strictly positive Hessians alone leaves degenerate stable targets open. Record any uncovered domain explicitly, without promoting a candidate mechanism to a theorem |
+| Budget and stop | One analytical mechanism proposal and its scope audit; zero optimizer starts, trajectories, source replays, response fits or physical records. There is no trajectory horizon or numerical precision extension. If the proposal needs numerical certification, first freeze its exact center/domain, numerical budget and acceptance protocol here before evaluation. If no mechanism covers the question, close admission as unresolved and name the missing mathematical step; do not extend a scan or silently restrict the claim |
 
-This review keeps the main objective tied to justified laws, formation and
-independent physical consequences. Second-order correlation dynamics may
-be a useful method, but its availability does not activate another campaign.
-No third-law campaign, stationary search, autonomous event selector, apparatus
-campaign or physical response evaluation is active.
+For a constructed target, reuse the generic root/Hessian kernel in
+[`_organized_stationary_certificate.py`](../../src/tnfr/physics/_organized_stationary_certificate.py),
+then certify each complete marked branch against the true strict bounds
+`-pi < delta_e < pi`. Its local box must have its own declared radius.
+The frozen search wrapper's `1/1024` margin is not a premise of this new
+question; preserve that wrapper, its protocol and its artifacts unchanged.
+
+A certified stable point would establish an available local target, not
+capture of the acquired source. A full stationary instability theorem would
+exclude stable stationary targets, not prove actual winding loss: special
+source stable manifolds, boundary limits and retention along a trajectory
+remain separate obligations. The alternative law needs its own stationary
+force and Hessian analysis; common finite identities transfer neither.
+
+The [existing constituent-memory](../nodal/ORGANIZED_CONSTITUENT_MEMORY.md)
+and [compression](../nodal/ORGANIZED_COMPRESSED_MEMORY.md) results remain
+tools for a named prediction, not a parallel moment-building task. No
+third-law, autonomous event, apparatus or physical response campaign is active.
 
 Recovering established physical relations remains the objective; the test
 need not predict a deviation from known physics. An equivalent circuit
@@ -920,10 +955,10 @@ For each subsequent law or hypothesis, retain its premises, consequences,
 countermodels and decision in the existing definition or proof owner.
 Close or revise the active gate before selecting another dependency here.
 A law is not accepted merely because it produces a desired object; no finite
-exhaustive list or uniquely selected law is promised. The stationary route
-remains separate and reopens only with a constructive target or an analytical
-certificate mechanism, preserving the complete source chamber, possible
-special-source stable manifolds and asymptotic approaches to cuts.
+exhaustive list or uniquely selected law is promised. Stationary numerical
+work reopens only after the analytical admission above, preserving the
+complete source chamber, possible special-source stable manifolds and
+asymptotic approaches to cuts.
 
 <a id="organized-contact-stationary-search"></a>
 ## Closed finite stationary search and marked-chamber admission

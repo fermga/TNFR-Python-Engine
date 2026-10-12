@@ -1032,6 +1032,95 @@ need not be an autonomous dynamical state. Finite information, exact
 aggregation or fewer channels must not be promoted to fundamental selection
 principles without an independent argument.
 
+<a id="post-contact-foundation-decision"></a>
+### What the contact results change in the foundation audit
+
+The bounded review declared at `6fc83d05` compares existing proofs, not new
+responses. The [own-law source](nodal/ORGANIZED_ALTERNATIVE_OUTER_ACQUISITION.md)
+and [finite contact](nodal/ORGANIZED_ALTERNATIVE_CONTACT.md) certificates now
+retain both endpoint laws through the actual preparation and intervention
+history. Their common marked identity does not make the complete laws
+equivalent. The [ideal contact theorem](nodal/ORGANIZED_CONTACT_DYNAMIC_CANCELLATION.md)
+separates complete-field reflection protection from law-dependent response
+onset. Its limiting preparation is not the acquired source. The subsequent
+[preparation theorem](nodal/ORGANIZED_CONTACT_PREPARATION_SENSITIVITY.md)
+shows that all 96 internal directions are invisible at first amplitude
+variation along the carrier, while explicit internal disturbances generate
+quadratic response. This is neither finite-amplitude transverse stability
+nor an all-times retention certificate. Its dynamical reflection is also
+not the stationary sector assumed in the older reflection obstruction.
+
+These results support the following dependency assessment. Task activation
+and the prospective protocol belong only to the
+[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-checkpoint).
+
+| Question | What the existing evidence permits | Missing admission |
+| --- | --- | --- |
+| Independent constitutive justification | The two supplied laws form the retained identities and are mathematically distinguishable; the information minimum constrains a description of a law | An independently justified restriction or a complete physical observation. Matching targets, dissipation, symmetry, onset order or operator labels does not select a law |
+| Continued-contact maintenance | Full-state stationary acceptance and restricted instability theorems are available under the original sine law | A constructive stable target in the complete source-compatible marked class, or a candidate-independent obstruction covering that class. No current proof supplies either |
+| Independent physical property | Collective measurement maps remain admissible in principle; existing electrical comparisons expose explicit failures | A joint certificate of independently prepared state, complete loaded law/support, input and clock calibration, and observation errors, obtained without the reserved response |
+| Additional collective coordinates | Constituent memory already derives quadratic feedback and nonclosure; compression already supplies a controlled finite prediction | A named missing predictive capability. Another covariance representation alone closes none of the preceding gaps |
+
+The most direct unresolved generative premise is whether continued contact
+admits a **stable stationary organization in the original complete marked
+class**. This is a necessary target question for the stationary maintenance
+route, not a claim that all identity retention must approach a stable point.
+The ontology distinguishes formation, finite interaction and
+[maintenance](EMERGENT_ONTOLOGY.md#generative-bound-organization); the new
+interaction theorems do not settle that last obligation.
+
+The [marked-class proof](nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md#marked-cycle-information-and-connected-chambers)
+retains the mixed cycles omitted by the fifteen reported windings. The
+actual source lies in its product class, and uninterrupted cut-free
+maintenance cannot leave that class. A search in another class cannot
+repair this source dependency. The full problem includes nonacute gaps,
+reflection-breaking states and the strips removed by the previous search's
+artificial margin. All 53 relative phases remain; the relative donor origin
+is included in those coordinates, not an additional degree of freedom.
+
+There are useful tools but no admitted full-domain mechanism. The
+[full-fine curvature witness](nodal/ORGANIZED_CONTACT_MAINTENANCE.md#5-a-full-fine-obstruction-to-stable-retention-near-the-carrier)
+requires its acute outer-gap and internal-gap-defect hypotheses. The
+[reflection obstruction](nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md#5-complete-law-consequence-and-scope)
+requires its static sector. The
+[root and stability certificate](nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md#root-and-stability-acceptance)
+can accept a constructed target, but supplies neither that target nor a
+global exclusion. The frozen 24-start nonfinding adds neither. Carrier
+mode separation does not extend those tools to arbitrary stationary states.
+The generic root/Hessian certificate is reusable independently of that
+search's `1/1024` marked margin; the full-class question retains strict
+avoidance of the actual cuts, including the omitted margin strips.
+
+For the fixed sine law, strict positive relative phase curvature at a
+certified stationary point gives local asymptotic stability of the complete
+two-row law on its fixed-mean leaf. A negative relative phase direction
+instead gives an unstable complete tangent mode. A global obstruction must
+therefore establish a negative direction at **every** stationary point in
+the declared class; merely failing to find a strictly positive Hessian does
+not exclude degenerate stable points. Conversely, a certified stable point
+would establish an available target, not capture of the actual source or
+indefinite maintenance of its fifteen identities. Even a global stationary
+instability theorem would leave possible special-source saddle manifolds
+and asymptotic approaches to marked cuts to be addressed separately.
+
+Thus the review identifies an analytical certificate mechanism as the
+missing admission, rather than authorizing another numerical search.
+The original sine law has the existing stationary acceptance tools; choosing
+it for this question does not prefer it as a fundamental law or transfer
+its conclusions to the alternative. A subsequent comparison needs its own
+force derivatives, storage and stability proof.
+
+The [law-selection boundary](#law-selection-and-boundary-information) and
+the failed physical-admission reviews remain unchanged. The required physical
+certificate is more than improved voltage precision: absent phase or hidden
+preparation information, loading and joint sensor coverage remain independent
+obligations. Likewise, supplying a support event to preserve an identity
+would add an occurrence law; the
+[support-law nonselection result](nodal/RELATIONAL_SUPPORT_EVENTS.md)
+does not derive that law from passivity or desired retention. No source,
+trajectory, stationary search, physical record or frozen producer was
+evaluated in this review.
+
 ### Cross-channel foundation audit
 
 The follow-through is centralized in
