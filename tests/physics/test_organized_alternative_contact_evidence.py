@@ -25,7 +25,7 @@ EVIDENCE = ROOT / "docs/assets" / NAME
 DECLARATION = "theory/nodal/ORGANIZED_ALTERNATIVE_CONTACT.md"
 EVALUATOR = "benchmarks/" + NAME + ".py"
 SOURCE = "src/tnfr/physics/_" + NAME + ".py"
-METHOD_REVISION = "pending_committed_method"
+METHOD_REVISION = "b544ad0aade0342fde3dba43e9bfdf658073d2cd"
 ERROR, RADIUS = Q(1, 10**10), Q(1, 10**70)
 CURRENT, STIFFNESS = 1 + Q(1, 1458), 1 + Q(2, 243)
 

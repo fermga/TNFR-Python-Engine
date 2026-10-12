@@ -409,3 +409,49 @@ checks the retained source receipts, primitive premises, finite remainders,
 event/storage costs and response margins without regenerating any source
 or response. A receipt associates bytes with a source revision; it does not
 authenticate an experiment or replace the conditional proof above.
+
+<a id="alternative-contact-result"></a>
+## 8. Retained complete-source decision
+
+The method and complete source were committed as `b544ad0a` before the one
+assessment. The [attempt](../../docs/assets/organized_alternative_contact/attempt.json)
+records that source inventory and the fixed arithmetic protocol. The
+[exact result](../../docs/assets/organized_alternative_contact/result.json)
+is **`alternative_contact_certified`**, with no unresolved condition.
+All source, intervention, work, identity and response conditions pass jointly.
+
+The following strict decimal summaries have been checked against the exact
+rational record, without rerunning the scientific assessment:
+
+| Quantity | Retained bound | Original requirement |
+| --- | --- | --- |
+| Outer-one absolute observed increment, every source and origin | Below `6.197e-9` | Below `1e-8` |
+| Outer-zero absolute observed increment at a witness for each source | Above `3.881e-7` for every permitted reading error | Above `3e-7` |
+| Paired absolute-response gap at that same witness | Above `3.819e-7` | Implied threshold gap `2.9e-7` |
+| Complete finite remainder plus two reading errors | Below `4.920e-10` | Retained in both response bounds |
+| Largest absolute intervention-event work | Below 3.603 | Below 4 |
+| Sum of all fifteen absolute intervention works | Below 36.025 | Below 40 |
+| New contact work, both families and every origin | Below 90.007 | Below 100 |
+| Joined initial storage, outer one / outer zero | Below 169.770 / 138.666 | Each below 200 |
+| Smallest word identity margin | Above 0.1975 | Strictly positive |
+| Smallest contact identity margin | Above 0.2975 | Strictly positive |
+
+All six original own-law constituent preparations retain their 96 relative
+error directions. The host histories preserve all fourteen original marked
+cycles, and both joined families preserve the six internal and nine host
+outer identities through the fixed contact horizon. The external constituent
+reacts under the same complete dynamics; no ideal target replaces either
+actual source. All four errors in the paired comparison are included.
+
+Together with the retained sine result, this proves the stated finite
+organization-dependent response contrast for both endpoint laws. It does
+not equate their detailed trajectories or responses. The comparison concerns
+the same component, interface, preparations and structural observation model;
+it neither selects a unique law nor identifies a material constituent.
+Exact zero response, indefinite contact maintenance and an operational
+alignment selector remain separate claims. The earlier sine inverse is
+unchanged and has not been extended to these alternative-law histories.
+
+The read-only evidence audit checks source receipts, clocks, primitive source
+bounds, event geometry, harmonics, finite remainders and every joint margin.
+The original sine evidence and earlier acquisition artifacts remain unchanged.

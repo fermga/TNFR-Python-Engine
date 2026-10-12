@@ -602,9 +602,13 @@ static discriminator and a named source dependency. The subsequent
 [own-law source result](ORGANIZED_ALTERNATIVE_OUTER_ACQUISITION.md#alternative-outer-acquisition-result)
 closes that dependency with unchanged preparation and deadlines. It does not
 transfer the earlier observation inverse, or this owner's history transport
-and finite contact certificate. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#organized-alternative-contact-admission)
-declares the remaining actual-law interaction decision separately. No old
-response is reevaluated.
+and finite contact certificate. The subsequent
+[own-law contact result](ORGANIZED_ALTERNATIVE_CONTACT.md#alternative-contact-result)
+derives its own history, resource and finite response bounds and certifies
+the original all-registration contrast. Neither endpoint law's finite bound
+establishes exact dynamical cancellation. The
+[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#organized-contact-dynamic-cancellation)
+keeps that distinct question separate. No old response is reevaluated.
 In the [physical-property atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena),
 this addresses whether generated organizations have reproducible distinct
 interactions; physical preparation, measurement, units and clock remain
