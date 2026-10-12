@@ -125,8 +125,14 @@ evidence. A selected example does not establish that quantifier.
 The [weak-contact constitutive comparison](nodal/ORGANIZED_ALTERNATIVE_WEAK_CONTACT.md)
 also separates the retained marked identity from its attracting relative
 geometry: changing the supplied law can change which registrations are
-stable on the same support. A stationary classification and capture of
-the actually prepared organization remain separate obligations.
+stable on the same support. Its separate
+[actual-source theorem](nodal/ORGANIZED_ALTERNATIVE_WEAK_CONTACT.md#alternative-weak-contact-source-capture)
+retains the acquired organization and its complete history on declared
+origin intervals. A common primitive preparation interval has disjoint
+asymptotic registrations under the two laws, each with its own reached
+state and errors. This establishes constitutive dependence of the acquired
+outcome, not just stationary possibility. It supplies neither a physical
+observation nor a claim about every compatible law.
 
 Within the specified complete laws, equal nominal collective means and storage
 can hide response-relevant internal information. The

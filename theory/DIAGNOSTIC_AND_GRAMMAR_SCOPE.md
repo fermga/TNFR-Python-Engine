@@ -1240,13 +1240,28 @@ curvature and uniform torque remainders retain all fine directions in
 this verdict. Marked identity and support symmetry therefore do not
 determine these attracting geometries for the retained pair.
 
-The classification is not a source-to-target theorem. The old alternative
-source and finite-response certificates neither establish entry into the
-stationary tube nor transfer the sine source basin. The remaining
-generative obligation is to carry the actual alternative-law preparation,
-its observation history and every error through the changed weak contact.
-This must distinguish stationary possibility from the fate of acquired
-organizations before assigning a constitutive outcome to those sources.
+The separate [own-source theorem](nodal/ORGANIZED_ALTERNATIVE_WEAK_CONTACT.md#alternative-weak-contact-source-capture)
+now carries the actual alternative-law preparation, its observation
+history and every original error through the changed weak contact.
+It retains marked identity at every donor origin and assigns an
+attracting destination on ten declared intervals. On one common
+primitive preparation interval, sine and the alternative have disjoint
+asymptotic registrations, each with its own reached state. This supplies
+an acquired-outcome distinction without a finite settling deadline or
+an independent physical readout.
+
+The endpoint comparison does not yet quantify structural robustness.
+At fixed positive contact strength, the sine minima's hyperbolicity
+already implies persistence under sufficiently small law changes.
+It does not give a contact-independent deformation tolerance. The
+retained endpoints have different orders of weak-contact restoring
+torque, which motivates a controlled joint deformation/contact reduction
+within the existing constitutive family. Its transition scale and local
+bifurcation require joint remainders and full-state normal stability;
+endpoint coefficients alone cannot establish them. This question tests
+whether the collective geometry tolerates small constitutive changes
+across contact scales. It is distinct from the earlier single-C9
+source-selector robustness result and from a finer basin map.
 
 The alternative priorities retain their existing boundaries. Narrowing
 basin gaps or enlarging eta refines the same conditional construction
@@ -1261,12 +1276,11 @@ still lacks independent preparation and measurement coverage. Capture
 does not supply those missing observations, a laboratory clock or a
 unique microscopic law.
 
-The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#alternative-weak-contact-source-admission)
+The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#weak-contact-constitutive-transition)
 owns the single next gate and its complete-law scope. The changed
-stationary geometry establishes constitutive dependence within the
-retained comparison. It does not select nature's law, classify an
-unexamined constitutive family or prove actual-source capture under the
-alternative.
+stationary geometry and own-source capture establish constitutive
+dependence within the retained comparison. They do not select nature's
+law, classify intermediate laws or supply autonomous occurrence.
 
 ### Cross-channel foundation audit
 

@@ -1,7 +1,7 @@
 """Static own-law controls for the fixed weak harmonic contact comparison.
 
-The analytic stationary construction is checked through its identities and
-uniform remainder bounds. No root, source, trajectory or frozen response runs.
+The stationary construction and actual-source capture proof are checked through
+their identities and uniform bounds. No root, source, trajectory or response runs.
 """
 
 from fractions import Fraction as Q
@@ -349,3 +349,291 @@ def test_alternative_weak_contact_complete_weighted_loss_and_normal_hessian(mp):
         shift = 2 * mp.cos(alpha) * (1 - mp.cos(2 * mp.pi * mode / 9))
         factor = mp.cholesky(wheel + shift * mp.eye(6))
         assert all(factor[index, index] > 0 for index in range(6))
+
+
+def test_alternative_weak_contact_source_budget_and_own_curvature():
+    """Carry retained own-law inequalities through the entire observation word."""
+    eta, gamma, duration = Q(1, 100000), Q(1, 3000), Q(1, 5000)
+    recovered_error, zeta = Q(1, 10**70), Q(1, 10**6)
+    j0, j1 = (_current_derivative_bound(1, order) for order in (0, 1))
+    form_bound = Q(1, 100) + gamma * j0 * duration
+    form_drift = (2 * form_bound + gamma * j0) * duration
+    phase_drift = 2 * gamma * form_bound * duration
+    word_increase = 360 * form_bound * form_drift + 180 * j0 * phase_drift
+    new_work = 45 * eta * ((form_bound + recovered_error) ** 2 / 2 + 2 + Q(2, 19683))
+    donor_excess = 2 * (1 + j1) * recovered_error**2
+    # These two primitive majorants come from the retained own-law outer
+    # proof. They are combined here, without re-evaluating its source producer.
+    reached_excess, old_boundary = Q(9588, 10**6), Q(1451, 100000)
+    full_excess = reached_excess + word_increase + donor_excess + new_work
+    assert word_increase < Q(1, 50000)
+    assert new_work < Q(901, 10**6)
+    assert full_excess < Q(1051, 100000) < Q(3, 250)
+    assert old_boundary - full_excess > Q(1, 250)
+
+    def cosine_lower(value):
+        return 1 - value**2 / 2 + value**4 / 24 - value**6 / 720
+
+    def cosine_upper(value):
+        return cosine_lower(value) + value**8 / 40320
+
+    gap = Q(29, 20)
+    remaining_gap = (2 * Q(157, 50) - gap) / 4
+    sine_face = 5 * Q(309, 1000) - cosine_upper(gap) - 4 * cosine_upper(remaining_gap)
+    # Every alternative edge correction is nonnegative; subtracting the
+    # entire five-edge correction ceiling at the ground remains sufficient.
+    own_face = sine_face - 5 * Q(2, 19683)
+    assert own_face > Q(1, 750)
+    assert cosine_lower(gap) - Q(2, 243) > Q(1, 10)
+    assert Q(1, 10) - eta * j1 > Q(9, 100)
+    pi = pi_interval()
+    internal_face = Q(1, 2) + 8 * (1 - cos(5 * pi / 24)) - 9 * (1 - cos(2 * pi / 9))
+    assert internal_face.lo > Q(1, 25) > Q(3, 250)
+    fine_coercivity = (Q(1, 2) - Q(2, 243)) * Q(2, 5) - 6 * eta * j1
+    assert fine_coercivity > Q(19, 100)
+    assert 10 * j1 < 11
+    assert Q(2, 5) - 2 * 11**2 * gamma**2 / Q(19, 100) > Q(19, 200)
+
+    phase_fine, scaled_form_fine = 2 * (zeta + phase_drift), 2 * gamma * form_bound
+    fine_source = 27 * ((phase_fine + scaled_form_fine) ** 2 + scaled_form_fine**2)
+    assert fine_source < Q(1, 10**8)
+    assert 2 * Q(1, 750) / Q(1, 10) < Q(1, 6) ** 2
+    assert 5 * form_bound**2 < Q(1, 40) ** 2
+    assert Q(1, 6) + 6 * eta + gamma / 40 < Q(1, 5)
+
+
+def test_alternative_weak_contact_fine_and_mean_rows_retain_actual_remainder(mp):
+    """Independent noncarrier edge sums check fine decay and both mean channels."""
+    eta, gamma, alpha, tolerance = (
+        mp.mpf(1) / 100000,
+        1 / (1023 * mp.pi),
+        2 * mp.pi / 9,
+        mp.mpf("1e-60"),
+    )
+    origins = tuple(2 * mp.pi * (child - 2) / 5 for child in range(5)) + (mp.pi / 7,)
+    forms = tuple(mp.mpf(2 * child - 5) / 10000 for child in range(6))
+    q, z = mp.zeros(54, 1), mp.zeros(54, 1)
+    for child in range(6):
+        raw_phase = tuple(
+            mp.mpf((3 * child + 5 * slot) % 11 - 5) / 20000 for slot in range(9)
+        )
+        raw_form = tuple(
+            mp.mpf((7 * child + 3 * slot) % 13 - 6) / 40000 for slot in range(9)
+        )
+        for slot in range(9):
+            q[9 * child + slot] = raw_phase[slot] - sum(raw_phase) / 9
+            z[9 * child + slot] = raw_form[slot] - sum(raw_form) / 9
+    carrier = mp.matrix(
+        [alpha * (slot - 4) + origins[child] for child in range(6) for slot in range(9)]
+    )
+    phase = carrier + q
+    form = mp.matrix([value for value in forms for _ in range(9)]) + z
+
+    def means(values):
+        return mp.matrix(
+            [sum(values[9 * child : 9 * child + 9]) / 9 for child in range(6)]
+        )
+
+    def fine(values):
+        averaged = means(values)
+        return values - mp.matrix([value for value in averaged for _ in range(9)])
+
+    current, carrier_current, gradient = (
+        mp.zeros(54, 1),
+        mp.zeros(54, 1),
+        mp.zeros(54, 1),
+    )
+    laplacian, storage = mp.zeros(54), mp.mpf(0)
+    for left, right, weight in _weighted_edges(eta):
+        angle = phase[right] - phase[left]
+        for vector, exchange in (
+            (current, weight * _current(mp, angle)),
+            (carrier_current, weight * _current(mp, carrier[right] - carrier[left])),
+            (gradient, weight * (form[left] - form[right])),
+        ):
+            vector[left] += exchange
+            vector[right] -= exchange
+        laplacian[left, left] += weight
+        laplacian[right, right] += weight
+        laplacian[left, right] -= weight
+        laplacian[right, left] -= weight
+        storage += weight * (
+            (form[right] - form[left]) ** 2 / 2 + _potential(mp, angle)
+        )
+    ground = 54 * _potential(mp, alpha) + 45 * _potential(mp, 2 * mp.pi / 5)
+    assert 0 < storage - ground < mp.mpf(3) / 250
+    assert max(abs(value) for value in fine(carrier_current)) < tolerance
+    fine_gradient = -fine(current)
+    assert (q.T * fine_gradient)[0] > mp.mpf(19) / 100 * (q.T * q)[0]
+    assert (fine_gradient.T * fine_gradient)[0] < 121 * (q.T * q)[0]
+    form_rate = (-gradient + gamma * current) / 4
+    phase_rate = gamma * gradient / 4
+    assert (
+        max(abs(value) for value in fine(phase_rate) - gamma * laplacian * z / 4)
+        < tolerance
+    )
+    assert (
+        max(
+            abs(value)
+            for value in fine(form_rate) + (laplacian * z + gamma * fine_gradient) / 4
+        )
+        < tolerance
+    )
+
+    def fine_energy_on_tangent(parameter):
+        actual_q = fine(phase + parameter * phase_rate - carrier)
+        actual_z = fine(form + parameter * form_rate)
+        mixed = actual_q + gamma * actual_z
+        return ((mixed.T * mixed)[0] + gamma**2 * (actual_z.T * actual_z)[0]) / 2
+
+    fine_energy = fine_energy_on_tangent(0)
+    bracket = (
+        (q.T * fine_gradient)[0]
+        + (z.T * laplacian * z)[0]
+        + 2 * gamma * (z.T * fine_gradient)[0]
+    )
+    assert abs(mp.diff(fine_energy_on_tangent, 0) + gamma**2 * bracket / 4) < tolerance
+    assert mp.diff(fine_energy_on_tangent, 0) <= -19 * gamma**2 * fine_energy / 800
+
+    wheel_current, remainder = mp.zeros(6, 1), mp.zeros(6, 1)
+    wheel_laplacian = mp.zeros(6)
+    wheel_edges = tuple((child, (child + 1) % 5, 1) for child in range(5)) + tuple(
+        (child, 5, eta) for child in range(5)
+    )
+    for left, right, weight in wheel_edges:
+        angle = origins[right] - origins[left]
+        exchange = weight * _current(mp, angle)
+        correction = (
+            weight
+            * sum(
+                _current(mp, angle + q[9 * right + slot] - q[9 * left + slot])
+                - _current(mp, angle)
+                for slot in range(9)
+            )
+            / 9
+        )
+        wheel_current[left] += exchange
+        wheel_current[right] -= exchange
+        remainder[left] += correction
+        remainder[right] -= correction
+        wheel_laplacian[left, left] += weight
+        wheel_laplacian[right, right] += weight
+        wheel_laplacian[left, right] -= weight
+        wheel_laplacian[right, left] -= weight
+    assert (
+        max(abs(value) for value in means(current) - wheel_current - remainder)
+        < tolerance
+    )
+    assert (
+        max(
+            abs(value)
+            for value in means(form_rate)
+            - (
+                -wheel_laplacian * mp.matrix(forms)
+                + gamma * (wheel_current + remainder)
+            )
+            / 4
+        )
+        < tolerance
+    )
+    assert (
+        max(
+            abs(value)
+            for value in means(phase_rate)
+            - gamma * wheel_laplacian * mp.matrix(forms) / 4
+        )
+        < tolerance
+    )
+    assert abs(remainder[5]) > 1000 * tolerance
+    assert sum(abs(value) for value in remainder) <= mp.mpf(80) * fine_energy / 27
+    assert abs(remainder[5]) <= mp.mpf(40) * eta * fine_energy / 27
+
+    chi = gamma * (sum(forms[:5]) / 5 - forms[5])
+    mean_phase_rate, mean_form_rate = means(phase_rate), means(form_rate)
+    t_rate = sum(mean_phase_rate[:5]) / 5 - mean_phase_rate[5]
+    chi_rate = gamma * (sum(mean_form_rate[:5]) / 5 - mean_form_rate[5])
+    assert abs(t_rate - 3 * eta * chi / 2) < tolerance
+    assert (
+        abs(t_rate + chi_rate + 3 * gamma**2 * (wheel_current[5] + remainder[5]) / 10)
+        < tolerance
+    )
+    # Discarding the nonzero fine torque changes the corrected-origin row,
+    # even though every fine phase and form array has zero child mean.
+    assert (
+        abs(t_rate + chi_rate + 3 * gamma**2 * wheel_current[5] / 10) > 1000 * tolerance
+    )
+
+
+def test_alternative_weak_contact_tracking_impulse_and_ten_source_arcs():
+    """Derive own-law tracking constants and disjoint limit windows analytically."""
+    eta, gamma = Q(1, 100000), Q(1, 3000)
+    j1, j2 = (_current_derivative_bound(1, order) for order in (1, 2))
+    host_coercivity, shape_gradient_norm = Q(9, 100), Q(5)
+    assert 5 * j1**2 < (26 * host_coercivity) ** 2
+    assert (26 * Q(3, 2)) ** 2 < 2 * 28**2
+    assert 4 * 5 * j1**2 < 5**2
+    assert (
+        1 - 2 * shape_gradient_norm**2 * gamma**2 / host_coercivity
+        > host_coercivity / 2
+    )
+    torque_upper = Q(25, 2187) / Q(2, 5) + 960 * eta
+    assert torque_upper < Q(1, 20)
+    mean_gain, mean_damping = Q(3, 10), Q(3, 2)
+    torque_shape, donor_fine, host_fine = Q(5), 4 * j2 / 3, 8 * j2 / 3
+    weight, decay, fine_decay = Q(20), Q(1, 200), Q(19, 800)
+    assert host_coercivity / 16 - weight * mean_gain * torque_shape * eta**2 > decay
+    assert (weight * mean_damping - 28) * eta > weight * decay * gamma**2
+    assert host_fine + weight * mean_gain * donor_fine * eta**2 < 3
+    plateau = weight * mean_gain * Q(1, 20) * eta**3 / decay
+    assert plateau == 60 * eta**3
+    convolution = Q(3) / (fine_decay - decay)
+    fine_source, shape_source = Q(1, 10**8), Q(1, 5)
+    transient = shape_source + convolution * fine_source
+    assert transient < Q(21, 100)
+    chi_bound = (
+        mean_gain
+        * gamma**2
+        * (
+            Q(1, 20) * eta
+            + torque_shape * (transient + plateau)
+            + donor_fine * fine_source
+        )
+        / mean_damping
+    )
+    assert chi_bound < gamma**2 / 4 < Q(1, 10**6)
+    impulse = (
+        mean_gain
+        * eta
+        * (torque_shape * transient / decay + donor_fine * fine_source / fine_decay)
+    )
+    assert impulse < Q(1, 1000)
+
+    inner, outer, chi_margin = Q(1, 10), Q(1, 5), Q(1, 10**6)
+    assert 10 * (inner - chi_margin) > Q(99, 100)
+    assert 10 * (outer + chi_margin) < Q(201, 100)
+
+    def sine_lower(value):
+        return value - value**3 / 6 + value**5 / 120 - value**7 / 5040
+
+    # Concavity on this positive subinterval of (0, pi) reduces its minimum
+    # to these endpoints; the lower Taylor polynomials certify both.
+    assert sine_lower(Q(99, 100)) > Q(4, 5)
+    assert sine_lower(Q(201, 100)) > Q(4, 5)
+    restoring = (Q(1, 40) * Q(4, 5) - 960 * eta) * eta**2
+    permanent_error = torque_shape * eta * plateau
+    assert restoring > eta**2 / 100 > permanent_error
+    assert impulse < outer - inner
+    pi_lower, pi_upper = Q(157, 50), Q(22, 7)
+    assert outer + chi_margin < pi_lower / 12
+    assert 2 * inner < pi_lower / 5
+
+    # Every primitive prototype is covered by a sine basin, while its own
+    # harmonic-law root window is separated from the corresponding sine root.
+    sine_labels = range(0, 20, 4)
+    for label in range(1, 20, 2):
+        circular_distance = min(
+            min((label - other) % 20, (other - label) % 20) for other in sine_labels
+        )
+        assert circular_distance == 1
+        assert circular_distance * pi_upper / 10 + inner < Q(3, 5)
+        assert circular_distance * pi_lower / 10 - pi_upper / 60 > 0

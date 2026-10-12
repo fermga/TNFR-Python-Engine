@@ -163,8 +163,15 @@ alternative has ten attracting and ten saddle registrations in its
 independently admitted full-state tube at the same fixed contact strength.
 The five sine-attracting relative origins are alternative-law saddles.
 Thus support and marked identity alone do not fix this attracting geometry.
-The next dependency is [actual-source admission under the alternative](#alternative-weak-contact-source-admission),
-whose retention and destination cannot inherit the sine certificate.
+The separate [actual-source admission under the alternative](#alternative-weak-contact-source-admission)
+now retains every original source's marked identity and selects an
+attracting destination on ten explicit origin intervals. A common
+primitive preparation interval reaches disjoint asymptotic registrations
+under the two laws, with each law's actual history and errors retained.
+This is an acquired-outcome distinction, without a finite settling
+deadline or a physical observation. The next question is
+[constitutive robustness of the attracting geometry](#weak-contact-constitutive-transition),
+using the already declared continuous deformation family.
 Unit-strength classification remains unresolved and deferred; no numerical
 campaign is admitted.
 
@@ -183,8 +190,9 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Pending own-law source admission | [Alternative-law weak-contact preparation](#alternative-weak-contact-source-admission): determine whether a delimited class of the original alternative sources retains its complete identity and reaches a certified attractive target, with its actual history and errors; no sine-certificate transfer or numerical campaign |
-| Closed analytical constitutive comparison | [Weak-contact attracting registrations](#weak-contact-constitutive-registration): the harmonic alternative has ten full-state minima and ten index-one saddles in its declared tube at eta=1e-5. The sine law's five attractive relative origins become saddles; actual-source destinations remain unproved |
+| Pending analytical constitutive robustness | [Weak-contact deformation transition](#weak-contact-constitutive-transition): determine whether and how the sine registration loses stability along the retained constitutive family, with a controlled small-contact scale and full-state normal stability; no source or numerical campaign |
+| Closed own-law source admission | [Alternative-law weak-contact preparation](#alternative-weak-contact-source-admission): every original source retains its marked identity; ten origin intervals select attractive targets at eta=1e-5. A common primitive preparation interval gives disjoint asymptotic outcomes under the two complete laws, retaining each own history and errors |
+| Closed analytical constitutive comparison | [Weak-contact attracting registrations](#weak-contact-constitutive-registration): the harmonic alternative has ten full-state minima and ten index-one saddles in its declared tube at eta=1e-5. The sine law's five attractive relative origins become saddles; source capture has its separate certificate below |
 | Closed post-capture foundation review | [After source-to-attractor capture](#post-capture-foundation-review): selected the own-law stationary comparison now closed below. Autonomous occurrence, physical identification and source admission under a changed law remain separate |
 | Closed actual-source basin admission | [Weak-contact source basin](#weak-contact-source-basin-admission): at fixed `eta=1e-5`, five donor-origin intervals of half-width `3/5` select their strict relative minima for all original source errors and observation histories. Every intervening gap contains a saddle-converging origin; other gap destinations remain unclassified |
 | Closed collective classification and all-origin obstruction | [Weak-contact collective selection](#weak-contact-collective-selection): exactly five attracting and five index-one saddle targets in the source-accessible low-energy sector. Every fixed actual residual member has at least one donor origin reaching a saddle; the later source-basin theorem places at least one saddle-converging origin in each of five separate gaps at fixed strength |
@@ -380,7 +388,7 @@ response has not been derived from the earlier acquired constituents.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
-| Composite identity under interaction | Retain complete-law, marked-identity and actual-source hypotheses when claiming maintained collective organization | **Closed sine source-to-attractor case and stationary law comparison.** The harmonic alternative changes the attracting geometry on the same weighted support; its own source retention and capture are now the missing generative admission. Unit-strength nonseparable classification and complete classification of the sine basin gaps remain deferred |
+| Composite identity under interaction | Retain complete-law, marked-identity and actual-source hypotheses when claiming maintained collective organization | **Closed two-law source-to-attractor comparison.** Own-law retention and capture distinguish acquired outcomes on the same support. Structural robustness along the retained constitutive family is the selected foundation question; unit-strength classification and remaining basin gaps stay deferred |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
 | Sufficient collective state and inherited response | Construct and certify a forecast from a joint finite noisy record without known collective initialization | **Closed operational software case.** The whole-record bound and one candidate forecast are certified; arbitrary-record convergence and physical measurement remain unproved |
@@ -430,9 +438,12 @@ explains why further finite-response refinement alone would not settle
 maintenance, independent-law or physical admission. The weak-contact basin
 certificate now closes one actual-source maintenance case. The
 [post-capture review](#post-capture-foundation-review) selected an own-law
-stationary comparison. Its certified change of attracting geometry now
-requires [own-source admission](#alternative-weak-contact-source-admission)
-before attributing that difference to the fate of acquired organizations.
+stationary comparison. Its separate [own-source admission](#alternative-weak-contact-source-admission)
+now connects that difference to the fate of acquired organizations. The
+[constitutive transition](#weak-contact-constitutive-transition) asks whether
+the sine geometry is robust to a small law deformation and whether that
+robustness survives weakening the contact. Endpoint results alone do not
+settle those quantifiers or justify a universal emergent law.
 
 <a id="organized-joint-preparation-resources"></a>
 ### Closed joint preparation-resource admission
@@ -1134,8 +1145,9 @@ retained harmonic counterlaw rather than inventing a new alternative.
 
 The review identified own-law stationary geometry and full-state stability
 as the first missing admissions. The comparison below now closes them in
-its declared tube with different attracting registrations. An actual-source
-basin under the alternative remains a separate obligation. The review
+its declared tube with different attracting registrations. The subsequent
+own-law source certificate below closes capture on its declared intervals.
+The review
 does not reopen physical feasibility, repeat known support-occurrence
 obstructions, optimize source precision or classify the remaining sine
 basin gaps. Unit-strength stationary classification stays deferred.
@@ -1170,36 +1182,76 @@ invariant region or a certificate for the original alternative sources.
 No source, trajectory, scan or physical response was evaluated.
 
 <a id="alternative-weak-contact-source-admission"></a>
-### Next analytical gate: original sources under the alternative weak contact
+### Closed analytical gate: original sources under the alternative weak contact
 
-**Question.** Can an independently delimited nonempty class of the original
-alternative-law sources retain its complete marked identity and reach one
-of the newly certified attractive registrations under fixed `eta=1e-5`?
-Use the [own-law outer acquisition](../nodal/ORGANIZED_ALTERNATIVE_OUTER_ACQUISITION.md)
-and [complete observation/contact history](../nodal/ORGANIZED_ALTERNATIVE_CONTACT.md),
-retaining all original host and donor errors, donor-origin preparation,
-waiting intervals and supplied event work. Change only the final spoke
-weight as declared in the stationary comparison; there is no subsequent
-input, event, reset to a carrier or autonomously selected contact.
+The [own-source theorem](../nodal/ORGANIZED_ALTERNATIVE_WEAK_CONTACT.md#alternative-weak-contact-source-capture)
+retains the original alternative-law acquisition, all twelve source
+allowances, all 96 relative error directions and the complete sequential
+observation history. Only the final spoke weight changes to `eta=1e-5`,
+in both complete rows. Contact work is charged separately; there is no
+subsequent input, event or reset to a carrier.
 
-First establish own-law all-future identity retention and the domain of
-possible limits. The stationary tube alone supplies neither source
-inclusion nor attraction into that tube. Re-admit the actual weighted
-storage, continuous loss, source transport and fine-mode relaxation under
-the harmonic law. If those steps succeed, state a donor-origin restriction
-and retain the accumulated fine and mean-shape transient when assigning
-an attracting destination. Sine barriers, decay constants and source
-basins do not transfer through matched support or isolated C9 tangents.
+Own-potential storage bounds retain the entire original marked identity
+at every donor origin. Fine residuals decay exponentially; the actual
+mean-rim energy supplies the curvature needed throughout the transient.
+Every source limit is one of the twenty independently classified carrier
+equilibria. For each k=0,...,9, the original preparation interval of
+half-width `1/10` centered at `beta=(2*k+1)*pi/10` reaches the unique
+strict minimum in the stationary window centered at `t=-beta_k`.
+Moving host shape and full fine-state forcing are included in the
+inward-torque proof. Other source destinations remain unclassified.
 
-Acceptance is a complete own-source capture certificate in the declared
-subfamily, or a proved obstruction to the proposed retention/destination
-claim. A failed sufficient bound alone is not a noncapture theorem. This
-connects the stationary constitutive distinction to acquired objects;
-it is not another precision refinement of a frozen response.
-Only analytical work and static proof controls are active. Any later
-numerical evaluation requires its own prospective source/domain, budget
-and acceptance protocol here. No source replay, trajectory, origin scan,
-strength sweep or physical-response evaluation is admitted.
+The [common-preparation contrast](../nodal/ORGANIZED_ALTERNATIVE_WEAK_CONTACT.md#alternative-weak-contact-source-discrimination)
+uses `abs(beta-pi/10)<=1/10`: sine reaches `t=0`, whereas the alternative
+reaches its strict minimum between `-7*pi/60` and `-pi/12`. The circular
+asymptotic separation exceeds `pi/12`, retaining each law's own reached
+state and uncertainty rather than equating their attachment endpoints.
+This connects constitutive dependence to acquired outcomes. It supplies
+no finite settling deadline, physical readout, autonomous contact or
+unique-law selection. No frozen producer, trajectory or physical response
+was evaluated.
+
+<a id="weak-contact-constitutive-transition"></a>
+### Next analytical gate: structural robustness along the retained law family
+
+**Question.** Does the sine-attracting registration persist under a small
+constitutive deformation, and is that robustness uniform as contact
+weakens? Use the already declared
+[potential family](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md),
+`V_lambda(a)=1-cos(a)+lambda*(1-cos(9*a))^2/(6*9^4)`, with
+`0<=lambda<=1`. Retain the 54 labeled nodes, old edge weights one,
+positive spoke weight `0<eta<=1e-5`, held unit capacities, quarter factors,
+tau clock, both conserved means and all fine coordinates. Both complete
+rows use the same weighted support. Only the constitutive deformation
+and declared contact strength vary; no source-capture certificate is
+transferred to intermediate laws.
+
+First continue the projected host shape at the reflection-fixed relative
+origin `t=0`, keeping its own-law normal curvature. Derive a reduced
+torque or curvature remainder that resolves competition between the sine
+restoring term and the deformation-induced harmonics near their balance.
+An endpoint remainder that dominates the smaller term cannot certify a
+transition. Determine whether a strictly positive deformation interval
+retains full-state attraction at each fixed eta, and give an explicit
+controlled scale or bounds for a loss of that attraction as eta tends
+to zero. At a proposed transition, certify the collective degeneracy,
+the other relative phase directions and the emerging stationary branches.
+The prospective balance suggests investigating `lambda=kappa*eta^3`;
+neither that scale nor a pitchfork follows from the endpoint proofs.
+Keep fixed-eta continuity distinct from uniform robustness and from any
+interchange of limits for the stationary registration sets.
+
+Acceptance is a quantitative bifurcation statement with full normal
+stability and a nonvacuous joint remainder, or an exact obstruction to that
+proposed reduction. A formal leading term, a wheel-only eigenvalue or
+fixed-eta hyperbolic persistence alone does not close the gate. Failure
+of a sufficient estimate is not a bifurcation obstruction. The result
+would decide whether this collective geometry tolerates small changes
+in its law across contact scales; it would not derive scale selection,
+universality, a new physical force or the fate of intermediate-law sources.
+Only analytical work and static proof controls are active. No source
+replay, trajectory, parameter scan, fitted law or physical-response
+evaluation is admitted.
 
 <a id="contact-maintenance-certificate-admission"></a>
 ### Closed complete-flow convergence; unit-strength classification deferred

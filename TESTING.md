@@ -1123,7 +1123,7 @@ owns capture on all five declared intervals and the existence of at least
 one saddle-converging origin in each gap; neither exact exceptional counts
 nor a basin probability follows.
 
-For [alternative-law weak-contact registration](theory/nodal/ORGANIZED_ALTERNATIVE_WEAK_CONTACT.md),
+For [alternative-law weak-contact registration and capture](theory/nodal/ORGANIZED_ALTERNATIVE_WEAK_CONTACT.md),
 select `tests/physics/test_organized_alternative_weak_contact.py` with
 `tests/physics/test_organized_alternative_contact.py`, the weak-contact
 sine module above and `tests/test_rational_interval.py`. Rebuild the
@@ -1133,9 +1133,16 @@ uniform torque/derivative remainder and root-window margins. Fine-sector
 curvature must retain all 48 internal directions; a wheel-only eigenvalue
 cannot establish complete-state stability. Static controls and the shared
 constitutive evaluator must agree without invoking a root search, source
-producer or trajectory. The proof owns the complete stationary count in
-its declared tube. Neither those tests nor the classification assigns a
-destination to the original alternative-law preparation.
+producer or trajectory. For the actual-source theorem, also select
+`tests/physics/test_organized_alternative_outer_evidence.py` and
+`tests/physics/test_organized_alternative_contact_evidence.py` for read-only
+checks of the retained preparation and observation history. Check the
+own-potential baseline, old marked-face barrier, event work, fine decay,
+mean-rim curvature, moving-shape inequalities and integrated transient
+bound. The ten source intervals and the disjoint sine/alternative limit
+windows require these source admissions as well as the stationary count.
+Static controls support the proof; they neither sample basins nor prove
+a finite settling deadline or a physical observation.
 
 For [reflected stationary contact identity](theory/nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md),
 select `tests/physics/test_organized_contact_reflection.py` with contact
