@@ -1123,6 +1123,20 @@ owns capture on all five declared intervals and the existence of at least
 one saddle-converging origin in each gap; neither exact exceptional counts
 nor a basin probability follows.
 
+For [alternative-law weak-contact registration](theory/nodal/ORGANIZED_ALTERNATIVE_WEAK_CONTACT.md),
+select `tests/physics/test_organized_alternative_weak_contact.py` with
+`tests/physics/test_organized_alternative_contact.py`, the weak-contact
+sine module above and `tests/test_rational_interval.py`. Rebuild the
+weighted full-state rows and loss from edges under the alternative law.
+Check its own stationary reduction, harmonic coefficient, real contraction,
+uniform torque/derivative remainder and root-window margins. Fine-sector
+curvature must retain all 48 internal directions; a wheel-only eigenvalue
+cannot establish complete-state stability. Static controls and the shared
+constitutive evaluator must agree without invoking a root search, source
+producer or trajectory. The proof owns the complete stationary count in
+its declared tube. Neither those tests nor the classification assigns a
+destination to the original alternative-law preparation.
+
 For [reflected stationary contact identity](theory/nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md),
 select `tests/physics/test_organized_contact_reflection.py` with contact
 maintenance, external interaction and `tests/test_rational_interval.py`.

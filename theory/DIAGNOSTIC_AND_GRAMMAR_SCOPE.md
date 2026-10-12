@@ -1065,7 +1065,7 @@ The review's stationary target question concerns a **stable organization
 in the original complete marked class under the original unit-strength
 law**. Its unresolved status does not obstruct every supplied contact law:
 the weighted comparison has its own source-to-target obligations. The
-[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#weak-contact-constitutive-registration)
+[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#alternative-weak-contact-source-admission)
 selects the next dependency. Identity retention alone need not approach
 a stable point; the separate basin theorem establishes that stronger
 conclusion for its declared source intervals and strength.
@@ -1231,18 +1231,22 @@ This makes constitutive robustness the most direct new foundation test.
 The [retained harmonic alternative](nodal/ORGANIZED_ALTERNATIVE_CONTACT.md#organized-alternative-contact)
 already has own-law preparation and finite interaction results. It is a
 declared counterlaw with the same primitive domains, reciprocal support
-and loss structure, rather than a newly fitted explanation. Whether it
-retains the sine law's five attracting registrations under the same weak
-contact is unresolved. Its old source and finite-response certificates
-do not settle that stationary question or transfer the sine source basin.
+and loss structure, rather than a newly fitted explanation. The
+[own-law weak-contact classification](nodal/ORGANIZED_ALTERNATIVE_WEAK_CONTACT.md)
+now changes the attracting registrations themselves: its admitted tube
+contains ten minima and ten index-one saddles, and the five sine-attracting
+relative origins are saddles under the alternative. Own-law normal
+curvature and uniform torque remainders retain all fine directions in
+this verdict. Marked identity and support symmetry therefore do not
+determine these attracting geometries for the retained pair.
 
-The first discriminating step is an own-law stationary and full-state
-curvature comparison, including the collective relative-origin direction
-and every fine phase direction. It can distinguish a structure-imposed
-target geometry from a law-dependent one before paying for another
-trajectory or observation protocol. A leading Fourier term alone is
-insufficient: the actual stationary domain and remainder must be admitted.
-Matching a carrier or tangent elsewhere does not answer this comparison.
+The classification is not a source-to-target theorem. The old alternative
+source and finite-response certificates neither establish entry into the
+stationary tube nor transfer the sine source basin. The remaining
+generative obligation is to carry the actual alternative-law preparation,
+its observation history and every error through the changed weak contact.
+This must distinguish stationary possibility from the fate of acquired
+organizations before assigning a constitutive outcome to those sources.
 
 The alternative priorities retain their existing boundaries. Narrowing
 basin gaps or enlarging eta refines the same conditional construction
@@ -1257,11 +1261,10 @@ still lacks independent preparation and measurement coverage. Capture
 does not supply those missing observations, a laboratory clock or a
 unique microscopic law.
 
-The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#weak-contact-constitutive-registration)
-owns the single next gate and its complete-law scope. A changed stationary
-geometry would establish constitutive dependence within the retained
-comparison; a shared geometry would establish conditional robustness for
-those two laws. Neither outcome would select nature's law, classify an
+The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#alternative-weak-contact-source-admission)
+owns the single next gate and its complete-law scope. The changed
+stationary geometry establishes constitutive dependence within the
+retained comparison. It does not select nature's law, classify an
 unexamined constitutive family or prove actual-source capture under the
 alternative.
 

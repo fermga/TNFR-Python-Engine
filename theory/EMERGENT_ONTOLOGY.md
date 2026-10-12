@@ -122,6 +122,11 @@ common identities with different nonlinear interaction signs. Extending
 robustness to every admissible TNFR law, or identifying it with a universal
 property of nature, requires an additional argument and independent physical
 evidence. A selected example does not establish that quantifier.
+The [weak-contact constitutive comparison](nodal/ORGANIZED_ALTERNATIVE_WEAK_CONTACT.md)
+also separates the retained marked identity from its attracting relative
+geometry: changing the supplied law can change which registrations are
+stable on the same support. A stationary classification and capture of
+the actually prepared organization remain separate obligations.
 
 Within the specified complete laws, equal nominal collective means and storage
 can hide response-relevant internal information. The
