@@ -134,6 +134,14 @@ state and errors. This establishes constitutive dependence of the acquired
 outcome, not just stationary possibility. It supplies neither a physical
 observation nor a claim about every compatible law.
 
+The [constitutive transition](nodal/ORGANIZED_CONSTITUTIVE_TRANSITION.md)
+also separates persistence at fixed contact from robustness across contact
+strengths. In its admitted small-contact regime, the deformation needed
+to change a registration's stability tends to zero cubically while the
+old marked identity survives. The new branches are conditional stationary
+organizations, not automatically acquired constituents or an autonomous
+operator occurrence. A comparison parameter is not an evolution law.
+
 Within the specified complete laws, equal nominal collective means and storage
 can hide response-relevant internal information. The
 [conservative persistence result](nodal/SINE_PAIR_INTERACTION.md#sine-pair-persistent-response)

@@ -169,9 +169,17 @@ attracting destination on ten explicit origin intervals. A common
 primitive preparation interval reaches disjoint asymptotic registrations
 under the two laws, with each law's actual history and errors retained.
 This is an acquired-outcome distinction, without a finite settling
-deadline or a physical observation. The next question is
-[constitutive robustness of the attracting geometry](#weak-contact-constitutive-transition),
-using the already declared continuous deformation family.
+deadline or a physical observation. The
+[constitutive robustness gate](#weak-contact-constitutive-transition)
+now proves a full-state local transition in the retained continuous law
+family: the critical deformation scales as the cube of contact strength.
+Its explicit proof range is `0<eta<=1e-12`, not the earlier fixed
+`eta=1e-5`. The critical registration remains asymptotically attracting
+but loses exponential stability; beyond it two nearby minima replace
+the central minimum, without losing old marked identity. This does not
+admit the intermediate laws' actual sources or select a physical law.
+The next task is the bounded
+[post-transition foundation review](#post-transition-foundation-review).
 Unit-strength classification remains unresolved and deferred; no numerical
 campaign is admitted.
 
@@ -190,7 +198,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Pending analytical constitutive robustness | [Weak-contact deformation transition](#weak-contact-constitutive-transition): determine whether and how the sine registration loses stability along the retained constitutive family, with a controlled small-contact scale and full-state normal stability; no source or numerical campaign |
+| Pending bounded foundation review | [After the constitutive transition](#post-transition-foundation-review): select the next independent foundational or generative obligation, comparing law justification, autonomous occurrence and sufficient parent state; no automatic extension of the parameter map or precision campaign |
+| Closed analytical constitutive robustness | [Weak-contact deformation transition](#weak-contact-constitutive-transition): five symmetry-related local supercritical pitchforks with critical deformation proportional to eta cubed for 0<eta<=1e-12, retaining all normal directions. Fixed-contact persistence is not uniform robustness as contact vanishes; no intermediate-law source certificate follows |
 | Closed own-law source admission | [Alternative-law weak-contact preparation](#alternative-weak-contact-source-admission): every original source retains its marked identity; ten origin intervals select attractive targets at eta=1e-5. A common primitive preparation interval gives disjoint asymptotic outcomes under the two complete laws, retaining each own history and errors |
 | Closed analytical constitutive comparison | [Weak-contact attracting registrations](#weak-contact-constitutive-registration): the harmonic alternative has ten full-state minima and ten index-one saddles in its declared tube at eta=1e-5. The sine law's five attractive relative origins become saddles; source capture has its separate certificate below |
 | Closed post-capture foundation review | [After source-to-attractor capture](#post-capture-foundation-review): selected the own-law stationary comparison now closed below. Autonomous occurrence, physical identification and source admission under a changed law remain separate |
@@ -388,7 +397,7 @@ response has not been derived from the earlier acquired constituents.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
-| Composite identity under interaction | Retain complete-law, marked-identity and actual-source hypotheses when claiming maintained collective organization | **Closed two-law source-to-attractor comparison.** Own-law retention and capture distinguish acquired outcomes on the same support. Structural robustness along the retained constitutive family is the selected foundation question; unit-strength classification and remaining basin gaps stay deferred |
+| Composite identity under interaction | Retain complete-law, marked-identity and actual-source hypotheses when claiming maintained collective organization | **Closed two-law source-to-attractor comparison and scoped constitutive transition.** Weak contact can make attracting registration sensitive to a cubically small law deformation while identity persists. The bounded foundation review chooses the next dependency; unit-strength classification, remaining basin gaps and a larger transition interval stay deferred |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
 | Sufficient collective state and inherited response | Construct and certify a forecast from a joint finite noisy record without known collective initialization | **Closed operational software case.** The whole-record bound and one candidate forecast are certified; arbitrary-record convergence and physical measurement remain unproved |
@@ -440,10 +449,12 @@ certificate now closes one actual-source maintenance case. The
 [post-capture review](#post-capture-foundation-review) selected an own-law
 stationary comparison. Its separate [own-source admission](#alternative-weak-contact-source-admission)
 now connects that difference to the fate of acquired organizations. The
-[constitutive transition](#weak-contact-constitutive-transition) asks whether
-the sine geometry is robust to a small law deformation and whether that
-robustness survives weakening the contact. Endpoint results alone do not
-settle those quantifiers or justify a universal emergent law.
+[constitutive transition](#weak-contact-constitutive-transition) now
+distinguishes fixed-contact persistence from uniform robustness as
+contact weakens, with an independently controlled joint remainder.
+The result is conditional to its law family and smaller contact domain;
+it neither justifies a universal emergent law nor supplies autonomous
+preparation, an observation bridge or an exact parent dynamics.
 
 <a id="organized-joint-preparation-resources"></a>
 ### Closed joint preparation-resource admission
@@ -1212,46 +1223,71 @@ unique-law selection. No frozen producer, trajectory or physical response
 was evaluated.
 
 <a id="weak-contact-constitutive-transition"></a>
-### Next analytical gate: structural robustness along the retained law family
+### Closed analytical gate: structural robustness along the retained law family
 
-**Question.** Does the sine-attracting registration persist under a small
-constitutive deformation, and is that robustness uniform as contact
-weakens? Use the already declared
-[potential family](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md),
-`V_lambda(a)=1-cos(a)+lambda*(1-cos(9*a))^2/(6*9^4)`, with
-`0<=lambda<=1`. Retain the 54 labeled nodes, old edge weights one,
-positive spoke weight `0<eta<=1e-5`, held unit capacities, quarter factors,
-tau clock, both conserved means and all fine coordinates. Both complete
-rows use the same weighted support. Only the constitutive deformation
-and declared contact strength vary; no source-capture certificate is
-transferred to intermediate laws.
+The [joint transition theorem](../nodal/ORGANIZED_CONSTITUTIVE_TRANSITION.md#weak-contact-constitutive-transition-result)
+uses the previously declared potential family, all 54 labeled nodes,
+held unit capacities, quarter factors, tau clock and both conserved
+means. Both rows retain the weighted support. The real model
+parameters are held within each complete law; their analytical
+comparison is not a derived parameter-evolution or event law.
 
-First continue the projected host shape at the reflection-fixed relative
-origin `t=0`, keeping its own-law normal curvature. Derive a reduced
-torque or curvature remainder that resolves competition between the sine
-restoring term and the deformation-induced harmonics near their balance.
-An endpoint remainder that dominates the smaller term cannot certify a
-transition. Determine whether a strictly positive deformation interval
-retains full-state attraction at each fixed eta, and give an explicit
-controlled scale or bounds for a loss of that attraction as eta tends
-to zero. At a proposed transition, certify the collective degeneracy,
-the other relative phase directions and the emerging stationary branches.
-The prospective balance suggests investigating `lambda=kappa*eta^3`;
-neither that scale nor a pitchfork follows from the endpoint proofs.
-Keep fixed-eta continuity distinct from uniform robustness and from any
-interchange of limits for the stationary registration sets.
+At `0<eta<=1e-12`, the reflection-fixed registration has a unique local
+critical deformation
+`lambda_c(eta)=kappa_* eta^3 mu_c(eta)`, where
+`kappa_*=2187*(105+47*sqrt(5))/40` and
+`abs(mu_c-1)<(eta/1e-12)/100`. An own-law joint complex contraction,
+weighted harmonic expansion and explicit derivative tails resolve the
+competing torques. Endpoint remainders alone would not suffice.
 
-Acceptance is a quantitative bifurcation statement with full normal
-stability and a nonvacuous joint remainder, or an exact obstruction to that
-proposed reduction. A formal leading term, a wheel-only eigenvalue or
-fixed-eta hyperbolic persistence alone does not close the gate. Failure
-of a sufficient estimate is not a bifurcation obstruction. The result
-would decide whether this collective geometry tolerates small changes
-in its law across contact scales; it would not derive scale selection,
-universality, a new physical force or the fate of intermediate-law sources.
-Only analytical work and static proof controls are active. No source
-replay, trajectory, parameter scan, fitted law or physical-response
-evaluation is admitted.
+There are five symmetry-related local supercritical pitchforks. Below
+critical the central registration is a strict minimum; above it the
+center has one unstable direction and two nearby strict minima emerge.
+At critical the relative phase Hessian has 52 positive directions and
+one zero, and the full 106-dimensional relative dynamics has one simple
+zero eigenvalue and 105 stable eigenvalues. Positive quartic storage
+still gives local asymptotic attraction at critical, without exponential
+stability. The old marked identity remains intact throughout the local
+branches. This is a local classification, not a global count of every
+stationary organization.
+
+Each fixed positive contact permits a nonzero small-deformation
+stability interval; no positive interval works uniformly as contact
+vanishes. This conclusion concerns registrations in this supplied law
+family, not trajectories at disconnected `eta=0`, universal scale
+selection or a physical constituent. The explicit transition theorem
+does not reach `eta=1e-5`, and no original-source certificate is
+transferred to intermediate laws. Static proof controls evaluate no
+trajectory, source, parameter scan or physical response.
+
+<a id="post-transition-foundation-review"></a>
+### Next bounded review: foundational priority after the constitutive transition
+
+**Question.** Which independent premise or generative dependency should
+be addressed next, now that retained identity, acquired endpoint
+outcomes and local constitutive sensitivity have distinct certificates?
+Use the [ontology](../EMERGENT_ONTOLOGY.md#generative-bound-organization),
+[foundation decision](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#post-capture-foundation-decision)
+and existing theory-to-execution map; do not reopen a claim solely
+because another method or sharper bound is available.
+
+Compare three obligations against existing results: independent law
+justification or observation; autonomous preparation/support occurrence;
+and sufficient parent state and dynamics under another interaction or
+composition. In the last case, distinguish stationary elimination from
+a dynamically justified reduction: the newly soft registration mode
+may need retained state or causal memory. First check whether existing
+closure, event and hidden-state counterexamples already settle the
+proposed question. A bifurcation label or a supplied parameter change
+does not establish a registered collective operator or its occurrence.
+
+Acceptance is one bounded follow-up with matched complete-law premises,
+a named missing result and a discriminating closure, or an explicit
+dependency preventing it. Prefer a consequence useful across the
+foundational branches. A larger eta range, a complete bifurcation map,
+additional source precision or another prepared response is not the
+default. No new numerical campaign, source replay, apparatus search or
+physical evaluation is activated by this review.
 
 <a id="contact-maintenance-certificate-admission"></a>
 ### Closed complete-flow convergence; unit-strength classification deferred

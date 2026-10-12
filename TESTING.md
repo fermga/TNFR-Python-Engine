@@ -1144,6 +1144,18 @@ windows require these source admissions as well as the stationary count.
 Static controls support the proof; they neither sample basins nor prove
 a finite settling deadline or a physical observation.
 
+For the [constitutive registration transition](theory/nodal/ORGANIZED_CONSTITUTIVE_TRANSITION.md),
+select `tests/physics/test_organized_constitutive_transition.py` together
+with both weak-contact modules above and `tests/test_rational_interval.py`.
+Check the joint complex-domain contraction, exact competing coefficients,
+weighted Fourier-degree bound, Cauchy derivative tails and the mixed
+parameter derivative. A value remainder alone does not control curvature
+or a bifurcation. Retain the explicit 0<eta<=1e-12 scope, full normal
+curvature, critical degeneracy and two-row stability; the theorem does
+not certify the transition at eta=1e-5. Static controls must preserve the
+no-source/trajectory/search guard. No intermediate-law preparation or
+actual-source basin follows from the stationary branch calculation.
+
 For [reflected stationary contact identity](theory/nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md),
 select `tests/physics/test_organized_contact_reflection.py` with contact
 maintenance, external interaction and `tests/test_rational_interval.py`.

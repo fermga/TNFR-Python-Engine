@@ -1250,18 +1250,25 @@ asymptotic registrations, each with its own reached state. This supplies
 an acquired-outcome distinction without a finite settling deadline or
 an independent physical readout.
 
-The endpoint comparison does not yet quantify structural robustness.
-At fixed positive contact strength, the sine minima's hyperbolicity
-already implies persistence under sufficiently small law changes.
-It does not give a contact-independent deformation tolerance. The
-retained endpoints have different orders of weak-contact restoring
-torque, which motivates a controlled joint deformation/contact reduction
-within the existing constitutive family. Its transition scale and local
-bifurcation require joint remainders and full-state normal stability;
-endpoint coefficients alone cannot establish them. This question tests
-whether the collective geometry tolerates small constitutive changes
-across contact scales. It is distinct from the earlier single-C9
-source-selector robustness result and from a finer basin map.
+The separate [joint transition theorem](nodal/ORGANIZED_CONSTITUTIVE_TRANSITION.md)
+now quantifies a local loss of stability within the existing constitutive
+family. Its critical deformation scales cubically with contact strength,
+with explicit joint derivative errors for 0<eta<=1e-12. All 52 normal
+phase directions remain positive while the soft registration undergoes
+a supercritical pitchfork. The central critical state has quartic
+restoring storage and remains asymptotically attracting, without
+exponential stability. The marked identity survives the local transition.
+
+This distinguishes robustness at fixed contact from a deformation
+tolerance uniform as contact vanishes. It is stronger than qualitative
+hyperbolic persistence, but it does not certify the transition at eta=1e-5,
+capture intermediate-law sources or select a unique fundamental law.
+The comparison coordinate connecting deformation and contact is not a
+new autonomous evolution rule. A stationary shape elimination also does
+not supply the effective dynamics of a parent interacting with another
+organization: retained slow state and causal memory remain separate
+obligations. Existing closure and event counterexamples must be checked
+before treating either as a new research gap.
 
 The alternative priorities retain their existing boundaries. Narrowing
 basin gaps or enlarging eta refines the same conditional construction
@@ -1276,11 +1283,11 @@ still lacks independent preparation and measurement coverage. Capture
 does not supply those missing observations, a laboratory clock or a
 unique microscopic law.
 
-The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#weak-contact-constitutive-transition)
-owns the single next gate and its complete-law scope. The changed
-stationary geometry and own-source capture establish constitutive
-dependence within the retained comparison. They do not select nature's
-law, classify intermediate laws or supply autonomous occurrence.
+The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#post-transition-foundation-review)
+owns the single next gate and its complete-law scope. Endpoint capture
+and the local transition distinguish retained identity from law-dependent
+registration. They do not select nature's law, globally classify the
+intermediate models, admit their sources or supply autonomous occurrence.
 
 ### Cross-channel foundation audit
 
