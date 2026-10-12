@@ -186,9 +186,15 @@ The [marked-boundary result](#critical-parent-interaction-admission)
 derives the relative means and critical coordinate retained when this
 parent contacts another NFR. A fixed positive contact changes its
 algebraic recovery coefficient, and equal means and storage can conceal
-opposite receiver rates. The next [two-port admission](#critical-parent-two-port-admission)
-tests whether a second attachment constrains the surviving critical
-mode at the same total boundary conductance.
+opposite receiver rates. The [boundary-constraint result](#collective-boundary-foundation-admission)
+separates consequences of positive normal curvature, independent boundary
+constraints and complete kinetics from assumptions of the selected law
+and critical tuning. Its matched-conductance split contact removes the
+remaining neutral mode; a cancelled exported mean signal need not remove
+internal restoration. This closes the contact-variant sequence. The
+next [independent-premise admission](#independent-boundary-premise-admission)
+must name new content beyond the existing compatibility and nonselection
+results before another constitutive or numerical comparison is justified.
 Unit-strength classification remains unresolved and deferred; no numerical
 campaign is admitted.
 
@@ -207,7 +213,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Active bounded boundary-constraint admission | [Two ports to the same neighbor](#critical-parent-two-port-admission): compare single and split contacts at matched total conductance, deriving effective restoration and complete coupled damping with own-law state and work admission; no numerical campaign |
+| Next bounded foundation admission | [Independent content for a constitutive restriction](#independent-boundary-premise-admission): identify one independently motivated restriction on the still-supplied interaction or kinetic law, test its novelty against retained countermodels, or state the precise missing information. No candidate is already justified and no numerical campaign is active |
+| Closed reusable structural admission | [Collective boundary constraints and their premises](#collective-boundary-foundation-admission): kernel constraints, exact normal compliance, full damping and hidden initialization separate structural consequences from law-specific tuning. The matched-conductance split control removes the remaining neutral mode; no further contact variant is activated |
 | Closed bounded interaction admission | [A marked boundary of the critical parent](#critical-parent-interaction-admission): exact exchange and local three-coordinate dynamics, full-state initialization, paid contact work and changed critical relaxation. Matched means and storage can conceal opposite receiver rates; no exact coarse quotient or acquired source follows |
 | Closed local analytical reduction | [Critical registration dynamics](#critical-registration-dynamics): full-law mobility, hidden initialization and algebraic critical relaxation, with a strong-stable exception; fixed positive eta, no uniform transient or source-entry certificate |
 | Closed bounded foundation review | [After the constitutive transition](#post-transition-foundation-review): the missing local parent dynamics is independent of existing mean-closure obstructions and fixed-support slow-phase results; law justification, physical admission and autonomous occurrence retain their named dependencies |
@@ -409,12 +416,12 @@ response has not been derived from the earlier acquired constituents.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
-| Composite identity under interaction | Retain complete-law, marked-identity and actual-source hypotheses when claiming maintained collective organization | **Closed two-law source-to-attractor comparison, scoped transition and marked critical interaction.** The next two-port admission tests how the boundary constrains the collective mode at matched total conductance; unit-strength classification, remaining basin gaps and a larger transition interval stay deferred |
+| Composite identity under interaction | Retain complete-law, marked-identity and actual-source hypotheses when claiming maintained collective organization | **Closed two-law source-to-attractor comparison, scoped transition, marked interaction and reusable boundary criterion.** Normal compliance and full kinetics retain distinct obligations. No further contact variant follows; unit-strength classification, basin gaps and a larger transition interval stay deferred |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
 | Sufficient collective state and inherited response | Construct and certify a forecast from a joint finite noisy record without known collective initialization | **Closed operational software case.** The whole-record bound and one candidate forecast are certified; arbitrary-record convergence and physical measurement remain unproved |
 | Fundamental physical properties and independent observation | Independently admit full preparation and joint physical measurement coverage before evaluating a response | **Closed scoped recovery-area review, unresolved physical dependency.** The reviewed direct-area route is not admitted; neither improved voltage precision nor clock rescaling alone repairs the missing premises. No further apparatus search is active |
-| Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Closed pairwise distinction and information minimum.** Regular information cost is now derived, but even two coordinates and unit consensus slope leave nonsine laws. Uniqueness and physical selection remain open |
+| Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Closed pairwise distinction, information minimum and structural premise classification.** The next bounded admission must identify new independent content in one proposed restriction; neither low information cost nor boundary restoration selects a unique law |
 | Autonomous preparation, support, capacity and events | Supply actual occurrence and state-evolution laws when claiming autonomous assembly. [Event work](../nodal/RELATIONAL_SUPPORT_EVENTS.md), passivity and [operator descent](../STRUCTURAL_OPERATORS.md) do not select occurrence | **Claim-dependent**. Current contacts and preparation remain supplied. Do not postpone investigation of the existing conditional composite until every origin question is solved |
 | Internal activity and recurrence | Separate preservation of identity from permanent motion; the [positive-loss boundary](../nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission) and alternative-mobility results retain different premises | **Prepared alternative** for a named claim requiring sustained activity. Neither a stationary identity nor finite response establishes recurrence or transfers an invariant measure |
 
@@ -1346,37 +1353,65 @@ The neighbor's organization and contact remain supplied; no original
 source, physical response or autonomous occurrence is admitted.
 
 <a id="critical-parent-two-port-admission"></a>
-### Next bounded admission: two ports at matched total conductance
+<a id="collective-boundary-foundation-admission"></a>
+### Closed structural admission: boundary constraints and constitutive premises
 
-**Question.** When does the boundary allow the critical mode to move
-collectively, and when does it introduce effective restoration?
-Keep the same 63 nodes, critical law, fixed positive eta, held unit
-capacities, weighted quarter-factor rows and tau. Compare a single
-c=2-to-c=6 boundary with a split boundary joining both c=2 and the
-old donor c=5 to that same neighbor. Each port has nine same-slot
-edges. Fix the same total conductance epsilon_1+epsilon_2 per slot:
-the single-port control places it all on c=2, and the split contact
-has epsilon_1>0 and epsilon_2>0. The control reweights existing edges;
-it does not invent duplicate parallel edges. Hold each choice fixed
-within its complete law.
+The [criterion owner](../nodal/COLLECTIVE_BOUNDARY_CONSTRAINTS.md)
+derives which neutral phase directions survive an admitted positive
+boundary curvature. It retains normal compliance in the static restoring
+coefficient and uses the complete two-row pencil for stability. Exact
+linear initialization and dynamic elimination keep hidden-state terms;
+static minimization is not an instantaneous evolution law.
 
-Re-admit the aligned equilibrium, full phase Hessian and two-row
-linearization on the fixed-global-mean leaf. Derive the boundary
-constraint on the old critical tangent and the effective quadratic
-restoration after eliminating all normal phase coordinates. Retain
-the released form/phase means in the coupled dynamics: a stationary
-stiffness alone is not a decay rate, and modes on the same contact
-scale cannot be removed by an unsupported instantaneous substitution.
-Obtain the complete damping criterion or its explicit obstruction,
-including full-state initialization, local identity and contact work.
+The same 63-node critical model supplies one discriminator. At equal
+total conductance, a single c=2-to-c=6 contact retains one neutral mode,
+while positive contacts from both c=2 and c=5 remove it. The split
+system is locally exponentially attracting on its fixed-mean leaf,
+with all fine directions retained. The exact quadratic restoring
+coefficient includes the parent's normal compliance. It is not a
+decay rate or a transferred one-port cubic coefficient. A positive
+split can also cancel the leading exported mean signal while retaining
+internal restoration. Contact work and local identity are re-admitted.
 
-Acceptance is an own-law local theorem or named obstruction that
-distinguishes boundary placement from merely increasing total weight.
-The single-port theorem supplies methods and a control, not the new
-support's coefficients or transient bounds. No trajectory, numerical
-root, source replay, parameter scan or physical response is activated.
-Any later finite prediction must first freeze preparation, contact
-weights, observation, horizon and numerical budget in this plan.
+The method uses established matrix analysis; its contribution here is
+the precise separation of structural consequences and constitutive
+inputs. Positive support weights need not supply positive phase
+curvature, and equal Hessians can conceal different nonlinear restoring
+orders or stability. Critical tuning, storage, kinetics and contact
+occurrence remain supplied. No source, numerical root, trajectory or
+physical response was evaluated. No third contact or tighter eta range
+is queued: the named dependency is closed.
+
+<a id="independent-boundary-premise-admission"></a>
+### Next bounded admission: independent content for a constitutive restriction
+
+**Question.** Can one independently motivated requirement constrain the
+still-supplied interaction or kinetic law beyond the restrictions already
+tested? The [foundation decision](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#boundary-criterion-foundation-decision)
+identifies those inputs. No proposed selector is assumed justified.
+
+Name one candidate requirement and its independent basis before testing
+its consequence. State whether it is an ontological definition, a new
+hypothesis, an operational requirement or an observation; distinguish
+its justification from the desirable behavior it might produce. Specify
+which complete-law input it constrains and whether it is invariant under
+admitted changes of chart and clock. Compare its logical content with
+the retained alternative-storage, mobility, first-resultant, composition
+and information-minimum countermodels before opening another calculation.
+
+Acceptance requires either a new conditional restriction with its
+independent motivation and remaining freedom explicit, or an obstruction
+identifying the additional information needed. Do not repeat the general
+ontology audit or present compatibility, passivity, minimal representation
+cost or a successful organized response as a new selector. If no candidate
+adds independently justified content, preserve the law family and report
+that outcome; do not manufacture a pressure or occurrence law to continue.
+Autonomous event mechanisms and an independent measurement bridge remain
+separate possible sources of new premises, with their own admission.
+
+This gate admits premise analysis only. Further numerical, source or
+physical evaluation requires a concrete discriminator and frozen protocol;
+the boundary theorem does not activate one.
 
 <a id="contact-maintenance-certificate-admission"></a>
 ### Closed complete-flow convergence; unit-strength classification deferred

@@ -1180,6 +1180,20 @@ is not an exact quotient on arbitrary states. Fixed-positive-contact
 asymptotics must not acquire a uniform contact-to-zero transient or an
 actual-source claim. Keep all controls static and the no-response guard.
 
+For the [collective boundary-constraint criterion](theory/nodal/COLLECTIVE_BOUNDARY_CONSTRAINTS.md),
+select `tests/physics/test_collective_boundary_constraints.py` with the
+critical-parent interaction and both constitutive-transition modules.
+Exercise primitive matrix examples with independently minimized quadratic
+forms and full kinetic generators. Test boundary rank, normal compliance,
+linear initialization and the difference between static and dynamic
+elimination. Retain signed/zero curvature and nonlinear equal-Hessian
+counterexamples: a positive support weight is not positive phase curvature,
+and a neutral tangent alone proves no nonlinear attraction. The one/split
+contact control must keep total boundary conductance fixed, both full rows
+and the actual critical port slope. Shared coordinate-memory controls
+remain relevant when exercising their existing engine owner. These static
+tests do not solve the unknown critical equilibrium or evaluate responses.
+
 For [reflected stationary contact identity](theory/nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md),
 select `tests/physics/test_organized_contact_reflection.py` with contact
 maintenance, external interaction and `tests/test_rational_interval.py`.

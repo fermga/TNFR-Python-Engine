@@ -159,6 +159,17 @@ differs. This is a conditional interaction property with explicit contact
 work and local identity retention, not a new primitive law, autonomous
 attachment or a physical identification.
 
+The [boundary-constraint criterion](nodal/COLLECTIVE_BOUNDARY_CONSTRAINTS.md)
+separates a reusable local consequence from its constitutive premises.
+Given an admitted equilibrium, positive normal curvature and the specified
+complete kinetic rows, positive boundary curvature removes the old neutral
+motions that change its endpoint gaps. Normal compliance affects the
+restoring coefficient; elimination of evolving state retains memory and
+initialization. Neither the number of contacts nor connectivity supplies
+that curvature, critical tuning or nonlinear attraction. The matched-weight
+two-port control illustrates this distinction without selecting a universal
+law or deriving contact occurrence.
+
 Within the specified complete laws, equal nominal collective means and storage
 can hide response-relevant internal information. The
 [conservative persistence result](nodal/SINE_PAIR_INTERACTION.md#sine-pair-persistent-response)

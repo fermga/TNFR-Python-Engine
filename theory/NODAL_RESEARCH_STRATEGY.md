@@ -145,6 +145,15 @@ freedom, as the [mobility countermodels](nodal/SINE_PAIR_MOBILITY.md#sine-replic
 show. A useful next discriminator must reach beyond the premises those
 countermodels already share.
 
+The [collective boundary criterion](nodal/COLLECTIVE_BOUNDARY_CONSTRAINTS.md)
+provides a reusable conditional mechanism, rather than a selector: actual
+positive boundary curvature constrains old neutral modes, normal compliance
+sets static restoration, and the full kinetic law controls dynamic recovery.
+Its premises do not follow from bare connectivity or retained identity.
+Further variants of the same contact cannot justify the still-free potential,
+kinetics or event occurrence; a foundational advance must add independent
+content to one of those inputs or a discriminating observation.
+
 The [boundary-information audit](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#law-selection-and-boundary-information)
 distinguishes an independently justified restriction from the cost of a
 chosen law's representation. Determining the minimum information needed for

@@ -533,10 +533,16 @@ changes the inherited relaxation and initialization.
 The retained state and boundary have been specified before any
 numerical or physical evaluation.
 
+The [boundary-constraint criterion](COLLECTIVE_BOUNDARY_CONSTRAINTS.md)
+identifies which parts of this conclusion use positive curvature and
+complete kinetics, and which retain the particular constitutive law.
+Its fixed-total-conductance split-port control removes the surviving
+neutral mode; it does not transfer this single-port cubic coefficient.
+
 [Static interaction tests](../../tests/physics/test_critical_parent_interaction.py)
 check the 63-node edge sums, mean orientations, projected
 three-coordinate matrix, full kernel and tangent norm, added
 storage, and the independent preparation witnesses. They do not
 solve a trajectory or search for a root. The
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#critical-parent-two-port-admission)
+[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 owns subsequent work.

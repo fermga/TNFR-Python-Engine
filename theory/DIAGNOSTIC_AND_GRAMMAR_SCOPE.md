@@ -1283,7 +1283,7 @@ still lacks independent preparation and measurement coverage. Capture
 does not supply those missing observations, a laboratory clock or a
 unique microscopic law.
 
-The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#critical-parent-two-port-admission)
+The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#independent-boundary-premise-admission)
 owns the single next gate and its complete-law scope. Endpoint capture
 and the local transition distinguish retained identity from law-dependent
 registration. They do not select nature's law, globally classify the
@@ -1338,14 +1338,40 @@ initial receiver exchange. A separate hidden-form witness excludes an
 exact instantaneous quotient even in those three coordinates.
 
 These results do not authorize arbitrary contacts, operator descent,
-intermediate-law acquisition or a uniform reduced solver. They isolate
-a substantive boundary question: whether two different attachments to
-the same neighbor constrain the surviving collective mode, after
-controlling total conductance. Effective stationary restoration and
-complete coupled damping have separate obligations. The
-[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#critical-parent-two-port-admission)
-owns that single bounded task and its support; this comparison introduces
-no parallel campaigns.
+intermediate-law acquisition or a uniform reduced solver. The
+[boundary-constraint theorem](nodal/COLLECTIVE_BOUNDARY_CONSTRAINTS.md)
+now separates the reusable local mechanism from its constitutive input:
+positive boundary curvature constrains precisely the old neutral
+directions visible at that boundary. Normal compliance changes the
+static coefficient; the complete kinetic pencil, memory and hidden
+initialization determine the dynamic response. At fixed total weight,
+split contact removes the critical mode retained by a single port.
+
+<a id="boundary-criterion-foundation-decision"></a>
+### What the boundary criterion does and does not justify
+
+The mathematical methods are established kernel and Schur-complement
+arguments. Their useful consequence here is the separation of inputs:
+connectivity does not specify phase curvature; a positive tangent does
+not specify a recovery rate; and a neutral tangent does not specify
+nonlinear attraction. Circular nonnegative potentials with the same
+Hessian can have different restoring orders or local stability. A
+cancelled exported mean signal also need not remove internal restoration.
+
+This closes the named structural dependency without selecting the
+potential, kinetic rows, critical tuning or occurrence of contact.
+The matched-conductance example is a discriminator for that distinction,
+not grounds for further contact variants. Independent law justification
+and physical admission remain open for their existing reasons.
+
+The next foundation question must introduce a named independent
+restriction on one of these inputs, or identify the additional
+information required to test one. Existing compatibility, passivity,
+first-resultant and information-minimum arguments already retain
+countermodels; renaming them cannot supply the missing restriction.
+The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#independent-boundary-premise-admission)
+owns that bounded premise admission and its stopping rule. No numerical
+or physical campaign follows from this review.
 
 ### Cross-channel foundation audit
 
