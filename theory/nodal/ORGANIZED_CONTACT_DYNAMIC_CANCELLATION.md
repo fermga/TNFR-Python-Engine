@@ -416,3 +416,9 @@ difference of onset orders select a fundamental law, establish a particle
 property, provide autonomous attachment or complete a physical measurement
 bridge. The prior finite-source contact bounds and the separate unresolved
 maintenance problem retain their original scopes.
+
+The [full-fine preparation analysis](ORGANIZED_CONTACT_PREPARATION_SENSITIVITY.md)
+separates the robustness obligations: internal disturbances can be invisible
+to every first-order mean response while generating quadratic leakage.
+Exact reflection-preserving preparations remain protected; winding and
+child means alone do not preserve this owner's ideal onset orders.

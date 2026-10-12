@@ -109,10 +109,15 @@ mechanism question, [dynamical protection of cancellation](#organized-contact-dy
 is now closed: complete-law reflection protects special origins, while the
 ideal donor response starts at order nine for sine and order three or five
 for the alternative elsewhere. Common organized identity therefore does not
-force the same nonlinear interaction. The next bounded task is
-[full-fine preparation sensitivity](#organized-contact-preparation-sensitivity):
-determine which internal disturbances remain invisible at first variation
-and how nonlinear coupling can expose them.
+force the same nonlinear interaction.
+[Full-fine preparation sensitivity](#organized-contact-preparation-sensitivity)
+is now closed: all 96 internal directions are invisible to first variation,
+but explicit phase/form disturbances generate quadratic response while
+preserving the initial marked windings. Exact reflection protection is a
+stronger condition. The next task is a
+[foundational priority review](#post-contact-foundation-review), using this
+distinction to select a missing premise rather than automatically extending
+the contact expansion or its numerical precision.
 
 No 45-node acquisition, physical readout or source certificate transfers to
 the supplied positive-r matrix law by default. Earlier frozen protocols,
@@ -129,7 +134,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next bounded mechanism question | [Full-fine preparation sensitivity](#organized-contact-preparation-sensitivity): distinguish symmetry-protected cancellation from first-order invisibility and quadratic leakage of internal disturbances, under the same two complete laws |
+| Next bounded decision | [Post-contact foundational review](#post-contact-foundation-review): identify the next unresolved premise and one discriminating protocol; no further response campaign is active |
+| Closed full-fine preparation sensitivity | [Hidden internal modes](#organized-contact-preparation-sensitivity): all-time first-order invisibility, opposite-mode quadratic coupling and explicit winding-admissible leakage distinguish exact reflection protection from a linear observation kernel |
 | Closed ideal dynamical cancellation | [Complete-law origin classification](#organized-contact-dynamic-cancellation): reflection protects both laws at beta=m*pi/5; elsewhere sine regenerates donor response at order nine and the alternative at order three or five, within the original derivative budget |
 | Closed alternative-law interaction admission | [Own-law finite contact](#organized-alternative-contact-admission): the actual acquired organizations retain the original all-registration contrast, with their complete intervention history, work/storage budgets and fifteen finite identities |
 | Closed alternative-law source admission | [Own-law outer acquisition](#organized-alternative-outer-acquisition): the original preparation forms and permanently retains the five-child identity at lambda=1; the paired zero-shift control retains outer winding zero |
@@ -852,30 +858,47 @@ onsets to perturbed acquired sources. Exact zero mean also implies neither
 zero local currents nor permanent retention of the marked windings.
 
 <a id="organized-contact-preparation-sensitivity"></a>
-### Next bounded task: which fine disturbances are hidden by organization?
+### Closed mechanism question: internal preparation and nonlinear exposure
 
-Determine whether the ideal cancellation and onset distinction depend only
-on collective preparation errors, or whether internal disturbances invisible
-in the child means generate an additional response. The static fact that a
-perturbed child can break cancellation is already known. The missing result
-is the complete dynamical separation of first-order invisibility, nonlinear
-leakage and exact symmetry protection on the full fine state. It is needed
-before interpreting the new onset orders as a robust collective property.
+The [proof owner](../nodal/ORGANIZED_CONTACT_PREPARATION_SENSITIVITY.md)
+preserves declaration `b2801170`, the complete two-law model and its
+amplitude-order-two/time-order-three budget. All 96 child-mean-zero internal
+directions remain invisible to every first-order child mean along the
+evolving carrier. Quadratic forcing can reach a mean through opposite
+internal slot modes. Explicit rational phase and form directions at a
+protected origin give strictly positive quadratic donor coefficients at
+time orders one and three, respectively, for both laws. The initial marked
+windings remain admitted for amplitudes up to one tenth.
 
-| Item | Fixed decision boundary |
+Full reflection-preserving directions retain exact zero donor response.
+The other witnesses show that this protection is not an open-neighborhood
+property of winding and means. The winding allowance is not a uniform
+amplitude-remainder certificate; other zero jets, transverse stability,
+finite noisy discrimination and acquired-source residual distributions
+remain outside the conclusion. No trajectory or frozen source was replayed.
+
+<a id="post-contact-foundation-review"></a>
+### Next bounded decision: which foundational premise now blocks progress?
+
+Reassess the research priority before extending the contact calculations.
+Own-law formation and finite interaction are established for the retained
+pair. The new results separate shared symmetry, law-dependent ideal onset
+and hidden preparation effects. They do not independently justify either
+law, maintain the organization indefinitely or provide a physical bridge.
+Another response coefficient is useful only if it decides one of those
+missing obligations.
+
+| Review obligation | Required decision |
 | --- | --- |
-| Complete model | Keep the two endpoint currents, 54-node/144-edge support, held unit capacities, full-circle phases and both quarter-rate rows from the [dynamic cancellation owner](../nodal/ORGANIZED_CONTACT_DYNAMIC_CANCELLATION.md#1-complete-model-initial-state-and-balances). Retain `gamma=1/(1023*pi)` and `tau=(1023/1024)*t`; no new law, input, support event or observation word |
-| Conditional preparation | Perturb the same ideal initial family as `x(0)=epsilon*u`, `theta(0)=theta_ideal(beta)+epsilon*v`, with all 54 signed form and 54 lifted phase directions retained. Work on `sum u=sum v=0`, fixing total form and the phase gauge. Keep beta symbolic. Give explicit small-amplitude winding-admissible witnesses rather than treating arbitrary directions as acquired endpoints |
-| State decomposition | Split both perturbation rows into each child's mean and its eight internal zero-mean modes. Derive the full variational field along the evolving carrier; do not hold its origins or donor fixed. Establish or refute whether internal `C9` symmetry keeps nonzero slot modes invisible to the donor mean at first variation for all times; a contact-time zero alone is insufficient |
-| Nonlinear question | Retain first and second derivatives in preparation amplitude only. Derive allowed mode couplings into `R_D`, separating collective disturbances, pairs of internal modes and directions preserving the full reflection sector. Determine whether vanishing first variation implies exact cancellation or permits a nonzero quadratic response |
-| Fixed analytical budget | Exact symmetry/variation proofs, plus contact-time derivatives through order three at most for the linear and quadratic preparation terms. Stop a branch when its leading nonzero term is established. Zero coefficients not covered by a complete symmetry proof remain unresolved; no amplitude/phase scan, larger time-jet budget or finite trajectory |
-| Acceptance and scope | Supply a complete-law invisibility theorem or counterexample, the relevant quadratic coupling rule and a winding-admissible leakage witness or obstruction. Include form diffusion, phase feedback, attachment work and storage scope. Distinguish robustness on an open prepared neighborhood from a symmetry submanifold. This does not certify a finite noisy discriminator or the residual distribution of an acquired source |
+| Consolidated premises | Match the two complete laws, actual-source certificates, ideal contact proofs and full-fine variation domain. Identify which properties follow from support symmetry, which consume the chosen constitutive law, and which require extra preparation information; do not promote conditional targets to actual sources |
+| Prior-work exclusion | Compare any proposed information/closure task with [constituent memory](../nodal/ORGANIZED_CONSTITUENT_MEMORY.md), [finite compression](../nodal/ORGANIZED_COMPRESSED_MEMORY.md) and [law/state identifiability](#organized-law-state-identifiability). A new covariance representation must supply a missing predictive capability, not repeat a known nonclosure example or improve only precision |
+| Candidate dependencies | Assess independent constitutive justification, source-compatible continued-contact maintenance, and an independently prepared/measured collective property. Retain the [premise review](#post-identifiability-premise-review), stationary obstructions and failed physical-admission boundaries. An attractive interpretation or another compatible law is insufficient to reopen a route |
+| Selection criterion | Choose one concrete unresolved premise with a result that would change a foundational or generative claim, an existing usable mathematical tool or a justified new one, and a bounded proof/discrimination criterion. Explain what favorable and unfavorable outcomes would establish and why an already-closed gate cannot answer it |
+| Stopping and evidence budget | Review existing owners and proofs only; no source replay, trajectory, parameter scan, new physical record or response fitting. Close this decision by recording one justified next protocol in this sole queue, with preparation, complete law, observation and budget fixed before evaluation. If no candidate is ready, name the missing admission instead of opening an ungrounded calculation |
 
-This tests which internal information an organized interaction can hide and
-later expose, instead of tightening the earlier finite envelope. The prior
-contact certificates remain unchanged. No physical signal, preparation
-device, long-time transverse stability or universal law is inferred from
-an amplitude expansion; each would require its own premises and protocol.
+This review keeps the main objective tied to justified laws, formation and
+independent physical consequences. Second-order correlation dynamics may
+be a useful method, but its availability does not activate another campaign.
 No third-law campaign, stationary search, autonomous event selector, apparatus
 campaign or physical response evaluation is active.
 

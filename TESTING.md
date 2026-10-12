@@ -463,6 +463,21 @@ sector follows from the complete-law reflection proof. No trajectory, source
 reconstruction or frozen response producer belongs to these checks; ideal
 derivatives do not certify noisy finite-source discrimination.
 
+For [full-fine contact preparation sensitivity](theory/nodal/ORGANIZED_CONTACT_PREPARATION_SENSITIVITY.md),
+select `tests/physics/test_organized_contact_preparation_sensitivity.py` with
+the static contact and constitutive-field controls. Rebuild from both complete
+direction rows, the declared phase origin and law; admit every scalar, shape,
+conserved total and bounded time order before geometry. Check independent
+first/quadratic amplitude coefficients, both evolving rows, internal-mode
+symmetry, exact means, covariance, and attachment/storage coefficients.
+Phase-only and form-only witnesses have different first nonzero time orders.
+Keep derivatives in time distinct from amplitude coefficients, and rigorous
+intervals containing zero distinct from exact vanishing. Reflection can prove
+exact protection; other zero coefficients remain unresolved at the fixed
+amplitude-order-two/time-order-three limit. Initial winding admission is not
+temporal retention. No source assessor, trajectory or frozen response replay
+belongs to these tests.
+
 For the [outer-organization response](theory/nodal/ORGANIZED_OUTER_RESPONSE.md),
 select `tests/physics/test_organized_outer_response.py` with the outer-winding,
 isolated-recovery and shared preparation owners. Check the complete phase
