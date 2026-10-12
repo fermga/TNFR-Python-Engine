@@ -21,11 +21,24 @@ from .relational_sine_class_mediation import _EDGES, _NODES
 from .relational_sine_port_composition import _parameters
 
 
-def _deformation(value):
+def _deformation(value: object) -> Q:
     coefficient = _exact(value, "deformation")
     if coefficient < 0:
         raise ValueError("deformation must be nonnegative")
     return coefficient
+
+
+def _current_fourier_coefficients(deformation: object) -> tuple[tuple[int, Q], ...]:
+    """Exact active sine coefficients of the declared potential derivative.
+
+    This is the same admitted nonnegative deformation family as ``_edge_law``;
+    callers may impose a narrower study domain. Exact zero high harmonics
+    disappear without applying a floating threshold to nonzero coefficients.
+    """
+    coefficient = _deformation(deformation)
+    return ((1, Q(1)),) + (
+        ((9, coefficient / 2187), (18, -coefficient / 4374)) if coefficient else ()
+    )
 
 
 def _edge_law(cosine, sine, coefficient):

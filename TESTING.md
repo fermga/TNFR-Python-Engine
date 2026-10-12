@@ -451,6 +451,18 @@ instrument owns the single joint source/history/contact assessment;
 retained result without replay. A finite contact
 certificate transfers neither the sine decoder nor all-future product capture.
 
+For [ideal contact cancellation](theory/nodal/ORGANIZED_CONTACT_DYNAMIC_CANCELLATION.md),
+select `tests/physics/test_organized_contact_dynamic_cancellation.py` with
+the static complete-field controls of both contact laws. Check exact
+cyclotomic reduction, all retained carrier rows, independent coefficient
+recurrence, lower-order zeros and the generic and exceptional nonzero terms.
+The two laws share one support and clock; harmonic weights must agree with
+the constitutive owner. Preserve Boolean/domain rejection and the fixed
+twelve-order ceiling. A zero jet at the ceiling is unresolved: the protected
+sector follows from the complete-law reflection proof. No trajectory, source
+reconstruction or frozen response producer belongs to these checks; ideal
+derivatives do not certify noisy finite-source discrimination.
+
 For the [outer-organization response](theory/nodal/ORGANIZED_OUTER_RESPONSE.md),
 select `tests/physics/test_organized_outer_response.py` with the outer-winding,
 isolated-recovery and shared preparation owners. Check the complete phase

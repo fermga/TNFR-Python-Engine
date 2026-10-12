@@ -31,7 +31,11 @@ from ._organized_external_interaction import (
     _OrganizedExternalInteractionGeometry,
     _derive_organized_external_interaction,
 )
-from ._sine_class_constitutive_comparison import _current_derivative_bound, _edge_law
+from ._sine_class_constitutive_comparison import (
+    _current_derivative_bound,
+    _current_fourier_coefficients,
+    _edge_law,
+)
 from ._sine_constitutive_recovery import (
     _ConstitutiveRecovery,
     _assess_constitutive_recovery,
@@ -50,7 +54,7 @@ _HORIZON = Q(1, 1000)
 _ONE_THRESHOLD = Q(1, 10**8)
 _ZERO_THRESHOLD = Q(3, 10**7)
 _CLOCK = Q(1023, 1024)
-_HARMONICS = ((1, Q(1)), (9, Q(1, 2187)), (18, -Q(1, 4374)))
+_HARMONICS = _current_fourier_coefficients(Q(1))
 
 
 def _geometry(origin: I, *, supplied: bool) -> _OrganizedExternalInteractionGeometry:

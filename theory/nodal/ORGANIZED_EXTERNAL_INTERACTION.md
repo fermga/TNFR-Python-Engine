@@ -607,8 +607,11 @@ and finite contact certificate. The subsequent
 derives its own history, resource and finite response bounds and certifies
 the original all-registration contrast. Neither endpoint law's finite bound
 establishes exact dynamical cancellation. The
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#organized-contact-dynamic-cancellation)
-keeps that distinct question separate. No old response is reevaluated.
+[dynamic cancellation theorem](ORGANIZED_CONTACT_DYNAMIC_CANCELLATION.md)
+classifies the exact limiting family: complete-law reflection protects special
+origins, while reciprocal feedback regenerates donor response elsewhere at
+law-dependent orders. It does not promote these ideal derivatives to an
+actual-source or finite-readout certificate. No old response is reevaluated.
 In the [physical-property atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena),
 this addresses whether generated organizations have reproducible distinct
 interactions; physical preparation, measurement, units and clock remain
