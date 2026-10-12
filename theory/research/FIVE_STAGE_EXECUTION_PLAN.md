@@ -133,8 +133,14 @@ targets in the remaining nonseparable sector are unresolved. The separate
 that every original outer-one source retains its complete marked identity
 and converges to an equilibrium for positive spoke strength at most `1e-5`,
 with that weight included in both complete rows. This rules out a
-topology-only obstruction to maintenance. It does not settle unit strength,
-identify a sharp transition or admit a numerical campaign.
+topology-only obstruction to maintenance. A separate
+[exact continuation](#weak-contact-stationary-continuation) now identifies
+a full-state stable stationary branch and its collective fold at contact
+strength between `0.07` and `0.08`, with every marked winding intact.
+Fine stationary rigidity excludes a nearby nonseparable escape from that
+branch. This neither extends the source-capture interval nor settles
+distant stationary components at unit strength; no numerical campaign
+is admitted.
 
 No 45-node acquisition, physical readout or source certificate transfers to
 the supplied positive-r matrix law by default. Earlier frozen protocols,
@@ -151,7 +157,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Pending analytical dependency | [Unit-strength stationary maintenance](#contact-maintenance-certificate-admission): use the admitted weak-contact regime to study stationary continuation and loss of stability or identity as contact increases. A full target or obstruction in the remaining nonseparable sector is still required; no numerical campaign is admitted |
+| Pending analytical dependency | [Unit-strength stationary maintenance](#contact-maintenance-certificate-admission): determine whether the disconnected nonseparable stationary sector contains a stable marked target. The exact carrier fold and fine rigidity close continuation of the admitted branch as a route to that sector; no numerical campaign is admitted |
+| Closed exact stationary continuation | [Collective fold before winding loss](#weak-contact-stationary-continuation): a branch stable in all 53 relative phase directions ends at eta between 0.07 and 0.08, retaining the complete marked identity; no nearby fine or reflection-breaking stationary escape. Actual source capture at these larger strengths is not established |
 | Closed weak-contact source retention | [Contact strength and the identity barrier](#weak-contact-maintenance-admission): the original outer-one family retains all marked identities for every `0<eta<=1e-5` and converges to an equilibrium. The changed weighted law separates a constitutive contact choice from topology; unit strength remains unresolved |
 | Closed complete-flow convergence and finite exclusions | [Single limiting equilibrium](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#full-contact-convergence): every finite zero-form-mean initial state converges with finite lifted phase variation. Every original outer-one source eventually remains outside the radius-1/25 uniform-rim tube. Stationary PSD exclusions persist; neither a stable target nor winding loss is proved |
 | Closed post-contact foundational review | [Dependency decision](#post-contact-foundation-review): contact response and hidden-mode results do not supply independent law selection, indefinite maintenance or a physical bridge; the missing maintenance certificate mechanism is explicit |
@@ -942,22 +949,53 @@ gives one equilibrium limit per trajectory, without a settling deadline
 or a stability assertion for that particular limit.
 
 The same barrier gives an open retained-identity class and an interior
-phase-potential minimum with nonnegative relative curvature. Strict
-curvature, a selected origin and a unique stable point are not supplied.
+phase-potential minimum with nonnegative relative curvature. That
+argument alone supplies neither strict curvature nor a selected origin;
+the separate exact branch below supplies a local stable target.
 This is a conditional theorem and an analytical reuse of source bounds;
 no source history, reserved response or stationary search was evaluated.
 The sufficient strength interval is not an optimal threshold or a
 laboratory calibration.
 
-The remaining question below is now specifically about the supplied
-unit-strength contact and its possible reorganization, rather than
-whether this topology can ever retain the original organization.
-The next analytical step is to study continuation of retained stationary
-states in eta and distinguish loss of curvature from loss of marked
-identity as contact increases toward unit strength.
-Such a branch result must retain all fine directions and cannot exclude
-other branches or the nonseparable sector by itself. No parameter scan
-or additional campaign is activated.
+The remaining unit-strength question concerns reorganization under that
+supplied contact, rather than whether this topology can ever retain the
+original organization. The analytical continuation below resolves one
+route while retaining the other stationary components as open.
+
+<a id="weak-contact-stationary-continuation"></a>
+### Closed analytical continuation: collective fold with retained identity
+
+The [exact branch owner](../nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md#weak-contact-stationary-fold)
+constructs reflected wheel equilibria under the same weighted complete
+law. Its stationary cubic and exact curvature blocks give strict
+stability in all 53 relative phase directions for `0<eta<eta_*`, where
+`27*(1+eta_*)^4=4*(2+eta_*)^3` and `0.07<eta_*<0.08`.
+The old acute rim chart is crossed before this endpoint while stability
+and the full marked identity persist. At the fold one collective mode
+loses curvature; the nonzero cubic potential term makes the endpoint
+nonlinearly unstable. Two local stationary branches meet, and none
+continues nearby beyond the fold.
+
+The 48 fine directions remain strictly positive at every PSD carrier.
+Their implicit stationary equations force all nearby full equilibria to
+remain carrier, even at collective degeneracy. Together with the
+positive reflection-breaking block at the fold this excludes a nearby
+hidden-state escape. A separate negative witness excludes PSD carrier
+states on a true rim cut. These arguments retain the complete fine
+state; restricting evolution to an invariant carrier would not suffice.
+
+Eta compares autonomous laws; no time-varying contact protocol or
+prepared-source trajectory was evaluated. The branch threshold is not
+a universal TNFR constant, a physical measurement or an extension of
+the `eta<=1e-5` whole-source capture theorem. It does not classify distant
+equilibria or establish the fate of the actual family at larger strength.
+
+The next analytical dependency is the disconnected nonseparable sector
+at unit strength, using its full stationary and curvature conditions.
+It cannot be reached from this carrier through a continuous path of PSD
+stationary states. A new stable target there or an obstruction covering
+that sector remains necessary; further precision on this branch would
+not answer that question. No numerical search or source replay is active.
 
 <a id="contact-maintenance-certificate-admission"></a>
 ### Closed complete-flow convergence; stationary target classification unresolved

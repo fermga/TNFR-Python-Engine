@@ -10,7 +10,10 @@ This result changes one supplied model parameter: all 45 external spokes
 have the same positive weight eta. It proves stationary existence and
 all-future identity retention for a declared weak-contact range, including
 the original acquired and observed source family. It is not a solution
-of the unit-weight stationary problem.
+of the unit-weight stationary problem. An exact stationary continuation
+also identifies a strictly stable full-state branch and its collective
+fold. The larger branch interval gives local stability of that branch;
+the acquired-source inclusion retains its own smaller interval.
 
 | Item | Declared model and scope |
 | --- | --- |
@@ -183,8 +186,10 @@ inclusion, supplied in section 5.
 ## 4. The weighted complete law still converges to one equilibrium
 
 The [complete-contact convergence method](ORGANIZED_CONTACT_MAINTENANCE.md#full-contact-convergence)
-must be re-admitted for (1). In the range (7), eta<1: indeed B<5 already
-follows from (3). Edgewise comparison gives
+must be re-admitted for (1). This section holds throughout
+\(0<\eta\le1\), independently of the narrower trapping condition (7).
+The latter is included because B<5 already follows from (3).
+Edgewise comparison gives
 
 \[
  0<L_\eta|_{\mathbf1^\perp},\qquad
@@ -371,7 +376,306 @@ replayed, no archived response was re-evaluated, and no original source
 or response flag is amended. In particular the original unit-contact
 response thresholds and horizons do not become weak-contact predictions.
 
-## 6. Meaning and remaining boundary
+<a id="weak-contact-stationary-fold"></a>
+## 6. An exact stable carrier branch ends at a collective fold
+
+The preceding energy argument proves existence without identifying the
+minimum. A separate exact stationary construction identifies a branch,
+its full-state stability and the way that stability ends. Eta is a
+parameter comparing different autonomous laws (1), not a time-dependent
+input. This construction neither changes nor follows the acquired source.
+
+<a id="carrier-stationary-continuation"></a>
+### 6.1 Full fine-coordinate rigidity near a stable carrier
+
+Put \(\alpha=2\pi/9\). A carrier is a state
+
+\[
+ x=0,\qquad \theta_{c,j}=\alpha(j-4)+\Phi_c
+ \pmod {2\pi}.
+ \tag{18}
+\]
+
+Its internal sine currents cancel pairwise. Consequently it is
+stationary precisely when the six origins are stationary for the
+weighted wheel potential
+
+\[
+ V_{\mathrm w,\eta}(\Phi)
+ =\sum_{c=0}^4[1-\cos(\Phi_{c+1}-\Phi_c)]
+   +\eta\sum_{c=0}^4[1-\cos(\Phi_D-\Phi_c)].
+ \tag{19}
+\]
+
+Here rim indices are modulo five. The full potential on the carrier is
+\(6V_9+9V_{\mathrm w,\eta}\). Let \(M_{\mathrm w,\eta}\) be the six-node
+Hessian of (19). In slot-first tensor order the full phase Hessian is
+
+\[
+ M_\eta
+ =\cos\alpha\,L_9\otimes I_6
+       +I_9\otimes M_{\mathrm w,\eta}.
+ \tag{20}
+\]
+
+Thus full positive semidefiniteness is equivalent to wheel positive
+semidefiniteness. Strict positivity modulo the one common rotation is
+equivalent in the same way. If the wheel Hessian is positive semidefinite,
+each of the 48 phase directions with zero mean within every child obeys
+
+\[
+ h^TM_\eta h
+ \ge \cos\alpha\,\lambda_2(L_9)\|h\|^2>0
+ \quad(h\ne0).
+ \tag{21}
+\]
+
+This gives a local statement about the full stationary equations, not
+only their linearization. In a local phase chart write a nearby state as
+(18) plus six child-mean-zero residuals. For any origins and eta, the
+projection of the carrier's phase gradient onto those 48 residual
+directions is exactly zero: the remaining wheel currents are constant
+in j. At a positive-semidefinite stationary carrier, (21) makes the
+derivative of these projected equations with respect to the residuals
+invertible. The implicit function theorem makes the zero residual their
+unique nearby solution. Every nearby full stationary state is therefore
+also a carrier, including when the wheel Hessian itself is degenerate.
+The form is zero at every equilibrium on the zero-form-mean leaf because
+\(L_\eta\) is connected for eta>0.
+
+In particular, the carrier subset is both relatively open and closed
+inside the stationary positive-semidefinite locus. Closedness is the
+closed circular identity (18); openness is the preceding normal
+uniqueness. Any connected subset of that locus meeting a carrier remains
+carrier. This does not exclude other disconnected, nonseparable
+stationary sets.
+
+A marked rim cut cannot provide a positive-semidefinite escape from this
+carrier locus. If rim neighbors a and b differ by pi, use the wheel
+vector \(e_a-e_b\), replicated in every slot. Its internal differences
+vanish, while its two spoke terms cancel because the spoke cosines are
+opposite. The rim edge a--b contributes -4; the other two incident rim
+edges contribute at most 2 together. Hence
+
+\[
+ (e_a-e_b)^TM_{\mathrm w,\eta}(e_a-e_b)\le-2,
+ \qquad h^TM_\eta h\le-18.
+ \tag{22}
+\]
+
+This bound holds for every eta>=0 and does not require stationarity.
+The carrier's internal gaps remain alpha. Thus neither a marked cut nor
+a fine-coordinate bifurcation permits stationary positive-semidefinite
+continuation from the carrier to another organization.
+
+### 6.2 The reflected stationary equations have an exact lower branch
+
+Ground the donor origin at zero and take the rim origins, in their
+original cyclic order, to be
+
+\[
+ (\Phi_0,\Phi_1,\Phi_2,\Phi_3,\Phi_4)
+       =(0,u,v,-v,-u),\qquad
+ 0<u<\pi/2<v<\pi.
+ \tag{23}
+\]
+
+Set \(a=1+\eta\), \(c=\cos v\), and
+\(r=|a+e^{iv}|\). The potential restricted to (23) is
+
+\[
+ \mathcal V_\eta(u,v)
+ =2a(1-\cos u)+2[1-\cos(v-u)]
+       +1-\cos(2v)+2(a-1)(1-\cos v).
+ \tag{24}
+\]
+
+The u equation is \(\sin(v-u)=a\sin u\). Its locally minimizing
+solution is \(u=\arg(a+e^{iv})\), so
+
+\[
+ A:=\cos u=\frac{a+c}{r},\qquad
+ \sin u=\frac{\sin v}{r},\qquad
+ B_1:=\cos(v-u)=\frac{1+ac}{r}.
+ \tag{25}
+\]
+
+The remaining stationary equation and the defining identity for r give
+
+\[
+ \frac a r+2c+a-1=0,\qquad
+ c=-\frac{a/r+a-1}{2},\qquad
+ f(r,a):=r^3-(a+1)r+a^2=0.
+ \tag{26}
+\]
+
+Reflection makes the fixed rim and donor equations vanish; the two
+remaining equations occur in opposite pairs. These are consequently
+the full wheel stationary equations, not merely a constrained critical
+point condition.
+
+Let \(a_*>1\) be the unique root
+
+\[
+ 27a_*^4=4(a_*+1)^3,\qquad
+ \frac{107}{100}<a_*<\frac{27}{25},\qquad
+ \eta_*=a_*-1\in\left(\frac7{100},\frac2{25}\right).
+ \tag{27}
+\]
+
+Uniqueness follows since \(a^4/(a+1)^3\) is strictly increasing for
+a>0. Substitution of the two rational endpoints gives opposite signs.
+For \(1<a<a_*\), f has two positive roots. Use the smaller one,
+denoted \(r_-(a)\). It continues from
+\(r_-(1)=(\sqrt5-1)/2\), where (23) is the uniform outer twist.
+At the endpoint the two roots meet at
+\(r_*=\sqrt{(a_*+1)/3}\). On the lower branch
+
+\[
+ \frac35<r_-(a)<\sqrt{\frac{a+1}{3}}<1,\qquad
+ \frac{dr_-}{da}=\frac{2a-r_-}{a+1-3r_-^2}>0.
+ \tag{28}
+\]
+
+The cubic's positive critical point is a strict local minimum; its value
+is negative exactly before (27), which proves the two-root assertion.
+The formulas above also give \(-29/30<c<0\). Thus (25) has
+\(0<u<\pi/2<v<\pi\), with u<v. The five positive principal rim gaps are
+\(u,v-u,2\pi-2v,v-u,u\). They stay strictly below pi and sum to
+2*pi, including at the fold. All six internal windings, all nine rim
+windings and all 32 mixed host periods remain those of the original
+marked class. For the original closing-edge branch convention, use
+the compatible rim lifts \((0,u,v,2\pi-v,2\pi-u)\); the large
+\(2\pi-2v\) gap is between the two reflected v origins.
+
+### 6.3 Full relative stability up to the endpoint
+
+Grounding the donor removes the common phase rotation. The wheel
+Hessian splits into ordinary reflection-odd and reflection-even
+directions. For the odd vector
+\((0,p,q,-q,-p;0)\), write its quadratic form as
+\(2(q,p)O(q,p)^T\). For the even vector
+\((t,p,q,q,p;0)\), write it as
+\(2(q,p,t)E(q,p,t)^T\). On the stationary branch,
+
+\[
+ \begin{split}
+ O&=
+ \begin{pmatrix}
+ B_1+2(2c^2-1)+(a-1)c&-B_1\\
+ -B_1&r
+ \end{pmatrix},\\
+ E&=
+ \begin{pmatrix}
+ B_1+(a-1)c&-B_1&0\\
+ -B_1&r&-A\\
+ 0&-A&A+(a-1)/2
+ \end{pmatrix}.
+ \end{split}
+ \tag{29}
+\]
+
+The identity \(B_1+aA=r\) supplies the middle diagonal. Substitution
+of (25)--(26), retaining the cubic rather than an approximate root,
+gives
+
+\[
+ \det O=\frac{(1-c^2)(a+1-3r^2)}r,\qquad
+ \det E=\frac{(a-1)(r^2+r-1)^4}{8r^4}.
+ \tag{30}
+\]
+
+At a=1, E is the positive multiple \(\cos(2\pi/5)\) of the
+three-vertex path Laplacian. It has two positive eigenvalues and one
+zero eigenvalue. Its determinant is strictly positive for every
+1<a<=a_* because r increases from the positive zero of
+\(r^2+r-1\). Continuity and absence of a zero eigenvalue make E
+positive definite throughout this interval. The lower diagonal of O
+is r>0. Its determinant is positive before the fold, and zero at the
+fold, where O has exactly one zero eigenvalue and one positive one.
+
+Equations (20)--(21) therefore prove strict positivity of all 53
+relative full phase directions for \(0<\eta<\eta_*\). This gives a
+locally asymptotically stable equilibrium of the actual two-row law:
+the strict local storage minimum traps a sufficiently small
+neighborhood, and section 4 supplies convergence to the unique local
+equilibrium. All forms and all fine phase directions are included.
+No source convergence to this particular equilibrium or uniform
+attraction rate is inferred.
+
+At eta=eta_* the full relative Hessian has exactly one zero direction,
+which is collective and reflection-odd. Its other 52 eigenvalues are
+positive; the 48 fine directions retain (21).
+
+### 6.4 The fold is unstable and has no nearby stationary bypass
+
+Eliminate u using (25), and call the resulting potential
+\(\widehat{\mathcal V}_a(v)\). Its first derivative is
+
+\[
+ \widehat{\mathcal V}_a'(v)
+   =2\sin v\left(\frac a r+2\cos v+a-1\right).
+ \tag{31}
+\]
+
+At (27), its first and second derivatives vanish, whereas
+
+\[
+ \widehat{\mathcal V}_{a_*}'''(v_*)
+       =\frac{6a_*^3\sin^3v_*}{r_*^5}>0.
+ \tag{32}
+\]
+
+For example, differentiating the bracket in (31) gives
+\(\sin v(a^2/r^3-2)\); at the double root \(a^2=2r^3\).
+One further derivative gives (32). The full potential is nine times
+this wheel potential plus a constant. The nonzero cubic term supplies
+arbitrarily close zero-form states of strictly lower storage, so the
+fold is not a local minimum.
+
+It is also Lyapunov unstable, without a center-manifold assumption.
+The positive fine block in (21) first makes every nearby equilibrium
+a carrier. The positive E block in (29) then forces every nearby wheel
+equilibrium into (23): phase inversion combined with rim reflection
+preserves the potential, and uniqueness in the transverse implicit
+equations sets the reflection-breaking coordinates to zero. The first
+balance has u derivative \(a\cos u+\cos(v-u)=r>0\), so its minimizing
+elimination is locally unique. Also
+\(dr/dv=-a\sin v/r\ne0\), and the bracket in (31) is exactly
+\(f(r,a)/(ar)\). Thus (26) is locally equivalent to the full remaining
+stationary equation. At the fold
+\(f_r=0\), \(f_{rr}=6r_*>0\), and \(f_a=2a_*-r_*>0\).
+Thus at fixed eta_* the equilibrium is locally isolated modulo
+rotation; on the eta>eta_* side there is no nearby full equilibrium.
+If a trajectory from one of the nearby lower-storage states remained
+forever in a sufficiently small closed neighborhood, section 4 would
+force convergence to this isolated equilibrium, contradicting
+nonincrease of storage. Arbitrarily small perturbations therefore
+leave that neighborhood.
+
+These same implicit equations give the complete local stationary fold,
+including all 54 nodes: two reflected carrier equilibria meet, the
+lower-root branch has positive relative Hessian, and the other local
+branch has one negative collective direction. No nearby fine or
+reflection-breaking stationary branch continues stability through the
+endpoint. This is a local classification of this branch, not a global
+classification of the remaining nonseparable sector.
+
+The endpoint occurs without a marked winding cut. It also lies beyond
+the original acute rim chart. Indeed \(r_*>83/100\) and \(a_*<27/25\)
+give
+\[
+ \frac{a_*}{r_*}+a_*-1
+ <\frac{108}{83}+\frac2{25}<\frac75<\sqrt2.
+ \tag{33}
+\]
+Hence \(c_*>-1/\sqrt2\), so the rim gap between v and -v is
+\(2\pi-2v_*>\pi/2\), while remaining less than pi. Stability persists
+through some nonacute rim configurations and then fails collectively;
+leaving the acute energy chart is not itself loss of marked identity
+or loss of stability.
+
+## 7. Meaning and remaining boundary
 
 The positive weak-contact interval proves that the same graph topology
 and complete marked identity are compatible with stationary existence and
@@ -381,16 +685,23 @@ enough of the old energy barrier to admit the actual reached sources.
 The supplied coupling has not been selected by TNFR's nodal identity or
 by a physical observation.
 
-The unit-weight problem at eta=1 remains outside the proved interval.
+The exact continuation identifies a strict full-state stationary branch
+and its collective fold at eta_* in (7/100,2/25). This is a critical
+coupling for that branch, without a universal transition claim. Local
+fine-coordinate rigidity and the cut witness exclude two possible
+stable bypasses; they do not remove distant stationary components.
+
+The unit-weight problem at eta=1 remains outside the retained branch.
 Its finite common-host exclusions, complete-flow convergence and remaining
-stationary feasibility question are unchanged. No critical coupling,
-sharp transition, unit-contact stable target or unit-contact winding loss
-has been established. The
+nonseparable stationary feasibility question are unchanged. No
+unit-contact stable target or unit-contact winding loss has been
+established. The
 [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#contact-maintenance-certificate-admission)
 owns that unresolved dependency.
 
 The result gives no autonomous contact selector, event reservoir,
 laboratory unit bridge or identification with physical matter. Its
 reusable mechanisms are the full old-edge barrier, explicit new-edge
-work, carried source-history estimate and analytic convergence under the
+work, carried source-history estimate, analytic convergence, full
+stationary normal rigidity and the exact collective fold under the
 actual positive weighted law.

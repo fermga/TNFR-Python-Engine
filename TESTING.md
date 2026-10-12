@@ -1069,8 +1069,19 @@ No trajectory, candidate search or frozen producer is executed. The proof
 owns all-future retention and existence of an interior minimum; arithmetic
 tests do not establish them by sampling. Strength `1e-5` is a sufficient
 bound for a changed complete model, not a measured or sharp transition.
-Neither the original unit-strength outcome nor stability of every actual
-limiting equilibrium follows.
+
+The same module checks the [exact stationary fold](theory/nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md#weak-contact-stationary-fold).
+Exact symbolic reductions retain the stationary cubic while checking
+both grounded reflection blocks. Independent fine edge assembly checks
+the full tensor Hessian, every slot sector, stationary residuals and
+marked windings at declared algebraic controls. Rational signs bracket
+the branch fold; the carrier cut witness tests its separate negative
+curvature bound. These are static identities, not continuation samples,
+optimizer starts or a parameter scan. SymPy is included in `test-all`.
+The proof owns continuation, the nonsingular fine equations, nonlinear
+fold instability and the absence of a nearby stationary escape.
+The exact branch threshold does not extend the source-capture interval,
+decide the original unit-strength outcome or select the actual limit.
 
 For [reflected stationary contact identity](theory/nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md),
 select `tests/physics/test_organized_contact_reflection.py` with contact
