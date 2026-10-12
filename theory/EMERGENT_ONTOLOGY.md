@@ -142,6 +142,15 @@ old marked identity survives. The new branches are conditional stationary
 organizations, not automatically acquired constituents or an autonomous
 operator occurrence. A comparison parameter is not an evolution law.
 
+The same model's [local dynamical reduction](nodal/ORGANIZED_CONSTITUTIVE_TRANSITION.md#constitutive-transition-local-dynamics)
+derives an inherited registration mobility and critical algebraic recovery
+from both complete rows. Its initialization retains the full form and phase
+state: equal initial phases can lead to opposite sides of the subsequent
+approach. This is a local effective description at each fixed positive
+contact, with stable transverse modes; it is neither a phase-only quotient
+of all states nor a law for arbitrary subsequent interactions. The marked
+boundary and any released collective means still need their own admission.
+
 Within the specified complete laws, equal nominal collective means and storage
 can hide response-relevant internal information. The
 [conservative persistence result](nodal/SINE_PAIR_INTERACTION.md#sine-pair-persistent-response)

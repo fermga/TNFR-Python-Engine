@@ -10,6 +10,12 @@ pitchfork: the central registration loses its collective stability and
 two attracting registrations emerge, while every other relative phase
 direction stays positive.
 
+At each fixed positive eta in the proved range, the same complete law
+also has a local scalar center dynamics with an inherited positive
+mobility. Its initialization depends on form as well as phase.
+Generic critical trajectories approach algebraically; a strong-stable
+exception approaches exponentially.
+
 The quantitative domain proved here is
 \(0<\eta\le10^{-12}\). It is a narrower mathematical domain than the
 endpoint owners' \(\eta=10^{-5}\). This theorem does not classify the
@@ -24,6 +30,7 @@ source nor refines an evaluated experimental protocol.
 | Retained state | All signed forms, primitive circular phases and fine directions, on fixed-total-form and fixed-total-phase leaves |
 | Comparison chart | \(\lambda=\kappa_*\mu\eta^3\), with independently supplied eta and lambda; this is not a parameter evolution law |
 | Quantitative transition | \(0<\eta\le10^{-12}\), \(\mu\in[9/10,11/10]\), relative origins \(|t|\le1/20\) and their five symmetry copies |
+| Local dynamics | Fixed positive eta, finite smooth center manifold, full-state initialization and critical asymptotic relaxation; neighborhoods and transverse rates may depend on eta |
 | Evidence | Analytic contraction, exact harmonic coefficients, Cauchy bounds and complete-state curvature; no trajectory, root search, sweep or source replay |
 
 ## 1. Complete law, coordinates and scope
@@ -657,7 +664,351 @@ The critical state is not locally exponentially stable: its complete
 linearization has the simple zero eigenvalue just proved. No uniform
 settling time or decay rate as eta tends to zero is claimed.
 
-## 8. Meaning and validation boundary
+<a id="constitutive-transition-local-dynamics"></a>
+
+## 8. The inherited local dynamics of the soft registration
+
+Fix one positive eta in the proved interval. This section derives a
+local dynamical consequence of the same complete law in the original
+tau clock. Every neighborhood, remainder constant and transverse
+tracking rate below may depend on that fixed eta. There is no
+uniform-in-eta center manifold, source-entry theorem, or finite-time
+approximation claim.
+
+Write \(\sigma=\mu-\mu_c(\eta)\). Let
+\(\Theta(t,\sigma)\) be the stationary carrier shape after eliminating
+the four host shape coordinates, with the total phase fixed.
+It is a curve of projected stationary shapes, not a curve of complete
+equilibria: its remaining torque can be nonzero. Its phases are
+
+\[
+\begin{split}
+ \Theta_{c,j}(t,\sigma)
+ &=\alpha(j-4)+b_c+\frac t6+u_c(t,\sigma)
+       +\text{fixed common origin}\quad(c<5),\\
+ \Theta_{D,j}(t,\sigma)
+ &=\alpha(j-4)-\frac{5t}{6}
+       +\text{the same fixed common origin}.
+\end{split}
+\tag{38}
+\]
+
+At criticality put \(\theta_*=\Theta(0,0)\),
+\(w=\Theta_t(0,0)\), and \(N=w^Tw\). Then
+
+\[
+ w_{c,j}=\frac16+u_{c,t}(0,0),\quad
+ w_{D,j}=-\frac56,\qquad
+ N=\frac{15}{2}+9\|u_t(0,0)\|_2^2.
+\tag{39}
+\]
+
+Differentiating the real contraction in (31) gives
+\[
+ \|u_t\|_2
+ \le\frac{(5/2)\sqrt5(101/100)}{1-1/500}\eta<6\eta.
+\tag{40}
+\]
+This derivative belongs to the actual constitutive shape at the
+critical parameter.
+
+In the state order \((\theta-\theta_*,x)\), the critical Jacobian and
+its right and normalized left zero vectors are
+
+\[
+\begin{split}
+ J&=\begin{pmatrix}
+        0&\gamma L_\eta/4\\
+        -\gamma M_{54}/4&-L_\eta/4
+       \end{pmatrix},&
+ v&=(w,0),&
+ \ell&=\frac{(w,\gamma w)}{N},\\
+ Jv&=0,&\ell J&=0,&\ell v&=1 .
+\end{split}
+\tag{41}
+\]
+
+Here \(M_{54}w=0\) follows from the critical Schur complement;
+the common-rotation zero mode has already been removed. For the
+linear coordinate
+\(\zeta=w^T(\theta-\theta_*+\gamma x)/N\), the full nonlinear
+equations have the exact projected row
+
+\[
+ \zeta'=-\frac{\gamma^2}{4N}\,
+                w^T\nabla U_\lambda(\theta).
+\tag{42}
+\]
+
+This row still depends on hidden phase coordinates. Projection is
+not yet a scalar closure.
+
+### 8.1 An invariant center manifold, with matched hypotheses
+
+The vector field is analytic on this finite-dimensional relative
+chart. Its critical spectrum consists of one simple zero and 105
+strictly stable eigenvalues. The local center-manifold theorem
+therefore gives a finite \(C^k\) invariant curve for any prescribed
+finite k, chosen here at least five. Applying the same theorem after
+adjoining \(\sigma'=0\) gives the local parameter family. These are
+the hypotheses of the local theorem and parameter construction in
+[Nagata, Lecture 25, Theorem 3.7 and the final parameter extension](https://personal.math.ubc.ca/~nagata/m552/lec25.pdf).
+
+The reflection symmetry acts as \(t\mapsto-t\). An invariant,
+reflection-symmetric cutoff in a local center/stable construction
+gives an equivariant center manifold; its scalar row is odd in t.
+The exact carrier subspace, in which fine phases and fine forms
+vanish, is itself invariant: internal currents cancel, and the wheel
+rows are constant in each slot. The center manifold can first be
+constructed in this ten-dimensional carrier system and is then an
+invariant manifold of the full system. Fine perturbations retain
+their stable directions; they are not assumed absent from nearby
+initial states.
+
+The center curve need not be unique or analytic. The claims below
+concern its finite-order coefficients and the tracking of nearby
+states, with physical t as its coordinate. The derivative of that
+coordinate along v is one, so it is a valid local parameter.
+The graph \((\Theta(t,\sigma),0)\) is not invariant away from its
+torque zeros: its phase row is zero while its form row is nonzero.
+It cannot replace the center manifold.
+
+### 8.2 The normal-form coefficients come from the actual two rows
+
+Let \(t'=g(t,\sigma)\) be the center row. At criticality odd symmetry
+and the zero eigenvalue give \(g(t,0)=O(t^3)\).
+Write the center phase and form curves as
+\(\Theta_{\rm c}(t)\), \(x_{\rm c}(t)\). The phase row implies
+
+\[
+ x_{\rm c}(t)=\frac4\gamma L_\eta^{-1}
+                 \Theta_{\rm c}'(t)\,g(t,0)=O(t^3).
+\tag{43}
+\]
+
+Invariance in the form row then forces the normal phase gradient to
+vanish through degree two. The invertible normal Hessian from
+section 6 consequently gives
+\(\Theta_{\rm c}(t)-\Theta(t,0)=O(t^3)\), at the same physical t.
+It is this agreement of finite-order expansions, not invariance of
+the stationary graph, that permits use of its reduced potential.
+
+Eliminating x from the full equations gives the exact second-order
+phase equation on the relative space,
+
+\[
+ L_\eta^{-1}\theta''+\frac14\theta'
+                       +\frac{\gamma^2}{16}\nabla U_\lambda(\theta)=0.
+\tag{44}
+\]
+
+On the critical center curve its inertial term is O(t^5).
+The cubic normal displacement changes the cubic gradient by
+\(M_{54}\) times that displacement; contraction with w annihilates
+this term. On the stationary curve,
+\(w^T\nabla U_\lambda(\Theta(t,0))=9T(t)\):
+the fine and projected host gradients vanish, and the host-shape part
+of w is orthogonal to the remaining mean gradient.
+Projection of (44) at cubic order therefore gives
+
+\[
+ g(t,0)=-b_\eta t^3+O(t^5),\qquad
+ b_\eta=m_\eta A\eta^5 B_s(0,\mu_c,\eta)>0,
+\tag{45}
+\]
+where the inherited mobility is
+\[
+ m_\eta=\frac{9\gamma^2}{4N}
+       =\frac{\gamma^2}{4(5/6+\|u_t(0,0)\|_2^2)},\qquad
+ \frac{\gamma^2}{4(5/6+36\eta^2)}
+       <m_\eta\le\frac{3\gamma^2}{10}.
+\tag{46}
+\]
+
+The positive coefficient is fixed by the complete damping row and
+the physical coordinate geometry. It is neither a new primitive
+capacity nor an independently assigned time rescaling.
+Equation (45) does not assert the exact scalar identity
+\(t'=-m_\eta T(t)\) at all orders.
+
+For the parameter-linear term, differentiate the simple critical
+eigenvalue. At the central equilibrium the stationary tangent
+satisfies \(w(\mu)^TM(\mu)w(\mu)=9T_t(0,\mu)\).
+Since \(M(\mu_c)w=0\), differentiation at criticality gives
+\(w^TM_\mu w=9T_{t\mu}\). The left/right vectors in (41)
+therefore yield
+
+\[
+ a_\eta=-m_\eta T_{t\mu}(0,\mu_c)
+       =-m_\eta A\eta^5B_\mu(0,\mu_c,\eta)>0 .
+\tag{47}
+\]
+
+The resulting local row in the unchanged tau clock is
+
+\[
+\begin{split}
+ t'&=a_\eta\sigma t-b_\eta t^3
+       +O_\eta(\sigma^2|t|+|\sigma||t|^3+|t|^5),\\
+ \frac{99}{20}m_\eta A\eta^5
+       &<a_\eta<\frac{101}{20}m_\eta A\eta^5,\\
+ 55m_\eta A\eta^5
+       &<b_\eta<70m_\eta A\eta^5,\qquad
+ \frac{a_\eta}{b_\eta}=c_\eta .
+\end{split}
+\tag{48}
+\]
+
+The subscript on the remainder records fixed-eta local constants.
+The dynamic branch ratio agrees with (29), an independent check of
+the pressure, damping and coordinate factors. The slow eigenvalue
+is \(a_\eta\sigma+O_\eta(\sigma^2)\) at the central equilibrium and
+\(-2a_\eta\sigma+O_\eta(\sigma^2)\) on the emerging branches.
+These are local spectral statements, not uniform relaxation times.
+
+<a id="constitutive-transition-initialization"></a>
+
+## 9. Hidden initialization and critical relaxation
+
+At criticality, the stable spectrum has a positive separation from
+zero for each fixed eta. In an adapted norm, choose
+\(\omega_\eta>0\) such that the stable semigroup is bounded by
+\(e^{-\omega_\eta\tau}\). After the spectral change of coordinates,
+the nonlinear remainder and its derivative vanish at the origin.
+A smooth local cutoff can therefore make its Lipschitz constant
+arbitrarily small compared with this separation, while leaving
+the actual equations unchanged on a smaller neighborhood.
+
+Taking the stable block as A, the zero center block as B, and
+\(\alpha=-\omega_\eta,\ \beta=0\), this satisfies
+\(2\operatorname{Lip}(H)<\beta-\alpha\) in the
+[foliation and exponential-tracking theorem of Chung and Jolly, Theorem 1.1 and Proposition 1.2](https://arxiv.org/pdf/1211.0768).
+For the finite \(C^k\) center curve, choose the cutoff still smaller
+so the center growth weights required through derivative order k
+remain strictly below the stable decay. Differentiating the
+Lyapunov--Perron fixed-point equation then has convergent stable
+integrals and invertible contraction derivatives through that order.
+This is the finite-smoothness center-manifold construction used in
+section 8.1; the cited Lipschitz foliation theorem by itself is not
+being used to assert smoothness or analyticity of the tracking map.
+Section 7 supplies a smaller invariant neighborhood of the actual
+critical law, so its forward solutions never use the modified
+equations outside the cutoff. This is a proof extension, not a new
+physical or runtime law.
+
+Every sufficiently close full initial state consequently tracks a
+center-manifold trajectory exponentially in the actual tau clock.
+Denote the physical t coordinate of that trajectory at time zero by
+\(\Pi_\eta(\theta_0,x_0)\). It is a local initialization map from
+the full state, not generally the observed t_0.
+
+The uniform graph slopes also give the needed linear-size initial
+bound, without requiring a smooth projection theorem. Write p for
+the stable spectral coordinates and c for the center coordinate.
+If the stable leaves and center graph have Lipschitz slopes at most
+\(q<1\), their intersection \((p_+,c_+)\) satisfies
+\[
+ |p_+|\le q|c_+|,\qquad
+ |c_+-c_0|\le q|p_+-p_0|,\qquad
+ |c_+|\le\frac{|c_0|+q|p_0|}{1-q^2}.
+\tag{48a}
+\]
+Thus the tracking initial state is O(norm(z_0)).
+On the critical center curve, (45) makes its scalar magnitude
+nonincreasing in a sufficiently small interval. Shrinking the initial
+neighborhood consequently keeps both the tracking center orbit and
+the actual orbit inside the region where the cutoff equals one.
+
+Its leading term is fixed by (41):
+
+\[
+ \Pi_\eta(\theta_0,x_0)
+ =\frac{w^T(\theta_0-\theta_*+\gamma x_0)}{N}
+       +O_\eta(\|(\theta_0-\theta_*,x_0)\|^2).
+\tag{49}
+\]
+
+One can obtain the quadratic remainder without assuming an analytic
+foliation. Let z and z_c be a full orbit and its exponentially
+tracking center orbit. Their projected difference satisfies
+\[
+ \ell[z(0)-z_{\rm c}(0)]
+ =-\int_0^\infty
+       \ell[\mathcal N(z(s))-\mathcal N(z_{\rm c}(s))]\,ds ,
+\tag{50}
+\]
+where \(\mathcal N\) is the nonlinear remainder after the critical
+linearization. The center orbit decreases in magnitude by (45);
+(48a), its smooth graph and exponential tracking keep both
+orbits O(norm(z(0))). Since \(D\mathcal N=O(\|z\|)\), the
+exponentially decaying difference makes (50) O(norm(z(0))^2).
+Finally \(\ell z_{\rm c}(0)=t_{\rm c}(0)+O(t_{\rm c}(0)^2)\).
+These facts prove (49).
+
+The set \(\Pi_\eta=0\) is the local 105-dimensional strong-stable
+manifold of the equilibrium. It is tangent to the kernel of the
+linear functional in (49); it is not asserted equal to that linear
+kernel. On this exceptional set the full state approaches the
+equilibrium exponentially.
+
+If \(\Pi_\eta\ne0\), its center trajectory eventually obeys
+\(t'=-b_\eta t^3+O_\eta(t^5)\), remains on the corresponding side
+of zero and approaches zero. Therefore
+
+\[
+ \frac{d}{d\tau}\frac1{t^2}
+       =2b_\eta+O_\eta(t^2),\qquad
+ t(\tau)\sim
+       \frac{\operatorname{sgn}\Pi_\eta}
+                    {\sqrt{2b_\eta\tau}} .
+\tag{51}
+\]
+
+The exponentially small tracking difference transfers this asymptotic
+formula to the physical relative origin of the full trajectory.
+Equivalently \(2b_\eta=m_\eta T_{ttt}(0,\mu_c)/3\).
+The limit is as tau tends to infinity at fixed positive eta.
+It is not a joint eta/time estimate or a finite experimental
+settling-time prediction.
+
+### 9.1 Equal phase observations can have opposite subsequent approaches
+
+There is a concrete local initialization witness. Keep every phase
+equal to the critical equilibrium and choose the two signed form
+states
+\[
+ \theta_0=\theta_*,\qquad x_0^\pm=\pm\varepsilon w,
+       \qquad\varepsilon>0.
+\tag{52}
+\]
+They obey the zero-total-form constraint and share all initial
+phase observations, including t_0=0 and the marked identity.
+For sufficiently small epsilon both lie in the preceding local
+domain. Equation (49) gives
+\[
+ \Pi_\eta(\theta_*,x_0^\pm)
+       =\pm\gamma\varepsilon+O_\eta(\varepsilon^2).
+\tag{53}
+\]
+Thus their asymptotic approach signs are opposite. Even their initial
+physical relative-origin rates already differ:
+\[
+ (t'_0)^\pm=\pm\frac32\gamma\eta\varepsilon .
+\tag{54}
+\]
+To check (54) directly, the host mean of w is 1/6, the donor mean is
+-5/6, and the exact mean phase row gives
+\(t'=(3/2)\gamma\eta(\bar x_H-\bar x_D)\).
+No selected trajectory was integrated to construct this witness.
+
+The scalar center law is therefore a justified local description
+with a full-state initialization and an exponentially decaying
+transverse discrepancy. It is not an exact instantaneous quotient
+of all nearby states onto their phase origin. This distinguishes
+inherited dynamics from stationary elimination and preserves the
+hidden-initial-state obligation in the ontology.
+
+## 10. Meaning and validation boundary
 
 For every eta in the proved positive interval, the central
 registration attracts for a strictly positive interval
@@ -692,6 +1043,10 @@ Static controls in the
 [transition research tests](../../tests/physics/test_organized_constitutive_transition.py)
 check the finite Fourier coefficient, rational contraction and
 remainder inequalities, derivative margins and full-state curvature.
+The [local-dynamics tests](../../tests/physics/test_organized_constitutive_dynamics.py)
+independently check the two-row projection, inherited mobility,
+invariant-manifold coefficients, initialization and critical decay
+identities.
 No source producer, frozen response, trajectory, parameter scan or
 numerical root search is used. The
 [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#weak-contact-constitutive-transition)

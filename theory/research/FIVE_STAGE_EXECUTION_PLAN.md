@@ -178,8 +178,12 @@ Its explicit proof range is `0<eta<=1e-12`, not the earlier fixed
 but loses exponential stability; beyond it two nearby minima replace
 the central minimum, without losing old marked identity. This does not
 admit the intermediate laws' actual sources or select a physical law.
-The next task is the bounded
-[post-transition foundation review](#post-transition-foundation-review).
+The [post-transition foundation review](#post-transition-foundation-review)
+selects a local dynamical reduction of the newly critical registration.
+The [local dynamics result](#critical-registration-dynamics) derives its
+mobility, full-state initialization and algebraic critical relaxation.
+The next [marked-boundary admission](#critical-parent-interaction-admission)
+tests which state must be retained when this parent contacts another NFR.
 Unit-strength classification remains unresolved and deferred; no numerical
 campaign is admitted.
 
@@ -198,7 +202,9 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Pending bounded foundation review | [After the constitutive transition](#post-transition-foundation-review): select the next independent foundational or generative obligation, comparing law justification, autonomous occurrence and sufficient parent state; no automatic extension of the parameter map or precision campaign |
+| Active bounded interaction admission | [A marked boundary of the critical parent](#critical-parent-interaction-admission): declare one additional C9 neighbor and its actual contact, derive the necessary local collective state and port coupling before admitting a prediction; no numerical campaign |
+| Closed local analytical reduction | [Critical registration dynamics](#critical-registration-dynamics): full-law mobility, hidden initialization and algebraic critical relaxation, with a strong-stable exception; fixed positive eta, no uniform transient or source-entry certificate |
+| Closed bounded foundation review | [After the constitutive transition](#post-transition-foundation-review): the missing local parent dynamics is independent of existing mean-closure obstructions and fixed-support slow-phase results; law justification, physical admission and autonomous occurrence retain their named dependencies |
 | Closed analytical constitutive robustness | [Weak-contact deformation transition](#weak-contact-constitutive-transition): five symmetry-related local supercritical pitchforks with critical deformation proportional to eta cubed for 0<eta<=1e-12, retaining all normal directions. Fixed-contact persistence is not uniform robustness as contact vanishes; no intermediate-law source certificate follows |
 | Closed own-law source admission | [Alternative-law weak-contact preparation](#alternative-weak-contact-source-admission): every original source retains its marked identity; ten origin intervals select attractive targets at eta=1e-5. A common primitive preparation interval gives disjoint asymptotic outcomes under the two complete laws, retaining each own history and errors |
 | Closed analytical constitutive comparison | [Weak-contact attracting registrations](#weak-contact-constitutive-registration): the harmonic alternative has ten full-state minima and ten index-one saddles in its declared tube at eta=1e-5. The sine law's five attractive relative origins become saddles; source capture has its separate certificate below |
@@ -397,7 +403,7 @@ response has not been derived from the earlier acquired constituents.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
-| Composite identity under interaction | Retain complete-law, marked-identity and actual-source hypotheses when claiming maintained collective organization | **Closed two-law source-to-attractor comparison and scoped constitutive transition.** Weak contact can make attracting registration sensitive to a cubically small law deformation while identity persists. The bounded foundation review chooses the next dependency; unit-strength classification, remaining basin gaps and a larger transition interval stay deferred |
+| Composite identity under interaction | Retain complete-law, marked-identity and actual-source hypotheses when claiming maintained collective organization | **Closed two-law source-to-attractor comparison, scoped transition and local critical dynamics.** The next marked-boundary admission checks the state released by a new interaction; unit-strength classification, remaining basin gaps and a larger transition interval stay deferred |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
 | Sufficient collective state and inherited response | Construct and certify a forecast from a joint finite noisy record without known collective initialization | **Closed operational software case.** The whole-record bound and one candidate forecast are certified; arbitrary-record convergence and physical measurement remain unproved |
@@ -1261,33 +1267,90 @@ transferred to intermediate laws. Static proof controls evaluate no
 trajectory, source, parameter scan or physical response.
 
 <a id="post-transition-foundation-review"></a>
-### Next bounded review: foundational priority after the constitutive transition
+### Closed review: foundational priority after the constitutive transition
 
-**Question.** Which independent premise or generative dependency should
-be addressed next, now that retained identity, acquired endpoint
-outcomes and local constitutive sensitivity have distinct certificates?
-Use the [ontology](../EMERGENT_ONTOLOGY.md#generative-bound-organization),
-[foundation decision](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#post-capture-foundation-decision)
-and existing theory-to-execution map; do not reopen a claim solely
-because another method or sharper bound is available.
+The [foundation decision](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#post-transition-dynamics-decision)
+compares independent law justification, autonomous occurrence and
+sufficient parent dynamics against their existing owners. It selects
+the local dynamics of the critical registration: stationary shape
+elimination and a simple zero eigenvalue do not provide its evolution
+rate or initialization from a full state.
 
-Compare three obligations against existing results: independent law
-justification or observation; autonomous preparation/support occurrence;
-and sufficient parent state and dynamics under another interaction or
-composition. In the last case, distinguish stationary elimination from
-a dynamically justified reduction: the newly soft registration mode
-may need retained state or causal memory. First check whether existing
-closure, event and hidden-state counterexamples already settle the
-proposed question. A bifurcation label or a supplied parameter change
-does not establish a registered collective operator or its occurrence.
+Existing nonlinear hidden-memory counterexamples already exclude generic
+mean-only closure. The [controlled slow-phase theorem](../nodal/SINE_FORM_PHASE_REDUCTION.md#sine-controlled-slow-phase)
+has a fixed support and a different small constitutive ratio; it does
+not give this contact-dependent critical mode. Independent law
+selection and physical admission need new premises or observations;
+passivity and event work already fail to select autonomous occurrence.
+None of those failures prevents this held-support local consequence.
+The review activates only the bounded analytical gate below, without
+a source replay, apparatus search or numerical campaign.
 
-Acceptance is one bounded follow-up with matched complete-law premises,
-a named missing result and a discriminating closure, or an explicit
-dependency preventing it. Prefer a consequence useful across the
-foundational branches. A larger eta range, a complete bifurcation map,
-additional source precision or another prepared response is not the
-default. No new numerical campaign, source replay, apparatus search or
-physical evaluation is activated by this review.
+<a id="critical-registration-dynamics"></a>
+### Closed analytical gate: actual local dynamics of the critical registration
+
+The [local reduction](../nodal/ORGANIZED_CONSTITUTIVE_TRANSITION.md#constitutive-transition-local-dynamics)
+derives the registration's center dynamics from both weighted rows of
+the unchanged 54-node model. At every fixed positive eta in the proved
+interval, it gives the original-tau mobility and cubic restoring
+coefficient, and the unfolding slope agrees with the stationary branch
+ratio. The stationary shape graph itself is not an invariant flow.
+
+The [initialization result](../nodal/ORGANIZED_CONSTITUTIVE_TRANSITION.md#constitutive-transition-initialization)
+retains full phase and form state. Generic local critical recovery is
+proportional to inverse square root of tau; the strong-stable manifold
+is an explicit exception with exponential decay. Equal initial phases
+with opposite small form perturbations can approach from opposite sides.
+All fine directions are included through transverse tracking.
+
+This is a fixed-eta local theorem, not an eta-uniform transient bound,
+an intermediate-law preparation certificate or a reduced numerical
+solver. No source, trajectory or physical response was evaluated.
+The next gate asks whether its state survives an actual new boundary,
+rather than automatically extending the small-parameter estimates.
+
+<a id="critical-parent-interaction-admission"></a>
+### Next bounded admission: a marked boundary of the critical parent
+
+**Question.** Which local collective state and interaction law follow
+when the critical six-child organization contacts one further C9 NFR?
+Keep the same supplied constitutive law at lambda_c(eta), each fixed
+positive eta in the transition domain, unit capacities, both weighted
+quarter-factor rows and the original tau. Add one labeled C9 child to
+the 54-node parent. Its nodes have order 54+j; its nine internal edges
+have weight one. The one proposed boundary consists of nine same-slot
+edges from host child c=2 to this new child, each of held conductance
+epsilon. The new weighted Laplacian must enter both evolution rows.
+Neither epsilon nor the old eta acquires an evolution or selection law.
+
+Start the analytical admission from a neighborhood of the parent's
+critical equilibrium and the neighbor's winding-one carrier. This is
+a conditional local state class, not an acquired intermediate-law
+source. Retain global form and lifted-phase means while re-admitting
+the parent's and neighbor's separate means, which need not remain
+constant after contact. Check the full center/stable split at zero
+external contact before using a local continuation; that zero-contact
+reference is distinct from setting the parent's internal eta to zero.
+
+Derive the actual marked-port projection and the leading joint local
+dynamics. In particular, decide whether the critical amplitude together
+with relative mean form and relative phase is sufficient locally, or
+which additional state or causal memory is required. Reuse the
+[registered composition methods](../nodal/REPEATED_ORGANIZED_COMPOSITION.md)
+without transferring their noncritical model's coefficients or finite
+error certificate. Compare against discarding the critical amplitude
+at matched retained means, using the independently defined parent mean
+form exchange and registration rate as candidate readouts.
+
+Acceptance is a complete-law local interaction result or a named
+obstruction, with marked child/parent identity, full-state initialization,
+boundary work and the domain of the reduction stated. An unchanged-state
+support addition has its own storage jump; it is not autonomously selected
+or automatically passive. Any finite prediction must first fix its
+source, epsilon, horizon, observation and error budget. No trajectory,
+root search, source replay, new apparatus search or physical evaluation
+is activated. A uniform eta-to-zero approximation becomes relevant only
+if this specific interaction requires it.
 
 <a id="contact-maintenance-certificate-admission"></a>
 ### Closed complete-flow convergence; unit-strength classification deferred

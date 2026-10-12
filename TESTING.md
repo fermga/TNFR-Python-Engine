@@ -1156,6 +1156,16 @@ not certify the transition at eta=1e-5. Static controls must preserve the
 no-source/trajectory/search guard. No intermediate-law preparation or
 actual-source basin follows from the stationary branch calculation.
 
+For its [local dynamical reduction](theory/nodal/ORGANIZED_CONSTITUTIVE_TRANSITION.md#constitutive-transition-local-dynamics),
+also select `tests/physics/test_organized_constitutive_dynamics.py`.
+Check the left/right projection against the full two-row Jacobian,
+physical-coordinate normalization, hidden form initialization and the
+invariance equation with coupled normal directions. A stationary valley
+is not an invariant trajectory. Retain original-clock factors, the
+critical reciprocal-square decay identity and the strong-stable exception.
+These static controls support a fixed-eta local theorem, not a uniform
+transient bound, a reduced solver or source entry into its neighborhood.
+
 For [reflected stationary contact identity](theory/nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md),
 select `tests/physics/test_organized_contact_reflection.py` with contact
 maintenance, external interaction and `tests/test_rational_interval.py`.

@@ -1283,11 +1283,59 @@ still lacks independent preparation and measurement coverage. Capture
 does not supply those missing observations, a laboratory clock or a
 unique microscopic law.
 
-The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#post-transition-foundation-review)
+The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#critical-parent-interaction-admission)
 owns the single next gate and its complete-law scope. Endpoint capture
 and the local transition distinguish retained identity from law-dependent
 registration. They do not select nature's law, globally classify the
 intermediate models, admit their sources or supply autonomous occurrence.
+
+<a id="post-transition-dynamics-decision"></a>
+### Priority after a soft collective mode appears
+
+The stationary transition leaves a specific dynamical question: what
+governs the slow registration, and which part of a complete initial state
+sets its subsequent motion? Its answer would connect constitutive
+sensitivity to collective relaxation and predictive state without
+introducing a new microscopic law. Eliminating stationary host shape
+does not prove that the same graph is invariant under the two-row flow.
+
+This is distinct from two already resolved questions. The
+[constituent-memory result](nodal/ORGANIZED_CONSTITUENT_MEMORY.md#organized-constituent-memory-result)
+excludes general closure by means or instantaneous current corrections
+on the earlier five-child model. The
+[controlled slow-phase theorem](nodal/SINE_FORM_PHASE_REDUCTION.md#sine-controlled-slow-phase)
+retains form initialization and proves finite-horizon errors at fixed
+support as a different constitutive ratio decreases. Neither supplies
+the new critical registration's mobility, local full-state projection
+or relaxation at fixed positive weak contact. Their methods transfer;
+their coefficients and error bounds do not.
+
+The [repeated-composition theorem](nodal/REPEATED_ORGANIZED_COMPOSITION.md)
+already retains child-to-port association in one finite parent interaction.
+That boundary requirement survives a new reduction: a scalar isolated-mode
+description cannot inherit another support's interaction certificate merely
+because both objects are composed of C9 children.
+
+| Obligation | Existing conclusion and genuinely missing premise |
+| --- | --- |
+| Independent law justification or observation | Compatibility, information cost and acquired outcomes do not select a unique law. A new independent restriction or jointly admitted preparation, clock and physical readout is needed; the scoped electrical and recovery obstructions remain valid. |
+| Autonomous preparation and contact occurrence | Event admissibility, passivity and assembly work do not select occurrence. Progress requires a named access, timing, reset or reservoir mechanism with its own justification; the pitchfork supplies none. |
+| Sufficient parent dynamics | The full critical tangent has one center direction and stable remaining directions. Its local invariant reduction now derives original-clock drift and full-state initialization. A new marked interaction still needs its own retained means, boundary projection and identity domain. |
+
+The [local reduction](nodal/ORGANIZED_CONSTITUTIVE_TRANSITION.md#constitutive-transition-local-dynamics)
+closes the selected consequence: inherited mobility and algebraic critical
+recovery follow from the complete law, with a strong-stable exception.
+Equal initial phases can approach from opposite sides because the center
+initialization also consumes form. This rules out resetting that initial
+coordinate to the observed registration alone.
+
+That result does not authorize arbitrary new contacts, operator descent,
+intermediate-law acquisition or an eta-uniform reduced solver. A concrete
+marked interaction now gives the next reason to test its retained state;
+a new error expansion alone would not do so. The
+[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#critical-parent-interaction-admission)
+owns that single bounded task and its support; this comparison introduces
+no parallel campaigns.
 
 ### Cross-channel foundation audit
 
