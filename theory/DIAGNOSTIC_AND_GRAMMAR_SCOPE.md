@@ -1057,7 +1057,7 @@ and the prospective protocol belong only to the
 | Question | What the existing evidence permits | Missing admission |
 | --- | --- | --- |
 | Independent constitutive justification | The two supplied laws form the retained identities and are mathematically distinguishable; the information minimum constrains a description of a law | An independently justified restriction or a complete physical observation. Matching targets, dissipation, symmetry, onset order or operator labels does not select a law |
-| Continued-contact maintenance | The original unit-strength sine law has full-state stationary acceptance and restricted instability theorems. The separately supplied [weak-contact law](nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md) admits source retention and classifies its low-energy limits as five minima and five saddles | Unit-strength nonseparable feasibility remains open. Under weak contact, every actual origin circle has exceptional saddle capture; selecting an attracting destination requires a source-specific basin certificate |
+| Continued-contact maintenance | The original unit-strength sine law has full-state stationary acceptance and restricted instability theorems. The separately supplied [weak-contact law](nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md#weak-contact-source-basin) now certifies actual-source capture by strict minima on five explicit donor-origin intervals at fixed eta=1e-5, with every original uncertainty retained | Unit-strength nonseparable feasibility remains open. Weak-contact gaps retain saddle-converging origins and otherwise unclassified destinations. Neither selected contact strength nor capture justifies the complete law or its event occurrence |
 | Independent physical property | Collective measurement maps remain admissible in principle; existing electrical comparisons expose explicit failures | A joint certificate of independently prepared state, complete loaded law/support, input and clock calibration, and observation errors, obtained without the reserved response |
 | Additional collective coordinates | Constituent memory already derives quadratic feedback and nonclosure; compression already supplies a controlled finite prediction | A named missing predictive capability. Another covariance representation alone closes none of the preceding gaps |
 
@@ -1065,9 +1065,10 @@ The review's stationary target question concerns a **stable organization
 in the original complete marked class under the original unit-strength
 law**. Its unresolved status does not obstruct every supplied contact law:
 the weighted comparison has its own source-to-target obligations. The
-[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#weak-contact-source-basin-admission)
+[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#weak-contact-constitutive-registration)
 selects the next dependency. Identity retention alone need not approach
-a stable point.
+a stable point; the separate basin theorem establishes that stronger
+conclusion for its declared source intervals and strength.
 The ontology distinguishes formation, finite interaction and
 [maintenance](EMERGENT_ONTOLOGY.md#generative-bound-organization); the
 finite-interaction theorems alone do not settle that last obligation.
@@ -1204,6 +1205,65 @@ would add an occurrence law; the
 does not derive that law from passivity or desired retention. No source,
 trajectory, stationary search, physical record or frozen producer was
 evaluated in this review.
+
+<a id="post-capture-foundation-decision"></a>
+### What source-to-attractor capture changes
+
+The [actual-source basin theorem](nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md#weak-contact-source-basin)
+closes a specific generative dependency: the acquired and observed host,
+joined to its independently prepared donor at fixed eta=1e-5, reaches a
+specified strict relative minimum on five declared origin intervals.
+The conclusion retains the full fine state and original errors. It is
+stronger than stationary existence, finite retention or mean-only
+attraction. The [ontology](EMERGENT_ONTOLOGY.md#generative-bound-organization)
+still distinguishes this conditional organization from physical binding,
+autonomous support formation and identification as a material constituent.
+
+The five target labels describe symmetry-related relative registrations.
+Their multiplicity is not a species count. Graph symmetry constrains the
+allowed reduced torque, but does not by itself fix its nonzero harmonics,
+sign or stable zeros. The sine proof uses its supplied potential in host
+shape elimination, the fifth-order restoring coefficient, the uniform
+remainder and source transport. Those premises cannot be removed by
+calling the resulting registration a property of topology alone.
+
+This makes constitutive robustness the most direct new foundation test.
+The [retained harmonic alternative](nodal/ORGANIZED_ALTERNATIVE_CONTACT.md#organized-alternative-contact)
+already has own-law preparation and finite interaction results. It is a
+declared counterlaw with the same primitive domains, reciprocal support
+and loss structure, rather than a newly fitted explanation. Whether it
+retains the sine law's five attracting registrations under the same weak
+contact is unresolved. Its old source and finite-response certificates
+do not settle that stationary question or transfer the sine source basin.
+
+The first discriminating step is an own-law stationary and full-state
+curvature comparison, including the collective relative-origin direction
+and every fine phase direction. It can distinguish a structure-imposed
+target geometry from a law-dependent one before paying for another
+trajectory or observation protocol. A leading Fourier term alone is
+insufficient: the actual stationary domain and remainder must be admitted.
+Matching a carrier or tangent elsewhere does not answer this comparison.
+
+The alternative priorities retain their existing boundaries. Narrowing
+basin gaps or enlarging eta refines the same conditional construction
+without yet distinguishing an independent premise. The original
+unit-strength stationary problem concerns a different supplied law.
+[Assembly work](nodal/ORGANIZED_ASSEMBLY_WORK.md) and
+[event admission](nodal/RELATIONAL_SUPPORT_EVENTS.md#support-event-premise-admission)
+already explain why a permitted contact is not an occurrence law; another
+proof of that distinction would not classify the maintained organization.
+The [physical review](research/ORGANIZED_RECOVERY_OBSERVATION.md#recovery-operational-admission)
+still lacks independent preparation and measurement coverage. Capture
+does not supply those missing observations, a laboratory clock or a
+unique microscopic law.
+
+The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#weak-contact-constitutive-registration)
+owns the single next gate and its complete-law scope. A changed stationary
+geometry would establish constitutive dependence within the retained
+comparison; a shared geometry would establish conditional robustness for
+those two laws. Neither outcome would select nature's law, classify an
+unexamined constitutive family or prove actual-source capture under the
+alternative.
 
 ### Cross-channel foundation audit
 

@@ -150,11 +150,17 @@ classifies its entire permitted low-energy sector: exactly five attracting
 equilibria and five index-one saddles, modulo common rotation. For each
 fixed actual residual member, at least one supplied donor origin converges
 to a saddle. The continuously prepared origin circle cannot be covered
-by open attractive basins. This does not locate the exceptional origins
-or identify the destination of a prescribed source. The next dependency
-is a [source-specific basin certificate](#weak-contact-source-basin-admission),
-retaining transient fine feedback. Unit-strength classification remains
-unresolved and deferred; no numerical campaign is admitted.
+by open attractive basins. The subsequent
+[source-basin certificate](#weak-contact-source-basin-admission) now selects
+the attracting destination on five explicit donor-origin intervals of
+half-width `3/5`, at fixed `eta=1e-5`, retaining every original uncertainty
+and the complete observation history. Each intervening gap contains at
+least one saddle-converging origin; the remaining destinations in those
+gaps are unclassified. The [post-capture foundation review](#post-capture-foundation-review)
+selects the next dependency: [constitutive robustness of the attracting
+registrations](#weak-contact-constitutive-registration) under the existing
+harmonic alternative. Unit-strength classification remains unresolved
+and deferred; no numerical campaign is admitted.
 
 No 45-node acquisition, physical readout or source certificate transfers to
 the supplied positive-r matrix law by default. Earlier frozen protocols,
@@ -171,8 +177,10 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Pending analytical dependency | [Weak-contact source basin](#weak-contact-source-basin-admission): certify an explicitly delimited original-source class reaching an attracting target, or prove the proposed source restriction insufficient. Retain the original preparation, transient fine feedback and the unavoidable exceptional origins; no numerical campaign |
-| Closed collective classification and all-origin obstruction | [Weak-contact collective selection](#weak-contact-collective-selection): exactly five attracting and five index-one saddle targets in the source-accessible low-energy sector. Every fixed actual residual member has at least one donor origin reaching a saddle; its location and source-specific basin remain unclassified |
+| Pending analytical constitutive comparison | [Weak-contact attracting registrations](#weak-contact-constitutive-registration): determine whether the existing harmonic alternative preserves the sine law's five stable registrations on the same weighted support, using own-law stationary and full-state curvature bounds; no source-capture transfer or numerical campaign |
+| Closed post-capture foundation review | [After source-to-attractor capture](#post-capture-foundation-review): conditional maintenance now reaches specified attractors; the next discriminator tests dependence of their geometry on the supplied constitutive law. Autonomous occurrence and physical identification remain separate |
+| Closed actual-source basin admission | [Weak-contact source basin](#weak-contact-source-basin-admission): at fixed `eta=1e-5`, five donor-origin intervals of half-width `3/5` select their strict relative minima for all original source errors and observation histories. Every intervening gap contains a saddle-converging origin; other gap destinations remain unclassified |
+| Closed collective classification and all-origin obstruction | [Weak-contact collective selection](#weak-contact-collective-selection): exactly five attracting and five index-one saddle targets in the source-accessible low-energy sector. Every fixed actual residual member has at least one donor origin reaching a saddle; the later source-basin theorem places at least one saddle-converging origin in each of five separate gaps at fixed strength |
 | Closed whole-source fine relaxation | [Exponential approach to collective geometry](#weak-contact-fine-relaxation-admission): all internal form and phase residuals decay, the wheel-current remainder has an exponential tail, and every actual-source limit is a carrier. Neither transient exact closure nor stable-origin selection follows |
 | Deferred model-specific classification | [Unit-strength stationary maintenance](#contact-maintenance-certificate-admission): disconnected nonseparable stable targets remain unresolved. Reopen for a global stationary mechanism or a named downstream claim requiring eta=1; the admitted weak-contact organization does not depend on resolving this benchmark |
 | Closed exact stationary continuation | [Collective fold before winding loss](#weak-contact-stationary-continuation): a branch stable in all 53 relative phase directions ends at eta between 0.07 and 0.08, retaining the complete marked identity; no nearby fine or reflection-breaking stationary escape. Actual source capture at these larger strengths is not established |
@@ -324,7 +332,11 @@ and [reflection](../nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md)
 obstructions retain their own sectors. The
 [finite stationary search](#organized-contact-stationary-search) found no
 target certificate and proved no global exclusion; source-compatible
-stationary geometry remains open. Finite interaction and its
+stationary geometry at unit strength remains open. The separate
+[weighted-law source certificate](../nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md#weak-contact-source-basin)
+now connects the actual preparation to strict attracting targets at
+`eta=1e-5`, uniformly over its original errors on five declared origin
+intervals. Finite interaction and its
 [joint resource domain](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result)
 do not require that indefinite maintenance result. Repeating local starts
 would not resolve the missing certificate mechanism.
@@ -361,7 +373,7 @@ response has not been derived from the earlier acquired constituents.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
-| Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Stationary target classification remains necessary.** Every finite zero-form-mean trajectory of the fixed unforced law converges to one equilibrium; continued nonstationary motion cannot supply an alternative. Finite common-host exclusions persist and the original outer-one sources eventually remain outside their initial tube. Stable targets and winding fate remain unresolved; no search is active |
+| Composite identity under interaction | Retain complete-law, marked-identity and actual-source hypotheses when claiming maintained collective organization | **Closed weak-contact source-to-attractor case.** Five declared origin intervals reach strict minima at fixed `eta=1e-5`, with all source errors retained. Exceptional saddle origins remain unavoidable. Unit-strength nonseparable classification is deferred; neither that benchmark nor complete classification of the weak-contact gaps blocks the admitted conditional organization |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
 | Sufficient collective state and inherited response | Construct and certify a forecast from a joint finite noisy record without known collective initialization | **Closed operational software case.** The whole-record bound and one candidate forecast are certified; arbitrary-record convergence and physical measurement remain unproved |
@@ -407,8 +419,11 @@ but does not establish an exact interaction constraint. The closed dynamical
 and preparation theorems now distinguish exact reflection protection,
 law-dependent onset and quadratic hidden-state leakage. The
 [foundation decision](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#post-contact-foundation-decision)
-explains why further response refinement would leave the maintenance,
-independent-law and physical-admission premises unresolved.
+explains why further finite-response refinement alone would not settle
+maintenance, independent-law or physical admission. The weak-contact basin
+certificate now closes one actual-source maintenance case. The
+[post-capture review](#post-capture-foundation-review) selects an own-law
+stationary comparison before another response or contact-strength calculation.
 
 <a id="organized-joint-preparation-resources"></a>
 ### Closed joint preparation-resource admission
@@ -942,8 +957,9 @@ a target or a global exclusion. No execution campaign is ready. The missing
 admission is a joint stationary/curvature certificate covering that class
 or a constructed stable target. The changed weighted law below supplies
 maintenance and stable targets within the same marked class; its
-[source-to-target dependency](#weak-contact-source-basin-admission) now sets
-priority without closing the unit-strength question.
+[source-to-target result](#weak-contact-source-basin-admission) closes that
+dependency on five declared origin intervals without closing the
+unit-strength question.
 
 <a id="weak-contact-maintenance-admission"></a>
 ### Closed analytical comparison: contact strength and retained identity
@@ -1068,35 +1084,90 @@ It leaves the finite hidden-state feedback intact and evaluates no
 trajectory, source producer, origin scan or physical record.
 
 <a id="weak-contact-source-basin-admission"></a>
-### Next analytical gate: an attracting target for a delimited actual source
+### Closed analytical gate: attracting targets for the actual source
 
-**Question.** Can an independently specified nonempty class of the original
-prepared sources be certified to reach one of the five attracting targets?
-Retain fixed `0<eta<=1e-5`, both complete weighted rows, the same clock,
-actual acquisition and observation history, and every uncertainty allowed
-within the stated subfamily. State the donor-origin restriction before
-evaluating its outcome. The full origin circle is excluded by the closed
-gate above; choosing an attractive equilibrium is not a source restriction.
+The [source-basin owner](../nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md#weak-contact-source-basin)
+retains the original acquisition, all twelve source allowances, all 96
+relative error directions and the complete sequential observation history.
+At fixed `eta=1e-5`, each donor-origin interval of half-width `3/5` centered
+at `2*k*pi/5` reaches the strict minimum with relative mean phase
+`t=-2*k*pi/5`, modulo common rotation. These are symmetry-related labeled
+registrations of the same organization, not distinct material species.
 
-Use the exact averaged wheel equations with their decaying fine-state
-remainder. A positive conclusion requires actual source inclusion in a
-basin, with its accumulated transient effect retained. Alternatively,
-prove why the proposed source restriction still includes saddle capture
-or lacks sufficient information for a uniform verdict. Neither the
-existence of five minima nor a measure statement in the full ambient
-state space supplies transversality of the original prepared family.
-Matching an ideal reflected source or dropping a vanishing forcing does
-not transfer its destination to the actual observation endpoint.
+The proof keeps the actual fine remainder and moving host shape. An
+all-time source-energy estimate admits the required normal curvature;
+coupled form/shape decay bounds limit the total adverse transient impulse.
+An inward-torque barrier then prevents passage to the neighboring saddle.
+No source is replaced by a stationary or exactly reflected preparation.
+This connects the reached organization to a specified attracting target,
+not merely to the existence of a stable equilibrium.
 
-This is the selected generative dependency: connect acquired organizations
-to an attracting collective target under an already admitted complete law.
-The supplied contact event, its work and eta are unchanged; no occurrence
-rule or collective operator is inferred from the continuous reduction.
-Unit-strength classification remains deferred with its own scope below.
-Only analytical work and static proof controls are admitted. Any later
-trajectory or numerical certificate requires a frozen source/domain,
-budget and acceptance protocol here. No origin scan, contact-strength
-sweep, source replay or physical-response evaluation is active.
+For every fixed original residual member, each of the five intervening
+gaps contains at least one saddle-converging donor origin. Other gap
+destinations, the exact exceptional count and its measure remain open.
+The five certified intervals cover angular length six, not a probability
+without a supplied distribution. The basin bound is restricted to the
+declared strength; it does not extend capture to the stationary fold or
+the original unit-strength law. No trajectory, origin scan, source replay
+or physical response was evaluated. Contact, its work and the complete
+law remain supplied; no event selector or physical constituent follows.
+
+<a id="post-capture-foundation-review"></a>
+### Closed bounded review: foundations after actual-source capture
+
+The [decision owner](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#post-capture-foundation-decision)
+uses the ontology, complete-law contracts and retained proof owners to
+separate actual-source attraction from supplied contact, independent law
+selection and physical identification. The five symmetry-related labels
+are not five species. The selected question tests which parts of that
+maintained geometry depend on the sine constitutive law, using the already
+retained harmonic counterlaw rather than inventing a new alternative.
+
+Own-law stationary geometry and full-state stability are the first missing
+admissions. An actual-source basin under the alternative remains a later,
+separate obligation even if its stationary targets coincide. The review
+does not reopen physical feasibility, repeat known support-occurrence
+obstructions, optimize source precision or classify the remaining sine
+basin gaps. Unit-strength stationary classification stays deferred.
+
+<a id="weak-contact-constitutive-registration"></a>
+### Next analytical gate: constitutive dependence of collective registration
+
+**Question.** Does the existing deformation-one harmonic law preserve the
+five attracting relative registrations of the sine organization under the
+same weak weighted contact, or does its own stationary geometry differ?
+Use the [complete alternative](../nodal/ORGANIZED_ALTERNATIVE_CONTACT.md)
+with `j_1(a)=sin(a)+(sin(9*a)-sin(18*a)/2)/2187` and its stated potential.
+Keep the 54 labeled nodes, old edge weights one, spoke weights
+`eta=1e-5`, held unit capacities, quarter factors, tau clock and zero
+total form leaf. Both the Laplacian and nonlinear edge current consume
+the same weights. Retain all signed forms and circular phases, the
+original complete old marked class and common-phase rotation symmetry;
+there is no later input, event, contact selector or installed runtime law.
+
+Start from the uniform internal C9 carrier, but re-admit its stationary
+host-shape reduction and a declared surrounding full-state domain under
+the alternative potential. Establish its own regularity, current balance
+and relative-Hessian signs, including all 48 internal directions and the
+five collective directions. Use the existing sine classification as a
+comparison, not as an alternative-law curvature or remainder bound.
+Symmetry, a leading harmonic or stability restricted to the carrier alone
+cannot establish the requested full-state result.
+
+Acceptance is an own-law certificate that the five sine registrations
+remain attracting in the declared domain, or a rigorously delimited
+change/obstruction with the resulting stationary and stability scope.
+Re-admit nonlinear remainders before interpreting a formal expansion.
+The original alternative preparation and observation history remain
+available through their owners, but no source-to-target destination is
+claimed by this stationary gate. A later capture statement must carry
+those actual sources, their work and every retained error under this law.
+
+Only analytical work and static proof controls are active. No deformation
+or contact-strength sweep, source replay, trajectory, gap-location scan
+or physical response is admitted. A shared target would show robustness
+for this pair, and a different target would show constitutive dependence;
+neither outcome selects a unique fundamental law or a physical species.
 
 <a id="contact-maintenance-certificate-admission"></a>
 ### Closed complete-flow convergence; unit-strength classification deferred

@@ -1025,3 +1025,188 @@ def test_weak_contact_fine_capture_mean_rows_keep_nonzero_residual(
     auxiliary = ((mixed.T * mixed)[0] + gamma**2 * (z.T * z)[0]) / 2
     assert residual_norm <= fine_edge_square / 9 <= mp.mpf(2) / 3 * q_squared
     assert residual_norm <= 8 * auxiliary / 3
+
+
+@pytest.mark.parametrize("origin_index", (0, 2))
+def test_weak_contact_source_basin_relative_rows_retain_fine_torque(
+    mp, bounded_fine_state, origin_index
+):
+    """Full weighted edges fix the donor sign and the corrected-origin row."""
+    state, tolerance = bounded_fine_state, mp.mpf("1e-85")
+    eta, gamma = state["eta"], state["gamma"]
+    phase, form = mp.matrix(state["phase"]), state["form"]
+    beta = mp.pi / 7 + 2 * origin_index * mp.pi / 5
+    for slot in range(9):
+        phase[45 + slot] += 2 * origin_index * mp.pi / 5
+
+    current, form_gradient = mp.zeros(54, 1), mp.zeros(54, 1)
+    for left, right, weight in state["edges"]:
+        exchange = weight * mp.sin(phase[right] - phase[left])
+        current[left] += exchange
+        current[right] -= exchange
+        form_exchange = weight * (form[left] - form[right])
+        form_gradient[left] += form_exchange
+        form_gradient[right] -= form_exchange
+    form_rate = (-form_gradient + gamma * current) / 4
+    phase_rate = gamma * form_gradient / 4
+
+    def host_minus_donor(values):
+        return sum(values[:45]) / 45 - sum(values[45:]) / 9
+
+    origin = host_minus_donor(phase)
+    chi = gamma * host_minus_donor(form)
+    origin_rate = host_minus_donor(phase_rate)
+    chi_rate = gamma * host_minus_donor(form_rate)
+    donor_torque = (
+        eta
+        * sum(
+            mp.sin(phase[9 * child + slot] - phase[45 + slot])
+            for child in range(5)
+            for slot in range(9)
+        )
+        / 9
+    )
+    assert abs(origin + beta) < tolerance
+    assert abs(sum(current[45:]) / 9 - donor_torque) < tolerance
+    assert abs(origin_rate - 3 * eta * chi / 2) < tolerance
+    assert (
+        abs(chi_rate + 3 * eta * chi / 2 + 3 * gamma**2 * donor_torque / 10) < tolerance
+    )
+    assert abs(origin_rate + chi_rate + 3 * gamma**2 * donor_torque / 10) < tolerance
+
+    # The five uniform host origins cancel the mean-only spoke torque. The
+    # supplied, nonuniform fine arrays do not: dropping them changes y'.
+    means = tuple(sum(phase[9 * child : 9 * child + 9]) / 9 for child in range(6))
+    mean_torque = eta * sum(mp.sin(means[child] - means[5]) for child in range(5))
+    remainder = donor_torque - mean_torque
+    fine_square = sum(
+        (state["q"][9 * child + slot] - state["q"][45 + slot]) ** 2
+        for child in range(5)
+        for slot in range(9)
+    )
+    q_squared = (state["q"].T * state["q"])[0]
+    assert abs(mean_torque) < tolerance
+    assert abs(remainder) > mp.mpf("1e-14")
+    assert abs(remainder) <= eta * fine_square / 18 <= eta * q_squared / 3
+    assert abs(origin_rate + chi_rate) > gamma**2 * mp.mpf("1e-15")
+
+
+def test_weak_contact_source_basin_moving_shape_lyapunov_identity():
+    """Differentiate the quadratic with moving u and an independent fine row."""
+    gamma, origin_rate = sp.symbols("gamma origin_rate", real=True)
+    error = sp.Matrix(sp.symbols("e0:2", real=True))
+    form = sp.Matrix(sp.symbols("p0:2", real=True))
+    gradient = sp.Matrix(sp.symbols("g0:2", real=True))
+    shape_derivative = sp.Matrix(sp.symbols("u0:2", real=True))
+    remainder = sp.Matrix(sp.symbols("r0:2", real=True))
+    diagonal, coupling = sp.symbols("diagonal coupling", real=True)
+    laplacian = sp.Matrix([[diagonal, coupling], [coupling, diagonal]])
+    error_rate = gamma * laplacian * form / 4 - shape_derivative * origin_rate
+    form_rate = (-laplacian * form - gamma * gradient + gamma * remainder) / 4
+    mixed = error + gamma * form
+    quadratic = ((mixed.T * mixed)[0] + gamma**2 * (form.T * form)[0]) / 2
+    differentiated = sum(
+        sp.diff(quadratic, variable) * rate
+        for variable, rate in zip(
+            tuple(error) + tuple(form), tuple(error_rate) + tuple(form_rate)
+        )
+    )
+    expected = (
+        -(gamma**2)
+        * (
+            (error.T * gradient)[0]
+            + (form.T * laplacian * form)[0]
+            + 2 * gamma * (form.T * gradient)[0]
+        )
+        / 4
+        - (mixed.T * shape_derivative)[0] * origin_rate
+        + gamma**2 * ((error + 2 * gamma * form).T * remainder)[0] / 4
+    )
+    assert sp.expand(differentiated - expected) == 0
+    # Both omitted terms are genuine polynomial terms, not a fixed-shape
+    # closure or a silently unforced approximation.
+    assert sp.diff(differentiated, shape_derivative[0]) != 0
+    assert sp.diff(differentiated, remainder[0]) != 0
+
+
+def test_weak_contact_source_basin_coarse_source_and_tracking_barrier():
+    """Derive the fixed-strength constants from source, Young and mean bounds."""
+    eta, gamma_upper = Q(1, 100000), Q(1, 3000)
+    duration, initial_form, zeta = Q(1, 5000), Q(1, 100), Q(1, 10**6)
+    form_bound = initial_form + gamma_upper * duration
+    phase_drift = 2 * gamma_upper * form_bound * duration
+    phase_fine = 2 * (zeta + phase_drift)
+    form_fine = 2 * form_bound
+    assert phase_fine < Q(1, 400000)
+    assert gamma_upper * form_fine < Q(7, 10**6)
+    source_fine = (
+        54
+        * ((phase_fine + gamma_upper * form_fine) ** 2 + (gamma_upper * form_fine) ** 2)
+        / 2
+    )
+    fine_bound, shape_bound = Q(1, 10**8), Q(1, 5)
+    assert source_fine < fine_bound
+    # Jensen and the host-shape Hessian, not a substituted equilibrium,
+    # control h; p uses the conserved zero initial host form mean.
+    host_shape_squared = 2 * Q(1, 750) / Q(1, 10)
+    assert host_shape_squared < Q(1, 6) ** 2
+    assert 5 * (Q(46, 15) * eta) ** 2 < (7 * eta) ** 2
+    assert 5 * form_bound**2 < Q(1, 40) ** 2
+    assert Q(1, 6) + 7 * eta + gamma_upper / 40 < shape_bound
+
+    coercivity, gradient_norm = Q(9, 100), Q(5)
+    assert Q(1, 10) - eta > coercivity
+    assert 4 + eta < gradient_norm
+    assert 5 < (25 * coercivity) ** 2
+    assert 1 - 2 * gradient_norm**2 * gamma_upper**2 / coercivity > coercivity / 2
+    shape_decay = coercivity / 16
+    moving_coefficient = Q(28)
+    assert (25 * Q(3, 2)) ** 2 < 2 * moving_coefficient**2
+    mean_gain, mean_damping, torque_error = Q(3, 10), Q(3, 2), Q(5)
+    assert 4 * 5 < torque_error**2
+    weight, decay, fine_decay = Q(20), Q(1, 200), Q(19, 800)
+    torque_bound, fine_torque, fine_forcing = Q(1000), Q(4, 3), Q(8, 3)
+    # The positive root of r^2-r-1 is below 13/8. Combine its fifth-order
+    # coefficient with the already certified Fourier-tail allowance.
+    assert Q(13, 8) ** 2 - Q(13, 8) - 1 > 0
+    assert 5 * Q(13, 8) ** 10 + 200 < torque_bound
+    assert shape_decay - weight * mean_gain * torque_error * eta**2 > decay
+    chi_coercivity = weight * mean_damping - moving_coefficient
+    assert chi_coercivity * eta > weight * decay * gamma_upper**2
+    combined_fine = fine_forcing + weight * mean_gain * fine_torque * eta**2
+    assert combined_fine < 3
+    plateau = weight * mean_gain * torque_bound * eta**6 / decay
+    transient_convolution = Q(3) / (fine_decay - decay)
+    assert transient_convolution == 160
+    transient = shape_bound + transient_convolution * fine_bound
+    assert transient < Q(21, 100)
+    chi_bound = (
+        mean_gain
+        * gamma_upper**2
+        * (
+            torque_bound * eta**4
+            + torque_error * (transient + plateau)
+            + fine_torque * fine_bound
+        )
+        / mean_damping
+    )
+    assert chi_bound < gamma_upper**2 / 4 < Q(1, 10**6)
+
+    impulse = (
+        mean_gain
+        * eta
+        * (torque_error * transient / decay + fine_torque * fine_bound / fine_decay)
+    )
+    assert impulse < Q(1, 1000)
+    inner, outer, chi_margin = Q(3, 5), Q(5, 8), Q(1, 10**6)
+    pi_lower, pi_upper = Q(157, 50), Q(22, 7)
+    sine_argument_lower = pi_lower - 5 * (outer + chi_margin)
+    sine_argument_upper = pi_upper - 5 * (inner - chi_margin)
+    assert 0 < sine_argument_lower < sine_argument_upper < 1
+    sine_lower = Q(5, 6) * sine_argument_lower
+    assert sine_lower > Q(1, 100)
+    restoring_lower = (600 - 200) * eta**5 * sine_lower
+    permanent_error = torque_error * eta * plateau
+    assert permanent_error < 4 * eta**5 < restoring_lower
+    assert impulse < outer - inner
+    assert outer + chi_margin < pi_lower / 5

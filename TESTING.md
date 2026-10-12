@@ -1109,7 +1109,19 @@ The [prepared-circle obstruction](theory/nodal/ORGANIZED_WEAK_CONTACT_MAINTENANC
 uses uniqueness, continuous dependence, open basins and compactness;
 no finite angle list can test its universal conclusion. Preserve the
 distinction between an exceptional source origin whose existence is
-proved and a specified source destination that has not been classified.
+proved and the independently certified source destinations below.
+
+The [actual-source basin certificate](theory/nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md#weak-contact-source-basin)
+uses the same module. Independent weighted-edge means check the relative
+phase/form rows and the corrected-origin derivative, including the donor
+fine-current remainder. Static Lyapunov and exact rational controls check
+the moving-shape comparison, source norms, accumulated transient impulse
+and inward-torque margins at fixed `eta=1e-5`. Preserve the opposite sign
+between donor preparation and selected relative-origin label. These are
+proof controls, not numerical basin samples or a source replay. The proof
+owns capture on all five declared intervals and the existence of at least
+one saddle-converging origin in each gap; neither exact exceptional counts
+nor a basin probability follows.
 
 For [reflected stationary contact identity](theory/nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md),
 select `tests/physics/test_organized_contact_reflection.py` with contact

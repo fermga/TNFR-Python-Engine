@@ -20,6 +20,10 @@ explicitly bounded remainder. The original all-origin source family
 cannot, however, consist entirely of preparations converging to locally
 asymptotically stable equilibria: its retained relative-phase circle
 forces at least one exceptional origin for every fixed source member.
+At the fixed strength eta=1/100000, a separate transient estimate
+certifies five explicit donor-origin intervals selecting the five
+attractive relative registrations, while retaining every original
+source error and the complete observation history.
 
 | Item | Declared model and scope |
 | --- | --- |
@@ -32,6 +36,7 @@ forces at least one exceptional origin for every fixed source member.
 | Marked identity | Six internal winding-one cycles, nine old rim winding-one cycles, and the original 32 independent zero mixed host periods; new spoke loops receive no prescribed winding |
 | Generic entry | The initial old edges lie in their original acute fixed-branch cell and the full weighted storage is below the barrier in section 2 |
 | Source interval | 0<eta<=1/100000, with all twelve original source allowances, all 96 relative directions and every supplied donor origin beta |
+| Certified source basins | At fixed eta=1/100000, the five donor-origin intervals of half-width 3/5 centered at 2*k*pi/5 select the corresponding strict relative minima; the intervening gaps are not completely classified |
 | Events and execution | The contact event changes weights/support only, with coordinates unchanged. No later forcing or event is supplied. This is a detached complete-law theorem, not native operator admission or an occurrence rule |
 | Evidence boundary | Analytical inequalities and static algebraic controls; no stationary search, trajectory, source-producer replay, response fit or new physical record |
 
@@ -1277,9 +1282,322 @@ A prospective selection statement must consequently allow exceptional
 origins or supply an independent restriction to a certified basin.
 This obstruction does not determine their number or measure, certify
 any specified beta's destination, or establish that all remaining
-origins reach the known stable branch.
+origins reach the known stable branch. The separate
+[source-basin certificate](#weak-contact-source-basin) below supplies
+explicit sufficient origin intervals at one fixed contact strength.
+Its intervening gaps remain unclassified beyond the existence of
+exceptional origins in each gap.
 
-## 8. Meaning and remaining boundary
+<a id="weak-contact-source-basin"></a>
+## 8. Explicit acquired-source basins at a fixed weak contact strength
+
+Fix eta=1/100000 in both complete evolution rows (1), with the original
+held capacities, clock, acquisition, observation word and unchanged
+contacted coordinates. Retain all twelve original allowances and all
+96 relative error directions. The following is an analytical source
+selection theorem; no trajectory, source producer or reserved response
+is evaluated. In this section t denotes the relative origin used in
+(33b), while tau remains the evolution clock.
+
+**Source-basin certificate.** For k=0,...,4, every actual preparation
+whose donor origin belongs to the circular interval
+
+\[
+ \left|\beta-\frac{2k\pi}{5}\right|\le\frac35
+ \quad\Longrightarrow\quad
+ t(\infty)=-\frac{2k\pi}{5}\pmod{2\pi}
+ \tag{36}
+\]
+
+converges to the corresponding strict relative minimum from section
+6.5. The inequality uses the lift of beta nearest the displayed center.
+All old marked identity survives as already proved in section 5. The
+conserved full lifted mean fixes the remaining common phase rotation.
+These five symmetry-related labeled registrations are not five species
+or different physical objects. The source is neither reset to a
+stationary shape nor made exactly reflection symmetric.
+
+### 8.1 Uniform shape regularity holds along the actual trajectory
+
+Use the exact child means in (17b), and let a bar with subscript H
+denote the average over the five host children. With
+\(b_c=2\pi(c-2)/5\), define
+
+\[
+ \begin{split}
+ t&=\overline\Phi_H-\Phi_D,&
+ h_c&=\Phi_c-\overline\Phi_H-b_c,&
+ p_c&=a_c-\overline a_H,\\
+ K&=L_5+\eta I\quad\hbox{on the zero-mean host space},&
+ e&=h-u(t,\eta),&
+ \chi&=\gamma(\overline a_H-a_D).
+ \end{split}
+ \tag{37}
+\]
+
+Here u is exactly the projected stationary shape constructed in
+(33c)--(33e). The host coordinates h and p have zero mean. Since the
+actual nine rim cycles retain their acute compatible branches, their
+averaged gaps are also acute winding-one gaps. Jensen across slots,
+the six internal cycle lower bounds and nonnegative form and spoke
+storage give, at every future time,
+
+\[
+ V_{\rm rim}(\Phi_H)-V_5
+ \le\frac{H_\eta-V_*}{9}<\frac1{750}.
+\]
+
+Every averaged rim gap is consequently in (0,29/20), by the same
+constrained cycle inequality (33j). The constructed u also has its
+rim gaps in that interval. The straight compatible segment from h to
+u retains those bounds, without requiring that segment itself to lie
+in the full storage sublevel.
+
+Let \(P_H=I-\mathbf1\mathbf1^T/5\), and let g be the projected
+host potential gradient at the actual mean phases. The projected
+gradient at u vanishes. Hence
+
+\[
+ \begin{split}
+ g&=\mathcal A e,&
+ \frac9{100}I&\le\mathcal A\le5I,&
+ I&<K<5I,\\
+ \|u_t(t,\eta)\|_2
+ &\le\frac{\sqrt5\eta}{9/100}<25\eta.
+ \end{split}
+ \tag{38}
+\]
+
+Indeed the segment's host Hessian is bounded below by
+\((1/10)L_5-\eta I>(9/100)I\); its norm is below
+\(\|L_5\|+\eta<5\). Differentiating the projected stationary
+equation gives the last bound, because its partial t derivative is
+\(\eta P_H\cos(t+b+u)\), of norm at most sqrt(5)*eta.
+Thus the regularity estimate applies during the actual transient,
+not merely near its final equilibrium.
+
+### 8.2 The exact mean and shape rows retain the fine-state error
+
+Write \(F_0=\mathcal F(0)\) for the fine Lyapunov function in (17e)
+and retain \(\rho=19\gamma^2/800\). Let r be the actual wheel
+remainder in (17h), and set \(r_H^0=P_Hr_H\). The donor row admits
+the sharper channel-specific bound
+
+\[
+ |r_D|\le\frac\eta{18}\sum_{c,j}(q_{c,j}-q_{D,j})^2
+ \le\frac\eta3\|q\|^2
+ \le\frac43\eta F_0e^{-\rho\tau}.
+\]
+
+The first step uses cancellation of the linear fine gap and the
+quadratic sine remainder; the second uses the star Laplacian norm six.
+In particular this donor forcing carries eta. It must not be replaced
+by an unweighted global remainder.
+
+The actual donor current is \(T(t,\eta)+\delta\), where T is (33f)
+and
+
+\[
+ \begin{split}
+ \delta&=\eta\sum_c
+  [\sin(t+b_c+h_c)-\sin(t+b_c+u_c)]+r_D,\\
+ t'&=\tfrac32\eta\chi,&
+ \chi'&=-\tfrac32\eta\chi
+              -\tfrac{3\gamma^2}{10}[T(t,\eta)+\delta],\\
+ e'&=\tfrac\gamma4Kp-u_t t',&
+ p'&=-\tfrac14Kp-\tfrac\gamma4g+\tfrac\gamma4r_H^0.
+ \end{split}
+ \tag{39}
+\]
+
+These equations follow by separately averaging the five host rows and
+the donor row, then subtracting the host mean. They retain both full
+evolution rows, the moving shape and the actual fine-state forcing.
+
+Define an auxiliary shape function and a corrected origin by
+
+\[
+ \begin{split}
+ \mathcal E&=\sqrt{\tfrac12\|e+\gamma p\|^2
+                              +\tfrac{\gamma^2}{2}\|p\|^2},&
+ y&=t+\chi,\\
+ \|e\|&\le2\mathcal E,&
+ y'&=-\tfrac{3\gamma^2}{10}[T(t,\eta)+\delta],\\
+ |\delta|&\le5\eta\mathcal E
+                         +\tfrac43\eta F_0e^{-\rho\tau},&
+ \|r_H^0\|&\le\tfrac83F_0e^{-\rho\tau}.
+ \end{split}
+ \tag{40}
+\]
+
+The correction chi is retained state, not a change of the phase
+observation or an assumed instantaneous form relaxation. In the
+derivative of \(\mathcal E^2\), the unforced fixed-shape terms are
+
+\[
+ -\frac{\gamma^2}{4}
+    (e^Tg+p^TKp+2\gamma p^Tg).
+\]
+
+With \(m=9/100\), Young's inequality gives
+\(2\gamma|p^Tg|\le(m/2)\|e\|^2+(50\gamma^2/m)\|p\|^2\).
+Since \(K>I\), \(\gamma<1/3000\) and
+\(\mathcal E^2\le\|e\|^2+\|p\|^2\), these terms give
+\(\mathcal E'\le-9\gamma^2\mathcal E/1600\).
+The additional moving-shape term has magnitude at most
+\(\|e+\gamma p\|\|u_t\||t'|\); (38)--(40) bound its
+contribution to \(\mathcal E'\) by \(28\eta^2|\chi|\).
+The fine forcing contributes at most \(\gamma^2\|r_H^0\|\).
+Consequently, with upper right derivatives at vanishing norms,
+
+\[
+ \begin{split}
+ \mathcal E'&\le-\frac{9\gamma^2}{1600}\mathcal E
+              +28\eta^2|\chi|+\frac83\gamma^2F_0e^{-\rho\tau},\\
+ |\chi|'&\le-\frac32\eta|\chi|
+       +\frac32\gamma^2\eta\mathcal E
+       +300\gamma^2\eta^5
+       +\frac25\gamma^2\eta F_0e^{-\rho\tau}.
+ \end{split}
+ \tag{41}
+\]
+
+Here (33i) gives \(|T|<1000\eta^5\):
+\(600<5\varphi^{10}<800\), with the upper bound following from
+\(\varphi<13/8\), and the torque remainder is below 200.
+
+### 8.3 The original preparation controls the entire transient
+
+The separate host and donor total forms are zero before contact and
+through their independent preparation and observation histories.
+The host phase total is zero; every observation jump has zero total.
+Therefore the actual contacted source has exactly
+
+\[
+ \chi(0)=0,\qquad t(0)=y(0)=-\beta.
+\]
+
+Coarse existing source inclusions already suffice for the needed norm
+bounds. With zeta=1e-6 and m from (12), subtracting each child's mean
+gives \(|q_{c,j}(0)|<2(\zeta+m)<1/400000\).
+Also \(|z_{c,j}(0)|<2B_o<21/1000\), so
+\(|\gamma z_{c,j}(0)|<7/10^6\). The donor's retained bounds are
+smaller. Thus
+
+\[
+ \begin{split}
+ F_0&<27\left[(1/400000+7/10^6)^2+(7/10^6)^2\right]
+          <10^{-8},\\
+ \mathcal E(0)&<\frac15.
+ \end{split}
+ \tag{42}
+\]
+
+For the second inequality, the rim energy bound and its Hessian
+\((1/10)L_5>I/10\) along the segment to the uniform rim give
+\(\|h(0)\|^2<2/75\), hence \(\|h(0)\|<1/6\).
+Schwarz's bound from section 6.5 gives \(\|u(t,\eta)\|<7\eta\).
+The exactly zero host mean form and (12) give
+\(\|p(0)\|<\sqrt5 B_o<1/40\). Substitution in (40), with
+\(\gamma<1/3000\), proves (42). These are bounds on the reached
+source; they impose no new restriction on its original uncertainty.
+
+Set \(\mathcal X=\mathcal E+20\eta|\chi|\) and
+\(\lambda=\gamma^2/200\). At the declared fixed eta,
+\(9/1600-30\eta^2>1/200\),
+\(\eta>\gamma^2/20\), and \(8/3+8\eta^2<3\).
+Equation (41) therefore implies
+
+\[
+ \begin{split}
+ \mathcal X'&\le-\lambda\mathcal X
+              +6000\gamma^2\eta^6+3\gamma^2F_0e^{-\rho\tau},\\
+ \mathcal E(\tau)&\le D e^{-\lambda\tau}+1200000\eta^6,&
+ D&=\mathcal E(0)+160F_0<\frac{21}{100},\\
+ |\chi(\tau)|&\le\gamma^2
+       [D+1200000\eta^6+200\eta^4+(4/15)F_0]
+       <\frac{\gamma^2}{4}<10^{-6}.
+ \end{split}
+ \tag{43}
+\]
+
+The coefficient 160 is exactly
+\(3\gamma^2/(\rho-\lambda)\), and \(\chi(0)=0\) removes any
+initial relative-form term. The last line follows by integrating the
+second inequality in (41) using the uniform bound on \(\mathcal E\).
+This comparison controls the moving shape and accumulated source
+transient. It does not substitute the stationary shape for the actual
+wheel trajectory.
+
+### 8.4 An inward torque prevents passage to a neighboring basin
+
+First consider \(|\beta|\le3/5\). In the upper strip
+\(3/5\le y\le5/8\), (43) gives
+\(2.999995<5t<3.125005\). Put \(v=\pi-5t\).
+The rational bounds \(157/50<\pi<22/7\) give
+\(0.014995<v<1\); therefore
+\(\sin(5t)=\sin v\ge5v/6>1/100\).
+The strictly positive torque quotient (33i) then gives
+\(T(t,\eta)>4\eta^5\). Meanwhile (40) and (43) bound the
+nondecaying part of \(|\delta|\) by
+
+\[
+ 6000000\eta^7=0.0006\eta^5<4\eta^5.
+\]
+
+It cannot reverse the inward torque in this strip. Only the decaying
+part can move y outward there; its entire future adverse displacement
+is bounded by
+
+\[
+ \begin{split}
+ J&=\frac{3\gamma^2}{10}
+       \int_0^\infty
+        [5\eta D e^{-\lambda\tau}
+                   +(4/3)\eta F_0e^{-\rho\tau}]\,d\tau\\
+  &=300\eta D+\frac{320}{19}\eta F_0<\frac1{1000}.
+ \end{split}
+ \tag{44}
+\]
+
+If y first reached 5/8, take its last preceding crossing of 3/5.
+Between those times it stays in the strip, so integrating (40) would
+give \(1/40\le J<1/1000\), a contradiction. The lower strip gives
+the same conclusion with reversed signs, because T is odd. Thus
+
+\[
+ |y(\tau)|<\frac58,\qquad
+ |t(\tau)|<\frac58+10^{-6}<\frac\pi5.
+ \tag{45}
+\]
+
+The complete flow converges by section 4, its fine coordinates vanish
+by section 5.1, and section 6.5 classifies every possible limit. The
+only classified relative origin allowed by (45) is t=0, a strict
+minimum. The period 2*pi/5 of T repeats the same argument about each
+even center. Together with \(y(0)=-\beta\), this proves (36),
+including its destination's minus sign.
+
+The five certified source intervals are disjoint and have total angular
+length six on the donor-origin circle. This is angular coverage, not
+a probability without a separately supplied distribution. Each of the
+five gaps between neighboring intervals contains at least one origin
+converging to a saddle: otherwise the connected interval joining the
+two certified endpoints would be covered by disjoint open attractive
+basins, although its endpoints have different destinations. This uses
+the existing complete limit classification, not continuity of the
+infinite-time destination map. No exact exceptional count, location
+or classification of every remaining origin follows.
+
+The estimate is restricted to the fixed eta=1/100000. In particular
+the comparison \(\eta>\gamma^2/20\) was used; the proof does not
+silently extend to the whole source-strength interval or to eta=1.
+It introduces no event, controller, autonomous contact selector,
+laboratory clock or physical identification. The certified basins
+belong to the supplied complete law and the unchanged actual history.
+
+<a id="8-meaning-and-remaining-boundary"></a>
+## 9. Meaning and remaining boundary
 
 The positive weak-contact interval proves that the same graph topology
 and complete marked identity are compatible with stationary existence and
@@ -1294,9 +1612,12 @@ exponential relaxation of all fine form and phase residuals. The actual
 source limits are consequently uniform internal carriers, and the
 collective wheel rows have the controlled decaying remainder (17h).
 Every collective limit belongs to the classified set of five strict
-minima and five hyperbolic saddles modulo common phase rotation. The destination
-of a specified source remains unselected. Moreover, every fixed actual
-source member has at least one donor origin whose limit is a saddle.
+minima and five hyperbolic saddles modulo common phase rotation. At
+eta=1/100000, section 8 certifies which strict minimum is selected on
+five explicit donor-origin intervals, uniformly over the original
+source uncertainties and observation history. Each intervening gap
+contains at least one saddle-converging origin; its remaining source
+destinations are not classified by the certificate.
 Uniform strict attractor selection over the original entire origin
 circle is therefore impossible, even though every member retains its
 identity and converges.
@@ -1320,5 +1641,6 @@ laboratory unit bridge or identification with physical matter. Its
 reusable mechanisms are the full old-edge barrier, explicit new-edge
 work, carried source-history estimate, analytic convergence, full
 fine relaxation and its collective error bound, stationary normal
-rigidity, the exact collective fold and the all-origin attractive-selection
-obstruction under the actual positive weighted law.
+rigidity, the exact collective fold, the all-origin attractive-selection
+obstruction and the source-basin comparison retaining the fine transient
+under the actual positive weighted law.
