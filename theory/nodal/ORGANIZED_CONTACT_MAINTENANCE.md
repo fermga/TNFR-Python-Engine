@@ -1093,6 +1093,207 @@ retains the unresolved feasibility and curvature question in that sector,
 including nonacute states, broken reflection and degenerate host minima.
 No actual-source fate or global exclusion has been established.
 
+<a id="stationary-compatibility-manifold"></a>
+### 5.13. The stationary reconstruction has 36 regular compatibility conditions
+
+The 44 relative host coordinates in section 5.11 are subject to the exact
+reconstruction guards. Their local geometry can be determined at a full
+equilibrium; counting the displayed scalar equations alone would not do so.
+Let `Y(h)` be the 18-component reconstruction (17y), and define its residual
+and circle guards by
+
+\[
+ \mathcal R(h)=E(h)Y(h)-T(h),\qquad
+ \mathcal U_j(h)=\tfrac12\bigl(Y_j(h)^TY_j(h)-1\bigr),
+ \qquad E_{(c,j),(k,a)}=E_j(c,a)\mathbf1_{j=k},\quad G=E^TE.
+ \tag{17ab}
+\]
+
+Here E is a 45-by-18 matrix with host rows in the original `(c,j)` order
+and two phasor columns per donor slot; `a=1,2`. All derivative identities
+below are evaluated at an admitted equilibrium. For a host
+variation v, differentiation must include the changing E as well as T.
+The derivative of the host-only torque is minus its own Hessian, whereas
+`dot(E)*y` supplies the spoke diagonal contribution. Thus
+`dot(T)-dot(E)*y=-A*v`. Differentiating the normal equations and using
+`T=E*y` gives
+
+\[
+ \dot Y=-G^{-1}E^TAv,\qquad
+ \dot{\mathcal R}=(I-P_E)Av,\qquad
+ \dot{\mathcal U}_j=y_j^T\dot Y_j,\qquad
+ P_E=EG^{-1}E^T.
+ \tag{17ac}
+\]
+
+The residual derivative has only 27 possible independent components,
+since `rank(E)=18`. Let J denote rotation through pi/2 in the phasor
+plane. A circle-tangent variation is uniquely `dot(Y)_j=J*y_j*b_j`,
+where b is a nine-component donor phase variation. Direct substitution
+gives `E*diag(J*y_j)=C`, with the negative spoke-cosine sign in (17p).
+Consequently the complete linearized residual and circle guards satisfy
+
+\[
+ \dot{\mathcal R}=0,\quad\dot{\mathcal U}=0
+ \quad\Longleftrightarrow\quad
+ Av+Cb=0\ \text{for a unique }b.
+ \tag{17ad}
+\]
+
+Uniqueness uses the full column rank of C, proved in section 5.7. This is
+a condition on all fine host coordinates, including their internal modes.
+It does not replace the remaining donor equilibrium equations.
+
+Suppose first that `A>0`. Then (17ad) has exactly the nine-dimensional
+solution space `v=-A^-1*C*b`; the Jacobian of the complete guard map has
+rank 36. These are 36 locally independent conditions within the displayed
+45 residual and nine circle equations, not 54 independent restrictions.
+The host implicit function theorem gives an actual local branch
+`h=psi(d)` solving all host rows, with `psi'=-A^-1*C`. Since C is injective,
+its projection to the host coordinates is a local embedding. The exact
+reconstruction and circle guards describe precisely that local image:
+near the equilibrium their unit donor phasors recover the same donor
+phase chart, and the full residual gives all host rows. Thus the admitted
+host-compatible states form a smooth nine-dimensional local manifold,
+or **eight dimensions after quotienting the common phase**. All marked
+cuts remain avoided after shrinking the chart; no numerical radius is
+provided by this argument.
+
+Strictly positive full relative curvature implies `A>0`: every nonzero
+vector `(v,0)` is different from the common phase direction. The regular
+manifold therefore covers every candidate with a strictly positive full
+relative Hessian. Merely PSD curvature does not yet admit this conclusion.
+
+### 5.14. All remaining regular curvature lies along compatible variations
+
+On the host-stationary branch define the local potential and its Hessian
+
+\[
+ U(d)=V(\psi(d),d),\qquad
+ \nabla U=-S_D(\psi(d),d),\qquad
+ \nabla^2U=N:=D-C^TA^{-1}C.
+ \tag{17ae}
+\]
+
+Host balance removes the chain-rule term involving the host gradient.
+Consequently full equilibria correspond exactly to critical points of U
+in this chart. Host directions transverse to the branch have positive
+curvature, as the exact identity
+
+\[
+ \begin{pmatrix}v\\b\end{pmatrix}^{\!T}M
+ \begin{pmatrix}v\\b\end{pmatrix}
+ =(v+A^{-1}Cb)^TA(v+A^{-1}Cb)+b^TNb
+ \tag{17af}
+\]
+
+shows. After shrinking the chart, positive host curvature also gives a
+uniform local fiber bound
+`V(h,d)>=U(d)+(kappa/2)*||h-psi(d)||^2` for some `kappa>0`.
+Local minima correspond, including minima degenerate along U; strict
+minima correspond modulo common rotation. The phase stationarity Jacobian has
+rank `45+rank(N)`. Since `A*1_H=-C*1_D`, one has `N*1_D=0`.
+Strict positivity of N on its eight donor-relative directions is
+therefore equivalent to strict positivity of M on all 53 relative
+directions. Its 45 other directions are retained by the positive host
+term in (17af). A negative N direction gives a negative full witness
+`(-A^-1*C*b,b)`. Additional null directions require further nonlinear
+analysis; they do not by themselves establish a stationary family.
+
+There is a sharper connection to the earlier 44-direction host Hessian K.
+If both `A>0` and `D>0`, the host space splits as
+
+\[
+ \mathbb R^{45}=\ker C^T\ \oplus\ \operatorname{range}(A^{-1}C).
+ \tag{17ag}
+\]
+
+The first space has dimension 36. On it K has the positive quadratic form
+of A, and its K cross term with the second space vanishes. The second
+space is exactly the tangent space (17ad) of the compatibility manifold.
+Put `R=C^T*A^-1*C>0`. Pulling K back to this nine-dimensional space gives
+
+\[
+ (A^{-1}C)^TK(A^{-1}C)
+   =R-RD^{-1}R=N-ND^{-1}N.
+ \tag{17ah}
+\]
+
+This matrix has the same inertia as N. Indeed
+`Z=D^-1/2*N*D^-1/2<I`, since `D-N=R>0`; the congruent matrix
+`Z-Z^2` has eigenvalue `z*(1-z)`, with the same sign as z for every
+`z<1`. Thus the negative index and additional nullity of K are fully
+represented on the compatible tangent; the other 36 directions are positive.
+The matrices are not isospectral, and their quadratic forms need not have
+the same sign on each identical coordinate vector. A K witness uses the
+donor-relaxed lift from (17t); an N witness uses (17af).
+
+This is a local stationary reduction, not an eight-coordinate temporal
+law. A moving solution of (1) need not preserve the host-balanced branch.
+Host-branch uniqueness gives the local covariance
+`psi(d+chi*1_D)=psi(d)+chi*1_H`. The complement `1_D^perp` is a convenient
+gauge for curvature, not a separately conserved donor mean or the exact
+pullback of the full phase-mean leaf. A common rotation restores the
+declared global mean without changing the quadratic forms. The
+construction provides no global branch, admitted neighborhood size or
+source inclusion.
+
+### 5.15. Singular host curvature retains extra unresolved directions
+
+The regular admission `A>0` cannot be omitted. At a PSD full Hessian, let
+`r=dim ker(A)`. For any `n in ker(A)`, PSD implies
+`M*(n,0)=0`, hence `C^T*n=0`. Equivalently,
+`range(C)` is contained in `range(A)`. With the Moore--Penrose inverse,
+all solutions of (17ad) are therefore
+
+\[
+ v=-A^\dagger Cb+n,\qquad n\in\ker A.
+ \tag{17ai}
+\]
+
+The two terms are independent and b has nine independent components.
+Thus the linearized host-compatible space has dimension `9+r`, and the
+Jacobian rank of the residual and circle guards is exactly `36-r`.
+Every nonzero `(n,0)` is an additional full phase-Hessian null direction
+whose donor component vanishes; it is not the common phase direction.
+These are genuine neutral directions of the complete linearized law at
+equilibrium. Subtracting the full common mean retains their independent
+nongauge null directions on the fixed-mean leaf, but may change the donor
+common angle; the donor relative angles remain unchanged. They need not
+integrate to curves of equilibria. Guard
+rank loss alone proves neither a nonlinear manifold of that dimension
+nor instability. Possible degenerate host minima remain in the unresolved
+domain. If A instead has a negative direction, extending it by a zero
+donor variation directly gives a negative full direction.
+
+An independent algebraic control uses the known aligned outer-zero state
+of section 2. For internal mode m and host rim mode r, write
+`z_m=cos(alpha)*lambda9(m)` and `lambda5(r)=2-2*cos(2*pi*r/5)`.
+The host-block eigenvalues and the donor-reduced eigenvalues are
+
+\[
+ \lambda_A(m,r)=z_m+1+\lambda_5(r)>0,\qquad
+ \lambda_N(m)=z_m+5-\frac5{z_m+1}
+             =\frac{z_m(z_m+6)}{z_m+1}.
+ \tag{17aj}
+\]
+
+A donor mode b induces the host-balanced variation
+`v_(c,j)=b_j/(z_m+1)` in every child. N has exactly eight positive
+relative modes and the common zero mode, so (17af) retains all 53 positive
+relative directions of that control. Its outer winding is zero and its
+E matrices have rank one: it checks the host-relaxation algebra and exact
+coefficients, not the rank-36 theorem or existence of a target in the
+outer-one class.
+
+The remaining regular question is whether the admitted local potentials
+U have an acceptable critical minimum in the original complete marked
+class. The singular PSD host sector requires separate higher-order or
+instability arguments. Neither sector has been decided here. The
+[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#contact-maintenance-certificate-admission)
+owns that unresolved dependency; no further numerical campaign follows
+from this compatibility geometry.
+
 ## 6. Actual aligned outer-zero control after the full observation word
 
 The local target in (2) becomes a maintenance result only with an actual
@@ -1307,7 +1508,7 @@ detached proof path. Numerical checks verify implemented arithmetic and
 wiring; the analytic arguments above establish the conditional mathematical
 claims and their domain boundaries.
 
-The later analytical extension in sections 5.1-5.12 uses exact identities
+The later analytical extension in sections 5.1-5.15 uses exact identities
 and counterexamples. Static regression checks separately reconstruct the
 stationary controls' neighbor resultants and the blind point's lifted
 secant from edge sums. These are arithmetic controls, not a stationary
@@ -1333,3 +1534,13 @@ reflected saddle in the
 That saddle remains unstable; its reconstruction supplies neither a new
 search nor a source evaluation. The globally unique circular completion
 does not change the full-box certificate's admission or numerical budget.
+
+The compatibility-manifold argument differentiates those exact guards and
+retains their dependent equations. Centered differences of the host-only
+reconstruction at the existing reflected saddle check (17ac)--(17ad);
+that saddle's negative host direction rejects the positive-A premise.
+Host-relaxation controls check (17af), (17ah) and (17aj) at the aligned
+outer-zero state, whose rank-one E is explicitly outside the winding-one
+reconstruction theorem. Neither local rank nor an infinitesimal null
+direction replaces the nonlinear stationary guards or the original
+full-box certificate.

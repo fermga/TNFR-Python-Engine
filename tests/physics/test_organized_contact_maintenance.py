@@ -206,7 +206,7 @@ def test_donor_schur_singular_block_has_an_explicit_full_negative_witness(mp):
     assert quadratic < -2
 
 
-def test_donor_schur_positive_block_does_not_certify_the_full_blind_point(mp):
+def test_donor_schur_positive_block_does_not_admit_host_relaxation_at_blind_point(mp):
     """A static nonstationary control retains a negative relaxed host direction."""
     tolerance = mp.mpf("1e-165")
     gaps = (mp.pi / 3,) * 7 + (-mp.pi / 6,) * 2
@@ -264,6 +264,106 @@ def test_donor_schur_positive_block_does_not_certify_the_full_blind_point(mp):
         for value, action in zip(arbitrary, _edge_action(mp, arbitrary, phases))
     ).real
     assert abs(completed - direct) < tolerance
+
+
+def test_host_relaxation_retains_eight_relative_modes_and_full_curvature(mp):
+    """The aligned outer-zero control checks local curvature, not temporal rates."""
+    tolerance = mp.mpf("1e-165")
+    alpha = 2 * mp.pi / 9
+    phases = tuple(alpha * (slot - 4) for _ in range(6) for slot in range(9))
+    matrix = _phase_hessian(mp, phases)
+    host, cross, donor = matrix[:45, :45], matrix[:45, 45:], matrix[45:, 45:]
+    cycle = mp.zeros(9)
+    for slot in range(9):
+        neighbor = (slot + 1) % 9
+        cycle[slot, slot] += 1
+        cycle[neighbor, neighbor] += 1
+        cycle[slot, neighbor] -= 1
+        cycle[neighbor, slot] -= 1
+    common_inverse = (mp.cos(alpha) * cycle + mp.eye(9)) ** -1
+    response = mp.matrix(
+        [[common_inverse[row % 9, slot] for slot in range(9)] for row in range(45)]
+    )
+    assert max(abs(value) for value in host * response + cross) < tolerance
+    coupling = -cross.T * response
+    reduced = donor - coupling
+    assert max(abs(value) for value in reduced * mp.matrix([1] * 9)) < tolerance
+
+    host_positive = donor_positive = donor_neutral = 0
+    for mode in range(9):
+        internal = tuple(mp.exp(mp.j * alpha * mode * slot) for slot in range(9))
+        stiffness = mp.cos(alpha) * (2 - 2 * mp.cos(alpha * mode))
+        for rim_mode in range(5):
+            vector = mp.matrix(
+                [
+                    mp.exp(2 * mp.j * mp.pi * rim_mode * child / 5) * internal[slot]
+                    for child in range(5)
+                    for slot in range(9)
+                ]
+            )
+            eigenvalue = 1 + stiffness + 2 - 2 * mp.cos(2 * mp.pi * rim_mode / 5)
+            assert eigenvalue >= 1
+            assert (
+                max(abs(value) for value in host * vector - eigenvalue * vector)
+                < tolerance
+            )
+            host_positive += 1
+        donor_vector = mp.matrix(internal)
+        expected_response = mp.matrix(internal * 5) / (stiffness + 1)
+        assert (
+            max(abs(value) for value in response * donor_vector - expected_response)
+            < tolerance
+        )
+        eigenvalue = stiffness * (stiffness + 6) / (stiffness + 1)
+        assert (
+            max(
+                abs(value)
+                for value in reduced * donor_vector - eigenvalue * donor_vector
+            )
+            < tolerance
+        )
+        if mode == 0:
+            assert eigenvalue == 0
+            donor_neutral += 1
+        else:
+            assert eigenvalue > 0
+            donor_positive += 1
+    assert (host_positive, donor_positive, donor_neutral) == (45, 8, 1)
+
+    # Complete the full quadratic form, retaining all 45 host fiber directions.
+    arbitrary = tuple(mp.mpf((7 * index + 3) % 19 - 9) / 23 for index in range(54))
+    host_vector, donor_vector = mp.matrix(arbitrary[:45]), mp.matrix(arbitrary[45:])
+    residual = host_vector - response * donor_vector
+    fiber_cost = (residual.T * host * residual)[0]
+    assert fiber_cost > 0
+    completed = fiber_cost + (donor_vector.T * reduced * donor_vector)[0]
+    direct = sum(
+        value * action
+        for value, action in zip(arbitrary, _edge_action(mp, arbitrary, phases))
+    ).real
+    assert abs(completed - direct) < tolerance
+
+    # Match the older donor-relaxed K to the new host-relaxed representation.
+    donor_inverse = donor**-1
+    old_reduced = host - cross * donor_inverse * cross.T
+    pullback = response.T * old_reduced * response
+    coupling_form = coupling - coupling * donor_inverse * coupling
+    reduced_form = reduced - reduced * donor_inverse * reduced
+    assert max(abs(value) for value in pullback - coupling_form) < tolerance
+    assert max(abs(value) for value in pullback - reduced_form) < tolerance
+    transverse = mp.matrix(
+        [
+            (mp.mpf(slot - 4) / 9) * (int(child == 0) - int(child == 1))
+            for child in range(5)
+            for slot in range(9)
+        ]
+    )
+    assert max(abs(value) for value in cross.T * transverse) < tolerance
+    assert (
+        max(abs(value) for value in response.T * old_reduced * transverse) < tolerance
+    )
+    assert (transverse.T * host * transverse)[0] > 0
+    assert abs((transverse.T * (old_reduced - host) * transverse)[0]) < tolerance
 
 
 def test_donor_schur_aligned_control_has_all_44_positive_relative_modes(mp):

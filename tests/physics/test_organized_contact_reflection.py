@@ -58,6 +58,35 @@ def independent_state(mp, report):
     )
 
 
+def _host_reconstruction(mp, host, slot):
+    """Use the four host neighbors, without a supplied donor coordinate."""
+    angles = tuple(host[9 * child + slot] for child in range(5))
+    torque = tuple(
+        sum(
+            mp.sin(host[neighbor] - angles[child])
+            for neighbor in (
+                9 * child + (slot - 1) % 9,
+                9 * child + (slot + 1) % 9,
+                9 * ((child - 1) % 5) + slot,
+                9 * ((child + 1) % 5) + slot,
+            )
+        )
+        for child in range(5)
+    )
+    design = mp.matrix([[mp.sin(angle), -mp.cos(angle)] for angle in angles])
+    gram, target = design.T * design, mp.matrix(torque)
+    determinant = gram[0, 0] * gram[1, 1] - gram[0, 1] ** 2
+    assert determinant > 0
+    right = design.T * target
+    reconstructed = mp.matrix(
+        [
+            (gram[1, 1] * right[0] - gram[0, 1] * right[1]) / determinant,
+            (gram[0, 0] * right[1] - gram[0, 1] * right[0]) / determinant,
+        ]
+    )
+    return design, gram, target, reconstructed
+
+
 def test_root_isolated_by_exact_signs_monotonicity_and_fixed_budget(report):
     lower, upper = report.root_bracket
 
@@ -133,40 +162,11 @@ def test_donor_reconstruction_recovers_the_known_stationary_saddle(
     host = independent_state[:45]
     reconstructed = []
     for slot in range(9):
-        angles = tuple(host[9 * child + slot] for child in range(5))
-        torque = tuple(
-            sum(
-                mp.sin(host[neighbor] - angles[child])
-                for neighbor in (
-                    9 * child + (slot - 1) % 9,
-                    9 * child + (slot + 1) % 9,
-                    9 * ((child - 1) % 5) + slot,
-                    9 * ((child + 1) % 5) + slot,
-                )
-            )
-            for child in range(5)
-        )
-        sine = tuple(mp.sin(angle) for angle in angles)
-        cosine = tuple(mp.cos(angle) for angle in angles)
-        g00 = sum(value**2 for value in sine)
-        g01 = -sum(s * c for s, c in zip(sine, cosine))
-        g11 = sum(value**2 for value in cosine)
-        determinant = g00 * g11 - g01**2
-        assert determinant > 0
-        right0 = sum(s * t for s, t in zip(sine, torque))
-        right1 = -sum(c * t for c, t in zip(cosine, torque))
-        real = (g11 * right0 - g01 * right1) / determinant
-        imaginary = (g00 * right1 - g01 * right0) / determinant
-        donor = mp.mpc(real, imaginary)
+        design, _, target, coordinates = _host_reconstruction(mp, host, slot)
+        donor = mp.mpc(*coordinates)
         assert abs(abs(donor) ** 2 - 1) < tolerance
         assert abs(donor - mp.exp(mp.j * independent_state[45 + slot])) < tolerance
-        assert (
-            max(
-                abs(s * real - c * imaginary - t)
-                for s, c, t in zip(sine, cosine, torque)
-            )
-            < tolerance
-        )
+        assert max(abs(value) for value in design * coordinates - target) < tolerance
         reconstructed.append(donor)
 
     # Rebuild every joined current from the reconstructed circular coordinates.
@@ -190,6 +190,90 @@ def test_donor_reconstruction_recovers_the_known_stationary_saddle(
     assert abs(sum(donor_gaps) - 2 * mp.pi) < tolerance
     assert quadratic < -mp.mpf(27) / 4
     assert report.stationary_instability_certified
+
+
+def test_host_compatibility_guard_derivatives_retain_full_joined_tangent(
+    mp, independent_state
+):
+    """A known saddle checks derivatives without asserting positive curvature."""
+    tolerance, step = mp.mpf("1e-35"), mp.mpf("1e-50")
+    host = independent_state[:45]
+    hessian, cross = mp.zeros(45), mp.zeros(45, 9)
+    for left, right in _EDGES:
+        weight = mp.cos(independent_state[right] - independent_state[left])
+        if left < 45:
+            hessian[left, left] += weight
+        if right < 45:
+            hessian[right, right] += weight
+        if left < 45 and right < 45:
+            hessian[left, right] -= weight
+            hessian[right, left] -= weight
+        elif left < 45:
+            cross[left, right - 45] -= weight
+    direction = mp.matrix(
+        [mp.mpf((7 * index + 3) % 19 - 9) / 23 for index in range(45)]
+    )
+    action = hessian * direction
+    plus = tuple(value + step * shift for value, shift in zip(host, direction))
+    minus = tuple(value - step * shift for value, shift in zip(host, direction))
+    donor_tangent, guard_defect = mp.zeros(9, 1), mp.zeros(45, 1)
+    for slot in range(9):
+        design, gram, _, coordinates = _host_reconstruction(mp, host, slot)
+        design_plus, _, target_plus, coordinates_plus = _host_reconstruction(
+            mp, plus, slot
+        )
+        design_minus, _, target_minus, coordinates_minus = _host_reconstruction(
+            mp, minus, slot
+        )
+        indices = tuple(9 * child + slot for child in range(5))
+        block_action = mp.matrix([action[index] for index in indices])
+        derivative = (coordinates_plus - coordinates_minus) / (2 * step)
+        expected = -mp.lu_solve(gram, design.T * block_action)
+        assert max(abs(value) for value in derivative - expected) < tolerance
+        residual_plus = design_plus * coordinates_plus - target_plus
+        residual_minus = design_minus * coordinates_minus - target_minus
+        residual_derivative = (residual_plus - residual_minus) / (2 * step)
+        projector = design * (gram**-1) * design.T
+        assert (
+            max(
+                abs(value)
+                for value in residual_derivative
+                - (mp.eye(5) - projector) * block_action
+            )
+            < tolerance
+        )
+        circle_derivative = (
+            (coordinates_plus.T * coordinates_plus)[0]
+            - (coordinates_minus.T * coordinates_minus)[0]
+        ) / (4 * step)
+        assert abs(circle_derivative - (coordinates.T * derivative)[0]) < tolerance
+        tangent = mp.matrix([-coordinates[1], coordinates[0]])
+        donor_tangent[slot] = (tangent.T * derivative)[0]
+        assert (
+            max(
+                abs((design * tangent)[child] - cross[index, slot])
+                for child, index in enumerate(indices)
+            )
+            < tolerance
+        )
+        correction = residual_derivative - design * coordinates * circle_derivative
+        for child, index in enumerate(indices):
+            guard_defect[index] = correction[child]
+    assert (
+        max(abs(value) for value in action + cross * donor_tangent - guard_defect)
+        < tolerance
+    )
+    assert max(abs(value) for value in guard_defect) > mp.mpf("0.01")
+    # Exact compatibility does not supply the A>0 premise of host relaxation.
+    cut = mp.matrix([int(index < 9) for index in range(45)])
+    assert (cut.T * hessian * cut)[0] < -mp.mpf(27) / 4
+    assert (
+        max(
+            abs(value)
+            for value in hessian * mp.matrix([1] * 45) + cross * mp.matrix([1] * 9)
+        )
+        < tolerance
+    )
 
 
 def test_every_marked_winding_and_nonacute_outer_gap(report, mp, independent_state):

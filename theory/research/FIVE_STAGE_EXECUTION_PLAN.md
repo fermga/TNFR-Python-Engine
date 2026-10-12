@@ -118,14 +118,14 @@ stronger condition. The [foundational priority review](#post-contact-foundation-
 is now closed: continued-contact stationary maintenance is the selected
 generative dependency, but a stable target or global instability certificate
 in its complete marked class remains missing. The
-[stationary reconstruction](#contact-maintenance-certificate-admission)
-now gives at most one donor completion for compatible host data, using all
-host balance equations. A common internal profile of the five hosts forces
-the donor to share that profile at stationarity, so the existing curvature
-obstruction excludes stability. The remaining admission is constrained host
-stationary feasibility with all 44 donor-relaxed host-relative curvature
-directions retained. No full-class certificate or numerical campaign is
-admitted.
+[stationary compatibility theorem](#contact-maintenance-certificate-admission)
+now identifies a local nine-coordinate compatibility manifold when the
+joined host Hessian block is strictly positive. Host relaxation preserves
+all eight remaining relative curvature directions. Global positivity of
+that host block has not been proved; a singular PSD case would retain
+additional host neutral directions. Chart coverage, constrained stationarity
+and stability in the original class remain unresolved. No numerical
+campaign is admitted.
 
 No 45-node acquisition, physical readout or source certificate transfers to
 the supplied positive-r matrix law by default. Earlier frozen protocols,
@@ -142,8 +142,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Pending analytical dependency | [Constrained host stationary maintenance](#contact-maintenance-certificate-admission): decide host compatibility with the unique donor reconstruction and all 44 host-relative curvature directions, or construct a full stable target; no numerical campaign is admitted |
-| Closed stationary reconstruction and scoped obstruction | [Global donor reconstruction](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#global-stationary-donor-reconstruction): compatible host data have at most one stationary donor completion; stationarity with a common five-host profile forces the excluded common six-child profile |
+| Pending analytical dependency | [Stationary maintenance and chart coverage](#contact-maintenance-certificate-admission): control the admitted host compatibility charts and their remaining curvature, including the singular host-block sector, or construct a full stable target; no numerical campaign is admitted |
+| Closed local compatibility and curvature reduction | [Stationary compatibility manifold](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#stationary-compatibility-manifold): a positive joined host block gives 36 independent host compatibility constraints, nine local coordinates and eight relative curvature directions; singular PSD host blocks retain additional neutral directions |
 | Closed post-contact foundational review | [Dependency decision](#post-contact-foundation-review): contact response and hidden-mode results do not supply independent law selection, indefinite maintenance or a physical bridge; the missing maintenance certificate mechanism is explicit |
 | Closed full-fine preparation sensitivity | [Hidden internal modes](#organized-contact-preparation-sensitivity): all-time first-order invisibility, opposite-mode quadratic coupling and explicit winding-admissible leakage distinguish exact reflection protection from a linear observation kernel |
 | Closed ideal dynamical cancellation | [Complete-law origin classification](#organized-contact-dynamic-cancellation): reflection protects both laws at beta=m*pi/5; elsewhere sine regenerates donor response at order nine and the alternative at order three or five, within the original derivative budget |
@@ -327,7 +327,7 @@ response has not been derived from the earlier acquired constituents.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
-| Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Unresolved constrained host feasibility; no active search.** All host equations determine at most one donor completion. Compatibility, unit modulus, donor balance and marked lifts remain necessary; exact relaxation retains all 44 host-relative curvature directions. A common five-host profile cannot yield a stable target |
+| Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Unresolved chart coverage and stationary curvature; no active search.** A positive joined host block gives a local nine-coordinate compatibility manifold and eight relative curvature directions. Its global admission and the singular PSD host-block sector remain open; coordinate reduction alone does not decide stability |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
 | Sufficient collective state and inherited response | Construct and certify a forecast from a joint finite noisy record without known collective initialization | **Closed operational software case.** The whole-record bound and one candidate forecast are certified; arbitrary-record convergence and physical measurement remain unproved |
@@ -910,24 +910,34 @@ question without repeating local starts, source histories or contact
 derivatives.
 
 <a id="contact-maintenance-certificate-admission"></a>
-### Closed global donor reconstruction; constrained host stationarity unresolved
+### Closed local compatibility manifold; stationary chart coverage unresolved
 
-The [proof owner](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#global-stationary-donor-reconstruction)
-gives a global stationary donor reconstruction from all host balance
-equations, complementing the exact local donor relaxation. It retains the
+The [proof owner](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#stationary-compatibility-manifold)
+gives a local compatibility manifold and exact remaining-curvature criterion
+when the joined host Hessian block is strictly positive. It retains the
 original sine law, complete `C9 x W6` support, held unit capacities, tau
 clock, both conserved means, all 53 relative phases and the
 [complete product marked class](../nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md#marked-cycle-information-and-connected-chambers).
 No numerical search, source replay, trajectory, response fit or physical
 record was evaluated.
 
-The cut-free winding-one host rim makes the donor-to-host torque map
-injective. Thus compatible host phases have at most one circular donor
-completion, even without a Hessian sign assumption. Arbitrary host data
-need not admit a completion: all host residuals, unit modulus, donor
-balance and the original marked lifts must still be checked. This removes
-stationary donor ambiguity without promoting the local reduced potential
-to a global potential or supplying a reduced evolution law.
+The [global donor reconstruction](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#global-stationary-donor-reconstruction)
+still determines at most one circular completion for compatible host data.
+Its host residual and unit-circle guards now have an exact local rank:
+at an admitted equilibrium with strictly positive joined host block A, they
+impose 36 independent constraints. The nine donor phases locally parameterize
+host compatibility, with eight coordinates after common rotation. Donor
+balance and complete marked-class admission remain required for equilibrium.
+
+Relaxing the host along this local branch gives
+`N=D-C^T*A^-1*C`. Its eight relative directions retain every remaining
+negative or additional zero curvature direction; the other 45 directions
+are positive. This identifies the relevant stationary and curvature problem
+in a regular chart, not a global reduced potential or an autonomous temporal
+law. Strict positivity of A has not been established throughout the class.
+At a PSD candidate with singular A and nullity r, the compatibility-guard
+Jacobian instead has rank `36-r`, and r donor-invisible host directions lie
+in the full Hessian kernel. No nine-coordinate chart follows in that sector.
 
 The [common-host-profile obstruction](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#common-host-profile-obstruction)
 also strengthens the excluded sector. If the five hosts share an internal
@@ -937,18 +947,17 @@ including degenerate cases. An unrestricted donor profile cannot stabilize
 that host arrangement. The earlier defect, resultant and cyclic-slot
 restrictions remain necessary.
 
-**Missing admission:** decide constrained stationary feasibility and full
-curvature for the remaining host configurations, or construct one stable
-target. At every PSD candidate the donor block is strictly positive, and
-its Schur complement retains all 44 host-relative directions. The next
-analytical step must combine reconstructed donor compatibility with that
-complete curvature criterion, including possible degenerate host minima.
-Neither a unique candidate completion, positive donor curvature nor relaxed
-collective cuts supplies a global decision. K need not have positive
-conductances. Nonacute and asymmetric host configurations remain included;
-common profiles, reflection or acuteness cannot be imposed. Repeating the
-earlier phase-pair sums, source precision changes or optimizer starts would
-not close this gap.
+**Missing admission:** establish a global stationary/curvature bound or a
+certified cover of the regular host charts with domains and curvature
+verdicts, or
+construct one stable target. A full obstruction must also cover singular
+PSD host blocks and possible degenerate minima; the existing donor reduction
+still retains all 44 host-relative directions there. Local implicit charts
+and their dimension counts supply no global coverage or stability verdict.
+Further block eliminations alone would not close that gap. Nonacute and
+asymmetric host configurations remain included; common profiles, reflection
+or acuteness cannot be imposed. Repeating phase-pair sums, source precision
+changes or optimizer starts would not settle these obligations.
 
 The unresolved question retains the original complete law and true cut-free
 class. A full obstruction must establish a negative relative direction at

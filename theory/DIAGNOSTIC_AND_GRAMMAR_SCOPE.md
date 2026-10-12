@@ -1106,9 +1106,20 @@ evolution law. The
 [common-host-profile obstruction](nodal/ORGANIZED_CONTACT_MAINTENANCE.md#common-host-profile-obstruction)
 further excludes a common internal profile of the five hosts: stationarity
 forces the donor to share it, putting the full state in the already
-excluded common-profile sector. The unresolved problem is constrained
-host stationary feasibility with all 44 relative curvature directions,
-including nonacute and asymmetric configurations. The
+excluded common-profile sector. The
+[stationary compatibility manifold](nodal/ORGANIZED_CONTACT_MAINTENANCE.md#stationary-compatibility-manifold)
+then makes the regular local constraint count precise. At an admitted
+stationary point with strictly positive joined host Hessian block A,
+the host residual and unit-circle guards
+have rank 36; nine donor coordinates parameterize host compatibility
+locally. Host relaxation preserves eight relative curvature directions
+and 45 positive directions. Positivity of A is not a global premise already
+proved by donor reconstruction. At PSD singular A with nullity r, the guard
+Jacobian has rank `36-r` and r host-only neutral directions persist; the
+regular chart cannot be assumed there. Global coverage, donor balance,
+marked-class admission and stationary stability remain unresolved,
+including nonacute and asymmetric configurations. These are stationary
+charts, not closed temporal laws. The
 [reflection obstruction](nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md#5-complete-law-consequence-and-scope)
 requires its static sector. The
 [root and stability certificate](nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md#root-and-stability-acceptance)

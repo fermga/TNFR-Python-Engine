@@ -1003,6 +1003,21 @@ target. The proof owns the full-domain uniqueness and common-host-profile
 obstruction; these controls require no new search, source replay or
 trajectory.
 
+For the [stationary compatibility manifold](theory/nodal/ORGANIZED_CONTACT_MAINTENANCE.md#stationary-compatibility-manifold),
+add `host_compatibility` from the reflection module and `host_relaxation`
+from the maintenance module. The reflected-saddle control reuses the
+existing fixed algebraic fixtures to differentiate donor reconstruction
+and its full residual/circle guards against the joined Hessian. Its host
+block has a negative direction, so this control does not certify the
+positive-host-block chart or its rank-36 conclusion. The maintenance
+control independently checks host relaxation, square completion, all 45
+positive host modes and eight relative donor modes at the aligned outer-zero
+state. That different marked class tests the block algebra, not existence
+of an outer-one regular chart. Retain the negative-host-block blind control
+and the singular-PSD exception in the proof. The maintenance selection uses
+no report/source fixture; neither selection invokes a new root search or
+trajectory.
+
 For [reflected stationary contact identity](theory/nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md),
 select `tests/physics/test_organized_contact_reflection.py` with contact
 maintenance, external interaction and `tests/test_rational_interval.py`.
