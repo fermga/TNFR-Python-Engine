@@ -1294,6 +1294,278 @@ instability arguments. Neither sector has been decided here. The
 owns that unresolved dependency; no further numerical campaign follows
 from this compatibility geometry.
 
+<a id="finite-host-reorganization-exclusion"></a>
+### 5.16. Finite neighborhoods of common host profiles exclude PSD equilibria
+
+The common-host obstruction has a quantitative extension that allows an
+arbitrary donor shape. Write the actual host and donor phasors as
+`z_(c,j)=exp(i*h_(c,j))` and `w_j=exp(i*d_j)`. Choose any common reference
+profile `p_j` on the unit circle and five reference origins `q_c=exp(i*Phi_c)`
+whose cut-free rim has winding one. Suppose
+
+\[
+ \max_{c,j}|z_{c,j}-p_jq_c|\le\varepsilon,\qquad
+ B_\Phi(c,:)=(1,\Re q_c,-\Im q_c),\qquad
+ \sigma=\sigma_{\min}(B_\Phi)>0.
+ \tag{17ak}
+\]
+
+The last inequality follows from the three-point argument in section 5.12.
+This is a chord-distance bound between circular phases, so no small-angle
+lift or inverse trigonometric branch is consumed. The profile p need not
+be uniform or acute. The actual complete marked-class admission remains
+a separate premise; proximity alone does not prove its windings or mixed
+periods.
+
+Define `beta_j=w_j*conj(p_j)`, still a unit phasor. Let I_j be the internal
+torque of p at slot j and R_c the rim torque of q at host c. The reference
+host current with the actual donor is
+`I_j+R_c+Im(beta_j*conj(q_c))`. For unit phasors, changing either endpoint
+by chord distance at most epsilon changes its edge sine or cosine by at
+most epsilon. Each host has four host neighbors and one donor neighbor.
+The difference between its actual current and this reference current is
+therefore at most `4*(2*epsilon)+epsilon=9*epsilon`.
+
+At a full stationary state the actual host currents vanish. Consequently
+there are residual vectors r_j with `||r_j||_infinity<=9*epsilon` such that
+
+\[
+ B_\Phi
+ \begin{pmatrix}I_j\\ \Im\beta_j\\ \Re\beta_j\end{pmatrix}
+ +R=r_j,
+ \qquad
+ |\beta_j-\beta_0|
+ \le\frac{18\sqrt5}{\sigma}\,\varepsilon.
+ \tag{17al}
+\]
+
+The bound follows by subtracting the slot-zero equation: the right side
+has Euclidean norm at most `18*sqrt(5)*epsilon`, and the two phasor
+components are part of the coefficient vector controlled by sigma. It
+uses all five host equations and does not assume donor coherence.
+
+Now set the donor reference origin to beta_0 and use two vectors constant
+within each child: v contains the real parts of `(q_0,...,q_4,beta_0)`,
+and u contains their imaginary parts, repeated over all nine slots. Their
+internal-edge differences vanish exactly, even when the actual internal
+profiles are nonacute. At the full common-profile reference, section 5.1
+gives the pair quadratic form `18*F_W<=-9/2`. On each rim edge the actual
+cosine differs from its reference by at most `2*epsilon`. On each spoke
+the difference is at most `(1+18*sqrt(5)/sigma)*epsilon`, by (17al).
+The squared pair difference on any edge is at most four. There are 45 rim
+edges and 45 spokes, so
+
+\[
+ \begin{split}
+ v^TMv+u^TMu
+ &\le-\frac92+
+       \left(540+\frac{3240\sqrt5}{\sigma}\right)\varepsilon,\\
+ \varepsilon
+ &<\frac{9/2}{540+3240\sqrt5/\sigma}
+ \quad\Longrightarrow\quad M\not\succeq0.
+ \end{split}
+ \tag{17am}
+\]
+
+At least one vector is then a negative full phase-Hessian witness.
+Subtracting its common mean preserves its quadratic form, making it a
+relative witness; (16) gives instability of the complete stationary law.
+More quantitatively, if Delta is the positive magnitude of the upper
+bound's negative right side, then
+`lambda_min(M|relative)<=-Delta/54`: the two centered squared norms sum
+to at most 54. Equality at the displayed radius is not an instability
+certificate.
+
+Thus a possible stable stationary target requires finite host deformation
+away from each fixed common-profile reference. The explicit radius depends
+on its origins through sigma; this singular value has no positive uniform
+bound as reference rims approach marked cuts. The estimate supplies no
+trajectory, source inclusion or claim that a target exists outside it.
+
+### 5.17. A uniform reference rim has a finite equilibrium obstruction
+
+For the uniform reference rim `Phi_c=2*pi*(c-2)/5`, the rim torque R is
+zero and `B_Phi^T*B_Phi=diag(5,5/2,5/2)`. For any reference internal
+profile p and any actual donor, the reference host-current vector at each
+slot therefore has squared norm `5*I_j^2+5/2`. This uses only
+`|beta_j|=1`, with no stationarity assumption. The current perturbation
+bound used above gives
+
+\[
+ \max_c|S_{c,j}|
+ \ge\frac1{\sqrt2}-9\varepsilon
+ \quad\text{at every slot }j.
+ \tag{17an}
+\]
+
+Indeed the reference Euclidean norm is at least `sqrt(5/2)`, its change
+is at most `9*sqrt(5)*epsilon`, and the maximum component is at least the
+Euclidean norm divided by `sqrt(5)`. Hence
+`epsilon<1/(9*sqrt(2))` excludes equilibrium altogether, not just PSD
+equilibrium. No donor shape, relative origin or change to the common
+internal reference profile removes this defect within the stated bound.
+This extends the zero-vector reconstruction example in section 5.11 to
+arbitrary reference profiles and a finite open neighborhood. It is a
+static current obstruction and also gives the following conditional
+complete-flow exit result.
+
+Fix this uniform q and `0<=epsilon<1/(9*sqrt(2))`. Allow any common p at
+each state and arbitrary donor phases, and define the closed tube by
+`min_p max_(c,j)|z_(c,j)-p_j*q_c|<=epsilon`. The minimum over the compact
+profile torus makes this a closed phase set. By (17an) it contains no
+state with `S=0`.
+
+Under the unforced complete law (1), no trajectory can remain in that
+closed tube for all future time. On the fixed zero-form-mean leaf, H is
+nonnegative and its form term bounds x, since L is positive on relative
+forms. The sine current is bounded and the law has only linear form
+dependence, so its forward solutions exist globally; their form/phasor
+states are precompact. The loss identity gives a nonempty invariant
+omega-limit set inside `Lx=0`. On the fixed mean leaf this is `x=0`, so
+the phase row is zero. Invariance then requires `S=0` in the form row.
+If a trajectory stayed in the closed tube, its omega-limit set would
+lie there as well, contradicting (17an). Therefore a trajectory initially
+inside must leave it at some finite time.
+
+This conclusion uses the unchanged autonomous law, support and loss
+identity, with no subsequent forcing or events. It gives no explicit
+exit time and prevents neither later return nor retention of marked windings.
+Its source premise is checked separately below. The initial
+profile p may vary across slots and need not be a carrier profile. Marked
+cuts do not stop the full flow, and tube exit is not winding loss. This
+exit argument does not apply merely from exclusion of PSD equilibria,
+such as the broader gap below; an unstable equilibrium can still belong
+to an invariant limit set.
+
+<a id="actual-outer-one-host-reorganization"></a>
+#### The retained outer-one source must leave the uniform-rim tube
+
+The original prepared source satisfies that premise using its existing
+complete bounds. The
+[outer acquisition estimate](ORGANIZED_OUTER_WINDING.md#4-fresh-carrier-entry-and-the-complete-reached-storage)
+retains the finite carrier endpoint
+`v_c=4*(c-2)/pi`, with `|Phi_c-v_c|<0.000022083`; it does not replace
+that endpoint by the uniform twist. The
+[observation-history transport](ORGANIZED_EXTERNAL_INTERACTION.md#2-actual-source-and-observation-history-transport)
+gives the actual contact phases
+`h_(c,j)=alpha*(j-4)+Phi_c+e_(c,j)+drift_(c,j)`, with
+`|e_(c,j)|<=Z<7*10^-70` and the whole-word drift bounded by
+`m=2*g*(1/100+g/5000)/5000` for any valid upper bound g on gamma.
+All commanded offsets have cancelled, while this continuous drift remains.
+
+Take `p_j=exp(i*alpha*(j-4))` and the uniform q from (17an). The distance
+from the actual source is bounded by
+
+\[
+ \max_{c,j}|z_{c,j}-p_jq_c|
+ \le \left(\frac8\pi-\frac{4\pi}5\right)+f_\theta+Z+m
+ <\frac1{25}<\frac1{9\sqrt2}.
+ \tag{17ao}
+\]
+
+The inequalities require no new numerical assessment. Since
+`pi^2<10` and `pi>157/50`, the endpoint mismatch is positive and less
+than `702/19625<9/250`. Use `f_theta<23*10^-6` and `Z<10^-8`.
+For the drift proof choose the independent analytic majorant `g=1/3000`,
+valid because `gamma=1/(1023*pi)<1/3069`; the displayed monotone formula
+then gives `m<10^-8`. Their sum is strictly less than `1/25`.
+Finally `9*sqrt(2)<25`, so this closed tube is below the no-equilibrium
+threshold. Phase-to-chord conversion uses `|exp(i*a)-exp(i*b)|<=|a-b|`.
+
+The [registered source family](ORGANIZED_EXTERNAL_REGISTRATION.md#1-prepared-family-sufficient-state-and-symmetry)
+retains all twelve original allowances in `[0,10^-10]`, all 96 relative
+source directions and every primitive donor origin beta. That isolated
+donor rotation leaves the host endpoint unchanged; attachment changes no
+coordinate. Consequently **every member of the original outer-one family,
+at every beta, must leave the closed uniform-rim tube of radius 1/25 after
+some finite unforced contact time** under (1).
+
+This is an analytical corollary of the existing source inequalities and
+the complete-flow argument, not a replay or amendment of their frozen
+assessments. It supplies no uniform exit-time bound, winding loss, terminal
+state or physical identification. In particular, leaving this tube may
+change the host origins while keeping a common internal profile; it does
+not by itself force departure from the whole common-host family considered
+next. No response record or source-assessor flag is changed.
+
+### 5.18. Compactness gives a uniform but uncomputed reorganization gap
+
+The dependence on sigma in (17am) leaves a separate question: could PSD
+stationary states approach common host profiles while their reference rims
+approach cuts? The cut limits can be included without treating them as
+admitted targets.
+
+Let K_closed be the closure, in the compact 54-phasor torus, of the
+original complete marked phase class. Let E_PSD consist of its stationary
+states with `M>=0`. Both stationarity and PSD are closed conditions, so
+E_PSD is compact. Let C_common be the compact set of phases with
+`z_(c,j)=p_j*q_c` for all five hosts, with arbitrary unit p, q and arbitrary
+donor phasors. We show that these two compact sets are disjoint.
+
+At any supposed intersection, the reference rim q lies in the closure of
+the cut-free winding-one rim class. If it has at least three distinct
+phasors, the rank-three argument (17aa) still applies, even at marked
+cuts: stationarity forces the donor to share p with a constant relative
+origin. The wheel inequality of section 5.1 extends to this rim closure
+by continuity. The common-profile pair then has quadratic form at most
+`-9/2`, contradicting PSD.
+
+The remaining case has at most two distinct rim phasors. A one-point rim
+has winding zero in an open neighborhood without cuts, so cannot be such
+a limit. The same holds for two nonantipodal points: every transition
+between them has a reverse transition, their principal gaps cancel, and
+all rim edges stay away from cuts. Thus the only possible two-point limit
+is an antipodal partition, with nonempty host groups P and N at q_plus
+and `-q_plus`. Let k be the number of rim edges crossing that partition;
+`k>=2`. Put
+`Q=sum_j Re(w_j*conj(p_j*q_plus))`. The indicators of all nodes in the
+respective host groups, with zero donor entries, give exact cut forms
+
+\[
+ \mathbf1_P^TM\mathbf1_P=-9k+|P|Q,\qquad
+ \mathbf1_N^TM\mathbf1_N=-9k-|N|Q.
+ \tag{17ap}
+\]
+
+Internal edges do not cross either cut, each crossing rim cosine is -1,
+and the spoke terms have the displayed opposite signs. If Q is
+nonpositive choose P; otherwise choose N. The chosen form is at most
+`-9k<=-18`, again contradicting PSD. This boundary control requires no
+donor profile assumption and no stationarity equation. Recentring its
+indicator preserves the negative relative form.
+
+Define the distance of the actual hosts from the entire common-profile
+family by
+
+\[
+ d_{\rm common}(z_H)
+ =\min_{p\in(S^1)^9,\ q\in(S^1)^5}
+       \max_{c,j}|z_{c,j}-p_jq_c|.
+ \tag{17aq}
+\]
+
+The minimum is attained, this distance is continuous, and it vanishes
+exactly on the host projections of C_common. Since C_common allows every
+donor, disjointness gives a number `delta_*>0` such that every state in
+E_PSD satisfies `d_common>=delta_*`, if E_PSD is nonempty. If it is empty,
+the exclusion is vacuous. In particular every possible stable stationary
+target in the original marked class must be separated by a finite host
+deformation from **all** common host profiles, including sequences whose
+reference rims approach cuts. Additional Hessian zero modes are included
+in this PSD statement.
+
+This is an existence proof of a positive separation, with no value or
+computable certificate for delta_star supplied. It proves neither that
+E_PSD is nonempty nor that the remaining genuinely different host profiles
+are unstable. The explicit reference-dependent bound (17am), the uniform-rim
+defect (17an), and this global uncomputed gap have different conclusions.
+Only the uniform-rim result has the conditional complete-flow exit
+consequence established above. None supplies actual-source capture,
+general common-profile-tube exit or physical identification. The
+[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#contact-maintenance-certificate-admission)
+retains the stationary feasibility and full stability decision beyond
+these exclusions.
+
 ## 6. Actual aligned outer-zero control after the full observation word
 
 The local target in (2) becomes a maintenance result only with an actual
@@ -1464,6 +1736,13 @@ the stronger necessary condition `D>=9/4` without the acute outer-gap
 restriction and excludes every common internal phase profile. It does not
 extend the frozen source calculation into a future-retention certificate.
 
+The separate [uniform-rim source corollary](#actual-outer-one-host-reorganization)
+uses the retained endpoint and observation-history inequalities to prove
+eventual exit of the full outer-one family from a specified uniform-rim
+neighborhood, at every donor origin. This is a full-fine departure result,
+with neither an exit-time bound nor a winding-loss conclusion; the frozen
+assessment (26) and its flags keep their original scope.
+
 These results separate maintained constituent identity, loss of a convenient
 capture chart, stationary instability and actual-source identity loss.
 They do not justify another series of short-horizon refinements or transfer
@@ -1508,7 +1787,7 @@ detached proof path. Numerical checks verify implemented arithmetic and
 wiring; the analytic arguments above establish the conditional mathematical
 claims and their domain boundaries.
 
-The later analytical extension in sections 5.1-5.15 uses exact identities
+The later analytical extension in sections 5.1-5.18 uses exact identities
 and counterexamples. Static regression checks separately reconstruct the
 stationary controls' neighbor resultants and the blind point's lifted
 secant from edge sums. These are arithmetic controls, not a stationary
@@ -1544,3 +1823,13 @@ outer-zero state, whose rank-one E is explicitly outside the winding-one
 reconstruction theorem. Neither local rank nor an infinitesimal null
 direction replaces the nonlinear stationary guards or the original
 full-box certificate.
+
+The host-reorganization controls check the current-error estimate, the
+uniform-rim residual floor, the phase-pair comparison and the antipodal
+boundary cuts using independently assembled edge sums. These static
+controls do not sample or compute the compact uniform gap. The conditional
+exit proof uses the complete law and its exact loss identity; it neither
+runs a trajectory nor re-evaluates any frozen source or response. The
+actual-source corollary combines the already proved complete-source bounds
+with a separate analytic majorant for the same observation drift. Its
+uniform-rim tube is distinct from the broader PSD-only exclusion.

@@ -176,6 +176,198 @@ def test_donor_reconstruction_covariance_does_not_remove_the_full_residual(mp):
     assert residual_squared > 0
 
 
+def test_host_reorganization_uniform_rim_has_a_finite_current_floor(mp):
+    """A static fine perturbation retains the floor with arbitrary donor phases."""
+    tolerance, epsilon = mp.mpf("1e-165"), mp.mpf(1) / 200
+    origins = tuple(2 * mp.pi * (child - 2) / 5 for child in range(5))
+    profile = tuple(
+        2 * mp.pi * (slot - 4) / 9 + mp.mpf((2 * slot + 1) % 7 - 3) / 50
+        for slot in range(9)
+    )
+    donor_origins = tuple(mp.mpf(2 * slot - 8) / 7 for slot in range(9))
+    host_reference = tuple(
+        profile[slot] + origins[child] for child in range(5) for slot in range(9)
+    )
+    host = tuple(
+        value + epsilon * ((3 * (index // 9) + 5 * (index % 9)) % 7 - 3) / 3
+        for index, value in enumerate(host_reference)
+    )
+    assert all(
+        abs(mp.exp(mp.j * actual) - mp.exp(mp.j * reference)) <= epsilon
+        for actual, reference in zip(host, host_reference)
+    )
+    phases = host + tuple(
+        value + origin for value, origin in zip(profile, donor_origins)
+    )
+    current = [mp.mpf(0)] * 54
+    for left, right in _EDGES:
+        value = mp.sin(phases[right] - phases[left])
+        current[left] += value
+        current[right] -= value
+    floor = 1 / mp.sqrt(2) - 9 * epsilon
+    assert floor > 0
+    for slot in range(9):
+        internal = mp.sin(profile[(slot + 1) % 9] - profile[slot]) + mp.sin(
+            profile[(slot - 1) % 9] - profile[slot]
+        )
+        ideal = tuple(
+            internal + mp.sin(donor_origins[slot] - origin) for origin in origins
+        )
+        actual = tuple(current[9 * child + slot] for child in range(5))
+        assert (
+            abs(sum(value**2 for value in ideal) - 5 * internal**2 - mp.mpf(5) / 2)
+            < tolerance
+        )
+        assert (
+            max(abs(value - reference) for value, reference in zip(actual, ideal))
+            <= 9 * epsilon
+        )
+        assert max(abs(value) for value in ideal) >= 1 / mp.sqrt(2)
+        assert max(abs(value) for value in actual) >= floor
+
+
+def test_host_reorganization_conditioned_pair_bound_on_a_nonstationary_control(mp):
+    """Supplied chord bounds test the envelope, without inferring stationarity."""
+    tolerance, epsilon = mp.mpf("1e-165"), mp.mpf("1e-5")
+    origins = tuple((child - 2) * mp.pi / 3 for child in range(5))
+    design = mp.matrix([[1, mp.cos(angle), -mp.sin(angle)] for angle in origins])
+    expected_gram = mp.matrix([[5, 1, 0], [1, 2, 0], [0, 0, 3]])
+    assert max(abs(value) for value in design.T * design - expected_gram) < tolerance
+    sigma = mp.sqrt((7 - mp.sqrt(13)) / 2)
+    coefficient = 18 * mp.sqrt(5) / sigma
+    gaps = (6 * mp.pi / 7,) + (mp.pi / 7,) * 8
+    profile = tuple(sum(gaps[:slot], mp.mpf(0)) for slot in range(9))
+    donor_origins = tuple(epsilon * (slot - 4) / 4 for slot in range(9))
+    beta = tuple(mp.exp(mp.j * angle) for angle in donor_origins)
+    host_reference = tuple(
+        profile[slot] + origins[child] for child in range(5) for slot in range(9)
+    )
+    host = tuple(
+        value + epsilon * ((3 * (index // 9) + 5 * (index % 9)) % 7 - 3) / 3
+        for index, value in enumerate(host_reference)
+    )
+    assert all(
+        abs(mp.exp(mp.j * actual) - mp.exp(mp.j * reference)) <= epsilon
+        for actual, reference in zip(host, host_reference)
+    )
+    assert all(abs(value - beta[0]) <= coefficient * epsilon for value in beta)
+    phases = host + tuple(
+        value + origin for value, origin in zip(profile, donor_origins)
+    )
+    current = [mp.mpf(0)] * 54
+    for left, right in _EDGES:
+        value = mp.sin(phases[right] - phases[left])
+        current[left] += value
+        current[right] -= value
+    assert max(abs(value) for value in current[:45]) > mp.mpf("0.5")
+    rim = mp.matrix(
+        [
+            mp.sin(origins[(child + 1) % 5] - angle)
+            + mp.sin(origins[(child - 1) % 5] - angle)
+            for child, angle in enumerate(origins)
+        ]
+    )
+    rows = []
+    for slot in range(9):
+        internal = mp.sin(profile[(slot + 1) % 9] - profile[slot]) + mp.sin(
+            profile[(slot - 1) % 9] - profile[slot]
+        )
+        coefficients = mp.matrix([internal, beta[slot].imag, beta[slot].real])
+        actual = mp.matrix([current[9 * child + slot] for child in range(5)])
+        error = actual - design * coefficients - rim
+        assert max(abs(value) for value in error) <= 9 * epsilon
+        rows.append((coefficients, actual, error))
+    for coefficients, actual, error in rows:
+        delta = coefficients - rows[0][0]
+        residual_difference = actual - rows[0][1]
+        assert (
+            max(
+                abs(value)
+                for value in design * delta - residual_difference + error - rows[0][2]
+            )
+            < tolerance
+        )
+        assert (
+            mp.norm(delta)
+            <= (18 * mp.sqrt(5) * epsilon + mp.norm(residual_difference)) / sigma
+        )
+
+    # The fixed pair has no internal-edge cost, even on the nonacute profile.
+    reference = host_reference + tuple(value + donor_origins[0] for value in profile)
+    child_phasors = tuple(mp.exp(mp.j * angle) for angle in origins) + (beta[0],)
+    real = tuple(value.real for value in child_phasors for _ in range(9))
+    imaginary = tuple(value.imag for value in child_phasors for _ in range(9))
+    pair_values = []
+    for state in (reference, phases):
+        pair_values.append(
+            sum(
+                mp.cos(state[right] - state[left])
+                * (
+                    (real[right] - real[left]) ** 2
+                    + (imaginary[right] - imaginary[left]) ** 2
+                )
+                for left, right in _EDGES
+            )
+        )
+    assert pair_values[0] <= -mp.mpf(9) / 2
+    error_bound = (540 + 180 * coefficient) * epsilon
+    assert abs(pair_values[1] - pair_values[0]) <= error_bound
+    margin = mp.mpf(9) / 2 - error_bound
+    assert margin > 0
+    assert pair_values[1] <= -margin
+    rayleigh = []
+    for vector in (real, imaginary):
+        centered = tuple(value - sum(vector) / 54 for value in vector)
+        quadratic = sum(
+            value * action
+            for value, action in zip(centered, _edge_action(mp, centered, phases))
+        ).real
+        rayleigh.append(quadratic / sum(value**2 for value in centered))
+    assert min(rayleigh) <= -margin / 54
+
+
+@pytest.mark.parametrize("positive_children", ((0,), (0, 2)))
+@pytest.mark.parametrize("antipodal_donor", (False, True))
+def test_host_reorganization_antipodal_boundary_has_a_negative_child_cut(
+    mp, positive_children, antipodal_donor
+):
+    """Marked-cut boundary states do not bypass the common-host obstruction."""
+    tolerance = mp.mpf("1e-165")
+    profile = tuple(2 * mp.pi * (slot - 4) / 9 for slot in range(9))
+    donor_origins = tuple(
+        mp.mpf(slot - 4) / 20 + (mp.pi if antipodal_donor else 0) for slot in range(9)
+    )
+    phases = tuple(
+        profile[slot] + (0 if child in positive_children else mp.pi)
+        for child in range(5)
+        for slot in range(9)
+    ) + tuple(value + origin for value, origin in zip(profile, donor_origins))
+    crossings = sum(
+        (child in positive_children) != ((child + 1) % 5 in positive_children)
+        for child in range(5)
+    )
+    assert crossings in (2, 4)
+    donor_sum = sum(mp.cos(origin) for origin in donor_origins)
+    assert (donor_sum < 0) == antipodal_donor
+    quadratics = []
+    for positive in (True, False):
+        children = tuple(
+            child for child in range(5) if (child in positive_children) == positive
+        )
+        cut = tuple(mp.mpf(index // 9 in children) for index in range(54))
+        centered = tuple(value - sum(cut) / 54 for value in cut)
+        expected = -9 * crossings + (1 if positive else -1) * len(children) * donor_sum
+        for vector in (cut, centered):
+            quadratic = sum(
+                value * action
+                for value, action in zip(vector, _edge_action(mp, vector, phases))
+            ).real
+            assert abs(quadratic - expected) < tolerance
+        quadratics.append(quadratic)
+    assert min(quadratics) <= -9 * crossings
+    assert min(quadratics) <= -18
+
+
 def test_donor_schur_singular_block_has_an_explicit_full_negative_witness(mp):
     """The winding-one carrier has a singular donor block, not a stable target."""
     tolerance = mp.mpf("1e-165")

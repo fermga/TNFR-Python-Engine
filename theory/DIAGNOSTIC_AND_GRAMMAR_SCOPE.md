@@ -1116,10 +1116,35 @@ locally. Host relaxation preserves eight relative curvature directions
 and 45 positive directions. Positivity of A is not a global premise already
 proved by donor reconstruction. At PSD singular A with nullity r, the guard
 Jacobian has rank `36-r` and r host-only neutral directions persist; the
-regular chart cannot be assumed there. Global coverage, donor balance,
-marked-class admission and stationary stability remain unresolved,
-including nonacute and asymmetric configurations. These are stationary
-charts, not closed temporal laws. The
+regular chart cannot be assumed there. These are stationary charts, not
+closed temporal laws.
+
+The [finite host-reorganization exclusion](nodal/ORGANIZED_CONTACT_MAINTENANCE.md#finite-host-reorganization-exclusion)
+adds an actual stationary restriction beyond those coordinate reductions.
+For a cut-free winding-one reference rim, an explicit neighborhood of
+common host profiles contains no PSD equilibrium, even with an arbitrary
+donor profile. Near the uniform rim, host balance alone excludes every
+equilibrium. The distance is a maximum phasor chord error on the fine host
+coordinates. The closed uniform-rim neighborhood cannot retain the
+unforced flow indefinitely: compactness and the exact storage loss force
+equilibrium omega limits, which its residual bound excludes. This eventual
+exit has no time bound and does not imply winding loss. It cannot be
+transferred to a general PSD-only neighborhood that may contain saddles.
+The [actual outer-one corollary](nodal/ORGANIZED_CONTACT_MAINTENANCE.md#actual-outer-one-host-reorganization)
+combines the retained acquisition and complete observation-history bounds:
+all twelve original allowances, all 96 relative preparation directions and
+every donor origin enter the uniform-rim tube of radius `1/25`. Under the
+unchanged unforced law, each must leave that tube in finite time. This is
+an analytical consequence of the existing source proofs, not a new
+numerical source assessment or a change to frozen response flags. It gives
+no uniform exit-time bound, winding-loss or convergence result.
+A separate compactness argument gives a positive uniform distance between
+the common-host family and all PSD stationary states in the compact closure
+of the original marked phasor class, if any exist. It includes degenerate
+host blocks and approach to marked cuts, but computes no global gap or
+target. The remaining sector requires finite nonseparable host
+reorganization; its existence and stability are still undecided. No
+physical identification follows. The
 [reflection obstruction](nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md#5-complete-law-consequence-and-scope)
 requires its static sector. The
 [root and stability certificate](nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md#root-and-stability-acceptance)

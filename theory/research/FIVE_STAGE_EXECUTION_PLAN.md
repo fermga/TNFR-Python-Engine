@@ -118,14 +118,17 @@ stronger condition. The [foundational priority review](#post-contact-foundation-
 is now closed: continued-contact stationary maintenance is the selected
 generative dependency, but a stable target or global instability certificate
 in its complete marked class remains missing. The
-[stationary compatibility theorem](#contact-maintenance-certificate-admission)
-now identifies a local nine-coordinate compatibility manifold when the
-joined host Hessian block is strictly positive. Host relaxation preserves
-all eight remaining relative curvature directions. Global positivity of
-that host block has not been proved; a singular PSD case would retain
-additional host neutral directions. Chart coverage, constrained stationarity
-and stability in the original class remain unresolved. No numerical
-campaign is admitted.
+[finite host-reorganization exclusion](#contact-maintenance-certificate-admission)
+now excludes PSD equilibrium in explicit neighborhoods of common host
+profiles. Near the uniform rim, no equilibrium exists and the unforced
+flow cannot stay in the closed neighborhood indefinitely. The retained
+source proofs place the entire original outer-one family, at every donor
+origin, inside its radius-1/25 tube: each must eventually leave it under
+the unchanged law. No uniform exit time or winding loss follows. A separate
+compactness argument gives a positive, uncomputed uniform separation of
+all PSD stationary candidates from the common-host family, including
+degenerate candidates and approach to marked cuts. The remaining finitely
+reorganized sector is unresolved; no numerical campaign is admitted.
 
 No 45-node acquisition, physical readout or source certificate transfers to
 the supplied positive-r matrix law by default. Earlier frozen protocols,
@@ -142,8 +145,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Pending analytical dependency | [Stationary maintenance and chart coverage](#contact-maintenance-certificate-admission): control the admitted host compatibility charts and their remaining curvature, including the singular host-block sector, or construct a full stable target; no numerical campaign is admitted |
-| Closed local compatibility and curvature reduction | [Stationary compatibility manifold](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#stationary-compatibility-manifold): a positive joined host block gives 36 independent host compatibility constraints, nine local coordinates and eight relative curvature directions; singular PSD host blocks retain additional neutral directions |
+| Pending analytical dependency | [Stationary maintenance after finite host reorganization](#contact-maintenance-certificate-admission): construct a full stable target or cover the nonseparable sector outside the excluded neighborhoods, including degenerate cases; no numerical campaign is admitted |
+| Closed finite host-reorganization exclusion | [Finite neighborhoods and compact separation](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#finite-host-reorganization-exclusion): explicit common-host neighborhoods exclude PSD equilibrium. The entire original outer-one source family lies in the radius-1/25 uniform-rim tube and must leave it under the unforced law; no uniform exit-time or winding-loss claim. The positive global separation remains uncomputed |
 | Closed post-contact foundational review | [Dependency decision](#post-contact-foundation-review): contact response and hidden-mode results do not supply independent law selection, indefinite maintenance or a physical bridge; the missing maintenance certificate mechanism is explicit |
 | Closed full-fine preparation sensitivity | [Hidden internal modes](#organized-contact-preparation-sensitivity): all-time first-order invisibility, opposite-mode quadratic coupling and explicit winding-admissible leakage distinguish exact reflection protection from a linear observation kernel |
 | Closed ideal dynamical cancellation | [Complete-law origin classification](#organized-contact-dynamic-cancellation): reflection protects both laws at beta=m*pi/5; elsewhere sine regenerates donor response at order nine and the alternative at order three or five, within the original derivative budget |
@@ -327,7 +330,7 @@ response has not been derived from the earlier acquired constituents.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
-| Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Unresolved chart coverage and stationary curvature; no active search.** A positive joined host block gives a local nine-coordinate compatibility manifold and eight relative curvature directions. Its global admission and the singular PSD host-block sector remain open; coordinate reduction alone does not decide stability |
+| Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Finite host reorganization is necessary; remaining sector unresolved.** Explicit neighborhoods exclude PSD equilibrium, and compactness separates every PSD stationary candidate from common host profiles. Every original outer-one source must eventually leave the radius-1/25 uniform-rim tube; winding fate remains open. No stable target or global exclusion is supplied; no search is active |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
 | Sufficient collective state and inherited response | Construct and certify a forecast from a joint finite noisy record without known collective initialization | **Closed operational software case.** The whole-record bound and one candidate forecast are certified; arbitrary-record convergence and physical measurement remain unproved |
@@ -910,54 +913,68 @@ question without repeating local starts, source histories or contact
 derivatives.
 
 <a id="contact-maintenance-certificate-admission"></a>
-### Closed local compatibility manifold; stationary chart coverage unresolved
+### Closed finite host-reorganization exclusion; remaining stationary sector unresolved
 
-The [proof owner](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#stationary-compatibility-manifold)
-gives a local compatibility manifold and exact remaining-curvature criterion
-when the joined host Hessian block is strictly positive. It retains the
-original sine law, complete `C9 x W6` support, held unit capacities, tau
+The [proof owner](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#finite-host-reorganization-exclusion)
+gives finite exclusion neighborhoods and a uniform separation theorem. It
+retains the original sine law, complete `C9 x W6` support, held unit capacities, tau
 clock, both conserved means, all 53 relative phases and the
 [complete product marked class](../nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md#marked-cycle-information-and-connected-chambers).
 No numerical search, source replay, trajectory, response fit or physical
 record was evaluated.
 
+Let epsilon bound the maximum phasor chord error of the fine hosts from
+`p_j*q_c`, with arbitrary common internal profile p and a cut-free
+winding-one reference rim q. If sigma is the least singular value of the
+five-row matrix `1, cos(Phi_c), -sin(Phi_c)`, every stationary state with
+`epsilon < sigma/(120*sigma+720*sqrt(5))` has negative full relative
+curvature. No donor shape or relative origin is fixed. For the uniform
+rim, every slot has maximum absolute host residual at least
+`1/sqrt(2)-9*epsilon`; thus `epsilon<1/(9*sqrt(2))` excludes every
+equilibrium, without a PSD or host-block premise.
+
+The closed uniform-rim neighborhood cannot retain an unforced trajectory
+indefinitely. Coercivity on a fixed form-mean leaf and the compact phase
+torus make trajectories precompact, while the exact storage loss confines
+their omega limits to equilibria. The residual bound excludes such a
+limit inside that neighborhood. This proves eventual exit with no time
+bound or winding-loss conclusion. The general
+PSD-only exclusion cannot inherit this conclusion because saddles may
+remain in its neighborhood.
+
+The [actual-source corollary](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#actual-outer-one-host-reorganization)
+uses the retained carrier endpoint, fine-source error and complete
+observation-word drift bounds to place every original outer-one source in
+the closed uniform-rim tube with `epsilon=1/25<1/(9*sqrt(2))` at contact.
+It covers all twelve original allowances, all 96 relative preparation
+directions and every supplied donor origin beta. The support event changes
+no coordinate. Every such trajectory must therefore leave this tube in
+finite time under the unchanged unforced law, with no later event. This
+mathematical corollary performs no numerical source reassessment, replays
+no frozen producer and changes no evaluated response flag. It supplies no
+uniform exit-time bound, winding loss, convergence or physical claim.
+
+A separate compactness argument separates all PSD stationary states in
+the compact closure of the original marked phasor class from the full
+common-host family by a positive uniform distance, if such states exist.
+The boundary proof retains
+the antipodal case rather than assuming the reference singular value stays
+away from zero. This covers degenerate host blocks and approach to marked
+cuts, but supplies no numerical value for the uniform gap. It does not
+construct a target or exclude every finitely reorganized configuration.
+
 The [global donor reconstruction](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#global-stationary-donor-reconstruction)
-still determines at most one circular completion for compatible host data.
-Its host residual and unit-circle guards now have an exact local rank:
-at an admitted equilibrium with strictly positive joined host block A, they
-impose 36 independent constraints. The nine donor phases locally parameterize
-host compatibility, with eight coordinates after common rotation. Donor
-balance and complete marked-class admission remain required for equilibrium.
+and [local compatibility geometry](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#stationary-compatibility-manifold)
+remain tools for that sector. Regular positive-host-block charts retain
+eight relative curvature directions; singular PSD host blocks retain
+additional neutral directions and must not be discarded.
 
-Relaxing the host along this local branch gives
-`N=D-C^T*A^-1*C`. Its eight relative directions retain every remaining
-negative or additional zero curvature direction; the other 45 directions
-are positive. This identifies the relevant stationary and curvature problem
-in a regular chart, not a global reduced potential or an autonomous temporal
-law. Strict positivity of A has not been established throughout the class.
-At a PSD candidate with singular A and nullity r, the compatibility-guard
-Jacobian instead has rank `36-r`, and r donor-invisible host directions lie
-in the full Hessian kernel. No nine-coordinate chart follows in that sector.
-
-The [common-host-profile obstruction](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#common-host-profile-obstruction)
-also strengthens the excluded sector. If the five hosts share an internal
-profile up to constant origins, full stationarity forces the donor to share
-it. The existing common-six-child curvature obstruction then excludes PSD,
-including degenerate cases. An unrestricted donor profile cannot stabilize
-that host arrangement. The earlier defect, resultant and cyclic-slot
-restrictions remain necessary.
-
-**Missing admission:** establish a global stationary/curvature bound or a
-certified cover of the regular host charts with domains and curvature
-verdicts, or
-construct one stable target. A full obstruction must also cover singular
-PSD host blocks and possible degenerate minima; the existing donor reduction
-still retains all 44 host-relative directions there. Local implicit charts
-and their dimension counts supply no global coverage or stability verdict.
-Further block eliminations alone would not close that gap. Nonacute and
-asymmetric host configurations remain included; common profiles, reflection
-or acuteness cannot be imposed. Repeating phase-pair sums, source precision
-changes or optimizer starts would not settle these obligations.
+**Missing admission:** construct one stable target or prove a stationary
+obstruction covering the remaining nonseparable sector beyond these
+excluded neighborhoods. Include nonacute and asymmetric states, singular
+host blocks and possible degenerate minima. Neither further block
+elimination, a sharper constant in the same neighborhood, more source
+precision nor optimizer restarts resolves the remaining existence question.
 
 The unresolved question retains the original complete law and true cut-free
 class. A full obstruction must establish a negative relative direction at

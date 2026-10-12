@@ -1018,6 +1018,31 @@ and the singular-PSD exception in the proof. The maintenance selection uses
 no report/source fixture; neither selection invokes a new root search or
 trajectory.
 
+For [finite host-reorganization exclusion](theory/nodal/ORGANIZED_CONTACT_MAINTENANCE.md#finite-host-reorganization-exclusion),
+add `host_reorganization` from the maintenance module. The six static
+controls independently check the phasor chord errors, full
+host-current comparison and uniform-rim residual floor, retaining arbitrary
+donor phases and the actual fine support. Antipodal boundary controls must
+include both donor-resultant signs and the whole-child negative cuts.
+The general-reference control uses an independent exact Gram matrix and
+fixed nonstationary perturbations to check the three-column singular value,
+slot-current identity and full pair-Hessian error bound. Its measured
+stationary residual remains explicit; a small residual is not a root
+certificate. These checks invoke no report fixture, root search, trajectory or
+source assessment. The proof owns the finite exclusion theorem, compact
+uniform separation and eventual exit from the closed uniform-rim
+neighborhood. Sampled states establish neither those global arguments nor
+a numerical uniform gap or exit-time bound.
+
+The [actual outer-one source corollary](theory/nodal/ORGANIZED_CONTACT_MAINTENANCE.md#actual-outer-one-host-reorganization)
+combines the retained carrier endpoint, original fine-source bounds and
+complete observation-word drift analytically. It covers all twelve
+allowances, all 96 relative directions and every donor origin, placing
+the source inside radius `1/25` before applying the exit theorem. Do not
+replay frozen producers, change response flags or treat a fresh numerical
+source assessment as necessary to test this consequence. Its conclusion
+supplies no uniform exit-time bound, winding loss or convergence.
+
 For [reflected stationary contact identity](theory/nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md),
 select `tests/physics/test_organized_contact_reflection.py` with contact
 maintenance, external interaction and `tests/test_rational_interval.py`.
