@@ -1057,7 +1057,7 @@ and the prospective protocol belong only to the
 | Question | What the existing evidence permits | Missing admission |
 | --- | --- | --- |
 | Independent constitutive justification | The two supplied laws form the retained identities and are mathematically distinguishable; the information minimum constrains a description of a law | An independently justified restriction or a complete physical observation. Matching targets, dissipation, symmetry, onset order or operator labels does not select a law |
-| Continued-contact maintenance | The original unit-strength sine law has full-state stationary acceptance and restricted instability theorems. The separately supplied [weak-contact law](nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md) admits source retention, full-fine relaxation and a stable stationary branch | Unit-strength nonseparable feasibility remains open. Under weak contact, a retained source limit is a carrier, but its attracting registration is not selected by the existence of that branch |
+| Continued-contact maintenance | The original unit-strength sine law has full-state stationary acceptance and restricted instability theorems. The separately supplied [weak-contact law](nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md) admits source retention and classifies its low-energy limits as five minima and five saddles | Unit-strength nonseparable feasibility remains open. Under weak contact, every actual origin circle has exceptional saddle capture; selecting an attracting destination requires a source-specific basin certificate |
 | Independent physical property | Collective measurement maps remain admissible in principle; existing electrical comparisons expose explicit failures | A joint certificate of independently prepared state, complete loaded law/support, input and clock calibration, and observation errors, obtained without the reserved response |
 | Additional collective coordinates | Constituent memory already derives quadratic feedback and nonclosure; compression already supplies a controlled finite prediction | A named missing predictive capability. Another covariance representation alone closes none of the preceding gaps |
 
@@ -1065,7 +1065,7 @@ The review's stationary target question concerns a **stable organization
 in the original complete marked class under the original unit-strength
 law**. Its unresolved status does not obstruct every supplied contact law:
 the weighted comparison has its own source-to-target obligations. The
-[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#weak-contact-collective-selection)
+[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#weak-contact-source-basin-admission)
 selects the next dependency. Identity retention alone need not approach
 a stable point.
 The ontology distinguishes formation, finite interaction and

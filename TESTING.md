@@ -1096,6 +1096,21 @@ fold instability and the absence of a nearby stationary escape.
 The exact branch threshold does not extend the source-capture interval,
 decide the original unit-strength outcome or select the actual limit.
 
+The [low-energy collective classification](theory/nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md#weak-contact-wheel-classification)
+uses the same module. Exact cycle inverses and rational majorants check
+the complex contraction, global energy coverage, fifth-order restoring
+coefficient and uniform Fourier remainder. A declared algebraic
+antipodal saddle checks the full positive-weight stationary rows,
+marked identities and phase-Hessian inertia with 100-digit arithmetic;
+no candidate or parameter is selected by a root search. The proof,
+not a sampled eigenvalue, classifies every permitted low-energy target.
+The weighted-row control also checks integer donor-phase-shift invariance.
+The [prepared-circle obstruction](theory/nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md#weak-contact-collective-selection-obstruction)
+uses uniqueness, continuous dependence, open basins and compactness;
+no finite angle list can test its universal conclusion. Preserve the
+distinction between an exceptional source origin whose existence is
+proved and a specified source destination that has not been classified.
+
 For [reflected stationary contact identity](theory/nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md),
 select `tests/physics/test_organized_contact_reflection.py` with contact
 maintenance, external interaction and `tests/test_rational_interval.py`.

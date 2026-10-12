@@ -16,7 +16,10 @@ fold. The larger branch interval gives local stability of that branch;
 the acquired-source inclusion retains its own smaller interval. Within
 that source interval, the full fine residuals decay exponentially and
 the actual collective rows approach the six-node wheel law with an
-explicitly bounded remainder.
+explicitly bounded remainder. The original all-origin source family
+cannot, however, consist entirely of preparations converging to locally
+asymptotically stable equilibria: its retained relative-phase circle
+forces at least one exceptional origin for every fixed source member.
 
 | Item | Declared model and scope |
 | --- | --- |
@@ -373,7 +376,8 @@ persist. The full forms tend to zero and the continuous phase lifts
 converge to one retained-identity equilibrium. Sections 5.1--5.2 below
 show that this limit has the uniform internal carrier profile. Its
 collective origins remain unspecified; a possible degenerate or saddle
-limit is not excluded by source convergence.
+limit is not excluded by source convergence alone. Section 6.5 separately
+classifies the limits and excludes degeneracy in this energy sector.
 
 These are new analytical consequences of the retained source inequalities
 under the explicitly changed contact model. No frozen producer was
@@ -882,7 +886,400 @@ through some nonacute rim configurations and then fails collectively;
 leaving the acute energy chart is not itself loss of marked identity
 or loss of stability.
 
-## 7. Meaning and remaining boundary
+<a id="weak-contact-wheel-classification"></a>
+### 6.5 The source energy range has five minima and five saddles
+
+The source limit can now be classified without selecting its destination.
+Fix \(0<\eta\le1/100000\), and consider a wheel equilibrium with the
+original acute winding-one rim and
+
+\[
+ V_{\rm rim}-V_5<\frac1{750}.
+ \tag{33a}
+\]
+
+Every actual limit from section 5 satisfies (33a): its internal profile
+is the exact carrier, its forms vanish, and its full excess storage is
+less than 3/250. Its nine identical rim contributions therefore give
+\(9(V_{\rm rim}-V_5)<3/250\), since the spoke storage is nonnegative.
+
+**Finite-interval classification.** Modulo common phase rotation there
+are exactly ten labeled wheel equilibria satisfying these premises. Five are
+strict relative minima and five have exactly one negative relative
+phase direction. Their full 54-node carriers have, respectively, 53
+positive relative phase directions, or 52 positive directions and one
+negative direction. The former are locally asymptotically stable for
+the actual complete law; the latter are hyperbolic saddles with one
+unstable direction. No exceptional zero eigenvalue occurs in this
+positive eta interval.
+
+The proof needs the small collective restoring term rather than an
+uncontrolled first-order approximation. Ground the donor at zero and
+write compatible rim lifts as
+
+\[
+ \Phi_c=t+\frac{2\pi(c-2)}5+u_c,
+ \qquad \sum_cu_c=0.
+ \tag{33b}
+\]
+
+Here t is the mean host origin relative to the donor; the centered
+uniform rim profile has mean zero. Put \(b=2\pi/5\), \(c_b=\cos b\),
+\(s_b=\sin b\), let D be the forward rim incidence, and set
+\(A=c_bD^TD\), \(G=A^+\). The projected host stationary equations are
+
+\[
+ u=-G\{D^TN(Du)+\eta\sin(t+b(c-2)+u_c)_{c=0}^4\},
+ \quad N(d)=\sin(b+d)-\sin b-c_bd.
+ \tag{33c}
+\]
+
+The sine on the right is a five-vector. G already removes its mean.
+A row of G is the cyclic permutation of
+\((2/5,0,-1/5,-1/5,0)/c_b\). Consequently
+
+\[
+ \begin{split}
+ \|G\|_\infty&=\frac4{5c_b}<\frac{259}{100},&
+ \|GD^T\|_\infty&=\frac6{5c_b}<\frac{389}{100},\\
+ \lambda_1^{-1}&<\frac{47}{20},&
+ \frac{2\sin(\pi/5)}{\lambda_1}&<\frac{69}{25},
+ \qquad \lambda_1=c_b(2-2c_b).
+ \end{split}
+ \tag{33d}
+\]
+
+These bounds use the exact \(c_b=(\sqrt5-1)/4\). They give a uniform
+complex-eta construction with real t. Take
+\(R=3/200\), \(r_0=1/100\), and center (33c) at
+\(u^{(1)}_c=-\eta\sin(t+b(c-2))/\lambda_1\). On \(|\eta|\le R\),
+\(\|u^{(1)}\|_\infty\le U_1=141/4000\) and
+\(\|Du^{(1)}\|_\infty\le D_1=207/5000\). The complex ball
+\(\|u-u^{(1)}\|_\infty\le r_0\) therefore satisfies
+\(\|u\|_\infty<U_0=23/500\), \(\|Du\|_\infty<D_0=31/500\).
+The fixed point is constrained to the complex zero-mean subspace.
+
+Here are explicit rational bounds for contraction and existence. Define
+
+\[
+ C_h(z)=\frac{z^2}{2(1-z^2/12)},\quad
+ S_h(z)=\frac z{1-z^2/6},\quad
+ S_r(z)=\frac{z^3}{6(1-z^2/20)}.
+\]
+
+On the positive arguments used here these bound, respectively,
+\(\cosh z-1\), \(\sinh z\), and \(\sinh z-z\), by their convergent
+power series. Also \(e^z\le1/(1-z)\). With
+\(g_0=259/100\), \(g_1=389/100\), \(c_0=31/100>c_b\), and
+\(s_0=24/25>s_b\), direct rational arithmetic gives
+
+\[
+ \begin{split}
+ Q_0&=2g_1[s_0S_h(D_0)+c_0C_h(D_0)]
+                         +\frac{g_0R}{1-U_0}<\frac{13}{25},\\
+ B_0&=g_1[s_0C_h(D_1)+c_0S_r(D_1)]
+                         +\frac{g_0RU_1}{1-U_1}<\frac{47}{10000},\\
+ B_0+\frac{13}{25}r_0&<r_0.
+ \end{split}
+ \tag{33e}
+\]
+
+The first line bounds the derivative of the map in (33c):
+\(|\cos(b+d)-c_b|\le s_b\sinh|d|+c_b(\cosh|d|-1)\), and
+\(\|D\|_\infty=2\). The second bounds its displacement at
+\(u^{(1)}\), using the exact linearized equation for that center.
+Thus the map contracts this ball into itself. Its unique solution
+\(u(t,\eta)\) is holomorphic in eta on the disk, real for real eta,
+and smooth in real t. It is a projected stationary shape, not yet a
+stationary wheel: the remaining mean equation is
+
+\[
+ T(t,\eta)=\eta\sum_{c=0}^4
+           \sin(t+b(c-2)+u_c(t,\eta))=0.
+ \tag{33f}
+\]
+
+If \(W(t,\eta)=V_{\mathrm w,\eta}(t+b(c-2)+u_c;0)\), the projected
+equations give \(\partial_tW=T\). The uniform complex bound is
+\(|T|\le5R/(1-U_0)<2/25=:M_0\). Cyclic relabeling makes T periodic
+with period 2*pi/5; phase inversion combined with rim reflection makes
+it odd in t. Changing eta's sign is equivalent to replacing t by
+t+pi. Finally, the coefficient of eta^n in T is a trigonometric
+polynomial of degree at most n. This follows inductively from (33c):
+the linear forcing has degree one, and multiplication in every Taylor
+coefficient adds its harmonic degrees and perturbation orders together.
+Only sine harmonics \(\sin(5kt)\) with \(5k\le n\) and parity
+\(5k\equiv n\pmod2\) can occur. Orders below five and order six
+therefore vanish exactly.
+
+The coefficient at order five follows from the existing exact branch,
+without assigning a numerical root. Put \(\varphi=(1+\sqrt5)/2\), and
+\(\ell=(2,2,1)^T\) in the reflection-even coordinates (q,p,t) of
+(29). The host mean of that vector is \(\ell^T(q,p,t)/5\). Eliminating
+its two mean-zero directions gives
+
+\[
+ W_{tt}(0,\eta)=\frac{50\det E}{\ell^T\operatorname{adj}(E)\ell}.
+ \tag{33g}
+\]
+
+After a cyclic rim relabeling, the reflected solution of section 6.2
+has compatible origins \((-v,-u,0,u,v)\), mean zero, and belongs to
+the locally unique shape branch. At eta=0, its r equals
+\(\varphi^{-1}\), \(dr/d\eta=\varphi\), and
+\(d(r^2+r-1)/d\eta=\sqrt5\varphi\). Equation (30) consequently gives
+\(\det E=(25\varphi^8/8)\eta^5+O(\eta^6)\).
+The denominator in (33g) tends to \(25/(4\varphi^2)\). Thus
+\(W_{tt}(0,\eta)=25\varphi^{10}\eta^5+O(\eta^6)\), which fixes the
+only possible fifth-order torque coefficient:
+
+\[
+ T(t,\eta)=5\varphi^{10}\eta^5\sin(5t)+\text{higher orders}.
+ \tag{33h}
+\]
+
+The remainder can be bounded relative to \(\sin(5t)\), including
+arbitrarily near its zeros. Cauchy's coefficient estimate gives
+\(\|T_n\|_\infty\le M_0/R^n\). Each sine Fourier coefficient of
+\(T_n\) has magnitude at most \(2M_0/R^n\). Since
+\(|\sin(5kt)|\le k|\sin(5t)|\), the quotient of the nth coefficient
+is bounded by \(M_0m(m+1)/R^n\), where \(m=\lfloor n/5\rfloor\).
+Use \(m(m+1)\le n(n+5)/25\) and put \(h=\eta/R\). Summing the
+absolutely convergent series from order seven gives
+
+\[
+ \begin{split}
+ \left|\frac{T(t,\eta)}{\eta^5\sin(5t)}-5\varphi^{10}\right|
+ &\le \frac{M_0\eta^2}{25R^7}
+             \frac{84-148h+66h^2}{(1-h)^3}<200,\\
+ 5\varphi^{10}&>600.
+ \end{split}
+ \tag{33i}
+\]
+
+The last strict bound is rational arithmetic at eta=1/100000; the
+positive-coefficient series increases with eta. The quotient extends
+continuously through every zero of sin(5t), by the same uniformly
+convergent sine-polynomial quotients. Hence T has exactly the ten zeros
+\(t=k\pi/5\), k=0,...,9, on the relative-origin circle. Its derivative
+is strictly positive at even k and strictly negative at odd k. This is
+a finite-interval conclusion, not just a leading-order prediction.
+
+It remains to exclude other low-energy shapes outside the contraction
+ball. Every acute winding-one C5 gap is positive: its other four gaps
+are strictly below pi/2 and their sum is less than 2*pi. With one gap
+fixed at s, Jensen bounds the rim cost below by
+\(F_5(s)=1-\cos s+4[1-\cos((2\pi-s)/4)]\). This function increases
+above b. Put \(C_8(y)=1-y^2/2+y^4/24-y^6/720+y^8/40320\).
+The cosine upper bound on [0,3/2], \(\pi>157/50\), and
+\(c_b>309/1000\) give the exact certificate
+
+\[
+ F_5(29/20)-V_5
+ >\frac{1545}{1000}-C_8(29/20)
+       -4C_8\!\left(\frac{2(157/50)-29/20}{4}\right)
+ >\frac1{750}.
+ \tag{33j}
+\]
+
+Thus every gap of a candidate satisfying (33a) is less than 29/20,
+where \(\cos(29/20)>1/10\) follows from the sixth-order cosine lower
+polynomial. The constructed shape also has all gaps in (0,29/20),
+by its bound \(\|Du\|_\infty<D_0\). The straight compatible segment
+from any candidate to the constructed shape with the same mean t stays
+in that interval. On its zero-mean host directions the full wheel
+potential has Hessian at least
+\((1/10)L_5-\eta I>0\), since \(\lambda_2(L_5)>1\).
+Two projected stationary shapes cannot occur on such a strictly convex
+segment. Every admitted candidate must therefore be the constructed
+shape. Conversely, the holomorphic bound and u(t,0)=0 give
+\(\|u(t,\eta)\|_\infty\le(U_0/R)\eta=(46/15)\eta\) by Schwarz's
+lemma, so all ten constructed equilibria have
+\(V_{\rm rim}-V_5\le10\|u\|_\infty^2<100\eta^2<1/750\).
+The classification covers exactly the stated energy sector.
+
+The four host shape directions are strictly positive. Their Schur
+complement is \(W_{tt}\), so (33i) proves the asserted wheel inertia.
+The full fine phase block stays positive even for the saddles: acute
+rim weights contribute nonnegatively, the internal block contributes
+\(\cos(2\pi/9)\lambda_2(L_9)>1/5\), and the negative spoke part is
+bounded below by \(-6\eta I\). Equation (20) thus leaves the single
+negative direction collective. To check full dynamical hyperbolicity,
+the linearized relative phase equation has the symmetric pencil
+\(s^2L_\eta^{-1}+sI/4+\gamma^2M_\eta/16\). At s=i*omega, its imaginary
+part excludes nonzero imaginary roots, and invertibility of the phase
+Hessian excludes s=0. For positive real s the pencil increases strictly
+from a matrix with one negative direction to a positive matrix, giving
+exactly one unstable eigenvalue; a nonreal eigenvalue with nonnegative
+real part is excluded by the imaginary part of its scalar quadratic
+identity. All remaining dynamical eigenvalues have negative real part.
+
+This identifies the possible destinations, including their stability
+types. It does not identify the destination of any specified acquired
+source or replace the decaying fine-state remainder by exact transient
+wheel closure.
+
+### 6.6 An exact antipodal saddle retains positive contact weights
+
+An explicit member of the classified saddle family provides a static
+control on the sign and model boundary. Set \(a=1-\eta\) and let
+\(r\) be the unique zero of f in (26) between 3/5 and
+\(r_*^0=(\sqrt5-1)/2\). Indeed,
+\(f(3/5,999/1000)=14601/10^6>0\), f increases with a on this
+interval, and
+\(f(r_*^0,a)=(a-1)(a+1-r_*^0)<0\). Also f decreases strictly
+with r on this interval, since \(r_*^0<5/8\) and
+\(f_r<3(5/8)^2-1999/1000<0\).
+
+Use (25)--(26) to define c, u and v, then take the actual rim origins
+\((-v,-u,0,u,v)\) and donor origin pi. The formal value a-1=-eta
+only constructs these phases. Shifting the donor by pi changes every
+spoke sine and cosine sign, making the phase equations exactly those
+of the actual **positive-eta** wheel. Both evolution rows still use
+the positive weighted \(L_\eta\) in (1); no negative-weight flow,
+capacity change or clock change is invoked.
+
+The root bounds imply \(-5/6<c<-3/4\). Hence A and B_1 in (25) are
+positive and \(\cos(2v)>1/8\): all five principal rim gaps remain
+acute and sum to 2*pi. The six internal profiles remain the uniform
+alpha twist, and all mixed host periods are zero. A common rotation
+matches any declared conserved phase mean.
+
+In the actual phase Hessian, (29)--(30) apply with this formal a:
+O is positive definite, while det E<0 and never vanishes for a<1.
+Its two positive directions at a=1 persist throughout this interval.
+The wheel therefore has exactly one negative relative direction;
+the positive fine block and full dynamical classification follow as
+in section 6.5. This is an index-one saddle of the positive-contact law.
+
+It also lies in the full retained source sublevel. Along this smooth
+stationary family the phase-gradient contribution to the storage
+derivative vanishes, leaving
+
+\[
+ \frac{dH_\eta}{d\eta}
+   =9\sum_{c=0}^4[1-\cos(\Phi_D-\Phi_c)]\le90,
+ \qquad H_\eta-V_*\le90\eta<\frac3{250}.
+ \tag{33k}
+\]
+
+At eta=0 its storage is V_*. This construction exhibits a saddle in
+the admitted region; it does not assert that a specified actual source
+converges to it. The following argument establishes exceptional actual
+source capture without assigning its origin or saddle label.
+
+<a id="weak-contact-collective-selection-obstruction"></a>
+## 7. The all-origin source family cannot select only attractive equilibria
+
+Fix any \(0<\eta\le1/100000\). Fix an actual admissible host and
+donor source member: all twelve allowances, every primitive form and
+phase error in all 96 relative directions, the complete acquisition,
+donor recovery and sequential observation history remain fixed. Vary
+only the primitive donor origin \(\beta\) modulo \(2\pi\), as in the
+[original registration family](ORGANIZED_EXTERNAL_REGISTRATION.md#1-prepared-family-sufficient-state-and-symmetry).
+No new source, event or response is evaluated.
+
+**All-origin selection obstruction.** For every such fixed member, at
+least one donor origin converges to one of the five hyperbolic saddles
+classified in section 6.5, modulo common phase rotation. The limit still
+retains the complete old marked identity and has the uniform internal
+carrier profile, by sections 4--5. The theorem does not locate this
+exceptional origin. It does not exclude open basins of the five strict
+relative minima.
+
+### 7.1 The actual prepared circle persists at every finite time
+
+Use the original [contact phase representation](ORGANIZED_EXTERNAL_REGISTRATION.md#1-prepared-family-sufficient-state-and-symmetry),
+whose equation (2) reads
+
+\[
+ \theta_{H,c,j}(0;\beta)=\psi_j+H_{c,j},\qquad
+ \theta_{D,j}(0;\beta)=\psi_j+\beta+z_{D,j}.
+ \tag{34}
+\]
+
+Here \(H\) includes the reached host state and all observation backaction;
+\(z_D\) is the actual recovered donor residual. Neither is replaced by
+an ideal profile. Isolated donor rotation leaves its complete relative
+preparation unchanged, so all forms and both residual arrays are
+independent of beta. In particular the two endpoints beta=0 and beta=2*pi
+have identical circular states. Their continuous lifts differ by
+2*pi on the nine donor vertices and by zero on the host vertices.
+
+The complete field (1) is unchanged by this integer vertex phase shift:
+every sine is unchanged, and the phase row depends only on forms.
+Uniqueness therefore preserves that same endpoint difference at every
+finite time. Continuous dependence on prepared initial data makes
+
+\[
+ \begin{split}
+ f_\tau(\beta)
+  &=\theta_{D,0}(\tau;\beta)-\theta_{H,0,0}(\tau;\beta),\\
+ f_\tau(2\pi)-f_\tau(0)&=2\pi
+ \end{split}
+ \tag{35}
+\]
+
+a continuous lifted family for each finite \(\tau\ge0\). The circular
+relative phase \(e^{if_\tau(\beta)}\) consequently covers the entire
+unit circle, with degree one. This follows directly from the endpoint
+identity and the intermediate value theorem; no origin scan or limiting
+interchange is used. In particular there is no common finite time at
+which the entire family lies in a neighborhood restricting this relative
+phase to a proper circular arc.
+
+This statement is about a circle of separately prepared trajectories.
+It does not say that any one trajectory keeps rotating: each continuous
+phase lift converges by section 4. The joined lifted mean is beta/6 and
+is conserved for each trajectory. To compare equilibria across beta,
+work on the zero-total-form space with circular phases modulo a common
+rotation. The projection in (35) is well-defined on that quotient. A
+fixed lifted-mean chart describes the same local relative stability,
+but there is no single fixed-mean lift convention turning (34) into an
+ordinary closed loop of real coordinates.
+
+### 7.2 Open attractive basins cannot cover this source circle
+
+Suppose every beta in this prepared circle converged to a locally
+asymptotically stable relative equilibrium. Each such equilibrium has
+an open basin of attraction. Basins of distinct equilibria are disjoint,
+because section 4 gives a unique limit. Their inverse images under the
+continuous preparation map would form disjoint open sets covering the
+connected beta circle. There can therefore be only one nonempty such
+set: every preparation would converge to the same relative equilibrium
+\(e_*\).
+
+Choose a neighborhood U of \(e_*\) in which the relative phase used
+in (35) lies in one proper circular arc. Local asymptotic stability
+supplies a smaller neighborhood V whose forward trajectories remain
+in U. For each prepared state, convergence gives a finite entrance
+time into V. By continuous dependence, a neighborhood of that prepared
+state also lies in V at that same time, and all its later states stay
+in U. Compactness of the prepared circle gives a finite subcover.
+The largest of those finitely many entrance times consequently puts
+the entire evolved circle in U. This contradicts (35).
+
+Thus at least one origin has a limit that is not locally asymptotically
+stable. No continuity of the infinite-time limit map, uniform convergence
+rate, finite equilibrium enumeration or symmetry of the observation word
+was assumed. In particular an exact reflection of an ideal profile
+cannot identify this exceptional actual preparation: the full ordered
+observation history and arbitrary original errors remain present.
+
+The topological argument itself needs no equilibrium enumeration.
+Combining it with the independently proved low-energy classification
+in section 6.5 gives the sharper conclusion: all actual limits belong
+to the ten classified equilibria, so every limit that is not locally
+asymptotically stable is one of the five index-one hyperbolic saddles.
+At least one actual origin therefore lies in a saddle's stable set.
+
+A prospective selection statement must consequently allow exceptional
+origins or supply an independent restriction to a certified basin.
+This obstruction does not determine their number or measure, certify
+any specified beta's destination, or establish that all remaining
+origins reach the known stable branch.
+
+## 8. Meaning and remaining boundary
 
 The positive weak-contact interval proves that the same graph topology
 and complete marked identity are compatible with stationary existence and
@@ -896,7 +1293,13 @@ Within the original source interval, the same energy margin forces
 exponential relaxation of all fine form and phase residuals. The actual
 source limits are consequently uniform internal carriers, and the
 collective wheel rows have the controlled decaying remainder (17h).
-Their final collective origins and stability type remain unselected.
+Every collective limit belongs to the classified set of five strict
+minima and five hyperbolic saddles modulo common phase rotation. The destination
+of a specified source remains unselected. Moreover, every fixed actual
+source member has at least one donor origin whose limit is a saddle.
+Uniform strict attractor selection over the original entire origin
+circle is therefore impossible, even though every member retains its
+identity and converges.
 
 The exact continuation identifies a strict full-state stationary branch
 and its collective fold at eta_* in (7/100,2/25). This is a critical
@@ -917,5 +1320,5 @@ laboratory unit bridge or identification with physical matter. Its
 reusable mechanisms are the full old-edge barrier, explicit new-edge
 work, carried source-history estimate, analytic convergence, full
 fine relaxation and its collective error bound, stationary normal
-rigidity and the exact collective fold under the
-actual positive weighted law.
+rigidity, the exact collective fold and the all-origin attractive-selection
+obstruction under the actual positive weighted law.

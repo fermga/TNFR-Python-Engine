@@ -144,11 +144,17 @@ distant stationary components at unit strength. The
 now proves exponential decay of every internal form and phase residual
 for `0<eta<=1e-5`. The exact collective wheel law has a quadratically
 small, exponentially decaying residual along the full trajectories;
-every limiting equilibrium is a uniform internal carrier. This still
-does not identify its relative origins or prove that every source reaches
-the known stable branch. That source-to-target question is the next
-analytical dependency. Unit-strength classification remains unresolved
-and deferred; no numerical campaign is admitted.
+every limiting equilibrium is a uniform internal carrier. The
+[collective selection result](#weak-contact-collective-selection) now
+classifies its entire permitted low-energy sector: exactly five attracting
+equilibria and five index-one saddles, modulo common rotation. For each
+fixed actual residual member, at least one supplied donor origin converges
+to a saddle. The continuously prepared origin circle cannot be covered
+by open attractive basins. This does not locate the exceptional origins
+or identify the destination of a prescribed source. The next dependency
+is a [source-specific basin certificate](#weak-contact-source-basin-admission),
+retaining transient fine feedback. Unit-strength classification remains
+unresolved and deferred; no numerical campaign is admitted.
 
 No 45-node acquisition, physical readout or source certificate transfers to
 the supplied positive-r matrix law by default. Earlier frozen protocols,
@@ -165,7 +171,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Pending analytical dependency | [Weak-contact collective selection](#weak-contact-collective-selection): classify the low-energy wheel limits and determine which original preparations reach an attracting target, retaining transient fine feedback and possible exceptional saddle capture. Fixed positive eta at most 1e-5; no numerical campaign |
+| Pending analytical dependency | [Weak-contact source basin](#weak-contact-source-basin-admission): certify an explicitly delimited original-source class reaching an attracting target, or prove the proposed source restriction insufficient. Retain the original preparation, transient fine feedback and the unavoidable exceptional origins; no numerical campaign |
+| Closed collective classification and all-origin obstruction | [Weak-contact collective selection](#weak-contact-collective-selection): exactly five attracting and five index-one saddle targets in the source-accessible low-energy sector. Every fixed actual residual member has at least one donor origin reaching a saddle; its location and source-specific basin remain unclassified |
 | Closed whole-source fine relaxation | [Exponential approach to collective geometry](#weak-contact-fine-relaxation-admission): all internal form and phase residuals decay, the wheel-current remainder has an exponential tail, and every actual-source limit is a carrier. Neither transient exact closure nor stable-origin selection follows |
 | Deferred model-specific classification | [Unit-strength stationary maintenance](#contact-maintenance-certificate-admission): disconnected nonseparable stable targets remain unresolved. Reopen for a global stationary mechanism or a named downstream claim requiring eta=1; the admitted weak-contact organization does not depend on resolving this benchmark |
 | Closed exact stationary continuation | [Collective fold before winding loss](#weak-contact-stationary-continuation): a branch stable in all 53 relative phase directions ends at eta between 0.07 and 0.08, retaining the complete marked identity; no nearby fine or reflection-breaking stationary escape. Actual source capture at these larger strengths is not established |
@@ -935,7 +942,7 @@ a target or a global exclusion. No execution campaign is ready. The missing
 admission is a joint stationary/curvature certificate covering that class
 or a constructed stable target. The changed weighted law below supplies
 maintenance and stable targets within the same marked class; its
-[source-to-target dependency](#weak-contact-collective-selection) now sets
+[source-to-target dependency](#weak-contact-source-basin-admission) now sets
 priority without closing the unit-strength question.
 
 <a id="weak-contact-maintenance-admission"></a>
@@ -1032,39 +1039,64 @@ at the same means need not reproduce the actual history or select the
 same equilibrium. No numerical trajectory or frozen evidence was evaluated.
 
 <a id="weak-contact-collective-selection"></a>
-### Next analytical gate: collective target selection from acquired sources
+### Closed analytical gate: collective targets and unavoidable saddle capture
 
-**Question.** Which low-energy wheel equilibria can be reached from the
-original weak-contact source family, and when is the limiting target
-attracting? Retain fixed `0<eta<=1e-5`, the original preparation and
-observation word, all twelve allowances, all 96 fine directions, every
-supplied donor registration and the same two-row weighted law and clock.
-At a limiting carrier, source energy implies
-`9*(V_rim-V5)<3/250`; use that restriction with the exact wheel equations
-and complete relative curvature, rather than classify arbitrary wheel states.
+The [classification owner](../nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md#weak-contact-wheel-classification)
+retains fixed `0<eta<=1e-5`, the original complete weighted law and the
+source-derived acute rim excess `V_rim-V5<1/750`. Convex host-shape
+elimination and a uniformly bounded analytic remainder leave exactly
+ten stationary relative origins: five strict minima and five index-one
+saddles. The fifth-order restoring term has a certified sign throughout
+this strength interval; a leading-order expansion alone would not suffice.
+Full fine curvature and the complete two-row tangent retain those
+stability types. No degenerate limit remains in this energy sector.
 
-First classify the stationary targets permitted by this low-energy class,
-including degenerate or symmetry-protected saddle alternatives. Then
-establish capture for an explicitly delimited original-source class, or
-prove why the proposed class cannot have a uniform attracting-target
-verdict. A stable equilibrium alone does not establish capture; an
-exponentially vanishing forcing need not have zero accumulated effect.
-Keep the exact averaged residual and original hidden initialization when
-passing from the full source to the collective dynamics. Do not assume
-that a protected ideal registration describes every perturbed source.
+The separate [source-circle theorem](../nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md#weak-contact-collective-selection-obstruction)
+proves that the original whole-origin family cannot select only the
+attracting targets. Fix every actual preparation error and the complete
+observation history, varying only the primitive donor origin. Its
+donor/host relative-phase circle has degree one at every finite time.
+Open attractive basins cannot cover this connected prepared circle:
+every fixed residual member therefore has at least one origin whose
+retained carrier limit is one of the five saddles. This identifies an
+obstruction to a uniform all-origin attracting-target verdict without
+assuming reflection of the ordered preparation.
 
-This is the selected generative dependency because it connects an acquired
-organization to an attracting collective target under an already admitted
-complete law. Global eta=1 classification addresses a different supplied
-contact strength and is not a prerequisite for this result. Its unresolved
-sector is preserved below; reopen it for a global stationary mechanism or
-a downstream claim that specifically consumes unit contact. Contact
-occurrence, the choice of eta and a physical bridge remain supplied or open.
+The result does not locate these exceptional origins, establish their
+measure in the prepared family, or classify a prescribed source's basin.
+It leaves the finite hidden-state feedback intact and evaluates no
+trajectory, source producer, origin scan or physical record.
 
+<a id="weak-contact-source-basin-admission"></a>
+### Next analytical gate: an attracting target for a delimited actual source
+
+**Question.** Can an independently specified nonempty class of the original
+prepared sources be certified to reach one of the five attracting targets?
+Retain fixed `0<eta<=1e-5`, both complete weighted rows, the same clock,
+actual acquisition and observation history, and every uncertainty allowed
+within the stated subfamily. State the donor-origin restriction before
+evaluating its outcome. The full origin circle is excluded by the closed
+gate above; choosing an attractive equilibrium is not a source restriction.
+
+Use the exact averaged wheel equations with their decaying fine-state
+remainder. A positive conclusion requires actual source inclusion in a
+basin, with its accumulated transient effect retained. Alternatively,
+prove why the proposed source restriction still includes saddle capture
+or lacks sufficient information for a uniform verdict. Neither the
+existence of five minima nor a measure statement in the full ambient
+state space supplies transversality of the original prepared family.
+Matching an ideal reflected source or dropping a vanishing forcing does
+not transfer its destination to the actual observation endpoint.
+
+This is the selected generative dependency: connect acquired organizations
+to an attracting collective target under an already admitted complete law.
+The supplied contact event, its work and eta are unchanged; no occurrence
+rule or collective operator is inferred from the continuous reduction.
+Unit-strength classification remains deferred with its own scope below.
 Only analytical work and static proof controls are admitted. Any later
-trajectory or numerical certificate requires its own frozen source/domain,
-budget and acceptance protocol here. No source replay, origin scan,
-contact-strength sweep or physical-response evaluation is active.
+trajectory or numerical certificate requires a frozen source/domain,
+budget and acceptance protocol here. No origin scan, contact-strength
+sweep, source replay or physical-response evaluation is active.
 
 <a id="contact-maintenance-certificate-admission"></a>
 ### Closed complete-flow convergence; unit-strength classification deferred

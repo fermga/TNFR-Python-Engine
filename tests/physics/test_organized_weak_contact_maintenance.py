@@ -101,6 +101,26 @@ def test_weak_contact_complete_weighted_rows_and_nodal_loss(mp, eta_value):
     assert abs(sum(form_rate)) < tolerance
     assert abs(sum(phase_rate)) < tolerance
 
+    # The actual source circle closes by a full turn on the nine donor
+    # vertices. Both complete rows and storage descend to that circular state;
+    # the relative lift still records the turn used in the degree argument.
+    shifted_phase = phase + mp.matrix([0] * 45 + [2 * mp.pi] * 9)
+    shifted_current, potential_change = mp.zeros(54, 1), mp.mpf(0)
+    for left, right, weight in edges:
+        gap = shifted_phase[right] - shifted_phase[left]
+        exchange = weight * mp.sin(gap)
+        shifted_current[left] += exchange
+        shifted_current[right] -= exchange
+        potential_change += weight * (mp.cos(phase[right] - phase[left]) - mp.cos(gap))
+    shifted_form_rate = (-form_gradient + gamma * shifted_current) / 4
+    assert max(abs(value) for value in shifted_form_rate - form_rate) < tolerance
+    assert abs(potential_change) < tolerance
+    assert (
+        abs(shifted_phase[45] - shifted_phase[0] - phase[45] + phase[0] - 2 * mp.pi)
+        < tolerance
+    )
+    assert abs(sum(shifted_phase - phase) / 54 - mp.pi / 3) < tolerance
+
     def storage_on_tangent(parameter, velocity=phase_rate):
         forms = form + parameter * form_rate
         phases = phase + parameter * velocity
@@ -469,6 +489,251 @@ def test_weak_contact_reflected_explicit_partner_is_a_cut_free_saddle(mp):
     assert abs(sum(witness)) < tolerance
     assert abs(quadratic - expected) < tolerance
     assert quadratic < 0
+
+
+def test_weak_contact_antipodal_saddle_branch_rational_domain():
+    """The continued lower root stays in an acute rim on the whole source range."""
+    radius, strength = sp.symbols("radius strength", real=True)
+    cubic = radius**3 - (strength + 1) * radius + strength**2
+    anchor_radius = (sp.sqrt(5) - 1) / 2
+    assert cubic.subs(
+        {radius: sp.Rational(3, 5), strength: sp.Rational(999, 1000)}
+    ) == (sp.Rational(14601, 10**6))
+    assert (
+        sp.simplify(
+            cubic.subs(radius, anchor_radius)
+            - (strength - 1) * (strength + 1 - anchor_radius)
+        )
+        == 0
+    )
+    assert (sp.Rational(5, 8) - anchor_radius).is_positive
+    assert 3 * Q(5, 8) ** 2 - Q(1999, 1000) < 0
+    # The reconstructed cos(v) lies strictly between -5/6 and -3/4.
+    assert Q(99999, 100000) / Q(5, 8) - Q(1, 100000) > Q(3, 2)
+    assert Q(1) / Q(3, 5) == Q(5, 3)
+    assert Q(99999, 100000) - Q(5, 6) > 0
+    assert 1 - Q(5, 6) > 0
+    assert 2 * Q(3, 4) ** 2 - 1 == Q(1, 8)
+    assert Q(1, 5) - 6 * Q(1, 100000) > 0
+    assert 90 * Q(1, 100000) < Q(3, 250)
+
+
+def test_weak_contact_positive_spokes_admit_an_acute_low_energy_saddle(mp):
+    """One exact algebraic saddle uses positive weights in every actual row.
+
+    The supplied radius fixes the state before evaluation. No stationary root
+    search, source history or trajectory selects it. Its tiny negative mode
+    needs the declared 100-digit static arithmetic, not a float64 verdict.
+    """
+    radius_exact = (sp.sqrt(5) - 1) / 2 - sp.Rational(1, 10**6)
+    strength_exact = (
+        radius_exact + sp.sqrt(radius_exact**2 - 4 * radius_exact**3 + 4 * radius_exact)
+    ) / 2
+
+    def exact_cubic(strength):
+        return sp.simplify(
+            radius_exact**3 - (strength + 1) * radius_exact + strength**2
+        )
+
+    assert exact_cubic(strength_exact) == 0
+    assert exact_cubic(sp.Rational(99999, 100000)).is_negative
+    assert exact_cubic(1).is_positive
+    # The positive quadratic root in strength is therefore in this interval.
+    radius = (mp.sqrt(5) - 1) / 2 - mp.mpf(1) / 10**6
+    strength = (radius + mp.sqrt(radius**2 - 4 * radius**3 + 4 * radius)) / 2
+    eta, alpha, tolerance = 1 - strength, 2 * mp.pi / 9, mp.mpf("1e-85")
+    assert 0 < eta < mp.mpf(1) / 100000
+    cosine_v = -(strength / radius + strength - 1) / 2
+    u, v = mp.acos((strength + cosine_v) / radius), mp.acos(cosine_v)
+    raw_origins = (-v, -u, mp.mpf(0), u, v, mp.pi)
+    origins = tuple(value - mp.pi / 6 for value in raw_origins)
+    phase = tuple(
+        alpha * (slot - 4) + origins[child] for child in range(6) for slot in range(9)
+    )
+    assert abs(sum(phase)) < tolerance
+    carrier_profile = mp.matrix(
+        [alpha * (slot - 4) for _ in range(6) for slot in range(9)]
+    )
+    assert (
+        max(abs(value) for value in _fine_projection(mp, phase) - carrier_profile)
+        < tolerance
+    )
+
+    current, hessian, storage, gaps = mp.zeros(54, 1), mp.zeros(54), mp.mpf(0), {}
+    for left, right, weight in _weighted_edges(eta):
+        assert weight > 0
+        difference = phase[right] - phase[left]
+        exchange = weight * mp.sin(difference)
+        current[left] += exchange
+        current[right] -= exchange
+        curvature = weight * mp.cos(difference)
+        hessian[left, left] += curvature
+        hessian[right, right] += curvature
+        hessian[left, right] -= curvature
+        hessian[right, left] -= curvature
+        storage += weight * (1 - mp.cos(difference))
+        gaps[left, right] = mp.atan2(mp.sin(difference), mp.cos(difference))
+    assert max(abs(value) for value in current) < tolerance
+    # At zero form, these are also the complete form and phase stationary rows.
+    laplacian = _product_laplacian(mp, eta)
+    positive_factor = mp.cholesky(laplacian[:53, :53])
+    assert all(positive_factor[index, index] > 0 for index in range(53))
+    for child in range(6):
+        cycle = tuple(
+            gaps[9 * child + slot, 9 * child + (slot + 1) % 9] for slot in range(9)
+        )
+        assert abs(sum(cycle) - 2 * mp.pi) < tolerance
+        assert all(0 < gap < mp.pi / 2 for gap in cycle)
+    for slot in range(9):
+        cycle = tuple(
+            gaps[9 * child + slot, 9 * ((child + 1) % 5) + slot] for child in range(5)
+        )
+        assert abs(sum(cycle) - 2 * mp.pi) < tolerance
+        assert all(0 < gap < mp.pi / 2 for gap in cycle)
+    for child in range(5):
+        for slot in range(9):
+            left, right = 9 * child + slot, 9 * ((child + 1) % 5) + slot
+            up_left = 9 * child + (slot + 1) % 9
+            up_right = 9 * ((child + 1) % 5) + (slot + 1) % 9
+            assert (
+                abs(
+                    gaps[left, right]
+                    + gaps[right, up_right]
+                    - gaps[up_left, up_right]
+                    - gaps[left, up_left]
+                )
+                < tolerance
+            )
+    ground = 54 * (1 - mp.cos(alpha)) + 45 * (1 - mp.cos(2 * mp.pi / 5))
+    assert 0 < storage - ground < 90 * eta < mp.mpf(3) / 250
+    # Independent full-edge assembly retains one negative collective mode,
+    # one common-rotation zero, and all 52 remaining positive phase modes.
+    eigenvalues = mp.eigsy(hessian, eigvals_only=True)
+    assert eigenvalues[0] < -mp.mpf("1e-40")
+    assert abs(eigenvalues[1]) < tolerance
+    assert all(value > tolerance for value in eigenvalues[2:])
+
+
+def test_weak_contact_collective_shape_global_convexity_and_complex_disk():
+    """Exact majorants admit a unique analytic host shape over the whole circle."""
+
+    def cosine_upper(value):
+        return 1 - value**2 / 2 + value**4 / 24 - value**6 / 720 + value**8 / 40320
+
+    gap = Q(29, 20)
+    remaining_gap_lower = (2 * Q(157, 50) - gap) / 4
+    excess_lower = (
+        5 * Q(309, 1000) - cosine_upper(gap) - 4 * cosine_upper(remaining_gap_lower)
+    )
+    assert Q(2236, 1000) ** 2 < 5
+    assert excess_lower > Q(1, 750)
+    assert cos(gap).lo > Q(1, 10)
+    assert Q(1, 10) - Q(1, 100000) > 0
+
+    cosine_twist = (sp.sqrt(5) - 1) / 4
+    cycle = sp.zeros(5)
+    incidence = sp.zeros(5)
+    for index in range(5):
+        incidence[index, index], incidence[index, (index + 1) % 5] = -1, 1
+    cycle = incidence.T * incidence
+    first_row = tuple(map(sp.Rational, (Q(2, 5), 0, Q(-1, 5), Q(-1, 5), 0)))
+    inverse = sp.Matrix(
+        5, 5, lambda left, right: first_row[(right - left) % 5] / cosine_twist
+    )
+    assert sp.simplify(cosine_twist * cycle * inverse) == sp.eye(5) - sp.ones(5) / 5
+    inverse_norm = sp.simplify(sum(abs(value) for value in inverse.row(0)))
+    difference_norm = sp.simplify(
+        sum(abs(value) for value in (inverse * incidence.T).row(0))
+    )
+    assert sp.simplify(inverse_norm - 4 / (5 * cosine_twist)) == 0
+    assert sp.simplify(difference_norm - 6 / (5 * cosine_twist)) == 0
+    assert (sp.Rational(259, 100) - inverse_norm).is_positive
+    assert (sp.Rational(389, 100) - difference_norm).is_positive
+    first_mode_inverse = sp.simplify(1 / (cosine_twist * (2 - 2 * cosine_twist)))
+    assert sp.simplify(first_mode_inverse - (1 + 3 * sp.sqrt(5) / 5)) == 0
+    assert (sp.Rational(47, 20) - first_mode_inverse).is_positive
+    first_mode_difference = sp.sqrt(10 - 2 * sp.sqrt(5)) * first_mode_inverse / 2
+    assert (sp.Rational(69, 25) - first_mode_difference).is_positive
+
+    disk, ball, inverse_bound, difference_bound = (
+        Q(3, 200),
+        Q(1, 100),
+        Q(259, 100),
+        Q(389, 100),
+    )
+    first_shape, first_difference = disk * Q(47, 20), disk * Q(69, 25)
+    shape, difference = Q(23, 500), Q(31, 500)
+    assert first_shape == Q(141, 4000)
+    assert first_difference == Q(207, 5000)
+    assert first_shape + ball < shape
+    assert first_difference + 2 * ball < difference
+
+    def cosh_remainder(value):
+        return value**2 / (2 * (1 - value**2 / 12))
+
+    def sinh_upper(value):
+        return value / (1 - value**2 / 6)
+
+    def sinh_remainder(value):
+        return value**3 / (6 * (1 - value**2 / 20))
+
+    sine_bound, cosine_bound = Q(24, 25), Q(31, 100)
+    assert (sp.Rational(31, 100) - cosine_twist).is_positive
+    assert (sp.Rational(24, 25) - sp.sqrt(10 + 2 * sp.sqrt(5)) / 4).is_positive
+    contraction = 2 * difference_bound * (
+        sine_bound * sinh_upper(difference) + cosine_bound * cosh_remainder(difference)
+    ) + inverse_bound * disk / (1 - shape)
+    center_residual = difference_bound * (
+        sine_bound * cosh_remainder(first_difference)
+        + cosine_bound * sinh_remainder(first_difference)
+    ) + inverse_bound * disk * first_shape / (1 - first_shape)
+    assert contraction < Q(13, 25)
+    assert center_residual < Q(47, 10000)
+    assert Q(47, 10000) + Q(13, 25) * ball < ball
+    assert 5 * disk / (1 - shape) < Q(2, 25)
+
+
+def test_weak_contact_collective_fifth_order_pinning_and_global_fourier_tail():
+    """The exact parity curvature fixes the leading sign; all higher modes fit."""
+    phi = (1 + sp.sqrt(5)) / 2
+    radius = 1 / phi
+    radius_derivative = sp.simplify((2 - radius) / (2 - 3 * radius**2))
+    assert sp.simplify(radius_derivative - phi) == 0
+    vanishing_factor_derivative = sp.simplify((2 * radius + 1) * radius_derivative)
+    determinant_leading = sp.simplify(vanishing_factor_derivative**4 / (8 * radius**4))
+    assert sp.simplify(determinant_leading - 25 * phi**8 / 8) == 0
+
+    # Fixing the five-host mean uses l=(2,2,1), not the unweighted
+    # coordinate mean of the three-dimensional reflection-even block.
+    cosine_twist = (sp.sqrt(5) - 1) / 4
+    even_anchor = cosine_twist * sp.Matrix([[1, -1, 0], [-1, 2, -1], [0, -1, 1]])
+    mean_weights = sp.Matrix([2, 2, 1])
+    denominator = sp.simplify(
+        (mean_weights.T * even_anchor.adjugate() * mean_weights)[0]
+    )
+    curvature_leading = sp.simplify(50 * determinant_leading / denominator)
+    assert sp.simplify(curvature_leading - 25 * phi**10) == 0
+    assert (5 * phi**10 - 600).is_positive
+
+    ratio = sp.symbols("ratio", real=True)
+    # Sum (n+7)(n+12) ratio**n using differentiated geometric series.
+    geometric = 1 / (1 - ratio)
+    first_moment = ratio * sp.diff(geometric, ratio)
+    second_moment = ratio * sp.diff(first_moment, ratio)
+    series = sp.factor(second_moment + 19 * first_moment + 84 * geometric)
+    assert (
+        sp.simplify(series - (84 - 148 * ratio + 66 * ratio**2) / (1 - ratio) ** 3) == 0
+    )
+    disk, eta, torque_bound = Q(3, 200), Q(1, 100000), Q(2, 25)
+    endpoint = eta / disk
+    tail = (
+        torque_bound
+        * eta**2
+        / disk**7
+        * (84 - 148 * endpoint + 66 * endpoint**2)
+        / (25 * (1 - endpoint) ** 3)
+    )
+    assert tail < 200 < 600
 
 
 @pytest.mark.parametrize("eta_value", (Q(1, 100000), Q(1)))
