@@ -142,6 +142,7 @@ nav:
           - "Loaded finite-window collective observation": theory/research/ORGANIZED_FINITE_WINDOW_DESIGN.md
           - "Integrated sensor response during recovery": theory/research/ORGANIZED_RECOVERY_OBSERVATION.md
           - "Organized identity under continued external contact": theory/nodal/ORGANIZED_CONTACT_MAINTENANCE.md
+          - "Organized identity under weak external contact": theory/nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md
           - "Reflection obstruction for full-fine contact identity": theory/nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md
           - "Full-fine stationary contact and marked chambers": theory/nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md
           - "Composition-compatible constitutive laws": theory/nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md

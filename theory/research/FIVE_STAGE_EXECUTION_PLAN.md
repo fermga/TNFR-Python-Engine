@@ -128,8 +128,13 @@ origin, eventually remains outside its initial radius-1/25 uniform-rim
 tube. No uniform exit time or winding loss follows; a limit can be a saddle
 or lie on marked cuts. Explicit neighborhoods and an uncomputed compact
 gap still exclude PSD stationary states near common host profiles. Stable
-targets in the remaining nonseparable sector are unresolved; no numerical
-campaign is admitted.
+targets in the remaining nonseparable sector are unresolved. The separate
+[weak-contact comparison](#weak-contact-maintenance-admission) now proves
+that every original outer-one source retains its complete marked identity
+and converges to an equilibrium for positive spoke strength at most `1e-5`,
+with that weight included in both complete rows. This rules out a
+topology-only obstruction to maintenance. It does not settle unit strength,
+identify a sharp transition or admit a numerical campaign.
 
 No 45-node acquisition, physical readout or source certificate transfers to
 the supplied positive-r matrix law by default. Earlier frozen protocols,
@@ -146,7 +151,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Pending analytical dependency | [Stationary maintenance after finite host reorganization](#contact-maintenance-certificate-admission): construct a full stable target or cover the nonseparable sector outside the excluded neighborhoods, including degenerate cases; no numerical campaign is admitted |
+| Pending analytical dependency | [Unit-strength stationary maintenance](#contact-maintenance-certificate-admission): use the admitted weak-contact regime to study stationary continuation and loss of stability or identity as contact increases. A full target or obstruction in the remaining nonseparable sector is still required; no numerical campaign is admitted |
+| Closed weak-contact source retention | [Contact strength and the identity barrier](#weak-contact-maintenance-admission): the original outer-one family retains all marked identities for every `0<eta<=1e-5` and converges to an equilibrium. The changed weighted law separates a constitutive contact choice from topology; unit strength remains unresolved |
 | Closed complete-flow convergence and finite exclusions | [Single limiting equilibrium](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#full-contact-convergence): every finite zero-form-mean initial state converges with finite lifted phase variation. Every original outer-one source eventually remains outside the radius-1/25 uniform-rim tube. Stationary PSD exclusions persist; neither a stable target nor winding loss is proved |
 | Closed post-contact foundational review | [Dependency decision](#post-contact-foundation-review): contact response and hidden-mode results do not supply independent law selection, indefinite maintenance or a physical bridge; the missing maintenance certificate mechanism is explicit |
 | Closed full-fine preparation sensitivity | [Hidden internal modes](#organized-contact-preparation-sensitivity): all-time first-order invisibility, opposite-mode quadratic coupling and explicit winding-admissible leakage distinguish exact reflection protection from a linear observation kernel |
@@ -913,6 +919,46 @@ or a constructed stable target. The analytical result below reduces this
 question without repeating local starts, source histories or contact
 derivatives.
 
+<a id="weak-contact-maintenance-admission"></a>
+### Closed analytical comparison: contact strength and retained identity
+
+The [proof owner](../nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md) keeps
+the 54-node support, all fine coordinates, sine interaction, capacity,
+clock and original pre-contact history. It assigns each of the 45 new
+spokes the same supplied positive strength eta, in both evolution rows
+and storage; all 99 old edges retain unit strength. This is an explicit
+change of the complete contact model, not a reclassification of the
+unit-strength evidence or a law selected by the nodal identity.
+
+The old marked-edge acute cell has boundary excess greater than `7/500`
+above `6*V9+9*V5`, independently of the nonnegative spoke storage. For
+every `0<eta<=1e-5`, the whole original outer-one family after the complete
+observation word and weighted attachment has excess below `3/250`.
+This includes all twelve primitive allowances, all 96 relative preparation
+directions and every supplied donor origin. The resulting strict reserve
+proves all-future retention of the six internal and nine rim windings and
+the zero mixed host periods. The weighted analytic convergence argument
+gives one equilibrium limit per trajectory, without a settling deadline
+or a stability assertion for that particular limit.
+
+The same barrier gives an open retained-identity class and an interior
+phase-potential minimum with nonnegative relative curvature. Strict
+curvature, a selected origin and a unique stable point are not supplied.
+This is a conditional theorem and an analytical reuse of source bounds;
+no source history, reserved response or stationary search was evaluated.
+The sufficient strength interval is not an optimal threshold or a
+laboratory calibration.
+
+The remaining question below is now specifically about the supplied
+unit-strength contact and its possible reorganization, rather than
+whether this topology can ever retain the original organization.
+The next analytical step is to study continuation of retained stationary
+states in eta and distinguish loss of curvature from loss of marked
+identity as contact increases toward unit strength.
+Such a branch result must retain all fine directions and cannot exclude
+other branches or the nonseparable sector by itself. No parameter scan
+or additional campaign is activated.
+
 <a id="contact-maintenance-certificate-admission"></a>
 ### Closed complete-flow convergence; stationary target classification unresolved
 
@@ -991,7 +1037,7 @@ remain tools for that sector. Regular positive-host-block charts retain
 eight relative curvature directions; singular PSD host blocks retain
 additional neutral directions and must not be discarded.
 
-**Missing admission:** construct one stable target or prove a stationary
+**Missing unit-strength admission:** construct one stable target or prove a stationary
 obstruction covering the remaining nonseparable sector beyond these
 excluded neighborhoods. Include nonacute and asymmetric states, singular
 host blocks and possible degenerate minima. Neither further block

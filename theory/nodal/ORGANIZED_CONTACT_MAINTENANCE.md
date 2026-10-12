@@ -9,6 +9,13 @@ This gate studies continued contact after the
 stationary geometry, stability, source inclusion and loss of a marked identity.
 No finite response, target label or carrier restriction supplies the others.
 
+The separate [weak-contact theorem](ORGANIZED_WEAK_CONTACT_MAINTENANCE.md)
+changes every spoke conductance to a supplied positive strength eta in
+both complete evolution rows and storage. It proves all-future retention
+of the actual outer-one family for `0<eta<=1e-5`. This distinguishes
+topology from contact strength; it changes neither the unit-strength
+results below nor their unresolved outer-one maintenance question.
+
 | Item | Fixed scope before source assessment |
 | --- | --- |
 | Complete law | Keep the 54-node unit support C9 square W6, all 108 fine form/phase coordinates, held unit capacities, x_tau=(-Lx+gamma*S(theta))/4 and theta_tau=gamma*Lx/4, gamma=1/(1023*pi), tau=(1023/1024)*t. No input or event after attachment |

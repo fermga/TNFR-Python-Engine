@@ -1059,6 +1059,19 @@ Permanent exclusion from a closed equilibrium-free tube already follows
 from compactness and loss. Neither result identifies the limiting target,
 proves a positive Hessian or decides winding at a cut limit.
 
+For [weak-contact retention](theory/nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md),
+select `tests/physics/test_organized_weak_contact_maintenance.py` and the
+`contact_convergence` selection above, with `tests/test_rational_interval.py`.
+The new controls assemble weighted edge rows independently, check the
+complete loss identity, retain the positive-contact torque at the unrelaxed
+reference, and verify the cycle-face and endpoint source-budget inequalities.
+No trajectory, candidate search or frozen producer is executed. The proof
+owns all-future retention and existence of an interior minimum; arithmetic
+tests do not establish them by sampling. Strength `1e-5` is a sufficient
+bound for a changed complete model, not a measured or sharp transition.
+Neither the original unit-strength outcome nor stability of every actual
+limiting equilibrium follows.
+
 For [reflected stationary contact identity](theory/nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md),
 select `tests/physics/test_organized_contact_reflection.py` with contact
 maintenance, external interaction and `tests/test_rational_interval.py`.
