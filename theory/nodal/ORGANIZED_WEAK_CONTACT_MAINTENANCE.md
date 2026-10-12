@@ -13,7 +13,10 @@ the original acquired and observed source family. It is not a solution
 of the unit-weight stationary problem. An exact stationary continuation
 also identifies a strictly stable full-state branch and its collective
 fold. The larger branch interval gives local stability of that branch;
-the acquired-source inclusion retains its own smaller interval.
+the acquired-source inclusion retains its own smaller interval. Within
+that source interval, the full fine residuals decay exponentially and
+the actual collective rows approach the six-node wheel law with an
+explicitly bounded remainder.
 
 | Item | Declared model and scope |
 | --- | --- |
@@ -367,14 +370,216 @@ allowance tuple and every donor origin remains in the original old
 acute cell for all future time under this weak-contact law. All fifteen
 winding-one identities and all 32 independent zero mixed host periods
 persist. The full forms tend to zero and the continuous phase lifts
-converge to one, still unspecified, retained-identity equilibrium. A
-possible degenerate or saddle limit is not excluded by source convergence.
+converge to one retained-identity equilibrium. Sections 5.1--5.2 below
+show that this limit has the uniform internal carrier profile. Its
+collective origins remain unspecified; a possible degenerate or saddle
+limit is not excluded by source convergence.
 
 These are new analytical consequences of the retained source inequalities
 under the explicitly changed contact model. No frozen producer was
 replayed, no archived response was re-evaluated, and no original source
 or response flag is amended. In particular the original unit-contact
 response thresholds and horizons do not become weak-contact predictions.
+
+<a id="weak-contact-fine-relaxation"></a>
+### 5.1. The source sublevel makes all fine residuals decay exponentially
+
+Retain \(0<\eta\le1/100000\), the original old acute cell and
+\(H_\eta-V_*<3/250\). These premises hold throughout every trajectory
+in section 5 by the actual storage identity. The result below covers
+any admitted state satisfying those same premises.
+
+Put \(\alpha=2\pi/9\). The premises give a stronger bound on each
+internal gap. With one C9 gap fixed at s, Jensen on the other eight
+gaps gives the constrained cycle cost
+
+\[
+ F_9(s)=1-\cos s+
+      8\left[1-\cos\left(\frac{2\pi-s}{8}\right)\right],
+ \qquad
+ F_9(\pi/3)-V_9>\frac1{25}>\frac3{250}.
+ \tag{17a}
+\]
+
+Here is an exact certificate for the strict constant. Put
+\(C_4(y)=1-y^2/2+y^4/24\) and \(C_6(y)=C_4(y)-y^6/720\).
+The alternating cosine bounds on [0,1] and
+\(157/50<\pi<22/7\) give
+\[
+ F_9(\pi/3)-V_9
+ >-\frac12+9C_6(44/63)-8C_4(157/240)>\frac1{25};
+\]
+the last inequality is rational arithmetic. On the feasible acute
+interval, \(F_9\) is strictly convex with minimum at alpha, and
+\(F_9(-\pi/3)>F_9(\pi/3)\). All other old cycles contribute at least
+their own \(V_n\), while form storage and spoke potential are
+nonnegative. A gap with absolute value at least pi/3 would therefore
+contradict the full storage sublevel. Every actual internal gap satisfies
+\(|\kappa_{c,j}|<\pi/3\), throughout the future trajectory and at its
+limit. The rim gaps retain their previously proved acute admission.
+
+Define the exact child means and fine residuals using the original
+compatible lifts. With \(\psi_j=\alpha(j-4)\), write
+
+\[
+ \begin{split}
+ a_c&=\frac19\sum_jx_{c,j},&
+ x_{c,j}&=a_c+z_{c,j},\\
+ \Phi_c&=\frac19\sum_j\theta_{c,j},&
+ \theta_{c,j}&=\psi_j+\Phi_c+q_{c,j},\\
+ \sum_jz_{c,j}&=\sum_jq_{c,j}=0,&
+ L_{\mathrm f}&=L_\eta|_{\operatorname{ran}P},\qquad
+ \frac25 I<L_{\mathrm f}\le10I .
+ \end{split}
+ \tag{17b}
+\]
+
+P subtracts each child's mean, so its range has 48 coordinates. It
+commutes with \(L_\eta\), because the same weighted wheel is used in
+every slot. The lower bound in (17b) follows from the internal C9
+factor: \(\lambda_2(L_9)=2-2\cos(2\pi/9)>2/5\).
+For example, \(\pi>3\) and the cosine upper polynomial at 2/3 already
+prove this rational bound. The upper bound follows from (8).
+
+Compare the actual phases with \(\theta^0_{c,j}=\psi_j+\Phi_c\) along
+the straight compatible lifted segment \(\theta^0+s q\), 0<=s<=1.
+Internal gaps interpolate between alpha and the actual gaps, remaining
+strictly inside (-pi/3,pi/3). Each carrier rim gap is the average of
+its nine actual rim gaps on the same closing-edge convention. Every
+rim gap along the segment is therefore acute. These facts do not
+require the segment's storage to lie below the source sublevel.
+
+On a fine direction, the internal Hessian contributes more than
+\(\lambda_2(L_9)/2\), and the rim Hessian is nonnegative. The spoke
+Hessian is bounded below by \(-\eta L_{\rm sp}\); its largest possible
+negative contribution is \(6\eta\), since the spoke graph is nine
+disjoint five-leaf stars. Thus the projected Hessian along this whole
+segment is bounded below by \(1/5-6\eta>19/100\) and above by 10.
+Moreover \(P\nabla V_\eta(\theta^0)=0\) for every set of child origins,
+because its internal currents cancel and its wheel currents are
+constant in j. Consequently the actual fine gradient obeys
+
+\[
+ \begin{split}
+ g&:=P\nabla V_\eta(\theta)
+       =\mathcal A q,\qquad
+ \mathcal A=\int_0^1
+       P\nabla^2V_\eta(\theta^0+s q)P\,ds\big|_{\operatorname{ran}P},\\
+ mI&\le\mathcal A\le10I,\qquad m=\frac{19}{100},\qquad
+ q^Tg\ge m\|q\|^2,\qquad \|g\|\le10\|q\|.
+ \end{split}
+ \tag{17c}
+\]
+
+Projecting both actual evolution rows gives the exact fine equations
+
+\[
+ q'=\frac{\gamma}{4}L_{\mathrm f}z,\qquad
+ z'=-\frac14L_{\mathrm f}z-\frac{\gamma}{4}g.
+ \tag{17d}
+\]
+
+The matrix \(\mathcal A\) can vary with time and with the collective
+state. No derivative bound on it is assumed. Instead use the fixed
+positive quadratic function
+
+\[
+ \begin{split}
+ \mathcal F&=\frac12\|q+\gamma z\|^2
+                       +\frac{\gamma^2}{2}\|z\|^2,\\
+ \mathcal F'
+ &=-\frac{\gamma^2}{4}
+       \left(q^Tg+z^TL_{\mathrm f}z+2\gamma z^Tg\right).
+ \end{split}
+ \tag{17e}
+\]
+
+This is an auxiliary proof function, not a replacement storage or a
+measurement map. Young's inequality bounds the absolute cross term by
+\(m\|q\|^2/2+(200\gamma^2/m)\|z\|^2\).
+Since \(\gamma<1/3000\), one has
+\(2/5-200\gamma^2/m>m/2\). Also
+\(\mathcal F\le\|q\|^2+\|z\|^2\),
+\(\|q\|^2\le4\mathcal F\), and
+\(\gamma^2\|z\|^2\le2\mathcal F\). It follows that
+
+\[
+ \begin{split}
+ \mathcal F'&\le-\rho\mathcal F,\qquad
+ \rho=\frac{19\gamma^2}{800},\qquad
+ \mathcal F(\tau)\le\mathcal F(0)e^{-\rho\tau},\\
+ \|q(\tau)\|^2&\le4\mathcal F(0)e^{-\rho\tau},\qquad
+ \|z(\tau)\|^2\le\frac{2}{\gamma^2}
+                         \mathcal F(0)e^{-\rho\tau}.
+ \end{split}
+ \tag{17f}
+\]
+
+The rate is in the declared tau clock and is uniform over the supplied
+weak-contact interval. It controls only the fine residuals; the complete
+collective convergence rate need not remain uniform as eta tends to zero.
+At each fixed positive eta, section 4 still gives one limiting full
+equilibrium. Equation (17f) makes its internal phases exactly the uniform
+alpha profile and its forms constant within each child. Full equilibrium
+and zero total form then make all forms zero. The surviving collective
+phase origins are not selected by this argument.
+
+### 5.2. The averaged wheel law has an exponentially bounded remainder
+
+Let \(L_{\mathrm W,\eta}\) and \(S_{\mathrm W,\eta}\) be the Laplacian
+and sine current of the six-node weighted wheel, with rim weight one
+and spoke weight eta. The actual child means in (17b) obey
+
+\[
+ a'=\frac{-L_{\mathrm W,\eta}a+
+              \gamma[S_{\mathrm W,\eta}(\Phi)+r]}4,\qquad
+ \Phi'=\frac{\gamma}{4}L_{\mathrm W,\eta}a.
+ \tag{17g}
+\]
+
+These rows follow by averaging the complete law: internal form and
+phase currents cancel over each cycle. Their residual is exactly
+
+\[
+ \begin{split}
+ r_c&=\sum_{b\sim c}w_{cb}
+  \left[\frac19\sum_j
+       \sin(\Phi_b-\Phi_c+q_{b,j}-q_{c,j})
+                    -\sin(\Phi_b-\Phi_c)\right],\\
+ \|r\|_1
+ &\le\frac19\sum_{\{c,b\}\in E_{\mathrm W}}\sum_j
+                     w_{cb}(q_{b,j}-q_{c,j})^2\\
+ &\le\frac23\|q\|^2
+ \le\frac83\mathcal F(0)e^{-\rho\tau}.
+ \end{split}
+ \tag{17h}
+\]
+
+The mean-zero fine residuals cancel the linear Taylor term on every
+wheel edge; the sine remainder is at most one half the squared gap.
+Summing both incident nodal contributions gives the first bound in
+(17h). The second uses
+\(L_{\mathrm W,\eta}\le L_{\mathrm W,1}\le6I\).
+This reuses the
+[constituent-memory distinction](ORGANIZED_CONSTITUENT_MEMORY.md):
+hidden fine state can affect the collective rows quadratically, while
+here its decay and the resulting error are controlled for the actual
+contacted preparation.
+
+The set q=z=0 is an invariant full dynamical carrier with arbitrary
+child-constant forms a. On it, (17g) is exactly the weighted wheel law.
+It is broader than the stationary x=0 carrier defined in section 6.1.
+For the whole original source family the fine residuals approach this
+set exponentially, and the exact collective equations acquire a
+vanishing remainder. This is an asymptotic reduction with an explicit
+error bound, not exact closure of the transient mean state.
+
+In particular (17h) does not prove that the actual means shadow one
+autonomous wheel trajectory for all future times, or that they select
+the strictly stable branch of section 6. The initial fine state remains
+in \(\mathcal F(0)\), and a collective unstable direction can still
+amplify a small accumulated error. No coarse event law, controller,
+autonomous source selector or physical observation follows.
 
 <a id="weak-contact-stationary-fold"></a>
 ## 6. An exact stable carrier branch ends at a collective fold
@@ -545,8 +750,10 @@ The formulas above also give \(-29/30<c<0\). Thus (25) has
 2*pi, including at the fold. All six internal windings, all nine rim
 windings and all 32 mixed host periods remain those of the original
 marked class. For the original closing-edge branch convention, use
-the compatible rim lifts \((0,u,v,2\pi-v,2\pi-u)\); the large
-\(2\pi-2v\) gap is between the two reflected v origins.
+the compatible rim lifts \((0,u,v,2\pi-v,2\pi-u)\), with the fixed
+2*pi addition on the edge from child four to child zero. The large
+\(2\pi-2v\) gap is between the two reflected v origins. A common
+rotation matches any declared conserved phase mean.
 
 ### 6.3 Full relative stability up to the endpoint
 
@@ -685,6 +892,12 @@ enough of the old energy barrier to admit the actual reached sources.
 The supplied coupling has not been selected by TNFR's nodal identity or
 by a physical observation.
 
+Within the original source interval, the same energy margin forces
+exponential relaxation of all fine form and phase residuals. The actual
+source limits are consequently uniform internal carriers, and the
+collective wheel rows have the controlled decaying remainder (17h).
+Their final collective origins and stability type remain unselected.
+
 The exact continuation identifies a strict full-state stationary branch
 and its collective fold at eta_* in (7/100,2/25). This is a critical
 coupling for that branch, without a universal transition claim. Local
@@ -703,5 +916,6 @@ The result gives no autonomous contact selector, event reservoir,
 laboratory unit bridge or identification with physical matter. Its
 reusable mechanisms are the full old-edge barrier, explicit new-edge
 work, carried source-history estimate, analytic convergence, full
-stationary normal rigidity and the exact collective fold under the
+fine relaxation and its collective error bound, stationary normal
+rigidity and the exact collective fold under the
 actual positive weighted law.

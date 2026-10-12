@@ -1070,6 +1070,19 @@ owns all-future retention and existence of an interior minimum; arithmetic
 tests do not establish them by sampling. Strength `1e-5` is a sufficient
 bound for a changed complete model, not a measured or sharp transition.
 
+The same module checks [whole-source fine relaxation](theory/nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md#weak-contact-fine-relaxation).
+Outward interval arithmetic checks the internal-gap energy obstruction;
+exact rational inequalities check the normal curvature and Lyapunov
+constants. Independent node/edge assembly checks child projection,
+weighted-Laplacian commutation, the projected gradient and the common
+quadratic derivative at a declared static state. Unequal slot weights
+must break the claimed product closure. Averaged rows retain a nonzero
+fine-phase current remainder and its quadratic bound. These tests perform
+no integration; the proof owns exponential decay throughout the retained
+source sublevel and convergence to carrier geometry. Neither the tests
+nor that theorem select the attracting collective registration or erase
+transient hidden feedback.
+
 The same module checks the [exact stationary fold](theory/nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md#weak-contact-stationary-fold).
 Exact symbolic reductions retain the stationary cubic while checking
 both grounded reflection blocks. Independent fine edge assembly checks

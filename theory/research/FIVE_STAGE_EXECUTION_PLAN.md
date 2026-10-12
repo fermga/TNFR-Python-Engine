@@ -139,8 +139,16 @@ a full-state stable stationary branch and its collective fold at contact
 strength between `0.07` and `0.08`, with every marked winding intact.
 Fine stationary rigidity excludes a nearby nonseparable escape from that
 branch. This neither extends the source-capture interval nor settles
-distant stationary components at unit strength; no numerical campaign
-is admitted.
+distant stationary components at unit strength. The
+[whole-source fine-relaxation theorem](#weak-contact-fine-relaxation-admission)
+now proves exponential decay of every internal form and phase residual
+for `0<eta<=1e-5`. The exact collective wheel law has a quadratically
+small, exponentially decaying residual along the full trajectories;
+every limiting equilibrium is a uniform internal carrier. This still
+does not identify its relative origins or prove that every source reaches
+the known stable branch. That source-to-target question is the next
+analytical dependency. Unit-strength classification remains unresolved
+and deferred; no numerical campaign is admitted.
 
 No 45-node acquisition, physical readout or source certificate transfers to
 the supplied positive-r matrix law by default. Earlier frozen protocols,
@@ -157,7 +165,9 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Pending analytical dependency | [Unit-strength stationary maintenance](#contact-maintenance-certificate-admission): determine whether the disconnected nonseparable stationary sector contains a stable marked target. The exact carrier fold and fine rigidity close continuation of the admitted branch as a route to that sector; no numerical campaign is admitted |
+| Pending analytical dependency | [Weak-contact collective selection](#weak-contact-collective-selection): classify the low-energy wheel limits and determine which original preparations reach an attracting target, retaining transient fine feedback and possible exceptional saddle capture. Fixed positive eta at most 1e-5; no numerical campaign |
+| Closed whole-source fine relaxation | [Exponential approach to collective geometry](#weak-contact-fine-relaxation-admission): all internal form and phase residuals decay, the wheel-current remainder has an exponential tail, and every actual-source limit is a carrier. Neither transient exact closure nor stable-origin selection follows |
+| Deferred model-specific classification | [Unit-strength stationary maintenance](#contact-maintenance-certificate-admission): disconnected nonseparable stable targets remain unresolved. Reopen for a global stationary mechanism or a named downstream claim requiring eta=1; the admitted weak-contact organization does not depend on resolving this benchmark |
 | Closed exact stationary continuation | [Collective fold before winding loss](#weak-contact-stationary-continuation): a branch stable in all 53 relative phase directions ends at eta between 0.07 and 0.08, retaining the complete marked identity; no nearby fine or reflection-breaking stationary escape. Actual source capture at these larger strengths is not established |
 | Closed weak-contact source retention | [Contact strength and the identity barrier](#weak-contact-maintenance-admission): the original outer-one family retains all marked identities for every `0<eta<=1e-5` and converges to an equilibrium. The changed weighted law separates a constitutive contact choice from topology; unit strength remains unresolved |
 | Closed complete-flow convergence and finite exclusions | [Single limiting equilibrium](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#full-contact-convergence): every finite zero-form-mean initial state converges with finite lifted phase variation. Every original outer-one source eventually remains outside the radius-1/25 uniform-rim tube. Stationary PSD exclusions persist; neither a stable target nor winding loss is proved |
@@ -190,7 +200,7 @@ admission.
 | Closed scoped charge-map obstruction | [Charge versus spatial response](#organized-charge-response-bridge-admission): identical-site conserved observations are affine in form; the full-density map fails unforced Ohmic closure, and homogeneous local edge redistribution cannot close near an acute C9 twist |
 | Closed finite factorization obstruction | [Two normalized interfaces](#organized-interface-factorization-admission): a nonzero true and error-rectified determinant excludes one purely multiplicative scalar source/probe factor throughout the declared source box; it does not identify or exclude physical charge |
 | Closed joint resource admission | [Joint preparation resources](#organized-joint-preparation-resources): one frozen corner admits the whole source/readout box under the same complete sine law; necessary phase-compression, contact-noise and acquisition-work restrictions remain separate |
-| Unresolved maintenance dependency, no active search | [Source-chamber stationary compatibility](../nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md): a certified stable target or a global stationary obstruction in the complete source class remains missing; actual source capture and winding loss are also unresolved |
+| Deferred unit-strength maintenance, no active search | [Source-chamber stationary compatibility](../nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md): a certified stable target or a global stationary obstruction in the unit-strength complete source class remains missing; actual source capture and winding loss under that law are also unresolved |
 | Closed finite stationary search and chamber audit | [Full-fine contact search](#organized-contact-stationary-search): all 24 prescribed attempts stopped near an imposed margin with nonzero current; no target certificate or global exclusion. An exact counterexample shows that the fifteen windings omit mixed-cycle information required by uninterrupted maintenance |
 | Closed scoped stationary obstruction | [Reflected contact identity](#organized-contact-reflection-admission): constituent winding, odd C9 length and stationary currents force slot-independent relative origins; negative full-state cuts exclude stability throughout the declared reflection sector, including nonacute charts. An exact nonacute saddle retains all fifteen windings |
 | Closed theoretical contact classification | [Continued-contact geometry and control capture](#organized-contact-maintenance-admission): stable aligned target, antipodal saddle, carrier acute-chart exit, a full-fine near-carrier instability obstruction and all-future capture of the actual zero-origin outer-zero control |
@@ -916,15 +926,17 @@ invisibility have different premises. Neither the mathematical two-law
 discriminator nor additional covariance coordinates supplies independent
 law selection or the missing physical preparation/measurement certificate.
 
-The selected generative dependency is stable stationary maintenance during
-continued contact in the original complete marked class. The existing
+The review selected stable stationary maintenance during continued contact
+in the original complete marked class. Under the original unit-strength law,
+the existing
 curvature and reflection obstructions leave nonacute, reflection-breaking
 states open; the frozen stationary search supplies acceptance tools without
 a target or a global exclusion. No execution campaign is ready. The missing
 admission is a joint stationary/curvature certificate covering that class
-or a constructed stable target. The analytical result below reduces this
-question without repeating local starts, source histories or contact
-derivatives.
+or a constructed stable target. The changed weighted law below supplies
+maintenance and stable targets within the same marked class; its
+[source-to-target dependency](#weak-contact-collective-selection) now sets
+priority without closing the unit-strength question.
 
 <a id="weak-contact-maintenance-admission"></a>
 ### Closed analytical comparison: contact strength and retained identity
@@ -990,15 +1002,72 @@ a universal TNFR constant, a physical measurement or an extension of
 the `eta<=1e-5` whole-source capture theorem. It does not classify distant
 equilibria or establish the fate of the actual family at larger strength.
 
-The next analytical dependency is the disconnected nonseparable sector
-at unit strength, using its full stationary and curvature conditions.
+The disconnected nonseparable sector at unit strength retains its full
+stationary and curvature conditions.
 It cannot be reached from this carrier through a continuous path of PSD
 stationary states. A new stable target there or an obstruction covering
-that sector remains necessary; further precision on this branch would
-not answer that question. No numerical search or source replay is active.
+that sector remains necessary to decide that model-specific question;
+further precision on this branch would not answer it. The source-to-target
+result below supplies a separate advance under weak contact. No numerical
+search or source replay is active.
+
+<a id="weak-contact-fine-relaxation-admission"></a>
+### Closed source-to-geometry gate: exponential internal relaxation
+
+The [proof owner](../nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md#weak-contact-fine-relaxation)
+uses the unchanged whole-source excess below `3/250` and fixed
+`0<eta<=1e-5`. Every internal C9 gap remains strictly between `-pi/3`
+and `pi/3`. Throughout the segment from the actual phases to their
+slot-averaged uniform carrier, all 48 fine directions have curvature
+greater than `19/100`. A common quadratic function for the two complete
+fine rows therefore decays at rate at least `19*gamma^2/800` in the
+declared tau clock. This includes all original fine form and phase
+uncertainties while the collective origins continue to move.
+
+Every acquired-source limit is consequently a uniform internal carrier.
+Exact averaging also gives the six-node wheel rows with a quadratic
+fine-phase current remainder whose tail decays exponentially. Finite
+internal feedback is retained: the autonomous wheel trajectory started
+at the same means need not reproduce the actual history or select the
+same equilibrium. No numerical trajectory or frozen evidence was evaluated.
+
+<a id="weak-contact-collective-selection"></a>
+### Next analytical gate: collective target selection from acquired sources
+
+**Question.** Which low-energy wheel equilibria can be reached from the
+original weak-contact source family, and when is the limiting target
+attracting? Retain fixed `0<eta<=1e-5`, the original preparation and
+observation word, all twelve allowances, all 96 fine directions, every
+supplied donor registration and the same two-row weighted law and clock.
+At a limiting carrier, source energy implies
+`9*(V_rim-V5)<3/250`; use that restriction with the exact wheel equations
+and complete relative curvature, rather than classify arbitrary wheel states.
+
+First classify the stationary targets permitted by this low-energy class,
+including degenerate or symmetry-protected saddle alternatives. Then
+establish capture for an explicitly delimited original-source class, or
+prove why the proposed class cannot have a uniform attracting-target
+verdict. A stable equilibrium alone does not establish capture; an
+exponentially vanishing forcing need not have zero accumulated effect.
+Keep the exact averaged residual and original hidden initialization when
+passing from the full source to the collective dynamics. Do not assume
+that a protected ideal registration describes every perturbed source.
+
+This is the selected generative dependency because it connects an acquired
+organization to an attracting collective target under an already admitted
+complete law. Global eta=1 classification addresses a different supplied
+contact strength and is not a prerequisite for this result. Its unresolved
+sector is preserved below; reopen it for a global stationary mechanism or
+a downstream claim that specifically consumes unit contact. Contact
+occurrence, the choice of eta and a physical bridge remain supplied or open.
+
+Only analytical work and static proof controls are admitted. Any later
+trajectory or numerical certificate requires its own frozen source/domain,
+budget and acceptance protocol here. No source replay, origin scan,
+contact-strength sweep or physical-response evaluation is active.
 
 <a id="contact-maintenance-certificate-admission"></a>
-### Closed complete-flow convergence; stationary target classification unresolved
+### Closed complete-flow convergence; unit-strength classification deferred
 
 The [proof owner](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#full-contact-convergence)
 proves single-equilibrium convergence and retains the earlier finite
@@ -1075,7 +1144,7 @@ remain tools for that sector. Regular positive-host-block charts retain
 eight relative curvature directions; singular PSD host blocks retain
 additional neutral directions and must not be discarded.
 
-**Missing unit-strength admission:** construct one stable target or prove a stationary
+**Deferred unit-strength admission:** construct one stable target or prove a stationary
 obstruction covering the remaining nonseparable sector beyond these
 excluded neighborhoods. Include nonacute and asymmetric states, singular
 host blocks and possible degenerate minima. Neither further block
@@ -2753,6 +2822,7 @@ the unavailable donor endpoint is activated by retaining this question.
 
 | Dependency | What remains and when to reopen |
 | --- | --- |
+| Unit-strength nonseparable stationary maintenance | The [complete marked-class problem](#contact-maintenance-certificate-admission) remains unresolved beyond the carrier and common-profile exclusions. Reopen for a new global stationary mechanism or a named claim that requires eta=1; retain asymmetric, nonacute and degenerate candidates. Local restarts, further carrier precision and weaker necessary tests do not settle it. Weak-contact source-to-target work does not require its resolution |
 | Operational winding-zero source width and complete numerical horizon | The [retained saddle trial](../nodal/SINE_CONSERVATIVE_PREPARATION.md#sine-operational-saddle-preparation) certifies the connection on prefixes but not a positive inverse-inclusion source radius or its complete forward horizon. Reopen only for a named downstream preparation, composition or physical-comparison claim that needs those specific data; declare separate evidence and a justified new budget. Do not retry the closed trial to improve its verdict |
 | Formation robust across different laws | The fixed mapped source fails the declared [one-percent comparison](../nodal/SINE_CONSERVATIVE_PREPARATION.md#sine-constitutive-robustness) by conserved storage. Reopen only for an independently constrained law or a named preparation with a justified positive own-law barrier margin. Passing that necessary budget alone is not formation; do not move the old source to erase its negative result |
 | Original eleven-node receiver transfer | The nonlinear net-work/basin-entry estimate for (5-sqrt(5))/2<F<=4 outside the retained exclusions. Reopen only if a named formation hypothesis needs that source class; reuse [receiver port work](archive/receiver/SINE_RECEIVER_TRANSFER_AND_CAPTURE.md#sine-receiver-port-passage), without threshold optimization or an H2 rerun for completeness |

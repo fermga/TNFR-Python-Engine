@@ -1057,17 +1057,20 @@ and the prospective protocol belong only to the
 | Question | What the existing evidence permits | Missing admission |
 | --- | --- | --- |
 | Independent constitutive justification | The two supplied laws form the retained identities and are mathematically distinguishable; the information minimum constrains a description of a law | An independently justified restriction or a complete physical observation. Matching targets, dissipation, symmetry, onset order or operator labels does not select a law |
-| Continued-contact maintenance | Full-state stationary acceptance and restricted instability theorems are available under the original sine law | A constructive stable target in the complete source-compatible marked class, or a candidate-independent obstruction covering that class. No current proof supplies either |
+| Continued-contact maintenance | The original unit-strength sine law has full-state stationary acceptance and restricted instability theorems. The separately supplied [weak-contact law](nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md) admits source retention, full-fine relaxation and a stable stationary branch | Unit-strength nonseparable feasibility remains open. Under weak contact, a retained source limit is a carrier, but its attracting registration is not selected by the existence of that branch |
 | Independent physical property | Collective measurement maps remain admissible in principle; existing electrical comparisons expose explicit failures | A joint certificate of independently prepared state, complete loaded law/support, input and clock calibration, and observation errors, obtained without the reserved response |
 | Additional collective coordinates | Constituent memory already derives quadratic feedback and nonclosure; compression already supplies a controlled finite prediction | A named missing predictive capability. Another covariance representation alone closes none of the preceding gaps |
 
-The most direct unresolved generative premise is whether continued contact
-admits a **stable stationary organization in the original complete marked
-class**. This is a necessary target question for the stationary maintenance
-route, not a claim that all identity retention must approach a stable point.
+The review's stationary target question concerns a **stable organization
+in the original complete marked class under the original unit-strength
+law**. Its unresolved status does not obstruct every supplied contact law:
+the weighted comparison has its own source-to-target obligations. The
+[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#weak-contact-collective-selection)
+selects the next dependency. Identity retention alone need not approach
+a stable point.
 The ontology distinguishes formation, finite interaction and
-[maintenance](EMERGENT_ONTOLOGY.md#generative-bound-organization); the new
-interaction theorems do not settle that last obligation.
+[maintenance](EMERGENT_ONTOLOGY.md#generative-bound-organization); the
+finite-interaction theorems alone do not settle that last obligation.
 
 The [marked-class proof](nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md#marked-cycle-information-and-connected-chambers)
 retains the mixed cycles omitted by the fifteen reported windings. The

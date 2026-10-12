@@ -491,3 +491,272 @@ def test_weak_contact_carrier_marked_cut_has_negative_full_curvature(mp, eta_val
     assert sum(witness) == 0
     assert abs(quadratic - 9 * (-4 + mp.sqrt(2))) < tolerance
     assert quadratic < -18
+
+
+def _fine_projection(mp, values):
+    return mp.matrix(
+        [
+            values[9 * child + slot] - sum(values[9 * child : 9 * child + 9]) / 9
+            for child in range(6)
+            for slot in range(9)
+        ]
+    )
+
+
+@pytest.fixture(scope="module")
+def bounded_fine_state(mp):
+    """One declared synthetic state; this is no source or stationary candidate."""
+    eta, gamma, alpha = mp.mpf(1) / 100000, 1 / (1023 * mp.pi), 2 * mp.pi / 9
+    origins = tuple(2 * mp.pi * (child - 2) / 5 for child in range(5)) + (mp.pi / 7,)
+    means = tuple(mp.mpf(2 * child - 5) / 10000 for child in range(6))
+    fine_phase, fine_form = [], []
+    for child in range(6):
+        raw_phase = tuple(Q((7 * child + 5 * slot) % 13 - 6, 2000) for slot in range(9))
+        raw_form = tuple(Q((3 * child + 7 * slot) % 17 - 8, 4000) for slot in range(9))
+        phase_row = tuple(value - sum(raw_phase) / 9 for value in raw_phase)
+        form_row = tuple(value - sum(raw_form) / 9 for value in raw_form)
+        assert sum(phase_row) == sum(form_row) == 0
+        fine_phase.extend(_mp(mp, value) for value in phase_row)
+        fine_form.extend(_mp(mp, value) for value in form_row)
+    fine_phase, fine_form = mp.matrix(fine_phase), mp.matrix(fine_form)
+    carrier = mp.matrix(
+        [alpha * (slot - 4) + origins[child] for child in range(6) for slot in range(9)]
+    )
+    phase = carrier + fine_phase
+    form = mp.matrix([value for value in means for _ in range(9)]) + fine_form
+    return {
+        "eta": eta,
+        "gamma": gamma,
+        "alpha": alpha,
+        "origins": origins,
+        "means": means,
+        "q": fine_phase,
+        "z": fine_form,
+        "carrier": carrier,
+        "phase": phase,
+        "form": form,
+        "edges": _weighted_edges(eta),
+        "laplacian": _product_laplacian(mp, eta),
+    }
+
+
+def test_weak_contact_fine_capture_strict_gap_and_decay_constants(mp):
+    """Outward bounds exclude a pi/3 internal gap from the admitted sublevel."""
+    pi = pi_interval()
+    ground = 9 * (1 - cos(2 * pi / 9))
+    positive_face = Q(1, 2) + 8 * (1 - cos(5 * pi / 24))
+    negative_face = Q(1, 2) + 8 * (1 - cos(7 * pi / 24))
+    excess = positive_face - ground
+    assert excess.lo > Q(1, 25) > Q(3, 250)
+    assert negative_face.lo > positive_face.hi
+    for sign, enclosure in ((1, positive_face), (-1, negative_face)):
+        gaps = (sign * mp.pi / 3,) + ((2 * mp.pi - sign * mp.pi / 3) / 8,) * 8
+        assert abs(sum(gaps) - 2 * mp.pi) < mp.mpf("1e-85")
+        assert all(abs(gap) < mp.pi / 2 for gap in gaps)
+        value = sum(1 - mp.cos(gap) for gap in gaps)
+        assert _mp(mp, enclosure.lo) < value < _mp(mp, enclosure.hi)
+
+    cycle_gap = 2 - 2 * cos(2 * pi / 9)
+    assert cycle_gap.lo > Q(2, 5)
+    coercivity, gamma_upper = Q(19, 100), Q(1, 3000)
+    assert cycle_gap.lo / 2 - 6 * Q(1, 100000) > coercivity
+    # These are the Young remainder and norm constants for the common F.
+    assert Q(2, 5) - 200 * gamma_upper**2 / coercivity > coercivity / 2
+    assert Q(3, 2) * gamma_upper**2 < 1
+    assert coercivity / 8 == Q(19, 800)
+
+
+def test_weak_contact_fine_capture_projection_and_unequal_spoke_control(mp):
+    """Exact product commutation needs slot-independent contact weights."""
+    eta = sp.Rational(1, 100000)
+    projector = sp.eye(54) - sp.kronecker_product(sp.eye(6), sp.ones(9) / 9)
+    laplacian = _product_laplacian(sp, eta)
+    edge_laplacian = sp.zeros(54)
+    for left, right, weight in _weighted_edges(eta):
+        edge_laplacian[left, left] += weight
+        edge_laplacian[right, right] += weight
+        edge_laplacian[left, right] -= weight
+        edge_laplacian[right, left] -= weight
+    assert laplacian == edge_laplacian
+    assert projector**2 == projector
+    assert projector.rank() == 48
+    assert projector * laplacian == laplacian * projector
+
+    coarse_form = sp.Matrix(
+        [sp.Rational(2 * child - 5, 10000) for child in range(6) for _ in range(9)]
+    )
+    assert projector * laplacian * coarse_form == sp.zeros(54, 1)
+    spoke = sp.zeros(54, 1)
+    spoke[0], spoke[45] = 1, -1
+    unequal = laplacian + eta * spoke * spoke.T
+    assert projector * unequal != unequal * projector
+    expected = eta * (coarse_form[0] - coarse_form[45]) * projector * spoke
+    assert projector * unequal * coarse_form == expected != sp.zeros(54, 1)
+
+    # The same single changed spoke breaks the normal-current closure.
+    alpha, strength = 2 * mp.pi / 9, mp.mpf(1) / 100000
+    origins = tuple(2 * mp.pi * (child - 2) / 5 for child in range(5)) + (mp.pi / 7,)
+    carrier = tuple(
+        alpha * (slot - 4) + origins[child] for child in range(6) for slot in range(9)
+    )
+    current = mp.zeros(54, 1)
+    for left, right, weight in _weighted_edges(strength):
+        exchange = weight * mp.sin(carrier[right] - carrier[left])
+        current[left] += exchange
+        current[right] -= exchange
+    assert max(abs(value) for value in _fine_projection(mp, current)) < mp.mpf("1e-85")
+    extra = strength * mp.sin(carrier[45] - carrier[0])
+    current[0] += extra
+    current[45] -= extra
+    assert max(abs(value) for value in _fine_projection(mp, current)) > strength / 10
+
+
+def test_weak_contact_fine_capture_common_lyapunov_identity(mp, bounded_fine_state):
+    """Differentiate F along the independent full edge field, not a trajectory."""
+    state, tolerance = bounded_fine_state, mp.mpf("1e-85")
+    phase, form = state["phase"], state["form"]
+    q, z, gamma, laplacian = state["q"], state["z"], state["gamma"], state["laplacian"]
+    for child in range(6):
+        for slot in range(9):
+            gap = phase[9 * child + (slot + 1) % 9] - phase[9 * child + slot]
+            gap += 2 * mp.pi if slot == 8 else 0
+            assert abs(gap) < mp.pi / 3
+    for child in range(5):
+        for slot in range(9):
+            gap = phase[9 * ((child + 1) % 5) + slot] - phase[9 * child + slot]
+            gap += 2 * mp.pi if child == 4 else 0
+            assert abs(gap) < mp.pi / 2
+
+    gradient, carrier_gradient, form_gradient = (mp.zeros(54, 1) for _ in range(3))
+    storage = mp.mpf(0)
+    for left, right, weight in state["edges"]:
+        gap, form_gap = phase[right] - phase[left], form[right] - form[left]
+        phase_exchange = weight * mp.sin(gap)
+        carrier_exchange = weight * mp.sin(
+            state["carrier"][right] - state["carrier"][left]
+        )
+        gradient[left] -= phase_exchange
+        gradient[right] += phase_exchange
+        carrier_gradient[left] -= carrier_exchange
+        carrier_gradient[right] += carrier_exchange
+        form_gradient[left] -= weight * form_gap
+        form_gradient[right] += weight * form_gap
+        storage += weight * (form_gap**2 / 2 + 1 - mp.cos(gap))
+    ground = 54 * (1 - mp.cos(state["alpha"])) + 45 * (1 - mp.cos(2 * mp.pi / 5))
+    assert 0 < storage - ground < mp.mpf(3) / 250
+    assert (
+        max(abs(value) for value in _fine_projection(mp, carrier_gradient)) < tolerance
+    )
+    assert max(abs(value) for value in form_gradient - laplacian * form) < tolerance
+    g = _fine_projection(mp, gradient)
+    q_squared, z_squared = (q.T * q)[0], (z.T * z)[0]
+    coercivity = mp.mpf(19) / 100
+    assert (q.T * g)[0] > coercivity * q_squared
+    assert (g.T * g)[0] <= 100 * q_squared
+    assert (z.T * laplacian * z)[0] > mp.mpf(2) / 5 * z_squared
+
+    form_rate = (-form_gradient - gamma * gradient) / 4
+    phase_rate = gamma * form_gradient / 4
+    assert (
+        max(
+            abs(value)
+            for value in _fine_projection(mp, form_rate)
+            + (laplacian * z + gamma * g) / 4
+        )
+        < tolerance
+    )
+    assert (
+        max(
+            abs(value)
+            for value in _fine_projection(mp, phase_rate) - gamma * laplacian * z / 4
+        )
+        < tolerance
+    )
+
+    def auxiliary_on_tangent(parameter):
+        fine_phase = _fine_projection(
+            mp, phase + parameter * phase_rate - state["carrier"]
+        )
+        fine_form = _fine_projection(mp, form + parameter * form_rate)
+        mixed = fine_phase + gamma * fine_form
+        return ((mixed.T * mixed)[0] + gamma**2 * (fine_form.T * fine_form)[0]) / 2
+
+    auxiliary = auxiliary_on_tangent(0)
+    bracket = (q.T * g)[0] + (z.T * laplacian * z)[0] + 2 * gamma * (z.T * g)[0]
+    derivative = mp.diff(auxiliary_on_tangent, 0)
+    assert abs(derivative + gamma**2 * bracket / 4) < tolerance
+    assert q_squared / 4 <= auxiliary <= q_squared + z_squared
+    assert bracket >= coercivity * (q_squared + z_squared) / 2
+    assert derivative <= -19 * gamma**2 * auxiliary / 800
+
+
+def test_weak_contact_fine_capture_mean_rows_keep_nonzero_residual(
+    mp, bounded_fine_state
+):
+    """A quadratic transient remainder is retained rather than exact closure."""
+    state, tolerance = bounded_fine_state, mp.mpf("1e-85")
+    eta, gamma, phase, form = (
+        state["eta"],
+        state["gamma"],
+        state["phase"],
+        state["form"],
+    )
+    q, origins, means = state["q"], state["origins"], mp.matrix(state["means"])
+    wheel_edges = tuple(
+        (child, (child + 1) % 5, mp.mpf(1)) for child in range(5)
+    ) + tuple((child, 5, eta) for child in range(5))
+    wheel_laplacian = mp.zeros(6)
+    wheel_current, residual = mp.zeros(6, 1), mp.zeros(6, 1)
+    fine_edge_square = mp.mpf(0)
+    for left, right, weight in wheel_edges:
+        wheel_laplacian[left, left] += weight
+        wheel_laplacian[right, right] += weight
+        wheel_laplacian[left, right] -= weight
+        wheel_laplacian[right, left] -= weight
+        gap = origins[right] - origins[left]
+        exchange = weight * mp.sin(gap)
+        wheel_current[left] += exchange
+        wheel_current[right] -= exchange
+        fine_gaps = tuple(q[9 * right + slot] - q[9 * left + slot] for slot in range(9))
+        assert abs(sum(fine_gaps)) < tolerance
+        remainder = (
+            weight
+            * sum(mp.sin(gap + fine_gap) - mp.sin(gap) for fine_gap in fine_gaps)
+            / 9
+        )
+        residual[left] += remainder
+        residual[right] -= remainder
+        fine_edge_square += weight * sum(value**2 for value in fine_gaps)
+
+    current, form_gradient = mp.zeros(54, 1), mp.zeros(54, 1)
+    for left, right, weight in state["edges"]:
+        exchange = weight * mp.sin(phase[right] - phase[left])
+        current[left] += exchange
+        current[right] -= exchange
+        form_exchange = weight * (form[left] - form[right])
+        form_gradient[left] += form_exchange
+        form_gradient[right] -= form_exchange
+    form_rate = (-form_gradient + gamma * current) / 4
+    phase_rate = gamma * form_gradient / 4
+    mean_form_rate = mp.matrix(
+        [sum(form_rate[9 * child : 9 * child + 9]) / 9 for child in range(6)]
+    )
+    mean_phase_rate = mp.matrix(
+        [sum(phase_rate[9 * child : 9 * child + 9]) / 9 for child in range(6)]
+    )
+    expected_form_rate = (
+        -wheel_laplacian * means + gamma * (wheel_current + residual)
+    ) / 4
+    expected_phase_rate = gamma * wheel_laplacian * means / 4
+    assert max(abs(value) for value in mean_form_rate - expected_form_rate) < tolerance
+    assert (
+        max(abs(value) for value in mean_phase_rate - expected_phase_rate) < tolerance
+    )
+    residual_norm = sum(abs(value) for value in residual)
+    assert residual_norm > mp.mpf("1e-8")
+    assert abs(sum(residual)) < tolerance
+    q_squared, z = (q.T * q)[0], state["z"]
+    mixed = q + gamma * z
+    auxiliary = ((mixed.T * mixed)[0] + gamma**2 * (z.T * z)[0]) / 2
+    assert residual_norm <= fine_edge_square / 9 <= mp.mpf(2) / 3 * q_squared
+    assert residual_norm <= 8 * auxiliary / 3
