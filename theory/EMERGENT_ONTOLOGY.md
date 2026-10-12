@@ -150,6 +150,14 @@ approach. This is a local effective description at each fixed positive
 contact, with stable transverse modes; it is neither a phase-only quotient
 of all states nor a law for arbitrary subsequent interactions. The marked
 boundary and any released collective means still need their own admission.
+For [one marked contact to a further C9](nodal/CRITICAL_PARENT_INTERACTION.md),
+the relative mean form and phase become dynamical alongside the critical
+coordinate. The neighbor changes its asymptotic relaxation coefficient
+through the joined mode geometry. Equal initial means and storage can
+still have opposite receiver transfer rates when the internal registration
+differs. This is a conditional interaction property with explicit contact
+work and local identity retention, not a new primitive law, autonomous
+attachment or a physical identification.
 
 Within the specified complete laws, equal nominal collective means and storage
 can hide response-relevant internal information. The

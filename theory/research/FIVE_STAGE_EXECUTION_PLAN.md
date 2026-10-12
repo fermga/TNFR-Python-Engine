@@ -182,8 +182,13 @@ The [post-transition foundation review](#post-transition-foundation-review)
 selects a local dynamical reduction of the newly critical registration.
 The [local dynamics result](#critical-registration-dynamics) derives its
 mobility, full-state initialization and algebraic critical relaxation.
-The next [marked-boundary admission](#critical-parent-interaction-admission)
-tests which state must be retained when this parent contacts another NFR.
+The [marked-boundary result](#critical-parent-interaction-admission)
+derives the relative means and critical coordinate retained when this
+parent contacts another NFR. A fixed positive contact changes its
+algebraic recovery coefficient, and equal means and storage can conceal
+opposite receiver rates. The next [two-port admission](#critical-parent-two-port-admission)
+tests whether a second attachment constrains the surviving critical
+mode at the same total boundary conductance.
 Unit-strength classification remains unresolved and deferred; no numerical
 campaign is admitted.
 
@@ -202,7 +207,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Active bounded interaction admission | [A marked boundary of the critical parent](#critical-parent-interaction-admission): declare one additional C9 neighbor and its actual contact, derive the necessary local collective state and port coupling before admitting a prediction; no numerical campaign |
+| Active bounded boundary-constraint admission | [Two ports to the same neighbor](#critical-parent-two-port-admission): compare single and split contacts at matched total conductance, deriving effective restoration and complete coupled damping with own-law state and work admission; no numerical campaign |
+| Closed bounded interaction admission | [A marked boundary of the critical parent](#critical-parent-interaction-admission): exact exchange and local three-coordinate dynamics, full-state initialization, paid contact work and changed critical relaxation. Matched means and storage can conceal opposite receiver rates; no exact coarse quotient or acquired source follows |
 | Closed local analytical reduction | [Critical registration dynamics](#critical-registration-dynamics): full-law mobility, hidden initialization and algebraic critical relaxation, with a strong-stable exception; fixed positive eta, no uniform transient or source-entry certificate |
 | Closed bounded foundation review | [After the constitutive transition](#post-transition-foundation-review): the missing local parent dynamics is independent of existing mean-closure obstructions and fixed-support slow-phase results; law justification, physical admission and autonomous occurrence retain their named dependencies |
 | Closed analytical constitutive robustness | [Weak-contact deformation transition](#weak-contact-constitutive-transition): five symmetry-related local supercritical pitchforks with critical deformation proportional to eta cubed for 0<eta<=1e-12, retaining all normal directions. Fixed-contact persistence is not uniform robustness as contact vanishes; no intermediate-law source certificate follows |
@@ -403,7 +409,7 @@ response has not been derived from the earlier acquired constituents.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
-| Composite identity under interaction | Retain complete-law, marked-identity and actual-source hypotheses when claiming maintained collective organization | **Closed two-law source-to-attractor comparison, scoped transition and local critical dynamics.** The next marked-boundary admission checks the state released by a new interaction; unit-strength classification, remaining basin gaps and a larger transition interval stay deferred |
+| Composite identity under interaction | Retain complete-law, marked-identity and actual-source hypotheses when claiming maintained collective organization | **Closed two-law source-to-attractor comparison, scoped transition and marked critical interaction.** The next two-port admission tests how the boundary constrains the collective mode at matched total conductance; unit-strength classification, remaining basin gaps and a larger transition interval stay deferred |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
 | Sufficient collective state and inherited response | Construct and certify a forecast from a joint finite noisy record without known collective initialization | **Closed operational software case.** The whole-record bound and one candidate forecast are certified; arbitrary-record convergence and physical measurement remain unproved |
@@ -1306,51 +1312,71 @@ All fine directions are included through transverse tracking.
 This is a fixed-eta local theorem, not an eta-uniform transient bound,
 an intermediate-law preparation certificate or a reduced numerical
 solver. No source, trajectory or physical response was evaluated.
-The next gate asks whether its state survives an actual new boundary,
-rather than automatically extending the small-parameter estimates.
+The [marked-boundary result](#critical-parent-interaction-admission)
+re-admits its state under an actual new contact, with its own local
+estimates and full-state initialization.
 
 <a id="critical-parent-interaction-admission"></a>
-### Next bounded admission: a marked boundary of the critical parent
+### Closed bounded admission: a marked boundary of the critical parent
 
-**Question.** Which local collective state and interaction law follow
-when the critical six-child organization contacts one further C9 NFR?
-Keep the same supplied constitutive law at lambda_c(eta), each fixed
-positive eta in the transition domain, unit capacities, both weighted
-quarter-factor rows and the original tau. Add one labeled C9 child to
-the 54-node parent. Its nodes have order 54+j; its nine internal edges
-have weight one. The one proposed boundary consists of nine same-slot
-edges from host child c=2 to this new child, each of held conductance
-epsilon. The new weighted Laplacian must enter both evolution rows.
-Neither epsilon nor the old eta acquires an evolution or selection law.
+The [interaction owner](../nodal/CRITICAL_PARENT_INTERACTION.md)
+adds a supplied winding-one C9 to the 54-node critical parent through
+nine same-slot edges from host c=2, each of weight epsilon. Both
+weighted rows, held capacities, lambda_c(eta) and the original tau
+remain explicit. The relative form and phase means become dynamical
+alongside the critical registration. Exact carrier balances and the
+local three-coordinate reduction include the actual marked port;
+hidden-state corrections enter all tracking initial coordinates.
 
-Start the analytical admission from a neighborhood of the parent's
-critical equilibrium and the neighbor's winding-one carrier. This is
-a conditional local state class, not an acquired intermediate-law
-source. Retain global form and lifted-phase means while re-admitting
-the parent's and neighbor's separate means, which need not remain
-constant after contact. Check the full center/stable split at zero
-external contact before using a local continuation; that zero-contact
-reference is distinct from setting the parent's internal eta to zero.
+For each fixed positive eta and epsilon, the joined relative state
+has one critical and 123 stable directions. The neighbor follows the
+critical port and changes the algebraic recovery coefficient through
+the joined tangent norm, without changing the stationary quartic
+potential. The coefficient ratio tends to 35/36 as eta tends to zero;
+this is not a uniform transient or an interchange of small-contact
+and long-time limits.
 
-Derive the actual marked-port projection and the leading joint local
-dynamics. In particular, decide whether the critical amplitude together
-with relative mean form and relative phase is sufficient locally, or
-which additional state or causal memory is required. Reuse the
-[registered composition methods](../nodal/REPEATED_ORGANIZED_COMPOSITION.md)
-without transferring their noncritical model's coefficients or finite
-error certificate. Compare against discarding the critical amplitude
-at matched retained means, using the independently defined parent mean
-form exchange and registration rate as candidate readouts.
+Full-state initialization, local marked identity and a sufficient
+admission accounting for the contact's storage jump are retained.
+Equal parent means and storage can give opposite receiver rates when
+the internal registration differs. Even all three reduced coordinates
+do not close the instantaneous field on arbitrary nearby states.
+These are analytical field witnesses, not evaluated trajectories.
+The neighbor's organization and contact remain supplied; no original
+source, physical response or autonomous occurrence is admitted.
 
-Acceptance is a complete-law local interaction result or a named
-obstruction, with marked child/parent identity, full-state initialization,
-boundary work and the domain of the reduction stated. An unchanged-state
-support addition has its own storage jump; it is not autonomously selected
-or automatically passive. Any finite prediction must first fix its
-source, epsilon, horizon, observation and error budget. No trajectory,
-root search, source replay, new apparatus search or physical evaluation
-is activated. A uniform eta-to-zero approximation becomes relevant only
-if this specific interaction requires it.
+<a id="critical-parent-two-port-admission"></a>
+### Next bounded admission: two ports at matched total conductance
+
+**Question.** When does the boundary allow the critical mode to move
+collectively, and when does it introduce effective restoration?
+Keep the same 63 nodes, critical law, fixed positive eta, held unit
+capacities, weighted quarter-factor rows and tau. Compare a single
+c=2-to-c=6 boundary with a split boundary joining both c=2 and the
+old donor c=5 to that same neighbor. Each port has nine same-slot
+edges. Fix the same total conductance epsilon_1+epsilon_2 per slot:
+the single-port control places it all on c=2, and the split contact
+has epsilon_1>0 and epsilon_2>0. The control reweights existing edges;
+it does not invent duplicate parallel edges. Hold each choice fixed
+within its complete law.
+
+Re-admit the aligned equilibrium, full phase Hessian and two-row
+linearization on the fixed-global-mean leaf. Derive the boundary
+constraint on the old critical tangent and the effective quadratic
+restoration after eliminating all normal phase coordinates. Retain
+the released form/phase means in the coupled dynamics: a stationary
+stiffness alone is not a decay rate, and modes on the same contact
+scale cannot be removed by an unsupported instantaneous substitution.
+Obtain the complete damping criterion or its explicit obstruction,
+including full-state initialization, local identity and contact work.
+
+Acceptance is an own-law local theorem or named obstruction that
+distinguishes boundary placement from merely increasing total weight.
+The single-port theorem supplies methods and a control, not the new
+support's coefficients or transient bounds. No trajectory, numerical
+root, source replay, parameter scan or physical response is activated.
+Any later finite prediction must first freeze preparation, contact
+weights, observation, horizon and numerical budget in this plan.
 
 <a id="contact-maintenance-certificate-admission"></a>
 ### Closed complete-flow convergence; unit-strength classification deferred

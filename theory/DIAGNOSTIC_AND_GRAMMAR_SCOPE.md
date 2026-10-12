@@ -1283,7 +1283,7 @@ still lacks independent preparation and measurement coverage. Capture
 does not supply those missing observations, a laboratory clock or a
 unique microscopic law.
 
-The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#critical-parent-interaction-admission)
+The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#critical-parent-two-port-admission)
 owns the single next gate and its complete-law scope. Endpoint capture
 and the local transition distinguish retained identity from law-dependent
 registration. They do not select nature's law, globally classify the
@@ -1320,7 +1320,7 @@ because both objects are composed of C9 children.
 | --- | --- |
 | Independent law justification or observation | Compatibility, information cost and acquired outcomes do not select a unique law. A new independent restriction or jointly admitted preparation, clock and physical readout is needed; the scoped electrical and recovery obstructions remain valid. |
 | Autonomous preparation and contact occurrence | Event admissibility, passivity and assembly work do not select occurrence. Progress requires a named access, timing, reset or reservoir mechanism with its own justification; the pitchfork supplies none. |
-| Sufficient parent dynamics | The full critical tangent has one center direction and stable remaining directions. Its local invariant reduction now derives original-clock drift and full-state initialization. A new marked interaction still needs its own retained means, boundary projection and identity domain. |
+| Sufficient parent dynamics | The isolated reduction and one admitted marked interaction derive original-clock drift, released means, full-state initialization and local identity retention. Their effective coordinates do not close arbitrary states; a changed boundary must re-admit the surviving mode and its dynamics. |
 
 The [local reduction](nodal/ORGANIZED_CONSTITUTIVE_TRANSITION.md#constitutive-transition-local-dynamics)
 closes the selected consequence: inherited mobility and algebraic critical
@@ -1329,11 +1329,21 @@ Equal initial phases can approach from opposite sides because the center
 initialization also consumes form. This rules out resetting that initial
 coordinate to the observed registration alone.
 
-That result does not authorize arbitrary new contacts, operator descent,
-intermediate-law acquisition or an eta-uniform reduced solver. A concrete
-marked interaction now gives the next reason to test its retained state;
-a new error expansion alone would not do so. The
-[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#critical-parent-interaction-admission)
+The [marked-contact result](nodal/CRITICAL_PARENT_INTERACTION.md)
+now re-admits relative form and phase means alongside the critical
+registration. One organized neighbor changes the asymptotic recovery
+coefficient through the joined tangent geometry. At matched means and
+storage, the internal registration still determines the sign of the
+initial receiver exchange. A separate hidden-form witness excludes an
+exact instantaneous quotient even in those three coordinates.
+
+These results do not authorize arbitrary contacts, operator descent,
+intermediate-law acquisition or a uniform reduced solver. They isolate
+a substantive boundary question: whether two different attachments to
+the same neighbor constrain the surviving collective mode, after
+controlling total conductance. Effective stationary restoration and
+complete coupled damping have separate obligations. The
+[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#critical-parent-two-port-admission)
 owns that single bounded task and its support; this comparison introduces
 no parallel campaigns.
 

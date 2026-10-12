@@ -1166,6 +1166,20 @@ critical reciprocal-square decay identity and the strong-stable exception.
 These static controls support a fixed-eta local theorem, not a uniform
 transient bound, a reduced solver or source entry into its neighborhood.
 
+For the [critical parent's marked interaction](theory/nodal/CRITICAL_PARENT_INTERACTION.md),
+select `tests/physics/test_critical_parent_interaction.py` with the two
+constitutive-transition modules and repeated-composition controls above.
+Rebuild both rows from the 63-node edges, including the new boundary in
+phase diffusion. Check the six-to-one mean weights, exact carrier and
+critical projection against independent edge sums. Distinguish raw
+registration rates from center-manifold rates and retain the full-state
+initialization. Check the joined kernel, mobility normalization, signed
+receiver control and positive contact work; unchanged phase means cannot
+replace the port's internal state. The three-coordinate local reduction
+is not an exact quotient on arbitrary states. Fixed-positive-contact
+asymptotics must not acquire a uniform contact-to-zero transient or an
+actual-source claim. Keep all controls static and the no-response guard.
+
 For [reflected stationary contact identity](theory/nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md),
 select `tests/physics/test_organized_contact_reflection.py` with contact
 maintenance, external interaction and `tests/test_rational_interval.py`.
