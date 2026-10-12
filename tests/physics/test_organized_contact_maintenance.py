@@ -75,6 +75,174 @@ def _edge_action(mp, vector, phases=None):
     return tuple(result)
 
 
+def test_stationary_resultants_do_not_make_unrestricted_stress_positive(mp):
+    """Static controls distinguish tangent curvature from unrestricted stress."""
+    alpha = 2 * mp.pi / 9
+    tolerance = mp.mpf("1e-165")
+    degrees = [0] * 54
+    phases = tuple(alpha * (j - 4) for _ in range(6) for j in range(9))
+    phasors = tuple(mp.exp(mp.j * phase) for phase in phases)
+    resultants = [mp.mpc(0)] * 54
+    for a, b in _EDGES:
+        resultants[a] += phasors[b]
+        resultants[b] += phasors[a]
+        degrees[a] += 1
+        degrees[b] += 1
+    radial = tuple(mp.conj(z) * resultant for z, resultant in zip(phasors, resultants))
+    assert degrees == [5] * 45 + [7] * 9
+    assert all(abs(value.imag) < tolerance for value in radial)
+    lower_bound = 5 - 2 * mp.sqrt(6)
+    assert lower_bound > mp.mpf("0.1")
+    for i, value in enumerate(radial):
+        expected = 2 * mp.cos(alpha) + (3 if i < 45 else 5)
+        assert abs(value.real - expected) < tolerance
+        assert value.real > lower_bound
+        assert abs(phasors[i] - resultants[i] / abs(resultants[i])) < tolerance
+        # Stationarity is H*z=0, where H=diag(r)-Adj; it is not H>=0.
+        assert abs(value.real * phasors[i] - resultants[i]) < tolerance
+        cosine_square_sum = sum(
+            mp.cos(phases[b] - phases[a]) ** 2 for a, b in _EDGES if i in (a, b)
+        )
+        assert cosine_square_sum >= 1
+        assert value.real**2 + cosine_square_sum <= 10 * value.real
+    potential = sum(1 - mp.cos(phases[b] - phases[a]) for a, b in _EDGES)
+    stress_on_one = tuple(value.real - degree for value, degree in zip(radial, degrees))
+    assert all(
+        abs(value - (2 * mp.cos(alpha) - 2)) < tolerance for value in stress_on_one
+    )
+    assert abs(sum(stress_on_one) + 2 * potential) < tolerance
+    assert sum(stress_on_one) < 0
+    # All phase-Hessian weights are positive on this connected support.
+    # The independent full-mode control below verifies the relative spectrum.
+    assert min(mp.cos(phases[b] - phases[a]) for a, b in _EDGES) > 0
+    vector = tuple(mp.mpf(2 * i - 53) / 108 for i in range(54))
+    curvature = sum(
+        v * value for v, value in zip(vector, _edge_action(mp, vector, phases))
+    ).real
+    form_curvature = sum(
+        v * value for v, value in zip(vector, _edge_action(mp, vector))
+    ).real
+    assert curvature >= mp.cos(alpha) * form_curvature - tolerance
+    assert form_curvature > 0
+
+    antipodal = tuple(
+        phase + (mp.pi if i >= 45 else 0) for i, phase in enumerate(phases)
+    )
+    anti_z = tuple(mp.exp(mp.j * phase) for phase in antipodal)
+    anti_resultants = [mp.mpc(0)] * 54
+    for a, b in _EDGES:
+        anti_resultants[a] += anti_z[b]
+        anti_resultants[b] += anti_z[a]
+    anti_radial = tuple(mp.conj(z) * value for z, value in zip(anti_z, anti_resultants))
+    assert all(abs(value.imag) < tolerance for value in anti_radial)
+    for value in anti_radial[45:]:
+        assert abs(value.real - (2 * mp.cos(alpha) - 5)) < tolerance
+        assert value.real < 0
+    donor_cut = tuple(mp.mpf(i >= 45) - mp.mpf(1) / 6 for i in range(54))
+    negative = sum(
+        value * action
+        for value, action in zip(donor_cut, _edge_action(mp, donor_cut, antipodal))
+    ).real
+    assert abs(negative + 45) < tolerance
+
+
+def test_static_slot_shift_secant_and_endpoint_hessian_defect(mp):
+    """The nonstationary blind point is a secant control, not a target verdict."""
+    gaps = (Q(1, 6),) * 7 + (Q(-1, 12),) * 2
+    profile = tuple(sum(gaps[:j], Q(0)) for j in range(9))
+    raw = tuple(
+        profile[j] + (Q(c - 2, 6) if c < 5 else 0) for c in range(6) for j in range(9)
+    )
+    mean = sum(raw, Q(0)) / 54
+    turns = tuple(value - mean for value in raw)
+    shifted = tuple(
+        turns[9 * c + (j + 1) % 9] + int(j == 8) - Q(1, 9)
+        for c in range(6)
+        for j in range(9)
+    )
+    assert sum(turns) == sum(shifted) == 0
+    assert tuple(shifted[i] - turns[i] for i in range(54)) == tuple(
+        gaps[j] - Q(1, 9) for _ in range(6) for j in range(9)
+    )
+    branches = tuple(-int(a % 9 == 8) for a, _ in _EDGES[:54])
+    branches += tuple(-int(a // 9 == 4) for a, _ in _EDGES[54:99])
+    branches += (0,) * 45
+    gap_rows = []
+    for state in (turns, shifted):
+        edge_gaps = tuple(
+            state[b] - state[a] - branch for (a, b), branch in zip(_EDGES, branches)
+        )
+        gap_rows.append(edge_gaps)
+        assert all(-Q(1, 2) < value < Q(1, 2) for value in edge_gaps[:99])
+        assert all(sum(edge_gaps[9 * c : 9 * c + 9]) == 1 for c in range(6))
+        assert all(
+            sum(edge_gaps[54 + 9 * c + j] for c in range(5)) == 1 for j in range(9)
+        )
+        for c in range(5):
+            for j in range(9):
+                mixed_square = (
+                    edge_gaps[9 * c + j]
+                    + edge_gaps[54 + 9 * c + (j + 1) % 9]
+                    - edge_gaps[9 * ((c + 1) % 5) + j]
+                    - edge_gaps[54 + 9 * c + j]
+                )
+                assert mixed_square == 0
+    assert gap_rows[0][:9] == gaps
+    assert gap_rows[1][:9] == gaps[1:] + gaps[:1]
+    assert gap_rows[0][54:] == gap_rows[1][54:]
+
+    phases = tuple(2 * mp.pi * _mp(mp, value) for value in turns)
+    plus = tuple(2 * mp.pi * _mp(mp, value) for value in shifted)
+    direction = tuple(after - before for before, after in zip(phases, plus))
+    current_rows = []
+    for state in (phases, plus):
+        current = [mp.mpf(0)] * 54
+        for a, b in _EDGES:
+            value = mp.sin(state[b] - state[a])
+            current[a] += value
+            current[b] -= value
+        current_rows.append(current)
+    tolerance = mp.mpf("1e-165")
+    assert abs(current_rows[0][1] - mp.sqrt(3) / 2) < tolerance
+    secant = mp.mpf(0)
+    endpoint_edges = mp.mpf(0)
+    for old, new in zip(*gap_rows):
+        a, b = 2 * mp.pi * _mp(mp, old), 2 * mp.pi * _mp(mp, new)
+        secant += (mp.sin(b) - mp.sin(a)) * (b - a)
+        endpoint_edges += (mp.cos(a) + mp.cos(b)) * (b - a) ** 2 / 2
+    expected_secant = 3 * mp.pi * (mp.sqrt(3) + 1)
+    expected_endpoint = 3 * mp.pi**2 * (mp.sqrt(3) + 1) / 4
+    assert abs(secant - expected_secant) < tolerance
+    assert secant > 0
+    current_pairing = sum(
+        h * (after - before)
+        for h, before, after in zip(direction, current_rows[0], current_rows[1])
+    )
+    assert abs(current_pairing + secant) < tolerance
+    quadratic = tuple(
+        sum(
+            h * action
+            for h, action in zip(direction, _edge_action(mp, direction, state))
+        ).real
+        for state in (phases, plus)
+    )
+    assert all(abs(value - expected_endpoint) < tolerance for value in quadratic)
+    average = sum(quadratic) / 2
+    assert abs(average - endpoint_edges) < tolerance
+    midpoint = tuple((a + b) / 2 for a, b in zip(phases, plus))
+    midpoint_quadratic = sum(
+        h * action
+        for h, action in zip(direction, _edge_action(mp, direction, midpoint))
+    ).real
+    # Every edge with a nonzero directional gap changes by exactly pi/2.
+    assert (
+        abs(secant - mp.sin(mp.pi / 4) / (mp.pi / 4) * midpoint_quadratic) < tolerance
+    )
+    assert abs(average - mp.cos(mp.pi / 4) * midpoint_quadratic) < tolerance
+    assert abs((average - secant) - expected_secant * (mp.pi / 4 - 1)) < tolerance
+    assert average - secant < 0
+
+
 @pytest.mark.parametrize("antipodal", (False, True))
 def test_every_full_spatial_mode_against_independent_edge_matrices(
     mp, geometry, antipodal

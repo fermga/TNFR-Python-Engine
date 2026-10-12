@@ -589,14 +589,195 @@ their span. A positive pair sum can hide a negative individual direction.
 It also does not refute a stronger theorem restricted to stationary states.
 The new common-profile test (17f) correctly rejects this same configuration.
 
-The mechanism therefore establishes necessary inequalities and a complete
-common-profile obstruction, but does not admit a chamber-wide stationary
-certificate. The unresolved sector consists of nonseparable candidates
-satisfying the necessary tests. Deciding it requires all nodal stationary
-equations jointly with full relative curvature, or a constructed stable
-target. More evaluations of the same nine sums cannot supply that missing
-argument. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#contact-maintenance-certificate-admission)
-owns that unresolved admission.
+The pair tests and common-profile obstruction alone do not admit a
+chamber-wide stationary certificate. The following stationarity arguments
+further restrict the nonseparable sector without discarding full relative
+curvature or replacing it by more evaluations of these nine sums.
+
+<a id="stationary-resultant-and-slot-comparison"></a>
+### 5.4. Every stationary PSD candidate has a nonzero aligned resultant
+
+For a stationary phase state, define
+
+\[
+ z_i=e^{i\theta_i},\qquad R_i=\sum_{b\sim i}z_b,\qquad
+ r_i=\Re(\overline z_iR_i)=\sum_{b\sim i}\cos(\theta_b-\theta_i).
+ \tag{17i}
+\]
+
+Every node has odd degree, five on a host and seven on the donor. For odd
+d, the maximum of `sum a_k^2` on `[-1,1]^d` with `sum a_k=0` is `d-1`.
+Indeed a vertex of this polytope has at most one nonsaturated coordinate.
+The other `d-1` coordinates sum to an even integer, so the remaining
+coordinate must be zero; the saturated coordinates balance. Convexity
+puts a maximum at a vertex. Apply this to the stationary sine currents:
+`sum sin(delta_ib)=0` implies `sum cos(delta_ib)^2>=1` at every node.
+
+Suppose the full phase Hessian M is positive semidefinite. Edgewise
+`cos(delta)<=1` gives `M<=L`. The C9 Laplacian is bounded by `4I`, while
+W6 is a subgraph of K6 and its Laplacian is bounded by `6I`. Thus
+`0<=M<=10I`, and spectral calculus gives `M^2<=10M`. Since `M_ii=r_i`,
+
+\[
+ r_i^2+1\ \le\ (M^2)_{ii}\ \le\ 10r_i,
+ \qquad r_i\ge5-2\sqrt6>\frac1{10}.
+ \tag{17j}
+\]
+
+Stationarity also makes `conj(z_i)*R_i` real. Consequently
+`R_i=r_i*z_i` with the strict bound (17j), and every such candidate obeys
+the regular fixed-point equation `z_i=R_i/|R_i|`. This excludes zero
+resultants and antipodal alignment, without a separable, acute or reflection
+premise. It is a necessary condition, not a proof of existence, uniqueness
+or full Hessian positivity. The angular fixed-point derivative still has
+signed weights `cos(delta_ib)/r_i`; their row sum is one, but negative
+entries prevent inference of a maximum principle or contraction.
+
+Nor can unrestricted stress positivity replace tangent-Hessian positivity.
+With adjacency matrix A and `T=diag(r)-A`, stationarity gives `T*z=0`,
+but `1^T*T*1=-2*V(theta)`. Requiring T to be PSD would force zero potential
+and synchronization. The stable aligned-twist control (2) already has
+`T*1=(2*cos(alpha)-2)*1<0`, although its M is positive on the full relative
+leaf by (3). This rejects that stronger certificate, not the control.
+
+### 5.5. Stationary comparison with a cyclically shifted profile
+
+Use lifts in the original complete product marked chamber: internal and
+rim closing branches are `-1`, and all other marked branches are zero.
+Let `kappa_(c,j)` be the forward principal internal gap, and define
+
+\[
+ \theta^+_{c,j}=\begin{cases}
+ \theta_{c,j+1}-\alpha,&j<8,\\
+ \theta_{c,0}+2\pi-\alpha,&j=8,
+ \end{cases}
+ \qquad d_{c,j}=\theta^+_{c,j}-\theta_{c,j}
+              =\kappa_{c,j}-\alpha.
+ \tag{17k}
+\]
+
+This is the slot automorphism followed by a common phase rotation, with
+the compatible lift retained. It preserves the complete law, every child
+lifted mean and the marked branch vector. Internal and rim principal gaps
+are cyclically shifted. Thus a stationary theta gives a stationary theta+
+with a permutation-conjugate Hessian M+. The straight lifted segment
+`theta+t*d`, `0<=t<=1`, stays in the original marked chamber: each marked
+gap interpolates between two values strictly inside the same cut bounds.
+This segment is a comparison of configurations, not a solution trajectory.
+
+For each oriented edge, let a and b be its gaps at theta and theta+ using
+the same lift/branch convention at both endpoints. Set
+`h=(b-a)/2` and `mu=(a+b)/2`. Include all 144 edges. On unmarked spokes
+retain these compatible lifted gaps; independently wrapping the two
+endpoints would change the secant. On every edge
+`2h=d_right-d_left=kappa_right-kappa_left`, hence `|h|<pi`.
+Stationarity at both endpoints and the edge quadratic form give
+
+\[
+ \begin{split}
+ 0&=\sum_e(\sin b_e-\sin a_e)(b_e-a_e)
+     =4\sum_e\cos\mu_e\,h_e\sin h_e,\\
+ \frac{d^TMd+d^TM^+d}{2}
+   &=4\sum_e\cos\mu_e\,h_e^2\cos h_e\ \ge\ 0
+       \quad\text{if }M\succeq0.
+ \end{split}
+ \tag{17l}
+\]
+
+Subtracting these identities gives the necessary inequality
+
+\[
+ \sum_e\cos\mu_e\,h_e(\sin h_e-h_e\cos h_e)\ \le\ 0.
+ \tag{17m}
+\]
+
+The factor `h*(sin h-h*cos h)` is strictly positive for `0<|h|<pi`:
+it is even, and the derivative of `sin h-h*cos h` is `h*sin h>0` for
+positive h in that interval. Therefore a PSD stationary candidate must
+either have a changing edge with `cos(mu)<0`, or satisfy `cos(mu)=0`
+on every changing edge. In the latter case (17l) has zero quadratic form
+at both PSD endpoints, so `Md=0`. It also gives `sin a=sin b` separately
+on every edge. The next argument excludes this entire flat alternative,
+including Hessians with additional zero eigenvalues.
+
+### 5.6. The flat alternative requires nine exceptional slots in six children
+
+Suppose the flat alternative holds. Equality of each edge's sine current
+before and after the shift means its current is independent of the slot.
+Each internal C9 then has a common positive current: zero current would
+force all its cut-free gaps to zero, and negative current would force all
+gaps negative, both contradicting winding one. Write its acute solution
+as `a` in `(0,pi/2]`; each gap is either a or `pi-a`.
+If there are m obtuse gaps, their sum is `9a+m*(pi-2a)=2*pi`.
+For `m>=2` this sum is at least `2*pi+5a>2*pi`. Thus the only profiles are
+
+\[
+ \begin{array}{ll}
+ \text{uniform:}&\kappa_j=2\pi/9\quad\text{for every }j,\\
+ \text{one obtuse gap:}&\kappa_{k_c}=6\pi/7,\qquad
+                  \kappa_j=\pi/7\quad(j\ne k_c).
+ \end{array}
+ \tag{17n}
+\]
+
+Adjacent children cannot have different types. On a wheel edge connecting
+such children, at the eight ordinary internal slots the successive
+compatible wheel gaps differ by `+/-5*pi/63`. There are two consecutive
+ordinary slots, so three consecutive wheel gaps would have equal sine
+and nonzero constant spacing `epsilon=+/-5*pi/63`. This is impossible:
+`sin t=sin(t+epsilon)=sin(t+2epsilon)` first implies
+`sin(t+epsilon)*(1-cos epsilon)=0` and then `sin epsilon=0`.
+The wheel is connected, so all six children have the same type.
+
+If all are uniform, they share an internal profile and section 5.2 gives
+a negative relative Hessian direction. In the other case, d from (17k)
+has the same two values in every child: its high value occurs only at
+slot `k_c`, and the difference between the two values is `q=5*pi/7`.
+Use `Md=0` at node `(c,k_c-1)`. Its only internal neighbor with high d is
+the forward neighbor, across an edge of weight `cos(pi/7)>0`; its internal
+contribution to Md is `-q*cos(pi/7)`, which is nonzero. Cancellation
+requires a wheel neighbor whose exceptional slot is `k_c-1`; otherwise
+all wheel differences of d vanish. At `(c,k_c+1)`, the unique internal
+high neighbor is backward across the obtuse edge. Its contribution is
+`+q*cos(pi/7)`, so a wheel neighbor with exceptional slot `k_c+1` is also
+required. These arguments need no sign assumption on the wheel weights.
+
+The nonempty set of occupied exceptional slots is therefore closed under
+both neighboring slots modulo nine. It must contain all nine slots, but
+six children can occupy at most six. This contradiction excludes the
+flat PSD alternative exactly, without a strict-positivity assumption.
+
+Consequently **every stationary candidate with a PSD full phase Hessian in
+the original complete marked class has a changing edge with strictly
+negative midpoint cosine in (17k)**. This is negative curvature of one
+changing edge potential at the comparison midpoint. Neither negative total
+segment curvature nor a negative candidate-Hessian direction has been
+proved; other edges can contribute positively. It is not an assertion
+about time evolution. Symmetry and stationarity alone have not forced a
+common profile.
+
+For an independent nonstationary control, the phase-pair blind point
+(17g) has exactly two changing internal gaps per child under (17k), while
+its wheel gaps are unchanged. Its stationarity secant is
+
+\[
+ \sum_e(\sin b_e-\sin a_e)(b_e-a_e)
+       =3\pi(\sqrt3+1)>0.
+ \tag{17o}
+\]
+
+It therefore fails the first identity in (17l), although all nine pair
+sums pass. The stationary conditions add information missing from those
+sums; this example is not evidence about existence of a stationary target.
+
+The remaining sector is regular, genuinely nonseparable and has negative
+midpoint cosine on a changing edge. Neither that necessary property nor
+the resultant bound certifies stability or excludes this sector. A full
+decision still requires a joint stationary/curvature argument or a
+constructed stable target on all 53 relative phase directions. The
+[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#contact-maintenance-certificate-admission)
+owns that unresolved admission. No new law, target, source capture or
+physical identification follows from these restrictions.
 
 ## 6. Actual aligned outer-zero control after the full observation word
 
@@ -812,8 +993,12 @@ detached proof path. Numerical checks verify implemented arithmetic and
 wiring; the analytic arguments above establish the conditional mathematical
 claims and their domain boundaries.
 
-The later analytical extension in sections 5.1-5.3 uses exact identities
-and counterexamples only. It does not change the earlier assessor's
-threshold, flags or frozen evidence, and adds no numerical decision API.
-Its necessary pair-sum inequalities must not be exposed as sufficient
-stability or stationary-maintenance verdicts.
+The later analytical extension in sections 5.1-5.6 uses exact identities
+and counterexamples. Static regression checks separately reconstruct the
+stationary controls' neighbor resultants and the blind point's lifted
+secant from edge sums. These are arithmetic controls, not a stationary
+search or a proof by sampled configurations. The extension does not change
+the earlier assessor's threshold, flags or frozen evidence, and adds no
+numerical decision API. Its necessary curvature, resultant and slot
+conditions must not be exposed as sufficient stability or maintenance
+verdicts.

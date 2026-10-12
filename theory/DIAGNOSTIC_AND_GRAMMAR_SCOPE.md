@@ -1086,8 +1086,13 @@ The subsequent
 removes the acute outer-gap requirement from a stronger necessary defect
 bound and excludes every common internal phase profile from stable
 stationary contact. An exact counterexample proves its nine fixed
-phase-pair sums are incomplete; nonseparable stationary targets still
-require a joint stationarity/curvature argument. The
+phase-pair sums are incomplete. The
+[stationarity extension](nodal/ORGANIZED_CONTACT_MAINTENANCE.md#stationary-resultant-and-slot-comparison)
+proves nonzero aligned neighbor resultants for every PSD stationary
+candidate and requires negative midpoint edge curvature in the cyclic slot
+comparison, even for degenerate Hessians. This is not a sign verdict on the
+total curvature. Nonseparable targets meeting those necessary conditions
+still require a full stationary/curvature decision. The
 [reflection obstruction](nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md#5-complete-law-consequence-and-scope)
 requires its static sector. The
 [root and stability certificate](nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md#root-and-stability-acceptance)

@@ -970,6 +970,16 @@ acute face before claiming all-future capture. Rejected inputs and unavailable
 sources cannot pass through the old fixed-origin comparison verdict. No
 trajectory, origin scan or frozen-source regeneration is needed.
 
+For the stationary resultant and cyclic slot-comparison extension, select
+the static `stationary_resultant` and `slot_shift` tests in that module,
+with `every_full_spatial_mode`, `geometry_covers_actual_product` and
+`negative_hessian_witness`. Reconstruct neighbor currents and compatible
+lifted edge secants independently. Preserve the nonstationary blind point
+and the distinction between tangent-Hessian and unrestricted stress
+positivity. These tests exercise the algebraic controls; the exact proof
+owns the full-domain necessary conditions and flat-case exclusion. No
+source-assessment fixture or frozen response is needed for this selection.
+
 For [reflected stationary contact identity](theory/nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md),
 select `tests/physics/test_organized_contact_reflection.py` with contact
 maintenance, external interaction and `tests/test_rational_interval.py`.

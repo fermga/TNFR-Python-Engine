@@ -326,7 +326,7 @@ response has not been derived from the earlier acquired constituents.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
-| Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Unresolved nonseparable stationary sector; no active search.** A shared internal phase profile is now excluded without acute/reflection restrictions. Full stationarity must control slot-dependent curvature; neither the finite search nor nine pair-sum tests supplies a complete certificate |
+| Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Unresolved nonseparable stationary sector; no active search.** Shared internal profiles and the flat slot-comparison alternative are excluded. Remaining candidates have nonzero aligned resultants and negative midpoint edge curvature in the slot comparison; their full relative curvature remains undecided |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
 | Sufficient collective state and inherited response | Construct and certify a forecast from a joint finite noisy record without known collective initialization | **Closed operational software case.** The whole-record bound and one candidate forecast are certified; arbitrary-record convergence and physical measurement remain unproved |
@@ -908,37 +908,40 @@ inequality covering that class. The analytical audit below addresses that gap wi
 repeating local starts, source histories or contact derivatives.
 
 <a id="contact-maintenance-certificate-admission"></a>
-### Closed curvature-mechanism audit; nonseparable maintenance unresolved
+### Closed stationarity restrictions; remaining maintenance sector unresolved
 
-The [proof owner](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#full-chamber-phase-curvature-tests)
-closes the single analytical proposal declared at `0aec0fe4`. It retains the
+The [proof owner](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#stationary-resultant-and-slot-comparison)
+extends the curvature audit closed at `730cc056` through the nodal
+stationary equations. It retains the
 original sine law, complete `C9 x W6` support, held unit capacities, tau
 clock, both conserved means, all 53 relative phases and the
 [complete product marked class](../nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md#marked-cycle-information-and-connected-chambers).
 No numerical search, source replay, trajectory, response fit or physical
 record was evaluated.
 
-Every winding-one wheel has a negative summed phase-curvature witness,
-including nonacute rims. This yields a full-fine necessary condition
-`D>=9/4` for a positive-semidefinite phase Hessian. More decisively, any
-shared internal phase profile lets the wheel-negative direction be applied
-without internal-edge cost: **no such stationary target can be stable**.
-This includes distorted profiles and reflection-breaking rim origins.
-An exact full-class counterexample nevertheless passes all nine fixed
-Fourier pair sums while possessing a negative full relative direction.
-The sums are therefore necessary tests, not a complete stability decision.
-The counterexample is nonstationary and does not resolve the stationary
-residual sector.
+The prior full-domain defect condition `D>=9/4`, common-profile obstruction
+and incompleteness of the nine fixed phase-pair sums remain valid. Full
+stationarity now adds two restrictions on every candidate with a
+positive-semidefinite phase Hessian. Each node aligns with its nonzero
+neighbor resultant, whose radius is at least `5-2*sqrt(6)>1/10`. The
+cyclic slot comparison must also have a changing edge with strictly
+negative midpoint cosine. Its flat alternative would require nine distinct
+exceptional internal slots in only six children and is excluded, including
+degenerate Hessians. The exact nonstationary blind point of the pair sums
+fails the new stationarity secant. These are analytical restrictions and
+static arithmetic controls, not an evaluated stationary target.
 
-**Missing admission:** an argument coupling all nodal stationary equations
-to the cost of varying the wheel-negative direction between internal slots,
-or a constructed stable target with genuinely different internal profiles.
-Topology fixes the marked periods but alone does not supply the required
-bound on that cost. The
-common-profile theorem does not justify restricting arbitrary targets to a
-carrier, reflection sector or acute collar. Further evaluations of the same
-nine sums, source precision changes and additional optimizer starts would
-not supply the missing argument.
+**Missing admission:** a joint stationary/curvature decision for the regular,
+genuinely nonseparable sector with negative midpoint edge curvature, or a
+constructed stable target in that sector. The signed fixed-point weights
+need not give a contraction, and endpoint Hessian positivity does not give
+positivity along the comparison segment. A negative midpoint edge cosine
+alone proves neither negative total segment curvature nor an unstable
+endpoint; it also supplies no stability certificate. The next
+analytical step must control that remaining negative contribution together
+with the full nodal balance; it cannot assume common profiles, reflection
+or acuteness. Repeating the same pair sums, increasing source precision or
+adding optimizer starts would not resolve this missing implication.
 
 The unresolved question retains the original complete law and true cut-free
 class. A full obstruction must establish a negative relative direction at
