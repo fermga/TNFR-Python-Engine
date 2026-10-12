@@ -934,11 +934,164 @@ is a static algebraic control, not a new candidate evaluation.
 
 The reduction proves how to account exactly for compensating curvature;
 it does not prove that the remaining sector contains a stable target or
-that K must always have a negative direction at its critical points. A
-global obstruction must cover all admissible donor branches and possible
-degenerate host minima. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#contact-maintenance-certificate-admission)
-retains that unresolved decision, with the original complete law and all
-marked identities. Local curvature reduction identifies no physical force.
+that K must always have a negative direction at its critical points.
+The following reconstruction removes donor ambiguity at full stationarity,
+while retaining every admissible host state and possible degenerate minimum.
+Neither reduction identifies a physical force.
+
+<a id="global-stationary-donor-reconstruction"></a>
+### 5.10. Host balance uniquely reconstructs a stationary donor
+
+The local branch in (17u) solves only the nine donor equations. Different
+such branches can exist at the same fixed host state. Full stationarity
+also requires all 45 host equations, which determine **at most one circular
+donor state** in the original outer-one class, without any Hessian premise.
+
+Write the host phases as `h_(c,j)`, the donor phases as `d_j`, and let
+`y_j=(cos d_j,sin d_j)^T`. Compute the host-only torque T on the 45 internal
+host edges and 45 rim edges, excluding all donor edges. At each slot define
+
+\[
+ T_{c,j}=\sum_{b\sim_H(c,j)}\sin(h_b-h_{c,j}),\qquad
+ E_j(c,:)=(\sin h_{c,j},-\cos h_{c,j}).
+ \tag{17x}
+\]
+
+The host equation is `T_(c,j)+sin(d_j-h_(c,j))=0`, hence `E_j y_j=T_j`.
+The five-row matrix E has rank two. Otherwise all five host phases would
+belong to one antipodal pair: an adjacent change between the two members
+would put a marked rim edge at a forbidden cut, while no change would
+give winding zero. Both contradict the cut-free winding-one rim. By the
+two-column Cauchy--Binet identity,
+
+\[
+ G_j=E_j^TE_j\succ0,\qquad
+ \det G_j=\sum_{c<e}\sin^2(h_{c,j}-h_{e,j})>0,\qquad
+ y_j=G_j^{-1}E_j^TT_j.
+ \tag{17y}
+\]
+
+Thus every full stationary completion has exactly this donor phasor.
+The formula is globally defined on the admitted host class and uses no
+argument of a host resultant, acute-gap condition, reflection symmetry
+or donor positivity. It does not provide a uniform conditioning bound:
+the Gram determinant can approach zero near excluded rim cuts.
+
+This construction is covariant under a common phase rotation. For its
+two-dimensional rotation matrix R, `E_j` becomes `E_j R^T`, T is unchanged,
+and reconstructed y becomes `R y`. Integer changes of phase representatives
+leave the circular reconstruction unchanged. Uniqueness is circular, not
+uniqueness of unwrapped lifts. Any subsequent use of lifted means still
+requires the declared marked branches and global phase mean.
+
+### 5.11. Exact completion guards and their curvature boundary
+
+Begin with all 45 host phases in the original **complete** host marked
+class: five internal windings, nine rim windings and all 32 mixed-cycle
+periods, with their cut-free branch admission. Formula (17y) is an exact
+reformulation of full stationary feasibility only with these additional
+guards:
+
+1. Every full residual `E_j y_j-T_j` vanishes. Solving the normal equations
+   alone does not ensure these five equations at each slot.
+2. Every `y_j^T y_j=1`. Do not normalize the reconstructed vector: doing so
+   changes the host balance, and a zero vector defines no donor phase.
+3. The nine donor phasors have cut-free internal winding one in the original
+   donor marked class. No new winding condition is imposed on the unmarked
+   spokes, and the earlier numerical search margin is not a hypothesis here.
+4. The donor rows vanish. With `cross(u,v)=u_x v_y-u_y v_x`, they are
+
+\[
+ \operatorname{cross}(y_j,y_{j+1})
+ -\operatorname{cross}(y_{j-1},y_j)+\sum_{c=0}^4 T_{c,j}=0.
+ \tag{17z}
+\]
+
+For necessity, host balance gives
+`cross(y_j,(cos h_(c,j),sin h_(c,j)))=T_(c,j)`, which fixes the plus sign
+in (17z); the other conditions follow from a full admitted stationary
+state. Conversely, the unit-circle guard provides donor phases, the full
+linear residual gives all host rows, and (17z) gives all donor rows. The
+two marked components are precisely the host product and donor C9, so
+their separate admissions cover the original marked class. Set `x=0` on
+the zero-form-mean leaf; choose compatible lifts and a common phase rotation
+to impose the declared global phase mean. This proves equivalence with a
+full equilibrium of (1), modulo the stated circular/lift distinction.
+
+At an admitted completion, sections 5.7--5.8 still require `D>0` and the
+full `K>=0` for PSD curvature. Strict K positivity on all 44 host-relative
+directions gives the positive full relative Hessian and local exponential
+stability; a negative full direction gives stationary instability by (16).
+Degenerate PSD is not a sufficient stability verdict. Reconstruction has
+not solved any of these curvature conditions or proved that a completion
+exists for a given host state.
+
+For example, fix the uniform host internal and rim twists
+`h_(c,j)=alpha*(j-4)+2*pi*(c-2)/5`. They belong to the original host class,
+but both opposite internal and rim currents cancel: `T_j=0` and
+`G_j=(5/2)*I`. Formula (17y) gives `y_j=0`, so **no donor shape or relative
+origin can complete this host state to equilibrium**. In contrast, the
+aligned outer-zero host of section 2 has rank-one E and admits both the
+aligned and antipodal stationary donors. The winding-one premise is
+essential to uniqueness. The analytic reflected saddle provides a
+nontrivial completion in the admitted class, while its negative curvature
+shows why exact reconstruction is not a stability certificate.
+
+The connection to the local reduced potential is also exact. If two
+donor-stationary branches at the same host state have phasors y and z,
+their reduced host gradients differ by `E_j(y_j-z_j)` at slot j. Therefore
+the squared gradient difference is
+`sum_j (y_j-z_j)^T G_j (y_j-z_j)`, strictly positive for distinct circular
+donors. Such branches cannot share a host critical point. This does not
+join their local potentials into one global W.
+
+The remaining problem uses 45 host phases, or 44 modulo common rotation,
+subject to the complete residual, circle, donor and marked-class guards.
+No independence or equation-rank count for those constraints is assumed.
+This is stationary feasibility, not an autonomous host evolution: (1)
+still consumes all 108 form and phase coordinates. Neither a source
+capture result nor a physical identification follows.
+
+<a id="common-host-profile-obstruction"></a>
+### 5.12. Donor deformation alone cannot stabilize a common host profile
+
+The common-profile obstruction of section 5.2 initially assumes all six
+children share one internal profile. Full stationarity supplies a stronger
+restriction: it is enough to assume this for the five hosts, while allowing
+an arbitrary donor profile at the outset.
+
+Suppose `h_(c,j)=psi_j+Phi_c`. Write the common host internal torque as
+`I_j=sin(kappa_j)-sin(kappa_(j-1))`, the rim torque as
+`R_c=sin(Phi_(c-1)-Phi_c)+sin(Phi_(c+1)-Phi_c)`, and put
+`beta_j=d_j-psi_j`. Host stationarity requires
+`I_j+R_c+sin(beta_j-Phi_c)=0`. Subtract the equations at slots j and k:
+
+\[
+ (I_j-I_k)+(\sin\beta_j-\sin\beta_k)\cos\Phi_c
+           -(\cos\beta_j-\cos\beta_k)\sin\Phi_c=0.
+ \tag{17aa}
+\]
+
+A cut-free winding-one rim has at least three distinct circular phases:
+with only two, every transition has a reverse transition whose principal
+gap cancels it, and an antipodal transition is forbidden. Three distinct
+points on a circle are not collinear, so the columns
+`1, cos Phi_c, sin Phi_c` have rank three. Equation (17aa) forces I to be
+constant across slots and beta to be constant modulo a turn. Summing I
+over the internal cycle gives zero, hence every `I_j=0`.
+
+Consequently the donor shares the same circular internal profile as the
+hosts. Section 5.2 then supplies a negative full phase-Hessian direction.
+**No stationary state with a common five-host profile can have PSD full
+curvature**, even if the donor was allowed to deform independently. This
+does not require acute edges or reflection symmetry. A stable stationary
+candidate in the original class must have genuinely different internal
+profiles among the hosts themselves, not merely a changed donor.
+
+The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#contact-maintenance-certificate-admission)
+retains the unresolved feasibility and curvature question in that sector,
+including nonacute states, broken reflection and degenerate host minima.
+No actual-source fate or global exclusion has been established.
 
 ## 6. Actual aligned outer-zero control after the full observation word
 
@@ -1154,7 +1307,7 @@ detached proof path. Numerical checks verify implemented arithmetic and
 wiring; the analytic arguments above establish the conditional mathematical
 claims and their domain boundaries.
 
-The later analytical extension in sections 5.1-5.9 uses exact identities
+The later analytical extension in sections 5.1-5.12 uses exact identities
 and counterexamples. Static regression checks separately reconstruct the
 stationary controls' neighbor resultants and the blind point's lifted
 secant from edge sums. These are arithmetic controls, not a stationary
@@ -1171,3 +1324,12 @@ That control tests the Schur algebra; its different rim winding is not
 evidence of an outer-one target. The shared root/Hessian certificate
 continues to admit its original full boxes and is not replaced by an
 uncertified donor branch or a collection of cut tests.
+
+The stationary-reconstruction controls independently build host torques
+and two-column Gram matrices. They retain the full residual and unit-circle
+guards, test rotation covariance and reconstruct the existing analytic
+reflected saddle in the
+[reflection tests](../../tests/physics/test_organized_contact_reflection.py).
+That saddle remains unstable; its reconstruction supplies neither a new
+search nor a source evaluation. The globally unique circular completion
+does not change the full-box certificate's admission or numerical budget.

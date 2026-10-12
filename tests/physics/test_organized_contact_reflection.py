@@ -124,6 +124,74 @@ def test_complete_support_fields_and_means_against_independent_state(
     assert report.stationary_residuals_consistent
 
 
+def test_donor_reconstruction_recovers_the_known_stationary_saddle(
+    report, mp, independent_state
+):
+    """Host-only balance recovers the donor without certifying stability."""
+    # This tolerance retains the existing cubic bracket's finite width.
+    tolerance = mp.mpf("1e-35")
+    host = independent_state[:45]
+    reconstructed = []
+    for slot in range(9):
+        angles = tuple(host[9 * child + slot] for child in range(5))
+        torque = tuple(
+            sum(
+                mp.sin(host[neighbor] - angles[child])
+                for neighbor in (
+                    9 * child + (slot - 1) % 9,
+                    9 * child + (slot + 1) % 9,
+                    9 * ((child - 1) % 5) + slot,
+                    9 * ((child + 1) % 5) + slot,
+                )
+            )
+            for child in range(5)
+        )
+        sine = tuple(mp.sin(angle) for angle in angles)
+        cosine = tuple(mp.cos(angle) for angle in angles)
+        g00 = sum(value**2 for value in sine)
+        g01 = -sum(s * c for s, c in zip(sine, cosine))
+        g11 = sum(value**2 for value in cosine)
+        determinant = g00 * g11 - g01**2
+        assert determinant > 0
+        right0 = sum(s * t for s, t in zip(sine, torque))
+        right1 = -sum(c * t for c, t in zip(cosine, torque))
+        real = (g11 * right0 - g01 * right1) / determinant
+        imaginary = (g00 * right1 - g01 * right0) / determinant
+        donor = mp.mpc(real, imaginary)
+        assert abs(abs(donor) ** 2 - 1) < tolerance
+        assert abs(donor - mp.exp(mp.j * independent_state[45 + slot])) < tolerance
+        assert (
+            max(
+                abs(s * real - c * imaginary - t)
+                for s, c, t in zip(sine, cosine, torque)
+            )
+            < tolerance
+        )
+        reconstructed.append(donor)
+
+    # Rebuild every joined current from the reconstructed circular coordinates.
+    phasors = tuple(mp.exp(mp.j * phase) for phase in host) + tuple(reconstructed)
+    current = [mp.mpf(0)] * 54
+    quadratic = mp.mpf(0)
+    for left, right in _EDGES:
+        relative = mp.conj(phasors[left]) * phasors[right]
+        current[left] += relative.imag
+        current[right] -= relative.imag
+        quadratic += (
+            relative.real
+            * _mp(mp, report.centered_cut[right] - report.centered_cut[left]) ** 2
+        )
+    assert max(abs(value) for value in current) < tolerance
+    donor_gaps = tuple(
+        mp.arg(mp.conj(reconstructed[slot]) * reconstructed[(slot + 1) % 9])
+        for slot in range(9)
+    )
+    assert all(abs(gap) < mp.pi for gap in donor_gaps)
+    assert abs(sum(donor_gaps) - 2 * mp.pi) < tolerance
+    assert quadratic < -mp.mpf(27) / 4
+    assert report.stationary_instability_certified
+
+
 def test_every_marked_winding_and_nonacute_outer_gap(report, mp, independent_state):
     cycles = tuple(tuple(9 * c + j for j in range(9)) for c in range(6)) + tuple(
         tuple(9 * c + j for c in range(5)) for j in range(9)

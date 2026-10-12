@@ -1078,7 +1078,7 @@ reflection-breaking states and the strips removed by the previous search's
 artificial margin. All 53 relative phases remain; the relative donor origin
 is included in those coordinates, not an additional degree of freedom.
 
-There are useful tools but no admitted full-domain mechanism. The
+There are useful reductions but no full-domain stationary stability decision. The
 [full-fine curvature witness](nodal/ORGANIZED_CONTACT_MAINTENANCE.md#5-a-full-fine-obstruction-to-stable-retention-near-the-carrier)
 retains its original acute outer-gap and internal-gap-defect hypotheses.
 The subsequent
@@ -1096,8 +1096,19 @@ still require a full stationary/curvature decision. The
 [exact donor relaxation](nodal/ORGANIZED_CONTACT_MAINTENANCE.md#exact-donor-relaxation)
 preserves that decision through nine strictly positive donor directions
 and 44 host-relative directions. Its local reduced potential preserves
-stationary points and local minima; it supplies neither a global branch
-nor an autonomous reduced evolution. The
+stationary points and local minima. Separately, the
+[global stationary reconstruction](nodal/ORGANIZED_CONTACT_MAINTENANCE.md#global-stationary-donor-reconstruction)
+uses all host balance equations to determine at most one donor completion
+for compatible host data. Host residuals, unit modulus, donor equations
+and marked lifts remain separate feasibility requirements. This does
+not extend the local reduced potential globally or close a reduced
+evolution law. The
+[common-host-profile obstruction](nodal/ORGANIZED_CONTACT_MAINTENANCE.md#common-host-profile-obstruction)
+further excludes a common internal profile of the five hosts: stationarity
+forces the donor to share it, putting the full state in the already
+excluded common-profile sector. The unresolved problem is constrained
+host stationary feasibility with all 44 relative curvature directions,
+including nonacute and asymmetric configurations. The
 [reflection obstruction](nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md#5-complete-law-consequence-and-scope)
 requires its static sector. The
 [root and stability certificate](nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md#root-and-stability-acceptance)

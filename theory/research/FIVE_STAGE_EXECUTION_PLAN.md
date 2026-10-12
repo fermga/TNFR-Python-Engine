@@ -116,15 +116,16 @@ but explicit phase/form disturbances generate quadratic response while
 preserving the initial marked windings. Exact reflection protection is a
 stronger condition. The [foundational priority review](#post-contact-foundation-review)
 is now closed: continued-contact stationary maintenance is the selected
-generative dependency, but no existing proof covers its complete marked
-class. The [analytical mechanism audit](#contact-maintenance-certificate-admission)
-is also closed: a winding-triangle argument excludes every shared internal
-phase profile as a stable stationary target and strengthens the full-fine
-necessary defect bound without acute outer gaps. An exact counterexample
-shows that the nine tested phase-pair sums are incomplete. The remaining
-admission requires stationarity and curvature to be controlled jointly for
-nonseparable internal profiles; no full-class certificate or new numerical
-campaign is admitted.
+generative dependency, but a stable target or global instability certificate
+in its complete marked class remains missing. The
+[stationary reconstruction](#contact-maintenance-certificate-admission)
+now gives at most one donor completion for compatible host data, using all
+host balance equations. A common internal profile of the five hosts forces
+the donor to share that profile at stationarity, so the existing curvature
+obstruction excludes stability. The remaining admission is constrained host
+stationary feasibility with all 44 donor-relaxed host-relative curvature
+directions retained. No full-class certificate or numerical campaign is
+admitted.
 
 No 45-node acquisition, physical readout or source certificate transfers to
 the supplied positive-r matrix law by default. Earlier frozen protocols,
@@ -141,8 +142,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Pending analytical dependency | [Nonseparable stationary maintenance](#contact-maintenance-certificate-admission): control variation of wheel-negative directions across slots using full nodal stationarity and internal coupling, or construct a full stable target; no numerical campaign is admitted |
-| Closed analytical mechanism audit | [Full-domain curvature tests](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#full-chamber-phase-curvature-tests): winding triangles exclude every common internal profile; an exact blind point shows that nine phase-pair sums are not a complete Hessian certificate |
+| Pending analytical dependency | [Constrained host stationary maintenance](#contact-maintenance-certificate-admission): decide host compatibility with the unique donor reconstruction and all 44 host-relative curvature directions, or construct a full stable target; no numerical campaign is admitted |
+| Closed stationary reconstruction and scoped obstruction | [Global donor reconstruction](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#global-stationary-donor-reconstruction): compatible host data have at most one stationary donor completion; stationarity with a common five-host profile forces the excluded common six-child profile |
 | Closed post-contact foundational review | [Dependency decision](#post-contact-foundation-review): contact response and hidden-mode results do not supply independent law selection, indefinite maintenance or a physical bridge; the missing maintenance certificate mechanism is explicit |
 | Closed full-fine preparation sensitivity | [Hidden internal modes](#organized-contact-preparation-sensitivity): all-time first-order invisibility, opposite-mode quadratic coupling and explicit winding-admissible leakage distinguish exact reflection protection from a linear observation kernel |
 | Closed ideal dynamical cancellation | [Complete-law origin classification](#organized-contact-dynamic-cancellation): reflection protects both laws at beta=m*pi/5; elsewhere sine regenerates donor response at order nine and the alternative at order three or five, within the original derivative budget |
@@ -326,7 +327,7 @@ response has not been derived from the earlier acquired constituents.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
-| Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Unresolved reduced stationary potential; no active search.** PSD candidates have nine positive donor directions; exact relaxation retains all 44 host-relative directions. The remaining stationary/minimum decision must cover all admitted local donor branches; collective cuts alone are insufficient |
+| Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Unresolved constrained host feasibility; no active search.** All host equations determine at most one donor completion. Compatibility, unit modulus, donor balance and marked lifts remain necessary; exact relaxation retains all 44 host-relative curvature directions. A common five-host profile cannot yield a stable target |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
 | Sufficient collective state and inherited response | Construct and certify a forecast from a joint finite noisy record without known collective initialization | **Closed operational software case.** The whole-record bound and one candidate forecast are certified; arbitrary-record convergence and physical measurement remain unproved |
@@ -903,44 +904,51 @@ continued contact in the original complete marked class. The existing
 curvature and reflection obstructions leave nonacute, reflection-breaking
 states open; the frozen stationary search supplies acceptance tools without
 a target or a global exclusion. No execution campaign is ready. The missing
-admission is a constructive analytical mechanism or a candidate-independent
-inequality covering that class. The analytical audit below addresses that gap without
-repeating local starts, source histories or contact derivatives.
+admission is a joint stationary/curvature certificate covering that class
+or a constructed stable target. The analytical result below reduces this
+question without repeating local starts, source histories or contact
+derivatives.
 
 <a id="contact-maintenance-certificate-admission"></a>
-### Closed exact donor reduction; stationary host curvature unresolved
+### Closed global donor reconstruction; constrained host stationarity unresolved
 
-The [proof owner](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#exact-donor-relaxation)
-continues the stationary restrictions consolidated at `3c4b8294` with an
-exact donor-relaxation criterion. It retains the
+The [proof owner](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#global-stationary-donor-reconstruction)
+gives a global stationary donor reconstruction from all host balance
+equations, complementing the exact local donor relaxation. It retains the
 original sine law, complete `C9 x W6` support, held unit capacities, tau
 clock, both conserved means, all 53 relative phases and the
 [complete product marked class](../nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md#marked-cycle-information-and-connected-chambers).
 No numerical search, source replay, trajectory, response fit or physical
 record was evaluated.
 
-The earlier defect, common-profile, resultant and cyclic-slot restrictions
-remain necessary. The new result proves that the donor principal Hessian
-block is strictly positive at every PSD candidate, including degenerate
-full Hessians. Its failure gives a negative full direction. When that block
-is positive, its Schur complement accounts exactly for all donor relaxation
-and leaves 44 host-relative curvature directions. At donor-stationary
-points the implicit function theorem gives a local reduced potential whose
-critical points and local minima correspond to those of the full phase
-potential. No phase information is discarded, and no reduced temporal law
-is supplied. Static controls check the exact square completion and retain
-a negative full witness despite positive donor curvature.
+The cut-free winding-one host rim makes the donor-to-host torque map
+injective. Thus compatible host phases have at most one circular donor
+completion, even without a Hessian sign assumption. Arbitrary host data
+need not admit a completion: all host residuals, unit modulus, donor
+balance and the original marked lifts must still be checked. This removes
+stationary donor ambiguity without promoting the local reduced potential
+to a global potential or supplying a reduced evolution law.
 
-**Missing admission:** decide the full curvature at stationary points of
-the reduced potential throughout the regular, genuinely nonseparable
-remaining sector, or construct one stable target there. The next analytical
-step must couple the host balances to the donor-relaxed curvature, covering
-all admitted donor branches and all 44 host-relative directions. Neither a
-local implicit branch, its existence theorem, positive donor curvature nor
-the relaxed collective cut tests supplies a global decision. K need not
-have positive conductances. Common profiles, reflection or acuteness cannot
-be imposed on the remaining targets. Repeating the earlier phase-pair sums,
-source precision changes or optimizer starts would not close this gap.
+The [common-host-profile obstruction](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#common-host-profile-obstruction)
+also strengthens the excluded sector. If the five hosts share an internal
+profile up to constant origins, full stationarity forces the donor to share
+it. The existing common-six-child curvature obstruction then excludes PSD,
+including degenerate cases. An unrestricted donor profile cannot stabilize
+that host arrangement. The earlier defect, resultant and cyclic-slot
+restrictions remain necessary.
+
+**Missing admission:** decide constrained stationary feasibility and full
+curvature for the remaining host configurations, or construct one stable
+target. At every PSD candidate the donor block is strictly positive, and
+its Schur complement retains all 44 host-relative directions. The next
+analytical step must combine reconstructed donor compatibility with that
+complete curvature criterion, including possible degenerate host minima.
+Neither a unique candidate completion, positive donor curvature nor relaxed
+collective cuts supplies a global decision. K need not have positive
+conductances. Nonacute and asymmetric host configurations remain included;
+common profiles, reflection or acuteness cannot be imposed. Repeating the
+earlier phase-pair sums, source precision changes or optimizer starts would
+not close this gap.
 
 The unresolved question retains the original complete law and true cut-free
 class. A full obstruction must establish a negative relative direction at

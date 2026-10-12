@@ -990,6 +990,19 @@ Schur modes without claiming an outer-one target or equating the reduced
 curvature eigenvalues to full dynamical rates. No implicit branch solver,
 root search or frozen source is invoked.
 
+For [global stationary donor reconstruction](theory/nodal/ORGANIZED_CONTACT_MAINTENANCE.md#global-stationary-donor-reconstruction),
+select `donor_reconstruction` in the maintenance and reflection test modules.
+Independently assemble the five host balance equations at each slot and
+check reconstruction rank, all host residuals, unit modulus and donor
+balance. A unique algebraic donor candidate must not certify incompatible
+host data or stability. The maintenance controls use static phase states;
+the reflection control reuses the existing `report` and `independent_state`
+module fixtures for the already declared saddle's fixed algebraic root
+enclosure. That reconstruction remains a stationary saddle, not a stable
+target. The proof owns the full-domain uniqueness and common-host-profile
+obstruction; these controls require no new search, source replay or
+trajectory.
+
 For [reflected stationary contact identity](theory/nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md),
 select `tests/physics/test_organized_contact_reflection.py` with contact
 maintenance, external interaction and `tests/test_rational_interval.py`.

@@ -86,6 +86,96 @@ def _phase_hessian(mp, phases):
     return matrix
 
 
+def _host_reconstruction_rows(mp, phases):
+    """Assemble host torques without supplying or reading a donor phase."""
+    torque = [mp.mpf(0)] * 45
+    for left, right in _EDGES:
+        if left >= 45 or right >= 45:
+            continue
+        current = mp.sin(phases[right] - phases[left])
+        torque[left] += current
+        torque[right] -= current
+    for slot in range(9):
+        angles = tuple(phases[9 * child + slot] for child in range(5))
+        design = mp.matrix([[mp.sin(value), -mp.cos(value)] for value in angles])
+        gram = design.T * design
+        target = mp.matrix([torque[9 * child + slot] for child in range(5)])
+        reconstructed = mp.lu_solve(gram, design.T * target)
+        yield angles, design, gram, target, reconstructed
+
+
+def test_donor_reconstruction_uniform_host_twist_fails_the_circle_condition(mp):
+    """Zero host torque has a unique linear solution, but it is not a phase."""
+    tolerance = mp.mpf("1e-165")
+    phases = tuple(
+        2 * mp.pi * (slot - 4) / 9 + 2 * mp.pi * (child - 2) / 5
+        for child in range(5)
+        for slot in range(9)
+    )
+    for _, design, gram, target, reconstructed in _host_reconstruction_rows(mp, phases):
+        assert max(abs(value) for value in target) < tolerance
+        assert max(abs(value) for value in gram - mp.eye(2) * 5 / 2) < tolerance
+        assert max(abs(value) for value in reconstructed) < tolerance
+        assert max(abs(value) for value in design * reconstructed - target) < tolerance
+        circle_defect = (reconstructed.T * reconstructed)[0] - 1
+        assert abs(circle_defect + 1) < tolerance
+        assert circle_defect < -mp.mpf("0.99")
+
+
+def test_donor_reconstruction_covariance_does_not_remove_the_full_residual(mp):
+    """A single fine phase change gives an exact nonzero least-squares defect."""
+    tolerance = mp.mpf("1e-165")
+    alpha, perturbation, origin = 2 * mp.pi / 9, mp.mpf(1) / 13, mp.mpf(2) / 7
+    phases = tuple(
+        alpha * (slot - 4)
+        + 2 * mp.pi * (child - 2) / 5
+        + (perturbation if (child, slot) == (0, 4) else 0)
+        for child in range(5)
+        for slot in range(9)
+    )
+    rotation = mp.matrix(
+        [[mp.cos(origin), -mp.sin(origin)], [mp.sin(origin), mp.cos(origin)]]
+    )
+    rows = tuple(_host_reconstruction_rows(mp, phases))
+    shifted = tuple(_host_reconstruction_rows(mp, tuple(h + origin for h in phases)))
+    for row, moved in zip(rows, shifted):
+        angles, design, gram, target, reconstructed = row
+        _, new_design, new_gram, new_target, new_reconstructed = moved
+        determinant = sum(
+            mp.sin(angles[left] - angles[right]) ** 2
+            for left in range(5)
+            for right in range(left + 1, 5)
+        )
+        assert determinant > 0
+        assert abs(mp.det(gram) - determinant) < tolerance
+        assert max(abs(value) for value in new_target - target) < tolerance
+        assert max(abs(value) for value in new_design - design * rotation.T) < tolerance
+        assert (
+            max(abs(value) for value in new_gram - rotation * gram * rotation.T)
+            < tolerance
+        )
+        assert (
+            max(abs(value) for value in new_reconstructed - rotation * reconstructed)
+            < tolerance
+        )
+        residual = design * reconstructed - target
+        new_residual = new_design * new_reconstructed - new_target
+        assert max(abs(value) for value in new_residual - residual) < tolerance
+        assert max(abs(value) for value in design.T * residual) < tolerance
+
+    # At the preceding slot only child zero acquires a host torque t.
+    _, design, gram, target, reconstructed = rows[3]
+    current = mp.sin(alpha + perturbation) - mp.sin(alpha)
+    assert current > 0
+    assert abs(target[0] - current) < tolerance
+    assert max(abs(target[child]) for child in range(1, 5)) < tolerance
+    assert max(abs(value) for value in gram - mp.eye(2) * 5 / 2) < tolerance
+    residual = design * reconstructed - target
+    residual_squared = (residual.T * residual)[0]
+    assert abs(residual_squared - 3 * current**2 / 5) < tolerance
+    assert residual_squared > 0
+
+
 def test_donor_schur_singular_block_has_an_explicit_full_negative_witness(mp):
     """The winding-one carrier has a singular donor block, not a stable target."""
     tolerance = mp.mpf("1e-165")
