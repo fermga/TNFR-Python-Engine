@@ -224,6 +224,16 @@ minimum is neither pointwise rank nor a fixed-degree or noise certificate.
 Retain arbitrarily small exact coefficients and the two-coordinate nonsine
 control. These are static proof controls, not another frozen response campaign.
 
+For [phase-response faithfulness](theory/nodal/SINE_CONSTITUTIVE_INFORMATION.md#phase-response-faithfulness),
+add `tests/physics/test_phase_response_faithfulness.py` to those two boundary
+owners. Compare the classifier with independent polynomial/Fourier stabilizers,
+retain exact tiny coefficients and the zero law's unavailable finite order,
+and check both existing counterfamilies. Exercise faithful laws without a
+first harmonic or positive acute curvature. Check both complete covering rows
+and storage scaling, including the failed phase-only map, shared native U3
+admission and lost primitive winding. A faithful primitive current need not
+make a collective aggregate faithful or provide a finite-noise inverse.
+
 For [composition-compatible constitutive laws](theory/nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md),
 select `tests/physics/test_composition_compatible_constitutive.py` together
 with `tests/physics/test_sine_constitutive_inheritance_algebra.py`. Check

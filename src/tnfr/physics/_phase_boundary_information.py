@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from fractions import Fraction
+from math import gcd
 from numbers import Integral
 from typing import Any
 
@@ -98,6 +99,46 @@ def _derive_boundary_information(coefficients: Any) -> _BoundaryInformation:
         for signed_harmonic in (harmonic, -harmonic)
     )
     return _BoundaryInformation(admitted, 2 * len(admitted), degree, eigenvalues)
+
+
+@dataclass(frozen=True)
+class _PhaseResponseFaithfulness:
+    """Exact phase-shift symmetry of a declared boundary-current channel.
+
+    For a nonzero law, the invisible shifts are integer multiples of the
+    fundamental period in turns, modulo one turn. Their number is the
+    shift subgroup order. The zero law has the full circle of invisible
+    shifts, so neither a finite order nor a least positive period is
+    available. Faithfulness concerns every gap/query, not one prepared
+    boundary, noisy observation, complete state or operator execution path.
+    """
+
+    coefficients: _Coefficients
+    shift_subgroup_order: int | None
+    fundamental_period_turns: Fraction | None
+    faithful: bool
+
+
+def _derive_phase_response_faithfulness(
+    coefficients: Any,
+) -> _PhaseResponseFaithfulness:
+    """Re-admit a finite Fourier law and classify its exact invisible shifts.
+
+    Fourier independence requires n*a to be an integer for every active
+    harmonic n, with a measured in turns. Bezout's identity makes this
+    equivalent to gcd(active harmonics)*a being an integer. Coefficient
+    signs and magnitudes do not change the exact group, but every nonzero
+    coefficient counts, however small. The shared finite implementation
+    budgets are not a restriction on the mathematical theorem.
+
+    This adds no minimal-information or phase-observability axiom and
+    certifies no detection tolerance, graph symmetry or law selection.
+    """
+    admitted = _admit_fourier_current(coefficients)
+    if not admitted:
+        return _PhaseResponseFaithfulness(admitted, None, None, False)
+    order = gcd(*(harmonic for harmonic, _ in admitted))
+    return _PhaseResponseFaithfulness(admitted, order, Fraction(1, order), order == 1)
 
 
 def _multiply(left: _Phasor, right: _Phasor) -> _Phasor:

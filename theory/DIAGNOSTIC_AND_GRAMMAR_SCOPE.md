@@ -1364,14 +1364,23 @@ The matched-conductance example is a discriminator for that distinction,
 not grounds for further contact variants. Independent law justification
 and physical admission remain open for their existing reasons.
 
-The next foundation question must introduce a named independent
-restriction on one of these inputs, or identify the additional
-information required to test one. Existing compatibility, passivity,
-first-resultant and information-minimum arguments already retain
-countermodels; renaming them cannot supply the missing restriction.
+The [phase-response classification](nodal/SINE_CONSTITUTIVE_INFORMATION.md#phase-response-faithfulness)
+tests one distinct premise: every nontrivial primitive phase rotation
+must be visible to some query of the declared current channel. Exact
+Fourier support determines its invisible subgroup, but both retained
+counterlaws are already faithful. Circle-valued state and full-state
+identity do not impose faithfulness on every current or collective
+observable. A many-to-one flow quotient can lose native U3 or winding
+information even when both continuous rows descend exactly.
+
+Thus the missing input is independent justification for the accessible
+query alphabet and its required distinctions, or a separately justified
+boundary-information resource restriction. Their conditional consequence
+does not justify them. Generic phase-access reviews would repeat the
+existing [preparation and observation obstruction](research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#primitive-phase-information-boundary).
 The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#independent-boundary-premise-admission)
-owns that bounded premise admission and its stopping rule. No numerical
-or physical campaign follows from this review.
+records the closed candidate and the concrete entry requirement for new
+work. No further selector, numerical or physical campaign follows.
 
 ### Cross-channel foundation audit
 

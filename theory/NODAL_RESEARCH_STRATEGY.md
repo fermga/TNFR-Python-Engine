@@ -163,6 +163,16 @@ lower bound as well as a sufficient representation, and must retain marked
 contacts. It does not supply autonomous evolution of the summary or replace
 the independent preparation, clock and measurement obligations.
 
+The [phase-response stabilizer](nodal/SINE_CONSTITUTIVE_INFORMATION.md#phase-response-faithfulness)
+separates information hidden by a current from information absent from the
+full state. Faithfulness of every primitive phase query is an additional
+channel premise, compatible with both retained laws; native U3 can distinguish
+phase sectors that a continuous-flow quotient discards. Combining faithfulness
+with a two-coordinate boundary minimum conditionally selects sine, but does
+not justify either restriction. Reopening selection requires a concrete new
+operational or resource premise, or independent evidence; another generic
+phase-information audit would repeat the existing obstruction.
+
 ### Present interaction and sufficient future state
 
 Instantaneous current, a sufficient state and a history-based description

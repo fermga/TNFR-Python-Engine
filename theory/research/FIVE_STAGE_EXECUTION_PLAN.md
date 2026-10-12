@@ -192,9 +192,13 @@ constraints and complete kinetics from assumptions of the selected law
 and critical tuning. Its matched-conductance split contact removes the
 remaining neutral mode; a cancelled exported mean signal need not remove
 internal restoration. This closes the contact-variant sequence. The
-next [independent-premise admission](#independent-boundary-premise-admission)
-must name new content beyond the existing compatibility and nonselection
-results before another constitutive or numerical comparison is justified.
+[independent-premise admission](#independent-boundary-premise-admission)
+is also closed: phase-response faithfulness has an exact classification,
+but remains an additional channel premise and retains both compared laws.
+A complete-flow covering need not preserve native U3 or marked winding.
+The [entry requirement](#new-constitutive-evidence-admission) for further
+selection is a concrete independent premise or observation; no generic
+phase-access review or additional selector is automatically queued.
 Unit-strength classification remains unresolved and deferred; no numerical
 campaign is admitted.
 
@@ -213,7 +217,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next bounded foundation admission | [Independent content for a constitutive restriction](#independent-boundary-premise-admission): identify one independently motivated restriction on the still-supplied interaction or kinetic law, test its novelty against retained countermodels, or state the precise missing information. No candidate is already justified and no numerical campaign is active |
+| Conditional next admission; no active calculation | [New constitutive input](#new-constitutive-evidence-admission): name an independent operational, resource or observation premise that changes an existing dependency before evaluating its consequence. No further selector or generic phase-access audit is queued |
+| Closed bounded foundation admission | [Independent content for a constitutive restriction](#independent-boundary-premise-admission): exact phase-current stabilizers and complete-flow covering limits; current-channel faithfulness is an additional premise, retains both counterlaws, and is not implied by full-state identity or native U3 |
 | Closed reusable structural admission | [Collective boundary constraints and their premises](#collective-boundary-foundation-admission): kernel constraints, exact normal compliance, full damping and hidden initialization separate structural consequences from law-specific tuning. The matched-conductance split control removes the remaining neutral mode; no further contact variant is activated |
 | Closed bounded interaction admission | [A marked boundary of the critical parent](#critical-parent-interaction-admission): exact exchange and local three-coordinate dynamics, full-state initialization, paid contact work and changed critical relaxation. Matched means and storage can conceal opposite receiver rates; no exact coarse quotient or acquired source follows |
 | Closed local analytical reduction | [Critical registration dynamics](#critical-registration-dynamics): full-law mobility, hidden initialization and algebraic critical relaxation, with a strong-stable exception; fixed positive eta, no uniform transient or source-entry certificate |
@@ -1383,35 +1388,65 @@ physical response was evaluated. No third contact or tighter eta range
 is queued: the named dependency is closed.
 
 <a id="independent-boundary-premise-admission"></a>
-### Next bounded admission: independent content for a constitutive restriction
+### Closed bounded admission: independent content for a constitutive restriction
 
-**Question.** Can one independently motivated requirement constrain the
-still-supplied interaction or kinetic law beyond the restrictions already
-tested? The [foundation decision](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#boundary-criterion-foundation-decision)
-identifies those inputs. No proposed selector is assumed justified.
+The selected candidate was **phase faithfulness of a declared boundary-current
+channel**: no nontrivial primitive phase rotation is invisible to every
+incident-gap and registration query. Its motivation is operational
+irredundancy of that channel, treated as an additional hypothesis before
+testing its consequence. The [classification owner](../nodal/SINE_CONSTITUTIVE_INFORMATION.md#phase-response-faithfulness)
+proves that a nonzero finite Fourier current is faithful exactly when its
+active harmonic indices have greatest common divisor one. The zero law has
+the entire circle as its invisible subgroup. Combining faithfulness, unit
+consensus slope and a two-coordinate regular boundary minimum selects sine
+conditionally; neither information premise follows from that implication.
 
-Name one candidate requirement and its independent basis before testing
-its consequence. State whether it is an ontological definition, a new
-hypothesis, an operational requirement or an observation; distinguish
-its justification from the desirable behavior it might produce. Specify
-which complete-law input it constrains and whether it is invariant under
-admitted changes of chart and clock. Compare its logical content with
-the retained alternative-storage, mobility, first-resultant, composition
-and information-minimum countermodels before opening another calculation.
+Both retained counterfamilies are faithful. Faithful currents can omit the
+first harmonic or have negative acute phase curvature, so this hypothesis
+does not supply first-resultant sufficiency, the collective constraint
+theorem's curvature premise or unique kinetics. The ontology requires no
+individual current to reveal every full-state distinction.
 
-Acceptance requires either a new conditional restriction with its
-independent motivation and remaining freedom explicit, or an obstruction
-identifying the additional information needed. Do not repeat the general
-ontology audit or present compatibility, passivity, minimal representation
-cost or a successful organized response as a new selector. If no candidate
-adds independently justified content, preserve the law family and report
-that outcome; do not manufacture a pressure or occurrence law to continue.
-Autonomous event mechanisms and an independent measurement bridge remain
-separate possible sources of new premises, with their own admission.
+For a pure higher harmonic, scaling both form and phase gives an exact
+many-to-one covering of the complete two-row sine flow, including storage.
+Native U3 and marked primitive winding need not descend to that covering.
+A full observation alphabet can therefore distinguish sectors invisible
+to the current without restricting the current itself. Collective torque
+cancellation and finite experimental resolution remain separate questions.
 
-This gate admits premise analysis only. Further numerical, source or
-physical evaluation requires a concrete discriminator and frozen protocol;
-the boundary theorem does not activate one.
+The gate closes with a precise missing premise: independently justify which
+phase queries are accessible and which distinctions this specific channel
+must retain, or supply an independent boundary-information resource bound.
+The kernel and exact controls add no trajectory, source replay, fitted
+response or physical admission. The law family remains unselected.
+
+<a id="new-constitutive-evidence-admission"></a>
+### Entry requirement for further constitutive selection
+
+No additional selector or generic phase-access audit is active. The
+[existing phase-information protocol](PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#primitive-phase-information-boundary)
+already records missing preparation and observation premises; rephrasing
+them is not a new research gate. Native U3 alone already distinguishes
+aliases without selecting the continuous current.
+
+Before reopening selection, identify one concrete independently justified
+operational or resource requirement, or an independent observation protocol.
+State its source, complete-law input, accessible preparations and queries,
+identity distinctions, chart/clock behavior and precise difference from the
+retained countermodels. A resource bound must be motivated independently
+of the desired sine conclusion. An operational premise can concern an
+explicit NFR-to-NFR probe with a complete law and retained identity; it need
+not already be a laboratory identification. Distinguishability through an
+extra gate alone cannot impose faithfulness on the original current.
+An observation requires its own preparation,
+clock, uncertainty and reserved-response admission. A new autonomous event
+mechanism similarly requires an independent occurrence law; continuous loss
+or contact passivity alone is insufficient.
+
+Acceptance is a new conditional restriction or a scoped obstruction, with
+remaining freedom explicit. If no new input changes an existing premise,
+retain the family rather than launch another compatibility calculation.
+This is the sole entry gate, not an apparatus search or numerical campaign.
 
 <a id="contact-maintenance-certificate-admission"></a>
 ### Closed complete-flow convergence; unit-strength classification deferred

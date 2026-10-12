@@ -1153,6 +1153,249 @@ compare the response to both existing owned law evaluators, preserving the
 distinct counterfamilies and the lack of a noise guarantee. No law is installed,
 no trajectory is evolved and no frozen scientific assessment is replayed.
 
+<a id="phase-response-faithfulness"></a>
+
+#### Phase-response faithfulness and the boundary of a quotient
+
+A distinct candidate requirement is **boundary-channel faithfulness**:
+no nonzero relative phase shift is invisible to every independently
+specified gap or registration query of the declared current. Its
+motivation is operational irredundancy of this particular phase-response
+channel, independently of which organized pattern it might favor.
+It is an additional hypothesis when the primitive phase and this channel
+have already been fixed. Neither the nodal equation nor the
+[NFR participation contract](../EMERGENT_ONTOLOGY.md#nfr-participation-in-form)
+requires each individual channel to distinguish every part of the full
+state. Other currents, observations, identities or events can consume
+phase information that this channel omits.
+
+This requirement is not injectivity of one scalar current reading:
+even sine has equal values at distinct gaps. It asks whether the
+entire family of shifted responses distinguishes the two phases.
+It is also not the removal of common phase-origin symmetry. The
+shift below changes the phase relative to independently held probes.
+
+**Exact stabilizer.** Fix the same finite odd Fourier class as in the
+preceding information theorem:
+
+\[
+ j(\delta)=\sum_{n\in\mathcal N}b_n\sin(n\delta),\qquad
+ b_n\ne0,\qquad \mathcal N\subset\mathbb N_{>0}.
+ \tag{F1}
+\]
+
+Only exact zero coefficients are omitted. Define the invisible-shift
+subgroup of the primitive phase circle by
+
+\[
+ H_j=\{a\in\mathbb R/(2\pi\mathbb Z):
+       j(\delta+a)=j(\delta)\ \hbox{for every }\delta\}.
+ \tag{F2}
+\]
+
+Because singleton boundaries are among the independent queries, (F2)
+is also the set of shifts invisible to every boundary list and every
+registration of the additive current. Uniqueness of the finite complex
+Fourier coefficients gives
+
+\[
+ a\in H_j
+ \quad\Longleftrightarrow\quad
+ e^{\mathrm i n a}=1\quad\hbox{for every }n\in\mathcal N.
+ \tag{F3}
+\]
+
+For a nonempty active set put \(d=\gcd\mathcal N\).
+Every active index is a multiple of \(d\); conversely, an integer
+combination of the active indices equals \(d\).
+Equation (F3) therefore proves exactly
+
+\[
+ \boxed{H_j=\{2\pi k/d:0\le k<d\},\qquad
+        \text{channel faithful}\ \Longleftrightarrow\ d=1.}
+ \tag{F4}
+\]
+
+The fundamental period is \(1/d\) turn. If \(j=0\), the active set is
+empty and the entire circle is invisible. There is then no least
+positive period and no finite subgroup order; faithfulness is false.
+This degenerate case must not be assigned order zero or period zero.
+
+Faithfulness is preserved by invertible changes of the declared
+state and observation charts when the entire query family is
+transformed with them. In a group-respecting radian chart, origin
+changes and orientation reversal leave (F4) unchanged. Nonzero
+constant current scaling or a common positive clock conversion
+does not change \(H_j\). An arbitrary phase reparametrization must
+also transport the phase-shift action; its transformed law need
+not still be a finite Fourier difference kernel.
+
+**What this restricts, and what it does not.** A single harmonic
+\(j_n(\delta)=\sin(n\delta)/n\) has unit consensus slope and
+minimum boundary-information dimension two for every \(n\).
+It is faithful exactly when \(n=1\). Accordingly, within (F1),
+
+\[
+ \bigl[m_{\min}=2,\ H_j=\{0\},\ j'(0)=1\bigr]
+ \quad\Longrightarrow\quad j(\delta)=\sin\delta.
+ \tag{F5}
+\]
+
+Here the previous theorem supplies \(m_{\min}=2|\mathcal N|\);
+the new argument supplies the stabilizer. Requiring the minimum
+to equal two and requiring faithfulness are separate additional
+premises. Neither is derived by combining them, by calling phase
+a single primitive coordinate, or by naming the representation
+minimal. Higher moments are functions of that same primitive
+phase, not automatically extra primitive state variables.
+
+Faithfulness alone does not require a first harmonic. For example,
+
+\[
+ j_{23}(\delta)=\frac{\sin2\delta+\sin3\delta}{5},\qquad
+ V_{23}(\delta)=\frac{1-\cos2\delta}{10}
+                  +\frac{1-\cos3\delta}{15}
+ \tag{F6}
+\]
+
+has \(\gcd(2,3)=1\), \(j_{23}'(0)=1\), and nonnegative periodic
+potential \(V_{23}'=j_{23}\), without any first harmonic.
+Nor does faithfulness imply positive curvature on the U3 acute
+domain. The also faithful law
+
+\[
+ j_{13}(\delta)=\frac{\sin\delta+\sin3\delta}{4},\qquad
+ V_{13}(\delta)=\frac{1-\cos\delta}{4}
+                  +\frac{1-\cos3\delta}{12}
+ \tag{F7}
+\]
+
+has unit consensus slope and nonnegative potential, but
+\(j_{13}'(\pi/3)=-5/8\). Thus it does not supply the positive
+boundary-curvature premise of the
+[collective constraint theorem](COLLECTIVE_BOUNDARY_CONSTRAINTS.md#collective-boundary-criterion).
+Both retained nonsine families, with active sets
+\(\{1,9,18\}\) and \(\{1,8,10,17,19\}\), already have gcd one.
+Their source, formation and interaction distinctions remain; this
+condition selects neither endpoint law nor a unique kinetic law.
+
+**A genuine quotient of one complete flow.** To distinguish a
+restricted channel hypothesis from an inadmissible chart change,
+consider the held-unit-capacity two-row comparison on fixed
+connected weighted support in its nondimensional structural
+chart and unchanged clock \(\tau\):
+
+\[
+ x'=\frac{-Lx-\gamma\nabla U_j(\theta)}4,\qquad
+ \theta'=\frac{\gamma Lx}4,\qquad
+ U_j(\theta)=\sum_{\{i,l\}}w_{il}V_j(\theta_i-\theta_l),
+ \quad V_j'=j,\quad V_j(0)=0.
+ \tag{F8}
+\]
+
+Here signed form and primitive circular phases are retained,
+\(\gamma>0\) and the support are held, and the complete
+observation/event alphabet is declared separately.
+\(L\) denotes the conductance Laplacian, positive definite on
+its relative space. This is the supplied two-row comparison,
+not a replacement of the native operator executor.
+Its storage is \(H_j=x^\top Lx/2+U_j\), with
+\(H_j'=-\|Lx\|^2/4\).
+
+For \(d>1\) in (F4), each independent local shift
+\(\theta_i\mapsto\theta_i+2\pi k_i/d\), with forms unchanged,
+preserves both rows and this normalized potential. The phase row
+does not consume the phase, and every edge current and potential
+has that period. Thus this fixed-support flow has an exact
+quotient by those finite phase symmetries.
+
+For the pure harmonic \(j_n\), the potential is
+\(V_n=(1-\cos(n\delta))/n^2\). Define
+
+\[
+ \phi_i=n\theta_i\pmod{2\pi},\qquad X_i=n x_i.
+ \tag{F9}
+\]
+
+Both quotient rows become exactly
+
+\[
+ X'=\frac{-LX-\gamma\nabla U_1(\phi)}4,\qquad
+ \phi'=\frac{\gamma LX}4,\qquad
+ H_1(X,\phi)=n^2H_n(x,\theta).
+ \tag{F10}
+\]
+
+No clock or reciprocal coefficient was changed. The form scale
+and any form observation must be transformed as stated. For
+\(n>1\), however, (F9) is an \(n\)-fold covering at each node,
+not an invertible regular chart on the original primitive phase.
+It discards discrete phase sectors. The fixed-support quotient
+does not establish equivalence of all the original observables
+or events, and its storage identity does not admit an undeclared
+support event.
+
+Two exact controls make the discarded information explicit.
+For \(n=2\), a primitive pair gap zero and a gap \(\pi\) have
+identical \(j_2\), \(V_2\) and quotient phase. The native U3
+gate with ceiling \(\pi/2\) accepts the former and rejects the
+latter. It therefore does not descend to this quotient.
+For \(n=3\), take an oriented three-cycle with phases
+\((0,2\pi/3,4\pi/3)\) and zero forms. Its three principal
+oriented edge increments equal \(2\pi/3\), so its winding is
+one. The quotient phases are all zero, just as for the primitive
+consensus state of winding zero. Both are stationary under
+(F8) with \(j_3\), but their marked primitive windings differ.
+No protected-source or phase-compatibility claim is made about
+that three-cycle control.
+
+**The operation alphabet sets the scope.** Native U3 consumes
+the primitive wrapped separation, and public phase proposals
+can consume first resultants. These are separate declared paths.
+Adding such a gate or readout to the observation alphabet can
+distinguish shifts invisible to a continuous current; it does
+not force that current to acquire a first harmonic. A translated
+proper U3 acceptance arc has no nontrivial circle-period, so
+faithfulness of the whole query family including that gate
+would already follow from the gate rather than constrain (F1).
+
+An operational definition of phase as equivalence under *all*
+admitted observations and interventions could instead justify a
+quotient. Its equivalence relation must then preserve that entire
+alphabet, identity and future response. The ontology's faithful
+full-state representation requirement does not imply that every
+individual boundary channel is faithful. Requiring faithfulness
+of a single fixed aggregate contact would be different again:
+organized phase cancellation can suppress that contact while
+other retained state and interactions remain relevant.
+In particular, the fivefold registration torque can have period
+\(2\pi/5\) even with primitive sine current. Its marked boundary
+state retains distinctions absent from that scalar torque;
+(F4) cannot be imposed on every collective observable.
+
+Equations (F2)--(F4) quantify over abstract independent phase
+queries. They supply no admitted apparatus, autonomous probe
+selection, finite-resolution inverse or observation horizon.
+An arbitrarily small exact Fourier coefficient can remove an
+alias without making it experimentally resolvable. The missing
+independent admission is whether this boundary-current channel,
+under a declared accessible query class, must distinguish the
+primitive phase sectors. Without that premise, a current may
+retain its proper period while other full-state channels
+distinguish those sectors.
+
+The shared [static information owner](../../src/tnfr/physics/_phase_boundary_information.py)
+derives this classification from re-admitted coefficients.
+Its faithfulness report retains the normalized coefficients,
+the finite shift-subgroup order and fundamental period in
+exact rational turns, and the faithful flag. For the zero law,
+the order and period are unavailable rather than zero.
+[Independent controls](../../tests/physics/test_phase_response_faithfulness.py)
+exercise exact stabilizers, coefficient admission, both retained
+counterfamilies, the complete two-row covering and its U3/winding
+obstructions. No law is installed, no source or trajectory is
+evaluated, and no finite-accuracy identifiability follows.
+
 <a id="balanced-neighborhood-information-admission"></a>
 
 #### Balanced geometry does not independently select the phase current
