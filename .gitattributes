@@ -1,5 +1,6 @@
 # Frozen raw archives preserve original bytes, including historical whitespace.
 # Live source and documentation retain the normal whitespace checks.
+docs/assets/organized_alternative_outer_acquisition/*.json -text
 docs/assets/organized_joint_resources/*.json -text
 docs/assets/organized_interface_factorization/*.json -text
 docs/assets/source_relative_form_response/producer.v1.py.txt -text -whitespace

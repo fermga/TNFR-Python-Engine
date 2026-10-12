@@ -100,9 +100,11 @@ decoders. It does not select the law or supply an autonomous collective state.
 The [organized-boundary applicability decision](#boundary-information-applicability)
 is also closed: the sine contact already retains sufficient instantaneous
 information, and ideal fivefold cancellation does not distinguish the two
-retained laws. The next bounded task is
-[own-law outer acquisition](#organized-alternative-outer-acquisition) under
-the endpoint alternative, before any new acquired-contact comparison.
+retained laws. [Own-law outer acquisition](#organized-alternative-outer-acquisition)
+is now closed: both endpoint laws form and retain the same marked organization
+from the original preparation. The next bounded task is
+[alternative-law finite interaction](#organized-alternative-contact-admission),
+including the actual intervention history and all-registration envelope.
 
 No 45-node acquisition, physical readout or source certificate transfers to
 the supplied positive-r matrix law by default. Earlier frozen protocols,
@@ -119,8 +121,9 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next bounded source admission | [Alternative-law outer acquisition](#organized-alternative-outer-acquisition): admit or obstruct formation and full-state retention of the original five-child host at lambda=1 with unchanged preparation, deadline and budgets |
-| Closed organized-boundary applicability | [Existing contact information](#boundary-information-applicability): sine already has the required port data; ideal fivefold cancellation is shared by the retained pair, while the alternative's acquired host remains uncertified |
+| Next bounded interaction admission | [Alternative-law finite contact](#organized-alternative-contact-admission): decide whether the actual acquired organizations retain the original all-registration response contrast, with own-law history, work and identity bounds |
+| Closed alternative-law source admission | [Own-law outer acquisition](#organized-alternative-outer-acquisition): the original preparation forms and permanently retains the five-child identity at lambda=1; the paired zero-shift control retains outer winding zero |
+| Closed organized-boundary applicability | [Existing contact information](#boundary-information-applicability): sine already has the required port data; ideal fivefold cancellation is shared by the retained pair; the identified own-law source dependency is closed below |
 | Closed boundary-information minimality | [Regular response summaries](#minimal-boundary-information): exact minimum two real coordinates per active Fourier harmonic; neither unique-law selection nor autonomous state follows |
 | Closed post-identifiability premise review | [Selection and physical-admission boundaries](#post-identifiability-premise-review): existing conditional selectors retain additional premises; preparation and complete physical measurement remain unadmitted |
 | Closed two-law record identifiability | [Complete nonlinear record separation](#organized-law-state-identifiability): the fixed noisy records distinguish the retained harmonic endpoints despite independently unknown initial states; the wider family and physical law remain unselected |
@@ -315,7 +318,7 @@ An added observable earns inclusion by deciding the selected prediction or a
 meaningful minimality obstruction. Existing failed physical-source admissions
 remain failed; more samples cannot repair their complete-law mismatches.
 
-The sole next task is [alternative-law outer acquisition](#organized-alternative-outer-acquisition).
+The sole next task is [alternative-law finite interaction](#organized-alternative-contact-admission).
 The table assesses dependencies, not a fixed sequence or parallel campaigns. It preserves
 the objective of generated, physically testable organization without identifying
 winding, phase cancellation or storage with material constituents.
@@ -337,8 +340,9 @@ premise review led to the regular-information minimum without a fitted
 response or a new selection axiom. Its [application](#boundary-information-applicability)
 respects the actual organization's restricted state and marked boundary,
 rather than transferring an all-degree minimum as a fixed-support state count.
-It identifies own-law outer acquisition as the next missing source premise.
-No additional trajectory
+Its identified own-law outer source premise is now certified. The remaining
+comparison needs actual-law intervention and contact bounds; the old sine
+inverse and response certificates do not transfer. No additional trajectory
 comparison, moment-hierarchy campaign or physical response evaluation is active.
 
 <a id="organized-joint-preparation-resources"></a>
@@ -771,48 +775,67 @@ tenth harmonic, so cancellation is not a topology-only universal law. This
 is a static identity and control, not a reached state or a finite response.
 
 The proposed new collective property is robustness of organization-dependent
-interaction suppression under the retained alternative law. Its first missing
-premise is formation and retention of that law's actual five-child host.
+interaction suppression under the retained alternative law. The first missing
+premise was formation and retention of that law's actual five-child host.
 Isolated C9 acquisition, invariant carriers and the two-law observation
 containing class do not supply it. No frozen response, source producer,
 physical record or trajectory was evaluated. Later observation-history and
-contact admission remain separate dependencies after the source decision.
+contact admission remain separate dependencies after the now-closed source
+decision below.
 
 <a id="organized-alternative-outer-acquisition"></a>
-### Next bounded task: own-law formation of the five-child host
+### Closed source admission: own-law formation of the five-child host
 
-Determine whether the endpoint alternative `lambda=1` generates the existing
-outer-one identity from the original five acquired C9 preparations. Reuse
-the [outer source declaration](../nodal/ORGANIZED_OUTER_WINDING.md)
-and [own-law isolated recovery](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-carried-handoff);
-the original sine result remains the retained comparison, not a producer to
-replay or a transferable certificate.
-The [own-law proof and instrument](../nodal/ORGANIZED_ALTERNATIVE_OUTER_ACQUISITION.md)
-retain the actual derivative, storage and source bounds for this decision.
+The [result owner](../nodal/ORGANIZED_ALTERNATIVE_OUTER_ACQUISITION.md#alternative-outer-acquisition-result)
+preserves declaration `99bf595c` and method/source `b220012f`. Its single
+fixed assessment admits the complete original five-child preparation at
+`lambda=1`: fresh own-law C9 recovery, all 80 relative error directions,
+unchanged shifts, attachment work and storage ceilings, and deadline 200.
+All five internal winding-one cycles survive transit; all nine outer slot
+cycles reach winding one and then retain it through full-state trapping
+and convergence. The paired actual-residual zero-shift control retains outer
+winding zero and converges to its own target.
+
+The two retained endpoint laws therefore acquire the same marked identity
+under their respective complete dynamics. Their finite reached states,
+stiffness and subsequent responses need not agree. This does not prove
+formation throughout the constitutive family, autonomous preparation,
+physical identification or later retention on changed contact support.
+The original sine evidence is unchanged; no trajectory or response was replayed.
+
+<a id="organized-alternative-contact-admission"></a>
+### Next bounded task: own-law finite collective interaction
+
+Decide whether the acquired alternative-law organizations preserve the
+original [all-registration response contrast](../nodal/ORGANIZED_EXTERNAL_REGISTRATION.md).
+This tests robustness of a finite organization-dependent interaction after
+actual formation, rather than cancellation at an ideal target. Reuse the
+justified method after deriving bounds for `lambda=1`; retain the sine result
+as the existing comparison without reevaluating it.
 
 | Item | Fixed decision boundary |
 | --- | --- |
-| Full support and state | Original 45-node unit C9 x C5, all 90 edges, all forms and primitive phases; held unit capacities and full-circle phase domain |
-| Complete law and clock | `x_tau=(-Lx+gamma*S_1(theta))/4`, `theta_tau=gamma*Lx/4`, `gamma=1/(1023*pi)`, using the existing `j_1=V_1'` and `tau=(1023/1024)*t` in both rows; no input or later event after the supplied attachment |
-| Actual preparation | Five independent original class-one ramps with the original zero-sum form/phase errors at most `1e-10`, all 80 relative error directions, primitive common form shifts `M_c=4092*(c-2)` and common zero phase origins; paired zero-shift control |
-| Isolated recovery | Re-admit the existing own-law C9 result and transform both rows to the quarter-factor clock: formation duration 200, recovery dwell `2*10^13`, retained residual allowance `q=1e-70`; no reset to the ideal profile |
-| Attachment and storage | Add the original 45 outer edges with coordinates unchanged; use actual `V_1` in all storage and event costs, retaining separate `2*10^9` ceilings on attachment work and joined initial storage |
-| Identity and deadline | Keep all five internal winding-one cycles through `0<=tau<=200`; starting from outer winding zero, assess all nine outer slot windings at the original deadline 200, their subsequent full-state trapping/retention and the paired control's outcome; no finite convergence deadline is added |
-| Analytical mechanism | Reuse carrier restriction, heat/phase transport and full product-cell barriers after deriving their actual-law bounds; matching the internal C9 target transfers neither outer C5 stiffness nor source entry |
-| Budget and stopping rule | One analytical admission at the existing outward dyadic128 precision: prove complete source entry and retention, prove an obstruction, or name the exact unavailable sufficient margin. No trajectory, scan, longer horizon, smaller error allowance, changed preparation or precision escalation |
+| Actual host sources | Both newly certified lambda=1 host families at post-attachment tau=200, with their own reached forms, phases and original residuals. Re-admit all primitive allowances and rebuild consumed bounds; no reset to a limiting target or substitution of sine source bounds |
+| Carried intervention history | The unchanged [sequential word](../nodal/ORGANIZED_SEQUENTIAL_OBSERVATION.md): five marked blocks, four windows of `h_o=1/100000` each, total `T=1/5000`; at local times `h_o,2*h_o,3*h_o`, phase jumps `+epsilon*k_c,-2*epsilon*k_c,+epsilon*k_c`, with `epsilon=1/10` and `k_c[b,j]=delta[b,c]-1/5`. Retain all drift and backaction between blocks and after the final command |
+| Intervention observations and budgets | Keep the same 25 receiver-child mean-form readings with raw errors at most `1e-15`, as supplied readout history. Re-admit identity throughout the word, every absolute event work below 4 and total absolute work below 40 using `V_1`. No sine inverse or winding-inference guarantee is presumed; the source identity is justified by preparation |
+| Independent donor | One own-law acquired C9 with zero common form, original zero-sum form/phase errors at most `1e-10`, formation duration 200, recovery dwell `2*10^13` and retained allowance `q=1e-70` in the quarter-factor tau clock. Synchronize preparation so recovery ends at contact, without extra waiting or a reset. All twelve host/donor allowances in `[0,1e-10]` retain all 96 relative source directions |
+| Relative origin and pairing | Donor primitive common phase origin `beta` ranges over the circle relative to the host's conserved zero lifted mean. Each beta is a separately supplied preparation, not an operational sweep. Pair both host organizations with the same donor residual member and beta; retain zero form totals and joined lifted phase total `9*beta` |
+| Support and complete law | Host nodes `9*c+j`, donor nodes `45+j`; simultaneously add 45 unit same-slot contacts with coordinates unchanged, giving 54 nodes and 144 unit edges. Both complete rows are `x_tau=(-Lx+gamma*S_1(theta))/4`, `theta_tau=gamma*Lx/4`, with `gamma=1/(1023*pi)`, actual `j_1=V_1'`, held unit capacities and full-circle phases. Do not replace the quarter factor by inverse degree |
+| Clock and finite observation | `tau=(1023/1024)*t` in both rows. Read donor mean signed form at elapsed contact times 0 and `h=1/1000`; each raw reading has arbitrary error at most `1e-10`. Retain both reading errors for each increment and all four for a paired difference; no independence is assumed |
+| Prospective response envelope | For every original outer-one source and every beta require absolute observed increment below `1e-8`. For every original outer-zero source require some beta with absolute observed increment above `3e-7` for all permitted reading errors. At that witness beta the paired outer-one upper bound still applies. The witness may depend on hidden source state and supplies no alignment mechanism |
+| Contact resources and identities | For both families and every beta, require full new-edge work below 100, joined initial storage below 200, and retention of all six internal winding-one cycles and nine respective host outer cycles through `0<=tau<=h`. New contact loops have no assigned identity; no indefinite retention or product-trap transfer to joined support |
+| Retained boundary state | Use actual marked-contact form and phase associations. The instantaneous phase term consumes harmonics 1,9,18; their moments are sufficient only for that static term. Derive full reaction, storage balance and finite remainder from the complete law, without claiming autonomous closure or reconstructing hidden state from the earlier 25 readings |
+| Budget and stopping rule | One complete analytical admission at the existing outward dyadic128 precision after committing the method: certify the joint response/resource/identity claim, prove a scoped obstruction, or name the exact unavailable margin. No trajectory, beta scan, third law, changed preparation, horizon extension, smaller error allowance, precision escalation or frozen-producer replay |
 
-The candidate outer-one target remains `x=0`,
-`theta[c,j]=2*pi*(j-4)/9+2*pi*(c-2)/5` on the zero global mean leaf.
-Its own-law equilibrium, regularity and complete trapping domain require
-checking. A target or a carrier-only result does not certify the actual
-source. An unavailable bound is not evidence that formation fails.
-
-A positive result would establish robustness of this acquired organization
-across the retained laws, not select one of them or prove the later contact
-property. The old observation word, donor/contact history and their finite
-identity, work and response margins remain unadmitted for the alternative
-until separately justified. No third-law formation, new autonomous closure,
-stationary search, apparatus campaign or physical response evaluation is active.
+The unchanged word is a supplied intervention and readout history for these
+acquired families. Extending the earlier inverse to unknown alternative-law
+sources is a different question and is not needed to decide this finite
+interaction property. A failed sufficient bound does not prove a failed
+interaction. Formation robustness and finite contact robustness are distinct
+claims; neither selects a unique law or identifies a physical constituent.
+There is no continuous input, and no further event after contact.
+No new autonomous closure, stationary search, apparatus campaign or physical
+response evaluation is active.
 
 Recovering established physical relations remains the objective; the test
 need not predict a deviation from known physics. An equivalent circuit

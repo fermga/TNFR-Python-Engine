@@ -427,8 +427,10 @@ direct-edge carrier errors, all signed product faces, exact tiny residuals,
 own-law source gating and the paired control. Every primitive allowance must
 be admitted before any source rebuild. Static and synthetic controls must
 exclude the original sine entry/source assessor and later response producers.
-The committed instrument owns the single complete-source assessment; its
-retained result is read without replaying that assessment. Changed reusable
+The committed instrument owns the single complete-source assessment;
+`tests/physics/test_organized_alternative_outer_evidence.py` reads its retained
+receipts, clock maps, exact residuals, signed faces and joint margins without
+replaying that assessment. Changed reusable
 recovery or prepared-flow kernels additionally require their own contracts;
 do not regenerate unchanged frozen scientific results for wiring checks.
 

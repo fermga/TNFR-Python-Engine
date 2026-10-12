@@ -311,3 +311,49 @@ of this gate. No seed, trajectory, parameter scan or physical record is used.
 The [instrument wiring controls](../../tests/research/test_organized_alternative_outer_evaluator.py)
 use a fake assessor. Later audits read the retained complete-source result
 without regenerating it.
+
+<a id="alternative-outer-acquisition-result"></a>
+## 7. Retained original-source decision
+
+The method and complete source were committed as `b220012f` before the
+single assessment. The [attempt](../../docs/assets/organized_alternative_outer_acquisition/attempt.json)
+retains the Git source inventory, arithmetic and fixed scientific protocol;
+the [exact result](../../docs/assets/organized_alternative_outer_acquisition/result.json)
+is **`alternative_outer_acquisition_certified`**, with no unresolved condition.
+All five own-law recoveries, source transport, entry, work/storage budgets,
+full product trapping and paired-control conditions pass together.
+
+The following strict rational summaries are checked against that retained
+record; they are not another run or rounded inputs to the proof:
+
+| Quantity | Retained bound |
+| --- | --- |
+| Carrier node form magnitude at tau=200 | Below 0.001395 |
+| Carrier node phase departure from v at tau=200 | Below 0.00002210 |
+| Actual full-fine form / phase departure from its own carrier through transit | Below `3.046e-70` / `6.002e-70` |
+| Complete product-cell boundary excess B | Above 0.01451 |
+| Complete actual endpoint excess U | Below 0.009588 |
+| Strict full-state capture margin B-U | Above 0.004922 |
+| Paired outer-zero control capture margin | Above 0.2427 |
+| Supplied outer attachment work | At least 1,507,001,760 and below 1,507,001,761 |
+| Complete joined initial storage | Below 1,507,001,771, within the separate 2,000,000,000 ceiling |
+
+Every original source member retains all five internal winding-one cycles
+through transit and has winding one on all nine outer slot cycles at the
+unchanged deadline. Its complete state then remains in the admitted cell
+and converges to the displayed product target. The paired actual-residual
+control retains outer winding zero and converges to its own target.
+
+Together with the retained sine theorem, this establishes the same conditional
+formation and retained identity for the two endpoint laws. It does not equate
+their finite reached states, trajectories, stiffness or interaction responses,
+nor establish acquisition for every intermediate or compatible law. No later
+observation word or external-contact certificate has been transferred.
+Source/support preparation and substantial positive work remain supplied;
+autonomous selection and physical identification remain open.
+
+The [read-only evidence audit](../../tests/physics/test_organized_alternative_outer_evidence.py)
+checks source receipts, actual-law recovery, clock maps, exact residual bounds,
+all signed faces and the joint inequalities without invoking this assessor or
+the earlier producers. A receipt associates bytes and source; it does not
+authenticate an experiment or independently prove the theorem.
