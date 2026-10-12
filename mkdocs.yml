@@ -112,6 +112,7 @@ nav:
           - "Full-state capture and collective registration of the organized source": theory/nodal/ORGANIZED_SOURCE_CAPTURE.md
           - "Acquisition of an outer winding by five acquired C9 organizations": theory/nodal/ORGANIZED_OUTER_WINDING.md
           - "Alternative-law outer acquisition": theory/nodal/ORGANIZED_ALTERNATIVE_OUTER_ACQUISITION.md
+          - "Alternative-law finite interaction": theory/nodal/ORGANIZED_ALTERNATIVE_CONTACT.md
           - "Finite probe response of the acquired outer organization": theory/nodal/ORGANIZED_OUTER_RESPONSE.md
           - "Observing outer winding with unknown child phase origins": theory/nodal/ORGANIZED_OUTER_OBSERVATION.md
           - "Observing outer winding on one continuing organization": theory/nodal/ORGANIZED_SEQUENTIAL_OBSERVATION.md

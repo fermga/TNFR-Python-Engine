@@ -812,6 +812,9 @@ This tests robustness of a finite organization-dependent interaction after
 actual formation, rather than cancellation at an ideal target. Reuse the
 justified method after deriving bounds for `lambda=1`; retain the sine result
 as the existing comparison without reevaluating it.
+The [own-law proof and instrument](../nodal/ORGANIZED_ALTERNATIVE_CONTACT.md)
+keep source transport, the harmonic remainder and finite identity/resource
+admission together; none consumes the sine inverse or its response verdict.
 
 | Item | Fixed decision boundary |
 | --- | --- |

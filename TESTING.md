@@ -434,6 +434,23 @@ replaying that assessment. Changed reusable
 recovery or prepared-flow kernels additionally require their own contracts;
 do not regenerate unchanged frozen scientific results for wiring checks.
 
+For [alternative-law finite contact](theory/nodal/ORGANIZED_ALTERNATIVE_CONTACT.md),
+select `tests/physics/test_organized_alternative_contact.py` and
+`tests/research/test_organized_alternative_contact_evaluator.py`, with
+`tests/research/test_single_analytic_assessment.py` for the shared evidence
+lifecycle. Check all 108 coordinates against independent edge sums, both
+clock-transformed rows, equal-opposite reaction and storage loss. Preserve
+the source's joint form totals, actual intervention drift, all event work,
+three contact harmonics and arbitrary bounded reading errors. The envelope
+upper bound holds at every prepared origin; its lower witness may depend on
+the source and supplies no alignment selector. Synthetic controls must reject
+wrong laws, clocks and unavailable source bounds without evaluating actual
+preparations, sine consumers or later response producers. The committed
+instrument owns the single joint source/history/contact assessment;
+`tests/physics/test_organized_alternative_contact_evidence.py` checks its
+retained result without replay. A finite contact
+certificate transfers neither the sine decoder nor all-future product capture.
+
 For the [outer-organization response](theory/nodal/ORGANIZED_OUTER_RESPONSE.md),
 select `tests/physics/test_organized_outer_response.py` with the outer-winding,
 isolated-recovery and shared preparation owners. Check the complete phase
