@@ -787,6 +787,8 @@ the [outer source declaration](../nodal/ORGANIZED_OUTER_WINDING.md)
 and [own-law isolated recovery](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-carried-handoff);
 the original sine result remains the retained comparison, not a producer to
 replay or a transferable certificate.
+The [own-law proof and instrument](../nodal/ORGANIZED_ALTERNATIVE_OUTER_ACQUISITION.md)
+retain the actual derivative, storage and source bounds for this decision.
 
 | Item | Fixed decision boundary |
 | --- | --- |

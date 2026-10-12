@@ -418,6 +418,20 @@ exclude the prepared-entry trajectory regressions
 `test_nonflat_corner_response_respects_mean_centered_and_correlated_edge_bounds`; do not
 regenerate frozen response producers for this proof-only owner.
 
+For [alternative-law outer acquisition](theory/nodal/ORGANIZED_ALTERNATIVE_OUTER_ACQUISITION.md),
+select `tests/physics/test_organized_alternative_outer_acquisition.py` and
+`tests/research/test_organized_alternative_outer_evaluator.py`, with
+`tests/research/test_single_analytic_assessment.py` for the shared evidence
+lifecycle. Verify the actual current and potential, full acute convexity,
+direct-edge carrier errors, all signed product faces, exact tiny residuals,
+own-law source gating and the paired control. Every primitive allowance must
+be admitted before any source rebuild. Static and synthetic controls must
+exclude the original sine entry/source assessor and later response producers.
+The committed instrument owns the single complete-source assessment; its
+retained result is read without replaying that assessment. Changed reusable
+recovery or prepared-flow kernels additionally require their own contracts;
+do not regenerate unchanged frozen scientific results for wiring checks.
+
 For the [outer-organization response](theory/nodal/ORGANIZED_OUTER_RESPONSE.md),
 select `tests/physics/test_organized_outer_response.py` with the outer-winding,
 isolated-recovery and shared preparation owners. Check the complete phase
