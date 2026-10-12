@@ -1080,7 +1080,14 @@ is included in those coordinates, not an additional degree of freedom.
 
 There are useful tools but no admitted full-domain mechanism. The
 [full-fine curvature witness](nodal/ORGANIZED_CONTACT_MAINTENANCE.md#5-a-full-fine-obstruction-to-stable-retention-near-the-carrier)
-requires its acute outer-gap and internal-gap-defect hypotheses. The
+retains its original acute outer-gap and internal-gap-defect hypotheses.
+The subsequent
+[winding-triangle argument](nodal/ORGANIZED_CONTACT_MAINTENANCE.md#full-chamber-phase-curvature-tests)
+removes the acute outer-gap requirement from a stronger necessary defect
+bound and excludes every common internal phase profile from stable
+stationary contact. An exact counterexample proves its nine fixed
+phase-pair sums are incomplete; nonseparable stationary targets still
+require a joint stationarity/curvature argument. The
 [reflection obstruction](nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md#5-complete-law-consequence-and-scope)
 requires its static sector. The
 [root and stability certificate](nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md#root-and-stability-acceptance)

@@ -117,10 +117,14 @@ preserving the initial marked windings. Exact reflection protection is a
 stronger condition. The [foundational priority review](#post-contact-foundation-review)
 is now closed: continued-contact stationary maintenance is the selected
 generative dependency, but no existing proof covers its complete marked
-class. The next task is [analytical certificate admission](#contact-maintenance-certificate-admission):
-develop a constructive target mechanism or a full-class stationary
-obstruction before reopening numerical work. Another contact expansion
-does not supply this missing premise.
+class. The [analytical mechanism audit](#contact-maintenance-certificate-admission)
+is also closed: a winding-triangle argument excludes every shared internal
+phase profile as a stable stationary target and strengthens the full-fine
+necessary defect bound without acute outer gaps. An exact counterexample
+shows that the nine tested phase-pair sums are incomplete. The remaining
+admission requires stationarity and curvature to be controlled jointly for
+nonseparable internal profiles; no full-class certificate or new numerical
+campaign is admitted.
 
 No 45-node acquisition, physical readout or source certificate transfers to
 the supplied positive-r matrix law by default. Earlier frozen protocols,
@@ -137,7 +141,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next bounded analytical admission | [Maintenance certificate mechanism](#contact-maintenance-certificate-admission): seek a constructive target or a candidate-independent stationary obstruction in the full source-compatible class; no numerical search is admitted |
+| Pending analytical dependency | [Nonseparable stationary maintenance](#contact-maintenance-certificate-admission): control variation of wheel-negative directions across slots using full nodal stationarity and internal coupling, or construct a full stable target; no numerical campaign is admitted |
+| Closed analytical mechanism audit | [Full-domain curvature tests](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#full-chamber-phase-curvature-tests): winding triangles exclude every common internal profile; an exact blind point shows that nine phase-pair sums are not a complete Hessian certificate |
 | Closed post-contact foundational review | [Dependency decision](#post-contact-foundation-review): contact response and hidden-mode results do not supply independent law selection, indefinite maintenance or a physical bridge; the missing maintenance certificate mechanism is explicit |
 | Closed full-fine preparation sensitivity | [Hidden internal modes](#organized-contact-preparation-sensitivity): all-time first-order invisibility, opposite-mode quadratic coupling and explicit winding-admissible leakage distinguish exact reflection protection from a linear observation kernel |
 | Closed ideal dynamical cancellation | [Complete-law origin classification](#organized-contact-dynamic-cancellation): reflection protects both laws at beta=m*pi/5; elsewhere sine regenerates donor response at order nine and the alternative at order three or five, within the original derivative budget |
@@ -321,7 +326,7 @@ response has not been derived from the earlier acquired constituents.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
-| Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Unresolved stable-stationary maintenance route; no active search.** The finite search is closed without a certificate; other classes do not repair uninterrupted maintenance. Reopen with a constructive target or an analytical certificate mechanism, not more starts |
+| Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Unresolved nonseparable stationary sector; no active search.** A shared internal phase profile is now excluded without acute/reflection restrictions. Full stationarity must control slot-dependent curvature; neither the finite search nor nine pair-sum tests supplies a complete certificate |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
 | Sufficient collective state and inherited response | Construct and certify a forecast from a joint finite noisy record without known collective initialization | **Closed operational software case.** The whole-record bound and one candidate forecast are certified; arbitrary-record convergence and physical measurement remain unproved |
@@ -899,24 +904,50 @@ curvature and reflection obstructions leave nonacute, reflection-breaking
 states open; the frozen stationary search supplies acceptance tools without
 a target or a global exclusion. No execution campaign is ready. The missing
 admission is a constructive analytical mechanism or a candidate-independent
-inequality covering that class. The next protocol addresses that gap without
+inequality covering that class. The analytical audit below addresses that gap without
 repeating local starts, source histories or contact derivatives.
 
 <a id="contact-maintenance-certificate-admission"></a>
-### Next bounded task: analytical maintenance-certificate admission
+### Closed curvature-mechanism audit; nonseparable maintenance unresolved
 
-Determine whether the existing full-state stationarity and curvature tools
-can support one analytical certificate mechanism for the source-compatible
-stationary question. This is a method-admission task, not a resumed numerical
-search or a claim of complete long-time maintenance. Its prospective scope is:
+The [proof owner](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#full-chamber-phase-curvature-tests)
+closes the single analytical proposal declared at `0aec0fe4`. It retains the
+original sine law, complete `C9 x W6` support, held unit capacities, tau
+clock, both conserved means, all 53 relative phases and the
+[complete product marked class](../nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md#marked-cycle-information-and-connected-chambers).
+No numerical search, source replay, trajectory, response fit or physical
+record was evaluated.
 
-| Stage | Fixed contract |
-| --- | --- |
-| F1: state and domain | All 54 nodes and 144 unit edges of the original `C9 x W6` support; signed forms, full circular phases, held unit capacities, zero total form and the conserved phase-lift mean. Use the [complete product marked class](../nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md#marked-cycle-information-and-connected-chambers), not just fifteen windings. Retain all 53 relative phases, including relative donor origin, nonacute gaps, reflection-breaking states and every cut-free margin strip |
-| F2: complete law | Original sine law only: `x'=(-Lx+gamma*S(theta))/4`, `theta'=gamma*Lx/4`, `gamma=1/(1023*pi)`, prime in `tau=(1023/1024)*t`; no forcing, later event, altered support, phase bias or fitted coefficient. Retain `H=x^T L x/2+sum_e(1-cos(delta_e))` and `H'=-||Lx||^2/4`. At stationarity connectedness and the fixed form mean require `x=0` and `S(theta)=0` |
-| F3: mechanism and coverage | Develop one explicit analytical target construction or a candidate-independent full-Hessian inequality, using the existing [curvature implication](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#5-a-full-fine-obstruction-to-stable-retention-near-the-carrier) and [stationary acceptance](../nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md#root-and-stability-acceptance). State every reduction hypothesis. A restricted construction can establish existence only with original class membership and full relative stability; a global obstruction cannot replace class coverage with a carrier, reflection or acute-collar restriction |
-| F4: discriminating criterion | A constructive route must identify a center and prove that strict root inclusion, complete marked-class admission and positive relative Hessian can be certified. An obstruction route must cover every stationary point and establish a negative relative Hessian direction; exclusion of strictly positive Hessians alone leaves degenerate stable targets open. Record any uncovered domain explicitly, without promoting a candidate mechanism to a theorem |
-| Budget and stop | One analytical mechanism proposal and its scope audit; zero optimizer starts, trajectories, source replays, response fits or physical records. There is no trajectory horizon or numerical precision extension. If the proposal needs numerical certification, first freeze its exact center/domain, numerical budget and acceptance protocol here before evaluation. If no mechanism covers the question, close admission as unresolved and name the missing mathematical step; do not extend a scan or silently restrict the claim |
+Every winding-one wheel has a negative summed phase-curvature witness,
+including nonacute rims. This yields a full-fine necessary condition
+`D>=9/4` for a positive-semidefinite phase Hessian. More decisively, any
+shared internal phase profile lets the wheel-negative direction be applied
+without internal-edge cost: **no such stationary target can be stable**.
+This includes distorted profiles and reflection-breaking rim origins.
+An exact full-class counterexample nevertheless passes all nine fixed
+Fourier pair sums while possessing a negative full relative direction.
+The sums are therefore necessary tests, not a complete stability decision.
+The counterexample is nonstationary and does not resolve the stationary
+residual sector.
+
+**Missing admission:** an argument coupling all nodal stationary equations
+to the cost of varying the wheel-negative direction between internal slots,
+or a constructed stable target with genuinely different internal profiles.
+Topology fixes the marked periods but alone does not supply the required
+bound on that cost. The
+common-profile theorem does not justify restricting arbitrary targets to a
+carrier, reflection sector or acute collar. Further evaluations of the same
+nine sums, source precision changes and additional optimizer starts would
+not supply the missing argument.
+
+The unresolved question retains the original complete law and true cut-free
+class. A full obstruction must establish a negative relative direction at
+every remaining stationary point, including possible degenerate cases;
+failure to certify strict positivity is insufficient. A constructive route
+must establish complete marked-class membership and stability in all 53
+relative phase directions. No new campaign is activated by this partial
+closure. Before any subsequent numerical certificate, freeze its proposed
+center/domain, budget and acceptance protocol here.
 
 For a constructed target, reuse the generic root/Hessian kernel in
 [`_organized_stationary_certificate.py`](../../src/tnfr/physics/_organized_stationary_certificate.py),

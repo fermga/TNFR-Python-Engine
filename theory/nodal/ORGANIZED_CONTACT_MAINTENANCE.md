@@ -416,6 +416,188 @@ This checks that the actual initial outer-one family lies inside the
 negative-curvature domain when the right side is below 9d. It is neither
 a stationary-state substitution nor a future bound on D along its motion.
 
+<a id="full-chamber-phase-curvature-tests"></a>
+### 5.1. Winding triangles and full-domain necessary curvature tests
+
+The analytical mechanism admission declared at `0aec0fe4` asks whether
+phase-Hessian witnesses can cover the complete source-compatible marked
+class. The following argument removes the acute outer-gap hypothesis from
+a necessary defect bound and excludes every common internal profile. It
+does not exclude all nonseparable stationary states. All results use (1),
+the original 144 unit edges and the complete phase Hessian; no source,
+trajectory, optimizer or numerical certificate is evaluated.
+
+Put `g(a)=cos(a)-cos(a)^2`. For one wheel, define
+
+\[
+ F_W=\sum_{e\in W_6}g(\delta_e).
+ \tag{17a}
+\]
+
+**Winding-triangle bound.** If the five rim edges avoid their principal cuts
+and have winding one, then `F_W<=-1/4`, regardless of the hub origin or any
+acute-gap assumption.
+
+First avoid spoke cuts as well. Orient each spoke triangle consistently
+with its rim edge. Their principal windings sum to the rim winding, because
+oppositely oriented spokes cancel. Each triangle winding is `-1`, `0` or
+`1`, so at least one is `1`. Its three principal increments `a,b,c` are
+strictly between zero and pi and sum to `2*pi`: a nonpositive increment
+could not complete that sum with the other two strictly below pi.
+
+For such a triangle, `g(a)+g(b)+g(c)<=-2`. Here is a direct proof that also
+admits boundary limits. Relabel so `c=max(a,b,c)>=2*pi/3`, and put
+`p=cos(c/2)` and `z=cos((a-b)/2)`. Then `0<=p<=1/2` and `p<=z<=1`.
+The sum is
+
+\[
+ 2(1-2p^2)z^2-2pz-4(1-p^2)^2.
+ \tag{17b}
+\]
+
+It is convex in z, so its maximum is at an endpoint. At `z=p` it equals
+`-2-8(p^2-1/2)^2`; at `z=1` it equals
+`-2+2p[2p(1-p^2)-1]`. Both are at most `-2`, since `2p(1-p^2)<=1`.
+Each of the seven remaining wheel edges has `g<=1/4`. Thus
+`F_W<=-2+7/4=-1/4`. If a spoke is at a cut, perturb only the hub origin
+to avoid all spoke cuts and pass to the limit. The marked rim winding is
+unchanged and the cosine expression is continuous.
+
+For the complete fine state, orient internal gaps in increasing slot order
+and define
+
+\[
+ \begin{split}
+ W&=\sum_{90\ \mathrm{wheel\ edges}}g(\delta_e),&
+ A&=\sum_{54\ \mathrm{internal\ edges}}\cos\delta_e,\\
+ B_2&=\sum_{54\ \mathrm{internal\ edges}}\cos^2\delta_e,&
+ C_2&=\sum_{54\ \mathrm{internal\ edges}}\cos\delta_e\sin\delta_e.
+ \end{split}
+ \tag{17c}
+\]
+
+For `m=0,...,8`, take the real vectors
+`v_m(c,j)=sin(theta_(c,j)-m*alpha*j)` and
+`w_m(c,j)=cos(theta_(c,j)-m*alpha*j)`, with `alpha=2*pi/9`.
+The phase reference is periodic on C9, including its closing edge.
+The squared-difference identity used in (12) gives exactly
+
+\[
+ \frac{v_m^TMv_m+w_m^TMw_m}{2}
+ =W+A-B_2\cos(m\alpha)-C_2\sin(m\alpha).
+ \tag{17d}
+\]
+
+There is no assumption of stationarity or a separable phase profile here.
+For nine winding-one rims, (17a) implies `W<=-9/4`. Positive semidefiniteness
+of M consequently requires
+
+\[
+ A-\max_{m=0,\ldots,8}
+       [B_2\cos(m\alpha)+C_2\sin(m\alpha)]\ \ge\ \frac94.
+ \tag{17e}
+\]
+
+For `m=1`, the internal contribution is
+`sum_internal cos(delta_e)[1-cos(delta_e-alpha)]<=D`, with D from (11).
+Thus **`D<9/4` excludes a positive-semidefinite full phase Hessian**, even
+for nonacute outer gaps and reflection-breaking states. The non-strict
+boundary `D=9/4` is not excluded by this bound. At a stationary point the
+negative direction gives complete-law instability by (16). At a moving
+state it remains an instantaneous curvature statement, not a future
+identity-loss verdict. The original acute-domain theorem and frozen source
+assessment retain their own stated bounds.
+
+### 5.2. No stable stationary contact with a common internal phase profile
+
+Suppose the full phase state has the form
+`theta_(c,j)=psi_j+Phi_c` modulo a turn for all six children, and its rim
+origins have winding one. The shared profile psi need not be uniform,
+acute or a stationary internal cycle. Choose vectors constant within each
+child: `v_(c,j)=sin(Phi_c)` and `w_(c,j)=cos(Phi_c)`. Internal edges
+contribute exactly zero. The nine wheels have identical gaps, hence
+
+\[
+ v^TMv+w^TMw=18F_W\ \le\ -\frac92.
+ \tag{17f}
+\]
+
+At least one vector has negative quadratic form. Subtracting its global
+mean preserves that form and places it on the full relative phase leaf.
+Consequently **no stationary state with a shared internal phase profile
+and retained outer winding one can be stable under (1)**. This excludes
+arbitrary common-profile distortions and arbitrary rim origins, without a
+reflection or acute-gap premise. It is broader than the helical carrier
+and does not require the constituent internal torques to vanish separately.
+
+A possible stable stationary target must therefore be genuinely
+nonseparable: some relative constituent phase difference must depend on
+the internal slot. Such dependence is a necessary property, not a supplied
+new law or evidence that a stable target exists. It does not establish
+formation, capture, a bound state or a physical constituent.
+
+<a id="phase-pair-witness-incompleteness"></a>
+### 5.3. An exact blind point of the nine fixed phase-pair sums
+
+The necessary tests (17d) do not form a complete Hessian certificate. An
+exact counterexample remains inside the original complete product marked
+class, including its mixed cycles and all true cut margins.
+
+Set `psi_0=0` and give its nine successive internal gaps the values
+
+\[
+ (\pi/3,\pi/3,\pi/3,\pi/3,\pi/3,\pi/3,\pi/3,-\pi/6,-\pi/6).
+ \tag{17g}
+\]
+
+Their sum is `2*pi`; all lie strictly inside the acute interval. For hosts
+put `Phi_c=(c-2)*pi/3`, `c=0,...,4`, and put `Phi_D=0` for the donor.
+Use `theta_(c,j)=psi_j+Phi_c` and zero forms, with a common phase translation
+if needed to retain the declared lifted mean. The five rim gaps are four
+copies of `pi/3` and the closing `2*pi/3`. The internal closing branch is
+`-1`, as is the rim closing branch; all other marked branches are zero.
+Every mixed marked square telescopes to zero. Thus this is in the
+[original complete class](ORGANIZED_CONTACT_STATIONARY_SEARCH.md#marked-cycle-information-and-connected-chambers),
+not merely a configuration sharing fifteen winding labels.
+
+Per wheel the rim contributes `1/4` to `F_W`, and the spokes contribute
+`-1`, giving `W=-27/4` over all nine wheels. Per internal child the sums in
+(17c) are
+
+\[
+ A_0=\frac72+\sqrt3,\qquad B_0=\frac{13}4,\qquad
+ C_0=\frac{5\sqrt3}4,\qquad
+ \sqrt{B_0^2+C_0^2}=\frac{\sqrt{61}}2.
+ \tag{17h}
+\]
+
+For every one of the nine m values, the half pair sum in (17d) is at least
+`-27/4+6*(A_0-sqrt(61)/2)>1/4`. The strict inequality follows exactly from
+`sqrt(3)>5/3` and `sqrt(61)<8`, which give
+`A_0-sqrt(61)/2>7/6`. No floating-point trigonometric evaluation is needed.
+
+Nevertheless let u equal one on host child zero and zero elsewhere, then
+subtract its global mean. Internal edges again contribute zero. At that
+host the two rim cosines are `1/2` and `-1/2`, and the spoke cosine is
+`-1/2`, so `u^T M u=-9/2`. The full Hessian is not positive semidefinite.
+The state is explicitly nonstationary: at slot `j=1` the equal adjacent
+internal sine currents cancel, while `S_(0,1)=sqrt(3)/2`.
+
+This example defeats the **nine pair-sum tests**, not every individual sine
+or cosine vector, their linear combinations or the full quadratic form on
+their span. A positive pair sum can hide a negative individual direction.
+It also does not refute a stronger theorem restricted to stationary states.
+The new common-profile test (17f) correctly rejects this same configuration.
+
+The mechanism therefore establishes necessary inequalities and a complete
+common-profile obstruction, but does not admit a chamber-wide stationary
+certificate. The unresolved sector consists of nonseparable candidates
+satisfying the necessary tests. Deciding it requires all nodal stationary
+equations jointly with full relative curvature, or a constructed stable
+target. More evaluations of the same nine sums cannot supply that missing
+argument. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#contact-maintenance-certificate-admission)
+owns that unresolved admission.
+
 ## 6. Actual aligned outer-zero control after the full observation word
 
 The local target in (2) becomes a maintenance result only with an actual
@@ -580,7 +762,11 @@ in the old acute chart indefinitely; a stable full-fine stationary
 organization retaining that chart would require D to exceed 9d. The
 existence, acquisition and maintained identity of such a substantially
 reorganized fine state remain unresolved. An outer gap becoming nonacute
-would still require a separate winding-loss check.
+would still require a separate winding-loss check. The subsequent
+[full-domain curvature result](#full-chamber-phase-curvature-tests) supplies
+the stronger necessary condition `D>=9/4` without the acute outer-gap
+restriction and excludes every common internal phase profile. It does not
+extend the frozen source calculation into a future-retention certificate.
 
 These results separate maintained constituent identity, loss of a convenient
 capture chart, stationary instability and actual-source identity loss.
@@ -625,3 +811,9 @@ Source regeneration and trajectory execution remain forbidden in this
 detached proof path. Numerical checks verify implemented arithmetic and
 wiring; the analytic arguments above establish the conditional mathematical
 claims and their domain boundaries.
+
+The later analytical extension in sections 5.1-5.3 uses exact identities
+and counterexamples only. It does not change the earlier assessor's
+threshold, flags or frozen evidence, and adds no numerical decision API.
+Its necessary pair-sum inequalities must not be exposed as sufficient
+stability or stationary-maintenance verdicts.
