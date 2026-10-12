@@ -1093,6 +1093,11 @@ candidate and requires negative midpoint edge curvature in the cyclic slot
 comparison, even for degenerate Hessians. This is not a sign verdict on the
 total curvature. Nonseparable targets meeting those necessary conditions
 still require a full stationary/curvature decision. The
+[exact donor relaxation](nodal/ORGANIZED_CONTACT_MAINTENANCE.md#exact-donor-relaxation)
+preserves that decision through nine strictly positive donor directions
+and 44 host-relative directions. Its local reduced potential preserves
+stationary points and local minima; it supplies neither a global branch
+nor an autonomous reduced evolution. The
 [reflection obstruction](nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md#5-complete-law-consequence-and-scope)
 requires its static sector. The
 [root and stability certificate](nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md#root-and-stability-acceptance)

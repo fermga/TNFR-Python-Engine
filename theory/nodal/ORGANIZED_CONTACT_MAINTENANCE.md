@@ -772,12 +772,173 @@ sums; this example is not evidence about existence of a stationary target.
 
 The remaining sector is regular, genuinely nonseparable and has negative
 midpoint cosine on a changing edge. Neither that necessary property nor
-the resultant bound certifies stability or excludes this sector. A full
-decision still requires a joint stationary/curvature argument or a
-constructed stable target on all 53 relative phase directions. The
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#contact-maintenance-certificate-admission)
-owns that unresolved admission. No new law, target, source capture or
-physical identification follows from these restrictions.
+the resultant bound certifies stability or excludes this sector. The next
+reduction retains all its phase directions while separating donor
+relaxation from the remaining host curvature.
+
+<a id="exact-donor-relaxation"></a>
+### 5.7. The donor block is strictly positive at every PSD candidate
+
+Partition the full phase Hessian into 45 host and nine donor coordinates:
+
+\[
+ M=\begin{pmatrix}A&C\\C^T&D\end{pmatrix},\qquad
+ C_{(c,j),k}=-\cos(\sigma_{c,j})\,\mathbf1_{j=k},\qquad
+ C^TC=\operatorname{diag}(s_j),\quad
+ s_j=\sum_{c=0}^4\cos^2(\sigma_{c,j}),
+ \tag{17p}
+\]
+
+where `sigma_(c,j)=theta_(D,j)-theta_(c,j)`. A is the principal block of
+the **joined** Hessian, including spoke diagonal terms; it is not the
+Hessian of the isolated host. D similarly includes donor internal edges
+and spoke diagonal terms. No internal edge cosine is assumed positive.
+
+In the original outer-one marked class, every `s_j>0`. Otherwise all five
+host phases at that slot would equal the donor phase plus or minus pi/2.
+Opposite choices at adjacent rim nodes would place their marked edge at
+a forbidden cut. Equal choices around the connected rim give winding zero.
+Both alternatives contradict the admitted cut-free winding-one rim.
+Thus C has full column rank, even though individual spoke cosines may vanish.
+
+If M is PSD, D is PSD. A nonzero `y` in `ker D` would give
+`(0,y)^T*M*(0,y)=0`, hence `M*(0,y)=0` and `Cy=0`, a contradiction.
+Therefore **D is strictly positive at every PSD candidate**, including
+those with a degenerate full relative Hessian. Moreover, the donor block
+of `M^2<=10M` gives the quantitative restriction
+
+\[
+ D^2+\operatorname{diag}(s_j)\preceq10D,
+ \qquad D\succeq\frac1{10}\operatorname{diag}(s_j)\succ0.
+ \tag{17q}
+\]
+
+These are curvature statements on the actual phase state and require no
+stationarity assumption. If D has a negative direction, extending it by
+zero host coordinates gives a negative full direction. If D is PSD but
+singular, take `Dy=0`, `y!=0`. Since `A<=10I` and `Cy!=0`, the explicit
+vector `v=(-Cy/10,y)` has `v^T*M*v<=-||Cy||^2/10<0`. Thus failure of
+strict donor positivity excludes full PSD in this marked class; it is not
+merely a failed sufficient test. Subtract the common mean to obtain a
+relative witness. At a stationary point (16) then gives complete-law
+instability; at a moving point it gives only instantaneous curvature.
+
+Let `t_j=sum_c cos(sigma_(c,j))` and `Q=sum_j t_j`. Since `D*1_D=t`,
+(17q) also gives
+
+\[
+ Q\ \ge\ \frac1{10}\sum_j(t_j^2+s_j)>0.
+ \tag{17r}
+\]
+
+At stationarity, summing the donor equations additionally gives
+`sum_(c,j) sin(sigma_(c,j))=0`. Hence a PSD stationary candidate has
+strictly positive real aggregate host-donor phase overlap. This is a
+derived phase balance, not an identified physical observable or a new
+interaction law. Its quantitative bound depends on the actual phase state.
+
+### 5.8. Exact donor relaxation and the remaining 44 relative directions
+
+For any admitted phase state with `D>0`, define its Schur complement
+
+\[
+ K=A-CD^{-1}C^T.
+ \tag{17s}
+\]
+
+For arbitrary host variation h and donor variation b, completing the square
+gives the exact identity
+
+\[
+ \begin{pmatrix}h\\b\end{pmatrix}^{\!T}
+ M\begin{pmatrix}h\\b\end{pmatrix}
+ =h^TKh+(b+D^{-1}C^Th)^TD(b+D^{-1}C^Th).
+ \tag{17t}
+\]
+
+Thus `M>=0` if and only if `K>=0`. The nine donor directions contribute
+strictly positive curvature; all negative and additional zero directions
+are preserved by K. Since `M*1=0`,
+`D*1_D=-C^T*1_H` and `K*1_H=0`. Strict positivity of the full Hessian on
+53 relative phase directions is therefore equivalent to positivity of K
+on all **44 host-relative directions**. An exact negative K witness h
+lifts to `(h,-D^-1*C^T*h)` with the same quadratic form; global recentering
+does not change it. This is a congruence and inertia identity, not equality
+of eigenvalues, dynamical modes or decay times.
+
+Together with section 5.7 this is a complete pointwise curvature criterion
+on the original marked class: test strict donor positivity, then retain
+the full K. Checking only host means would discard 40 host internal
+directions. The inequality `K<=A` shows that allowing the donor to respond
+can only lower the quadratic cost compared with holding it fixed. D need
+not have nonpositive off-diagonal entries, and K need not be a Laplacian
+with positive conductances. Neither matrix defines a supplied pressure law.
+
+There is also an exact **local stationary** interpretation. At any point
+with `S_D=0` and `D>0`, the implicit function theorem gives a unique local
+donor branch `b=phi(a)` solving `S_D(a,b)=0`, with
+`phi'(a)=-D^-1*C^T`. Define the reduced potential
+`W(a)=V(a,phi(a))`. On this branch,
+
+\[
+ \nabla W=-S_H(a,\phi(a)),\qquad \nabla^2W=K.
+ \tag{17u}
+\]
+
+Full stationary points correspond exactly to critical points of W in this
+local chart. After shrinking it, continuity gives `D>=kappa*I` for some
+`kappa>0` throughout its donor fibers, and
+`V(a,b)>=W(a)+(kappa/2)*||b-phi(a)||^2`. Local minima, including degenerate
+ones, therefore correspond; strict minima correspond after quotienting
+the common phase. No numerical neighborhood or global donor branch has
+been certified by this existence argument.
+
+The donor coordinates remain represented by `phi(a)` and their nine
+residual directions. The full form/phase dynamics is still (1): this
+stationary graph need not be invariant under that flow. In particular,
+`S_D=0` neither removes donor form diffusion nor freezes its phase row.
+The reduction supplies no autonomous 44-coordinate TNFR evolution,
+source inclusion, selected event or acquisition result.
+
+### 5.9. Collective compensation must include the donor response
+
+For a subset U of host nodes, let h be its indicator and put
+`b_j=sum_{c:(c,j) in U} cos(sigma_(c,j))`. Formula (17t) gives the exact
+donor-relaxed cut test
+
+\[
+ h^TKh=\sum_{e\in\mathrm{host\ cut}(U)}\cos\delta_e
+           +\sum_j b_j-b^TD^{-1}b.
+ \tag{17v}
+\]
+
+Every PSD candidate must make this nonnegative for every U. The last term
+retains the joint response of all nine donor coordinates, rather than
+treating their compensation separately or holding them fixed. These cuts
+are useful necessary tests, not a substitute for full K positivity.
+
+The exact nonstationary blind point (17g) is a control for that distinction.
+Its spoke cosine sum is one at every slot and its internal cosines are
+positive, so `D=M_internal+I>=I`. Nevertheless, for the indicator h of
+host child zero, `h^T*A*h=-9/2` and `C^T*h=(1/2)*1_D`. Since `D*1_D=1_D`,
+the relaxed donor variation is `-(1/2)*1_D` and
+
+\[
+ h^TKh=-\frac92-\frac94=-\frac{27}4<0.
+ \tag{17w}
+\]
+
+Positive donor curvature therefore does not establish full stability or
+stationarity. This example remains outside equilibrium; the calculation
+is a static algebraic control, not a new candidate evaluation.
+
+The reduction proves how to account exactly for compensating curvature;
+it does not prove that the remaining sector contains a stable target or
+that K must always have a negative direction at its critical points. A
+global obstruction must cover all admissible donor branches and possible
+degenerate host minima. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#contact-maintenance-certificate-admission)
+retains that unresolved decision, with the original complete law and all
+marked identities. Local curvature reduction identifies no physical force.
 
 ## 6. Actual aligned outer-zero control after the full observation word
 
@@ -993,7 +1154,7 @@ detached proof path. Numerical checks verify implemented arithmetic and
 wiring; the analytic arguments above establish the conditional mathematical
 claims and their domain boundaries.
 
-The later analytical extension in sections 5.1-5.6 uses exact identities
+The later analytical extension in sections 5.1-5.9 uses exact identities
 and counterexamples. Static regression checks separately reconstruct the
 stationary controls' neighbor resultants and the blind point's lifted
 secant from edge sums. These are arithmetic controls, not a stationary
@@ -1002,3 +1163,11 @@ the earlier assessor's threshold, flags or frozen evidence, and adds no
 numerical decision API. Its necessary curvature, resultant and slot
 conditions must not be exposed as sufficient stability or maintenance
 verdicts.
+
+The donor-relaxation controls independently assemble the joined Hessian
+blocks, verify (17t) and the exact negative witness (17w), and check all
+44 positive host-relative modes at the known aligned outer-zero control.
+That control tests the Schur algebra; its different rim winding is not
+evidence of an outer-one target. The shared root/Hessian certificate
+continues to admit its original full boxes and is not replaced by an
+uncertified donor branch or a collection of cut tests.

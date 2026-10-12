@@ -75,6 +75,159 @@ def _edge_action(mp, vector, phases=None):
     return tuple(result)
 
 
+def _phase_hessian(mp, phases):
+    matrix = mp.zeros(54)
+    for left, right in _EDGES:
+        weight = mp.cos(phases[right] - phases[left])
+        matrix[left, left] += weight
+        matrix[right, right] += weight
+        matrix[left, right] -= weight
+        matrix[right, left] -= weight
+    return matrix
+
+
+def test_donor_schur_singular_block_has_an_explicit_full_negative_witness(mp):
+    """The winding-one carrier has a singular donor block, not a stable target."""
+    tolerance = mp.mpf("1e-165")
+    phases = tuple(
+        2 * mp.pi * (j - 4) / 9 + (2 * mp.pi * (c - 2) / 5 if c < 5 else 0)
+        for c in range(6)
+        for j in range(9)
+    )
+    matrix = _phase_hessian(mp, phases)
+    cross, donor = matrix[:45, 45:], matrix[45:, 45:]
+    null = mp.matrix([1] * 9)
+    # Internal cycle currents telescope; the five spoke cosines sum to zero.
+    assert max(abs(value) for value in donor * null) < tolerance
+    expected_cross_gram = mp.eye(9) * mp.mpf(5) / 2
+    assert (
+        max(abs(value) for value in cross.T * cross - expected_cross_gram) < tolerance
+    )
+    coupling = cross * null
+    norm_squared = (coupling.T * coupling)[0]
+    assert abs(norm_squared - mp.mpf(45) / 2) < tolerance
+    full = tuple(-coupling / 10) + tuple(null)
+    vector = tuple(value - sum(full) / 54 for value in full)
+    quadratic = sum(
+        value * action
+        for value, action in zip(vector, _edge_action(mp, vector, phases))
+    ).real
+    assert quadratic <= -norm_squared / 10 + tolerance
+    assert quadratic < -2
+
+
+def test_donor_schur_positive_block_does_not_certify_the_full_blind_point(mp):
+    """A static nonstationary control retains a negative relaxed host direction."""
+    tolerance = mp.mpf("1e-165")
+    gaps = (mp.pi / 3,) * 7 + (-mp.pi / 6,) * 2
+    profile = tuple(sum(gaps[:j], mp.mpf(0)) for j in range(9))
+    phases = tuple(
+        profile[j] + ((c - 2) * mp.pi / 3 if c < 5 else 0)
+        for c in range(6)
+        for j in range(9)
+    )
+    matrix = _phase_hessian(mp, phases)
+    host, cross, donor = matrix[:45, :45], matrix[:45, 45:], matrix[45:, 45:]
+    internal = mp.zeros(9)
+    for j, gap in enumerate(gaps):
+        next_slot = (j + 1) % 9
+        weight = mp.cos(gap)
+        assert weight > 0
+        internal[j, j] += weight
+        internal[next_slot, next_slot] += weight
+        internal[j, next_slot] -= weight
+        internal[next_slot, j] -= weight
+    # Positive internal edge weights make internal PSD, hence donor >= I.
+    assert max(abs(value) for value in donor - internal - mp.eye(9)) < tolerance
+    donor_one = mp.matrix([1] * 9)
+    assert max(abs(value) for value in donor * donor_one - donor_one) < tolerance
+    inverse = donor**-1
+    reduced = host - cross * inverse * cross.T
+    assert max(abs(value) for value in reduced * mp.matrix([1] * 45)) < tolerance
+
+    direction = mp.matrix([int(i < 9) for i in range(45)])
+    forcing = cross.T * direction
+    relaxed = -inverse * forcing
+    assert abs((direction.T * host * direction)[0] + mp.mpf(9) / 2) < tolerance
+    assert max(abs(value) for value in forcing - donor_one / 2) < tolerance
+    assert max(abs(value) for value in relaxed + donor_one / 2) < tolerance
+    expected = -mp.mpf(27) / 4
+    assert abs((direction.T * reduced * direction)[0] - expected) < tolerance
+    full = tuple(direction) + tuple(relaxed)
+    centered = tuple(value - sum(full) / 54 for value in full)
+    for vector in (full, centered):
+        quadratic = sum(
+            value * action
+            for value, action in zip(vector, _edge_action(mp, vector, phases))
+        ).real
+        assert abs(quadratic - expected) < tolerance
+
+    # A separate fine vector retains donor residuals in the completed square.
+    arbitrary = tuple(mp.mpf((7 * i + 3) % 19 - 9) / 23 for i in range(54))
+    host_vector, donor_vector = mp.matrix(arbitrary[:45]), mp.matrix(arbitrary[45:])
+    residual = donor_vector + inverse * cross.T * host_vector
+    donor_cost = (residual.T * donor * residual)[0]
+    assert donor_cost > 0
+    completed = (host_vector.T * reduced * host_vector)[0] + donor_cost
+    direct = sum(
+        value * action
+        for value, action in zip(arbitrary, _edge_action(mp, arbitrary, phases))
+    ).real
+    assert abs(completed - direct) < tolerance
+
+
+def test_donor_schur_aligned_control_has_all_44_positive_relative_modes(mp):
+    """Check static reduced curvature; these values are not temporal eigenvalues."""
+    tolerance = mp.mpf("1e-165")
+    alpha = 2 * mp.pi / 9
+    phases = tuple(alpha * (j - 4) for _ in range(6) for j in range(9))
+    matrix = _phase_hessian(mp, phases)
+    host, cross, donor = matrix[:45, :45], matrix[:45, 45:], matrix[45:, 45:]
+    cycle = mp.zeros(9)
+    for j in range(9):
+        next_slot = (j + 1) % 9
+        cycle[j, j] += 1
+        cycle[next_slot, next_slot] += 1
+        cycle[j, next_slot] -= 1
+        cycle[next_slot, j] -= 1
+    expected_donor = mp.cos(alpha) * cycle + 5 * mp.eye(9)
+    assert max(abs(value) for value in donor - expected_donor) < tolerance
+    inverse = donor**-1
+    reduced = host - cross * inverse * cross.T
+    positive = neutral = 0
+    for internal_mode in range(9):
+        internal = tuple(
+            mp.exp(2 * mp.j * mp.pi * internal_mode * j / 9) for j in range(9)
+        )
+        stiffness = mp.cos(alpha) * (2 - 2 * mp.cos(alpha * internal_mode))
+        assert stiffness + 5 > 0
+        for rim_mode in range(5):
+            vector = mp.matrix(
+                [
+                    mp.exp(2 * mp.j * mp.pi * rim_mode * c / 5) * internal[j]
+                    for c in range(5)
+                    for j in range(9)
+                ]
+            )
+            if rim_mode == 0:
+                expected = stiffness * (stiffness + 6) / (stiffness + 5)
+                expected_relaxed = mp.matrix(internal) * 5 / (stiffness + 5)
+            else:
+                expected = stiffness + 1 + 2 - 2 * mp.cos(2 * mp.pi * rim_mode / 5)
+                expected_relaxed = mp.zeros(9, 1)
+            action = reduced * vector
+            assert max(abs(value) for value in action - expected * vector) < tolerance
+            relaxed = -inverse * cross.T * vector
+            assert max(abs(value) for value in relaxed - expected_relaxed) < tolerance
+            if (internal_mode, rim_mode) == (0, 0):
+                assert expected == 0
+                neutral += 1
+            else:
+                assert expected > 0
+                positive += 1
+    assert (positive, neutral) == (44, 1)
+
+
 def test_stationary_resultants_do_not_make_unrestricted_stress_positive(mp):
     """Static controls distinguish tangent curvature from unrestricted stress."""
     alpha = 2 * mp.pi / 9

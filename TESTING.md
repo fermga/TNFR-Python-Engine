@@ -980,6 +980,16 @@ positivity. These tests exercise the algebraic controls; the exact proof
 owns the full-domain necessary conditions and flat-case exclusion. No
 source-assessment fixture or frozen response is needed for this selection.
 
+For exact donor relaxation, add the `donor_schur` controls from the same
+module. Rebuild the joined host block including spoke diagonal terms,
+all nine donor coordinates and the full cross block. Verify square
+completion and witness reconstruction against independent edge sums;
+positive donor curvature alone must not certify the nonstationary blind
+point. The aligned outer-zero control checks all 44 positive relative
+Schur modes without claiming an outer-one target or equating the reduced
+curvature eigenvalues to full dynamical rates. No implicit branch solver,
+root search or frozen source is invoked.
+
 For [reflected stationary contact identity](theory/nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md),
 select `tests/physics/test_organized_contact_reflection.py` with contact
 maintenance, external interaction and `tests/test_rational_interval.py`.

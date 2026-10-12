@@ -326,7 +326,7 @@ response has not been derived from the earlier acquired constituents.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
-| Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Unresolved nonseparable stationary sector; no active search.** Shared internal profiles and the flat slot-comparison alternative are excluded. Remaining candidates have nonzero aligned resultants and negative midpoint edge curvature in the slot comparison; their full relative curvature remains undecided |
+| Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Unresolved reduced stationary potential; no active search.** PSD candidates have nine positive donor directions; exact relaxation retains all 44 host-relative directions. The remaining stationary/minimum decision must cover all admitted local donor branches; collective cuts alone are insufficient |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
 | Sufficient collective state and inherited response | Construct and certify a forecast from a joint finite noisy record without known collective initialization | **Closed operational software case.** The whole-record bound and one candidate forecast are certified; arbitrary-record convergence and physical measurement remain unproved |
@@ -908,40 +908,39 @@ inequality covering that class. The analytical audit below addresses that gap wi
 repeating local starts, source histories or contact derivatives.
 
 <a id="contact-maintenance-certificate-admission"></a>
-### Closed stationarity restrictions; remaining maintenance sector unresolved
+### Closed exact donor reduction; stationary host curvature unresolved
 
-The [proof owner](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#stationary-resultant-and-slot-comparison)
-extends the curvature audit closed at `730cc056` through the nodal
-stationary equations. It retains the
+The [proof owner](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#exact-donor-relaxation)
+continues the stationary restrictions consolidated at `3c4b8294` with an
+exact donor-relaxation criterion. It retains the
 original sine law, complete `C9 x W6` support, held unit capacities, tau
 clock, both conserved means, all 53 relative phases and the
 [complete product marked class](../nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md#marked-cycle-information-and-connected-chambers).
 No numerical search, source replay, trajectory, response fit or physical
 record was evaluated.
 
-The prior full-domain defect condition `D>=9/4`, common-profile obstruction
-and incompleteness of the nine fixed phase-pair sums remain valid. Full
-stationarity now adds two restrictions on every candidate with a
-positive-semidefinite phase Hessian. Each node aligns with its nonzero
-neighbor resultant, whose radius is at least `5-2*sqrt(6)>1/10`. The
-cyclic slot comparison must also have a changing edge with strictly
-negative midpoint cosine. Its flat alternative would require nine distinct
-exceptional internal slots in only six children and is excluded, including
-degenerate Hessians. The exact nonstationary blind point of the pair sums
-fails the new stationarity secant. These are analytical restrictions and
-static arithmetic controls, not an evaluated stationary target.
+The earlier defect, common-profile, resultant and cyclic-slot restrictions
+remain necessary. The new result proves that the donor principal Hessian
+block is strictly positive at every PSD candidate, including degenerate
+full Hessians. Its failure gives a negative full direction. When that block
+is positive, its Schur complement accounts exactly for all donor relaxation
+and leaves 44 host-relative curvature directions. At donor-stationary
+points the implicit function theorem gives a local reduced potential whose
+critical points and local minima correspond to those of the full phase
+potential. No phase information is discarded, and no reduced temporal law
+is supplied. Static controls check the exact square completion and retain
+a negative full witness despite positive donor curvature.
 
-**Missing admission:** a joint stationary/curvature decision for the regular,
-genuinely nonseparable sector with negative midpoint edge curvature, or a
-constructed stable target in that sector. The signed fixed-point weights
-need not give a contraction, and endpoint Hessian positivity does not give
-positivity along the comparison segment. A negative midpoint edge cosine
-alone proves neither negative total segment curvature nor an unstable
-endpoint; it also supplies no stability certificate. The next
-analytical step must control that remaining negative contribution together
-with the full nodal balance; it cannot assume common profiles, reflection
-or acuteness. Repeating the same pair sums, increasing source precision or
-adding optimizer starts would not resolve this missing implication.
+**Missing admission:** decide the full curvature at stationary points of
+the reduced potential throughout the regular, genuinely nonseparable
+remaining sector, or construct one stable target there. The next analytical
+step must couple the host balances to the donor-relaxed curvature, covering
+all admitted donor branches and all 44 host-relative directions. Neither a
+local implicit branch, its existence theorem, positive donor curvature nor
+the relaxed collective cut tests supplies a global decision. K need not
+have positive conductances. Common profiles, reflection or acuteness cannot
+be imposed on the remaining targets. Repeating the earlier phase-pair sums,
+source precision changes or optimizer starts would not close this gap.
 
 The unresolved question retains the original complete law and true cut-free
 class. A full obstruction must establish a negative relative direction at
