@@ -696,9 +696,18 @@ observation backaction, remains captured after a separately supplied zero-origin
 contact. The exact carrier with acute outer winding one must leave that acute
 cell, and a full-fine stable equilibrium retaining it requires a quantified
 amount of internal reorganization. Acute-chart exit is not winding loss; the
-actual outer-one source's eventual fate remains open. Constituent windings,
+actual outer-one source's limiting identity remains open. Constituent windings,
 internal shape and collective identity therefore require separate maintenance
 arguments on the actual interface and law. None is yet a particle identity.
+
+The [full-contact convergence result](nodal/ORGANIZED_CONTACT_MAINTENANCE.md#full-contact-convergence)
+shows that every trajectory of this fixed unforced sine contact law approaches
+one equilibrium, with finite total variation of its continuous phase lifts.
+An indefinitely moving asymptotic organization cannot bypass the stationary
+maintenance question in this model. This does not require an NFR to be
+stationary under every TNFR law: conservative, forced and event-driven models
+have different premises. Nor does convergence make the limit stable or
+preserve the prepared identity; a limiting state may lie on a marked cut.
 
 The [reflection obstruction](nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md)
 separates the shape of a stationary organization from the identities it

@@ -1032,6 +1032,17 @@ phase origin. That support-specific theorem does not select which
 equilibrium a preparation reaches or supply a convergence deadline;
 it does not replace the broader equilibrium-set statement above.
 
+For the fixed 54-node sine contact law with held unit capacities, the
+[full-contact convergence proof](ORGANIZED_CONTACT_MAINTENANCE.md#full-contact-convergence)
+also gives a single limiting equilibrium and finite total variation of
+continuous phase lifts, without assuming isolated critical points. It uses
+an analytic modified energy on the compact fixed-mean phase torus; bounded
+lifts follow from the proof rather than entering as a premise. Its positive
+relative metric and complete law must be re-admitted before transferring
+the conclusion to heterogeneous or zero capacities, native phase dynamics
+or other execution paths. The limiting equilibrium need not be stable or
+retain a prescribed winding.
+
 ### A finite passive environment is not an unlimited source
 
 Retaining additional environmental nodes does not supply energy

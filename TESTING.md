@@ -1030,7 +1030,7 @@ slot-current identity and full pair-Hessian error bound. Its measured
 stationary residual remains explicit; a small residual is not a root
 certificate. These checks invoke no report fixture, root search, trajectory or
 source assessment. The proof owns the finite exclusion theorem, compact
-uniform separation and eventual exit from the closed uniform-rim
+uniform separation and eventual permanent exit from the closed uniform-rim
 neighborhood. Sampled states establish neither those global arguments nor
 a numerical uniform gap or exit-time bound.
 
@@ -1041,7 +1041,23 @@ allowances, all 96 relative directions and every donor origin, placing
 the source inside radius `1/25` before applying the exit theorem. Do not
 replay frozen producers, change response flags or treat a fresh numerical
 source assessment as necessary to test this consequence. Its conclusion
-supplies no uniform exit-time bound, winding loss or convergence.
+supplies no uniform exit-time bound or winding loss.
+
+For [complete-flow convergence](theory/nodal/ORGANIZED_CONTACT_MAINTENANCE.md#full-contact-convergence),
+select `contact_convergence` from the maintenance module. The static
+controls combine nonacute outer-one and aligned outer-zero phases with
+zero and nonzero mean-zero forms. Independent edge rows and a relative
+Poisson solve check the full-law second-order reduction, scaled energy,
+and exact modified-energy derivative and decrease bound. The zero-form
+nonstationary case must retain strict modified-energy decrease even when
+the original energy derivative is instantaneously zero. Keep the actual
+quarter factors and all fine directions. These checks run no trajectory
+and cannot establish single-equilibrium convergence by
+sampling. The proof owns the compact phase-space argument, analytic
+gradient inequality, finite lifted phase variation and single limit.
+Permanent exclusion from a closed equilibrium-free tube already follows
+from compactness and loss. Neither result identifies the limiting target,
+proves a positive Hessian or decides winding at a cut limit.
 
 For [reflected stationary contact identity](theory/nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md),
 select `tests/physics/test_organized_contact_reflection.py` with contact
@@ -1051,9 +1067,9 @@ branch margins, full fine stationary rows and the centered negative cut
 against independent edge calculations. Zero-enclosing residuals are an
 arithmetic audit; the exact cubic identities prove stationarity. The
 illustration covers one nonacute saddle, while the analytic proof owns the
-entire declared reflection sector. Preserve unavailable actual-source fate
-and the no-trajectory/frozen-producer guard; no candidate or precision scan
-belongs to this fixed illustration.
+entire declared reflection sector. Preserve its lack of an actual-source
+winding verdict and the no-trajectory/frozen-producer guard; no candidate
+or precision scan belongs to this fixed illustration.
 
 For [full-fine stationary contact](theory/nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md),
 select `tests/physics/test_organized_stationary_certificate.py`,

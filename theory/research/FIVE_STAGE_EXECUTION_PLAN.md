@@ -118,17 +118,18 @@ stronger condition. The [foundational priority review](#post-contact-foundation-
 is now closed: continued-contact stationary maintenance is the selected
 generative dependency, but a stable target or global instability certificate
 in its complete marked class remains missing. The
-[finite host-reorganization exclusion](#contact-maintenance-certificate-admission)
-now excludes PSD equilibrium in explicit neighborhoods of common host
-profiles. Near the uniform rim, no equilibrium exists and the unforced
-flow cannot stay in the closed neighborhood indefinitely. The retained
-source proofs place the entire original outer-one family, at every donor
-origin, inside its radius-1/25 tube: each must eventually leave it under
-the unchanged law. No uniform exit time or winding loss follows. A separate
-compactness argument gives a positive, uncomputed uniform separation of
-all PSD stationary candidates from the common-host family, including
-degenerate candidates and approach to marked cuts. The remaining finitely
-reorganized sector is unresolved; no numerical campaign is admitted.
+[complete-flow convergence theorem](#contact-maintenance-certificate-admission)
+now proves that every finite initial state on the zero-form-mean leaf of
+the fixed unforced contact law converges to one equilibrium, with forms
+tending to zero and finite total variation of the continuous phase lifts.
+Sustained nonstationary motion therefore cannot bypass the stationary
+question. The entire original outer-one source family, at every donor
+origin, eventually remains outside its initial radius-1/25 uniform-rim
+tube. No uniform exit time or winding loss follows; a limit can be a saddle
+or lie on marked cuts. Explicit neighborhoods and an uncomputed compact
+gap still exclude PSD stationary states near common host profiles. Stable
+targets in the remaining nonseparable sector are unresolved; no numerical
+campaign is admitted.
 
 No 45-node acquisition, physical readout or source certificate transfers to
 the supplied positive-r matrix law by default. Earlier frozen protocols,
@@ -146,7 +147,7 @@ admission.
 | Status | Scope and owner |
 | --- | --- |
 | Pending analytical dependency | [Stationary maintenance after finite host reorganization](#contact-maintenance-certificate-admission): construct a full stable target or cover the nonseparable sector outside the excluded neighborhoods, including degenerate cases; no numerical campaign is admitted |
-| Closed finite host-reorganization exclusion | [Finite neighborhoods and compact separation](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#finite-host-reorganization-exclusion): explicit common-host neighborhoods exclude PSD equilibrium. The entire original outer-one source family lies in the radius-1/25 uniform-rim tube and must leave it under the unforced law; no uniform exit-time or winding-loss claim. The positive global separation remains uncomputed |
+| Closed complete-flow convergence and finite exclusions | [Single limiting equilibrium](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#full-contact-convergence): every finite zero-form-mean initial state converges with finite lifted phase variation. Every original outer-one source eventually remains outside the radius-1/25 uniform-rim tube. Stationary PSD exclusions persist; neither a stable target nor winding loss is proved |
 | Closed post-contact foundational review | [Dependency decision](#post-contact-foundation-review): contact response and hidden-mode results do not supply independent law selection, indefinite maintenance or a physical bridge; the missing maintenance certificate mechanism is explicit |
 | Closed full-fine preparation sensitivity | [Hidden internal modes](#organized-contact-preparation-sensitivity): all-time first-order invisibility, opposite-mode quadratic coupling and explicit winding-admissible leakage distinguish exact reflection protection from a linear observation kernel |
 | Closed ideal dynamical cancellation | [Complete-law origin classification](#organized-contact-dynamic-cancellation): reflection protects both laws at beta=m*pi/5; elsewhere sine regenerates donor response at order nine and the alternative at order three or five, within the original derivative budget |
@@ -330,7 +331,7 @@ response has not been derived from the earlier acquired constituents.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
-| Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Finite host reorganization is necessary; remaining sector unresolved.** Explicit neighborhoods exclude PSD equilibrium, and compactness separates every PSD stationary candidate from common host profiles. Every original outer-one source must eventually leave the radius-1/25 uniform-rim tube; winding fate remains open. No stable target or global exclusion is supplied; no search is active |
+| Composite identity under interaction | Decide whether stationary balance and full relative stability can coexist in the preparation's complete marked class on the same `C9 x W6` support | **Stationary target classification remains necessary.** Every finite zero-form-mean trajectory of the fixed unforced law converges to one equilibrium; continued nonstationary motion cannot supply an alternative. Finite common-host exclusions persist and the original outer-one sources eventually remain outside their initial tube. Stable targets and winding fate remain unresolved; no search is active |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
 | Sufficient collective state and inherited response | Construct and certify a forecast from a joint finite noisy record without known collective initialization | **Closed operational software case.** The whole-record bound and one candidate forecast are certified; arbitrary-record convergence and physical measurement remain unproved |
@@ -913,15 +914,30 @@ question without repeating local starts, source histories or contact
 derivatives.
 
 <a id="contact-maintenance-certificate-admission"></a>
-### Closed finite host-reorganization exclusion; remaining stationary sector unresolved
+### Closed complete-flow convergence; stationary target classification unresolved
 
-The [proof owner](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#finite-host-reorganization-exclusion)
-gives finite exclusion neighborhoods and a uniform separation theorem. It
-retains the original sine law, complete `C9 x W6` support, held unit capacities, tau
+The [proof owner](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md#full-contact-convergence)
+proves single-equilibrium convergence and retains the earlier finite
+exclusion neighborhoods and uniform separation theorem. It uses the
+original sine law, complete `C9 x W6` support, held unit capacities, tau
 clock, both conserved means, all 53 relative phases and the
 [complete product marked class](../nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md#marked-cycle-information-and-connected-chambers).
 No numerical search, source replay, trajectory, response fit or physical
 record was evaluated.
+
+For every finite initial state on the zero-form-mean leaf, the full
+unforced law converges to a single stationary phase state and forms tend
+to zero. Continuous phase lifts have finite total variation and converge
+as real coordinates. The analytic argument retains asymmetric states,
+degenerate critical points, saddle limits and marked-cut limits; it does
+not assume a positive Hessian or continued membership in the marked class.
+
+This complementary step resolves whether sustained nonstationary motion
+could bypass the stationary maintenance question. It cannot under this
+fixed law. The theorem neither chooses the limiting equilibrium nor proves
+its stability or retained windings. A cut-free limit makes the marked
+windings eventually constant, but a limit on a cut leaves that conclusion
+unavailable. No new campaign follows.
 
 Let epsilon bound the maximum phasor chord error of the fine hosts from
 `p_j*q_c`, with arbitrary common internal profile p and a cut-free
@@ -937,8 +953,12 @@ The closed uniform-rim neighborhood cannot retain an unforced trajectory
 indefinitely. Coercivity on a fixed form-mean leaf and the compact phase
 torus make trajectories precompact, while the exact storage loss confines
 their omega limits to equilibria. The residual bound excludes such a
-limit inside that neighborhood. This proves eventual exit with no time
-bound or winding-loss conclusion. The general
+limit inside that neighborhood. Arbitrarily late returns to the closed
+tube would produce an omega-limit point there, so every trajectory
+eventually remains outside it. This last-exit statement already follows
+from compactness and storage loss; analyticity supplies the stronger
+single-limit and finite-phase-variation conclusions. There is no uniform
+exit-time bound or winding-loss conclusion. The general
 PSD-only exclusion cannot inherit this conclusion because saddles may
 remain in its neighborhood.
 
@@ -948,18 +968,20 @@ observation-word drift bounds to place every original outer-one source in
 the closed uniform-rim tube with `epsilon=1/25<1/(9*sqrt(2))` at contact.
 It covers all twelve original allowances, all 96 relative preparation
 directions and every supplied donor origin beta. The support event changes
-no coordinate. Every such trajectory must therefore leave this tube in
-finite time under the unchanged unforced law, with no later event. This
-mathematical corollary performs no numerical source reassessment, replays
-no frozen producer and changes no evaluated response flag. It supplies no
-uniform exit-time bound, winding loss, convergence or physical claim.
+no coordinate. Every such trajectory must eventually remain outside this
+tube under the unchanged unforced law, with no later event. Its limiting
+equilibrium has uniform-reference host distance at least `1/(9*sqrt(2))`.
+This mathematical corollary performs no numerical source reassessment,
+replays no frozen producer and changes no evaluated response flag. It
+supplies no uniform exit-time bound, winding loss, stable-limit selection
+or physical claim.
 
 A separate compactness argument separates all PSD stationary states in
 the compact closure of the original marked phasor class from the full
 common-host family by a positive uniform distance, if such states exist.
-The boundary proof retains
-the antipodal case rather than assuming the reference singular value stays
-away from zero. This covers degenerate host blocks and approach to marked
+The boundary proof retains the antipodal case rather than assuming the
+reference singular value stays away from zero. This covers degenerate
+host blocks and approach to marked
 cuts, but supplies no numerical value for the uniform gap. It does not
 construct a target or exclude every finitely reorganized configuration.
 

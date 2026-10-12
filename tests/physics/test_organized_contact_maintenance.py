@@ -104,6 +104,124 @@ def _host_reconstruction_rows(mp, phases):
         yield angles, design, gram, target, reconstructed
 
 
+@pytest.mark.parametrize("outer_one", (False, True))
+@pytest.mark.parametrize("moving_form", (False, True))
+def test_contact_convergence_full_law_and_strict_modified_dissipation(
+    mp, outer_one, moving_form
+):
+    """Static edge identities test the proof constants, not convergence in time."""
+    tolerance = mp.mpf("1e-165")
+    gamma, epsilon = 1 / (1023 * mp.pi), mp.mpf(1) / 8
+    scale = gamma**2 / 16
+    gaps = (6 * mp.pi / 7,) + (mp.pi / 7,) * 8 if outer_one else (2 * mp.pi / 9,) * 9
+    profile = tuple(sum(gaps[:slot], mp.mpf(0)) for slot in range(9))
+    phases = tuple(
+        profile[slot] + ((child - 2) * mp.pi / 3 if outer_one and child < 5 else 0)
+        for child in range(6)
+        for slot in range(9)
+    )
+    # The nonacute control retains all six internal and nine rim periods.
+    # Its additive common profile also makes every mixed host period zero.
+    for cycle in tuple(tuple(9 * c + j for j in range(9)) for c in range(6)) + tuple(
+        tuple(9 * c + j for c in range(5)) for j in range(9)
+    ):
+        angles = tuple(
+            mp.atan2(
+                mp.sin(phases[cycle[(i + 1) % len(cycle)]] - phases[node]),
+                mp.cos(phases[cycle[(i + 1) % len(cycle)]] - phases[node]),
+            )
+            for i, node in enumerate(cycle)
+        )
+        expected = 2 * mp.pi if len(cycle) == 9 or outer_one else 0
+        assert abs(sum(angles) - expected) < tolerance
+        assert all(abs(angle) < mp.pi for angle in angles)
+    if outer_one:
+        assert any(mp.cos(phases[b] - phases[a]) < 0 for a, b in _EDGES)
+
+    raw_form = tuple(mp.mpf((7 * index) % 17 - 8) / 19 for index in range(54))
+    form = mp.matrix(
+        [value - sum(raw_form) / 54 if moving_form else 0 for value in raw_form]
+    )
+    laplacian, current = mp.zeros(54), mp.zeros(54, 1)
+    potential = mp.mpf(0)
+    for left, right in _EDGES:
+        gap = phases[right] - phases[left]
+        potential += 1 - mp.cos(gap)
+        current[left] += mp.sin(gap)
+        current[right] -= mp.sin(gap)
+        laplacian[left, left] += 1
+        laplacian[right, right] += 1
+        laplacian[left, right] -= 1
+        laplacian[right, left] -= 1
+    form_rate = (-laplacian * form + gamma * current) / 4
+    velocity = gamma * laplacian * form / 4
+    acceleration = gamma * laplacian * form_rate / 4
+    gradient = -scale * current
+
+    # A gauge-fixed Poisson solve independently supplies P=L^{-1} on 1-perp.
+    poisson = laplacian + mp.ones(54) / 54
+    mass_velocity = mp.lu_solve(poisson, velocity)
+    mass_acceleration = mp.lu_solve(poisson, acceleration)
+    assert abs(sum(form)) < tolerance
+    assert abs(sum(velocity)) < tolerance
+    assert abs(sum(mass_velocity)) < tolerance
+    assert max(abs(value) for value in mass_velocity - gamma * form / 4) < tolerance
+    assert (
+        max(abs(value) for value in mass_acceleration + velocity / 4 + gradient)
+        < tolerance
+    )
+    storage = sum((form[b] - form[a]) ** 2 for a, b in _EDGES) / 2 + potential
+    energy = (velocity.T * mass_velocity)[0] / 2 + scale * potential
+    assert abs(energy - scale * storage) < tolerance
+    velocity_squared = (velocity.T * velocity)[0]
+    energy_rate = (mass_velocity.T * acceleration + gradient.T * velocity)[0]
+    assert abs(energy_rate + velocity_squared / 4) < tolerance
+
+    def modified_energy_on_tangent(parameter):
+        """Differentiate a straight tangent, without taking an evolution step."""
+        varied_velocity = velocity + parameter * acceleration
+        varied_mass = mass_velocity + parameter * mass_acceleration
+        varied_gradient = mp.zeros(54, 1)
+        varied_potential = mp.mpf(0)
+        for left, right in _EDGES:
+            gap = (
+                phases[right]
+                - phases[left]
+                + parameter * (velocity[right] - velocity[left])
+            )
+            varied_potential += 1 - mp.cos(gap)
+            force = scale * mp.sin(gap)
+            varied_gradient[left] -= force
+            varied_gradient[right] += force
+        return (
+            (varied_velocity.T * varied_mass)[0] / 2
+            + scale * varied_potential
+            + epsilon * (varied_gradient.T * varied_velocity)[0]
+        )
+
+    direct_rate = mp.diff(modified_energy_on_tangent, 0)
+    hessian_quadratic = scale * sum(
+        mp.cos(phases[b] - phases[a]) * (velocity[b] - velocity[a]) ** 2
+        for a, b in _EDGES
+    )
+    gradient_loss = (gradient.T * laplacian * gradient)[0]
+    expected_rate = -velocity_squared / 4 + epsilon * (
+        hessian_quadratic - (gradient.T * laplacian * velocity)[0] / 4 - gradient_loss
+    )
+    bound = -17 * velocity_squared / 128 - gradient_loss / 16
+    assert abs(direct_rate - expected_rate) < tolerance
+    assert direct_rate <= bound + tolerance
+    if outer_one or moving_form:
+        assert direct_rate < 0
+        assert bound < 0
+    else:
+        assert max(abs(value) for value in current) < tolerance
+        assert abs(direct_rate) < tolerance
+    if outer_one and not moving_form:
+        assert energy_rate == 0
+        assert abs(direct_rate + epsilon * gradient_loss) < tolerance
+
+
 def test_donor_reconstruction_uniform_host_twist_fails_the_circle_condition(mp):
     """Zero host torque has a unique linear solution, but it is not a phase."""
     tolerance = mp.mpf("1e-165")

@@ -1483,7 +1483,9 @@ some finite unforced contact time** under (1).
 This is an analytical corollary of the existing source inequalities and
 the complete-flow argument, not a replay or amendment of their frozen
 assessments. It supplies no uniform exit-time bound, winding loss, terminal
-state or physical identification. In particular, leaving this tube may
+state or physical identification. The [complete-flow convergence proof](#full-contact-convergence)
+below separately strengthens departure to permanent exclusion and gives a
+single, still unidentified, limiting equilibrium. Leaving this tube may
 change the host origins while keeping a common internal profile; it does
 not by itself force departure from the whole common-host family considered
 next. No response record or source-assessor flag is changed.
@@ -1565,6 +1567,162 @@ general common-profile-tube exit or physical identification. The
 [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#contact-maintenance-certificate-admission)
 retains the stationary feasibility and full stability decision beyond
 these exclusions.
+
+<a id="full-contact-convergence"></a>
+### 5.19. Every complete unforced contact trajectory converges to one equilibrium
+
+The same fixed sine law gives a global convergence statement without a
+marked-class, acute-gap or positive-Hessian premise. Every finite initial
+state with zero form mean has a global forward solution, finite total
+phase variation and a single limiting equilibrium. The limit can depend on
+initialization; this is not uniqueness of the stationary configuration.
+It does not decide which equilibrium is reached or whether a stable
+stationary target exists in the original marked class.
+
+Write `mathcal H=1^perp`, and restrict L to this relative space. Set
+`lambda=lambda_min(L|mathcal H)>0` and `mu=||L||<=10`. At the conserved
+lifted phase mean, phase can be represented on the compact flat torus
+`mathcal H/(2*pi*(Z^54 intersect mathcal H))`. This quotient retains the
+given continuous lift locally; no boundedness of that lift is assumed.
+Let q denote this circular relative phase, let V be the 144-edge phase
+potential in (1), and put
+
+\[
+ k=\frac{\gamma^2}{16}<\frac1{16},\qquad
+ U(q)=kV(q),\quad g=\nabla U,\quad P=L^{-1}|_{\mathcal H},\qquad
+ v=q'=\frac\gamma4Lx.
+ \tag{17ar}
+\]
+
+Since `grad V=-S`, differentiation of the actual phase row gives the
+equivalent damped mechanical system and its energy identity
+
+\[
+ Pv'+\frac14v+g=0,\qquad
+ E=\frac12v^TPv+U=kH,\qquad E'=-\frac14\|v\|^2.
+ \tag{17as}
+\]
+
+Here P is a mathematical metric on the declared coordinates; it is not
+an identification of physical mass. The nonnegative energy bounds x and
+v on the fixed form-mean leaf. The smooth vector field has bounded phase
+currents and only linear form dependence, so solutions exist for all
+forward time and their form/circular-phase states are precompact. The
+invariance argument used in section 5.17 gives a nonempty compact
+omega-limit set consisting entirely of equilibria: zero loss requires
+`v=0`, and invariance of that condition in (17as) requires `g=0`.
+In particular `v->0`, `g->0` and `E->E_infinity`.
+
+To prove convergence to one point rather than just to this stationary
+set, use the auxiliary real-analytic proof function
+
+\[
+ F(q,v)=E(q,v)+\frac18g(q)^Tv.
+ \tag{17at}
+\]
+
+F is not a new model law, physical storage or installed diagnostic. The
+declared H and its loss identity remain unchanged.
+
+The phase Hessian satisfies `||Hess U||<=k*mu`: the signed-cosine
+Laplacian M obeys `-L<=M<=L`. Along the complete law,
+
+\[
+ \begin{split}
+ F'&=-\frac14\|v\|^2+
+       \frac18\left(v^T(\nabla^2U)v-rac14g^TLv-g^TLg\right),\\
+ \frac14|g^TLv|&\le\frac12g^TLg+\frac1{32}v^TLv,\\
+ F'&\le-\frac{17}{128}\|v\|^2-\frac1{16}g^TLg
+      \le-c\big(\|v\|^2+\|g\|^2\big),\qquad
+ c=\min\left\{\frac{17}{128},\frac\lambda{16}\right\}>0.
+ \end{split}
+ \tag{17au}
+\]
+
+The constant uses only `k<1/16` and `mu<=10`, including nonacute states
+and marked-cut crossings. F is bounded below on the orbit, decreases,
+and has limit `E_infinity`, since its extra term tends to zero. Every
+point of the omega-limit set is a critical point of F at that same value.
+
+The local analytic gradient inequality therefore applies to F in a
+coordinate chart around each such point. This is the analytic method
+for damped second-order systems developed by
+[Haraux and Jendoubi (1998), DOI 10.1006/jdeq.1997.3393](https://www.sciencedirect.com/science/article/pii/S0022039697933933);
+the local gradient-inequality and finite-length argument is also stated
+in [Begout, Bolte and Jendoubi, *On damped second-order gradient systems*, arXiv version 5](https://arxiv.org/abs/1411.8005v5).
+Their bounded Euclidean-trajectory hypothesis is not assumed for a
+phase lift here. Compactness of the circular omega-limit set supplies a
+finite chart cover. Taking the minimum of its positive exponents and
+enlarging its constant gives, for every sufficiently late time,
+
+\[
+ (F-E_\infty)^{1-\rho}
+ \le C\|\nabla F\|
+ \le C_1(\|v\|+\|g\|),\qquad 0<\rho\le\tfrac12.
+ \tag{17av}
+\]
+
+Indeed the orbit eventually stays in every neighborhood of its compact
+omega-limit set. In combining the finitely many inequalities one can
+also require `0<=F-E_infinity<1`. The last bound follows directly from
+`grad_q F=g+(Hess U)*v/8` and `grad_v F=P*v+g/8`.
+
+If F reaches its limiting value at a finite time, (17au) makes the state
+stationary thereafter. Otherwise (17au)--(17av) imply
+
+\[
+ -\frac{d}{d\tau}(F-E_\infty)^\rho
+ \ge c_1(\|v\|+\|g\|),\qquad
+ \int_0^\infty(\|v\|+\|g\|)\,d\tau<\infty
+ \tag{17aw}
+\]
+
+for a positive constant c1 at sufficiently late times; the finite initial
+interval contributes a finite amount. Thus the phase has finite total
+variation. Its original continuous lift is Cauchy and converges in the
+fixed-mean affine space. This proves boundedness of the lift as a
+consequence, rather than using it as a premise. Equation (17as) also
+gives integrable v', hence integrable `x'=(4/gamma)*P*v'`. The full state
+converges to a single point with `x=0` and `S(theta)=0`.
+
+The limit may be a saddle, a degenerate equilibrium or a marked-cut
+state. The theorem excludes persistent nonstationary limiting motion
+under (1), while allowing transient motion, connecting orbits and damped
+oscillations. Even finite phase variation can coexist with infinitely
+many marked-cut crossings if the limit lies on a cut. If the limit is
+cut-free, all marked windings are eventually constant; their values are
+not selected by this argument. No convergence rate, finite settling time,
+source-to-target capture or physical identification is supplied.
+
+There is a stronger departure consequence for the already admitted
+outer-one source. Define its distance from the fixed uniform reference
+rim, with arbitrary common profile and donor, by
+`d_uniform=min_p max_(c,j)|z_(c,j)-p_j*q_c|` as in section 5.17.
+The current floor (17an) forces every stationary state to satisfy
+`d_uniform>=1/(9*sqrt(2))`. Consequently the limiting distance of every
+continued-contact trajectory obeys
+
+\[
+ d_{\rm uniform}(\theta_\infty)\ge\frac1{9\sqrt2}.
+ \tag{17ax}
+\]
+
+In particular the entire original source family, at every donor origin,
+eventually stays outside the closed tube of radius `1/25` that initially
+contains it by (17ao). A finite last-exit time exists but is not bounded
+here. This permanent exclusion already follows from the compact
+omega-limit argument and the no-equilibrium gap: arbitrarily late returns
+would give a stationary accumulation point inside that tube. It does not
+require the analytic finite-length step. The latter separately proves
+convergence of the complete state and its continuous lifts.
+
+These statements retain the unchanged complete law, support, capacity
+and clock, with no later input or event. They reuse the existing source
+inclusion rather than evaluating a new trajectory or modifying a frozen
+assessment. Permanent departure from this particular uniform-rim tube
+does not establish winding loss or departure from every common-host
+profile. Stable stationary feasibility in the full original marked class,
+and the actual source's eventual marked identity, remain unresolved.
 
 ## 6. Actual aligned outer-zero control after the full observation word
 
@@ -1787,7 +1945,7 @@ detached proof path. Numerical checks verify implemented arithmetic and
 wiring; the analytic arguments above establish the conditional mathematical
 claims and their domain boundaries.
 
-The later analytical extension in sections 5.1-5.18 uses exact identities
+The later analytical extension in sections 5.1-5.19 uses exact identities
 and counterexamples. Static regression checks separately reconstruct the
 stationary controls' neighbor resultants and the blind point's lifted
 secant from edge sums. These are arithmetic controls, not a stationary
@@ -1833,3 +1991,11 @@ runs a trajectory nor re-evaluates any frozen source or response. The
 actual-source corollary combines the already proved complete-source bounds
 with a separate analytic majorant for the same observation drift. Its
 uniform-rim tube is distinct from the broader PSD-only exclusion.
+
+The contact-convergence controls independently assemble the full edge rows,
+solve the relative Poisson relation, and check the mechanical energy and
+auxiliary-function derivatives at static states. They include a nonstationary
+state at rest where the original loss vanishes but the auxiliary derivative
+is strictly negative. These arithmetic controls establish neither finite
+trajectory length nor convergence; section 5.19 owns those analytic claims
+and their compactness and gradient-inequality premises.

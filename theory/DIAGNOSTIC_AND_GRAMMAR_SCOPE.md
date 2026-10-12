@@ -1127,17 +1127,34 @@ donor profile. Near the uniform rim, host balance alone excludes every
 equilibrium. The distance is a maximum phasor chord error on the fine host
 coordinates. The closed uniform-rim neighborhood cannot retain the
 unforced flow indefinitely: compactness and the exact storage loss force
-equilibrium omega limits, which its residual bound excludes. This eventual
-exit has no time bound and does not imply winding loss. It cannot be
-transferred to a general PSD-only neighborhood that may contain saddles.
+equilibrium omega limits, which its residual bound excludes. Arbitrarily
+late returns would give a limit in that closed tube, so eventual exit is
+permanent. It has no uniform time bound and does not imply winding loss.
+It cannot be transferred to a general PSD-only neighborhood that may
+contain saddles.
 The [actual outer-one corollary](nodal/ORGANIZED_CONTACT_MAINTENANCE.md#actual-outer-one-host-reorganization)
 combines the retained acquisition and complete observation-history bounds:
 all twelve original allowances, all 96 relative preparation directions and
 every donor origin enter the uniform-rim tube of radius `1/25`. Under the
-unchanged unforced law, each must leave that tube in finite time. This is
+unchanged unforced law, each eventually remains outside that tube. This is
 an analytical consequence of the existing source proofs, not a new
 numerical source assessment or a change to frozen response flags. It gives
-no uniform exit-time bound, winding-loss or convergence result.
+no uniform exit-time bound or winding-loss result.
+
+The [complete-flow convergence theorem](nodal/ORGANIZED_CONTACT_MAINTENANCE.md#full-contact-convergence)
+adds a single limiting equilibrium and finite total variation of the
+continuous phase lifts for every finite initial state on the fixed law's
+zero-form-mean leaf; all forms tend to zero. It derives this from the
+analytic potential and complete dissipative equations without assuming
+convexity, symmetry or a positive Hessian. The actual outer-one sources
+therefore have limiting uniform-reference host distance at least
+`1/(9*sqrt(2))`. Convergence does not select a stable target: saddle,
+degenerate and marked-cut limits remain possible. Only a cut-free limit
+guarantees eventual constancy of the marked windings. The permanent
+uniform-tube exit uses compactness and loss alone; the analytic argument
+is needed for the single limit and finite phase variation. Sustained
+nonstationary motion cannot bypass stationary maintenance in this model.
+
 A separate compactness argument gives a positive uniform distance between
 the common-host family and all PSD stationary states in the compact closure
 of the original marked phasor class, if any exist. It includes degenerate
