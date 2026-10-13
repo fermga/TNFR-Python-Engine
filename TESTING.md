@@ -236,7 +236,9 @@ make a collective aggregate faithful or provide a finite-noise inverse.
 
 For the [free organized phase probe](theory/nodal/ORGANIZED_FREE_PHASE_PROBE.md),
 select `tests/physics/test_organized_free_phase_probe.py` and
-`tests/physics/test_organized_free_phase_record.py`; retain
+`tests/physics/test_organized_free_phase_record.py`; add
+`tests/physics/test_organized_free_phase_reader.py` for the primitive reader.
+Retain
 `tests/physics/test_phase_boundary_law_integration.py` for its constitutive
 coefficient source. Reconstruct both complete 18-node rows and actual means;
 verify source reaction, the monotone full-turn bound and uniform fine-state
@@ -250,9 +252,17 @@ interpolation and cellwise midpoint remainders, reconstructed turn and both
 endpoint terms. Calibration affects the scaled readings and the denominator;
 the initial phase readout error does not change the prepared phase. Exercise
 the frozen arithmetic budget with independent algebraic controls, preserving
-uniformity over the unknown constitutive coefficient. No source, trajectory
-or measured record is evaluated. A sufficient prospective budget neither
-implements a record reader nor establishes physical sensor accuracy.
+uniformity over the unknown constitutive coefficient. For the reader, check
+primitive ordered-grid admission, calibration and residual amplitude/slope
+contradictions, interval threshold ambiguity, root transport, both endpoint
+terms and the actually computed numerical radius. Use independent analytic
+manufactured records, including nonzero boundary corrections, and exercise
+work limits and precision abstention. Numerical widths must not duplicate
+the observation error budget. Select `tests/test_rational_interval.py`,
+`tests/test_comparison_flow.py` and
+`tests/mathematics/test_validated_metric_taylor.py` when the shared exponential
+enclosure changes. These controls evaluate no TNFR source or trajectory;
+manufactured records do not establish physical sensor accuracy.
 
 For [composition-compatible constitutive laws](theory/nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md),
 select `tests/physics/test_composition_compatible_constitutive.py` together

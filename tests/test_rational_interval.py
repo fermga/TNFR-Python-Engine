@@ -13,6 +13,7 @@ from tnfr.mathematics._rational_interval import (
     atan,
     atan_ratio,
     cos,
+    exp_neg_unit,
     pi_interval,
     sin,
     sqrt,
@@ -307,3 +308,58 @@ def test_square_root_rejects_negative_domains_and_implicit_scalar_admission():
     for invalid in (True, 1.0, "1", None):
         with pytest.raises(TypeError):
             sqrt(invalid)
+
+
+def _negative_exp_reference(value):
+    """Independent alternating series, without a positive-series reciprocal."""
+    assert 0 <= value <= 1
+    partial = sum(((-value) ** k / factorial(k) for k in range(64)), Q(0))
+    return partial, partial + value**64 / factorial(64)
+
+
+@pytest.mark.parametrize(
+    "value", (Q(0), Q(1, 10**90), Q(1, 1000), Q(1, 3), Q(1, 2), Q(1))
+)
+def test_exponential_decay_encloses_independent_alternating_reference(value):
+    result = exp_neg_unit(value)
+    lower, upper = _negative_exp_reference(value)
+    assert result.lo <= lower <= upper <= result.hi
+    grid = Q(1, 1 << INTERVAL_BITS)
+    assert result.width <= 3 * grid
+    assert 0 < result.lo <= result.hi <= 1
+    for endpoint in (result.lo, result.hi):
+        assert (1 << INTERVAL_BITS) % endpoint.denominator == 0
+
+
+def test_exponential_decay_unit_endpoints_and_monotone_interval_extension():
+    assert exp_neg_unit(0) == I(1)
+    at_one = exp_neg_unit(1)
+    lower, upper = _negative_exp_reference(Q(1))
+    assert Q(1, 3) < at_one.lo <= lower <= upper <= at_one.hi < Q(3, 8)
+    full = exp_neg_unit(I(0, 1))
+    assert full.lo == at_one.lo
+    assert full.hi == 1
+    subdomain = I(Q(1, 4), Q(3, 4))
+    subrange = exp_neg_unit(subdomain)
+    assert full.contains(subrange)
+    for point in (subdomain.lo, subdomain.midpoint, subdomain.hi):
+        lower, upper = _negative_exp_reference(point)
+        assert subrange.lo <= lower <= upper <= subrange.hi
+    assert exp_neg_unit(Q(3, 4)).hi < exp_neg_unit(Q(1, 4)).lo
+
+
+def test_exponential_decay_preserves_subgrid_domain_failures():
+    tiny = Q(1, 10**90)
+    for value in (-tiny, 1 + tiny, I(-tiny, 1), I(0, 1 + tiny)):
+        with pytest.raises(ValueError, match=r"\[0, 1\]"):
+            exp_neg_unit(value)
+    for value in (tiny, 1 - tiny):
+        lower, upper = _negative_exp_reference(value)
+        result = exp_neg_unit(value)
+        assert result.lo <= lower <= upper <= result.hi
+
+
+@pytest.mark.parametrize("value", (True, False, 0.5, "0", None, float("nan")))
+def test_exponential_decay_rejects_implicit_scalar_admission(value):
+    with pytest.raises(TypeError):
+        exp_neg_unit(value)

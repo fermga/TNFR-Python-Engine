@@ -184,6 +184,12 @@ subtracts the known decay before interpolation and bounds the joint reading,
 exposure-time, calibration, phase, endpoint and quadrature errors. A supplied
 finite accuracy budget can suffice, while sufficiently uncertain raw records
 can still overlap. Numerical conditioning does not supply measurement accuracy.
+The [primitive reader](nodal/ORGANIZED_FREE_PHASE_PROBE.md#free-phase-probe-reader)
+now encloses the reconstructed turn and harmonic functional, retaining
+necessary consistency checks and numerical abstention. Its inferred current
+cannot independently test the phase row used to reconstruct that current.
+A complete-law observation therefore needs an independently justified
+phase/clock channel, including its interaction with the observed organization.
 Contact work, elapsed time, preparation authority and an independently
 admitted physical observation remain separate resources.
 

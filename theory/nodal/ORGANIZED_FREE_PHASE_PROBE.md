@@ -836,6 +836,165 @@ for this preparation, not a sharp noise threshold or a
 claim that every noisier record is ambiguous. More samples
 alone cannot remove this admitted overlap.
 
+<a id="free-phase-probe-reader"></a>
+
+### 6.5 A certified consumer of primitive records
+
+The detached reader implements (30)--(40). Its inputs are the ordered
+raw readings at the canonical nominal grid \(i/N\), the scalar
+\(\widehat\gamma>0\), the initial lifted-phase readout
+\(\widehat\delta_0\), and all primitive preparation, error and
+integer work budgets. It rebuilds the family and fine-state bounds;
+a cached budget, derivative bound or earlier report is not a premise.
+Every raw scalar is admitted before interval arithmetic. Malformed
+values, a wrong sample count and unsupported theorem budgets retain
+their domain errors.
+
+Some necessary consistency conditions can be checked before evaluating
+the observation. In addition to
+\(|\widehat\delta_0|\le\zeta\), they are
+
+\[
+\begin{split}
+ 1-\kappa&\le1023\pi\,\widehat\gamma\le1+\kappa,\\
+ |\widehat w_0|&\le E,\qquad
+ |\widehat w_i|\le C+E,\\
+ |\widehat w_{i+1}-\widehat w_i|
+   &\le2CH+2E,\qquad
+ \widehat w_i=\widehat\gamma\widehat r_i-12e^{-iH}.
+\end{split}
+ \tag{43}
+\]
+
+The first line checks the declared calibration against the unchanged
+model constant. The other lines follow from \(w(0)=0\),
+\(|w|\le C\), \(|w_s|\le2C\), and the sample error (29).
+A separated violation is incompatible with the joint supplied
+premises. If an outward enclosure overlaps a threshold without
+certifying its side, the reader abstains numerically. Passing these
+conditions is not a sufficient test that a record came from the
+declared dynamics, preparation or instrument.
+
+All numerical enclosures concern the supplied represented readings
+themselves. Sensor and calibration uncertainty are already propagated
+by (28)--(40); they are not applied a second time as numerical
+uncertainty on every raw value. The shared exact exponential bounds
+and outward rational interval arithmetic enclose the reference heat
+values, residuals and their cumulative integrals. For example, define
+
+\[
+ P_i=\sum_{j<i}\frac H2(\widehat w_j+\widehat w_{j+1}),
+ \qquad d_i=\frac{\widehat w_{i+1}-\widehat w_i}{H}.
+\]
+
+For \(s=iH+u\), \(0\le u\le H\), the reconstructed increment is
+
+\[
+ D_{\rm inc}(s)=12(1-e^{-s})+
+                    P_i+\widehat w_i u+\frac12d_i u^2.
+ \tag{44}
+\]
+
+This exact cell formula avoids numerical integration of the phase.
+Grid heat values may be formed by outward recurrence with the common
+factor \(e^{-H}\), retaining the accumulated enclosure width.
+The shared positive exponential enclosure on \([0,1]\) also encloses
+\(e^{-s}\) by taking its reciprocal. No new decay law is introduced.
+
+On each cell the lower bound
+\[
+ \widetilde v(s)\ge
+ 12e^{-(i+1)H}+\min(\widehat w_i,\widehat w_{i+1})
+ \tag{45}
+\]
+gives a directly checkable positive slope \(\mu\) for the reconstructed
+increment. The reader encloses \(D_{\rm inc}(1)-2\pi\) and brackets
+the first complete turn. Bisection uses certified signs, not a
+floating root followed by a claimed tolerance. If the enclosure of
+\(D_{\rm inc}(m)-2\pi\) straddles zero, the inverse slope bound
+still contains the root within
+\(m\pm |D_{\rm inc}(m)-2\pi|/\mu\), using an upper bound on the
+absolute residual. A root bracket is retained through every step.
+The initial phase readout remains outside this increment equation.
+
+Let the certified root interval be \(S\), let \(b\) be its rational
+midpoint and let \(r_S\) be its radius. Evaluate the prescribed
+midpoint sum clipped at \(b\), including both endpoint terms,
+with outward function and arithmetic enclosures. Denote this
+coefficient enclosure by \(I_b\). The root sensitivity derived
+after (40) gives
+
+\[
+\begin{split}
+ L_{\rm end}
+ &=\frac{1}{\pi_-}\left[
+ \widehat R_0A_0+\frac{H}{2K}
+       (\widehat R_1A_0+\widehat R_0A_1)
+       +\widehat R_1+n\widehat R_0V\right],\\
+ I_{\rm obs}&=I_b+[-L_{\rm end}r_S,L_{\rm end}r_S].
+\end{split}
+ \tag{46}
+\]
+
+Thus \(I_{\rm obs}\) encloses the exact discrete functional (37),
+including its exact reconstructed turn endpoint. The numerical
+certificate requires the computed radius
+\(\operatorname{rad}(I_{\rm obs})\le\varepsilon_{\rm num}\);
+the requested numerical allowance alone never proves that inequality.
+Quadrature truncation is accounted for separately, through \(E_Q\).
+If certified, the final conditional coefficient enclosure is
+
+\[
+ I_{\rm coefficient}=I_{\rm obs}+[-E_{\rm an},E_{\rm an}],
+ \qquad
+ E_{\rm an}=\frac{8J_2F_0}{9}+\frac{E_O+E_Q}{\pi_-}.
+ \tag{47}
+\]
+
+The measured numerical width already lies in \(I_{\rm obs}\).
+Adding \(\varepsilon_{\rm num}\) again in (47) would count it twice.
+The midpoint of \(I_{\rm obs}\) also satisfies the conservative
+bound (40), conditional on the independent observation premises.
+
+The implementation distinguishes five outcomes:
+
+| Status | Meaning |
+| --- | --- |
+| Certified | The necessary record checks, reconstructed turn and requested numerical width have been enclosed; (47) remains conditional on the supplied model and observation premises |
+| Incompatible record | A checked necessary condition is separated from its admitted interval; the record and joint premises cannot all hold |
+| Unresolved numeric | Fixed-precision enclosures cannot settle a required comparison or fit the requested numerical allowance |
+| Unresolved endpoint | A sufficient monotone reconstruction or complete-turn bracket has not been certified within the endpoint iteration and precision limits |
+| Work limit | The quadrature evaluation cap is insufficient for the reconstructed endpoint |
+
+These statuses do not replace domain rejection and do not identify
+a physical law. The interval owner uses a fixed dyadic precision;
+its bounded computation need not attain every positive tolerance
+allowed by the mathematical existence argument. In particular, zero
+numerical allowance is an exact ideal and will generally remain
+unresolved. Work limits are computation policies, not a failure of
+TNFR dynamics. Input admission precedes a work-limit return.
+The coefficient enclosure remains unavailable for every noncertified
+status, even if intermediate endpoint or observation bounds are retained.
+
+Independent controls use manufactured analytic records. For example,
+an ideal constant residual \(w=c\) gives
+\[
+ v=h+c,\quad
+ R=(hc+c^2/2)/\widehat\gamma^2,\quad
+ R_s+2R=cv/\widehat\gamma^2.
+ \tag{48}
+\]
+Its corrected continuous full-increment functional is zero for every
+initial readout origin: the corresponding test current is constant
+\(-c/\widehat\gamma^2\), whose sine integral over a turn vanishes.
+For nonzero origin and \(c\), the endpoint term itself need not
+vanish. Rational approximations to these analytic samples, with
+independently bounded remainders, test the numerical reconstruction
+and endpoint correction. Such records are controls of an observation
+algorithm, not evaluated histories of the supplied constitutive
+family. No scientific producer, source replay or physical-data
+comparison is needed to verify this reader.
+
 ## 7. Scope and shared verification
 
 This result replaces an abstract collection of separately imposed
@@ -858,13 +1017,19 @@ quadratic decay and work bounds, and the integral harmonic identity.
 These controls evolve no source or trajectory, install no event,
 and provide no new physical observation evidence.
 The separate
-[finite-record budget calculation](../../src/tnfr/physics/_organized_free_phase_record.py)
-rebuilds (28)--(40) from primitive error allowances and integer
-sampling budgets. It evaluates no record and implements no record
-consumer, source producer, continuous solver or physical sensor.
-Its mathematical uncertainty guarantee is conditional on the
-observation premises and a certified evaluation allowance.
+[finite-record owner](../../src/tnfr/physics/_organized_free_phase_record.py)
+provides both the prospective budget calculation and the detached
+primitive-record reader. The first rebuilds (28)--(40) without
+evaluating a record; the second encloses the reconstructed observation
+and measures its numerical width. Neither is a source producer,
+continuous solver or physical sensor. Their uncertainty guarantees
+retain the independent model and observation premises.
 The [finite-record controls](../../tests/physics/test_organized_free_phase_record.py)
 check the residual identity, actual fine-state cancellation,
 interpolation and midpoint bounds, primitive admission and the
 frozen rational comparison without evaluating a response.
+The [reader controls](../../tests/physics/test_organized_free_phase_reader.py)
+check primitive-record admission, certified endpoints, an independent
+analytic midpoint calculation, the nonzero boundary correction and
+explicit unavailable outcomes. These manufactured records test the
+instrument's mathematics, not a constitutive response.

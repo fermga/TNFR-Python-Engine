@@ -204,7 +204,9 @@ entire registration traversal through one reacting pair, with explicit
 preparation, work and fine-identity bounds. The
 [finite-record theorem](#free-phase-probe-record-admission) now supplies a
 sufficient joint error budget, with a separate coarse-noise obstruction.
-The next bounded implementation is a [certified record reader](#free-phase-probe-reader-admission);
+The [certified record reader](#free-phase-probe-reader-admission) implements
+that observation with explicit numerical abstention. The next foundational
+dependency is an [independent phase/clock observation](#free-probe-independent-kinetic-observation);
 physical admission remains separate.
 Unit-strength classification remains unresolved and deferred; no numerical
 campaign is admitted.
@@ -224,7 +226,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next bounded observation implementation | [Certified free-probe record reader](#free-phase-probe-reader-admission): consume primitive samples and error evidence, enclose the reconstructed turn and harmonic integral, and abstain when its numerical budget is unresolved; no scientific response is activated |
+| Next foundational dependency | [Independent phase/clock observation](#free-probe-independent-kinetic-observation): admit a concrete observation channel independently of the phase row used by the reader before testing the complete law; no response or generic identifiability audit is activated |
+| Closed bounded observation implementation | [Certified free-probe record reader](#free-phase-probe-reader-admission): primitive samples and rebuilt error bounds give interval reconstruction, root transport and harmonic readout, with distinct contradictions and numerical/work-limit abstention |
 | Closed bounded observation admission | [Finite records of the free probe](#free-phase-probe-record-admission): decay subtraction and a joint reading, clock, calibration, endpoint and quadrature bound support the fixed arithmetic budget; a sufficient noisy-record overlap bound retains the information limit |
 | Closed bounded operational admission | [Free relative-phase probe](#free-phase-probe-admission): one freely reacting two-C9 history traverses a full registration turn, retaining both child identities with a uniform fine bound and accounted contact work. Its derivative-free harmonic identity selects no intrinsic law or physical interpretation |
 | Closed bounded foundation admission | [Independent content for a constitutive restriction](#independent-boundary-premise-admission): exact phase-current stabilizers and complete-flow covering limits; current-channel faithfulness is an additional premise, retains both counterlaws, and is not implied by full-state identity or native U3 |
@@ -1513,24 +1516,45 @@ Preparation, event work, long structural horizon and physical admission retain
 their existing boundaries.
 
 <a id="free-phase-probe-reader-admission"></a>
-### Next bounded implementation: a certified primitive-record reader
+### Closed bounded implementation: a certified primitive-record reader
 
-Implement the admitted observation as a detached consumer of primitive raw
-samples, nominal times, calibration, lifted-phase readout and independent
-error evidence. Rebuild the family and fine-state bounds; do not trust a
-cached budget, fitted derivative bound or supplied verdict. Enclose decay
-subtraction, phase integration, the full-turn endpoint and the harmonic
-integral with certified function evaluation and arithmetic. Report unresolved
-numerical or reconstructed-turn bounds explicitly.
+The [reader owner](../nodal/ORGANIZED_FREE_PHASE_PROBE.md#free-phase-probe-reader)
+implements the admitted observation in the shared finite-record module.
+It re-admits raw samples, their exact nominal grid, calibration, lifted
+readout and primitive error bounds. Necessary residual amplitude and slope
+checks precede use of the quadrature constants. Cached reports cannot replace
+these inputs. Shared exponential enclosures and cell recurrences retain all
+arithmetic uncertainty without introducing a second decay law.
 
-Reuse the finite-record owner and shared exact/interval arithmetic instead
-of adding a parallel observation formula. Check polynomial/analytic records,
-endpoint and calibration controls, malformed input and numerical abstention
-without invoking a scientific producer. This step implements the theorem's
-numerical allowance; it does not authenticate preparation, instrument errors
-or a reached source. No two-law response, source replay, physical-data
-evaluation or apparatus search is activated. Any later response requires
-its own frozen preparation, record protocol and complete-law evidence.
+The computed interval encloses the reconstructed turn and corrected midpoint
+functional; its actual width must meet the requested numerical allowance.
+Model/reading error is then added once. Contradictory records, unresolved
+interval comparisons/endpoints and work limits remain distinct. Independent
+manufactured analytic records check the reader, including a nonzero endpoint
+correction; none is a source, TNFR response or physical observation.
+
+<a id="free-probe-independent-kinetic-observation"></a>
+### Entry requirement: independently observing phase and clock
+
+The reader reconstructs phase using the declared kinetic row. Its current
+estimate therefore cannot test that same row or justify an unknown clock.
+This dependence is already explicit in the observation theorem; another
+retained-law response or generic identifiability audit would not remove it.
+
+The next substantive admission must name a concrete phase/clock observation
+channel justified independently of the inferred response. Declare what it
+observes, its circular or lifted domain, units, timing, uncertainty and any
+backreaction or added state. Distinguish primitive phase from form-derived
+registration and native U3 inspection from a physical measurement. Apply the
+NFR ontology and actual execution contract to any proposed observing NFR.
+
+Acceptance requires a conditional joint observation protocol that can test
+a kinetic premise independently of the current reconstruction, or a scoped
+obstruction for that named channel. Do not invent a channel, clock law or
+selector solely to obtain a preferred constitutive law. Without independent
+new input, retain the existing family and its valid conditional reader.
+No new trajectory, source replay, apparatus search or physical-data evaluation
+is active; any later response still requires a frozen complete protocol.
 
 <a id="contact-maintenance-certificate-admission"></a>
 ### Closed complete-flow convergence; unit-strength classification deferred

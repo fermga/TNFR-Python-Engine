@@ -2,7 +2,8 @@
 
 Every endpoint is rounded outwards to a fixed dyadic grid. Elementary bounds
 use the existing rational Machin pi/cosine owners and alternating arctangent
-series. These are numerical enclosures, not assertions about any model or
+series. Unit-interval exponential decay reuses the exact-time Taylor owner.
+These are numerical enclosures, not assertions about any model or
 trajectory. Wide or unresolved bounds must be handled by their caller.
 """
 
@@ -13,7 +14,7 @@ from fractions import Fraction as Q
 from functools import lru_cache
 from math import isqrt
 
-from .._exact_time import exact_or_represented_real
+from .._exact_time import exact_or_represented_real, exp_unit_bounds
 from ._phase_midpoint import _pi_bounds
 from ._phase_resultant_chamber import certified_cosine_bounds
 
@@ -22,6 +23,7 @@ __all__ = (
     "RationalInterval",
     "INTERVAL_BITS",
     "INTERVAL_METHOD",
+    "EXP_NEG_UNIT_METHOD",
     "pi_interval",
     "sin",
     "cos",
@@ -29,10 +31,12 @@ __all__ = (
     "atan_ratio",
     "arg",
     "sqrt",
+    "exp_neg_unit",
 )
 
 INTERVAL_BITS = 128
 INTERVAL_METHOD = "rational_outward_dyadic128_machin_trigonometry_v1"
+EXP_NEG_UNIT_METHOD = "shared_rational_exp_unit_reciprocal_dyadic128_v1"
 _SCALE = 1 << INTERVAL_BITS
 _ATAN_TERMS = 64
 
@@ -183,6 +187,31 @@ RationalInterval = I
 def pi_interval():
     """Enclose mathematical pi using the shared Machin-series owner."""
     return I(*_pi_bounds())
+
+
+def exp_neg_unit(value):
+    """Enclose ``exp(-s)`` for the whole input interval within ``[0, 1]``.
+
+    Decreasing monotonicity reverses the endpoint order. Positive exponential
+    bounds come from the shared exact-time Taylor series and its rigorous
+    tail; their exact reciprocals are rounded outward only at the result.
+    Zero maps exactly to one. This narrow numerical domain is an explicit
+    work limit, not clipping or extrapolation of an unsupported input.
+
+    As elsewhere in this kernel, scalars must be exact integers or Fractions;
+    callers admit represented-real observations before constructing intervals.
+    ``EXP_NEG_UNIT_METHOD`` identifies this bound without changing the existing
+    trigonometric ``INTERVAL_METHOD`` provenance.
+    """
+    value = I.coerce(value)
+    if value.lo < 0 or value.hi > 1:
+        raise ValueError("exponential-decay interval must lie in [0, 1]")
+    lower_at_lo, upper_at_lo = exp_unit_bounds(value.lo)
+    if value.lo == value.hi:
+        upper_at_hi = upper_at_lo
+    else:
+        _, upper_at_hi = exp_unit_bounds(value.hi)
+    return I(1 / upper_at_hi, 1 / lower_at_lo)
 
 
 def sqrt(value):
