@@ -191,4 +191,59 @@ shared exact artifact and strict JSON owners. A source archive and freeze are
 written before evaluation; an exclusive attempt precedes the scientific call.
 The first outcome, including failure, is retained. Archives associate declared
 bytes and configuration; they do not independently authenticate chronology or
-execution. The response has not yet been evaluated at this method's admission.
+execution. The method was admitted before the reserved response below.
+
+<a id="mobile-response-result"></a>
+## 5. Retained endpoint result and its limits
+
+The first assessment used the unchanged protocol, all 182 cubic output modes,
+12 Gauss nodes on each of 64 panels, and 128-bit outward arithmetic. The
+following decimals are deliberately rounded outwards from the exact rational
+[report](../../docs/assets/localized_mobile_interaction/report.json):
+
+| Quantity | Certified enclosure or upper bound |
+| --- | --- |
+| Total numerical error | `<4.639280e-16`, below `a^3/1000 > 1.45519e-14` |
+| Cubic endpoint norm | `[1.2888499e-12, 1.2897778e-12]` |
+| Complete-flow nominal defect norm | `[1.2847097e-12, 1.2939180e-12]` |
+| Complete-flow defect norm over the original shared-source family | `[0, 6.1613890e-12]` |
+
+Thus the exact nominal preparations have a strictly nonzero endpoint
+superposition defect under the declared complete nonlinear law. The linear
+shared-source control has exactly zero defect. Both prepared band identities
+retain their separate whole-window certificate. This is a finite mathematical
+interaction result, conditional on the supplied sources, support and law.
+It is not a full nonlinear trajectory calculation or laboratory observation.
+
+The original source-family test remains **unresolved**. Its sensitivity
+allowance is about `4.86747e-12`, whereas the nominal fifth-order allowance
+is about `4.14022e-15` and numerical error is below `4.64e-16`. More quadrature
+precision alone therefore cannot make this same sufficient uniform bound
+positive. The zero lower endpoint is not a witness of zero interaction for
+an admissible preparation. Neither acceptance level, source tolerance nor
+other frozen input was changed after evaluation.
+
+The [protocol](../../docs/assets/localized_mobile_interaction/protocol.json)
+pins the scientific admission to revision
+`14cbad44f92194774c4cd66a8763f2069c95270c`. The
+[manifest](../../docs/assets/localized_mobile_interaction/source-manifest.json),
+[source archive](../../docs/assets/localized_mobile_interaction/source.zip),
+[freeze](../../docs/assets/localized_mobile_interaction/freeze.json) and
+[exclusive attempt](../../docs/assets/localized_mobile_interaction/attempt.json)
+retain the implementation and first outcome, based on source HEAD `a8c02f0b`.
+The [read-only evidence controls](../../tests/physics/test_localized_mobile_response_evidence.py)
+re-admit primitive inputs, rebuild analytical and quadrature budgets, and
+reconstruct Parseval intervals and verdicts from the retained spectral boxes.
+They forbid producer replay. These reductions are conditional on those boxes;
+byte associations do not independently authenticate execution or prove each
+integrand evaluation.
+
+The defect I is a difference between three histories, not an independently
+evolving object. Even additional Fourier modes can describe ordinary
+deformation or radiation. In this preparation `T*a^2=1/65536`; the certified
+nominal defect is less than `5.3e-9*a`. No additional NFR identity, formation,
+post-separation lifetime or subsequent response is established. Investigating
+recursive organization requires an independently motivated actual-state
+identity and a complete-law mechanism that can sustain it. The
+[formation-feasibility gate](../research/FIVE_STAGE_EXECUTION_PLAN.md#mobile-organization-feasibility-admission)
+owns that question without authorizing a replay or parameter search.

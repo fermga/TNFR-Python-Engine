@@ -4,9 +4,12 @@
 under the complete positive-loss law of
 [prepared transport](LOCALIZED_IDENTITY_TRANSPORT.md#localized-transport-law).
 The results below retain two band observations through their encounter and
-bound a prospective nonlinear response calculation. No paired trajectory or
-cubic response has been evaluated. A nonzero interaction, a new organization
-and physical identification remain separate claims. The
+bound a prospective nonlinear response calculation. The separate
+[retained endpoint assessment](LOCALIZED_MOBILE_RESPONSE.md#mobile-response-result)
+now certifies the nominal nonlinear defect; the original source-family
+test remains unresolved. No paired nonlinear trajectory was evaluated.
+Interaction, a new organization and physical identification remain separate
+claims. The
 [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#localized-mobile-interaction-admission)
 owns the next task.
 
@@ -259,10 +262,11 @@ For a point approximation whose norm is used instead of an outward norm
 interval, add eta_num to each threshold. Do not subtract numerical error
 twice. Failure at either level means the corresponding sufficient test
 does not resolve a response; it proves neither exact superposition nor
-impossibility of observing an interaction. A lower bound is presently
-unavailable because (10) has not been evaluated.
+impossibility of observing an interaction. These criteria were fixed before
+evaluating (10); the [result owner](LOCALIZED_MOBILE_RESPONSE.md#mobile-response-result)
+records both verdicts without changing the original protocol.
 
-The next calculation is a detached certificate for (10), using finite
+The admitted calculation is a detached certificate for (10), using finite
 cycle Fourier blocks of the actual tangent and a validated integral. Its
 budget is the shared 128-bit outward rational arithmetic and at most 65,536
 deterministically refined quadrature panels; refine only to meet the stated

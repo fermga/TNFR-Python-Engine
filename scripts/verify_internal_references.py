@@ -40,6 +40,18 @@ REFERENCE_PATTERN = re.compile(r"^\s{0,3}\[[^\]]+\]:\s*(.+)$", re.MULTILINE)
 HEADING_PATTERN = re.compile(r"^#{1,6}\s+(.+?)\s*#*\s*$", re.MULTILINE)
 CUSTOM_ID_PATTERN = re.compile(r"\{#([^}]+)\}\s*$")
 HTML_ID_PATTERN = re.compile(r"""<a\s+(?:name|id)=["']([^"']+)["']""", re.I)
+FROZEN_MARKDOWN_CAPTURES = frozenset(
+    {"docs/assets/localized_mobile_interaction/protocol-proof.md"}
+)
+
+
+def is_frozen_markdown_capture(relative_path: Path) -> bool:
+    """Classify declared raw evidence copies by exact repository-relative path.
+
+    Their original link context and bytes belong to the source archive. Other
+    Markdown in assets, including files with the same basename, remains live.
+    """
+    return relative_path.as_posix() in FROZEN_MARKDOWN_CAPTURES
 
 
 def _excluded(path: Path) -> bool:
@@ -50,6 +62,7 @@ def _excluded(path: Path) -> bool:
     return (
         bool(set(relative.parts) & EXCLUDED_PARTS)
         or any(part.startswith(".venv") for part in relative.parts)
+        or is_frozen_markdown_capture(relative)
     ) or relative.as_posix().startswith(".github/agents/")
 
 

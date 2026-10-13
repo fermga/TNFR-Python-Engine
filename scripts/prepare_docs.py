@@ -17,6 +17,7 @@ if str(REPO_ROOT) not in sys.path:
 from scripts.clean_repository import generated_directory
 from scripts.verify_internal_references import (
     _markdown_segments,
+    is_frozen_markdown_capture,
     rewrite_markdown_prose,
 )
 
@@ -69,6 +70,8 @@ def _copy_tree(relative: str) -> None:
         return
     for source in source_root.rglob("*"):
         if not source.is_file() or source.suffix.lower() not in TREE_SUFFIXES:
+            continue
+        if is_frozen_markdown_capture(source.relative_to(REPO_ROOT)):
             continue
         if any(
             part in {"__pycache__", "output", "outputs", "results", "_build"}

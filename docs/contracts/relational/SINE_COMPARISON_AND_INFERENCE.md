@@ -262,6 +262,15 @@ remains unresolved sufficiency, not a declaration that the response vanishes.
 This calculation evaluates an analytic tangent integral, not the full
 nonlinear trajectory and not a physical observation.
 
+The [retained endpoint result](../../../theory/nodal/LOCALIZED_MOBILE_RESPONSE.md#mobile-response-result)
+passes the numerical budget and certifies a nonzero complete-flow nominal
+defect while retaining both prepared band identities. The original
+shared-source-family bound remains unresolved. The
+[read-only evidence controls](../../../tests/physics/test_localized_mobile_response_evidence.py)
+rebuild budgets and verdicts from primitive inputs and retained spectral boxes
+without replaying the producer; byte associations do not authenticate execution.
+Nonadditivity establishes no additional NFR identity or formation.
+
 ### Sine-law prospective sampling budgets
 
 `bound_sine_sampling_smoothness(*, reference_model, form_diameter_bound,

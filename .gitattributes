@@ -148,4 +148,7 @@ docs/assets/organized_observed_forecast/*.zip binary
 docs/assets/organized_robust_current/*.json -text
 docs/assets/organized_law_contrast_kernels/*.json -text
 docs/assets/organized_law_record_separation/*.json -text
+docs/assets/localized_mobile_interaction/*.json -text
+docs/assets/localized_mobile_interaction/protocol-proof.md -text
+docs/assets/localized_mobile_interaction/source.zip binary
 theory/research/archive/DEVELOPMENT_LOG_PRE_0.0.3.6_2026-09-19.txt -text -whitespace

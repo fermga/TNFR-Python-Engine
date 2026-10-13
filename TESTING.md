@@ -157,23 +157,27 @@ linear rows in the joint-minus-separate defect, including preparation errors
 reused from the same primitives. Distinguish that defect from intensity cross
 terms. Check the actual damped tangent's cubic Duhamel term, fifth-order
 remainder and correlated-preparation sensitivity, alongside exact/outward
-admission and unavailable failed bounds. Without an evaluated proxy there is
-no positive interaction lower bound. These controls perform no paired
-trajectory evaluation and supply no detected deformation or collision result.
+admission and unavailable failed bounds. These budget controls alone establish
+no positive interaction lower bound and perform no paired trajectory evaluation.
 
 For the [certified endpoint instrument](theory/nodal/LOCALIZED_MOBILE_RESPONSE.md),
 also select its independent spectral, quadrature and evidence controls:
 
 ```sh
-python -m pytest tests/physics/test_localized_mobile_spectral.py tests/physics/test_localized_mobile_response.py tests/test_gauss_legendre.py tests/scripts/test_localized_mobile_response_lifecycle.py -q
+python -m pytest tests/physics/test_localized_mobile_spectral.py tests/physics/test_localized_mobile_response.py tests/physics/test_localized_mobile_response_evidence.py tests/test_gauss_legendre.py tests/scripts/test_localized_mobile_response_lifecycle.py -q
 ```
 
 Spectral controls use small synthetic supports and direct real-site references;
 quadrature controls use exact polynomial moments and sharp remainder cases.
 Endpoint wiring mocks its integrand explicitly, while lifecycle tests use
-temporary synthetic repositories. None evaluates the reserved C1024 response.
-The one-shot driver requires its own freeze and preserves its first outcome.
-An evidence audit checks byte associations without replaying the producer.
+temporary synthetic repositories. Retained-evidence controls re-admit primitive
+inputs, rebuild budgets and reconstruct Parseval intervals and verdicts from
+the retained spectral boxes, with producer replay forbidden. These reductions
+are conditional on those boxes; byte associations do not authenticate execution.
+The [frozen result](theory/nodal/LOCALIZED_MOBILE_RESPONSE.md#mobile-response-result)
+passes its numerical budget and certifies nominal nonadditivity while leaving
+the original shared-source-family bound unresolved. Preserve those distinct
+outcomes and the prepared band identities without claiming a new NFR.
 
 For shared [Krylov and Hankel arithmetic](src/tnfr/mathematics/krylov.py), select
 `tests/mathematics/test_krylov_admission.py`,

@@ -142,6 +142,12 @@ Use [retained-evidence checks](../TESTING.md#current-checks-and-retained-evidenc
 and the [instrument lifecycle](../benchmarks/README.md#freeze-before-evaluating-a-reserved-response)
 to distinguish read-only audits from a separately declared new evaluation.
 
+The exact capture `docs/assets/localized_mobile_interaction/protocol-proof.md`
+retains its frozen source context. The shared reference/staging classifier
+excludes its outgoing links from live documentation checks and omits this raw
+copy as a MkDocs page; the unchanged bytes remain available in its `source.zip`.
+The canonical proof and neighboring Markdown remain checked and staged.
+
 `artifacts/`, ignored `output/`, `outputs/` and `results/` retain local receipts
 and earlier source contexts. They are not current guides or another task queue.
 `build/docs-source/` and `site/` are generated; edit their maintained inputs.

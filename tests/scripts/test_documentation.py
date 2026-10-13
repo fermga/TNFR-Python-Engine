@@ -10,6 +10,7 @@ import importlib.util
 import json
 import subprocess
 import sys
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -754,6 +755,59 @@ def test_staging_preserves_inline_and_reference_link_destinations(
     assert (output / "index.md").is_file()
     assert not (output / "README.md").exists()
     assert (examples / "guide.md").read_text(encoding="utf-8") == original
+
+
+def test_frozen_markdown_capture_keeps_bytes_and_archive_without_excluding_live_docs(
+    reference_workspace, monkeypatch
+):
+    from scripts import prepare_docs as staging
+
+    workspace, _, checker = reference_workspace
+    monkeypatch.setattr(staging, "REPO_ROOT", workspace)
+    monkeypatch.setattr(staging, "STAGE_DIR", workspace / "build" / "docs-source")
+    for relative in staging.ROOT_FILES:
+        (workspace / relative).write_text("placeholder\n", encoding="utf-8")
+    (workspace / "README.md").write_text("# Home\n", encoding="utf-8")
+
+    captured = Path("docs/assets/localized_mobile_interaction/protocol-proof.md")
+    frozen = workspace / captured
+    frozen.parent.mkdir(parents=True)
+    frozen_bytes = b"# Frozen protocol\r\n[Historical](original-relative-path.md)\r\n"
+    frozen.write_bytes(frozen_bytes)
+    maintained = (
+        captured.with_name("guide.md"),
+        Path("docs/assets/another_case/protocol-proof.md"),
+        Path("theory/nodal/LOCALIZED_MOBILE_INTERACTION.md"),
+    )
+    for relative in maintained:
+        document = workspace / relative
+        document.parent.mkdir(parents=True, exist_ok=True)
+        document.write_text(
+            "# Live owner\n[Broken live link](missing.md)\n", encoding="utf-8"
+        )
+    archive = frozen.with_name("source.zip")
+    with zipfile.ZipFile(archive, "w") as stream:
+        stream.writestr("protocol-proof.md", frozen_bytes)
+    archive_bytes = archive.read_bytes()
+
+    references, failures = checker.verify(["docs", "theory"])
+    assert references == len(maintained)
+    assert len(failures) == len(maintained)
+    for relative in maintained:
+        assert any(
+            relative.as_posix() in failure.replace("\\", "/") for failure in failures
+        )
+    assert checker.verify([captured.as_posix()]) == (0, [])
+
+    output = staging.prepare()
+    assert not (output / captured).exists()
+    assert all((output / relative).is_file() for relative in maintained)
+    staged_archive = output / archive.relative_to(workspace)
+    assert staged_archive.read_bytes() == archive_bytes
+    with zipfile.ZipFile(staged_archive) as stream:
+        assert stream.read("protocol-proof.md") == frozen_bytes
+    assert frozen.read_bytes() == frozen_bytes
+    assert archive.read_bytes() == archive_bytes
 
 
 def test_staged_adjacent_display_math_renders_without_a_false_link(

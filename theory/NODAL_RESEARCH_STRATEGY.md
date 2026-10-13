@@ -267,23 +267,25 @@ The [mobile-pair identity proof](nodal/LOCALIZED_MOBILE_INTERACTION.md#mobile-pa
 retains a joint full-state tube and the localization of two opposite-band
 projections through a prepared encounter. This does not split the nonlinear
 law into two independent subsystems. The
-[prospective discriminator](nodal/LOCALIZED_MOBILE_INTERACTION.md#mobile-pair-protocol)
-instead compares the joint state with separate histories using shared initial
+[frozen discriminator](nodal/LOCALIZED_MOBILE_INTERACTION.md#mobile-pair-protocol)
+compares the joint state with separate histories using shared initial
 primitives. That subtraction cancels linear evolution, including reused errors;
-an intensity cross term would not serve the same purpose. A cubic Duhamel proxy
-has a nonlinear remainder and correlated-preparation budget, but has not yet
-been evaluated, so no positive interaction has been resolved.
+an intensity cross term would not serve the same purpose. The
+[retained endpoint result](nodal/LOCALIZED_MOBILE_RESPONSE.md#mobile-response-result)
+resolves a nonzero nonlinear defect for the exact nominal preparations within
+the numerical budget. Its original shared-source-family bound remains
+unresolved; more quadrature precision alone cannot resolve that bound.
 
-An organization formed through interaction would need its own identity,
-formation, retention and further response before supporting a recursive hierarchy.
-The remaining question is whether that declared endpoint norm discriminator
-separates from zero within its error budget while preserving the admitted
-identities. Fixed-interface results on C9-based organizations do not transfer
-their verdicts to moving patterns. Formation from a class lacking the mobile
-identity remains open, and positive-loss recurrence exclusions still constrain
-permanent motion. The
-[sole queue](research/FIVE_STAGE_EXECUTION_PLAN.md#mobile-pair-response-admission)
-owns the response admission and frozen protocol.
+An organization formed through interaction would need an independent
+actual-state identity absent initially, formation, persistence or maintenance,
+and later response before supporting a recursive hierarchy. The next question
+is whether this complete law admits such a mechanism beyond small deformation
+or radiation. Fixed-interface results on C9-based organizations do not transfer
+their verdicts to moving patterns, and positive loss still constrains permanent
+motion. The
+[sole queue](research/FIVE_STAGE_EXECUTION_PLAN.md#mobile-organization-feasibility-admission)
+owns this analytical feasibility gate; the retained response is not retuned or
+replayed.
 
 ### Present interaction and sufficient future state
 
