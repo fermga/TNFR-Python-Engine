@@ -263,18 +263,27 @@ This applies even to spatially asymmetric form. The separate exact
 excludes unilateral majority localization from symmetric preparation while
 leaving bilateral motion open. Neither result excludes all mobile organization.
 
-Joint dynamics of two already prepared mobile patterns can test an additional
-capability under this same complete law. A prospective observable must compare
-joint evolution with declared separate histories, while retaining both
-identities, preparation errors and source premises. Nonlinear evolution does
-not automatically preserve a sum of separately transported references. Regional
-balances and internal-state bounds can help after matching the actual support,
-clock and preparation; fixed-interface results on C9-based organizations do
-not transfer their verdicts to moving patterns. Formation from a class lacking
-the mobile identity remains open, and positive-loss recurrence exclusions
-still constrain permanent motion. The
-[sole queue](research/FIVE_STAGE_EXECUTION_PLAN.md#localized-mobile-interaction-admission)
-owns the interaction admission and its prospective freeze.
+The [mobile-pair identity proof](nodal/LOCALIZED_MOBILE_INTERACTION.md#mobile-pair-identity)
+retains a joint full-state tube and the localization of two opposite-band
+projections through a prepared encounter. This does not split the nonlinear
+law into two independent subsystems. The
+[prospective discriminator](nodal/LOCALIZED_MOBILE_INTERACTION.md#mobile-pair-protocol)
+instead compares the joint state with separate histories using shared initial
+primitives. That subtraction cancels linear evolution, including reused errors;
+an intensity cross term would not serve the same purpose. A cubic Duhamel proxy
+has a nonlinear remainder and correlated-preparation budget, but has not yet
+been evaluated, so no positive interaction has been resolved.
+
+An organization formed through interaction would need its own identity,
+formation, retention and further response before supporting a recursive hierarchy.
+The remaining question is whether that declared endpoint norm discriminator
+separates from zero within its error budget while preserving the admitted
+identities. Fixed-interface results on C9-based organizations do not transfer
+their verdicts to moving patterns. Formation from a class lacking the mobile
+identity remains open, and positive-loss recurrence exclusions still constrain
+permanent motion. The
+[sole queue](research/FIVE_STAGE_EXECUTION_PLAN.md#mobile-pair-response-admission)
+owns the response admission and frozen protocol.
 
 ### Present interaction and sufficient future state
 

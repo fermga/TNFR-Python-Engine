@@ -234,9 +234,13 @@ between disjoint endpoint windows. The
 [source admission](#localized-transport-source-admission) now identifies a
 finite obstruction for small phase-flat preparations: their arbitrary real
 form cannot acquire the admitted one-sided carrier identity on this horizon.
-This leaves bilateral mobility and other organizations open. The next question
-is [interaction between prepared mobile patterns](#localized-mobile-interaction-admission),
-retaining the supplied source and complete-law premises. Neither unique law
+This leaves bilateral mobility and other organizations open. The
+[mobile-pair admission](#localized-mobile-interaction-admission) now retains
+two localized band observations through an encounter and bounds a prospective
+nonlinear-superposition response, including correlated preparation errors.
+The [reserved endpoint certificate](#mobile-pair-response-admission) is next;
+no interaction signal or newly formed organization has yet been established.
+Neither unique law
 selection nor a physical sensor is a prerequisite to this conditional question.
 Another internal law-discrimination refinement is not automatically queued.
 Unit-strength classification remains unresolved and deferred; no numerical
@@ -257,7 +261,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next conditional interaction admission | [Two mobile patterns under one complete law](#localized-mobile-interaction-admission): freeze a paired preparation, encounter geometry, retained identity and joint-versus-separate response observable; assess a resolvable interaction before evaluating any trajectory |
+| Next reserved response certificate | [Mobile-pair endpoint defect](#mobile-pair-response-admission): enclose the frozen actual-tangent cubic response once, with separate nominal and original-source-family verdicts; no response-driven retuning or full nonlinear trajectory |
+| Closed analytical interaction admission | [Two mobile patterns under one complete law](#localized-mobile-interaction-admission): joint band identity through overlap, an exact linear null control and cubic-response/source-error bounds; no detected interaction or new NFR |
 | Closed scoped source obstruction | [Source resources for mobile organization](#localized-transport-source-admission): actual damped opposite-band balance plus a nonlinear error bound exclude the one-sided target for arbitrary small phase-flat form sources; exact reflection restricts single-window concentration separately |
 | Closed prepared transport | [Localized identity transport](#localized-identity-transport-admission): a full-state moving reference, nonlinear error tube and uniform localization bound prove finite transport under positive loss, including a full preparation-error ball; no formation or trajectory campaign |
 | Entry condition for constitutive selection | [Independent content for law selection or physical comparison](#new-constitutive-evidence-admission): the reviewed resource/observation bounds supply no new independently justified selector or physical bridge; this does not block conditional capability research |
@@ -1769,56 +1774,53 @@ keeping the source verdict separate. Broader formation stays open; a further
 source variant is not the next active gate.
 
 <a id="localized-mobile-interaction-admission"></a>
-### Next admission: interaction between two prepared mobile patterns
+### Closed analytical admission: a prepared mobile encounter
 
-**Question.** Under the same complete law, does an encounter between two
-localized mobile patterns produce a resolved change in their continuing
-motion, identity or later response? Preparation remains supplied. This tests
-joint dynamics without first claiming autonomous formation or a particle type.
+The [proof and protocol](../nodal/LOCALIZED_MOBILE_INTERACTION.md) retain
+`C_1024`, positive loss, both complete rows, held unit capacities, clock,
+`Q=16`, `a=2^-12`, and the original primitive error balls. Opposite carriers
+start at centers +/-128, meet at tau=128 and separate again at tau=256.
+Each fixed band observation remains more than 24/25 concentrated in its
+prospective window, with its own explicit template-error and norm floor.
+These observations are not closed independent nonlinear subsystems, and
+their densities are not an additive decomposition during overlap.
 
-**Admission work.** Fix two mobile preparations on one common labeled support,
-their directions, separation, joint error budget and an encounter horizon
-that includes a subsequent observation interval. Retain actual positive loss,
-both form/phase rows, capacity and clock. Define the continuing identities and
-a joint observable before the response; do not assume the identity criteria
-of fixed C9 constituents transfer to the mobile packet family. Account for
-overlapping tails and admit superposed phase lifts in their common chart.
+The fixed full-state defect `I=z_AB-z_A-z_B` has an exact linear null control
+when the same primitive sources are reused. A cubic Duhamel comparison under
+the actual damped tangent has a fifth-order remainder and a separate
+correlated-source allowance. Reusing the already proved Fejer height makes
+both bounds materially smaller than generic norm-only bounds. The detached
+reader certifies these budgets, not a response. No trajectory or cubic
+endpoint was evaluated; a resolved interaction remains open.
 
-Compare the actual joint evolution with the reference built from separately
-evolved single-pattern preparations on that same complete support. Both
-single histories and their reconstruction are references, not a replacement
-linear execution law. Use the full-state superposition defect
-`I=z_AB-z_A-z_B` about the zero background: subtracting the three squared
-localization weights instead includes interference even for a linear law.
-Derive the cross-interaction source, then determine
-whether one prospective displacement, deformation, phase-registration or
-post-encounter response difference can be separated from preparation and
-numerical error while identities remain admitted. The algebraic inequality
-`sin(u+v)!=sin(u)+sin(v)` alone does not establish that finite outcome.
+<a id="mobile-pair-response-admission"></a>
+### Next gate: the frozen mobile-pair endpoint response
 
-**Candidate geometry before response.** Retain `C_1024`, the existing loss,
-exchange, packet scale and `Q=16`. Put the two nominal packet centers at
-`+128` and `-128`, with respective carriers `+pi/2` and `-pi/2`. Their
-comparison centers meet at `tau=128` and their radius-96 windows are again
-disjoint at `tau=256`. During overlap use the joint state or declared band
-components rather than forcing a unique spatial center. This geometry does
-not itself certify the nonlinear joint identity or an interaction signal.
-First distinguish an exact mathematical shared-source relation
-`z_AB(0)=z_A(0)+z_B(0)` from three independently uncertain preparations.
-The former retains correlated errors and is not an experimental ability to
-copy unknown states. The current one-packet error bound need not resolve a
-cubic mixed response; the observable and joint bound must pass this admission
-before any paired trajectory is evaluated.
+**Question.** Does the endpoint norm of the actual joint-minus-separate
+response exceed zero with a certified error margin at the already fixed
+post-encounter time? Retain the
+[frozen protocol](../nodal/LOCALIZED_MOBILE_INTERACTION.md#mobile-pair-protocol),
+including exact source registration and both nominal and whole-source-family
+acceptance levels. The analytic error allowance is not a signal lower bound.
 
-**Acceptance.** Freeze one complete paired protocol and a discriminating
-observable with an analytical feasibility bound, or record the obstruction
-that prevents such a claim at its declared resources. A weak, unresolved or
-vanishing interaction is a valid scoped outcome. No numerical scan, frozen
-producer replay, new forcing, support event or physical campaign is active.
-Any later trajectory uses the shared integrator and complete-row residual
-evidence after its protocol is fixed here. Arithmetic spectral examples remain
-conditional representation results, not an independently activated campaign
-or a physical identification of the interacting patterns.
+**Work and acceptance.** Implement a detached enclosure of the actual-tangent
+cubic Duhamel integral, using finite cycle Fourier blocks, the shared outward
+arithmetic and a validated quadrature remainder. Re-admit primitive inputs;
+include source materialization and norm-reduction errors. Use the declared
+128-bit precision, at most 65,536 deterministic quadrature panels and total
+Euclidean numerical error at most `a^3/1000`. Evaluate the one frozen endpoint
+only after independent enclosure controls pass. Report nominal and uniform
+source-family certificates separately; an unresolved level does not authorize
+retuning amplitude, horizon, carrier, registration or preparation tolerance.
+
+A positive result would certify nonlinear deformation relative to separate
+evolution, not the formation of a new NFR. The recursive-organization hypothesis
+requires a later independently defined identity, occurrence, persistence and
+response with retained constituent and boundary state. No new organization
+search, physical comparison, arithmetic campaign or full trajectory is active.
+If the numerical budget cannot certify the integral, retain unavailability
+and its specific cause. A future full trajectory requires its own shared
+integrator admission at this support size; existing dimension caps remain.
 
 <a id="contact-maintenance-certificate-admission"></a>
 ### Closed complete-flow convergence; unit-strength classification deferred

@@ -1,6 +1,6 @@
 # Normalized-sine comparison, inference and forecasts
 
-Shared sine-law report admission, captured comparison, prepared transport and source budgets, retained mediation, sampling, hidden state/capacity inference and prior-only forecasting.
+Shared sine-law report admission, captured comparison, prepared transport, source and interaction budgets, retained mediation, sampling, hidden state/capacity inference and prior-only forecasting.
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
@@ -202,6 +202,42 @@ evaluates no trajectory. The separate
 [exact reflection obstruction](../../../theory/nodal/LOCALIZED_TRANSPORT_SOURCES.md#reflection-source-obstruction)
 concerns disjoint reflected localization windows under the full law; it is not
 a consequence of phase uniformity alone or another output of this calculator.
+
+### Private mobile-pair identity and discriminator budgets
+
+`_bound_localized_mobile_interaction` in
+[`_localized_mobile_interaction.py`](../../../src/tnfr/physics/_localized_mobile_interaction.py)
+evaluates scalar budgets for the
+[joint band-identity proof](../../../theory/nodal/LOCALIZED_MOBILE_INTERACTION.md#mobile-pair-identity)
+and its prospective interaction discriminator. It shares the actual positive-loss
+model, cycle, amplitude, error, radius and horizon admission of the prepared
+transport reader. The horizon must also be even: initial opposite-band centers
+are `+T/2` and `-T/2`, meet at `T/2` and separate by the endpoint `T`.
+Each preparation has its own joint form/phase error ball, and the combined
+initial state is exactly the sum of those same two preparations. Three
+independently perturbed histories do not satisfy this correlation premise.
+
+`prepared_identity_certified` requires the joint full-state reference error and
+each projected component's tail to meet their strict tolerances, with separated
+endpoint windows. The band
+projections retain the declared identity labels through overlap; they do not
+close two nonlinear subsystems or partition the actual state spatially.
+`cubic_remainder_certified` separately admits the nominal fifth-order remainder
+and correlated-preparation sensitivity for the
+[cubic Duhamel instrument](../../../theory/nodal/LOCALIZED_MOBILE_INTERACTION.md#mobile-pair-defect).
+Its tangent is the actual damped tangent. The joint-minus-separate defect
+cancels all linear evolution, including reused errors; intensity cross terms
+are not substitutes for that full-state observable.
+
+The helper computes no cubic proxy or paired trajectory. It returns
+`interaction_norm_bounds=None`, with no interaction-detection verdict; a
+positive lower bound would require separation of an evaluated proxy from its
+complete error budget. `status="certified"` records sufficient identity and
+cubic-error budgets only. Failed
+bootstraps leave the corresponding actual-state and remainder bounds
+unavailable. The [frozen endpoint protocol](../../../theory/nodal/LOCALIZED_MOBILE_INTERACTION.md#mobile-pair-protocol)
+defines that separate evaluation. These private scalar bounds authenticate no
+source, install no solver and establish no resolved deformation or collision.
 
 ### Sine-law prospective sampling budgets
 

@@ -103,6 +103,7 @@ nav:
           - "Information from a small phase preparation": theory/nodal/ORGANIZED_SMALL_RESOURCE_INFORMATION.md
           - "Finite transport of a localized identity": theory/nodal/LOCALIZED_IDENTITY_TRANSPORT.md
           - "Source resources for localized mobile identities": theory/nodal/LOCALIZED_TRANSPORT_SOURCES.md
+          - "Prepared mobile encounter and interaction observation": theory/nodal/LOCALIZED_MOBILE_INTERACTION.md
           - "Constitutive freedom of organized patterns": theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md
           - "Constitutive inheritance through organized interfaces": theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md
           - "Predictive repeated organized composition": theory/nodal/REPEATED_ORGANIZED_COMPOSITION.md

@@ -142,6 +142,25 @@ symmetry. These controls exclude
 the declared target from that source class, while retaining the possibility
 of counterpropagating pairs or different mobile organization.
 
+For [mobile-pair identity and the prospective defect](theory/nodal/LOCALIZED_MOBILE_INTERACTION.md),
+select the new private instrument with its shared transport budgets:
+
+```sh
+python -m pytest tests/physics/test_localized_mobile_interaction.py tests/physics/test_localized_identity_transport.py -q
+```
+
+Check the two opposite-band references, joint norm and whole-window error,
+projected-component concentration and strict identity thresholds. Projections
+must remain observations, without claiming closed nonlinear subsystems or a
+spatial decomposition. Independently derive cancellation of the complete
+linear rows in the joint-minus-separate defect, including preparation errors
+reused from the same primitives. Distinguish that defect from intensity cross
+terms. Check the actual damped tangent's cubic Duhamel term, fifth-order
+remainder and correlated-preparation sensitivity, alongside exact/outward
+admission and unavailable failed bounds. Without an evaluated proxy there is
+no positive interaction lower bound. These controls perform no paired
+trajectory evaluation and supply no detected deformation or collision result.
+
 For shared [Krylov and Hankel arithmetic](src/tnfr/mathematics/krylov.py), select
 `tests/mathematics/test_krylov_admission.py`,
 `tests/mathematics/test_arithmetic_pulse.py` and

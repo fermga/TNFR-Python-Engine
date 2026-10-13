@@ -869,6 +869,26 @@ retained real phase lifts, under the full law.
 These statements leave bilateral mobile organization and other source classes
 open. A source may lack the directional identity while already being localized.
 
+The [joint band-identity theorem](nodal/LOCALIZED_MOBILE_INTERACTION.md#mobile-pair-identity)
+carries two prepared opposite-carrier patterns through a finite encounter,
+retaining a joint full-state tube and localization of each projected component.
+These spectral projections are neither closed nonlinear subsystems nor a
+spatial partition of the actual state. The
+[interaction defect](nodal/LOCALIZED_MOBILE_INTERACTION.md#mobile-pair-defect)
+compares joint evolution with separate histories sharing the same preparation
+primitives; their linear evolution cancels. A cubic Duhamel proxy and error
+budget support a prospective discriminator, but no proxy or paired response
+has been evaluated. Only the trivial zero interaction lower bound is available;
+intensity interference alone does not establish a nonlinear interaction.
+
+Interactions could form another organization between the prepared patterns,
+and repeated formation could support a hierarchy. This remains a hypothesis.
+A nonzero superposition defect diagnoses nonadditivity but does not identify
+a new NFR. That claim needs an independently defined identity absent from
+the initial preparation, formation, persistence or maintenance, and later
+interaction or response, with relevant constituent and boundary state retained.
+Recursive composition does not guarantee increasing complexity.
+
 Existing [positive-loss exclusions](nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission)
 constrain recurrence on their finite closed complete laws; their hypotheses
 do not exclude every finite displacement. The
@@ -885,8 +905,8 @@ This conditional finite theorem is not a particle definition or a permanent
 transport claim. Physical displacement, mass, charge, spin and
 measurement statistics retain the independent obligations in the
 [physical atlas](PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena).
-The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#localized-mobile-interaction-admission)
-alone owns the interaction admission for prepared mobile patterns; formation
+The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#mobile-pair-response-admission)
+alone owns the response admission for prepared mobile patterns; formation
 from another source class remains a separate obligation.
 
 ### 1.1 NFR formation: definition, birth and collective dynamics
