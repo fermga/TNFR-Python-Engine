@@ -173,6 +173,15 @@ not justify either restriction. Reopening selection requires a concrete new
 operational or resource premise, or independent evidence; another generic
 phase-information audit would repeat the existing obstruction.
 
+Operational access is a separate constructive question. The
+[free two-C9 probe](nodal/ORGANIZED_FREE_PHASE_PROBE.md) replaces separately
+imposed registrations by one freely reacting transient under a declared
+initial form contrast and weak contact. Complete mean balances reconstruct
+the relative phase from form history; a uniform fine-state bound preserves
+child identity. This supplies a conditional way to query the law, rather
+than justify it. Contact work, elapsed time, preparation authority and
+finite-resolution observation remain separate resources.
+
 ### Present interaction and sufficient future state
 
 Instantaneous current, a sufficient state and a history-based description

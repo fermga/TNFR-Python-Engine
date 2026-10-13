@@ -234,6 +234,19 @@ and storage scaling, including the failed phase-only map, shared native U3
 admission and lost primitive winding. A faithful primitive current need not
 make a collective aggregate faithful or provide a finite-noise inverse.
 
+For the [free organized phase probe](theory/nodal/ORGANIZED_FREE_PHASE_PROBE.md),
+select `tests/physics/test_organized_free_phase_probe.py` and retain
+`tests/physics/test_phase_boundary_law_integration.py` for its constitutive
+coefficient source. Reconstruct both complete 18-node rows and actual means;
+verify source reaction, the monotone full-turn bound and uniform fine-state
+Lyapunov estimate. Check mean-zero cancellation in attachment work and the
+quadratic current defect, including the derivative-free harmonic identity
+and endpoint term. Primitive error budgets are conditional Euclidean bounds,
+not observed state or source certificates. Exercise their strict boundary,
+invalid domains and fresh-input admission. No source, trajectory or measured
+record is evaluated; continuous integral access does not certify finite
+sampling, clock accuracy or a physical preparation.
+
 For [composition-compatible constitutive laws](theory/nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md),
 select `tests/physics/test_composition_compatible_constitutive.py` together
 with `tests/physics/test_sine_constitutive_inheritance_algebra.py`. Check

@@ -1384,6 +1384,13 @@ primitive phase sectors. Without that premise, a current may
 retain its proper period while other full-state channels
 distinguish those sectors.
 
+The [free two-C9 probe](ORGANIZED_FREE_PHASE_PROBE.md) supplies one
+conditional realization of an entire relative-registration traversal.
+Both constituents react, with their own fine state, supplied initial
+form contrast and contact work retained. Its integral current observation
+uses a declared kinetic row and continuous form record; it neither
+derives current-channel faithfulness nor supplies finite sensor accuracy.
+
 The shared [static information owner](../../src/tnfr/physics/_phase_boundary_information.py)
 derives this classification from re-admitted coefficients.
 Its faithfulness report retains the normalized coefficients,

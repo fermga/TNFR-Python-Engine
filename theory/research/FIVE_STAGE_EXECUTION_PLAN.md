@@ -199,9 +199,11 @@ A complete-flow covering need not preserve native U3 or marked winding.
 The [entry requirement](#new-constitutive-evidence-admission) for further
 selection is a concrete independent premise or observation; no generic
 phase-access review or additional selector is automatically queued.
-The selected [free-probe admission](#free-phase-probe-admission) instead
-tests whether one reacting pair can realize an entire registration query
-under an explicit finite preparation, work and identity contract.
+The [free-probe result](#free-phase-probe-admission) instead realizes an
+entire registration traversal through one reacting pair, with explicit
+preparation, work and fine-identity bounds. Its continuous-record harmonic
+identity leaves [finite-record admission](#free-phase-probe-record-admission)
+as the next observation dependency; physical admission remains separate.
 Unit-strength classification remains unresolved and deferred; no numerical
 campaign is admitted.
 
@@ -220,7 +222,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Active bounded operational admission | [Free relative-phase probe](#free-phase-probe-admission): test whether one freely reacting two-C9 history can traverse every relative registration with both child identities retained, accounted contact work and a derivative-free current observation. No intrinsic law selector or physical evaluation is activated |
+| Next bounded observation admission | [Finite records of the free probe](#free-phase-probe-record-admission): admit sampled form, reconstructed registration, endpoint and clock errors for the new integral observation before any response evaluation; exact continuous access alone supplies no sensor accuracy |
+| Closed bounded operational admission | [Free relative-phase probe](#free-phase-probe-admission): one freely reacting two-C9 history traverses a full registration turn, retaining both child identities with a uniform fine bound and accounted contact work. Its derivative-free harmonic identity selects no intrinsic law or physical interpretation |
 | Closed bounded foundation admission | [Independent content for a constitutive restriction](#independent-boundary-premise-admission): exact phase-current stabilizers and complete-flow covering limits; current-channel faithfulness is an additional premise, retains both counterlaws, and is not implied by full-state identity or native U3 |
 | Closed reusable structural admission | [Collective boundary constraints and their premises](#collective-boundary-foundation-admission): kernel constraints, exact normal compliance, full damping and hidden initialization separate structural consequences from law-specific tuning. The matched-conductance split control removes the remaining neutral mode; no further contact variant is activated |
 | Closed bounded interaction admission | [A marked boundary of the critical parent](#critical-parent-interaction-admission): exact exchange and local three-coordinate dynamics, full-state initialization, paid contact work and changed critical relaxation. Matched means and storage can conceal opposite receiver rates; no exact coarse quotient or acquired source follows |
@@ -1457,32 +1460,50 @@ contract supplied an additional intrinsic selector. Constitutive selection
 retains the entry requirements above.
 
 <a id="free-phase-probe-admission"></a>
-### Active bounded admission: a free relative-phase probe
+### Closed bounded admission: a free relative-phase probe
 
-Fix two marked winding-one C9 children, joined by nine same-slot contacts.
-Use the existing potential family `0<=lambda<=1`, held unit capacities,
-the complete uniform-quarter rows in tau, `gamma=1/(1023*pi)` and matching
-conductance `a=gamma^2/1000`. All 18 forms and primitive phases remain
-retained. Prepare zero global form mean, relative child form mean `12/gamma`,
-zero relative lifted phase mean, and independently bounded within-child
-fine residuals about the uniform winding profiles. Preparation, contact
-occurrence and work are supplied premises; no native operator preparation
-or previous reached-state certificate is assumed.
+The declaration at `d9119600` fixed the two marked C9 children, nine
+same-slot contacts, complete quarter-factor rows, potential family
+`0<=lambda<=1`, held unit capacities and structural tau clock. Its
+conductance is `a=gamma^2/1000`, with `gamma=1/(1023*pi)`; the supplied
+relative form mean is `12/gamma` and initial relative lifted phase is
+zero. All eighteen forms and phases remain retained, including
+independently bounded within-child residuals. No previous source verdict
+or native operator preparation is assumed.
 
-After contact, evolve freely with neither phase jumps, clamping nor input.
-The fixed access horizon is `T=2/a` in tau, with `s=a*tau/2`. Acceptance
-requires a monotone full turn of the actual lifted mean registration by
-that horizon, a sufficient nonzero fine-state allowance preserving both
-child identities, and the actual attachment storage jump. Joined contact
-gaps and new mixed-cycle labels need not remain in their initial chamber.
+The [proof owner](../nodal/ORGANIZED_FREE_PHASE_PROBE.md) derives the
+exact reacting mean rows and a monotone full relative turn by `T=2/a`.
+A common quadratic fine-state bound keeps both child identities acute
+through the nonacute contact transit. Actual attachment work is bounded
+by `81/125` plus the admitted fine-residual term. The weak contact trades
+finite work against a very long structural horizon; preparation and
+event occurrence remain supplied, and physical units remain unassigned.
 
-Derive a current-harmonic observation from the continuous relative mean-form
-record, the independently declared kinetic row and initial lift. It must
-retain source reaction and avoid differentiating readings. This is an
-analytical query-access and observation-identity gate, not a finite-noise
-sensor certificate, trajectory evaluation or repeat of two-law record
-separation. Any later finite-record evaluation needs its own frozen error,
-clock and quadrature declaration. Physical admission remains open.
+The actual mean-form record reconstructs relative phase using the held
+kinetic row and initial lift. A derivative-free integral reads each
+current harmonic with a quadratic fine-state bias bound. This realizes
+the query in one freely reacting history, with no phase resets, clamped
+probe, input, source replay or trajectory evaluation. It is neither
+an intrinsic selector nor a finite-noise or physical measurement certificate.
+
+<a id="free-phase-probe-record-admission"></a>
+### Next bounded admission: finite records of the free probe
+
+The [integral identity](../nodal/ORGANIZED_FREE_PHASE_PROBE.md#free-phase-probe-integral-observation)
+requires a continuous record and its one-turn endpoint. Its small raw
+harmonic contrast cannot be made resolvable merely by normalizing it.
+The next question is whether a finite record can certify the same
+observation within a declared mathematical accuracy and work/time budget.
+
+Specify the sampled relative-form readout, preparation uncertainty,
+sampling clock, kinetic calibration and integration rule before any
+response evaluation. Propagate their joint errors through reconstructed
+phase, the stopping endpoint, every integral and the normalization. Keep
+the actual fine-state bias and supplied resources. Acceptance is a
+constructive sufficient finite-record bound or a scoped resolution
+obstruction; neither identifies a physical sensor or universally
+excludes another observation. No new two-law trajectory comparison,
+source replay or apparatus search is activated by the exact-access result.
 
 <a id="contact-maintenance-certificate-admission"></a>
 ### Closed complete-flow convergence; unit-strength classification deferred
