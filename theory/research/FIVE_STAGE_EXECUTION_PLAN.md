@@ -209,9 +209,14 @@ that observation with explicit numerical abstention. The
 [independent phase/clock channel](#free-probe-independent-kinetic-observation)
 now tests a circular consequence of the collective kinetic row using primitive
 phase readings and independent timing and variation bounds. Physical sensing
-and clock calibration remain separate. The next foundational dependency is
-[preparation reachability and resources](#free-probe-preparation-reachability):
-the large initial contrast is still supplied, not autonomously generated.
+and clock calibration remain separate. The
+[preparation-resource gate](#free-probe-preparation-reachability) now excludes
+generation of the large contrast by arbitrary common matching-contact schedules
+from zero means. External form transfer can supply it, with an independent
+variation budget and separate attachment work. The next foundational dependency
+is the [boundary of that obstruction under more general contact](#organized-form-resource-envelope);
+nonuniform interfaces and additional reacting organizations are not covered by
+the matching-contact argument.
 Unit-strength classification remains unresolved and deferred; no numerical
 campaign is admitted.
 
@@ -230,7 +235,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next foundational dependency | [Preparation reachability and resources](#free-probe-preparation-reachability): identify what can generate the probe's supplied initial contrast under an independently justified complete mechanism, or retain it explicitly as external; no response or apparatus search is activated |
+| Next foundational dependency | [Reciprocal form resources beyond matching contacts](#organized-form-resource-envelope): determine whether nonuniform interfaces and additional reacting organizations can evade the preparation obstruction under the same complete law and an explicit initial fine-state budget |
+| Closed preparation-resource admission | [Preparation reachability and resources](#free-probe-preparation-reachability): common matching-contact schedules cannot create the target contrast from zero means; a necessary nodal form-variation budget, separate work ledger and conditional supplied-input construction retain the autonomous-source boundary |
 | Closed conditional structural observation | [Independent phase/clock channel](#free-probe-independent-kinetic-observation): a primitive phase product tests the collective kinetic row without reconstruction; a finer arithmetic mean needs independently certified absence of internal slips. Finite circular records and unknown clock scale retain their ambiguities |
 | Closed bounded observation implementation | [Certified free-probe record reader](#free-phase-probe-reader-admission): primitive samples and rebuilt error bounds give interval reconstruction, root transport and harmonic readout, with distinct contradictions and numerical/work-limit abstention |
 | Closed bounded observation admission | [Finite records of the free probe](#free-phase-probe-record-admission): decay subtraction and a joint reading, clock, calibration, endpoint and quadrature bound support the fixed arithmetic budget; a sufficient noisy-record overlap bound retains the information limit |
@@ -1560,32 +1566,58 @@ trajectory or physical response is evaluated. The earlier harmonic reader
 retains its separate conditional scope.
 
 <a id="free-probe-preparation-reachability"></a>
-### Entry requirement: generating the supplied preparation
+### Closed admission: preparation reachability and resource distinction
 
-Independent structural observation does not generate the probe's initial
-relative form `v(0)=12`. The existing preparation argument translates each
-isolated child's common form by a supplied amount. Its symmetry and isolated
-Laplacian-storage cost do not establish reachability, a reservoir or event
-occurrence. Contact work is already accounted separately.
+The [proof owner](../nodal/ORGANIZED_FREE_PHASE_PROBE.md#free-phase-probe-preparation-reachability)
+extends the exact two-child mean balance to arbitrary nonnegative locally
+integrable common matching-contact weights, including state-preserving on/off
+changes. From zero relative mean and without contrast inputs or jumps, the
+scaled form remains below `1e-7` in magnitude; the required value is `12`.
+The result retains all fine states and the full admitted potential family.
+Childwise zero-mean forcing cannot evade the mean obstruction.
 
-The next bounded foundational question is whether an existing independently
-justified mechanism can produce that contrast from a declared lower-resource
-state while retaining the marked children. First derive the restrictions of
-the unchanged isolated and joined complete rows, including nonnegative
-time-dependent matched-contact weights and state-preserving support switches.
-Then examine only mechanisms
-with an actual boundary/input/event owner; declare retained source state,
-clock, transfer balance, work, identity and occurrence premises. An authorized
-state edit or passive attachment is not an autonomous preparation law.
+An integrating-factor identity separates initial contrast, bounded current,
+continuous input and form jumps. Its detached budget calculator uses primitive
+nodal form-variation allowances, rejecting missing baselines and certifying only
+strict exclusion. An allowance above the necessary floor does not establish
+reachability. The storage ledger separately retains input work and contact
+changes; the canonical fresh attachment at the target has a work floor of `81/125`.
 
-Acceptance is a conditional preparation construction with its source and
-resource obligations, or a scoped reachability obstruction that leaves the
-large contrast explicitly external. Do not add a reservoir, controller or
-third NFR solely to make the target reachable. If a new constitutive premise
-is necessary, name the independent input that would justify it. Another
-accuracy refinement or retained-law response cannot settle this question.
-No trajectory, source replay, apparatus search or physical-data evaluation is
-active; a later response still requires a frozen complete protocol.
+Opposite child-uniform inputs give an exact conditional preparation while
+preserving isolated fine histories and zero global form mean. Their zero
+isolated storage work does not erase their input variation or derive a source.
+The existing operator, reservoir and organized-port owners supply no autonomous
+occurrence or preparation certificate for this target. No waveform, source
+replay, trajectory or physical response was evaluated. The large contrast
+remains an external preparation unless a distinct mechanism is admitted.
+
+<a id="organized-form-resource-envelope"></a>
+### Entry requirement: reciprocal form resources beyond matching contacts
+
+The matching-contact mean closes because every slot uses the same weight.
+Nonuniform interfaces retain fine-form information in their mean exchange;
+additional reacting organizations also add state and initial resources. The
+next bounded question is whether either extension evades the preparation
+obstruction under the existing complete constitutive family.
+
+Retain the uniform quarter-factor form and phase rows, fixed gamma, held unit
+capacities, structural tau clock, fixed finite node labels and the same odd
+edge current. Admit nonnegative symmetric time-dependent weights, used in both
+rows, and state-preserving contact switches. Keep two disjoint marked groups
+of nine nodes as the target. Declare all initial forms, including any additional
+source nodes; zero child means alone do not bound hidden fine preparation.
+No additive input, form jump, node birth, capacity change or prescribed donor
+waveform is admitted in this comparison. Track support work separately:
+arbitrary weight changes need not be passive.
+
+Acceptance is a necessary contrast envelope in terms of the initial form
+resources and finite node count, or a counterexample within this declared
+class. Work on the actual fine graph without assuming collective closure.
+An exclusion may hold even without retained child identity; a positive
+preparation claim must additionally prove that identity and source reaction.
+Do not introduce an auxiliary reservoir solely to place the target in its
+initial state. No trajectory, source replay, apparatus search or physical-data
+evaluation is active; a later response still requires a frozen complete protocol.
 
 <a id="contact-maintenance-certificate-admission"></a>
 ### Closed complete-flow convergence; unit-strength classification deferred

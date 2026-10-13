@@ -277,6 +277,18 @@ or target-law speed bound may establish independent observation. An interval
 containing zero is inconclusive, not verification of the kinetic law; retain
 the declared clock and separate physical sensing premises.
 
+For [free-probe preparation reachability](theory/nodal/ORGANIZED_FREE_PHASE_PROBE.md#free-phase-probe-preparation-reachability),
+select `tests/physics/test_organized_free_phase_preparation.py` with the original
+probe, finite-record and kinetic readers, which consume the shared law bounds.
+Reconstruct the mean balance from independent fine-edge sums, retaining source
+and jump projection factors. Check invariant-band boundaries, strict resource
+exclusion, exact scalar admission and the nonexcluded budget case.
+Opposite uniform inputs must preserve isolated fine coordinates and total form
+while changing relative means; their zero isolated storage work does not make
+their form variation vanish. Verify the fresh-contact work floor separately.
+These are static algebra and conditional budget controls, not an executed
+preparation or an autonomous event certificate.
+
 For [composition-compatible constitutive laws](theory/nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md),
 select `tests/physics/test_composition_compatible_constitutive.py` together
 with `tests/physics/test_sine_constitutive_inheritance_algebra.py`. Check

@@ -199,6 +199,18 @@ sensing, timing and backreaction admission before a physical comparison.
 Contact work, elapsed time, preparation authority and an independently
 admitted physical observation remain separate resources.
 
+The [preparation bound](nodal/ORGANIZED_FREE_PHASE_PROBE.md#free-phase-probe-preparation-reachability)
+separates their roles. Isolated child means are conserved, and arbitrary
+nonnegative timing or strength changes of the matching contact cannot create
+the probe's large contrast from zero means. The bound retains every fine state
+and the entire supplied constitutive family. Added form inputs or jumps carry
+a separate variation budget, even when their net total form is zero. Uniform
+opposite inputs give a conditional preparation that preserves isolated fine
+state, but their amplitude and occurrence remain supplied. Their zero isolated
+storage work is not a source law or a free physical resource. Nonuniform
+interfaces and additional reacting organizations require their own mean
+balance; the two-child matching proof does not exclude them by analogy.
+
 ### Present interaction and sufficient future state
 
 Instantaneous current, a sufficient state and a history-based description

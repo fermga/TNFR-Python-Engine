@@ -14,6 +14,8 @@ finitely many uncertain samples, under explicit timing and kinetic
 calibration premises.
 Separately admitted primitive phase and form snapshots provide a circular
 necessary test of that kinetic row, without reconstructing phase from it.
+The preparation result below distinguishes the large supplied form contrast
+from what any unforced common-contact schedule can generate.
 
 This is conditional operational access under the existing supplied
 constitutive family. It does not select that family, establish physical
@@ -1226,7 +1228,263 @@ physical sensor. An interacting observing NFR would additionally need its
 own state, laws, coupling, backreaction and admission. No such object,
 trajectory, source replay or physical response is evaluated here.
 
-## 8. Scope and shared verification
+<a id="free-phase-probe-preparation-reachability"></a>
+
+## 8. Preparation reachability and its supplied resources
+
+The common-form symmetry in section 1 relates different initial states;
+it does not generate their different means along an unforced history.
+This section asks whether a lower-resource initial state can acquire the
+probe's \(v=12\), allowing a much larger class of contact schedules than
+the fixed contact used in sections 1--7. It changes neither the eighteen
+marked nodes, the unit internal edges, the held unit capacities nor the
+canonical \(\gamma\). Fix any one \(\lambda\in[0,1]\).
+
+### 8.1 Exact full-state contrast and invariant band
+
+Let the nine matching edges share a nonnegative, measurable, locally
+integrable weight \(a(\tau)\). Both quarter-factor rows use this same
+weight. Allow a separately supplied locally integrable nodal form source
+\(\Gamma(\tau)\) and finitely many finite form jumps \(\Delta x_j\)
+at declared times \(\tau_j\), keeping primitive phases unchanged at those
+jumps. Between jumps the complete law is
+
+\[
+ x_\tau=\frac{-L(a)x-\gamma\nabla U_\lambda(a,\theta)}4+\Gamma,
+ \qquad \theta_\tau=\frac{\gamma L(a)x}4,
+ \qquad L(a)=I_2\otimes L_9+aL_{\rm match}.
+ \tag{57}
+\]
+
+The additive source is outside the quarter factor. It is the supplied
+form-rate channel described by the [parameter foundation](../NODAL_PARAMETER_FOUNDATIONS.md)
+and [integrator contract](../../src/tnfr/dynamics/integrators.py), not a
+pressure reconstructed from the response. Equation (57) declares the
+phase row as well; using the source channel does not assert that a native
+operator runtime implements this whole comparison law. No phase, capacity
+or internal-support events are added here.
+The fixed-contact clock \(s=a\tau/2\) from (5) is not used for variable
+or vanishing contact. Zero contact can pause accumulated exposure while the
+declared structural clock \(\tau\) and isolated dynamics continue.
+
+This flow has unique continuation on every finite interval: the linear
+coefficient has norm bounded by \(4+2a\), while the current is globally
+bounded and globally Lipschitz with locally integrable weighted
+coefficients. The resulting integral bounds prevent finite-time escape
+of either form or a continuous phase lift. The argument needs no acute
+fine chart, carrier assumption or constituent-retention certificate.
+
+Write \(\overline\Gamma_c=\frac19\sum_k\Gamma_{c,k}\), and put
+
+\[
+\begin{split}
+ k(\tau)&=a(\tau)/2,\qquad C=\gamma^2J_0,\\
+ u(\tau)&=\gamma(\overline\Gamma_A-\overline\Gamma_B),\qquad
+ d_j=\frac\gamma9\left(\sum_A\Delta x_j-\sum_B\Delta x_j\right),\\
+ \mathcal E(\tau,\sigma)&=
+       \exp\left(-\int_\sigma^\tau k(\zeta)\,d\zeta\right).
+\end{split}
+ \tag{58}
+\]
+
+Internal diffusion and odd-current terms cancel in each child mean.
+The common matching weight leaves exactly \(a(X_A-X_B)\) in its
+mean form sum, even for arbitrary fine forms. Thus the actual full state obeys
+\(v_\tau=-kv-\gamma^2k\overline J+u\), with \(|\overline J|\le J_0\)
+for all primitive phases and every admitted \(\lambda\). At a form jump,
+\(\Delta v=d_j\). State-preserving support changes have no direct
+contrast jump. The integrating-factor identity, with right-continuous
+values at the finite jumps, is
+
+\[
+\begin{split}
+ v(\tau)={}&\mathcal E(\tau,0)v(0)
+ -\gamma^2\int_0^\tau\mathcal E(\tau,\sigma)k(\sigma)
+                  \overline J(\sigma)\,d\sigma+\mathcal R(\tau),\\
+ \mathcal R(\tau)={}&\int_0^\tau\mathcal E(\tau,\sigma)u(\sigma)\,d\sigma
+       +\sum_{0<\tau_j\le\tau}\mathcal E(\tau,\tau_j)d_j.
+\end{split}
+ \tag{59}
+\]
+
+Any initial jump is included in the declared \(v(0)\). Since
+\(\int_0^\tau\mathcal E(\tau,\sigma)k(\sigma)\,d\sigma
+=1-\mathcal E(\tau,0)\), (59) gives the signed enclosure
+
+\[
+ \mathcal E(\tau,0)v(0)+\mathcal R(\tau)-C(1-\mathcal E(\tau,0))
+ \ \le v(\tau)\le
+ \mathcal E(\tau,0)v(0)+\mathcal R(\tau)+C(1-\mathcal E(\tau,0)).
+ \tag{60}
+\]
+
+Without sources or form jumps, \([-C,C]\) is invariant; an arbitrary
+initial contrast stays in the convex hull of its initial value and this
+band. In particular, from \(v(0)=0\),
+\(|v(\tau)|\le C(1-\mathcal E(\tau,0))\le C<10^{-7}\).
+The last strict inequality follows from \(\pi>157/50\) and
+\(J_0=1459/1458\). No duration, strength or timing of these common
+nonnegative contacts can reach \(v=12\). At \(a=0\), both child means
+are separately conserved in the unforced model. Sources and jumps with
+zero form mean separately in each child cannot evade this obstruction,
+however large their fine-state effects. The equal weight over all nine
+slots is essential: slot-dependent weights would retain fine forms in
+the mean boundary term and define another preparation problem.
+
+### 8.2 Necessary source and jump variation
+
+Reaching \(v(\tau)=12\) requires the signed discounted resource
+
+\[
+ \mathcal R(\tau)\ge
+ 12-\mathcal E(\tau,0)v(0)-C(1-\mathcal E(\tau,0)).
+ \tag{61}
+\]
+
+Replacing \(u,d_j\) by their positive parts in \(\mathcal R\) gives
+a larger quantity and the same necessary lower bound. Neither this
+inequality nor the current bound supplies the current's realized sign
+or sufficient conditions for reaching the target.
+
+A simpler envelope uses only primitive bounds on the initial contrast
+and total nodal input variation through the proposed horizon:
+\(|r(0)|\le R_0\),
+\(B_{\rm cont}\ge\int\sum_i|\Gamma_i|\,d\tau\), and
+\(B_{\rm jump}\ge\sum_j\sum_i|\Delta x_{i,j}|\).
+Because \(|u|\le\gamma\sum_i|\Gamma_i|/9\), with the same projection
+bound for each jump, and \(0<\mathcal E\le1\),
+
+\[
+\begin{split}
+ |v(\tau)|&\le
+   M_0+\frac\gamma9(B_{\rm cont}+B_{\rm jump}),
+       \qquad M_0=\max(\gamma R_0,C),\\
+ B_{\rm cont}+B_{\rm jump}&\ge
+       \frac9\gamma[12-M_0]_+\quad\text{is necessary to allow the target}.
+\end{split}
+ \tag{62}
+\]
+
+These budgets count unsigned nodal form variation, not stored energy,
+net form creation or work. Indeed the global form mean
+\(\mu=(X_A+X_B)/2\) has
+\(\mu_\tau=(\overline\Gamma_A+\overline\Gamma_B)/2\), and its
+jump is the average of the two child-mean jumps. Equal opposite inputs
+can increase contrast while keeping \(\mu\) fixed. A zero net input
+therefore does not establish a zero preparation-resource budget.
+
+### 8.3 Work accounting and a supplied positive control
+
+The contrast theorem allows merely locally integrable \(a\); a
+differentiable storage ledger requires stronger regularity. If \(a\)
+is absolutely continuous between its finitely many declared support
+jumps, define
+
+\[
+ K(x,\theta)=\frac12\sum_k(x_{A,k}-x_{B,k})^2
+                  +\sum_kV_\lambda(\theta_{A,k}-\theta_{B,k})\ge0.
+ \qquad
+ H_\tau=-\frac14\|Lx\|^2+(Lx)^\top\Gamma+a_\tau K.
+ \tag{63}
+\]
+
+The cross terms between the two continuous rows cancel exactly.
+A state-preserving support jump has
+\(\Delta H=(a^+-a^-)K\). At fixed support a pure form jump has
+\(\Delta H=(Lx^-)^\top\Delta x+\frac12\Delta x^\top L\Delta x\).
+For simultaneous state and support changes, use the exact difference
+\(H(a^+,x^+,\theta)-H(a^-,x^-,\theta)\), or explicitly order the
+events and evaluate their separate changes at the proper states.
+An arbitrary measurable contact schedule need not have finite variation
+or a finite work ledger; (59)--(62) do not presume one.
+
+At any fresh state-preserving attachment from \(a=0\) to the canonical
+\(a_*=\gamma^2/1000\), a state with \(|v|=12\) satisfies
+
+\[
+ \Delta H=a_*K\ge a_*\frac92(X_A-X_B)^2
+        =\frac{81}{125}.
+ \tag{64}
+\]
+
+This follows from the mean-square inequality and \(V_\lambda\ge0\),
+independently of the fine state. It is a floor for this declared
+attachment, not for the cumulative work of every possible schedule.
+For the admitted fine states of section 1, the corresponding upper
+bound remains (17).
+
+There is also a precise conditional positive control within the existing
+supplied source class. Keep \(a=0\), and let \((\widehat x,\widehat\theta)\)
+be any unforced own-law isolated history whose initial form means are zero.
+For an absolutely continuous nondecreasing supplied function \(f\),
+with \(f(0)=0\) and \(f(T)=6/\gamma\), set
+
+\[
+ x_A=\widehat x_A+f\mathbf1,\quad
+ x_B=\widehat x_B-f\mathbf1,\quad
+ \theta=\widehat\theta,\qquad
+ \Gamma_A=f'\mathbf1,\quad\Gamma_B=-f'\mathbf1.
+ \tag{65}
+\]
+
+The isolated Laplacian annihilates both added constants, so (65) is an
+exact solution transformation of (57). Every fine state, internal
+phase history and previously admitted constituent identity is unchanged.
+The contrast reaches \(v(T)=12\), the global form mean remains zero,
+and the total nodal input variation is \(18\int_0^T f'=108/\gamma\).
+The source's contribution \((Lx)^\top\Gamma\) to isolated storage is
+identically zero; subsequent attachment still pays (64). This absence
+of isolated Laplacian-storage work is not zero physical preparation
+cost. The source is externally prescribed, with no waveform selected
+or trajectory evaluated here. It derives neither source occurrence nor
+an autonomous or native preparation event. Apart from this exact symmetry
+control, the general reachability bounds transfer no fine-state retention
+certificate to histories with newly supplied sources or jumps.
+
+### 8.4 Detached resource exclusion
+
+The shared
+[free-probe implementation](../../src/tnfr/physics/_organized_free_phase_probe.py)
+adds `_bound_organized_free_phase_preparation`, which re-admits the three
+primitive bounds \(R_0,B_{\rm cont},B_{\rm jump}\) and rebuilds (62)
+with the uniform current bound and outward canonical parameter intervals.
+Missing resource bounds reject admission instead of becoming zero. A strict
+upper bound below 12 gives `excluded_by_resource_bound`; otherwise
+`not_excluded` supplies no sufficiency, source authenticity or occurrence
+verdict. The calculation
+does not consume a contact trajectory or replace unsigned nodal variation
+by net form or energy. Its
+[static controls](../../tests/physics/test_organized_free_phase_preparation.py)
+check the full-state mean cancellation, input/jump projection, necessary
+resource bound and source/storage distinctions without a response run.
+
+### 8.5 Existing mechanisms and their admission boundary
+
+The [operator activation audit](../STRUCTURAL_OPERATORS.md#operator-mechanism-and-activation-audit)
+and [complete reset contract](RELATIONAL_SUPPORT_EVENTS.md#nodal-reorganization-and-contact)
+separate action, eligibility, selection and accounting. A form-changing
+operator may supply a jump in (59), but its name or grammar admission does
+not derive its source, target, sign or occurrence. Pressure-only writes also
+need a declared lifetime under constitutive refresh. The
+[event executor](../../docs/contracts/OPERATOR_EVENTS.md#operator-event-timeline)
+does not silently implement (57): its continuous write contract differs
+from this comparison's independent phase row. Native relational execution
+likewise has its own unforced admission; the Gamma construction is not an
+invocation of that path.
+
+The existing [finite reservoir model](ORGANIZED_PARENT_RESERVOIR_EXCHANGE.md#organized-parent-reservoir-exchange)
+does retain a reacting source and its work balance, but it supplies that
+source's initial state and coupling on a different 36-node host. The
+[formed C9 source port](ORGANIZED_SOURCE_PORT.md#organized-source-port)
+changes both host rows and retains donor phase and fine correlations; it
+does not realize the earlier form-only reservoir by coefficient substitution.
+Neither owner establishes this probe's autonomous preparation. Their useful
+mechanisms remain conditional, and moving the required initial contrast into
+an additional supplied object would not derive its origin. Equations
+(59)--(62) exclude the stated matching-contact class, not all other interfaces,
+organized sources or future independently justified preparation laws.
+
+## 9. Scope and shared verification
 
 This result replaces an abstract collection of separately imposed
 registrations by one finite, freely reacting contact history.
