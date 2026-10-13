@@ -1487,7 +1487,7 @@ probe, input, source replay or trajectory evaluation. It is neither
 an intrinsic selector nor a finite-noise or physical measurement certificate.
 
 <a id="free-phase-probe-record-admission"></a>
-### Next bounded admission: finite records of the free probe
+### Active bounded admission: finite records of the free probe
 
 The [integral identity](../nodal/ORGANIZED_FREE_PHASE_PROBE.md#free-phase-probe-integral-observation)
 requires a continuous record and its one-turn endpoint. Its small raw
@@ -1504,6 +1504,30 @@ constructive sufficient finite-record bound or a scoped resolution
 obstruction; neither identifies a physical sensor or universally
 excludes another observation. No new two-law trajectory comparison,
 source replay or apparatus search is activated by the exact-access result.
+
+The bounded analytic calculation uses the unchanged complete family and
+preparation above, uniformly over `0<=lambda<=1`. It samples the raw relative
+form at a uniform nominal grid on `0<=s<=1`, with bounded exposure-time,
+reading and constant kinetic-calibration errors. It subtracts the known
+homogeneous decay `12*exp(-s)` before piecewise-linear interpolation,
+integrates that reconstruction to locate a full-turn increment, and retains
+the initial lifted-phase readout error and both boundary terms. A scaled
+energy residual supplies an algebraically equivalent harmonic integral.
+Composite midpoint quadrature stays inside interpolation cells; its
+remainder and all calibration factors must be bounded independently of
+the unknown deformation and of any evaluated response.
+
+The single prospective arithmetic control fixes harmonic `n=9`, combined
+fine allowances `rho_x=0`, `rho_theta=10^-6`, `10000` sampling intervals,
+`100` quadrature subdivisions per interval, raw relative-form reading
+error `10^-11`, normalized exposure-time error `10^-18`, relative constant
+kinetic-calibration error `10^-18`, initial lifted-phase readout error
+`10^-10`, and total numerical evaluation/endpoint error `10^-8` in the
+normalized coefficient. Its target is a sufficient uncertainty below
+`1/(2*2187)` for the existing endpoint-law contrast. These are stipulated
+mathematical budgets, not sensor capabilities. Acceptance may instead
+report an unresolved budget. This control evaluates bounds only: no
+record, trajectory, source replay or physical response is reserved or run.
 
 <a id="contact-maintenance-certificate-admission"></a>
 ### Closed complete-flow convergence; unit-strength classification deferred
