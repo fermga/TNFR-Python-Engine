@@ -218,10 +218,14 @@ variation budget and separate attachment work. The
 nonuniform contacts and additional nodes directly, counting every initial
 fine form. Changing contact cannot evade that conditional bound. The target
 `12` is sufficient for the existing full-turn probe, not necessary for every
-observation. The next dependency is a
-[resource-information comparison without initial mean-form contrast](#organized-small-resource-information):
-determine both separation and ambiguity under a declared small phase
-preparation and finite observation accuracy, without requiring a full turn.
+observation. The
+[small-preparation information theorem](#organized-small-resource-information)
+now gives a cubic endpoint law gap, full-state error budgets and a genuine
+common-reading ambiguity witness, with quadratic nominal attachment storage.
+It requires no initial mean-form contrast or full turn. The next step is a
+[foundation decision after these resource bounds](#post-resource-foundation-review),
+to identify an unclosed mechanism or independent premise before another
+internal observation design.
 Unit-strength classification remains unresolved and deferred; no numerical
 campaign is admitted.
 
@@ -240,7 +244,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next foundational dependency | [Small-resource constitutive information](#organized-small-resource-information): determine a two-sided resource-information tradeoff for one fixed endpoint observation under the same two-C9 quarter law, retaining phase preparation, fine state and independent nuisance/error sets |
+| Next foundation decision | [After the resource-information bounds](#post-resource-foundation-review): reconcile the supplied-law, equivalence, occurrence and measurement obligations with their existing owners; admit further work only for a new independent premise or an unclosed complete mechanism |
+| Closed resource-information admission | [Small-resource constitutive information](#organized-small-resource-information): a cubic endpoint law gap, independent full-state error budgets, genuine reading-set overlap and quadratic nominal attachment storage quantify one fixed observation class without large initial mean forms |
 | Closed reciprocal resource admission | [Reciprocal form resources beyond matching contacts](#organized-form-resource-envelope): a centered cut invariant bounds the marked contrast on every finite reciprocal contact network from all initial forms and node count; additional nodes and nonuniform contacts carry their own resources, and nonexclusion proves no reachability |
 | Closed preparation-resource admission | [Preparation reachability and resources](#free-probe-preparation-reachability): common matching-contact schedules cannot create the target contrast from zero means; a necessary nodal form-variation budget, separate work ledger and conditional supplied-input construction retain the autonomous-source boundary |
 | Closed conditional structural observation | [Independent phase/clock channel](#free-probe-independent-kinetic-observation): a primitive phase product tests the collective kinetic row without reconstruction; a finer arithmetic mean needs independently certified absence of internal slips. Finite circular records and unknown clock scale retain their ambiguities |
@@ -1623,40 +1628,50 @@ The bound does not exclude every finite network, every supplied preparation,
 other complete laws or observations that do not require a full turn.
 
 <a id="organized-small-resource-information"></a>
-### Entry requirement: constitutive information with small preparation resources
+### Closed admission: constitutive information with small preparation resources
 
-Keep the same eighteen-node two-C9 quarter law, unit internal conductance,
-held unit capacities, fixed gamma and constant matching weight
-`a=gamma^2/1000`. Compare the two existing endpoint laws, with both reacting
-rows and the same declared clock `s=a*tau/2`. Start with zero nominal child
-mean forms and nominal relative phase `d`, where `0<d<=1/100`. Declare primitive
-preparation errors in those means, in `d` and in every retained fine coordinate;
-a broad phase interval cannot silently stand for known registration. The
-observation class is one relative mean-form reading at nominal `s=1`, with
-independently declared reading, exposure and calibration uncertainty. There
-are no additional inputs, jumps, donor objects or later contact changes.
+The [proof owner](../nodal/ORGANIZED_SMALL_RESOURCE_INFORMATION.md#organized-small-resource-information)
+retains the same two-C9 quarter law, canonical weak contact and complete fine
+state. Zero nominal mean forms and a supplied small phase offset yield an
+endpoint raw-form gap bounded above and below by constants times `gamma*d^3`.
+Direct comparison of the two reacting laws preserves the shared linear
+response; separate coarse endpoint errors would lose this small-signal result.
 
-Determine upper and constructive lower bounds on the endpoint law gap as
-`d` decreases, testing whether it scales as `gamma*d^3`, together with a
-sufficient nonoverlap budget and an explicit ambiguity regime. Bound the
-law difference directly so that separate coarse remainders do not discard
-their shared linear response. Ambiguity requires an actual common-reading
-witness, not just overlapping conservative enclosures. Compare the two
-candidates' entire reading sets, allowing
-independent nuisance choices unless a common preparation correlation is
-separately justified. In particular, phase-preparation uncertainty can mask a
-small nonlinear gap through the much larger common response. Retain fine-state
-errors, both child identities and the initial attachment-storage bound; replacing
-large form preparation by phase preparation does not derive that preparation's
-origin. An obstruction in this observation class is an acceptable result.
+The existing uniform fine-retention mechanism carries independent preparation,
+phase, exposure, gain and reading errors for each candidate. A sufficient joint
+budget gives disjoint reading sets. A separate additive-noise condition admits
+the actual midpoint of the two nominal responses under either law; overlapping
+conservative intervals are not used as evidence of ambiguity. The detached
+calculator distinguishes those conclusions from an uncertified budget and
+evaluates no response. Nominal attachment storage is quadratic in the phase
+offset, with a separate full-error work bound. Source formation, phase
+preparation, clock and sensor admission remain supplied obligations.
 
-The [earlier finite nonlinear discriminator](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-finite-carried-response)
-uses another support, normalization and imposed inputs. It already establishes
-the possibility of finite small-response discrimination; it supplies neither
-this model's coefficients nor its preparation-information tradeoff. Another
-positive contrast alone does not close this gate. Prove the resource and
-ambiguity bounds prospectively before any response evaluation. No trajectory,
-source replay, apparatus search or physical-data campaign is active.
+This quantifies resources and information within one observation class; it
+selects neither a physical law nor a universally optimal observation. No
+trajectory, source replay, apparatus search or physical data was evaluated.
+
+<a id="post-resource-foundation-review"></a>
+### Entry requirement: foundation decision after the resource-information bounds
+
+The resource results remove the need to assume large initial mean forms for
+every constitutive observation. They leave the complete law and independent
+preparation/measurement premises unresolved. Reconcile those obligations with
+the [ontology](../EMERGENT_ONTOLOGY.md),
+[form and chart foundations](../FUNDAMENTAL_THEORY.md),
+[phase-response and covering classification](../nodal/SINE_CONSTITUTIVE_INFORMATION.md#phase-response-faithfulness),
+[complete interface maps](../nodal/ORIENTED_INTERFACE_PROFILE_INHERITANCE.md),
+[event occurrence](../nodal/RELATIONAL_SUPPORT_EVENTS.md), and
+[calibrated-observation boundaries](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-calibrated-observation).
+
+Acceptance is one dependency decision: identify a genuinely unclosed complete
+mechanism or a concrete new independent premise that can discriminate the
+remaining alternatives. Declare the admissible state, coordinate and readout
+freedoms before proposing an equivalence theorem. Existing affine maps,
+phase-origin freedom and event-admission distinctions are not new research
+gates by themselves. If no such premise or mechanism is available, record the
+precise missing bridge; do not substitute another topology, threshold or
+precision refinement. This review activates no response or physical campaign.
 
 <a id="contact-maintenance-certificate-admission"></a>
 ### Closed complete-flow convergence; unit-strength classification deferred

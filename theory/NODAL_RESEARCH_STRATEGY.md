@@ -219,6 +219,15 @@ The value `12` belongs to the sufficient full-turn probe construction, not
 to every possible constitutive observation. These preparation bounds do not
 exclude lower-resource observations or all TNFR formation.
 
+The [small-phase information theorem](nodal/ORGANIZED_SMALL_RESOURCE_INFORMATION.md)
+makes that distinction quantitative in the same two-C9 model. With zero nominal
+mean forms, a supplied phase offset gives a cubic endpoint law gap and quadratic
+attachment storage. Independent fine, preparation, timing and reading budgets
+can preserve separation; a larger additive reading allowance gives an actual
+common record. Lower preparation therefore trades against observation accuracy
+within this fixed class. The result justifies neither the phase preparation
+nor a physical sensor, and it does not select a constitutive law without data.
+
 ### Present interaction and sufficient future state
 
 Instantaneous current, a sufficient state and a history-based description

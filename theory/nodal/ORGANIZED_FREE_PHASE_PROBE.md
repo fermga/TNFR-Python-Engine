@@ -1493,6 +1493,12 @@ identity retention or sufficient reachability. The target `12` remains a
 sufficient choice for this probe, not a necessary resource for every
 possible constitutive observation.
 
+The [small-phase comparison](ORGANIZED_SMALL_RESOURCE_INFORMATION.md)
+uses the same complete law and fine-retention estimate with zero nominal mean
+forms. It bounds both the endpoint information available from a supplied small
+phase offset and a regime of indistinguishable readings, without a full turn.
+Its observation, uncertainty and attachment work have their own admission.
+
 ## 9. Scope and shared verification
 
 This result replaces an abstract collection of separately imposed

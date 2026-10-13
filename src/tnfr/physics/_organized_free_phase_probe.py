@@ -20,6 +20,13 @@ _CHILD_SIZE = 9
 _INITIAL_SCALED_FORM = Q(12)
 _CONTACT_DENOMINATOR = Q(1000)
 _FINE_ENERGY_LIMIT = Q(1, 40000)
+_FINE_DECAY_DENOMINATOR = Q(32)
+
+
+def _fine_energy_upper_bound(gamma_upper, form_error, phase_error):
+    """Bound the shared fine functional from normalized nonnegative primitives."""
+    scaled_form = gamma_upper * form_error
+    return ((phase_error + scaled_form) ** 2 + scaled_form**2) / 2
 
 
 def _free_probe_current_bounds(coefficient):
@@ -117,8 +124,7 @@ def _derive_organized_free_phase_probe(
     if gamma.hi**2 * current_bound >= Q(1, 2):
         raise ArithmeticError("fixed probe kinetic bound is unresolved")
 
-    scaled_form_error = gamma.hi * rho_x
-    fine_energy = ((rho_theta + scaled_form_error) ** 2 + scaled_form_error**2) / 2
+    fine_energy = _fine_energy_upper_bound(gamma.hi, rho_x, rho_theta)
     if fine_energy >= _FINE_ENERGY_LIMIT:
         raise ValueError("fine error budget requires F0_upper < 1/40000")
 
@@ -136,7 +142,7 @@ def _derive_organized_free_phase_probe(
         horizon_bounds=2 / contact,
         initial_form_contrast_bounds=_INITIAL_SCALED_FORM / gamma,
         form_contrast_bounds=I(Q(11, 3) / gamma.hi, _INITIAL_SCALED_FORM / gamma.lo),
-        fine_decay_rate_bounds=gamma_squared / 32,
+        fine_decay_rate_bounds=gamma_squared / _FINE_DECAY_DENOMINATOR,
         fine_energy_upper_bound=fine_energy,
         fine_energy_margin=_FINE_ENERGY_LIMIT - fine_energy,
         phase_residual_norm_squared_upper_bound=4 * fine_energy,
@@ -186,7 +192,7 @@ class _OrganizedFreePhasePreparationBound:
         "source_budgets_do_not_follow_from_net_form_change_or_stored_energy",
         "initial_mean_contrast_and_all_source_bounds_are_supplied_not_authenticated",
         "unforced_envelope_uses_the_global_current_bound_without_a_fine_state_certificate",
-        "strict_target_exclusion_is_necessary_only_not_a_reachability_decision",
+        "resource_bound_is_necessary_for_reachability_not_sufficient",
         "no_source_execution_identity_formation_autonomy_or_physical_sensor_claim",
     )
 

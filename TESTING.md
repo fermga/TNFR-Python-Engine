@@ -302,6 +302,18 @@ The finite instrument work limit is not the theorem's node limit; its optional
 necessary node count does not prove reachability. These are static controls,
 with no trajectory, identity-retention or autonomous-source certificate.
 
+For [small-preparation information](theory/nodal/ORGANIZED_SMALL_RESOURCE_INFORMATION.md),
+select `tests/physics/test_organized_small_resource_information.py` and the
+free-probe, preparation, finite-record and reader owners above when their
+shared fine-energy or constitutive bounds change. Derive the cubic law
+difference directly; independent endpoint remainders can lose its scaling.
+Check the actual fine-decay convolution, per-candidate preparation errors,
+exposure and multiplicative gain conventions, and the separate work bound.
+Test strict separation, an actual midpoint reading-noise overlap witness and
+the uncertified middle regime. Preserve exact tiny nonzero preparations,
+primitive admission and immutable reports. A positive budget verifies the
+prospective bound, not a response, sensor, source or selected physical law.
+
 For [composition-compatible constitutive laws](theory/nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md),
 select `tests/physics/test_composition_compatible_constitutive.py` together
 with `tests/physics/test_sine_constitutive_inheritance_algebra.py`. Check
