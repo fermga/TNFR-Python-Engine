@@ -199,6 +199,9 @@ A complete-flow covering need not preserve native U3 or marked winding.
 The [entry requirement](#new-constitutive-evidence-admission) for further
 selection is a concrete independent premise or observation; no generic
 phase-access review or additional selector is automatically queued.
+The selected [free-probe admission](#free-phase-probe-admission) instead
+tests whether one reacting pair can realize an entire registration query
+under an explicit finite preparation, work and identity contract.
 Unit-strength classification remains unresolved and deferred; no numerical
 campaign is admitted.
 
@@ -217,7 +220,7 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Conditional next admission; no active calculation | [New constitutive input](#new-constitutive-evidence-admission): name an independent operational, resource or observation premise that changes an existing dependency before evaluating its consequence. No further selector or generic phase-access audit is queued |
+| Active bounded operational admission | [Free relative-phase probe](#free-phase-probe-admission): test whether one freely reacting two-C9 history can traverse every relative registration with both child identities retained, accounted contact work and a derivative-free current observation. No intrinsic law selector or physical evaluation is activated |
 | Closed bounded foundation admission | [Independent content for a constitutive restriction](#independent-boundary-premise-admission): exact phase-current stabilizers and complete-flow covering limits; current-channel faithfulness is an additional premise, retains both counterlaws, and is not implied by full-state identity or native U3 |
 | Closed reusable structural admission | [Collective boundary constraints and their premises](#collective-boundary-foundation-admission): kernel constraints, exact normal compliance, full damping and hidden initialization separate structural consequences from law-specific tuning. The matched-conductance split control removes the remaining neutral mode; no further contact variant is activated |
 | Closed bounded interaction admission | [A marked boundary of the critical parent](#critical-parent-interaction-admission): exact exchange and local three-coordinate dynamics, full-state initialization, paid contact work and changed critical relaxation. Matched means and storage can conceal opposite receiver rates; no exact coarse quotient or acquired source follows |
@@ -1446,7 +1449,40 @@ or contact passivity alone is insufficient.
 Acceptance is a new conditional restriction or a scoped obstruction, with
 remaining freedom explicit. If no new input changes an existing premise,
 retain the family rather than launch another compatibility calculation.
-This is the sole entry gate, not an apparatus search or numerical campaign.
+The admitted operational question below changes the query architecture:
+one freely reacting history replaces independently imposed registration
+queries. It tests access under an explicit preparation and complete law,
+without using that law to justify itself. No existing operator or resource
+contract supplied an additional intrinsic selector. Constitutive selection
+retains the entry requirements above.
+
+<a id="free-phase-probe-admission"></a>
+### Active bounded admission: a free relative-phase probe
+
+Fix two marked winding-one C9 children, joined by nine same-slot contacts.
+Use the existing potential family `0<=lambda<=1`, held unit capacities,
+the complete uniform-quarter rows in tau, `gamma=1/(1023*pi)` and matching
+conductance `a=gamma^2/1000`. All 18 forms and primitive phases remain
+retained. Prepare zero global form mean, relative child form mean `12/gamma`,
+zero relative lifted phase mean, and independently bounded within-child
+fine residuals about the uniform winding profiles. Preparation, contact
+occurrence and work are supplied premises; no native operator preparation
+or previous reached-state certificate is assumed.
+
+After contact, evolve freely with neither phase jumps, clamping nor input.
+The fixed access horizon is `T=2/a` in tau, with `s=a*tau/2`. Acceptance
+requires a monotone full turn of the actual lifted mean registration by
+that horizon, a sufficient nonzero fine-state allowance preserving both
+child identities, and the actual attachment storage jump. Joined contact
+gaps and new mixed-cycle labels need not remain in their initial chamber.
+
+Derive a current-harmonic observation from the continuous relative mean-form
+record, the independently declared kinetic row and initial lift. It must
+retain source reaction and avoid differentiating readings. This is an
+analytical query-access and observation-identity gate, not a finite-noise
+sensor certificate, trajectory evaluation or repeat of two-law record
+separation. Any later finite-record evaluation needs its own frozen error,
+clock and quadrature declaration. Physical admission remains open.
 
 <a id="contact-maintenance-certificate-admission"></a>
 ### Closed complete-flow convergence; unit-strength classification deferred
