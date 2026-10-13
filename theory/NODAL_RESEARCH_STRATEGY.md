@@ -179,8 +179,13 @@ imposed registrations by one freely reacting transient under a declared
 initial form contrast and weak contact. Complete mean balances reconstruct
 the relative phase from form history; a uniform fine-state bound preserves
 child identity. This supplies a conditional way to query the law, rather
-than justify it. Contact work, elapsed time, preparation authority and
-finite-resolution observation remain separate resources.
+than justify it. Its [finite-record theorem](nodal/ORGANIZED_FREE_PHASE_PROBE.md#free-phase-probe-finite-records)
+subtracts the known decay before interpolation and bounds the joint reading,
+exposure-time, calibration, phase, endpoint and quadrature errors. A supplied
+finite accuracy budget can suffice, while sufficiently uncertain raw records
+can still overlap. Numerical conditioning does not supply measurement accuracy.
+Contact work, elapsed time, preparation authority and an independently
+admitted physical observation remain separate resources.
 
 ### Present interaction and sufficient future state
 

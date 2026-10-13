@@ -201,9 +201,11 @@ selection is a concrete independent premise or observation; no generic
 phase-access review or additional selector is automatically queued.
 The [free-probe result](#free-phase-probe-admission) instead realizes an
 entire registration traversal through one reacting pair, with explicit
-preparation, work and fine-identity bounds. Its continuous-record harmonic
-identity leaves [finite-record admission](#free-phase-probe-record-admission)
-as the next observation dependency; physical admission remains separate.
+preparation, work and fine-identity bounds. The
+[finite-record theorem](#free-phase-probe-record-admission) now supplies a
+sufficient joint error budget, with a separate coarse-noise obstruction.
+The next bounded implementation is a [certified record reader](#free-phase-probe-reader-admission);
+physical admission remains separate.
 Unit-strength classification remains unresolved and deferred; no numerical
 campaign is admitted.
 
@@ -222,7 +224,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next bounded observation admission | [Finite records of the free probe](#free-phase-probe-record-admission): admit sampled form, reconstructed registration, endpoint and clock errors for the new integral observation before any response evaluation; exact continuous access alone supplies no sensor accuracy |
+| Next bounded observation implementation | [Certified free-probe record reader](#free-phase-probe-reader-admission): consume primitive samples and error evidence, enclose the reconstructed turn and harmonic integral, and abstain when its numerical budget is unresolved; no scientific response is activated |
+| Closed bounded observation admission | [Finite records of the free probe](#free-phase-probe-record-admission): decay subtraction and a joint reading, clock, calibration, endpoint and quadrature bound support the fixed arithmetic budget; a sufficient noisy-record overlap bound retains the information limit |
 | Closed bounded operational admission | [Free relative-phase probe](#free-phase-probe-admission): one freely reacting two-C9 history traverses a full registration turn, retaining both child identities with a uniform fine bound and accounted contact work. Its derivative-free harmonic identity selects no intrinsic law or physical interpretation |
 | Closed bounded foundation admission | [Independent content for a constitutive restriction](#independent-boundary-premise-admission): exact phase-current stabilizers and complete-flow covering limits; current-channel faithfulness is an additional premise, retains both counterlaws, and is not implied by full-state identity or native U3 |
 | Closed reusable structural admission | [Collective boundary constraints and their premises](#collective-boundary-foundation-admission): kernel constraints, exact normal compliance, full damping and hidden initialization separate structural consequences from law-specific tuning. The matched-conductance split control removes the remaining neutral mode; no further contact variant is activated |
@@ -1487,47 +1490,47 @@ probe, input, source replay or trajectory evaluation. It is neither
 an intrinsic selector nor a finite-noise or physical measurement certificate.
 
 <a id="free-phase-probe-record-admission"></a>
-### Active bounded admission: finite records of the free probe
+### Closed bounded admission: finite records of the free probe
 
-The [integral identity](../nodal/ORGANIZED_FREE_PHASE_PROBE.md#free-phase-probe-integral-observation)
-requires a continuous record and its one-turn endpoint. Its small raw
-harmonic contrast cannot be made resolvable merely by normalizing it.
-The next question is whether a finite record can certify the same
-observation within a declared mathematical accuracy and work/time budget.
+The declaration at `fd5dc157` fixed the unchanged free-probe family,
+residual-interpolation algorithm and one prospective arithmetic budget.
+The [proof owner](../nodal/ORGANIZED_FREE_PHASE_PROBE.md#free-phase-probe-finite-records)
+derives a joint coefficient bound from primitive reading, exposure-time,
+constant kinetic-calibration and initial lifted-phase readout errors.
+Subtracting the known homogeneous decay controls interpolation without
+discarding the actual fine-state dynamics. The reconstructed turn, both
+boundary terms, cellwise midpoint quadrature and denominator uncertainty
+remain in the bound.
 
-Specify the sampled relative-form readout, preparation uncertainty,
-sampling clock, kinetic calibration and integration rule before any
-response evaluation. Propagate their joint errors through reconstructed
-phase, the stopping endpoint, every integral and the normalization. Keep
-the actual fine-state bias and supplied resources. Acceptance is a
-constructive sufficient finite-record bound or a scoped resolution
-obstruction; neither identifies a physical sensor or universally
-excludes another observation. No new two-law trajectory comparison,
-source replay or apparatus search is activated by the exact-access result.
+The fixed control gives coefficient uncertainty below `0.0000219`,
+strictly below `1/(2*2187)`. It stipulates `10001` raw samples and at most
+`1000000` quadrature evaluations with the independently declared accuracy;
+these are mathematical costs and premises, not instrument capabilities or
+runtime measurements. A separate sufficient raw-noise overlap construction
+shows why better quadrature alone cannot guarantee discrimination.
+The shared budget kernel evaluates no sampled response, source or trajectory.
+Preparation, event work, long structural horizon and physical admission retain
+their existing boundaries.
 
-The bounded analytic calculation uses the unchanged complete family and
-preparation above, uniformly over `0<=lambda<=1`. It samples the raw relative
-form at a uniform nominal grid on `0<=s<=1`, with bounded exposure-time,
-reading and constant kinetic-calibration errors. It subtracts the known
-homogeneous decay `12*exp(-s)` before piecewise-linear interpolation,
-integrates that reconstruction to locate a full-turn increment, and retains
-the initial lifted-phase readout error and both boundary terms. A scaled
-energy residual supplies an algebraically equivalent harmonic integral.
-Composite midpoint quadrature stays inside interpolation cells; its
-remainder and all calibration factors must be bounded independently of
-the unknown deformation and of any evaluated response.
+<a id="free-phase-probe-reader-admission"></a>
+### Next bounded implementation: a certified primitive-record reader
 
-The single prospective arithmetic control fixes harmonic `n=9`, combined
-fine allowances `rho_x=0`, `rho_theta=10^-6`, `10000` sampling intervals,
-`100` quadrature subdivisions per interval, raw relative-form reading
-error `10^-11`, normalized exposure-time error `10^-18`, relative constant
-kinetic-calibration error `10^-18`, initial lifted-phase readout error
-`10^-10`, and total numerical evaluation/endpoint error `10^-8` in the
-normalized coefficient. Its target is a sufficient uncertainty below
-`1/(2*2187)` for the existing endpoint-law contrast. These are stipulated
-mathematical budgets, not sensor capabilities. Acceptance may instead
-report an unresolved budget. This control evaluates bounds only: no
-record, trajectory, source replay or physical response is reserved or run.
+Implement the admitted observation as a detached consumer of primitive raw
+samples, nominal times, calibration, lifted-phase readout and independent
+error evidence. Rebuild the family and fine-state bounds; do not trust a
+cached budget, fitted derivative bound or supplied verdict. Enclose decay
+subtraction, phase integration, the full-turn endpoint and the harmonic
+integral with certified function evaluation and arithmetic. Report unresolved
+numerical or reconstructed-turn bounds explicitly.
+
+Reuse the finite-record owner and shared exact/interval arithmetic instead
+of adding a parallel observation formula. Check polynomial/analytic records,
+endpoint and calibration controls, malformed input and numerical abstention
+without invoking a scientific producer. This step implements the theorem's
+numerical allowance; it does not authenticate preparation, instrument errors
+or a reached source. No two-law response, source replay, physical-data
+evaluation or apparatus search is activated. Any later response requires
+its own frozen preparation, record protocol and complete-law evidence.
 
 <a id="contact-maintenance-certificate-admission"></a>
 ### Closed complete-flow convergence; unit-strength classification deferred

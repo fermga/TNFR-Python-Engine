@@ -235,7 +235,8 @@ admission and lost primitive winding. A faithful primitive current need not
 make a collective aggregate faithful or provide a finite-noise inverse.
 
 For the [free organized phase probe](theory/nodal/ORGANIZED_FREE_PHASE_PROBE.md),
-select `tests/physics/test_organized_free_phase_probe.py` and retain
+select `tests/physics/test_organized_free_phase_probe.py` and
+`tests/physics/test_organized_free_phase_record.py`; retain
 `tests/physics/test_phase_boundary_law_integration.py` for its constitutive
 coefficient source. Reconstruct both complete 18-node rows and actual means;
 verify source reaction, the monotone full-turn bound and uniform fine-state
@@ -243,9 +244,15 @@ Lyapunov estimate. Check mean-zero cancellation in attachment work and the
 quadratic current defect, including the derivative-free harmonic identity
 and endpoint term. Primitive error budgets are conditional Euclidean bounds,
 not observed state or source certificates. Exercise their strict boundary,
-invalid domains and fresh-input admission. No source, trajectory or measured
-record is evaluated; continuous integral access does not certify finite
-sampling, clock accuracy or a physical preparation.
+invalid domains and fresh-input admission. For finite-record budgets, check
+the decay-subtracted energy identity, actual fine-state derivative bound,
+interpolation and cellwise midpoint remainders, reconstructed turn and both
+endpoint terms. Calibration affects the scaled readings and the denominator;
+the initial phase readout error does not change the prepared phase. Exercise
+the frozen arithmetic budget with independent algebraic controls, preserving
+uniformity over the unknown constitutive coefficient. No source, trajectory
+or measured record is evaluated. A sufficient prospective budget neither
+implements a record reader nor establishes physical sensor accuracy.
 
 For [composition-compatible constitutive laws](theory/nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md),
 select `tests/physics/test_composition_compatible_constitutive.py` together

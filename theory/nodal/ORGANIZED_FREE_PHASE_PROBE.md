@@ -9,6 +9,9 @@ neither constituent is held, and no phase reset or continuous input is
 used after contact. The actual mean-form record determines the relative
 phase through the already declared kinetic row. An integral identity then
 reads a current harmonic without differentiating that record.
+The finite-record construction below bounds the same readout from
+finitely many uncertain samples, under explicit timing and kinetic
+calibration premises.
 
 This is conditional operational access under the existing supplied
 constitutive family. It does not select that family, establish physical
@@ -410,15 +413,437 @@ normalizing denominator; a numerator-only error at nominal
 \(\gamma\) does not suffice. For example, distinguishing two
 deformations through \(n=9\) with a common such bound requires
 twice (22) to be smaller than
-\(|\lambda_1-\lambda_0|/2187\). No instrument, finite sampling
-scheme or uncertainty budget is admitted here.
+\(|\lambda_1-\lambda_0|/2187\). The next section supplies a finite
+sampling construction and its conditional uncertainty budget.
+It does not admit an instrument or a physical observation map.
 
-## 6. Scope and shared verification
+<a id="free-phase-probe-finite-records"></a>
+
+## 6. Finite records with explicit uncertainty
+
+The mathematical question is whether finite observations can retain the
+information in (20), rather than whether the ideal continuous integral
+exists. Keep the complete law, primitive preparation, contact and horizon
+of section 1. In particular the actual initial means remain
+\(v(0)=12,\delta(0)=0\). The initial phase uncertainty introduced below
+belongs only to the readout; it does not enlarge the preparation class.
+
+### 6.1 Subtracting the known free relaxation
+
+Define a reference and two residuals from the actual mean record:
+
+\[
+ h(s)=12e^{-s},\qquad w(s)=v(s)-h(s),\qquad
+ R(s)=\frac{v(s)^2-h(s)^2}{2\gamma^2}
+     =\frac{h(s)w(s)+w(s)^2/2}{\gamma^2}.
+ \tag{23}
+\]
+
+The complete mean rows, without any carrier substitution, give
+
+\[
+\begin{split}
+ w_s+w&=-\gamma^2\overline J,\qquad w(0)=0,\\
+ R_s+2R&=-v\overline J,\qquad R(0)=0,\\
+ |w|&\le\gamma^2J_0,\qquad |w_s|\le2\gamma^2J_0,\\
+ |R|&\le R_0:=6J_0,\qquad |R_s|\le24J_0.
+\end{split}
+ \tag{24}
+\]
+
+The last two estimates follow by variation of constants and \(v\le12\).
+Multiplying the second row by \(\sin(n\delta)\) and integrating yields,
+at any \(b\in[0,1]\),
+
+\[
+ \frac1\pi\int_0^b\overline J\,v\sin(n\delta)\,ds
+ =\frac1\pi\left\{
+ \int_0^b R\bigl(nv\cos(n\delta)-2\sin(n\delta)\bigr)\,ds
+ -[R\sin(n\delta)]_0^b\right\}.
+ \tag{25}
+\]
+
+At \(b=s_*\) this is the same \(B_n\) as (19).
+The factorized expression in (23) avoids forming the difference of
+the two large integrals in (19). It does not remove the accuracy needed
+to read the small form residual or to calibrate \(\gamma\).
+
+The finite interpolation bound must also retain the actual fine state.
+Writing \(d_k=q_{A,k}-q_{B,k}\), equations (9), (12) and \(s=a\tau/2\)
+give
+
+\[
+ \|d\|\le2\sqrt{2F},\qquad
+ \|d_s\|\le\frac{5\sqrt F}{a},\qquad \sum_k(d_k)_s=0.
+ \tag{26}
+\]
+
+Here \(\|L_f\|<5\) and \(\gamma\|z\|\le\sqrt{2F}\).
+Differentiate the actual average current and subtract the zero
+quantity \(j_\lambda'(\delta)\sum_k(d_k)_s/9\). Then
+
+\[
+\begin{split}
+ |\overline J_s|
+ &\le12J_1+\frac{J_2}{9}\|d\|\|d_s\|\\
+ &\le12J_1+\frac{10\sqrt2J_2}{9a}F
+ \le12J_1+\frac{5J_2}{3a}F,\\
+ |w_{ss}|&\le
+ \gamma^2(2J_0+12J_1)+\frac{5000}{3}J_2F_0.
+\end{split}
+ \tag{27}
+\]
+
+Thus the fast fine relaxation has a declared contribution to the
+interpolation budget; it is not replaced by the carrier derivative.
+
+### 6.2 Finite sampling, reconstruction and stopping
+
+Use \(N+1\) samples at nominal scaled times \(s_i=i/N\),
+\(i=0,\ldots,N\), with \(N\) a positive integer and \(H=1/N\).
+The following are independently
+supplied observation premises:
+
+- A raw reading \(\widehat r_i\) differs from the actual relative form
+  \(r(s_i^{\rm act})\) by at most \(\varepsilon_r\).
+- Its exposure time satisfies
+  \(|s_i^{\rm act}-s_i|\le\xi\), with every actual exposure in \([0,1]\).
+  This is an error in the declared scaled clock, including any error
+  in converting a reading's timestamp to that clock.
+- A single kinetic calibration obeys
+  \(\widehat\gamma/\gamma\in[1-\kappa,1+\kappa]\), \(0\le\kappa<1\).
+- The readout origin \(\widehat\delta_0\) obeys
+  \(|\widehat\delta_0|\le\zeta\).
+
+These premises do not follow from the nodal identity. In particular,
+a sensor value has not been identified with EPI by this theorem.
+The true kinetic law and \(\gamma=1/(1023\pi)\) remain unchanged;
+\(\widehat\gamma\) is only an observation calibration. An arbitrary
+unknown clock scale is not admitted unless it satisfies the uniform
+exposure bound throughout this horizon.
+The error allowances are deterministic joint uniform bounds and may
+be correlated. Independent justification means justification apart
+from the evaluated response; no statistical independence or stochastic
+averaging is assumed.
+
+For computable enclosures let \(g_-\le\gamma\le g_+\) be positive
+rational bounds and let \(\pi_-\le\pi\le\pi_+\).
+Use the norm-derived sufficient upper bound \(F_0\) from (4), replacing
+\(\gamma\) by \(g_+\) there. Define
+
+\[
+\begin{split}
+ C&=g_+^2J_0,\\
+ E&=12\kappa+(1+\kappa)
+       \bigl[g_+\varepsilon_r+(12+C)\xi\bigr],\\
+ M_w&=g_+^2(2J_0+12J_1)+\frac{5000}{3}J_2F_0,\\
+ \varepsilon_v&=E+\frac{M_wH^2}{8},\qquad
+ E_\delta=\zeta+\varepsilon_v,\qquad
+ G_-^2=(1-\kappa)^2g_-^2.
+\end{split}
+ \tag{28}
+\]
+
+Indeed \(|v_s|\le12+C\). Multiplication of the raw reading by
+\(\widehat\gamma\), followed by comparison with \(v(s_i)\), gives
+\[
+ |\widehat v_i-v(s_i)|\le E,\qquad
+ \widehat v_i=\widehat\gamma\widehat r_i.
+ \tag{29}
+\]
+The term \(12\kappa\) retains the error in the large form mean; it
+cannot be dropped merely because the constitutive contrast is small.
+
+At each nominal time form
+\(\widehat w_i=\widehat v_i-h(s_i)\), and let \(\widetilde w\)
+be their piecewise linear interpolant. Define the continuous
+reconstruction
+
+\[
+ \widetilde v=h+\widetilde w,\qquad
+ \widetilde\delta(s)=\widehat\delta_0+
+            \int_0^s\widetilde v(u)\,du,\qquad
+ \widetilde R=\frac{h\widetilde w+\widetilde w^2/2}
+                   {\widehat\gamma^2}.
+ \tag{30}
+\]
+
+The elementary linear interpolation remainder bounded by
+\(\sup|w_{ss}|H^2/8\), together with (29), proves
+\[
+ |\widetilde v-v|\le\varepsilon_v,\qquad
+ |\widetilde\delta-\delta|\le E_\delta.
+ \tag{31}
+\]
+The integral in (30) uses only an exponential and the integral
+of a linear function on each cell; it requires no derivative
+of any reading.
+
+Require the strict stopping margin
+
+\[
+ \varepsilon_v<
+ \min\left(\frac{11}{3},\,\frac{34}{5}-2\pi_+\right).
+ \tag{32}
+\]
+
+Then \(\widetilde v>0\) and there is a unique
+\(\widehat s_*\in(0,1)\) at which
+\(\int_0^{\widehat s_*}\widetilde v\,ds=2\pi\).
+This is a full reconstructed **increment**, so that
+\(\widetilde\delta(\widehat s_*)=\widehat\delta_0+2\pi\);
+it does not reset the true phase or absorb the readout offset.
+Moreover
+
+\[
+ |\delta(\widehat s_*)-2\pi|\le\varepsilon_v,\qquad
+ |\widehat s_*-s_*|\le\frac{3\varepsilon_v}{11}.
+ \tag{33}
+\]
+
+The second bound uses the true lower speed in (7).
+The readout origin error affects the harmonic factors and both
+endpoint terms, but not this increment stopping rule.
+
+### 6.3 Calibration, quadrature and endpoint errors
+
+The residual normalization in (30) uses the uncertain kinetic
+calibration. Its complete error, rather than a numerator-only
+error, is bounded by
+
+\[
+ \varepsilon_R=
+ \frac{(24+\varepsilon_v)\varepsilon_v}{2G_-^2}
+ +R_0\left((1-\kappa)^{-2}-1\right),\qquad
+ |\widetilde R-R|\le\varepsilon_R.
+ \tag{34}
+\]
+
+To see this, first compare \(\widetilde v^2\) with \(v^2\),
+using \(v\le12\); then compare
+\(\gamma^2/\widehat\gamma^2\) with one in the true residual.
+Both errors are retained in (34).
+
+For an explicit finite quadrature, take a positive integer \(K\).
+Subdivide each data cell into \(K\) equal subcells and retain
+their portions before \(\widehat s_*\), clipping the last one
+at that endpoint. Use the midpoint of each retained portion.
+Each has length at most \(H/K\), no portion crosses a data
+knot, and there are at most \(NK\) such evaluations. This splitting
+matters because \(\widetilde w_s\) can jump at a data knot.
+
+The following constants bound derivatives inside each data cell:
+
+\[
+\begin{split}
+ W&=C+E,\qquad D=2C+2E/H,\qquad
+ V=12+W,\qquad V_1=12+D,\\
+ \widehat R_0&=(12W+W^2/2)/G_-^2,\\
+ \widehat R_1&=(12W+VD)/G_-^2,\\
+ \widehat R_2&=(12W+24D+D^2)/G_-^2,\\
+ A_0&=nV+2,\\
+ A_1&=nV_1+n^2V^2+2nV,\\
+ A_2&=12n+3n^2VV_1+n^3V^3+2nV_1+2n^2V^2,\\
+ M_{f,2}&=\widehat R_2A_0+
+                    2\widehat R_1A_1+\widehat R_0A_2,\\
+ E_Q&=\frac{M_{f,2}}{24(NK)^2}.
+\end{split}
+ \tag{35}
+\]
+
+For example \(|\widetilde w|\le W\),
+\(|\widetilde w_s|\le D\) and \(\widetilde w_{ss}=0\)
+inside a cell. Therefore
+\[
+ \widetilde R_{ss}
+ =\frac{h\widetilde w-2h\widetilde w_s+
+                       (\widetilde w_s)^2}{\widehat\gamma^2}.
+ \tag{36}
+\]
+This proves the three residual bounds in (35).
+For
+\(\widetilde A=n\widetilde v\cos(n\widetilde\delta)
+-2\sin(n\widetilde\delta)\), the bounds on
+\(|\widetilde A|,|\widetilde A_s|,|\widetilde A_{ss}|\)
+are respectively \(A_0,A_1,A_2\), using
+\(\widetilde\delta_s=\widetilde v\) and
+\(|\widetilde v_{ss}|=h\le12\).
+The product rule bounds
+\(|(\widetilde R\widetilde A)_{ss}|\) by \(M_{f,2}\).
+The midpoint remainder summed over the separate subcells is
+at most \(M_{f,2}(H/K)^2/24\), since their total length is
+at most one. No differentiability across data knots is assumed.
+
+Let \(Q_{N,K}\) be this quadrature of
+\(\widetilde R\widetilde A\), and retain the reconstructed
+endpoint correction:
+
+\[
+ \widehat B_n^{\,\rm exact}=\frac1\pi\left\{
+ Q_{N,K}-[\widetilde R\sin(n\widetilde\delta)]
+                               _0^{\widehat s_*}\right\}.
+ \tag{37}
+\]
+
+Both sine factors at these endpoints are
+\(\sin(n\widehat\delta_0)\); they need not vanish.
+Define the deliberately conservative observation bound
+
+\[
+ E_O=\varepsilon_R(nV+4)
+ +R_0\left[n\varepsilon_v+(12n^2+4n)E_\delta\right]
+ +J_0\varepsilon_v.
+ \tag{38}
+\]
+
+Here is a direct comparison with the true full-turn integral.
+For \(A=nv\cos(n\delta)-2\sin(n\delta)\), equations
+(31) and (34) imply
+\[
+ |\widetilde R\widetilde A-RA|
+ \le\varepsilon_R(nV+2)
+ +R_0\left[n\varepsilon_v+(12n^2+2n)E_\delta\right].
+ \tag{39}
+\]
+Each endpoint difference is at most
+\(\varepsilon_R+R_0nE_\delta\).
+Finally the true current integral between \(\widehat s_*\)
+and \(s_*\) is bounded by \(J_0\varepsilon_v\), using
+\(d\delta=v\,ds\), \(|\overline J|\le J_0\) and (33).
+Adding these terms proves (38), including the true and
+reconstructed endpoints. The last term could be sharpened
+near a full turn but no such improvement is used here.
+
+Allow a further certified coefficient error
+\(\varepsilon_{\rm num}\) in evaluating (37). Combining
+(21), (35) and (38) gives the finite-record theorem
+
+\[
+ \boxed{|\widehat B_n-b_n|\le
+ \mathcal E_n:=
+ \frac{8J_2F_0}{9}+\frac{E_O+E_Q}{\pi_-}
+                         +\varepsilon_{\rm num}.}
+ \tag{40}
+\]
+
+The terms separately retain fine-state bias, raw readings,
+clock exposures, calibration, phase readout, interpolation,
+stopping, endpoints, quadrature and numerical evaluation.
+This is a sufficient theorem domain; failure of (32) or of
+a discrimination margin does not prove that a particular
+record is uninformative.
+
+The numerical allowance can be supplied constructively.
+There are finitely many cell formulas and quadrature values;
+bounded-argument exponential and trigonometric Taylor series,
+with rigorous remainders, and convergent rational enclosures
+of \(\pi\) enclose them to arbitrary positive accuracy.
+The positive lower slope
+\(11/3-\varepsilon_v\) in (32) gives an explicit inverse
+bound for bisection of the reconstructed increment.
+For the integrand in (37), put
+\(M_0=\widehat R_0A_0\) and
+\(M_1=\widehat R_1A_0+\widehat R_0A_1\).
+Moving the clipping endpoint by \(e_s\) changes the midpoint
+sum by at most \((M_0+HM_1/(2K))e_s\): the derivative of a
+partial-cell term of length \(\ell\) is
+\(f(\mathrm{midpoint})+\ell f_s(\mathrm{midpoint})/2\).
+The corresponding endpoint product changes by at most
+\((\widehat R_1+n\widehat R_0V)e_s\).
+These bounds also apply when an endpoint crosses a data knot,
+by continuity and the bounds on each side. They permit a
+finite root enclosure and arithmetic precisions whose total
+coefficient error is any prescribed
+\(\varepsilon_{\rm num}>0\). This is an existence and error
+allocation argument, not a claim about unchecked floating
+point evaluation. Setting this allowance to zero describes
+ideal exact evaluation, not a generic machine implementation.
+
+### 6.4 Frozen finite budget and an ambiguity control
+
+The prospective budget frozen at revision fd5dc157 uses
+
+| Primitive allowance or design | Frozen value |
+| --- | --- |
+| Harmonic and two hypotheses | \(n=9,\ \lambda=0\) versus \(\lambda=1\) |
+| Fine form and phase norm bounds | \(\rho_x=0,\ \rho_\theta=10^{-6}\) |
+| Data intervals and quadrature subdivisions | \(N=10000,\ K=100\) |
+| Raw relative-form reading error | \(\varepsilon_r=10^{-11}\) |
+| Exposure error in scaled time | \(\xi=10^{-18}\) |
+| Relative kinetic calibration error | \(\kappa=10^{-18}\) |
+| Initial phase readout error | \(\zeta=10^{-10}\) |
+| Certified coefficient evaluation allowance | \(\varepsilon_{\rm num}=10^{-8}\) |
+
+Thus \(F_0=5\,10^{-13}\). Rebuilding (28)--(40) with rational
+enclosures gives the following approximate values only as
+readable summaries of the bounds:
+
+| Derived bound | Approximate upper bound |
+| --- | --- |
+| Scaled sample error \(E\) | \(3.13554\,10^{-15}\) |
+| Interpolation error \(\varepsilon_v\) | \(4.84310\,10^{-15}\) |
+| Residual error \(\varepsilon_R\) | \(6.00283\,10^{-7}\) |
+| Observation contribution \(E_O\) | \(6.78369\,10^{-5}\) |
+| Quadrature contribution \(E_Q\) | \(6.95902\,10^{-7}\) |
+| Total coefficient bound \(\mathcal E_9\) | \(2.18247\,10^{-5}\) |
+
+The exact rational comparison is
+
+\[
+ \mathcal E_9<\frac{219}{10^7}
+       <\frac1{4374}
+       =\frac12\left|\frac1{2187}-0\right|.
+ \tag{41}
+\]
+
+It proves disjoint coefficient intervals for the two hypotheses
+if a record and its calibration satisfy these supplied premises.
+The construction uses 10001 raw readings and at most one million
+quadrature evaluations; these are finite counts, not a benchmark
+or a runtime prediction. The budget is stringent, especially its
+kinetic and clock calibration. No instrument, actual record,
+observed response or laboratory clock is certified by (41).
+The calculation admits the frozen budget without retuning it
+against an evaluated response.
+
+Finite error is also a substantive information restriction.
+For example, compare the two exact carrier histories under the
+same frozen support and means, with \(\lambda=0\) and \(1\).
+Their currents differ by at most \(d=1/1458\) at each phase.
+Variation of constants in (6), the current Lipschitz bound
+\(J_1\), and Gronwall's inequality on \(0\le s\le1\) give
+
+\[
+ \sup_s|v_1(s)-v_0(s)|
+ \le\gamma^2d\,e^{\gamma^2J_1},\qquad
+ \sup_s|r_1(s)-r_0(s)|
+ \le\gamma d\,e^{\gamma^2J_1}.
+ \tag{42}
+\]
+
+For completeness, the first difference is bounded by
+\(\gamma^2d+\gamma^2J_1\int_0^s|\delta_1-\delta_0|\,du\).
+Since the phase difference is the integral of the form
+difference, on this unit horizon its double integral is at
+most the corresponding single integral of the running
+supremum. The scalar Gronwall bound gives (42).
+If the independently permitted raw reading radius is at least
+\(\gamma d e^{\gamma^2J_1}/2\), the midpoint of these two raw
+records is compatible with both laws. This remains true even
+with continuous reading, perfect clocks and perfect kinetic
+calibration. It is a sufficient, nonoptimal ambiguity regime
+for this preparation, not a sharp noise threshold or a
+claim that every noisier record is ambiguous. More samples
+alone cannot remove this admitted overlap.
+
+## 7. Scope and shared verification
 
 This result replaces an abstract collection of separately imposed
 registrations by one finite, freely reacting contact history.
 It retains its supplied large form means, positive work, both
 kinetic rows, complete fine-state allowance and constituent identities.
+The finite-record theorem additionally exposes sufficient observation
+and computation budgets, and a regime where reading sets can overlap.
 The observations remain conditional on their declared preparation
 and law. A free probe does not convert compatibility, faithfulness
 or minimal information into an intrinsic constitutive selector.
@@ -431,4 +856,15 @@ and residual allowances.
 check the actual support/mean rows, full fine projection,
 quadratic decay and work bounds, and the integral harmonic identity.
 These controls evolve no source or trajectory, install no event,
-and provide no new physical or finite-noise observation evidence.
+and provide no new physical observation evidence.
+The separate
+[finite-record budget calculation](../../src/tnfr/physics/_organized_free_phase_record.py)
+rebuilds (28)--(40) from primitive error allowances and integer
+sampling budgets. It evaluates no record and implements no record
+consumer, source producer, continuous solver or physical sensor.
+Its mathematical uncertainty guarantee is conditional on the
+observation premises and a certified evaluation allowance.
+The [finite-record controls](../../tests/physics/test_organized_free_phase_record.py)
+check the residual identity, actual fine-state cancellation,
+interpolation and midpoint bounds, primitive admission and the
+frozen rational comparison without evaluating a response.

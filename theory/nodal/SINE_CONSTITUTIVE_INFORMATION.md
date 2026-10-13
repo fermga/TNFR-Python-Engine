@@ -1388,8 +1388,11 @@ The [free two-C9 probe](ORGANIZED_FREE_PHASE_PROBE.md) supplies one
 conditional realization of an entire relative-registration traversal.
 Both constituents react, with their own fine state, supplied initial
 form contrast and contact work retained. Its integral current observation
-uses a declared kinetic row and continuous form record; it neither
-derives current-channel faithfulness nor supplies finite sensor accuracy.
+uses a declared kinetic row. Its
+[finite-record theorem](ORGANIZED_FREE_PHASE_PROBE.md#free-phase-probe-finite-records)
+also bounds reconstruction and numerical errors under stipulated reading,
+clock and calibration accuracies. It neither derives current-channel
+faithfulness nor establishes a physical sensor's accuracy.
 
 The shared [static information owner](../../src/tnfr/physics/_phase_boundary_information.py)
 derives this classification from re-admitted coefficients.
