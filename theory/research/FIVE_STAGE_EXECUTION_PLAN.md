@@ -227,12 +227,15 @@ It requires no initial mean-form contrast or full turn. The
 reviewed owners supply no new independent selector, ready generative mechanism
 or physical bridge for this comparison. Further constitutive selection retains
 the [independent-content entry condition](#new-constitutive-evidence-admission).
-The next conditional question is
-[localized identity transport](#localized-identity-transport-admission): admit
-a complete model and a finite displacement/identity claim before evaluating
-whether the capability exists or encounters a scoped obstruction. This does
-not require prior unique law selection or a physical sensor. Another internal
-law-discrimination refinement is not automatically queued.
+The [localized identity transport gate](#localized-identity-transport-admission)
+is closed by a whole-interval proof under one complete positive-loss law:
+a prepared packet retains localization and full-state identity while moving
+between disjoint endpoint windows. The next question is
+[source admission for mobile organization](#localized-transport-source-admission):
+declare a class that lacks the target organization before asking whether it
+can form. Neither unique law selection nor a physical sensor is a prerequisite
+to this conditional question. Another internal law-discrimination refinement
+is not automatically queued.
 Unit-strength classification remains unresolved and deferred; no numerical
 campaign is admitted.
 
@@ -251,7 +254,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next conditional model admission | [Localized identity transport](#localized-identity-transport-admission): specify one complete law, background, support geometry, finite preparation and displacement/identity contract; decide analytic feasibility before any trajectory campaign |
+| Next conditional source admission | [Formation of a mobile organization](#localized-transport-source-admission): declare an independent initial class lacking the target organization, and a prospective formation/transport claim under the same complete law; check resource and symmetry restrictions before a response |
+| Closed prepared transport | [Localized identity transport](#localized-identity-transport-admission): a full-state moving reference, nonlinear error tube and uniform localization bound prove finite transport under positive loss, including a full preparation-error ball; no formation or trajectory campaign |
 | Entry condition for constitutive selection | [Independent content for law selection or physical comparison](#new-constitutive-evidence-admission): the reviewed resource/observation bounds supply no new independently justified selector or physical bridge; this does not block conditional capability research |
 | Closed foundation decision | [After the resource-information bounds](#post-resource-foundation-review): internal access and error budgets are established; law justification, occurrence and the physical bridge retain distinct missing premises. Existing chart results and deferred receiver questions do not activate another campaign |
 | Closed resource-information admission | [Small-resource constitutive information](#organized-small-resource-information): a cubic endpoint law gap, independent full-state error budgets, genuine reading-set overlap and quadratic nominal attachment storage quantify one fixed observation class without large initial mean forms |
@@ -464,7 +468,7 @@ response has not been derived from the earlier acquired constituents.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
-| Localized identity transport | Distinguish displacement across fixed support from internal activity, relabeling and fixed-cycle retention; apply the [ontology contract](../EMERGENT_ONTOLOGY.md#localized-identity-transport) to the whole state | **Next conditional model admission.** Declare a finite claim under one complete law; a transport construction or scoped obstruction is useful without unique law selection. Formation, permanent motion and collision are separate obligations |
+| Localized identity transport | [Prepared finite transport](../nodal/LOCALIZED_IDENTITY_TRANSPORT.md) is proved with full-state identity and localization under positive loss; forming that organization needs an independent source class | **Next conditional source admission.** Specify what organization is initially absent and what resources/direction are supplied under the same law. Permanent motion, collision and physical identification remain separate |
 | Composite identity under interaction | Retain complete-law, marked-identity and actual-source hypotheses when claiming maintained collective organization | **Closed two-law source-to-attractor comparison, scoped transition, marked interaction and reusable boundary criterion.** Normal compliance and full kinetics retain distinct obligations. No further contact variant follows; unit-strength classification, basin gaps and a larger transition interval stay deferred |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
@@ -1503,7 +1507,7 @@ capability question under a supplied complete law.
 
 A conditional generative question may instead investigate an unclosed
 capability, as in the selected
-[transport admission](#localized-identity-transport-admission). Declare its
+[mobile-source admission](#localized-transport-source-admission). Declare its
 source class, complete law, identity and possible obstruction before seeking
 a proof or finite evidence; a proof need not already exist to admit the
 question. The [receiver capture contract](../nodal/ORGANIZED_RECEIVER_SLOW_ADMISSION.md#organized-receiver-capture-contract)
@@ -1713,44 +1717,59 @@ generative question. The separately selected transport admission below does
 not claim to supply these missing independent premises.
 
 <a id="localized-identity-transport-admission"></a>
-### Next admission: finite transport of a localized identity
+### Closed admission: finite transport of a prepared localized identity
 
-**Question.** Under one declared complete TNFR law, can a localized
-organization change location on supplied support while retaining its identity
-for a finite interval? Apply the
-[ontology contract](../EMERGENT_ONTOLOGY.md#localized-identity-transport).
-Prepared transport and formation from a source lacking that identity are
-separate claims. The initial admission targets transport; it must explicitly
-record any organization or directional asymmetry already prepared.
+The [proof and fixed protocol](../nodal/LOCALIZED_IDENTITY_TRANSPORT.md#localized-transport-protocol)
+answer the finite transport question positively under the existing
+normalized-sine law with strictly positive loss. A supplied cycle, held unit
+capacities, small phase lift and directional Fejer packet give a prospective
+full-state reference. A contractive tangent estimate and nonlinear bootstrap
+retain the same trajectory in a uniform error tube, including arbitrary joint
+form/phase preparation errors. Its localization windows at the two endpoints
+are disjoint; stationary states and nonlocalized single modes cannot stand
+in for this property. Every bound applies throughout the declared interval.
 
-**Admission work.** Choose one existing complete law and a finite support
-with a declared homogeneous translation action, boundary convention,
-background and geometric metric. Verify coefficient/capacity equivariance
-rather than infer it from a drawing. Freeze the full state, source class,
-clock, localization observation, nonvanishing signal floor, displacement,
-identity tolerance and finite horizon before a response is evaluated.
-Record numerical and preparation error separately. If that law cannot support
-the claim, retain the obstruction before considering another completion.
+The [detached budget](../../src/tnfr/physics/_localized_identity_transport.py)
+re-admits coefficients and scalar premises with outward arithmetic. It uses
+no trajectory, eigensystem fit, response or source replay. The conservative
+tangent is a comparison inside the proof; actual loss remains positive.
+The reference's internal rotation is predicted state, not phase gauge, and
+fractional profile shifts are observations, not exact nonlinear symmetries.
 
-**Reuse and limits.** Consult the existing
-[positive-loss obstruction](../nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission)
-before proposing permanent motion, and distinguish a transported profile from
-the [fixed-constituent pulse](../nodal/SINE_REPLICA_PULSE.md#sine-replica-joint-persistence).
-Use full-state regional observations and boundary work; preserve hidden
-initialization if a reduced model introduces memory. Frozen acquired-cycle
-sources and their capture constants do not transfer to a new support.
-Auxiliary graph-wave propagation is not execution of the selected nodal law.
-Numerical work, if admitted, uses the shared integrator with the actual
-complete rows and residual evidence; no new parallel runner is needed.
+This closes the admitted finite transport gate with a conditional proof,
+stronger than a feasibility argument. It does not establish formation,
+permanent motion, selected direction, closed collective dynamics or physical
+identity. The [positive-loss recurrence boundary](../nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission)
+and independent physical-admission duties remain unchanged.
 
-**Acceptance.** The next result is an explicit model/claim admission with an
-analytic feasibility argument, or a law-specific obstruction. A proposed
-response must distinguish retained finite transport from decay, spreading,
-site relabeling and unrelated later excitation. A trajectory alone will not
-establish robustness or continuous-time identity. Unavailable bounds remain
-unavailable. No numerical scan, frozen-source replay, collision, autonomous
-event, infinite-support limit or physical campaign is activated by this
-consolidation. Further execution requires its concrete protocol in this gate.
+<a id="localized-transport-source-admission"></a>
+### Next admission: a source for mobile organization
+
+**Question.** Can the same complete law generate a localized mobile
+organization from a declared initial class that does not already contain
+that identity? Apply the [formation and transport distinction](../EMERGENT_ONTOLOGY.md#localized-identity-transport).
+Prepared motion does not answer this question, and a more accurate trajectory
+of the existing packet would not close it.
+
+**Admission work.** Retain the actual support, capacity, positive loss, clock
+and observation owner before changing the model. Define the initially absent
+property, all supplied spatial/phase organization and resources, and a finite
+formation-plus-transport acceptance criterion. Check conserved means,
+storage/loss and complete-law symmetries against that class. In particular,
+an exactly uniform equilibrium remains uniform; a numerical tie-break cannot
+establish spontaneous direction selection. Freeze a source independently of
+the target response; reversing a chosen final packet is engineered preparation,
+not an independently justified formation mechanism. A nontrivial source may
+retain declared correlations, but must expose them rather than call them absent.
+
+**Acceptance.** Supply one admissible source/claim with an analytical route,
+or a scoped obstruction explaining which missing resource or premise blocks
+it. Distinguish transient focusing from entry into a mobile identity retained
+over a subsequent interval. Retain full-state preparation errors and boundaries
+on every inherited certificate. No parameter scan, trajectory campaign,
+frozen-source replay, new forcing, autonomous support event, collision or
+physical campaign is active. Any later numerical protocol must be fixed here
+before evaluation and use the shared complete-row integrator.
 
 <a id="contact-maintenance-certificate-admission"></a>
 ### Closed complete-flow convergence; unit-strength classification deferred

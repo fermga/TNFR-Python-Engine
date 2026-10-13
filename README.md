@@ -22,12 +22,13 @@ stays near their seat. This illustrates how organization can belong to a group
 and persist while its parts change. It is an analogy for the question, not a
 derivation of physical matter.
 
-Studying such movement requires tracking a localized pattern across fixed
-sites while checking its identity. Internal oscillation or persistence on a
-prepared loop alone does not establish this capability; the
+A [conditional transport proof](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/LOCALIZED_IDENTITY_TRANSPORT.md)
+shows that a prepared localized pattern can move across fixed sites while
+retaining its full-state identity for a finite interval under one specified
+law. Its initial organization and direction are supplied; explaining how
+such a pattern forms remains a separate question. The
 [transport contract](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/EMERGENT_ONTOLOGY.md#localized-identity-transport)
-states the distinction. It can be investigated under a declared model before
-that model has a physical identification or a uniquely selected law.
+states what localization, displacement and identity mean here.
 
 This repository contains the Python engine, mathematical definitions, proofs
 with stated assumptions, and numerical experiments. It establishes results

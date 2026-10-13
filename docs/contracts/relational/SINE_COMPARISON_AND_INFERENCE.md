@@ -1,6 +1,6 @@
 # Normalized-sine comparison, inference and forecasts
 
-Shared sine-law report admission, captured comparison, retained mediation, sampling, hidden state/capacity inference and prior-only forecasting.
+Shared sine-law report admission, captured comparison, prepared transport budgets, retained mediation, sampling, hidden state/capacity inference and prior-only forecasting.
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
@@ -131,6 +131,49 @@ automatic model selection. Preserved native equilibrium shapes do not imply
 an identical equilibrium set, recovery rate, basin, memory or frozen response.
 The supplied coefficients, initialization and alternative-law provenance
 remain explicit even when the two laws agree at consensus.
+
+<a id="localized-identity-transport-budget"></a>
+### Private finite localized-transport budget
+
+`_bound_localized_identity_transport` in
+[`_localized_identity_transport.py`](../../../src/tnfr/physics/_localized_identity_transport.py)
+evaluates the [prepared transport proof's](../../../theory/nodal/LOCALIZED_IDENTITY_TRANSPORT.md)
+scalar sufficient bounds. Its supplied model is the actual positive-loss
+normalized-sine law. The conservative comparison uses `omega(k)=1-cos(k)`;
+the actual loss remains in both the declared model and its error budget.
+The preparation already contains a localized Fejer envelope and directional
+carrier. Identity compares signed form and real phase lifts jointly against
+the complete moving reference, including its internal rotation. The resulting
+finite tube is conditional on that preparation.
+
+The reader re-admits the explicitly regular `reference_model` coefficients
+through the shared sine owner, requiring positive loss and exchange and unit
+storage scale, without renormalizing the supplied mix. `node_count`,
+`fejer_order` and `horizon` are ordinary Python integers: `N>=8` is divisible
+by four, `Q>=2`, `Q-1<N/4` and
+`0<T<=N/2`. `amplitude`, `initial_state_error_bound` and `localization_radius`
+use shared exact or represented-real admission before arithmetic, requiring
+`a>0`, `epsilon>=0` and `1<R<N/2`. Boolean and nonfinite values reject. Unit
+cycle conductances, geometric lengths and held capacities, no input or event,
+and the clock `tau=w*t/pi` in both rows are mathematical premises. This
+function accepts no graph or observed state with which to verify them.
+
+Exact rational arithmetic and outward intervals retain initial error, actual
+loss, conservative dispersion and nonlinear remainder contributions, the
+localization tail and endpoint-window separation. The report separates strict
+bootstrap, identity tolerance, concentration and window conditions. A failed
+sufficient condition yields `not_certified` with `unavailable_reasons`, not
+impossibility of transport; failed bootstrap leaves actual-state norm and tail
+bounds unavailable. No bound is clipped to manufacture a passing result.
+Clock conversions divide exact endpoints before outward materialization.
+A zero lower endpoint for an unresolved tiny clock rate does not turn its
+retained positive exchange coefficient into a frozen law.
+
+This private calculator authenticates no source, evaluates no trajectory and
+installs no native solver or execution law. It is not a graph observer or a
+public forecast API. The existing shared sine rows remain the actual field
+owner. The result supplies no formation, permanent-motion or physical
+identification certificate.
 
 ### Sine-law prospective sampling budgets
 

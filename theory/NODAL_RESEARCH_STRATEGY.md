@@ -246,23 +246,24 @@ generative question first resolve law selection or physical measurement.
 ### Localized organization and transport
 
 The [transport contract](EMERGENT_ONTOLOGY.md#localized-identity-transport)
-isolates a capability beyond internal pulse and fixed-cycle retention:
-whether a localized organization can move across supplied support while
-retaining its identity. Complete-law symmetry, regional boundary balances,
-retained internal state and full-state error bounds can serve this question
-together. Their existing coefficients and capture verdicts transfer only
-after the new law, support and preparation satisfy their hypotheses.
+distinguishes movement across fixed support from internal pulse and fixed-cycle
+retention. The [prepared finite theorem](nodal/LOCALIZED_IDENTITY_TRANSPORT.md)
+establishes this capability under the actual positive-loss normalized-sine
+law: a full-state tube follows a localized moving reference while retaining
+a signal floor. The conservative dispersion used in its comparison does not
+replace the actual loss. Both localization and direction are supplied in the
+initial class, and the proof evaluates no trajectory or formation source.
 
-Begin with a finite structural transport claim. Prepared transport is useful
-without claiming formation; formation needs a source class lacking the target
-identity. Positive-loss recurrence obstructions must be applied before any
-permanent-motion proposal, while conservative internal pulses supply no
-spatial propagation theorem. A new drive, support selector or capacity law
-would change the model and need its own motivation. This route tests a
-conditional capability; particle identification and unique constitutive
-selection remain distinct. The
-[sole queue](research/FIVE_STAGE_EXECUTION_PLAN.md#localized-identity-transport-admission)
-owns model admission and the response-freeze boundary.
+The remaining generative issue is how an admitted source reaches that class
+from preparation lacking the target organization. Existing regional balances,
+internal-state bounds and capture methods can inform that question only after
+matching the complete law, support, clock and source. A new drive, support
+selector or capacity law would change the model and need its own motivation.
+Positive-loss recurrence exclusions still constrain permanent-motion proposals;
+finite transport neither removes them nor establishes particle identity or
+unique constitutive selection. The
+[sole queue](research/FIVE_STAGE_EXECUTION_PLAN.md#localized-transport-source-admission)
+owns the source-admission task and its prospective freeze.
 
 ### Present interaction and sufficient future state
 

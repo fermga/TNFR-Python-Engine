@@ -101,6 +101,7 @@ nav:
           - "Free relative-phase access between organized children": theory/nodal/ORGANIZED_FREE_PHASE_PROBE.md
           - "Reciprocal form-resource envelope": theory/nodal/RECIPROCAL_FORM_RESOURCE_ENVELOPE.md
           - "Information from a small phase preparation": theory/nodal/ORGANIZED_SMALL_RESOURCE_INFORMATION.md
+          - "Finite transport of a localized identity": theory/nodal/LOCALIZED_IDENTITY_TRANSPORT.md
           - "Constitutive freedom of organized patterns": theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md
           - "Constitutive inheritance through organized interfaces": theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md
           - "Predictive repeated organized composition": theory/nodal/REPEATED_ORGANIZED_COMPOSITION.md

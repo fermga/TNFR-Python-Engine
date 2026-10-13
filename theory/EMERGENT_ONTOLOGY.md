@@ -834,6 +834,18 @@ An admissible transport claim declares the following before its response:
   by a numerical tie-break and then called autonomous direction selection.
   Admit finite transport, persistent motion and collision as separate claims.
 
+The [finite prepared-transport theorem](nodal/LOCALIZED_IDENTITY_TRANSPORT.md)
+meets these obligations for one positive-loss normalized-sine law on a fixed
+unit cycle. A tube in the complete form and lifted-phase state follows a
+prescribed moving reference throughout a finite interval, retaining its
+internal rotation and a nonvanishing signal floor. Localization and direction
+are already present in the supplied initial class. The result therefore
+establishes robust prepared transport, with distinct endpoint windows, rather
+than acquisition of that organization. Integer cycle translations are exact
+symmetries; the reference's fractional center is an observation coordinate.
+The private scalar budget reader neither authenticates a source nor evaluates
+a trajectory.
+
 Existing [positive-loss exclusions](nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission)
 constrain recurrence on their finite closed complete laws; their hypotheses
 do not exclude every finite displacement. The
@@ -846,12 +858,12 @@ and [memory owner](DERIVED_EPI_MEMORY.md) retain the boundary and hidden-state
 obligations. A time-dependent membership additionally needs its own transport
 accounting; a fixed-region identity is not that formula.
 
-These are mathematical admission requirements, not a new particle definition
-or a transport certificate. Physical displacement, mass, charge, spin and
+This conditional finite theorem is not a particle definition or a permanent
+transport claim. Physical displacement, mass, charge, spin and
 measurement statistics retain the independent obligations in the
 [physical atlas](PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena).
-The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#localized-identity-transport-admission)
-alone selects the bounded research question.
+The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#localized-transport-source-admission)
+alone owns further source admission.
 
 ### 1.1 NFR formation: definition, birth and collective dynamics
 

@@ -108,6 +108,26 @@ individual module/test links; proofs own model-specific hypotheses, constants
 and frozen preparations. This guide groups the obligations needed to choose
 coverage, rather than repeating each research result.
 
+For [prepared finite localized transport](theory/nodal/LOCALIZED_IDENTITY_TRANSPORT.md),
+select the private budget controls with the shared actual-law owners:
+
+```sh
+python -m pytest tests/physics/test_localized_identity_transport.py tests/physics/test_sine_admission.py tests/physics/test_relational_sine_comparison.py tests/physics/test_sine_flow_kernel.py tests/physics/test_relational_sine_resonance.py -q
+```
+
+Check both complete rows and their clock conversion, positive-loss tangent
+contraction, cycle symmetries, joint form/phase localization and the reference's
+internal rotation. Derive dispersion and direction from the conservative comparison's
+`omega(k)=1-cos(k)` while retaining actual damping; an auxiliary wave's square
+root dispersion is a different model. Exercise nonlocalized single modes,
+independent Fejer norm/tail bounds, nonlinear bootstrap and strict endpoint
+separation. Verify exact/outward scalar budgets, invalid primitive domains,
+authoritative model coefficients, subgrid positive clock conversions and
+unavailable conclusions when sufficient bounds fail. These are response-free
+controls of a finite theorem for an
+already localized, directional preparation. They neither authenticate its
+source nor run a trajectory or frozen producer.
+
 For shared [Krylov and Hankel arithmetic](src/tnfr/mathematics/krylov.py), select
 `tests/mathematics/test_krylov_admission.py`,
 `tests/mathematics/test_arithmetic_pulse.py` and
