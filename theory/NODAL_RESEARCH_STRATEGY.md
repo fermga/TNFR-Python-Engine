@@ -207,9 +207,17 @@ and the entire supplied constitutive family. Added form inputs or jumps carry
 a separate variation budget, even when their net total form is zero. Uniform
 opposite inputs give a conditional preparation that preserves isolated fine
 state, but their amplitude and occurrence remain supplied. Their zero isolated
-storage work is not a source law or a free physical resource. Nonuniform
-interfaces and additional reacting organizations require their own mean
-balance; the two-child matching proof does not exclude them by analogy.
+storage work is not a source law or a free physical resource. The
+[reciprocal resource theorem](nodal/RECIPROCAL_FORM_RESOURCE_ENVELOPE.md)
+now bounds nonuniform interfaces and additional reacting nodes directly on
+the full fine graph. A centered cut invariant accounts for every initial form
+and the finite node count, without assuming closure of the marked means.
+Zero child means alone can hide a supplied fine resource. The exclusion is
+conditional on that resource and the unchanged complete law; permitted
+budgets establish neither reachable contrasts nor retained child identities.
+The value `12` belongs to the sufficient full-turn probe construction, not
+to every possible constitutive observation. These preparation bounds do not
+exclude lower-resource observations or all TNFR formation.
 
 ### Present interaction and sufficient future state
 

@@ -213,10 +213,15 @@ and clock calibration remain separate. The
 [preparation-resource gate](#free-probe-preparation-reachability) now excludes
 generation of the large contrast by arbitrary common matching-contact schedules
 from zero means. External form transfer can supply it, with an independent
-variation budget and separate attachment work. The next foundational dependency
-is the [boundary of that obstruction under more general contact](#organized-form-resource-envelope);
-nonuniform interfaces and additional reacting organizations are not covered by
-the matching-contact argument.
+variation budget and separate attachment work. The
+[reciprocal resource envelope](#organized-form-resource-envelope) now covers
+nonuniform contacts and additional nodes directly, counting every initial
+fine form. Changing contact cannot evade that conditional bound. The target
+`12` is sufficient for the existing full-turn probe, not necessary for every
+observation. The next dependency is a
+[resource-information comparison without initial mean-form contrast](#organized-small-resource-information):
+determine both separation and ambiguity under a declared small phase
+preparation and finite observation accuracy, without requiring a full turn.
 Unit-strength classification remains unresolved and deferred; no numerical
 campaign is admitted.
 
@@ -235,7 +240,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next foundational dependency | [Reciprocal form resources beyond matching contacts](#organized-form-resource-envelope): determine whether nonuniform interfaces and additional reacting organizations can evade the preparation obstruction under the same complete law and an explicit initial fine-state budget |
+| Next foundational dependency | [Small-resource constitutive information](#organized-small-resource-information): determine a two-sided resource-information tradeoff for one fixed endpoint observation under the same two-C9 quarter law, retaining phase preparation, fine state and independent nuisance/error sets |
+| Closed reciprocal resource admission | [Reciprocal form resources beyond matching contacts](#organized-form-resource-envelope): a centered cut invariant bounds the marked contrast on every finite reciprocal contact network from all initial forms and node count; additional nodes and nonuniform contacts carry their own resources, and nonexclusion proves no reachability |
 | Closed preparation-resource admission | [Preparation reachability and resources](#free-probe-preparation-reachability): common matching-contact schedules cannot create the target contrast from zero means; a necessary nodal form-variation budget, separate work ledger and conditional supplied-input construction retain the autonomous-source boundary |
 | Closed conditional structural observation | [Independent phase/clock channel](#free-probe-independent-kinetic-observation): a primitive phase product tests the collective kinetic row without reconstruction; a finer arithmetic mean needs independently certified absence of internal slips. Finite circular records and unknown clock scale retain their ambiguities |
 | Closed bounded observation implementation | [Certified free-probe record reader](#free-phase-probe-reader-admission): primitive samples and rebuilt error bounds give interval reconstruction, root transport and harmonic readout, with distinct contradictions and numerical/work-limit abstention |
@@ -1592,32 +1598,65 @@ replay, trajectory or physical response was evaluated. The large contrast
 remains an external preparation unless a distinct mechanism is admitted.
 
 <a id="organized-form-resource-envelope"></a>
-### Entry requirement: reciprocal form resources beyond matching contacts
+### Closed admission: reciprocal form resources beyond matching contacts
 
-The matching-contact mean closes because every slot uses the same weight.
-Nonuniform interfaces retain fine-form information in their mean exchange;
-additional reacting organizations also add state and initial resources. The
-next bounded question is whether either extension evades the preparation
-obstruction under the existing complete constitutive family.
+The [proof owner](../nodal/RECIPROCAL_FORM_RESOURCE_ENVELOPE.md#reciprocal-form-resource-envelope)
+derives an invariant polytope of centered form sums on the actual finite graph.
+It retains both quarter-factor rows, held unit capacities, the canonical gamma,
+structural tau and nonnegative reciprocal locally integrable weights. The
+result admits arbitrary nonuniform contacts and state-preserving support
+changes without assuming closure of the two marked nine-node means.
 
-Retain the uniform quarter-factor form and phase rows, fixed gamma, held unit
-capacities, structural tau clock, fixed finite node labels and the same odd
-edge current. Admit nonnegative symmetric time-dependent weights, used in both
-rows, and state-preserving contact switches. Keep two disjoint marked groups
-of nine nodes as the target. Declare all initial forms, including any additional
-source nodes; zero child means alone do not bound hidden fine preparation.
-No additive input, form jump, node birth, capacity change or prescribed donor
-waveform is admitted in this comparison. Track support work separately:
-arbitrary weight changes need not be passive.
+Their scaled contrast is bounded by the full initial centered resource, the
+uniform current bound and total node count. Eighteen equal initial forms cannot
+generate the target `12`; additional equal-form nodes have a large necessary
+count, with no sufficient construction. Zero child means alone are insufficient:
+an explicit fine-form counterexample has nonzero boundary transfer. A detached
+calculator re-admits all ordered forms, marked groups and primitive uncertainty,
+with a sharp coordinate-error allowance. Its finite work limit does not limit
+the theorem. Strict exclusion proves conditional nonreachability; nonexclusion
+proves neither reachability nor retained identity.
 
-Acceptance is a necessary contrast envelope in terms of the initial form
-resources and finite node count, or a counterexample within this declared
-class. Work on the actual fine graph without assuming collective closure.
-An exclusion may hold even without retained child identity; a positive
-preparation claim must additionally prove that identity and source reaction.
-Do not introduce an auxiliary reservoir solely to place the target in its
-initial state. No trajectory, source replay, apparatus search or physical-data
-evaluation is active; a later response still requires a frozen complete protocol.
+The proof needs no contact-passivity premise, and the support-work ledger
+remains separate. No source, trajectory or physical response was evaluated.
+The bound does not exclude every finite network, every supplied preparation,
+other complete laws or observations that do not require a full turn.
+
+<a id="organized-small-resource-information"></a>
+### Entry requirement: constitutive information with small preparation resources
+
+Keep the same eighteen-node two-C9 quarter law, unit internal conductance,
+held unit capacities, fixed gamma and constant matching weight
+`a=gamma^2/1000`. Compare the two existing endpoint laws, with both reacting
+rows and the same declared clock `s=a*tau/2`. Start with zero nominal child
+mean forms and nominal relative phase `d`, where `0<d<=1/100`. Declare primitive
+preparation errors in those means, in `d` and in every retained fine coordinate;
+a broad phase interval cannot silently stand for known registration. The
+observation class is one relative mean-form reading at nominal `s=1`, with
+independently declared reading, exposure and calibration uncertainty. There
+are no additional inputs, jumps, donor objects or later contact changes.
+
+Determine upper and constructive lower bounds on the endpoint law gap as
+`d` decreases, testing whether it scales as `gamma*d^3`, together with a
+sufficient nonoverlap budget and an explicit ambiguity regime. Bound the
+law difference directly so that separate coarse remainders do not discard
+their shared linear response. Ambiguity requires an actual common-reading
+witness, not just overlapping conservative enclosures. Compare the two
+candidates' entire reading sets, allowing
+independent nuisance choices unless a common preparation correlation is
+separately justified. In particular, phase-preparation uncertainty can mask a
+small nonlinear gap through the much larger common response. Retain fine-state
+errors, both child identities and the initial attachment-storage bound; replacing
+large form preparation by phase preparation does not derive that preparation's
+origin. An obstruction in this observation class is an acceptable result.
+
+The [earlier finite nonlinear discriminator](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-finite-carried-response)
+uses another support, normalization and imposed inputs. It already establishes
+the possibility of finite small-response discrimination; it supplies neither
+this model's coefficients nor its preparation-information tradeoff. Another
+positive contrast alone does not close this gate. Prove the resource and
+ambiguity bounds prospectively before any response evaluation. No trajectory,
+source replay, apparatus search or physical-data campaign is active.
 
 <a id="contact-maintenance-certificate-admission"></a>
 ### Closed complete-flow convergence; unit-strength classification deferred

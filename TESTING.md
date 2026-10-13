@@ -289,6 +289,19 @@ their form variation vanish. Verify the fresh-contact work floor separately.
 These are static algebra and conditional budget controls, not an executed
 preparation or an autonomous event certificate.
 
+For the [reciprocal form-resource envelope](theory/nodal/RECIPROCAL_FORM_RESOURCE_ENVELOPE.md),
+select `tests/physics/test_reciprocal_form_resources.py` with the probe and
+preparation owners above. Reconstruct cut rates from reciprocal edge sums,
+including nonuniform support, rather than assuming closure of marked means.
+Check the centered prefix resource against independent subset bounds, the
+sharp coordinate-error allowance, uniform-form shifts and relabeling with
+marks retained. Include hidden fine preparation with zero child means,
+additional-node budgets, strict exclusion and inconclusive large resources.
+Reject incomplete, unordered or invalid primitive inputs before computing.
+The finite instrument work limit is not the theorem's node limit; its optional
+necessary node count does not prove reachability. These are static controls,
+with no trajectory, identity-retention or autonomous-source certificate.
+
 For [composition-compatible constitutive laws](theory/nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md),
 select `tests/physics/test_composition_compatible_constitutive.py` together
 with `tests/physics/test_sine_constitutive_inheritance_algebra.py`. Check

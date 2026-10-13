@@ -99,6 +99,7 @@ nav:
           - "Relational coefficient and capacity identification": theory/nodal/RELATIONAL_RESPONSE_IDENTIFICATION.md
           - "Sine law and constitutive information boundaries": theory/nodal/SINE_CONSTITUTIVE_INFORMATION.md
           - "Free relative-phase access between organized children": theory/nodal/ORGANIZED_FREE_PHASE_PROBE.md
+          - "Reciprocal form-resource envelope": theory/nodal/RECIPROCAL_FORM_RESOURCE_ENVELOPE.md
           - "Constitutive freedom of organized patterns": theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md
           - "Constitutive inheritance through organized interfaces": theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md
           - "Predictive repeated organized composition": theory/nodal/REPEATED_ORGANIZED_COMPOSITION.md

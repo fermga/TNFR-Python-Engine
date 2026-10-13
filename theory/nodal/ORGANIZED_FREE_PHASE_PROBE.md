@@ -1329,7 +1329,10 @@ are separately conserved in the unforced model. Sources and jumps with
 zero form mean separately in each child cannot evade this obstruction,
 however large their fine-state effects. The equal weight over all nine
 slots is essential: slot-dependent weights would retain fine forms in
-the mean boundary term and define another preparation problem.
+the mean boundary term and define another preparation problem. The separate
+[reciprocal resource theorem](RECIPROCAL_FORM_RESOURCE_ENVELOPE.md)
+bounds that broader class using all initial fine forms and the node count;
+its bound does not replace this sharper common-matching result.
 
 ### 8.2 Necessary source and jump variation
 
@@ -1482,7 +1485,13 @@ Neither owner establishes this probe's autonomous preparation. Their useful
 mechanisms remain conditional, and moving the required initial contrast into
 an additional supplied object would not derive its origin. Equations
 (59)--(62) exclude the stated matching-contact class, not all other interfaces,
-organized sources or future independently justified preparation laws.
+organized sources or future independently justified preparation laws. The
+[finite-network extension](RECIPROCAL_FORM_RESOURCE_ENVELOPE.md#reciprocal-form-resource-envelope)
+accounts for nonuniform contacts and additional nodes under the same
+unforced law. It retains their full initial form resource, without proving
+identity retention or sufficient reachability. The target `12` remains a
+sufficient choice for this probe, not a necessary resource for every
+possible constitutive observation.
 
 ## 9. Scope and shared verification
 
