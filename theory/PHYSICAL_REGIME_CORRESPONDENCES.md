@@ -100,7 +100,7 @@ of cards and prerequisites, not independently active campaigns.
 | Turing / reaction–diffusion | **Conditional mechanisms and obstructions reusable:** pure diffusion versus the same [multichannel capacity closure](CAPACITY_LOCALIZATION_BALANCE.md#8-a-local-form-capacity-relation-dissipation-and-restoration-criteria) | A justified local reaction/feedback law and a spatial-mode instability test; nonuniform appearance alone is insufficient. |
 | Critical phenomena | **No identified physical critical observable:** [field scope](../docs/STRUCTURAL_FIELDS_TETRAD.md#coherence-length) and spectral relaxation remain useful controls | Physical connected correlations, ensemble/dynamics, finite-size protocol and uncertainties; no critical exponent follows from the name `xi_C`. |
 | Vortices / topological defects | **Conditional discrete winding evidence:** [retention and branch loss](COUPLING_WINDING_PERSISTENCE.md#6-canonical-loss-branch-crossings-and-observation-limits) | Spatial/cell realization, interpolation, physical order parameter and defect core; graph winding alone is not a physical vortex. |
-| Solitons / localized coherent structures | **Deferred candidate:** [conditional identity and recovery](NODAL_RESEARCH_STRATEGY.md#closure-audit-equations-events-and-identity) | A justified supporting law and the claimed propagation/stability or collision property; persistence alone does not identify a soliton. |
+| Solitons / localized coherent structures | **Conditional transport question:** [localization, displacement and retained identity](EMERGENT_ONTOLOGY.md#localized-identity-transport), with admission owned by the [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#localized-identity-transport-admission) | Supply the complete law, preparation and finite-time robustness argument. Internal pulse and fixed-cycle retention do not establish propagation; collision, permanent motion and soliton/particle identification remain separate. |
 | BEC / superfluidity | **Deferred physical bridge:** classical phase observations are available | Quantum state/statistics, observables and constitutive bridge; classical phase order does not establish condensation or superfluidity. |
 | Renormalization / universality | **Exact restricted coarse reductions and memory:** [scale bridge](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md), [elimination](DERIVED_EPI_MEMORY.md) | Declared scale/time/field transformations and effective-model flow/fixed points; REMESH and nesting are not automatically RG. |
 | Emergent geometry | **Conditional inherited geometry:** the same scale and observation owners | Demonstrate realizability and retained dynamics; a tetrad readout does not derive a fundamental physical geometry. |
@@ -434,8 +434,12 @@ oscillator response**, a mechanism used in physics of wave transport.
 This does not identify a particle; it makes the collective response amenable
 to established symmetry, energy and observation tests. The
 [exact representation and reversal proof](nodal/SINE_REPLICA_PULSE.md#sine-moving-pulse-parametric-representation)
-own the TNFR derivation. The following cards identify reuse and missing
-premises; the execution plan remains the sole queue.
+own the TNFR derivation. Here "moving" denotes an evolving internal pattern
+and its response coefficients, not a localized identity propagating across
+support. That claim uses the separate
+[transport contract](EMERGENT_ONTOLOGY.md#localized-identity-transport).
+The following cards identify reuse and missing premises; the execution plan
+remains the sole queue.
 
 **Time-varying oscillator card.**
 

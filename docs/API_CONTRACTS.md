@@ -258,6 +258,15 @@ alignment. Its legacy empty-graph value of one is a convention, not evidence.
 A zero resultant has zero magnitude but no direction. Pairwise linear phase
 affinity is a configured score, distinct from structural C and live U3 admission.
 
+The [declared-cycle winding reader](../src/tnfr/physics/winding_certificates.py)
+uses shared represented-real admission before circular reduction. A nonzero
+phase that would materialize as zero makes the observation undefined; an
+invalid authoritative alias cannot fall through to a secondary phase. Invalid
+or underflowing `branch_tolerance` and `phase_gate` raise `ValueError`; exact
+zero remains permitted. The word observer rejects invalid initial phase
+before executing a step. A defined sampled winding does not certify identity
+between observations or transport of a localized organization.
+
 The shared coherence-value boundary checks the original real input in `[0, 1]`
 before accepting its finite binary64 representation. Rounding a value above one
 to one, or a nonzero value to zero, cannot make it admissible. The SDK and

@@ -52,11 +52,17 @@ region under the same complete law. Reuse formation, persistence and response
 results with their actual preparation, support and horizon premises. Stable
 geometry, internal motion and perturbation stability are distinct; none alone
 selects preparation, primitive support or physical identity.
+Localized transport additionally asks whether the sites carrying a pattern
+can change while its identity persists. Internal pulse, fixed-cycle retention
+and a graph-layout animation do not establish this capability. Conditional
+study under a declared law does not require unique microscopic law selection;
+physical motion and particle identification retain separate observation duties.
 Composite identity additionally needs a structural separation criterion
 that distinguishes loss of the parent from destruction of its constituents;
 interaction, capture and assembly work alone do not identify physical binding.
 
   theory/EMERGENT_ONTOLOGY.md#organization-and-internal-pulse
+  theory/EMERGENT_ONTOLOGY.md#localized-identity-transport
   theory/nodal/SINE_PATTERN_DYNAMICS.md
   theory/nodal/RESONANCE_FOUNDATIONS.md
 

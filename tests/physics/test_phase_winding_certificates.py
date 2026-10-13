@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+from fractions import Fraction
 
 import networkx as nx
 import pytest
@@ -117,6 +118,41 @@ def test_direct_certificate_rejects_invalid_phase_values(bad_phase):
     assert "phase at cycle node 2" in certificate.reason
 
 
+@pytest.mark.parametrize("sign", [-1, 1])
+def test_nonzero_phase_underflow_is_unavailable_without_alias_fallback(sign):
+    graph = winding_ring(5, 1)
+    tiny = sign * Fraction(1, 10**500)
+    graph.nodes[2]["theta"] = tiny
+    graph.nodes[2]["phase"] = 0.0
+
+    certificate = certify_phase_winding(graph, range(5))
+
+    assert not certificate.is_defined
+    assert certificate.cycle_exists
+    assert certificate.winding is None
+    assert certificate.raw_winding is None
+    assert certificate.minimum_branch_margin is None
+    assert certificate.minimum_u3_margin is None
+    assert certificate.u3_admissible is None
+    assert "phase at cycle node 2" in certificate.reason
+    assert "underflows" in certificate.reason
+    assert graph.nodes[2]["theta"] == tiny
+
+
+@pytest.mark.parametrize("sign", [-1, 1])
+def test_representable_subnormal_phase_is_not_rejected_as_underflow(sign):
+    graph = nx.cycle_graph(3)
+    nx.set_node_attributes(graph, 0, "theta")
+    smallest = Fraction(1, 2**1074)
+    graph.nodes[0]["theta"] = sign * smallest
+
+    certificate = certify_phase_winding(graph, range(3), phase_gate=smallest)
+
+    assert certificate.is_defined
+    assert certificate.winding == 0
+    assert graph.nodes[0]["theta"] == sign * smallest
+
+
 def test_finite_extreme_phases_are_reduced_before_differencing():
     graph = _executable_ring(nodes=5)
     graph.nodes[0]["theta"] = 1e308
@@ -143,7 +179,31 @@ def test_certificate_rejects_ambiguous_numeric_parameters(kwargs):
         certify_phase_winding(_executable_ring(), range(8), **kwargs)
 
 
-@pytest.mark.parametrize("bad_phase", [None, float("nan")])
+@pytest.mark.parametrize("parameter", ["branch_tolerance", "phase_gate"])
+@pytest.mark.parametrize("sign", [-1, 1])
+def test_certificate_parameter_underflow_cannot_become_a_zero_budget(parameter, sign):
+    with pytest.raises(ValueError, match=f"{parameter} must be finite and nonnegative"):
+        certify_phase_winding(
+            _executable_ring(), range(8), **{parameter: sign * Fraction(1, 10**500)}
+        )
+
+
+@pytest.mark.parametrize("parameter", ["branch_tolerance", "phase_gate"])
+def test_exact_zero_and_positive_subnormal_budgets_remain_admitted(parameter):
+    graph = nx.cycle_graph(3)
+    nx.set_node_attributes(graph, 0, "theta")
+    for value in (Fraction(0), Fraction(1, 2**1074)):
+        certificate = certify_phase_winding(graph, range(3), **{parameter: value})
+        assert certificate.is_defined
+        if parameter == "phase_gate":
+            assert certificate.minimum_u3_margin == float(value)
+    with pytest.raises(ValueError, match="finite and nonnegative"):
+        certify_phase_winding(graph, range(3), **{parameter: -Fraction(1, 2**1074)})
+
+
+@pytest.mark.parametrize(
+    "bad_phase", [None, float("nan"), Fraction(1, 10**500), -Fraction(1, 10**500)]
+)
 def test_winding_word_rejects_invalid_phase_before_mutation(bad_phase):
     graph = _executable_ring()
     if bad_phase is None:

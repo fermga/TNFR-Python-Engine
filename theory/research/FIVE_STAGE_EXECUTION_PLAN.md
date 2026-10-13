@@ -225,10 +225,14 @@ common-reading ambiguity witness, with quadratic nominal attachment storage.
 It requires no initial mean-form contrast or full turn. The
 [foundation review](#post-resource-foundation-review) is now closed: the
 reviewed owners supply no new independent selector, ready generative mechanism
-or physical bridge for this comparison. Further work returns to the
-[independent-content entry condition](#new-constitutive-evidence-admission).
-The family remains available for conditional research; another internal
-observation refinement is not automatically queued.
+or physical bridge for this comparison. Further constitutive selection retains
+the [independent-content entry condition](#new-constitutive-evidence-admission).
+The next conditional question is
+[localized identity transport](#localized-identity-transport-admission): admit
+a complete model and a finite displacement/identity claim before evaluating
+whether the capability exists or encounters a scoped obstruction. This does
+not require prior unique law selection or a physical sensor. Another internal
+law-discrimination refinement is not automatically queued.
 Unit-strength classification remains unresolved and deferred; no numerical
 campaign is admitted.
 
@@ -247,7 +251,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Entry condition; no new campaign admitted | [Independent content for the next claim](#new-constitutive-evidence-admission): name a justified new law/resource restriction, a source-valid complete generative mechanism or an independently admitted physical comparison; the reviewed owners do not currently supply that input |
+| Next conditional model admission | [Localized identity transport](#localized-identity-transport-admission): specify one complete law, background, support geometry, finite preparation and displacement/identity contract; decide analytic feasibility before any trajectory campaign |
+| Entry condition for constitutive selection | [Independent content for law selection or physical comparison](#new-constitutive-evidence-admission): the reviewed resource/observation bounds supply no new independently justified selector or physical bridge; this does not block conditional capability research |
 | Closed foundation decision | [After the resource-information bounds](#post-resource-foundation-review): internal access and error budgets are established; law justification, occurrence and the physical bridge retain distinct missing premises. Existing chart results and deferred receiver questions do not activate another campaign |
 | Closed resource-information admission | [Small-resource constitutive information](#organized-small-resource-information): a cubic endpoint law gap, independent full-state error budgets, genuine reading-set overlap and quadratic nominal attachment storage quantify one fixed observation class without large initial mean forms |
 | Closed reciprocal resource admission | [Reciprocal form resources beyond matching contacts](#organized-form-resource-envelope): a centered cut invariant bounds the marked contrast on every finite reciprocal contact network from all initial forms and node count; additional nodes and nonuniform contacts carry their own resources, and nonexclusion proves no reachability |
@@ -459,12 +464,13 @@ response has not been derived from the earlier acquired constituents.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
+| Localized identity transport | Distinguish displacement across fixed support from internal activity, relabeling and fixed-cycle retention; apply the [ontology contract](../EMERGENT_ONTOLOGY.md#localized-identity-transport) to the whole state | **Next conditional model admission.** Declare a finite claim under one complete law; a transport construction or scoped obstruction is useful without unique law selection. Formation, permanent motion and collision are separate obligations |
 | Composite identity under interaction | Retain complete-law, marked-identity and actual-source hypotheses when claiming maintained collective organization | **Closed two-law source-to-attractor comparison, scoped transition, marked interaction and reusable boundary criterion.** Normal compliance and full kinetics retain distinct obligations. No further contact variant follows; unit-strength classification, basin gaps and a larger transition interval stay deferred |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
 | Sufficient collective state and inherited response | Construct and certify a forecast from a joint finite noisy record without known collective initialization | **Closed operational software case.** The whole-record bound and one candidate forecast are certified; arbitrary-record convergence and physical measurement remain unproved |
 | Fundamental physical properties and independent observation | Independently admit full preparation and joint physical measurement coverage before evaluating a response | **Closed scoped recovery-area review, unresolved physical dependency.** The reviewed direct-area route is not admitted; neither improved voltage precision nor clock rescaling alone repairs the missing premises. No further apparatus search is active |
-| Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Closed pairwise distinction, information minimum and structural premise classification.** The next bounded admission must identify new independent content in one proposed restriction; neither low information cost nor boundary restoration selects a unique law |
+| Independent selection of laws | Derive an independently justified restriction or admit an observation that distinguishes retained complete-law countermodels; [compatibility alone](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission) remains insufficient | **Closed pairwise distinction, information minimum and structural premise classification.** Reopening selection needs new independent content in one proposed restriction; neither low information cost nor boundary restoration selects a unique law |
 | Autonomous preparation, support, capacity and events | Supply actual occurrence and state-evolution laws when claiming autonomous assembly. [Event work](../nodal/RELATIONAL_SUPPORT_EVENTS.md), passivity and [operator descent](../STRUCTURAL_OPERATORS.md) do not select occurrence | **Claim-dependent**. Current contacts and preparation remain supplied. Do not postpone investigation of the existing conditional composite until every origin question is solved |
 | Internal activity and recurrence | Separate preservation of identity from permanent motion; the [positive-loss boundary](../nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission) and alternative-mobility results retain different premises | **Prepared alternative** for a named claim requiring sustained activity. Neither a stationary identity nor finite response establishes recurrence or transfers an invariant measure |
 
@@ -1490,24 +1496,29 @@ under explicit preparation and complete laws. Their resource and error bounds
 do not use either law to justify itself. The
 [post-resource decision](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#post-resource-foundation-decision)
 found no additional intrinsic selector or admitted physical bridge in the
-reviewed owners. This is now the sole entry condition, not an instruction to
-repeat a generic premise audit or search for another threshold.
+reviewed owners. This remains the entry condition for further constitutive
+selection, not an instruction to repeat a generic premise audit or search
+for another threshold. It does not bar a separately declared conditional
+capability question under a supplied complete law.
 
-A generative reopening may instead identify a concrete unclosed mechanism
-under an existing complete law, together with a source-valid argument that
-could decide it. The [receiver capture contract](../nodal/ORGANIZED_RECEIVER_SLOW_ADMISSION.md#organized-receiver-capture-contract)
-and its finite negative evidence remain available, but no new invariant-domain
-argument is presently admitted. A longer simulation alone does not resolve
-an all-future claim. A new source, capacity or occurrence law needs its own
-independent motivation; installing a controller does not provide it.
+A conditional generative question may instead investigate an unclosed
+capability, as in the selected
+[transport admission](#localized-identity-transport-admission). Declare its
+source class, complete law, identity and possible obstruction before seeking
+a proof or finite evidence; a proof need not already exist to admit the
+question. The [receiver capture contract](../nodal/ORGANIZED_RECEIVER_SLOW_ADMISSION.md#organized-receiver-capture-contract)
+and its finite negative evidence remain available but deferred. A longer
+simulation alone does not resolve that all-future claim. A new source,
+capacity or occurrence law needs its own independent motivation; installing
+a controller does not provide it.
 
 For physical comparison, supply a named property and a jointly admitted
 preparation, collective measurement, clock, loading and complete-law reduction
 before freezing the reserved response. The small-phase gain and timing
 allowances presume that bridge. Earlier apparatus exclusions concern their
 own models and do not prove that every realization of the new comparison is
-impossible. No response evaluation, source replay, apparatus search or physical
-campaign is active while this independent input remains absent.
+impossible. No constitutive response evaluation, source replay, apparatus
+search or physical campaign follows from these missing independent inputs.
 
 <a id="free-phase-probe-admission"></a>
 ### Closed bounded admission: a free relative-phase probe
@@ -1693,11 +1704,53 @@ argument. The physical reviews also supply no independent complete preparation,
 relative-phase information, clock and observation bridge for the two-C9 model.
 Those are missing inputs, not errors removable by more precise trajectories.
 
-The decision is to retain the valid conditional family and return to the
-[existing entry condition](#new-constitutive-evidence-admission). No new selector,
-chart, topology, precision, source or physical campaign is activated. This
-review neither proves that future independent content is impossible nor makes
-unique microscopic law selection a prerequisite to every physical comparison.
+The decision retains the valid conditional family and the
+[existing entry condition](#new-constitutive-evidence-admission) for selection.
+That review activated no further constitutive or physical campaign. It neither
+proves that future independent content is impossible nor makes unique law
+selection a prerequisite to every physical comparison or conditional
+generative question. The separately selected transport admission below does
+not claim to supply these missing independent premises.
+
+<a id="localized-identity-transport-admission"></a>
+### Next admission: finite transport of a localized identity
+
+**Question.** Under one declared complete TNFR law, can a localized
+organization change location on supplied support while retaining its identity
+for a finite interval? Apply the
+[ontology contract](../EMERGENT_ONTOLOGY.md#localized-identity-transport).
+Prepared transport and formation from a source lacking that identity are
+separate claims. The initial admission targets transport; it must explicitly
+record any organization or directional asymmetry already prepared.
+
+**Admission work.** Choose one existing complete law and a finite support
+with a declared homogeneous translation action, boundary convention,
+background and geometric metric. Verify coefficient/capacity equivariance
+rather than infer it from a drawing. Freeze the full state, source class,
+clock, localization observation, nonvanishing signal floor, displacement,
+identity tolerance and finite horizon before a response is evaluated.
+Record numerical and preparation error separately. If that law cannot support
+the claim, retain the obstruction before considering another completion.
+
+**Reuse and limits.** Consult the existing
+[positive-loss obstruction](../nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission)
+before proposing permanent motion, and distinguish a transported profile from
+the [fixed-constituent pulse](../nodal/SINE_REPLICA_PULSE.md#sine-replica-joint-persistence).
+Use full-state regional observations and boundary work; preserve hidden
+initialization if a reduced model introduces memory. Frozen acquired-cycle
+sources and their capture constants do not transfer to a new support.
+Auxiliary graph-wave propagation is not execution of the selected nodal law.
+Numerical work, if admitted, uses the shared integrator with the actual
+complete rows and residual evidence; no new parallel runner is needed.
+
+**Acceptance.** The next result is an explicit model/claim admission with an
+analytic feasibility argument, or a law-specific obstruction. A proposed
+response must distinguish retained finite transport from decay, spreading,
+site relabeling and unrelated later excitation. A trajectory alone will not
+establish robustness or continuous-time identity. Unavailable bounds remain
+unavailable. No numerical scan, frozen-source replay, collision, autonomous
+event, infinite-support limit or physical campaign is activated by this
+consolidation. Further execution requires its concrete protocol in this gate.
 
 <a id="contact-maintenance-certificate-admission"></a>
 ### Closed complete-flow convergence; unit-strength classification deferred

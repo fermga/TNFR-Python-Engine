@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from numbers import Real
 from typing import Any, Iterable
 
+from .._exact_time import finite_represented_real
 from ..constants import EPI_PRIMARY
 from ..constants.aliases import ALIAS_THETA
 from ..utils.numeric import angle_diff
@@ -105,20 +105,15 @@ def _runtime_phase_gate(graph: Any, operator_code: str = "") -> float:
 
 
 def _finite_cycle_phase(graph: Any, node: Any) -> tuple[float | None, str | None]:
-    """Read one explicit finite phase without a zero-valued fallback."""
+    """Admit one represented phase without fallback or nonzero underflow."""
     data = graph.nodes[node]
     alias = next((key for key in ALIAS_THETA if key in data), None)
     if alias is None:
         return None, f"phase is missing at cycle node {node!r}"
-    raw = data[alias]
-    if isinstance(raw, bool) or not isinstance(raw, Real):
-        return None, f"phase at cycle node {node!r} must be a finite real number"
     try:
-        phase = float(raw)
-    except (OverflowError, ValueError):
-        return None, f"phase at cycle node {node!r} must be finite"
-    if not math.isfinite(phase):
-        return None, f"phase at cycle node {node!r} must be finite"
+        phase, _ = finite_represented_real(data[alias], f"phase at cycle node {node!r}")
+    except (TypeError, ValueError) as exc:
+        return None, str(exc)
     # Reduce each operand before subtraction.  Two individually finite values
     # near opposite float limits can otherwise overflow their phase difference
     # and fabricate NaN winding telemetry.
@@ -127,13 +122,11 @@ def _finite_cycle_phase(graph: Any, node: Any) -> tuple[float | None, str | None
 
 def _finite_nonnegative_parameter(value: Any, name: str) -> float:
     """Normalize a finite nonnegative certificate parameter."""
-    if isinstance(value, bool) or not isinstance(value, Real):
-        raise ValueError(f"{name} must be finite and nonnegative")
     try:
-        normalized = float(value)
-    except (OverflowError, TypeError, ValueError) as exc:
+        normalized, _ = finite_represented_real(value, name)
+    except (TypeError, ValueError) as exc:
         raise ValueError(f"{name} must be finite and nonnegative") from exc
-    if not math.isfinite(normalized) or normalized < 0.0:
+    if normalized < 0.0:
         raise ValueError(f"{name} must be finite and nonnegative")
     return normalized
 
@@ -160,7 +153,9 @@ def certify_phase_winding(
     within ``branch_tolerance`` of the branch boundary makes the result
     undefined.  U3 admissibility is reported separately and does not determine
     whether the topological winding itself is defined. Every declared cycle
-    node must carry an explicit finite real phase; no zero fallback is used.
+    node must carry an explicit finite represented real phase; no zero fallback
+    or materialization of a nonzero source as zero is allowed. The same
+    represented-real admission applies to both numeric parameters.
     """
     nodes = tuple(cycle_nodes)
     convention = "wrapped phase differences in [-pi, pi)"

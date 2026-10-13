@@ -789,6 +789,70 @@ The channels, reach and timing of its effects follow from the actual law.
 This requirement constrains model construction but does not select the
 cotangent premise, operator occurrence or a complete microscopic closure.
 
+<a id="localized-identity-transport"></a>
+### Localized identity and transport on a supplied support
+
+A basic NFR is the lowest retained level of a declared model, not an
+established ultimate constituent. The
+[substrate foundation](FUNDAMENTAL_THEORY.md#29-assumed-substrate-and-emergence-between-scales)
+already permits that distinction. Conditional research can ask whether
+interactions on a supplied support sustain a localized organization that
+moves across it while retaining a reproducible identity. This capability
+does not require prior unique law selection or physical identification.
+
+Transport of a pattern changes which fixed sites carry it. It differs from
+internal phase rotation, oscillation within fixed constituent pairs, a
+redrawn graph layout, relabeling sites or creating a child node. A supplied
+cycle's winding and a moving maximum are not sufficient identity tests.
+Formation and transport also differ: transporting a prepared organization
+does not show its formation from a class lacking that identity.
+
+An admissible transport claim declares the following before its response:
+
+- **Law and background.** Retain every consumed coordinate, the full support,
+  capacities, clock, inputs and events, with a specified reference background.
+  An observation window does not remove interactions with its complement.
+  Define a support metric separately from conductance; graph-layout positions
+  have no dynamical meaning without a declared geometric model.
+- **Localization.** Define a nonnegative observation of departure from the
+  background, its units, spatial width/tail criterion and a nonvanishing
+  signal floor. This observation does not replace signed form in the law or
+  turn a signed storage remainder into a positive local energy. State how
+  multiple peaks, splitting and unavailable centers are handled.
+- **Displacement and identity.** Use one fixed support reference and a
+  predeclared identity comparison with error bounds over the entire interval.
+  If translations are used as exact dynamical equivalences, verify that their
+  maps preserve support, coefficients and complete dynamics. Profile alignment
+  used only as an observation must retain any mismatch and its error bounds.
+  Preserve displacement in the record. Common phase-origin freedom is not
+  spatial translation.
+  Retain the internal and boundary state needed to distinguish continuing
+  transport from decay followed by unrelated excitation elsewhere.
+- **Preparation and robustness.** Declare whether the initial class already
+  contains the identity, any supplied directional asymmetry and independent
+  disturbances. Symmetry of both the law and preparation cannot be discarded
+  by a numerical tie-break and then called autonomous direction selection.
+  Admit finite transport, persistent motion and collision as separate claims.
+
+Existing [positive-loss exclusions](nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission)
+constrain recurrence on their finite closed complete laws; their hypotheses
+do not exclude every finite displacement. The
+[replica pulse](nodal/SINE_REPLICA_PULSE.md#sine-replica-joint-persistence)
+supplies internal activity on fixed constituents, not this transport property.
+Using a conservative completion instead retains that different loss premise;
+removing damping to obtain a desired trajectory is not a derived mechanism.
+The [regional balance](nodal/FORCED_REGIONAL_RESPONSE.md#7-a-region-and-its-environment-on-the-same-nodal-support)
+and [memory owner](DERIVED_EPI_MEMORY.md) retain the boundary and hidden-state
+obligations. A time-dependent membership additionally needs its own transport
+accounting; a fixed-region identity is not that formula.
+
+These are mathematical admission requirements, not a new particle definition
+or a transport certificate. Physical displacement, mass, charge, spin and
+measurement statistics retain the independent obligations in the
+[physical atlas](PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena).
+The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#localized-identity-transport-admission)
+alone selects the bounded research question.
+
 ### 1.1 NFR formation: definition, birth and collective dynamics
 
 The [NFR definition](GLOSSARY.md#fractal-resonant-node-nfr) is scale-relative.

@@ -239,8 +239,30 @@ a physical comparison needs
 an independently admitted collective observation and preparation. Neither
 requires solving every origin question first. Broader nonlinear equivalence
 remains dependent on its declared input/readout class, and the remaining
-receiver question needs a source-valid invariant-domain argument. The
-execution plan retains these boundaries without opening parallel campaigns.
+receiver question needs a source-valid invariant-domain argument. These are
+boundaries on the respective claims, not a requirement that every conditional
+generative question first resolve law selection or physical measurement.
+
+### Localized organization and transport
+
+The [transport contract](EMERGENT_ONTOLOGY.md#localized-identity-transport)
+isolates a capability beyond internal pulse and fixed-cycle retention:
+whether a localized organization can move across supplied support while
+retaining its identity. Complete-law symmetry, regional boundary balances,
+retained internal state and full-state error bounds can serve this question
+together. Their existing coefficients and capture verdicts transfer only
+after the new law, support and preparation satisfy their hypotheses.
+
+Begin with a finite structural transport claim. Prepared transport is useful
+without claiming formation; formation needs a source class lacking the target
+identity. Positive-loss recurrence obstructions must be applied before any
+permanent-motion proposal, while conservative internal pulses supply no
+spatial propagation theorem. A new drive, support selector or capacity law
+would change the model and need its own motivation. This route tests a
+conditional capability; particle identification and unique constitutive
+selection remain distinct. The
+[sole queue](research/FIVE_STAGE_EXECUTION_PLAN.md#localized-identity-transport-admission)
+owns model admission and the response-freeze boundary.
 
 ### Present interaction and sufficient future state
 

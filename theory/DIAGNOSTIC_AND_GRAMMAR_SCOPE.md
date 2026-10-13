@@ -1442,8 +1442,11 @@ input may instead be a justified source/occurrence mechanism with its own
 capability; it need not select the current. Physical comparison need not await
 unique law selection or substrate origin once its own bridge is admitted.
 The [sole queue](research/FIVE_STAGE_EXECUTION_PLAN.md#post-resource-foundation-review)
-records the dependency decision; another internal observation refinement
-does not fill this missing input.
+records this selection and physical-admission dependency; another internal
+observation refinement does not fill the missing input. It does not forbid
+investigating a named new conditional capability, such as
+[localized identity transport](EMERGENT_ONTOLOGY.md#localized-identity-transport),
+under an explicitly supplied complete law.
 
 ### Cross-channel foundation audit
 
