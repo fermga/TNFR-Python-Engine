@@ -205,9 +205,13 @@ preparation, work and fine-identity bounds. The
 [finite-record theorem](#free-phase-probe-record-admission) now supplies a
 sufficient joint error budget, with a separate coarse-noise obstruction.
 The [certified record reader](#free-phase-probe-reader-admission) implements
-that observation with explicit numerical abstention. The next foundational
-dependency is an [independent phase/clock observation](#free-probe-independent-kinetic-observation);
-physical admission remains separate.
+that observation with explicit numerical abstention. The
+[independent phase/clock channel](#free-probe-independent-kinetic-observation)
+now tests a circular consequence of the collective kinetic row using primitive
+phase readings and independent timing and variation bounds. Physical sensing
+and clock calibration remain separate. The next foundational dependency is
+[preparation reachability and resources](#free-probe-preparation-reachability):
+the large initial contrast is still supplied, not autonomously generated.
 Unit-strength classification remains unresolved and deferred; no numerical
 campaign is admitted.
 
@@ -226,7 +230,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next foundational dependency | [Independent phase/clock observation](#free-probe-independent-kinetic-observation): admit a concrete observation channel independently of the phase row used by the reader before testing the complete law; no response or generic identifiability audit is activated |
+| Next foundational dependency | [Preparation reachability and resources](#free-probe-preparation-reachability): identify what can generate the probe's supplied initial contrast under an independently justified complete mechanism, or retain it explicitly as external; no response or apparatus search is activated |
+| Closed conditional structural observation | [Independent phase/clock channel](#free-probe-independent-kinetic-observation): a primitive phase product tests the collective kinetic row without reconstruction; a finer arithmetic mean needs independently certified absence of internal slips. Finite circular records and unknown clock scale retain their ambiguities |
 | Closed bounded observation implementation | [Certified free-probe record reader](#free-phase-probe-reader-admission): primitive samples and rebuilt error bounds give interval reconstruction, root transport and harmonic readout, with distinct contradictions and numerical/work-limit abstention |
 | Closed bounded observation admission | [Finite records of the free probe](#free-phase-probe-record-admission): decay subtraction and a joint reading, clock, calibration, endpoint and quadrature bound support the fixed arithmetic budget; a sufficient noisy-record overlap bound retains the information limit |
 | Closed bounded operational admission | [Free relative-phase probe](#free-phase-probe-admission): one freely reacting two-C9 history traverses a full registration turn, retaining both child identities with a uniform fine bound and accounted contact work. Its derivative-free harmonic identity selects no intrinsic law or physical interpretation |
@@ -1534,27 +1539,53 @@ manufactured analytic records check the reader, including a nonzero endpoint
 correction; none is a source, TNFR response or physical observation.
 
 <a id="free-probe-independent-kinetic-observation"></a>
-### Entry requirement: independently observing phase and clock
+### Closed conditional admission: independently observed collective kinetics
 
-The reader reconstructs phase using the declared kinetic row. Its current
-estimate therefore cannot test that same row or justify an unknown clock.
-This dependence is already explicit in the observation theorem; another
-retained-law response or generic identifiability audit would not remove it.
+The [observation owner](../nodal/ORGANIZED_FREE_PHASE_PROBE.md#free-phase-probe-independent-kinetics)
+defines a detached structural channel using eighteen primitive phase/form
+readings. Their phase product gives a global circular necessary test of the
+collective kinetic row without reconstructing phase from that row. Shared
+marked arithmetic collar means provide finer registration information only
+when independently supplied speed bounds certify no internal phase slip.
+Unavailable collars do not suppress the global test.
 
-The next substantive admission must name a concrete phase/clock observation
-channel justified independently of the inferred response. Declare what it
-observes, its circular or lifted domain, units, timing, uncertainty and any
-backreaction or added state. Distinguish primitive phase from form-derived
-registration and native U3 inspection from a physical measurement. Apply the
-NFR ontology and actual execution contract to any proposed observing NFR.
+Independent reading, exposure and variation bounds give outward defect
+intervals. A positive lower bound excludes the joint observation and kinetic
+premises; zero inclusion is inconclusive. Hidden turns, ninefold product
+aliases and zero-mean fine motions delimit the information retained. A clock
+change transforms both complete rows; this channel supplies neither a clock
+calibration nor a physical sensor. No observing NFR, feedback or support event
+is installed. Manufactured records verify the instrument only; no source,
+trajectory or physical response is evaluated. The earlier harmonic reader
+retains its separate conditional scope.
 
-Acceptance requires a conditional joint observation protocol that can test
-a kinetic premise independently of the current reconstruction, or a scoped
-obstruction for that named channel. Do not invent a channel, clock law or
-selector solely to obtain a preferred constitutive law. Without independent
-new input, retain the existing family and its valid conditional reader.
-No new trajectory, source replay, apparatus search or physical-data evaluation
-is active; any later response still requires a frozen complete protocol.
+<a id="free-probe-preparation-reachability"></a>
+### Entry requirement: generating the supplied preparation
+
+Independent structural observation does not generate the probe's initial
+relative form `v(0)=12`. The existing preparation argument translates each
+isolated child's common form by a supplied amount. Its symmetry and isolated
+Laplacian-storage cost do not establish reachability, a reservoir or event
+occurrence. Contact work is already accounted separately.
+
+The next bounded foundational question is whether an existing independently
+justified mechanism can produce that contrast from a declared lower-resource
+state while retaining the marked children. First derive the restrictions of
+the unchanged isolated and joined complete rows, including nonnegative
+time-dependent matched-contact weights and state-preserving support switches.
+Then examine only mechanisms
+with an actual boundary/input/event owner; declare retained source state,
+clock, transfer balance, work, identity and occurrence premises. An authorized
+state edit or passive attachment is not an autonomous preparation law.
+
+Acceptance is a conditional preparation construction with its source and
+resource obligations, or a scoped reachability obstruction that leaves the
+large contrast explicitly external. Do not add a reservoir, controller or
+third NFR solely to make the target reachable. If a new constitutive premise
+is necessary, name the independent input that would justify it. Another
+accuracy refinement or retained-law response cannot settle this question.
+No trajectory, source replay, apparatus search or physical-data evaluation is
+active; a later response still requires a frozen complete protocol.
 
 <a id="contact-maintenance-certificate-admission"></a>
 ### Closed complete-flow convergence; unit-strength classification deferred

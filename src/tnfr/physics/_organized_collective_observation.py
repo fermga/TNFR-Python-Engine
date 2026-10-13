@@ -1,4 +1,4 @@
-"""Detached circular child means on the marked six-C9 organization.
+"""Detached circular child means on marked C9 organizations.
 
 The strict coherent collar is the observation domain in equations (27)-(28)
 of ``theory/nodal/ORGANIZED_ELECTRICAL_REALIZATION.md``. Outward enclosures
@@ -12,7 +12,14 @@ from dataclasses import dataclass
 from fractions import Fraction as Q
 
 from .._exact_time import exact_or_represented_real as _exact
-from ..mathematics._rational_interval import INTERVAL_METHOD, I, atan, cos, sin
+from ..mathematics._rational_interval import (
+    INTERVAL_METHOD,
+    I,
+    atan,
+    cos,
+    pi_interval,
+    sin,
+)
 from ._sine_preparation import _prepared_coordinate_vector as _vector
 from .relational_observations import _ordered
 
@@ -56,6 +63,59 @@ class _OrganizedCollectiveObservation:
         "strict_collar_requires_all_residual_cosines_proved_positive",
         "outward_bounds_may_abstain_without_proving_an_actual_domain_failure",
         "no_source_formation_law_trajectory_or_physical_identification_certificate",
+    )
+
+
+@dataclass(frozen=True)
+class _MarkedC9PairObservation:
+    """Two independently observed marked children, without a temporal lift."""
+
+    form: tuple[Q, ...]
+    primitive_phase_bounds: tuple[I, ...]
+    phase_offset_bounds: tuple[I, ...]
+    children: tuple[_OrganizedChildObservation, ...]
+    available: bool
+    interval_method: str = INTERVAL_METHOD
+    scope: tuple[str, ...] = (
+        "fixed_node_order_9_c_plus_j_for_two_marked_C9_children",
+        "primitive_phases_demodulated_by_the_fixed_centered_winding_one_template",
+        "arithmetic_collar_mean_reuses_the_shared_marked_child_observer",
+        "snapshot_lifts_are_not_a_continuous_temporal_lift",
+        "no_intersample_identity_retention_or_dynamical_law_is_certified",
+    )
+
+
+def _observe_marked_c9_pair(*, form, phase):
+    """Read eighteen signed forms and primitive circular phase observations.
+
+    Each phase may be an exact/represented scalar or an outward interval.
+    Subtracting the fixed template ``2*pi*(j-4)/9`` exposes each child's
+    coherent collar even though a raw winding-one resultant can vanish.
+    No fine residual, common origin or dynamic reconstruction is supplied.
+    All primitive values are admitted before any trigonometric evaluation.
+    """
+    values = _vector(form, "form", 18)
+    raw = _ordered(phase, "phase", limit=19)
+    if len(raw) != 18:
+        raise ValueError("phase requires 18 registered coordinates")
+    phases = tuple(_phase_box(value, f"phase[{i}]") for i, value in enumerate(raw))
+    alpha = 2 * pi_interval() / 9
+    offsets = tuple(value - alpha * (i % 9 - 4) for i, value in enumerate(phases))
+    children = tuple(
+        _observe_child(
+            child=child,
+            values=values[9 * child : 9 * child + 9],
+            offsets=offsets[9 * child : 9 * child + 9],
+            origin=I(0),
+        )
+        for child in range(2)
+    )
+    return _MarkedC9PairObservation(
+        form=values,
+        primitive_phase_bounds=phases,
+        phase_offset_bounds=offsets,
+        children=children,
+        available=all(child.available for child in children),
     )
 
 

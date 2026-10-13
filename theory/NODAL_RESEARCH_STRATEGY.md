@@ -188,8 +188,14 @@ The [primitive reader](nodal/ORGANIZED_FREE_PHASE_PROBE.md#free-phase-probe-read
 now encloses the reconstructed turn and harmonic functional, retaining
 necessary consistency checks and numerical abstention. Its inferred current
 cannot independently test the phase row used to reconstruct that current.
-A complete-law observation therefore needs an independently justified
-phase/clock channel, including its interaction with the observed organization.
+The [independent kinetic channel](nodal/ORGANIZED_FREE_PHASE_PROBE.md#free-phase-probe-independent-kinetics)
+instead reads all marked primitive phases. Their product tests a global
+circular consequence of the kinetic row; arithmetic collar means retain finer
+registration information when independent speed bounds exclude internal slips.
+Neither uses form evolution to define the observed phase. Finite circular
+records still hide full turns, and an unknown clock scale remains confounded
+with kinetic coefficients. This structural readout requires separate physical
+sensing, timing and backreaction admission before a physical comparison.
 Contact work, elapsed time, preparation authority and an independently
 admitted physical observation remain separate resources.
 

@@ -264,6 +264,19 @@ the observation error budget. Select `tests/test_rational_interval.py`,
 enclosure changes. These controls evaluate no TNFR source or trajectory;
 manufactured records do not establish physical sensor accuracy.
 
+For the [independent kinetic observation](theory/nodal/ORGANIZED_FREE_PHASE_PROBE.md#free-phase-probe-independent-kinetics),
+select `tests/physics/test_organized_free_phase_kinetics.py` and the shared
+`tests/physics/test_organized_collective_observation.py`. The primitive phase
+product gives a global circular necessary test; arithmetic collar means need
+an independent no-slip certificate before their increments enter a verdict.
+Exercise hidden individual and whole-child turns, argument cuts, unavailable
+collars, simultaneous exposure uncertainty and independently bounded form
+quadrature. Compare against manufactured analytic records with both compatible
+and incompatible increments. No phase reconstruction, fine-decay certificate
+or target-law speed bound may establish independent observation. An interval
+containing zero is inconclusive, not verification of the kinetic law; retain
+the declared clock and separate physical sensing premises.
+
 For [composition-compatible constitutive laws](theory/nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md),
 select `tests/physics/test_composition_compatible_constitutive.py` together
 with `tests/physics/test_sine_constitutive_inheritance_algebra.py`. Check

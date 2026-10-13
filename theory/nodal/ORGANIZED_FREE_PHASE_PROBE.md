@@ -12,6 +12,8 @@ reads a current harmonic without differentiating that record.
 The finite-record construction below bounds the same readout from
 finitely many uncertain samples, under explicit timing and kinetic
 calibration premises.
+Separately admitted primitive phase and form snapshots provide a circular
+necessary test of that kinetic row, without reconstructing phase from it.
 
 This is conditional operational access under the existing supplied
 constitutive family. It does not select that family, establish physical
@@ -995,7 +997,236 @@ algorithm, not evaluated histories of the supplied constitutive
 family. No scientific producer, source replay or physical-data
 comparison is needed to verify this reader.
 
-## 7. Scope and shared verification
+<a id="free-phase-probe-independent-kinetics"></a>
+
+## 7. Independently observed phase and clock
+
+The preceding reader reconstructs phase using the kinetic row it consumes.
+An independent test of that row instead observes the eighteen primitive
+phases as well as the eighteen signed forms, in the fixed order `9*c+j`.
+This section supplies a conditional structural observation protocol. The
+phase readout and its error and timing bounds are additional premises;
+they are not inferred from the form record. The global product channel
+needs no internal phase chart; an optional finer channel admits its own collar.
+Support, unit capacities, the two-C9 marking and the fixed model constant
+\(\gamma=1/(1023\pi)\) remain unchanged. No observing NFR or physical
+sensor is introduced, and detached reading installs no feedback or event.
+
+### 7.1 Global products and marked arithmetic means
+
+For arbitrary continuous primitive lifts define
+\(\delta=(\sum_j\theta_{A,j}-\sum_j\theta_{B,j})/9\).
+The directly observed product
+\(P_9=\prod_j e^{i\theta_{A,j}}\prod_j e^{-i\theta_{B,j}}
+=e^{i9\delta}\) is independent of their displayed turns. This identity
+needs neither a fine-state bound nor retained internal winding. The fixed
+support and labels are needed to compare its rate with the mean form row.
+The product alone retains a ninefold ambiguity in circular \(\delta\).
+
+At a snapshot subtract the known frame \(\alpha(j-4)\) from each
+primitive phase, obtaining circular offsets \(d_{c,j}\). Retain the
+strict coherent collar used by the
+[shared child observation](../../src/tnfr/physics/_organized_collective_observation.py).
+In exact notation, let \(Z_c=\sum_j e^{i(d_{c,j}-d_{c,0})}\), require
+\(\operatorname{Re}Z_c>0\), and define
+
+\[
+\begin{split}
+ b_c&=d_{c,0}+\operatorname{Arg}Z_c,\\
+ r_{c,j}&=\operatorname{Arg}e^{i(d_{c,j}-b_c)},
+       \qquad |r_{c,j}|<\pi/2,\\
+ M_c&=b_c+\frac19\sum_{j=0}^8r_{c,j},\qquad
+              m_c=e^{iM_c}.
+\end{split}
+ \tag{49}
+\]
+
+The resultant selects a regular anchor; the reported mean is the
+**arithmetic mean of the collar lifts**, not its direction. On the marked
+fine chart \(d_{c,j}=\Phi_c+q_{c,j}\), with zero fine mean and compatible
+collar lifts, (49) gives \(m_c=e^{i\Phi_c}\) exactly. All fine deviations
+are retained. Adding independent full turns to displayed primitive phases
+preserves this circular mean; it can change the displayed anchor lift.
+That snapshot lift is not automatically a continuous temporal lift.
+
+This distinction matters even on the existing organization. The ordinary
+first resultant is exactly zero on the winding-one carrier:
+\(\sum_j e^{i[\alpha(j-4)+\Phi_c]}=0\). Demodulation removes that
+cancellation, but its resultant direction need not equal the arithmetic
+mean. For \(q=(a,a,-2a,0,\ldots,0)\), \(a>0\) small, the fine mean
+vanishes while the demodulated resultant has imaginary part
+\(2\sin a-\sin2a>0\). Formula (49) removes this fine-state bias by
+retaining the individual phases.
+
+Snapshot collars alone do not connect (49) to the continuous nodal means
+between readings: an individual node could leave and re-enter the collar
+after one full turn. The optional local test below therefore requires an
+independent no-slip certificate. The product channel avoids this issue.
+
+### 7.2 Independent boxes and a circular kinetic test
+
+Choose exact increasing nominal times \(s_i\) in \([0,1]\). At each
+snapshot all eighteen forms and phases refer to one actual exposure
+\(s_i+e_i^{\rm time}\in[0,1]\), where \(|e_i^{\rm time}|\le\xi\). Supply per-node form
+error \(\varepsilon_x\), circular angular error \(\eta\), and independent
+absolute-continuity bounds \(|v_s|\le L_v\) and
+\(|\theta_{c,j,s}|\le L_\theta\) throughout the window. These bounds
+are independently justified regularity assumptions; no values are taken
+from the kinetic row under test. Frame-registration and phase-readout
+errors must be included in \(\eta\), and uncertainty in conversion to
+the declared scaled clock must be included in \(\xi\).
+When \(\xi=0\), no node phase-speed bound is needed for exposure
+transport; take \(L_\theta\xi=0\) without supplying \(L_\theta\).
+It is still needed for the implemented optional local no-slip test.
+
+A conservative \(L_v\) can follow from the unchanged **form row alone**.
+For any phase path, \(v_s+v=-\gamma^2\overline J\),
+\(|\overline J|\le J_0\), and \(v(0)=12\) imply
+\(|v|\le12+C\), \(|v_s|\le12+2C\), with \(C=\gamma^2J_0\).
+Thus \(L_v=12+2C\) is available when those independent form-law
+premises are retained. No phase kinetic identity is used in this bound.
+
+For the recorded primitive phases \(\widehat\theta_{c,j,i}\), use local
+real boxes whose circular images contain the nominal phases:
+
+\[
+ P_{c,j,i}=\widehat\theta_{c,j,i}
+       +[-e_\theta,e_\theta],\qquad
+ e_\theta=\eta+L_\theta\xi,\qquad
+ e_v=2\gamma\varepsilon_x+L_v\xi.
+ \tag{50}
+\]
+
+These boxes directly enclose the global product angle by summation.
+Optionally apply (49) to their demodulated values with outward arithmetic
+and the shared strict collar checks. This gives \(M_{c,i}\) enclosing a
+representative of the nominal circular mean. An unresolved collar leaves
+only that local mean unavailable; it does not block the product channel.
+No phase is reconstructed from form or replaced by a resultant direction.
+
+The signed sample means independently give
+\(\widehat v_i=\gamma(\sum_j\widehat x_{A,j,i}
+-\sum_j\widehat x_{B,j,i})/9\). Simultaneous exposure and the two
+mean errors imply \(v(s_i)\in V_i=\widehat v_i+[-e_v,e_v]\).
+For \(h_i=s_{i+1}-s_i\), define
+
+\[
+ A_i=\frac{h_i}{2}(V_i+V_{i+1})
+       +[-L_vh_i^2/4,L_vh_i^2/4].
+ \tag{51}
+\]
+
+This encloses \(\int_{s_i}^{s_{i+1}}v\,ds\). Indeed the trapezoid
+error equals \(\int_{s_i}^{s_{i+1}}(s-(s_i+s_{i+1})/2)v_s\,ds\),
+whose absolute value is at most \(L_vh_i^2/4\). Endpoint reading
+uncertainty is already in the intervals \(V_i\); it is not added twice.
+
+Let \(S_i=\sum_jP_{A,j,i}-\sum_jP_{B,j,i}\). The tested mean kinetic
+row and its globally observable necessary condition are
+
+\[
+ \delta_s=v,\qquad
+ e^{i9[\delta(s_{i+1})-\delta(s_i)-\int_{s_i}^{s_{i+1}}v\,ds]}=1,
+ \qquad
+ C_{9,i}=2\bigl(1-\cos(S_{i+1}-S_i-9A_i)\bigr).
+ \tag{52}
+\]
+
+Every independently displayed primitive turn cancels under this cosine.
+For the sharper local test, require endpoint collars and, for both children,
+an independently bounded \(L_\theta\) and the strict certificate
+
+\[
+ \max_j|\operatorname{Arg}e^{i(d_{c,j,i}-d_{c,0,i})}|
+       +2L_\theta h_i<\pi,\qquad
+ C_{1,i}=2\bigl(1-\cos(D_{i+1}-D_i-A_i)\bigr),
+ \quad D_i=M_{A,i}-M_{B,i}.
+ \tag{53}
+\]
+
+The maximum is bounded over the phase boxes. Node-to-first-node phase
+differences have speed at most \(2L_\theta\), so their left principal
+lifts cannot cross a cut during the interval. The endpoint arithmetic
+means therefore match the continuous means up to a common whole turn.
+This suffices for \(C_{1,i}\); no collar is assumed between snapshots.
+Alternatively an independently admitted whole-window marked fine chart
+justifies the same local identity. The implemented certificate uses (53).
+
+Each available defect is enclosed outwards in \([0,4]\). A strictly
+positive lower bound refutes the joint observation and kinetic premises;
+zero inclusion is inconclusive. Unresolved collars or no-slip bounds do
+not erase a product-channel exclusion. These are necessary tests, not
+proofs of the kinetic law, a selected current or an authenticated sensor.
+They test the collective row only: even exact agreement leaves zero-mean
+fine phase motions unchecked. Eighteen primitive inputs do not make this
+compressed observation a test of all eighteen phase equations.
+
+An exact analytic control changes only the phase row to
+\(\theta_s=0\), retaining the form row and the carrier initial state
+\(q=z=0\), \(\delta=0\), \(v=12\). The held phases give
+\(\overline J=0\), hence \(v(s)=12e^{-s}\). Over \([0,1/4]\)
+the phase increment is zero while the form integral is
+\(12(1-e^{-1/4})\in(21/8,85/32)\subset(0,\pi)\), using the
+quadratic and cubic alternating bounds for \(e^{-1/4}\). Nine times
+this interval lies strictly between \(6\pi\) and \(8\pi\), so the
+product defect is positive too. This is a complete-row control, not a
+numerically evaluated trajectory or a transferred formation certificate.
+
+### 7.3 Aliasing and clock scope
+
+Even perfect finite phase readings do not generally determine a temporal
+lift. On the uniform grid \(s_i=i/N\), the changes
+
+\[
+ \theta_{A,j}(s)\longmapsto\theta_{A,j}(s)+2\pi Ns,
+ \qquad
+ \theta_{B,j}(s)\longmapsto\theta_{B,j}(s)-2\pi Ns
+ \tag{54}
+\]
+
+leave every sampled primitive phasor, both fine states and the zero global
+phase mean unchanged. They add \(4\pi Ns\) to the relative lift.
+These are alternative observation-level histories, not asserted solutions
+of the held complete law. They show why the circular necessary test can
+miss added whole turns; it is not an exact temporal reconstruction.
+
+With independently justified bounds \(\epsilon_i^\delta\) on circular registration
+reading errors, the familiar sufficient no-alias condition is
+
+\[
+ |\delta(s_{i+1})-\delta(s_i)|+\epsilon_i^\delta+\epsilon_{i+1}^\delta<\pi.
+ \tag{55}
+\]
+
+It permits unique principal increments after an admitted initial lift;
+consistent endpoint errors telescope. A known independent variation bound
+can supply the first term. Equation (55) may not be justified by the very
+phase row being tested. The present circular instrument supplies neither
+this temporal lift nor an independently observed turn counter.
+
+Finally, an external clock \(u\) with \(ds/du=\chi(u)>0\) transforms
+**both** complete rows. With the unchanged weighted support and
+\(s=a\tau/2\), they become
+
+\[
+ x_u=\frac{\chi}{2a}(-Lx-\gamma\nabla U),\qquad
+ \theta_u=\frac{\chi\gamma}{2a}Lx,\qquad
+ \delta_u=\chi\gamma r.
+ \tag{56}
+\]
+
+An unknown constant clock scale and an unknown phase kinetic coefficient
+appear only through their product in the last observation. They are not
+separately identified by that row. A clock or another independently
+justified complete-law premise is needed to separate them. Declaring
+nominal structural timestamps is not a laboratory clock calibration.
+This protocol is a structural observation in the
+[NFR ontology](../EMERGENT_ONTOLOGY.md); native phase/U3 access is not a
+physical sensor. An interacting observing NFR would additionally need its
+own state, laws, coupling, backreaction and admission. No such object,
+trajectory, source replay or physical response is evaluated here.
+
+## 8. Scope and shared verification
 
 This result replaces an abstract collection of separately imposed
 registrations by one finite, freely reacting contact history.
@@ -1033,3 +1264,9 @@ check primitive-record admission, certified endpoints, an independent
 analytic midpoint calculation, the nonzero boundary correction and
 explicit unavailable outcomes. These manufactured records test the
 instrument's mathematics, not a constitutive response.
+The separate
+[kinetic observation](../../src/tnfr/physics/_organized_free_phase_kinetics.py)
+consumes primitive phase/form snapshots and independently supplied timing
+and variation bounds. Its [controls](../../tests/physics/test_organized_free_phase_kinetics.py)
+retain the global product, conditional arithmetic collar and aliasing
+distinctions; they do not evaluate a source or establish a physical sensor.
