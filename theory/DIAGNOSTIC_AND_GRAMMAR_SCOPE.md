@@ -1348,7 +1348,8 @@ initialization determine the dynamic response. At fixed total weight,
 split contact removes the critical mode retained by a single port.
 
 <a id="boundary-criterion-foundation-decision"></a>
-### What the boundary criterion does and does not justify
+<a id="post-resource-foundation-decision"></a>
+### Independent premises after structure and observation bounds
 
 The mathematical methods are established kernel and Schur-complement
 arguments. Their useful consequence here is the separation of inputs:
@@ -1373,14 +1374,76 @@ identity do not impose faithfulness on every current or collective
 observable. A many-to-one flow quotient can lose native U3 or winding
 information even when both continuous rows descend exactly.
 
-Thus the missing input is independent justification for the accessible
-query alphabet and its required distinctions, or a separately justified
-boundary-information resource restriction. Their conditional consequence
-does not justify them. Generic phase-access reviews would repeat the
-existing [preparation and observation obstruction](research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#primitive-phase-information-boundary).
-The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#independent-boundary-premise-admission)
-records the closed candidate and the concrete entry requirement for new
-work. No further selector, numerical or physical campaign follows.
+The [free probe](nodal/ORGANIZED_FREE_PHASE_PROBE.md) and
+[small-phase comparison](nodal/ORGANIZED_SMALL_RESOURCE_INFORMATION.md)
+now provide conditional access, including full fine-state errors, preparation
+resources and distinguishable or overlapping reading sets. The latter removes
+large initial mean forms as a requirement for every observation in this family.
+Neither result supplies a new restriction on the current, kinetic rows or
+accessible physical preparations. A lower information or attachment cost does
+not become a selection principle without independent justification for that
+requirement. The [reciprocal resource envelope](nodal/RECIPROCAL_FORM_RESOURCE_ENVELOPE.md)
+also bounds what changing contacts can supply; it does not produce an occurrence
+law or transfer its weighted comparison model to native phase-pressure support.
+
+The remaining distinction is between an unresolved proof and an absent premise:
+
+- **Complete-law justification.** Held capacity and support already complete
+  those channels in the selected models. The
+  [NFR requirements](EMERGENT_ONTOLOGY.md#12-can-nfr-properties-justify-a-joint-law)
+  allow boundary-dependent inherited laws and memory; they do not require
+  cosine storage, first-resultant sufficiency or unchanged scalar profiles
+  across every contact. The retained countermodels already satisfy the weaker
+  requirements. Selecting among them needs additional independent content,
+  not another derivation from the same premises or replacement of the nodal row.
+- **Equivalence and observation.** The
+  [form chart foundation](FUNDAMENTAL_THEORY.md#foundational-state-admission),
+  [complete interface maps](nodal/ORIENTED_INTERFACE_PROFILE_INHERITANCE.md#oriented-interface-selection)
+  and [scalar calibration theorem](nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-calibrated-observation)
+  have stated transformation classes. Disjoint record sets exclude equivalence
+  preserving that preparation, clock, input and observation contract. They do
+  not classify arbitrary nonlinear state conjugacies with changed inputs and
+  readouts. A broader equivalence question first needs a justified operational
+  class; an unspecified class is not a missing theorem to solve by enumeration.
+- **Generative occurrence.** The
+  [operator activation audit](STRUCTURAL_OPERATORS.md#operator-mechanism-and-activation-audit)
+  and [event premises](nodal/RELATIONAL_SUPPORT_EVENTS.md#support-event-premise-admission)
+  already separate candidate access, eligibility, action, cost and occurrence.
+  A reservoir or source port retains its own preparation and constitutive law.
+  Its availability does not derive those inputs. Autonomous capacity, support
+  and preparation become necessary for a claim consuming them; they are not
+  prerequisites to every conditional formation or physical comparison.
+- **Independent physical bridge.** The small-phase theorem consumes a supplied
+  relative phase and fine-state budget, a declared clock and an observation law.
+  Gain and exposure allowances presume those inputs. The
+  [recovery preparation counterexample](research/ORGANIZED_RECOVERY_OBSERVATION.md#recovery-operational-admission)
+  shows why voltage precision alone cannot certify unobserved relative phases.
+  The [electrical review](research/ORGANIZED_ELECTRICAL_FEASIBILITY.md#organized-electrical-physical-admission)
+  separately retains complete-law and preparation mismatches. Those older
+  models supply no bridge for the eighteen-node comparison; their numerical
+  apparatus limits do not transfer to it either. A collective sensor map is
+  allowed, with independent preparation, loading, clock and reduction errors.
+
+There are still conditional mathematical questions, including receiver
+acquisition or an all-future exclusion beyond its
+[finite nonacquisition result](nodal/CONSTITUTIVE_RECEIVER_COMPARISON.md#constitutive-receiver-comparison-result).
+That question requires a new source-valid invariant-domain or capture argument;
+extending the finite run does not supply one. It is not evidence that another
+law or engine mechanism is already justified. The same distinction applies to
+deferred unit-strength stationary classification and capacity/support models.
+
+The reviewed owners therefore identify no new independently justified selector
+or ready complete mechanism that resolves the current dependency. This is a
+boundary of the admitted repository evidence, not a proof that none can exist.
+The [constitutive entry condition](research/FIVE_STAGE_EXECUTION_PLAN.md#new-constitutive-evidence-admission)
+requires a named new premise or observation, its independent basis and the
+retained alternative it can exclude. For an autonomous generative claim, the
+input may instead be a justified source/occurrence mechanism with its own
+capability; it need not select the current. Physical comparison need not await
+unique law selection or substrate origin once its own bridge is admitted.
+The [sole queue](research/FIVE_STAGE_EXECUTION_PLAN.md#post-resource-foundation-review)
+records the dependency decision; another internal observation refinement
+does not fill this missing input.
 
 ### Cross-channel foundation audit
 

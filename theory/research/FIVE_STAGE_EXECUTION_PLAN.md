@@ -222,10 +222,13 @@ observation. The
 [small-preparation information theorem](#organized-small-resource-information)
 now gives a cubic endpoint law gap, full-state error budgets and a genuine
 common-reading ambiguity witness, with quadratic nominal attachment storage.
-It requires no initial mean-form contrast or full turn. The next step is a
-[foundation decision after these resource bounds](#post-resource-foundation-review),
-to identify an unclosed mechanism or independent premise before another
-internal observation design.
+It requires no initial mean-form contrast or full turn. The
+[foundation review](#post-resource-foundation-review) is now closed: the
+reviewed owners supply no new independent selector, ready generative mechanism
+or physical bridge for this comparison. Further work returns to the
+[independent-content entry condition](#new-constitutive-evidence-admission).
+The family remains available for conditional research; another internal
+observation refinement is not automatically queued.
 Unit-strength classification remains unresolved and deferred; no numerical
 campaign is admitted.
 
@@ -244,7 +247,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next foundation decision | [After the resource-information bounds](#post-resource-foundation-review): reconcile the supplied-law, equivalence, occurrence and measurement obligations with their existing owners; admit further work only for a new independent premise or an unclosed complete mechanism |
+| Entry condition; no new campaign admitted | [Independent content for the next claim](#new-constitutive-evidence-admission): name a justified new law/resource restriction, a source-valid complete generative mechanism or an independently admitted physical comparison; the reviewed owners do not currently supply that input |
+| Closed foundation decision | [After the resource-information bounds](#post-resource-foundation-review): internal access and error budgets are established; law justification, occurrence and the physical bridge retain distinct missing premises. Existing chart results and deferred receiver questions do not activate another campaign |
 | Closed resource-information admission | [Small-resource constitutive information](#organized-small-resource-information): a cubic endpoint law gap, independent full-state error budgets, genuine reading-set overlap and quadratic nominal attachment storage quantify one fixed observation class without large initial mean forms |
 | Closed reciprocal resource admission | [Reciprocal form resources beyond matching contacts](#organized-form-resource-envelope): a centered cut invariant bounds the marked contrast on every finite reciprocal contact network from all initial forms and node count; additional nodes and nonuniform contacts carry their own resources, and nonexclusion proves no reachability |
 | Closed preparation-resource admission | [Preparation reachability and resources](#free-probe-preparation-reachability): common matching-contact schedules cannot create the target contrast from zero means; a necessary nodal form-variation budget, separate work ledger and conditional supplied-input construction retain the autonomous-source boundary |
@@ -1480,12 +1484,30 @@ or contact passivity alone is insufficient.
 Acceptance is a new conditional restriction or a scoped obstruction, with
 remaining freedom explicit. If no new input changes an existing premise,
 retain the family rather than launch another compatibility calculation.
-The admitted operational question below changes the query architecture:
-one freely reacting history replaces independently imposed registration
-queries. It tests access under an explicit preparation and complete law,
-without using that law to justify itself. No existing operator or resource
-contract supplied an additional intrinsic selector. Constitutive selection
-retains the entry requirements above.
+The completed operational branch changed the query architecture: a free
+relative turn and then a small-phase endpoint comparison establish access
+under explicit preparation and complete laws. Their resource and error bounds
+do not use either law to justify itself. The
+[post-resource decision](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#post-resource-foundation-decision)
+found no additional intrinsic selector or admitted physical bridge in the
+reviewed owners. This is now the sole entry condition, not an instruction to
+repeat a generic premise audit or search for another threshold.
+
+A generative reopening may instead identify a concrete unclosed mechanism
+under an existing complete law, together with a source-valid argument that
+could decide it. The [receiver capture contract](../nodal/ORGANIZED_RECEIVER_SLOW_ADMISSION.md#organized-receiver-capture-contract)
+and its finite negative evidence remain available, but no new invariant-domain
+argument is presently admitted. A longer simulation alone does not resolve
+an all-future claim. A new source, capacity or occurrence law needs its own
+independent motivation; installing a controller does not provide it.
+
+For physical comparison, supply a named property and a jointly admitted
+preparation, collective measurement, clock, loading and complete-law reduction
+before freezing the reserved response. The small-phase gain and timing
+allowances presume that bridge. Earlier apparatus exclusions concern their
+own models and do not prove that every realization of the new comparison is
+impossible. No response evaluation, source replay, apparatus search or physical
+campaign is active while this independent input remains absent.
 
 <a id="free-phase-probe-admission"></a>
 ### Closed bounded admission: a free relative-phase probe
@@ -1652,26 +1674,30 @@ selects neither a physical law nor a universally optimal observation. No
 trajectory, source replay, apparatus search or physical data was evaluated.
 
 <a id="post-resource-foundation-review"></a>
-### Entry requirement: foundation decision after the resource-information bounds
+### Closed decision: the independent-input boundary
 
-The resource results remove the need to assume large initial mean forms for
-every constitutive observation. They leave the complete law and independent
-preparation/measurement premises unresolved. Reconcile those obligations with
-the [ontology](../EMERGENT_ONTOLOGY.md),
-[form and chart foundations](../FUNDAMENTAL_THEORY.md),
-[phase-response and covering classification](../nodal/SINE_CONSTITUTIVE_INFORMATION.md#phase-response-faithfulness),
-[complete interface maps](../nodal/ORIENTED_INTERFACE_PROFILE_INHERITANCE.md),
-[event occurrence](../nodal/RELATIONAL_SUPPORT_EVENTS.md), and
-[calibrated-observation boundaries](../nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-calibrated-observation).
+The [foundation owner](../DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#post-resource-foundation-decision)
+reconciles the ontology, constitutive countermodels, complete chart maps,
+operator/event contracts and physical source reviews. It finds no unfilled
+row in the declared held-channel model and no newly justified selector.
+Operational separation remains conditional on accessible preparation, clock
+and readout. Arbitrary nonlinear conjugacy has no admitted general input/readout
+class here; the existing restricted equivalences must not be repackaged as a
+new classification task or enlarged into a global inequivalence claim.
 
-Acceptance is one dependency decision: identify a genuinely unclosed complete
-mechanism or a concrete new independent premise that can discriminate the
-remaining alternatives. Declare the admissible state, coordinate and readout
-freedoms before proposing an equivalence theorem. Existing affine maps,
-phase-origin freedom and event-admission distinctions are not new research
-gates by themselves. If no such premise or mechanism is available, record the
-precise missing bridge; do not substitute another topology, threshold or
-precision refinement. This review activates no response or physical campaign.
+Autonomous preparation and support occurrence require additional constitutive
+content when claimed. Their absence is not an executor defect. Receiver
+acquisition or permanent exclusion remains a genuine mathematical question,
+but its present finite evidence supplies no new all-future invariant-domain
+argument. The physical reviews also supply no independent complete preparation,
+relative-phase information, clock and observation bridge for the two-C9 model.
+Those are missing inputs, not errors removable by more precise trajectories.
+
+The decision is to retain the valid conditional family and return to the
+[existing entry condition](#new-constitutive-evidence-admission). No new selector,
+chart, topology, precision, source or physical campaign is activated. This
+review neither proves that future independent content is impossible nor makes
+unique microscopic law selection a prerequisite to every physical comparison.
 
 <a id="contact-maintenance-certificate-admission"></a>
 ### Closed complete-flow convergence; unit-strength classification deferred

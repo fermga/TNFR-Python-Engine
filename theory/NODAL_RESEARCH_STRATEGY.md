@@ -228,6 +228,20 @@ common record. Lower preparation therefore trades against observation accuracy
 within this fixed class. The result justifies neither the phase preparation
 nor a physical sensor, and it does not select a constitutive law without data.
 
+The [foundation decision](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#post-resource-foundation-decision)
+separates those completed access results from independent law justification.
+No reviewed operator, chart, source or physical bridge adds a new selector.
+Further constitutive selection needs a new independent premise with a
+consequence separating retained alternatives. A generative continuation instead
+needs a concrete unclosed capability and a source-valid argument under its
+declared complete law. An autonomous source claim needs an occurrence law;
+a physical comparison needs
+an independently admitted collective observation and preparation. Neither
+requires solving every origin question first. Broader nonlinear equivalence
+remains dependent on its declared input/readout class, and the remaining
+receiver question needs a source-valid invariant-domain argument. The
+execution plan retains these boundaries without opening parallel campaigns.
+
 ### Present interaction and sufficient future state
 
 Instantaneous current, a sufficient state and a history-based description
