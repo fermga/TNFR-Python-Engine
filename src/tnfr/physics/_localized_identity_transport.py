@@ -379,3 +379,96 @@ def _bound_phase_flat_directional_source(
         unavailable_reasons=tuple(reasons),
         status="excluded" if not reasons else "not_certified",
     )
+
+
+@dataclass(frozen=True)
+class _CycleConsensusBasinBound:
+    """Conditional all-time capture from a supplied small real-lift state.
+
+    The primitive norm bounds both signed form and retained real phase lifts
+    about a supplied constant background. It is not merely a bound on storage
+    or on wrapped edge gaps: either of those can also describe nonzero winding.
+    Actual conserved form and lifted phase means, including source residuals,
+    determine the eventual constant state. No zero-mean preparation is assumed.
+
+    This report supplies no convergence deadline, mobile template certificate,
+    finite-lived formation exclusion, actual source or physical identification.
+    Failed sufficiency leaves the consensus basin unavailable.
+    """
+
+    node_count: int
+    initial_state_norm_upper_bound: Q
+    form_loss_coefficient: Q
+    exchange_coefficient: Q
+    storage_scale: Q
+    initial_storage_upper_bound: Q
+    acute_boundary_storage_lower_bound: Q
+    acute_barrier_margin: Q
+    edge_cosine_lower_bound: Q | None
+    consensus_basin_certified: bool
+    unavailable_reasons: tuple[str, ...]
+    status: str
+    conditional_on_supplied_preparation: bool = True
+    scope: tuple[str, ...] = (
+        "complete_positive_loss_normalized_sine_rows_and_no_inputs_or_events",
+        "fixed_simple_unit_cycle_with_held_unit_capacity_and_unit_storage_scale",
+        "initial_joint_norm_uses_signed_form_and_real_phase_lifts_about_constants",
+        "supplied_initial_lift_is_not_replaced_by_wrapped_edge_storage",
+        "strict_storage_barrier_retains_the_zero_winding_acute_cell_for_all_time",
+        "consensus_is_on_each_actual_conserved_form_and_lifted_phase_mean_leaf",
+        "tau_equals_exchange_times_original_time_over_pi_in_both_rows",
+        "no_uniform_convergence_deadline_or_finite_packet_template_transfer",
+        "no_exclusion_of_finite_lived_transient_organizations",
+        "not_certified_is_failed_sufficiency_not_observed_nonformation",
+        "no_source_response_trajectory_or_physical_identification",
+    )
+
+
+def _bound_cycle_consensus_basin(
+    *, reference_model, node_count, initial_state_norm_upper_bound
+) -> _CycleConsensusBasinBound:
+    """Apply the small-state zero-sector corollary without evaluating a flow.
+
+    Proof: LOCALIZED_ORGANIZATION_GEOMETRY.md. Require an ordinary integer N>=3,
+    the admitted positive-loss sine law with beta=1, and an exact or represented
+    nonnegative joint norm M about a supplied constant form/real-phase background.
+    The cycle has held unit capacities, conductances and geometric lengths.
+
+    Storage satisfies H<=2*M**2 initially and is nonincreasing under both
+    complete rows. If 2*M**2<1, then 2*M<sqrt(2)<pi/2 also admits the initial
+    zero-winding acute chart. Every boundary face costs at least one. Its
+    forward-invariant storage sublevel has edge cosines at least 1-2*M**2
+    and contains only the consensus critical geometry. The existing full-law
+    sector theorem gives convergence on each actual conserved-mean leaf.
+
+    Only sufficient scalar arithmetic is performed. No phase state is read,
+    so the caller must retain the real-lift norm premise and support model;
+    a small storage observation alone cannot replace that premise.
+    """
+    if type(node_count) is not int:
+        raise TypeError("node_count must be an ordinary Python integer")
+    if node_count < 3:
+        raise ValueError("node_count must be at least three for a simple cycle")
+    radius = _exact(initial_state_norm_upper_bound, "initial_state_norm_upper_bound")
+    if radius < 0:
+        raise ValueError("initial_state_norm_upper_bound must be nonnegative")
+    loss, exchange, beta = _admit_cycle_law(reference_model)
+    storage = 2 * radius**2
+    margin = 1 - storage
+    certified = margin > 0
+    return _CycleConsensusBasinBound(
+        node_count=node_count,
+        initial_state_norm_upper_bound=radius,
+        form_loss_coefficient=loss,
+        exchange_coefficient=exchange,
+        storage_scale=beta,
+        initial_storage_upper_bound=storage,
+        acute_boundary_storage_lower_bound=Q(1),
+        acute_barrier_margin=margin,
+        edge_cosine_lower_bound=margin if certified else None,
+        consensus_basin_certified=certified,
+        unavailable_reasons=(
+            () if certified else ("acute_storage_barrier_not_certified",)
+        ),
+        status="certified" if certified else "not_certified",
+    )

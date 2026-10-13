@@ -276,13 +276,24 @@ resolves a nonzero nonlinear defect for the exact nominal preparations within
 the numerical budget. Its original shared-source-family bound remains
 unresolved; more quadrature precision alone cannot resolve that bound.
 
-An organization formed through interaction would need an independent
-actual-state identity absent initially, formation, persistence or maintenance,
-and later response before supporting a recursive hierarchy. The next question
-is whether this complete law admits such a mechanism beyond small deformation
-or radiation. Fixed-interface results on C9-based organizations do not transfer
-their verdicts to moving patterns, and positive loss still constrains permanent
-motion. The
+The [geometric basin result](nodal/LOCALIZED_ORGANIZATION_GEOMETRY.md#mobile-zero-sector-basin)
+now excludes winding generation and nonuniform stationary limits for the
+entire original pair source family, using its zero-lift chart and small
+storage. This narrows the remaining mechanism to finite-lived organization;
+it does not exclude such formation. The
+[geometry audit](nodal/LOCALIZED_ORGANIZATION_GEOMETRY.md#geometry-and-formation)
+separates consumed support, conductance and primitive phase geometry from an
+embedding or carrier label, and compatible charts from actual acquisition.
+
+The next question is whether this complete law can reorganize the incoming
+patterns into a common composite identity defined by their relative position,
+phase and dynamics. Admit shared motion or oscillation and evolving constituent
+profiles. The identity must be absent initially with a margin, then form and
+retain joint organization beyond linear overlap, with constituent and boundary
+state and a later response criterion. This is stronger than small deformation
+or radiation and remains unproved by the endpoint result. Fixed-interface
+results on C9-based organizations do not transfer their verdicts to moving
+patterns, and positive loss still constrains permanent motion. The
 [sole queue](research/FIVE_STAGE_EXECUTION_PLAN.md#mobile-organization-feasibility-admission)
 owns this analytical feasibility gate; the retained response is not retuned or
 replayed.

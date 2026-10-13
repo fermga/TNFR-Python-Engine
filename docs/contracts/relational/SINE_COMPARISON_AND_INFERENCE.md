@@ -211,8 +211,8 @@ evaluates scalar budgets for the
 [joint band-identity proof](../../../theory/nodal/LOCALIZED_MOBILE_INTERACTION.md#mobile-pair-identity)
 and its prospective interaction discriminator. It shares the actual positive-loss
 model, cycle, amplitude, error, radius and horizon admission of the prepared
-transport reader. The horizon must also be even: initial opposite-band centers
-are `+T/2` and `-T/2`, meet at `T/2` and separate by the endpoint `T`.
+transport reader. The horizon must also be even: opposite-band reference
+centers start at `+T/2` and `-T/2`, meet at `T/2` and separate by the endpoint `T`.
 Each preparation has its own joint form/phase error ball, and the combined
 initial state is exactly the sum of those same two preparations. Three
 independently perturbed histories do not satisfy this correlation premise.
@@ -221,7 +221,8 @@ independently perturbed histories do not satisfy this correlation premise.
 each projected component's tail to meet their strict tolerances, with separated
 endpoint windows. The band
 projections retain the declared identity labels through overlap; they do not
-close two nonlinear subsystems or partition the actual state spatially.
+close two nonlinear subsystems, partition the actual state spatially or
+prescribe exact constituent trajectories.
 `cubic_remainder_certified` separately admits the nominal fifth-order remainder
 and correlated-preparation sensitivity for the
 [cubic Duhamel instrument](../../../theory/nodal/LOCALIZED_MOBILE_INTERACTION.md#mobile-pair-defect).
@@ -269,7 +270,40 @@ shared-source-family bound remains unresolved. The
 [read-only evidence controls](../../../tests/physics/test_localized_mobile_response_evidence.py)
 rebuild budgets and verdicts from primitive inputs and retained spectral boxes
 without replaying the producer; byte associations do not authenticate execution.
-Nonadditivity establishes no additional NFR identity or formation.
+Nonadditivity establishes no common composite NFR identity or capture. That
+claim needs an initially absent actual-state relation and joint retention
+beyond linear overlap, with constituent and boundary state retained. A
+prospective composite identity may allow shared motion and changing profiles;
+it is not supplied by the separated reference windows of this endpoint test.
+
+### Private cycle consensus-basin bound
+
+`_bound_cycle_consensus_basin(*, reference_model, node_count,
+initial_state_norm_upper_bound)` in the shared
+[`_localized_identity_transport.py`](../../../src/tnfr/physics/_localized_identity_transport.py)
+evaluates the [zero-sector corollary](../../../theory/nodal/LOCALIZED_ORGANIZATION_GEOMETRY.md#mobile-zero-sector-basin).
+It admits an ordinary integer `N>=3`, a nonnegative exact or represented norm
+bound `M`, and the regular positive-loss normalized-sine model with `beta=1`.
+The caller supplies the fixed unit cycle, held unit capacities, no inputs or
+events, and a joint signed-form/real-phase-lift norm about constant backgrounds.
+A storage observation or wrapped edge gaps cannot replace that lift premise.
+
+The reader computes `initial_storage_upper_bound=2*M**2` and
+`acute_barrier_margin=1-2*M**2`. A strictly positive margin also guarantees
+the initial zero-winding acute chart under the supplied norm premise;
+`consensus_basin_certified=True` and `status="certified"` then retain the
+all-time cosine lower bound and convergence to the actual conserved form and
+lifted-phase means. Otherwise `edge_cosine_lower_bound=None` and
+`status="not_certified"` leave the conclusion unavailable with an explicit
+reason. This is failed sufficiency, not evidence of a different outcome.
+
+The scalar reader inspects no state, authenticates no source and evaluates no
+trajectory. It supplies neither a convergence deadline nor a mobile-template
+extension, and excludes no finite-lived organization. The
+[geometry owner](../../../theory/nodal/LOCALIZED_ORGANIZATION_GEOMETRY.md#geometry-and-formation)
+separates consumed support/conductance and phase geometry from unused embedding
+or independent edge lengths, and retains the stationary winding-one control
+showing why small storage alone does not certify consensus.
 
 ### Sine-law prospective sampling budgets
 

@@ -152,7 +152,8 @@ python -m pytest tests/physics/test_localized_mobile_interaction.py tests/physic
 Check the two opposite-band references, joint norm and whole-window error,
 projected-component concentration and strict identity thresholds. Projections
 must remain observations, without claiming closed nonlinear subsystems or a
-spatial decomposition. Independently derive cancellation of the complete
+spatial decomposition; reference tubes are not exact constituent trajectories.
+Independently derive cancellation of the complete
 linear rows in the joint-minus-separate defect, including preparation errors
 reused from the same primitives. Distinguish that defect from intensity cross
 terms. Check the actual damped tangent's cubic Duhamel term, fifth-order
@@ -178,6 +179,28 @@ The [frozen result](theory/nodal/LOCALIZED_MOBILE_RESPONSE.md#mobile-response-re
 passes its numerical budget and certifies nominal nonadditivity while leaving
 the original shared-source-family bound unresolved. Preserve those distinct
 outcomes and the prepared band identities without claiming a new NFR.
+
+For the [cycle geometry and consensus basin](theory/nodal/LOCALIZED_ORGANIZATION_GEOMETRY.md),
+select its static controls with the shared transport reader:
+
+```sh
+python -m pytest tests/physics/test_localized_cycle_geometry.py tests/physics/test_localized_identity_transport.py -q
+```
+
+Check the original pair's whole-source storage bound, strict zero-chart
+admission and unavailable failed bounds. Retain the separately supplied
+acute winding-one equilibrium below the storage threshold as a counterexample
+to dropping the chart premise. The proof separately distinguishes the actual
+support and conductance from an unused embedding or independent edge length,
+and primitive phase winding from carrier frequency. Consensus on the actual
+mean leaf excludes neither transient structure nor finite-lived formation;
+these tests evaluate no response and preserve the frozen endpoint evidence.
+
+A future composite-formation claim needs separate controls for source absence
+with margin and sustained joint relative-state identity beyond linear overlap,
+retaining constituent and boundary state. Shared motion, oscillation and changes
+of constituent profiles are admissible identity choices. The current controls
+establish no such capture or subsequent composite response.
 
 For shared [Krylov and Hankel arithmetic](src/tnfr/mathematics/krylov.py), select
 `tests/mathematics/test_krylov_admission.py`,

@@ -873,7 +873,8 @@ The [joint band-identity theorem](nodal/LOCALIZED_MOBILE_INTERACTION.md#mobile-p
 carries two prepared opposite-carrier patterns through a finite encounter,
 retaining a joint full-state tube and localization of each projected component.
 These spectral projections are neither closed nonlinear subsystems nor a
-spatial partition of the actual state. The
+spatial partition of the actual state; the reference tubes do not prescribe
+exact constituent trajectories. The
 [interaction defect](nodal/LOCALIZED_MOBILE_INTERACTION.md#mobile-pair-defect)
 compares joint evolution with separate histories sharing the same preparation
 primitives; their linear evolution cancels. The
@@ -881,17 +882,35 @@ primitives; their linear evolution cancels. The
 certifies a nonzero nonlinear defect for the exact nominal preparations within
 the frozen numerical budget, with both prepared band identities retained.
 The original shared-source-family bound remains unresolved. This conditional
-mathematical result establishes nonadditivity, not an additional organization
+mathematical result establishes nonadditivity, not a common composite identity
 or a physical observation.
 
-Interactions could form another organization between the prepared patterns,
-and repeated formation could support a hierarchy. This remains a hypothesis.
-A nonzero superposition defect or additional Fourier modes may describe small
-deformation or radiation. A new NFR needs an independently defined actual-state
-identity absent from the initial preparation, formation, persistence or
-maintenance, and later
-interaction or response, with relevant constituent and boundary state retained.
-Recursive composition does not guarantee increasing complexity.
+The interacting patterns could reorganize into a common composite NFR whose
+identity depends on their relative position, phase and dynamics. Their shapes
+and trajectories may change; a finite-lived composite may move or oscillate
+jointly. This remains a hypothesis. Its independently defined actual-state
+identity must be absent initially with a margin, then form and persist beyond
+what linear overlap explains, with relevant constituent and boundary state
+retained and a later interaction or response criterion. A nonzero superposition
+defect or extra Fourier modes may describe small deformation or radiation
+without this joint retention. Repeated composite formation could support a
+hierarchy, but does not guarantee increasing complexity.
+
+The [zero-sector basin theorem](nodal/LOCALIZED_ORGANIZATION_GEOMETRY.md#mobile-zero-sector-basin)
+places the entire original mobile-pair source family in an invariant acute
+phase domain; each state converges to consensus on its actual conserved mean
+leaf. It excludes
+winding generation and a nonuniform stationary limit from that family, while
+leaving finite-lived organization open. Small storage alone is insufficient:
+a separately supplied acute winding-one twist on the same cycle is stationary
+below the same storage threshold, outside the required zero-lift chart.
+
+[Geometry and formation](nodal/LOCALIZED_ORGANIZATION_GEOMETRY.md#geometry-and-formation)
+therefore require distinct tests. Support and conductance enter this law;
+an embedding or independent edge length alone does not. A proper localized
+cycle window induces a path, so the winding identity of a supplied C9
+constituent does not transfer to that window. Neither geometric compatibility
+nor an invariant collective chart establishes actual entry and retention.
 
 Existing [positive-loss exclusions](nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission)
 constrain recurrence on their finite closed complete laws; their hypotheses
