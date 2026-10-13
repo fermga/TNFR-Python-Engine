@@ -161,6 +161,20 @@ admission and unavailable failed bounds. Without an evaluated proxy there is
 no positive interaction lower bound. These controls perform no paired
 trajectory evaluation and supply no detected deformation or collision result.
 
+For the [certified endpoint instrument](theory/nodal/LOCALIZED_MOBILE_RESPONSE.md),
+also select its independent spectral, quadrature and evidence controls:
+
+```sh
+python -m pytest tests/physics/test_localized_mobile_spectral.py tests/physics/test_localized_mobile_response.py tests/test_gauss_legendre.py tests/scripts/test_localized_mobile_response_lifecycle.py -q
+```
+
+Spectral controls use small synthetic supports and direct real-site references;
+quadrature controls use exact polynomial moments and sharp remainder cases.
+Endpoint wiring mocks its integrand explicitly, while lifecycle tests use
+temporary synthetic repositories. None evaluates the reserved C1024 response.
+The one-shot driver requires its own freeze and preserves its first outcome.
+An evidence audit checks byte associations without replaying the producer.
+
 For shared [Krylov and Hankel arithmetic](src/tnfr/mathematics/krylov.py), select
 `tests/mathematics/test_krylov_admission.py`,
 `tests/mathematics/test_arithmetic_pulse.py` and

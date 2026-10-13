@@ -239,6 +239,29 @@ unavailable. The [frozen endpoint protocol](../../../theory/nodal/LOCALIZED_MOBI
 defines that separate evaluation. These private scalar bounds authenticate no
 source, install no solver and establish no resolved deformation or collision.
 
+### Private certified mobile endpoint observation
+
+`_evaluate_localized_mobile_response` in
+[`_localized_mobile_response.py`](../../../src/tnfr/physics/_localized_mobile_response.py)
+rebuilds those primitive budgets and encloses the nominal cubic endpoint with
+the [finite spectral and quadrature method](../../../theory/nodal/LOCALIZED_MOBILE_RESPONSE.md#mobile-response-numerics).
+The spectral factory additionally requires `N<=4096`, `Q<=32`,
+`3(Q-1)<N/4` and `sigma*T<=1`; it retains both real channels, all cubic
+modes and the declared source reflection. These are instrument domains.
+The returned closure consumes only freshly admitted time, not a cached
+external preparation report.
+
+Gauss order 12 and deterministic prior-bound panel doubling implement the
+frozen calculation. Root/weight intervals, source materialization, propagators,
+convolution and Parseval reduction retain outward error. A failed numerical
+budget cannot certify a positive interaction even when its computed lower
+bound is positive. `nominal_interaction_certified` and
+`uniform_interaction_certified` separately require the original identity
+contract and the corresponding complete error budget. A zero lower bound
+remains unresolved sufficiency, not a declaration that the response vanishes.
+This calculation evaluates an analytic tangent integral, not the full
+nonlinear trajectory and not a physical observation.
+
 ### Sine-law prospective sampling budgets
 
 `bound_sine_sampling_smoothness(*, reference_model, form_diameter_bound,
