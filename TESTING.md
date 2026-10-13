@@ -112,7 +112,7 @@ For [prepared finite localized transport](theory/nodal/LOCALIZED_IDENTITY_TRANSP
 select the private budget controls with the shared actual-law owners:
 
 ```sh
-python -m pytest tests/physics/test_localized_identity_transport.py tests/physics/test_sine_admission.py tests/physics/test_relational_sine_comparison.py tests/physics/test_sine_flow_kernel.py tests/physics/test_relational_sine_resonance.py -q
+python -m pytest tests/physics/test_localized_identity_transport.py tests/physics/test_sine_admission.py tests/physics/test_relational_sine_comparison.py tests/physics/test_sine_flow_kernel.py tests/physics/test_relational_sine_resonance.py tests/physics/test_sine_involution_reduction.py -q
 ```
 
 Check both complete rows and their clock conversion, positive-loss tangent
@@ -127,6 +127,20 @@ unavailable conclusions when sufficient bounds fail. These are response-free
 controls of a finite theorem for an
 already localized, directional preparation. They neither authenticate its
 source nor run a trajectory or frozen producer.
+
+The same focused suite covers the
+[phase-uniform source obstruction](theory/nodal/LOCALIZED_TRANSPORT_SOURCES.md#phase-flat-source-obstruction).
+Check equal opposite-band norms under the actual damped tangent for arbitrary
+real form, including spatially asymmetric sources, and independently derive
+the distance from a target confined to either carrier band. Retain full-state
+source errors, finite nonlinear bootstrap, strict exclusion margins and
+unavailable bounds when the bootstrap fails. The existing
+[involution controls](tests/physics/test_sine_involution_reduction.py) retain
+complete-state reflection admission; check the half-mass bound for disjoint
+reflected windows separately. Phase uniformity alone does not imply reflection
+symmetry. These controls exclude
+the declared target from that source class, while retaining the possibility
+of counterpropagating pairs or different mobile organization.
 
 For shared [Krylov and Hankel arithmetic](src/tnfr/mathematics/krylov.py), select
 `tests/mathematics/test_krylov_admission.py`,

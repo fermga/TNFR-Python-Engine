@@ -254,16 +254,27 @@ a signal floor. The conservative dispersion used in its comparison does not
 replace the actual loss. Both localization and direction are supplied in the
 initial class, and the proof evaluates no trajectory or formation source.
 
-The remaining generative issue is how an admitted source reaches that class
-from preparation lacking the target organization. Existing regional balances,
-internal-state bounds and capture methods can inform that question only after
-matching the complete law, support, clock and source. A new drive, support
-selector or capacity law would change the model and need its own motivation.
-Positive-loss recurrence exclusions still constrain permanent-motion proposals;
-finite transport neither removes them nor establishes particle identity or
-unique constitutive selection. The
-[sole queue](research/FIVE_STAGE_EXECUTION_PLAN.md#localized-transport-source-admission)
-owns the source-admission task and its prospective freeze.
+The [phase-uniform source result](nodal/LOCALIZED_TRANSPORT_SOURCES.md#phase-flat-source-obstruction)
+identifies a missing directional resource: the actual damped tangent preserves
+equal opposite-band norms for arbitrary real-form preparation, and a bounded
+nonlinear remainder excludes entry into the specified directional identity.
+This applies even to spatially asymmetric form. The separate exact
+[reflection argument](nodal/LOCALIZED_TRANSPORT_SOURCES.md#reflection-source-obstruction)
+excludes unilateral majority localization from symmetric preparation while
+leaving bilateral motion open. Neither result excludes all mobile organization.
+
+Joint dynamics of two already prepared mobile patterns can test an additional
+capability under this same complete law. A prospective observable must compare
+joint evolution with declared separate histories, while retaining both
+identities, preparation errors and source premises. Nonlinear evolution does
+not automatically preserve a sum of separately transported references. Regional
+balances and internal-state bounds can help after matching the actual support,
+clock and preparation; fixed-interface results on C9-based organizations do
+not transfer their verdicts to moving patterns. Formation from a class lacking
+the mobile identity remains open, and positive-loss recurrence exclusions
+still constrain permanent motion. The
+[sole queue](research/FIVE_STAGE_EXECUTION_PLAN.md#localized-mobile-interaction-admission)
+owns the interaction admission and its prospective freeze.
 
 ### Present interaction and sufficient future state
 

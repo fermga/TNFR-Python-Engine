@@ -51,6 +51,23 @@ def _bound(**changes):
     )
 
 
+def _source_bound(**changes):
+    return owner._bound_phase_flat_directional_source(
+        **(
+            dict(
+                reference_model=_model(),
+                node_count=1024,
+                fejer_order=16,
+                source_form_norm_bound=Q(1, 2**12),
+                target_amplitude=Q(1, 2**12),
+                initial_state_error_bound=Q(1, 1000 * 2**12),
+                horizon=256,
+            )
+            | changes
+        )
+    )
+
+
 def _cycle_laplacian(size):
     matrix = sp.zeros(size)
     for left in range(size):
@@ -428,3 +445,216 @@ def test_tiny_exchange_with_unscaled_loss_fails_the_budget_without_arithmetic_fa
     assert report.relative_damping_error_upper_bound > 1
     assert report.original_horizon_bounds.lo > 0
     assert report.actual_tail_fraction_upper_bound is None
+
+
+def test_actual_damped_modal_pair_preserves_opposite_band_norms():
+    k, damping, f, g, real, imaginary = sp.symbols(
+        "k damping f g real imaginary", real=True
+    )
+    frequency = 1 - sp.cos(k)
+    assert frequency.subs(k, -k) == frequency
+    generator = sp.Matrix([[-damping * frequency, -frequency], [frequency, 0]])
+    modal = sp.Matrix([f, g])
+    form_rate, phase_rate = generator * modal
+    assert sp.expand(f * form_rate + g * phase_rate + damping * frequency * f**2) == 0
+    initial_plus = real + sp.I * imaginary
+    initial_minus = sp.conjugate(initial_plus)
+    # The same real two-row propagator acts at k and -k, including positive loss.
+    plus = (f + sp.I * g) * initial_plus
+    minus = (f + sp.I * g) * initial_minus
+    assert (
+        sp.expand_complex(
+            plus * sp.conjugate(plus) - minus * sp.conjugate(minus)
+        ).expand()
+        == 0
+    )
+    assert (
+        sp.expand_complex(plus * sp.conjugate(plus)).expand()
+        == ((f**2 + g**2) * (real**2 + imaginary**2)).expand()
+    )
+
+
+def test_phase_flat_band_balance_does_not_assume_spatial_reflection_or_zero_means():
+    size = 8
+    root = (1 + sp.I) / sp.sqrt(2)
+    forms = (3, -1, 2, 0, 0, 0, 0, 0)
+    assert forms != tuple(forms[-j % size] for j in range(size))
+    assert sum(forms) != 0
+    for mode in (1, 2, 3):
+        plus = sum(forms[j] * root ** (-mode * j) for j in range(size))
+        minus = sum(forms[j] * root ** (mode * j) for j in range(size))
+        assert sp.simplify(minus - sp.conjugate(plus)) == 0
+        shifted = sum((forms[j] + 7) * root ** (-mode * j) for j in range(size))
+        assert sp.simplify(shifted - plus) == 0
+
+
+def test_reflection_fixed_state_cannot_put_over_half_its_mass_in_disjoint_mirror_windows():
+    size, center, radius = 32, 8, 2
+
+    def window(at):
+        return {
+            j for j in range(size) if min((j - at) % size, (at - j) % size) <= radius
+        }
+
+    positive, negative = window(center), window(-center)
+    assert not positive & negative
+    assert {-j % size for j in positive} == negative
+    # This exact nonlinear symmetry argument needs reflection-fixed state.
+    # It does not apply to every arbitrary real phase-flat source above.
+    orbit_mass = sp.symbols("rho:17", nonnegative=True)
+    masses = tuple(orbit_mass[min(j, size - j)] for j in range(size))
+    positive_mass = sum(masses[j] for j in positive)
+    negative_mass = sum(masses[j] for j in negative)
+    assert positive_mass == negative_mass
+    remaining = sp.Poly(sum(masses) - 2 * positive_mass, *orbit_mass)
+    assert all(coefficient >= 0 for coefficient in remaining.coeffs())
+
+
+def test_one_sided_target_distance_follows_from_square_completion():
+    real, imaginary, target_real, target_imaginary = sp.symbols("u v p q", real=True)
+    target_squared = target_real**2 + target_imaginary**2
+    # Opposite-band norm equality supplies the second term even if phases differ.
+    distance_squared = (
+        (real - target_real) ** 2
+        + (imaginary - target_imaginary) ** 2
+        + real**2
+        + imaginary**2
+    )
+    remainder = 2 * (
+        (real - target_real / 2) ** 2 + (imaginary - target_imaginary / 2) ** 2
+    )
+    assert sp.expand(distance_squared - remainder - target_squared / 2) == 0
+    assert (
+        sp.simplify(
+            distance_squared.subs(
+                {real: target_real / 2, imaginary: target_imaginary / 2}
+            )
+        )
+        == target_squared / 2
+    )
+    root = _source_bound().one_over_sqrt_two_bounds
+    assert root.lo**2 <= Q(1, 2) <= root.hi**2
+
+
+def test_correlated_real_form_and_phase_can_remove_one_carrier_band():
+    real, imaginary = sp.symbols("real imaginary", real=True)
+    form_plus = real + sp.I * imaginary
+    phase_plus = -sp.I * form_plus
+    # Both underlying spatial channels remain real through conjugate Fourier pairs.
+    form_minus, phase_minus = sp.conjugate(form_plus), sp.conjugate(phase_plus)
+    plus = sp.expand(form_plus + sp.I * phase_plus)
+    minus = sp.expand(form_minus + sp.I * phase_minus)
+    assert plus == 2 * form_plus
+    assert minus == 0
+    assert sp.expand_complex(plus * sp.conjugate(plus)).expand() == 4 * (
+        real**2 + imaginary**2
+    )
+    assert phase_plus != 0
+
+
+def test_fixed_source_exclusion_retains_joint_error_without_damping_penalty():
+    report = _source_bound()
+    radius, time, error = Q(1, 2**12), 256, Q(1, 1000 * 2**12)
+    nonlinear = Q(4, 3) * time * (2 * radius) ** 3
+    delta = error + nonlinear
+    assert report.nonlinear_error_upper_bound == nonlinear
+    assert report.tangent_error_upper_bound == delta
+    assert delta / radius == Q(1, 1000) + Q(32, 3) * time * radius**2
+    assert report.bootstrap_margin == radius - delta > 0
+    assert report.target_distance_lower_bound > Q(7059, 10000) * radius
+    assert report.exclusion_margin > 0
+    assert report.status == "excluded"
+    strongly_damped = _model(epi_weight=100, phase_weight=1)
+    damped_source = _source_bound(reference_model=strongly_damped)
+    assert damped_source.form_loss_coefficient > report.form_loss_coefficient
+    assert (
+        damped_source.target_distance_lower_bound == report.target_distance_lower_bound
+    )
+    assert damped_source.status == "excluded"
+    assert _bound(reference_model=strongly_damped).status == "not_certified"
+
+
+def test_source_bootstrap_and_target_tube_boundaries_are_strict_and_separate():
+    baseline = _source_bound(initial_state_error_bound=0)
+    at_bootstrap = _source_bound(
+        initial_state_error_bound=baseline.source_form_norm_bound
+        - baseline.nonlinear_error_upper_bound
+    )
+    assert at_bootstrap.bootstrap_margin == 0
+    assert not at_bootstrap.bootstrap_certified
+    assert at_bootstrap.target_distance_lower_bound is None
+    assert at_bootstrap.exclusion_margin is None
+    assert at_bootstrap.status == "not_certified"
+    error = (
+        baseline.tangent_target_distance_lower_bound
+        - baseline.target_tube_radius
+        - baseline.nonlinear_error_upper_bound
+    )
+    at_tube = _source_bound(initial_state_error_bound=error)
+    assert at_tube.bootstrap_certified
+    assert at_tube.exclusion_margin == 0
+    assert at_tube.status == "not_certified"
+    inside_budget = _source_bound(initial_state_error_bound=error - Q(1, 10**30))
+    assert inside_budget.exclusion_margin > 0
+    assert inside_budget.status == "excluded"
+
+
+def test_source_tiny_norms_and_clock_rates_remain_exact_positive_primitives():
+    tiny = Q(1, 10**500)
+    model = _model()
+    object.__setattr__(model, "phase_weight", tiny)
+    object.__setattr__(model, "epi_weight", tiny / (2**20 - 1))
+    report = _source_bound(
+        reference_model=model,
+        source_form_norm_bound=tiny,
+        target_amplitude=tiny,
+        initial_state_error_bound=tiny / 1000,
+    )
+    assert report.source_form_norm_bound == report.target_amplitude == tiny
+    assert report.initial_state_error_bound == tiny / 1000
+    assert report.exchange_coefficient == tiny
+    assert report.clock_rate_bounds.lo == 0 < report.clock_rate_bounds.hi
+    assert report.original_horizon_bounds.lo > 0
+    assert report.target_distance_lower_bound > 0
+    assert report.status == "excluded"
+    with pytest.raises(FrozenInstanceError):
+        report.source_form_norm_bound = 1
+    with pytest.raises(TypeError):
+        _source_bound(source_form_norm_bound=report)
+
+
+@pytest.mark.parametrize(
+    "parameter",
+    ["source_form_norm_bound", "target_amplitude", "initial_state_error_bound"],
+)
+@pytest.mark.parametrize("bad", [True, float("nan"), float("inf"), "0.1", None, 1j])
+def test_source_real_primitives_are_readmitted_before_calculation(parameter, bad):
+    with pytest.raises((TypeError, ValueError)):
+        _source_bound(**{parameter: bad})
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"source_form_norm_bound": 0},
+        {"source_form_norm_bound": -Q(1, 10**500)},
+        {"target_amplitude": 0},
+        {"initial_state_error_bound": -1},
+        {"node_count": np.int64(1024)},
+        {"fejer_order": 257},
+        {"horizon": 0},
+        {"reference_model": _model(storage_scale=2)},
+        {"reference_model": _model(phase_domain="acute")},
+        {"reference_model": _model(epi_weight=0)},
+    ],
+)
+def test_source_uses_the_shared_model_and_finite_band_domain(changes):
+    with pytest.raises((TypeError, ValueError)):
+        _source_bound(**changes)
+
+
+def test_source_does_not_trust_the_reference_model_dataclass_as_admission():
+    model = _model()
+    object.__setattr__(model, "epi_weight", True)
+    with pytest.raises(TypeError):
+        _source_bound(reference_model=model)

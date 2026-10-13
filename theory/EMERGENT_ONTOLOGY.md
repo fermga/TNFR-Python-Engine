@@ -70,6 +70,17 @@ between material systems. Names such as hydrogen remain physical identifications
 to establish through those responses, not names for an assumed TNFR primitive.
 Neither a common substrate nor scale nesting alone derives the chemical elements.
 
+Candidate particle species could be classes of stable or dynamically maintained
+organization under one complete law; treating number symbols as reductions of
+such organization is a further hypothesis. Each symbolic map must declare its
+retained and discarded information and prove the arithmetic relations it
+preserves. A claim of emergent physical constituents additionally needs a
+source/formation account, identity over the claimed lifetime and independently
+measured responses. The
+[arithmetic-spectral scope](TNFR_NUMBER_THEORY.md#95-three-sectors-of-primality-unification-measured)
+retains supplied modular carriers and graph constructions; its conditional
+consequences do not derive those carriers or identify particle species.
+
 <a id="generative-bound-organization"></a>
 
 The intended physical question is whether nodal organization can generate the
@@ -846,6 +857,18 @@ symmetries; the reference's fractional center is an observation coordinate.
 The private scalar budget reader neither authenticates a source nor evaluates
 a trajectory.
 
+The [phase-uniform source obstruction](nodal/LOCALIZED_TRANSPORT_SOURCES.md#phase-flat-source-obstruction)
+excludes that directional carrier identity for a bounded real-form preparation
+class and its admitted full-state errors over a finite interval. Its actual
+damped tangent preserves equal opposite-band norms, even for spatially
+asymmetric form; the nonlinear transfer retains a separate error budget.
+The [reflection obstruction](nodal/LOCALIZED_TRANSPORT_SOURCES.md#reflection-source-obstruction)
+instead excludes majority localization in either of two disjoint reflected
+windows for exactly reflection-symmetric preparations, including their
+retained real phase lifts, under the full law.
+These statements leave bilateral mobile organization and other source classes
+open. A source may lack the directional identity while already being localized.
+
 Existing [positive-loss exclusions](nodal/RESONANCE_FOUNDATIONS.md#permanent-pulse-admission)
 constrain recurrence on their finite closed complete laws; their hypotheses
 do not exclude every finite displacement. The
@@ -862,8 +885,9 @@ This conditional finite theorem is not a particle definition or a permanent
 transport claim. Physical displacement, mass, charge, spin and
 measurement statistics retain the independent obligations in the
 [physical atlas](PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena).
-The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#localized-transport-source-admission)
-alone owns further source admission.
+The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#localized-mobile-interaction-admission)
+alone owns the interaction admission for prepared mobile patterns; formation
+from another source class remains a separate obligation.
 
 ### 1.1 NFR formation: definition, birth and collective dynamics
 

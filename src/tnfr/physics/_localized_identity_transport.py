@@ -1,7 +1,8 @@
-"""Detached sufficient budgets for a localized full-state sine-law packet.
+"""Detached transport and source budgets for a full-state sine-law packet.
 
-Proof: LOCALIZED_IDENTITY_TRANSPORT.md#localized-transport-error.
-The prescribed Fejer packet, directional carrier and complete law are premises.
+Proofs: LOCALIZED_IDENTITY_TRANSPORT.md#localized-transport-error and
+LOCALIZED_TRANSPORT_SOURCES.md. Prepared transport and phase-flat source
+exclusion have separate premises; neither report supplies an actual source.
 This arithmetic evaluates no trajectory, source, observed response or native
 runtime. A failed sufficient bound does not disprove finite transport.
 """
@@ -17,6 +18,50 @@ from ._sine_admission import _sine_model_coefficients
 
 _IDENTITY_TOLERANCE = Q(1, 25)
 _TAIL_TOLERANCE = Q(1, 25)
+
+
+def _admit_cycle_window(node_count, fejer_order, horizon):
+    """Admit the shared finite cycle, disjoint carrier bands and clock window."""
+    for name, value in (
+        ("node_count", node_count),
+        ("fejer_order", fejer_order),
+        ("horizon", horizon),
+    ):
+        if type(value) is not int:
+            raise TypeError(f"{name} must be an ordinary Python integer")
+    if node_count < 8 or node_count % 4:
+        raise ValueError("node_count must be at least eight and divisible by four")
+    if fejer_order < 2 or 4 * (fejer_order - 1) >= node_count:
+        raise ValueError("fejer_order requires 2 <= Q and Q-1 < N/4")
+    if not 0 < horizon <= node_count // 2:
+        raise ValueError("horizon requires 0 < T <= N/2")
+
+
+def _admit_cycle_law(reference_model):
+    """Re-admit the common positive-loss complete law without renormalization."""
+    coefficients = _sine_model_coefficients(reference_model, positive_loss=True)
+    if coefficients[2] != 1:
+        raise ValueError("localized transport requires unit storage_scale")
+    return coefficients
+
+
+def _cycle_clock_bounds(exchange, horizon, pi):
+    """Divide admitted exact positive rates before outward grid projection."""
+    # A subgrid exchange has a zero lower enclosure endpoint, not a zero clock.
+    return (
+        I(exchange / pi.hi, exchange / pi.lo),
+        I(horizon * pi.lo / exchange, horizon * pi.hi / exchange),
+    )
+
+
+def _cycle_cubic_error_upper_bound(state_norm_upper_bound, horizon):
+    """Integrate the cycle sine defect inside an independently closed norm ball.
+
+    Callers admit exact nonnegative radius and horizon, both complete rows,
+    beta one and the contractive tangent before applying this arithmetic.
+    The result alone does not certify continued membership in the norm ball.
+    """
+    return Q(4, 3) * horizon * state_norm_upper_bound**3
 
 
 @dataclass(frozen=True)
@@ -121,19 +166,7 @@ def _bound_localized_identity_transport(
     identity and tail tolerances and separated endpoint windows (2R<T).
     These are sufficient finite observation conditions, not selected laws.
     """
-    for name, value in (
-        ("node_count", node_count),
-        ("fejer_order", fejer_order),
-        ("horizon", horizon),
-    ):
-        if type(value) is not int:
-            raise TypeError(f"{name} must be an ordinary Python integer")
-    if node_count < 8 or node_count % 4:
-        raise ValueError("node_count must be at least eight and divisible by four")
-    if fejer_order < 2 or 4 * (fejer_order - 1) >= node_count:
-        raise ValueError("fejer_order requires 2 <= Q and Q-1 < N/4")
-    if not 0 < horizon <= node_count // 2:
-        raise ValueError("horizon requires 0 < T <= N/2")
+    _admit_cycle_window(node_count, fejer_order, horizon)
     amplitude, error, radius = (
         _exact(value, name)
         for name, value in (
@@ -146,15 +179,13 @@ def _bound_localized_identity_transport(
         raise ValueError("require positive amplitude and nonnegative initial error")
     if not 1 < radius < Q(node_count, 2):
         raise ValueError("localization_radius requires 1 < R < N/2")
-    loss, exchange, beta = _sine_model_coefficients(reference_model, positive_loss=True)
-    if beta != 1:
-        raise ValueError("localized transport requires unit storage_scale")
+    loss, exchange, beta = _admit_cycle_law(reference_model)
 
     pi = pi_interval()
     initial = error / amplitude
     damping = 2 * pi.hi * loss * horizon / exchange
     dispersion = Q(horizon, 6) * (2 * pi.hi * Q(fejer_order - 1, node_count)) ** 3
-    nonlinear = Q(32, 3) * horizon * amplitude**2
+    nonlinear = _cycle_cubic_error_upper_bound(2 * amplitude, horizon) / amplitude
     relative_error = initial + damping + dispersion + nonlinear
     identity_error = amplitude * relative_error
     bootstrap_margin = 1 - relative_error
@@ -178,11 +209,7 @@ def _bound_localized_identity_transport(
         reasons.append("tail_tolerance_not_certified")
     if not disjoint:
         reasons.append("endpoint_windows_not_separated")
-    # Divide exact positive coefficients before outward interval rounding. A
-    # subgrid exchange rate may have a zero lower enclosure endpoint, but is
-    # neither a zero clock nor an interval denominator that contains zero.
-    clock_rate = I(exchange / pi.hi, exchange / pi.lo)
-    original_horizon = I(horizon * pi.lo / exchange, horizon * pi.hi / exchange)
+    clock_rate, original_horizon = _cycle_clock_bounds(exchange, horizon, pi)
     return _LocalizedIdentityTransportBound(
         node_count=node_count,
         fejer_order=fejer_order,
@@ -216,4 +243,139 @@ def _bound_localized_identity_transport(
         endpoint_windows_disjoint=disjoint,
         unavailable_reasons=tuple(reasons),
         status="certified" if not reasons else "not_certified",
+    )
+
+
+@dataclass(frozen=True)
+class _PhaseFlatDirectionalSourceBound:
+    """Finite exclusion from a norm-bounded phase-flat source class.
+
+    The source is within the supplied joint error of (u,0), where u is any
+    real form vector with norm at most M. It need not be reflection symmetric,
+    localized or mean zero. The target class consists of norm-a joint states
+    z=x+i*theta supported in either of the two opposite carrier bands. This is
+    a necessary property of the prepared packet, not a new formation target.
+
+    Delta is a candidate nonlinear bootstrap bound. Actual distance and its
+    exclusion margin are unavailable unless delta<M. A failed sufficient
+    bound supplies neither a formation claim nor an all-future obstruction.
+    """
+
+    node_count: int
+    fejer_order: int
+    source_form_norm_bound: Q
+    target_amplitude: Q
+    initial_state_error_bound: Q
+    horizon: int
+    form_loss_coefficient: Q
+    exchange_coefficient: Q
+    storage_scale: Q
+    carrier_mode: int
+    clock_rate_bounds: I
+    original_horizon_bounds: I
+    nonlinear_error_upper_bound: Q
+    tangent_error_upper_bound: Q
+    bootstrap_margin: Q
+    bootstrap_certified: bool
+    one_over_sqrt_two_bounds: I
+    tangent_target_distance_lower_bound: Q
+    target_distance_lower_bound: Q | None
+    target_tube_radius: Q
+    exclusion_margin: Q | None
+    unavailable_reasons: tuple[str, ...]
+    status: str
+    identity_tolerance: Q = _IDENTITY_TOLERANCE
+    interval_method: str = INTERVAL_METHOD
+    conditional_on_supplied_source_class: bool = True
+    scope: tuple[str, ...] = (
+        "same_complete_positive_loss_sine_law_unit_cycle_and_held_unit_capacities",
+        "tau_equals_exchange_times_original_time_over_pi_in_both_rows",
+        "source_class_is_arbitrary_real_form_with_zero_nominal_phase_lift",
+        "joint_initial_error_retains_every_form_phase_and_common_mean_component",
+        "no_reflection_symmetry_spatial_profile_or_target_reversed_source_assumed",
+        "actual_damped_tangent_preserves_equal_opposite_carrier_band_norms",
+        "target_class_has_fixed_norm_and_only_one_of_two_disjoint_carrier_bands",
+        "target_rotations_translations_and_either_direction_are_covered_by_the_band_bound",
+        "strict_exclusion_applies_throughout_the_declared_finite_window",
+        "not_certified_is_failed_sufficiency_not_positive_formation_evidence",
+        "no_obstruction_to_all_mobile_patterns_or_arbitrarily_late_nonlinear_bias",
+        "no_source_authentication_trajectory_response_or_physical_identification",
+    )
+
+
+def _bound_phase_flat_directional_source(
+    *,
+    reference_model,
+    node_count,
+    fejer_order,
+    source_form_norm_bound,
+    target_amplitude,
+    initial_state_error_bound,
+    horizon,
+) -> _PhaseFlatDirectionalSourceBound:
+    """Bound distance from a source class to either one-sided carrier band.
+
+    Require positive exact or represented M and a, nonnegative error eps,
+    and the same finite cycle, band, time and model domains as prepared
+    transport. No initial state or target profile is calculated. The nominal
+    source is (u,0) for arbitrary real ||u||<=M; its actual positive-loss tangent
+    retains equal opposite-band norms, hence distance at least a/sqrt(2) from
+    every norm-a target in either band. This does not require spatial symmetry.
+
+    Delta=eps+(32/3)*T*M**3 closes the full nonlinear 2M bootstrap only when
+    delta<M. Then a/sqrt(2)-delta bounds the actual distance at every time in
+    [0,T]. Exclusion requires this lower bound strictly above a/25.
+    """
+    _admit_cycle_window(node_count, fejer_order, horizon)
+    source_norm, amplitude, error = (
+        _exact(value, name)
+        for name, value in (
+            ("source_form_norm_bound", source_form_norm_bound),
+            ("target_amplitude", target_amplitude),
+            ("initial_state_error_bound", initial_state_error_bound),
+        )
+    )
+    if source_norm <= 0 or error < 0 or amplitude <= 0:
+        raise ValueError("require positive source/target norms and nonnegative error")
+    loss, exchange, beta = _admit_cycle_law(reference_model)
+    pi = pi_interval()
+    clock_rate, original_horizon = _cycle_clock_bounds(exchange, horizon, pi)
+    nonlinear = _cycle_cubic_error_upper_bound(2 * source_norm, horizon)
+    delta = error + nonlinear
+    margin = source_norm - delta
+    bootstrap = margin > 0
+    reciprocal_root = sqrt(I(Q(1, 2)))
+    tangent_distance = amplitude * reciprocal_root.lo
+    target_distance = tangent_distance - delta if bootstrap else None
+    tube = amplitude * _IDENTITY_TOLERANCE
+    exclusion_margin = target_distance - tube if target_distance is not None else None
+    reasons = []
+    if not bootstrap:
+        reasons.append("nonlinear_bootstrap_not_closed")
+    elif exclusion_margin <= 0:
+        reasons.append("target_tube_exclusion_not_certified")
+    return _PhaseFlatDirectionalSourceBound(
+        node_count=node_count,
+        fejer_order=fejer_order,
+        source_form_norm_bound=source_norm,
+        target_amplitude=amplitude,
+        initial_state_error_bound=error,
+        horizon=horizon,
+        form_loss_coefficient=loss,
+        exchange_coefficient=exchange,
+        storage_scale=beta,
+        carrier_mode=node_count // 4,
+        clock_rate_bounds=clock_rate,
+        original_horizon_bounds=original_horizon,
+        nonlinear_error_upper_bound=nonlinear,
+        tangent_error_upper_bound=delta,
+        bootstrap_margin=margin,
+        bootstrap_certified=bootstrap,
+        one_over_sqrt_two_bounds=reciprocal_root,
+        tangent_target_distance_lower_bound=tangent_distance,
+        target_distance_lower_bound=target_distance,
+        target_tube_radius=tube,
+        exclusion_margin=exclusion_margin,
+        unavailable_reasons=tuple(reasons),
+        status="excluded" if not reasons else "not_certified",
     )

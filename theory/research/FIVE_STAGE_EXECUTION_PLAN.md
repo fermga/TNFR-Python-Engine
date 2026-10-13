@@ -230,12 +230,15 @@ the [independent-content entry condition](#new-constitutive-evidence-admission).
 The [localized identity transport gate](#localized-identity-transport-admission)
 is closed by a whole-interval proof under one complete positive-loss law:
 a prepared packet retains localization and full-state identity while moving
-between disjoint endpoint windows. The next question is
-[source admission for mobile organization](#localized-transport-source-admission):
-declare a class that lacks the target organization before asking whether it
-can form. Neither unique law selection nor a physical sensor is a prerequisite
-to this conditional question. Another internal law-discrimination refinement
-is not automatically queued.
+between disjoint endpoint windows. The
+[source admission](#localized-transport-source-admission) now identifies a
+finite obstruction for small phase-flat preparations: their arbitrary real
+form cannot acquire the admitted one-sided carrier identity on this horizon.
+This leaves bilateral mobility and other organizations open. The next question
+is [interaction between prepared mobile patterns](#localized-mobile-interaction-admission),
+retaining the supplied source and complete-law premises. Neither unique law
+selection nor a physical sensor is a prerequisite to this conditional question.
+Another internal law-discrimination refinement is not automatically queued.
 Unit-strength classification remains unresolved and deferred; no numerical
 campaign is admitted.
 
@@ -254,7 +257,8 @@ admission.
 
 | Status | Scope and owner |
 | --- | --- |
-| Next conditional source admission | [Formation of a mobile organization](#localized-transport-source-admission): declare an independent initial class lacking the target organization, and a prospective formation/transport claim under the same complete law; check resource and symmetry restrictions before a response |
+| Next conditional interaction admission | [Two mobile patterns under one complete law](#localized-mobile-interaction-admission): freeze a paired preparation, encounter geometry, retained identity and joint-versus-separate response observable; assess a resolvable interaction before evaluating any trajectory |
+| Closed scoped source obstruction | [Source resources for mobile organization](#localized-transport-source-admission): actual damped opposite-band balance plus a nonlinear error bound exclude the one-sided target for arbitrary small phase-flat form sources; exact reflection restricts single-window concentration separately |
 | Closed prepared transport | [Localized identity transport](#localized-identity-transport-admission): a full-state moving reference, nonlinear error tube and uniform localization bound prove finite transport under positive loss, including a full preparation-error ball; no formation or trajectory campaign |
 | Entry condition for constitutive selection | [Independent content for law selection or physical comparison](#new-constitutive-evidence-admission): the reviewed resource/observation bounds supply no new independently justified selector or physical bridge; this does not block conditional capability research |
 | Closed foundation decision | [After the resource-information bounds](#post-resource-foundation-review): internal access and error budgets are established; law justification, occurrence and the physical bridge retain distinct missing premises. Existing chart results and deferred receiver questions do not activate another campaign |
@@ -468,7 +472,7 @@ response has not been derived from the earlier acquired constituents.
 
 | Research front | Missing result and discriminating closure | Priority and activation |
 | --- | --- | --- |
-| Localized identity transport | [Prepared finite transport](../nodal/LOCALIZED_IDENTITY_TRANSPORT.md) is proved with full-state identity and localization under positive loss; forming that organization needs an independent source class | **Next conditional source admission.** Specify what organization is initially absent and what resources/direction are supplied under the same law. Permanent motion, collision and physical identification remain separate |
+| Localized identity transport and interaction | [Prepared finite transport](../nodal/LOCALIZED_IDENTITY_TRANSPORT.md) and [phase-flat source obstruction](../nodal/LOCALIZED_TRANSPORT_SOURCES.md) separate mobility from supplied directional organization | **Next conditional interaction admission.** Compare two prepared mobile patterns jointly and separately under one law, retaining identity and initial resources. Broader formation, permanent motion and physical identification remain separate |
 | Composite identity under interaction | Retain complete-law, marked-identity and actual-source hypotheses when claiming maintained collective organization | **Closed two-law source-to-attractor comparison, scoped transition, marked interaction and reusable boundary criterion.** Normal compliance and full kinetics retain distinct obligations. No further contact variant follows; unit-strength classification, basin gaps and a larger transition interval stay deferred |
 | Operational preparation, work and timescales | The [admitted joint box](../nodal/ORGANIZED_JOINT_RESOURCES.md#joint-resource-corner-result) retains the complete finite history and separates necessary restrictions from sufficient bounds | **Closed in the declared domain.** Large paid preparation work and a laboratory bridge remain open; no dwell/precision optimization campaign is active |
 | Transferable collective coupling | The [finite determinant](../nodal/ORGANIZED_INTERFACE_FACTORIZATION.md#finite-interface-factorization-result) excludes one purely multiplicative scalar factor under the complete declared protocol | **Closed in scope.** Neither more matrix columns nor a new moment hierarchy is active; nonlinear scalar, affine and multichannel descriptions are not excluded |
@@ -1507,7 +1511,7 @@ capability question under a supplied complete law.
 
 A conditional generative question may instead investigate an unclosed
 capability, as in the selected
-[mobile-source admission](#localized-transport-source-admission). Declare its
+[mobile-interaction admission](#localized-mobile-interaction-admission). Declare its
 source class, complete law, identity and possible obstruction before seeking
 a proof or finite evidence; a proof need not already exist to admit the
 question. The [receiver capture contract](../nodal/ORGANIZED_RECEIVER_SLOW_ADMISSION.md#organized-receiver-capture-contract)
@@ -1743,33 +1747,78 @@ identity. The [positive-loss recurrence boundary](../nodal/RESONANCE_FOUNDATIONS
 and independent physical-admission duties remain unchanged.
 
 <a id="localized-transport-source-admission"></a>
-### Next admission: a source for mobile organization
+### Closed source admission: a phase-flat preparation lacks the target resource
 
-**Question.** Can the same complete law generate a localized mobile
-organization from a declared initial class that does not already contain
-that identity? Apply the [formation and transport distinction](../EMERGENT_ONTOLOGY.md#localized-identity-transport).
-Prepared motion does not answer this question, and a more accurate trajectory
-of the existing packet would not close it.
+The [source theorem](../nodal/LOCALIZED_TRANSPORT_SOURCES.md#phase-flat-source-obstruction)
+admits every real form profile in a fixed norm ball, initially uniform phase
+and independent joint preparation error under the same law. The actual
+positive-loss tangent preserves equal opposite-band norms. A contractive
+nonlinear comparison therefore gives a uniform positive separation from every
+norm-a target confined to either carrier band, including all translated
+Fejer references. The fixed source budget remains outside the admitted
+identity tube throughout the interval, without a trajectory or source fit.
 
-**Admission work.** Retain the actual support, capacity, positive loss, clock
-and observation owner before changing the model. Define the initially absent
-property, all supplied spatial/phase organization and resources, and a finite
-formation-plus-transport acceptance criterion. Check conserved means,
-storage/loss and complete-law symmetries against that class. In particular,
-an exactly uniform equilibrium remains uniform; a numerical tie-break cannot
-establish spontaneous direction selection. Freeze a source independently of
-the target response; reversing a chosen final packet is engineered preparation,
-not an independently justified formation mechanism. A nontrivial source may
-retain declared correlations, but must expose them rather than call them absent.
+This identifies a missing form/phase resource for that target family. Arbitrary
+form profiles may already contain localization and spatial asymmetry. Exact
+reflection-even states have a separate all-time restriction on concentration
+in one of two disjoint reflected windows. Neither argument excludes bilateral
+motion, other identities or regimes outside its resource/horizon hypotheses.
+The [private reader](../../src/tnfr/physics/_localized_identity_transport.py)
+shares admission, clock and cubic arithmetic with prepared transport while
+keeping the source verdict separate. Broader formation stays open; a further
+source variant is not the next active gate.
 
-**Acceptance.** Supply one admissible source/claim with an analytical route,
-or a scoped obstruction explaining which missing resource or premise blocks
-it. Distinguish transient focusing from entry into a mobile identity retained
-over a subsequent interval. Retain full-state preparation errors and boundaries
-on every inherited certificate. No parameter scan, trajectory campaign,
-frozen-source replay, new forcing, autonomous support event, collision or
-physical campaign is active. Any later numerical protocol must be fixed here
-before evaluation and use the shared complete-row integrator.
+<a id="localized-mobile-interaction-admission"></a>
+### Next admission: interaction between two prepared mobile patterns
+
+**Question.** Under the same complete law, does an encounter between two
+localized mobile patterns produce a resolved change in their continuing
+motion, identity or later response? Preparation remains supplied. This tests
+joint dynamics without first claiming autonomous formation or a particle type.
+
+**Admission work.** Fix two mobile preparations on one common labeled support,
+their directions, separation, joint error budget and an encounter horizon
+that includes a subsequent observation interval. Retain actual positive loss,
+both form/phase rows, capacity and clock. Define the continuing identities and
+a joint observable before the response; do not assume the identity criteria
+of fixed C9 constituents transfer to the mobile packet family. Account for
+overlapping tails and admit superposed phase lifts in their common chart.
+
+Compare the actual joint evolution with the reference built from separately
+evolved single-pattern preparations on that same complete support. Both
+single histories and their reconstruction are references, not a replacement
+linear execution law. Use the full-state superposition defect
+`I=z_AB-z_A-z_B` about the zero background: subtracting the three squared
+localization weights instead includes interference even for a linear law.
+Derive the cross-interaction source, then determine
+whether one prospective displacement, deformation, phase-registration or
+post-encounter response difference can be separated from preparation and
+numerical error while identities remain admitted. The algebraic inequality
+`sin(u+v)!=sin(u)+sin(v)` alone does not establish that finite outcome.
+
+**Candidate geometry before response.** Retain `C_1024`, the existing loss,
+exchange, packet scale and `Q=16`. Put the two nominal packet centers at
+`+128` and `-128`, with respective carriers `+pi/2` and `-pi/2`. Their
+comparison centers meet at `tau=128` and their radius-96 windows are again
+disjoint at `tau=256`. During overlap use the joint state or declared band
+components rather than forcing a unique spatial center. This geometry does
+not itself certify the nonlinear joint identity or an interaction signal.
+First distinguish an exact mathematical shared-source relation
+`z_AB(0)=z_A(0)+z_B(0)` from three independently uncertain preparations.
+The former retains correlated errors and is not an experimental ability to
+copy unknown states. The current one-packet error bound need not resolve a
+cubic mixed response; the observable and joint bound must pass this admission
+before any paired trajectory is evaluated.
+
+**Acceptance.** Freeze one complete paired protocol and a discriminating
+observable with an analytical feasibility bound, or record the obstruction
+that prevents such a claim at its declared resources. A weak, unresolved or
+vanishing interaction is a valid scoped outcome. No numerical scan, frozen
+producer replay, new forcing, support event or physical campaign is active.
+Any later trajectory uses the shared integrator and complete-row residual
+evidence after its protocol is fixed here. Arithmetic spectral examples remain
+conditional representation results, not an independently activated campaign
+or a physical identification of the interacting patterns.
 
 <a id="contact-maintenance-certificate-admission"></a>
 ### Closed complete-flow convergence; unit-strength classification deferred

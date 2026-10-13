@@ -1,6 +1,6 @@
 # Normalized-sine comparison, inference and forecasts
 
-Shared sine-law report admission, captured comparison, prepared transport budgets, retained mediation, sampling, hidden state/capacity inference and prior-only forecasting.
+Shared sine-law report admission, captured comparison, prepared transport and source budgets, retained mediation, sampling, hidden state/capacity inference and prior-only forecasting.
 
 Part of [Relational dynamics contract index](../RELATIONAL_DYNAMICS.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
@@ -174,6 +174,34 @@ installs no native solver or execution law. It is not a graph observer or a
 public forecast API. The existing shared sine rows remain the actual field
 owner. The result supplies no formation, permanent-motion or physical
 identification certificate.
+
+### Private phase-uniform source obstruction
+
+`_bound_phase_flat_directional_source` in the same private module evaluates
+the [source obstruction](../../../theory/nodal/LOCALIZED_TRANSPORT_SOURCES.md#phase-flat-source-obstruction).
+It shares the cycle, band, horizon and actual positive-loss model admission
+above. `source_form_norm_bound=M` and `target_amplitude=a` must be positive;
+`initial_state_error_bound=epsilon` must be nonnegative, under shared exact or
+represented-real admission. The supplied source is within joint error epsilon
+of `(u,0)` for arbitrary real `||u||<=M`. Spatial asymmetry, localization and
+nonzero form mean are permitted; no initial source or target is reconstructed.
+
+The actual damped tangent preserves equal norms in opposite carrier bands.
+Its distance from every norm-a target confined to either band is at least
+`a/sqrt(2)`. This argument requires neither a conservative replacement nor
+spatial reflection symmetry. The report evaluates the nonlinear candidate
+`delta=epsilon+(32/3)*T*M^3`. Strict `delta<M` closes the bootstrap and admits
+the whole-interval distance bound `a/sqrt(2)-delta`, with outward arithmetic.
+`status="excluded"` requires that lower bound to exceed the target tube radius
+`a/25` strictly. Otherwise the result is `not_certified` with explicit reasons;
+failed bootstrap leaves actual distance and exclusion margin unavailable.
+
+This is a sufficient exclusion from a declared source class, not evidence of
+formation when the bound fails. It leaves other mobile organizations open and
+evaluates no trajectory. The separate
+[exact reflection obstruction](../../../theory/nodal/LOCALIZED_TRANSPORT_SOURCES.md#reflection-source-obstruction)
+concerns disjoint reflected localization windows under the full law; it is not
+a consequence of phase uniformity alone or another output of this calculator.
 
 ### Sine-law prospective sampling budgets
 
