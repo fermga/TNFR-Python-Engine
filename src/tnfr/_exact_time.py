@@ -76,18 +76,26 @@ def bounded_represented_real(
     """
     result = finite_represented_real(value, label)
 
-    def ordered_source(raw: Any) -> Any:
+    def ordered_source(raw: Any, represented: Fraction) -> Any:
         if isinstance(raw, Rational):
             return Fraction(int(raw.numerator), int(raw.denominator))
+        if type(raw) is float:
+            return represented
+        ratio = getattr(raw, "as_integer_ratio", None)
+        if ratio is not None:
+            # Extended floating scalars need not compare directly with Fraction.
+            # Their source ratio preserves precision beyond the runtime float.
+            numerator, denominator = ratio()
+            return Fraction(int(numerator), int(denominator))
         return raw
 
-    source = ordered_source(value)
+    source = ordered_source(value, result[1])
     if minimum is not None:
-        finite_represented_real(minimum, f"{label} lower bound")
-        minimum = ordered_source(minimum)
+        _, exact_minimum = finite_represented_real(minimum, f"{label} lower bound")
+        minimum = ordered_source(minimum, exact_minimum)
     if maximum is not None:
-        finite_represented_real(maximum, f"{label} upper bound")
-        maximum = ordered_source(maximum)
+        _, exact_maximum = finite_represented_real(maximum, f"{label} upper bound")
+        maximum = ordered_source(maximum, exact_maximum)
     if minimum is not None and maximum is not None and minimum > maximum:
         raise ValueError(f"{label} lower bound must not exceed its upper bound")
     if minimum is not None and source < minimum:

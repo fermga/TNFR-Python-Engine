@@ -475,7 +475,9 @@ unchecked call does not acquire that certificate.
 Closed scalar configuration intervals use `bounded_represented_real` from
 `_exact_time.py` to check the original admitted source against their bounds.
 An exact value outside the interval cannot enter by rounding to an endpoint;
-accepted values retain the consumer's binary64 model. This boundary applies
+floating sources and bounds exposing exact integer ratios use those ratios
+for comparison, retaining precision beyond binary64 when available.
+Accepted values retain the consumer's binary64 model. This boundary applies
 to selector/adaptation controls, stability fractions and active glyph factors.
 It does not prohibit rounded arithmetic already declared by a numerical model.
 

@@ -65,6 +65,59 @@ def test_fixed_width_fraction_components_do_not_overflow_original_domain_checks(
             bounded_represented_real(value, "ratio", minimum=bound, maximum=value)
 
 
+@pytest.mark.parametrize(
+    "value,minimum,maximum",
+    [
+        (np.longdouble(0), Fraction(0), Fraction(1)),
+        (np.longdouble(1), Fraction(0), Fraction(1)),
+        (np.longdouble(0.5), Fraction(1, 2), Fraction(1, 2)),
+        (Fraction(1, 2), np.longdouble(0.5), np.longdouble(0.5)),
+        (np.longdouble(0.5), np.longdouble(0), Fraction(1)),
+        (np.longdouble(0.5), Fraction(0), np.longdouble(1)),
+        (0.5, np.longdouble(0.5), Fraction(1, 2)),
+    ],
+)
+def test_numpy_real_and_rational_bounds_admit_exact_endpoints(value, minimum, maximum):
+    actual, exact = bounded_represented_real(
+        value, "ratio", minimum=minimum, maximum=maximum
+    )
+    assert actual == float(value)
+    assert exact == Fraction.from_float(actual)
+
+
+@pytest.mark.parametrize(
+    "value,minimum,maximum",
+    [
+        (np.longdouble(1), 0, Fraction(1) - Fraction(1, 2**100)),
+        (np.longdouble(1), _BEYOND_ONE, 2),
+        (_BEYOND_ONE, 0, np.longdouble(1)),
+        (Fraction(1) - Fraction(1, 2**100), np.longdouble(1), 2),
+        (np.longdouble(-1), Fraction(-1) + Fraction(1, 2**100), 0),
+    ],
+)
+def test_numpy_real_and_rational_bounds_reject_exact_outside_values(
+    value, minimum, maximum
+):
+    # The source or bound differs from its adjacent endpoint below binary64
+    # resolution, including on platforms where longdouble itself is binary64.
+    with pytest.raises(ValueError, match="ratio must be"):
+        bounded_represented_real(value, "ratio", minimum=minimum, maximum=maximum)
+
+
+@pytest.mark.parametrize(
+    "minimum,maximum",
+    [
+        (np.longdouble(1), Fraction(1) - Fraction(1, 2**100)),
+        (_BEYOND_ONE, np.longdouble(1)),
+    ],
+)
+def test_numpy_real_and_rational_bounds_reject_exact_reversed_interval(
+    minimum, maximum
+):
+    with pytest.raises(ValueError, match="lower bound"):
+        bounded_represented_real(1, "ratio", minimum=minimum, maximum=maximum)
+
+
 def test_higher_precision_real_is_not_rounded_into_the_unit_interval():
     source = np.nextafter(np.longdouble(1), np.longdouble(2))
     if source == np.longdouble(float(source)):
