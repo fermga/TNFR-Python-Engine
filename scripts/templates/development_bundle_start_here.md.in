@@ -1,0 +1,113 @@
+# TNFR ${version} development bundle
+
+This lightweight source snapshot preserves the files of commit `${commit}`.
+It includes the engine, theory, ontology, contracts, documentation, examples,
+tests, instruments and configuration. Research evidence under `docs/assets/`
+is available on demand; the small `docs/assets/mathjax.js` site helper remains
+included. This is a development starting point, not an offline Python
+environment or a complete evidence archive.
+
+Read [AGENTS.md](AGENTS.md) before making changes. Its contributor rules and
+byte-identical agent mirror remain authoritative for this snapshot.
+
+## Start from the maintained owners
+
+- [README](README.md): present model and organized-object example.
+- [Theory catalog](theory/README.md) and
+  [NFR ontology](theory/EMERGENT_ONTOLOGY.md): definitions and conditional results.
+- [Execution plan](theory/research/FIVE_STAGE_EXECUTION_PLAN.md): the sole
+  research queue, active question and stopping condition.
+- [Architecture](ARCHITECTURE.md), [API contracts](docs/API_CONTRACTS.md),
+  [contributing](CONTRIBUTING.md) and [testing](TESTING.md): implementation and
+  verification boundaries.
+
+Use local owners for this version. Original documents may link to GitHub
+`main`, which can change. The
+[version-pinned source](https://github.com/${repository}/tree/${commit})
+preserves the selected commit. Packaging does not modify or validate scientific
+claims or select a research task.
+
+## Install and run
+
+Extract the ZIP into a normal local directory. From its root, create a separate
+Python 3.10+ environment:
+
+```sh
+python -m venv .venv
+```
+
+Activate with `.venv\Scripts\Activate.ps1` in PowerShell or
+`source .venv/bin/activate` in a POSIX shell. Then:
+
+```sh
+python -m pip install -e .
+python -m tnfr --version
+python examples/01_foundations/01_hello_world.py
+python scripts/development_bundle_evidence.py verify
+```
+
+Dependencies require network access or an appropriate local package cache.
+For affected implementation tests, follow `TESTING.md`. Missing evidence is
+not a passing result. Some tests, the internal-reference check and the complete
+documentation build require the omitted files.
+
+## Recover evidence without rerunning experiments
+
+[bundle/manifest.json](bundle/manifest.json) records included and omitted Git
+files, byte sizes, SHA256 hashes and Git blob identifiers. Each omitted file has
+a commit-pinned source URL. The recovery helper needs only Python's standard
+library:
+
+```sh
+python scripts/development_bundle_evidence.py list
+python scripts/development_bundle_evidence.py fetch --path docs/assets/organized_source_silence_handoff
+python scripts/development_bundle_evidence.py verify
+```
+
+Use an exact file path or a directory prefix from the manifest. Downloads
+must match the recorded size and SHA256 before installation; differing local
+files are never replaced. Recovery does not execute producers, extract nested
+ZIPs or select new calculations.
+
+To recover all omitted evidence, explicitly choose:
+
+```sh
+python scripts/development_bundle_evidence.py fetch --all
+python scripts/development_bundle_evidence.py verify --require-all-evidence
+```
+
+An existing full GitHub or Zenodo release ZIP can supply the same files offline:
+
+```sh
+python scripts/development_bundle_evidence.py fetch --all --archive /path/to/full-release.zip
+```
+
+Full restoration adds ${omitted_bytes} bytes of files. Individual downloads may
+transfer more than the full compressed archive. The helper uses a filesystem
+supporting hard links for atomic installation without overwriting. If that
+facility is unavailable, use the full archive in a fresh directory.
+
+Verification reports development edits as byte mismatches. Additional local
+files are outside its inventory. Hashes detect differences; they do not
+authenticate an untrusted manifest or establish scientific validity.
+
+## Git history and optional supplements
+
+There is no `.git` directory. Initializing a new repository does not recover
+the original history. Historical recovery, original pinned worktrees and normal
+contribution workflows need a proper clone:
+
+```sh
+git clone https://github.com/${repository}.git
+cd TNFR-Python-Engine
+git switch --detach ${commit}
+```
+
+Small inactive applications and recovery records retain their original status.
+No tracked file is rewritten for this bundle. Only `START_HERE.md` and
+`bundle/manifest.json` are generated packaging aids outside the selected tree.
+
+Separate release supplements are not part of the Git tree or this manifest.
+Check the [release assets](https://github.com/${repository}/releases/tag/v${version})
+for their own restoration instructions and the complete source archive.
+The external `.zip.sha256` file checks this whole lightweight ZIP.

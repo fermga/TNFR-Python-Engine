@@ -12,6 +12,131 @@ on:
         type: boolean
 
 jobs:
+  development-bundle:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v5
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python for the standard-library bundle tools
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.11'
+
+    - name: Build the exact source development bundle
+      env:
+        RELEASE_TAG: ${{ github.event.release.tag_name }}
+      run: |
+        python - <<'PY'
+        import os
+        import subprocess
+        import sys
+        from pathlib import Path
+
+        output = Path(os.environ["RUNNER_TEMP"]) / "tnfr-development-bundle"
+        output.mkdir()
+        command = [
+            sys.executable, "scripts/build_development_bundle.py",
+            "--revision", "HEAD", "--output-dir", str(output),
+        ]
+        tag = os.environ.get("RELEASE_TAG")
+        if tag:
+            command.extend(["--expected-tag", tag])
+        result = subprocess.run(command, check=True, capture_output=True, text=True)
+        (output / "build-receipt.json").write_text(result.stdout, encoding="utf-8")
+        print(result.stdout)
+        PY
+
+    - name: Verify the extracted development bundle
+      run: |
+        python - <<'PY'
+        import os
+        import subprocess
+        import sys
+        import tempfile
+        import zipfile
+        from pathlib import Path
+
+        output = Path(os.environ["RUNNER_TEMP"]) / "tnfr-development-bundle"
+        archives = list(output.glob("TNFR-*-light-development.zip"))
+        if len(archives) != 1:
+            raise SystemExit("Expected exactly one development bundle")
+        archive = archives[0]
+        with tempfile.TemporaryDirectory(prefix="tnfr-extracted-") as directory:
+            with zipfile.ZipFile(archive) as bundle:
+                bundle.extractall(directory)
+            root = Path(directory) / archive.stem
+            subprocess.run([
+                sys.executable, "scripts/development_bundle_evidence.py", "verify",
+            ], cwd=root, check=True)
+        PY
+
+    - name: Retain the development bundle and build receipt
+      uses: actions/upload-artifact@v4
+      with:
+        name: tnfr-development-bundle
+        path: ${{ runner.temp }}/tnfr-development-bundle/*
+        if-no-files-found: error
+        retention-days: 14
+
+    - name: Attach the development bundle to the published release
+      if: github.event_name == 'release'
+      env:
+        GH_TOKEN: ${{ github.token }}
+        GH_REPO: ${{ github.repository }}
+        RELEASE_TAG: ${{ github.event.release.tag_name }}
+      run: |
+        python - <<'PY'
+        import hashlib
+        import json
+        import os
+        import subprocess
+        import tempfile
+        from pathlib import Path
+        from urllib.parse import quote
+
+        tag = os.environ["RELEASE_TAG"]
+        repository = os.environ["GH_REPO"]
+        output = Path(os.environ["RUNNER_TEMP"]) / "tnfr-development-bundle"
+        archives = list(output.glob("TNFR-*-light-development.zip"))
+        if len(archives) != 1:
+            raise SystemExit("Expected exactly one development bundle")
+        archive = archives[0]
+        payloads = [archive, archive.with_name(archive.name + ".sha256")]
+        result = subprocess.run([
+            "gh", "api", f"repos/{repository}/releases/tags/{quote(tag, safe='')}",
+        ], check=True, capture_output=True, text=True)
+        release = json.loads(result.stdout)
+        existing = {asset["name"]: asset for asset in release["assets"]}
+        missing = []
+        for path in payloads:
+            expected = hashlib.sha256(path.read_bytes()).hexdigest()
+            asset = existing.get(path.name)
+            if asset is None:
+                missing.append(str(path))
+                continue
+            actual = asset.get("digest")
+            if actual is None:
+                with tempfile.TemporaryDirectory(prefix="tnfr-release-asset-") as directory:
+                    subprocess.run([
+                        "gh", "release", "download", tag, "--repo", repository,
+                        "--pattern", path.name, "--dir", directory,
+                    ], check=True)
+                    downloaded = Path(directory) / path.name
+                    actual = "sha256:" + hashlib.sha256(downloaded.read_bytes()).hexdigest()
+            if asset["size"] != path.stat().st_size or actual != "sha256:" + expected:
+                raise SystemExit(f"Existing release asset differs: {path.name}")
+            print(f"Verified existing release asset: {path.name}")
+        if missing:
+            subprocess.run([
+                "gh", "release", "upload", tag, *missing, "--repo", repository,
+            ], check=True)
+        PY
+
   pypi-publish:
     runs-on: ubuntu-latest
     permissions:

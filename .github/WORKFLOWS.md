@@ -13,7 +13,7 @@ not establish current GitHub run health, branch protection or enabled secrets.
 | [docs.yml](workflows/docs.yml) | Filtered push/PR to main and manual invocation. References, documentation integrity, staging and strict MkDocs build; publishes Pages only on pushes to main. |
 | [verify-references.yml](workflows/verify-references.yml) | Filtered Markdown/notebook changes on PRs and pushes to main/develop. Independent local Markdown target and fragment check. |
 | [pip-audit.yml](workflows/pip-audit.yml) | Push/PR to main/master, Monday 05:00 UTC and manual invocation. Audits the installed core, test-all and serialization environment; captures available reports and fails when the JSON audit fails. |
-| [pypi-zenodo.yml](workflows/pypi-zenodo.yml) | Published GitHub release or manual invocation. Builds and checks distributions; publishes on release or when the existing manual force-publish input is true. |
+| [pypi-zenodo.yml](workflows/pypi-zenodo.yml) | Published GitHub release or manual invocation. Builds/checks PyPI distributions and an independent lightweight development bundle. Publishes to PyPI on release or when the existing manual force-publish input is true; attaches the bundle only on release events. |
 | [lint-workflows.yml](workflows/lint-workflows.yml) | Filtered workflow/script changes on PRs and pushes to main. Searches for unsupported Bandit SARIF invocation; this is not a general Actions schema linter. |
 | [copilot-setup-steps.yml](workflows/copilot-setup-steps.yml) | Manual invocation or edits to its own workflow. Installs a Python 3.11 development/test environment and verifies importability. |
 
@@ -90,6 +90,19 @@ Release preparation must consider relevant validation evidence; the workflow
 does not itself enforce a dependency on successful CI runs. A normal manual
 invocation builds/checks only; its existing force-publish input enables publishing.
 
+An independent `development-bundle` job uses the standard-library builder
+`scripts/build_development_bundle.py` to create the mandatory
+`TNFR-<version>-light-development.zip` and `.zip.sha256` from the checked-out
+commit. It validates the release tag/version and verifies the extracted bundle
+with its included evidence helper. It requires neither PyPI credentials nor
+engine dependencies, and its output is outside `dist/`. Both manual and release
+runs retain an Actions artifact. Only release events attach the ZIP and sidecar
+to the existing release; only this job has `contents: write`. Existing matching
+assets are accepted by size and SHA256; conflicting assets fail without
+overwriting. This job's checksum/extraction checks do not replace the
+[onboarding and selected execution checks](../TESTING.md#lightweight-development-bundle)
+required during release preparation.
+
 Publishing a GitHub release therefore also requests PyPI publication. Before
 that trigger, review validation runs for the exact commit being released:
 blocking CI formatting/static checks and its test matrix (including SDK tests),
@@ -109,7 +122,9 @@ verify a DOI. No GitHub/PyPI/Zenodo settings are inferred from this file.
 | --- | --- |
 | PyPI wheel | Installable `tnfr` package, typing/schema data and package metadata. The publication job uploads built distributions; it does not upload the repository or site. |
 | PyPI source distribution | Maintained build inputs selected by [MANIFEST.in](https://github.com/fermga/TNFR-Python-Engine/blob/main/MANIFEST.in), including package source and small root metadata. Research evidence, tests, generated sites and optional application trees are outside this package payload. |
+| Lightweight development ZIP | Exact source snapshot for agent/developer handoff: code, theory, documentation, instructions, examples and tests, with generated onboarding, a manifest and verified retrieval of omitted `docs/assets/` evidence. The publication workflow attaches it and its SHA256 sidecar to each GitHub release. It contains neither Git history nor installed dependencies. |
 | GitHub source ZIP/TAR | The release tag's repository tree, including committed research evidence. GitHub's source downloads are distinct from wheel/sdist assets and do not contain Git history. |
+| Zenodo archive | The complete source archive retained through the separately configured GitHub integration. The lightweight development ZIP does not replace this evidence archive or require another deposit. Verify the actual version DOI and archive after publication. |
 | Documentation site | Rendered documentation plus retained downloadable source/evidence, deployed separately to `gh-pages`. Its size is not the installed package size. |
 | Actions reports | JUnit, coverage and dependency-audit reports retained by their respective jobs; they are not package contents or release archives. |
 

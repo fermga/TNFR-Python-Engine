@@ -281,6 +281,12 @@ inputs, not `build/docs-source/` or `site/`.
   site build. Report checks and material limitations.
 - For distribution changes, check fresh wheel and source archives with
   `scripts/check_distribution.py` and the release checks in [Testing].
+- Every release must include a verified lightweight development bundle and its
+  SHA256 sidecar as GitHub release assets. Build from the exact release commit
+  with `scripts/build_development_bundle.py`; retain code, theory, instructions,
+  examples and tests, plus onboarding and verified retrieval of omitted evidence.
+  Follow [Testing] for source/version, extraction and helper checks. Preserve
+  the complete repository/Zenodo archive separately.
 
 Distinguish grammar rejection, live-state rejection, solver defects, unavailable
 observations and unsupported theorem domains. Coherence decrease violates only

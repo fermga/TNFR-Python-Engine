@@ -487,6 +487,51 @@ requirements; see [publication payloads](.github/WORKFLOWS.md#published-payloads
 Frozen scientific evidence must retain its original bytes and dependencies.
 Removing it merely to meet a package budget would not validate the package.
 
+### Lightweight development bundle
+
+Every release also delivers `TNFR-<version>-light-development.zip` and its
+`.zip.sha256` sidecar as GitHub release assets. This is the minimum development
+handoff for another agent: code, theory, ontology, documentation, instructions,
+examples and tests from the selected commit, without Git history or installed
+dependencies. The builder derives the version from that commit, not the live
+working tree, and excludes bulky `docs/assets/` evidence while retaining the
+site's `mathjax.js`. Omitted evidence remains in the full repository/Zenodo
+archive and is individually recorded for retrieval; omission does not authorize
+deleting or regenerating frozen results.
+
+Build an initial candidate from a committed tree with Python 3.11+ and Git:
+
+```sh
+python scripts/build_development_bundle.py --revision HEAD --output-dir artifacts/development-bundle
+```
+
+For publication, set `--revision` to the exact release commit/tag and pass
+`--expected-tag` with the actual release tag. The tag must be `v` followed by
+the version declared by that tree. Keep this output separate from `dist/`;
+the bundle is not a PyPI distribution.
+
+Before accepting each release bundle:
+
+1. Verify the archive and sidecar, selected commit/version, byte-exact retained
+   files, mirrored agent instructions and the declared omitted-evidence manifest.
+2. Extract into a fresh directory. Read generated `START_HERE.md` and `AGENTS.md`
+   and run `python scripts/development_bundle_evidence.py verify` there.
+   The standard-library helper checks retained files and reports missing
+   evidence explicitly; its `list` and `fetch` commands support retrieval of
+   original evidence by pinned revision and SHA256.
+3. Follow onboarding to install dependencies and run the README example and
+   affected contract checks. Report the actual environment and selection;
+   checksum verification does not execute the engine or validate research.
+   Research checks needing omitted files require those files to be retrieved
+   first. Do not substitute missing evidence with regenerated responses.
+
+The [publication workflow](.github/WORKFLOWS.md#package-publication) independently
+builds the bundle and verifies its extracted contents without installing engine
+dependencies. A manual run retains it as an Actions artifact; a release run also
+attaches the ZIP and sidecar to the release. The source archive and existing
+Zenodo integration remain the full evidence distribution; no separate Zenodo
+deposit is required for this development handoff.
+
 ## Security checks
 
 Follow [SECURITY.md](SECURITY.md) for reporting and trust boundaries:
