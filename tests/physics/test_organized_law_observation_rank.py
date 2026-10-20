@@ -4,7 +4,9 @@ from fractions import Fraction as Q
 
 import pytest
 
-from tnfr.mathematics._interval_taylor import Jet, cos as jet_cos, sinc
+from tnfr.mathematics._interval_taylor import Jet
+from tnfr.mathematics._interval_taylor import cos as jet_cos
+from tnfr.mathematics._interval_taylor import sinc
 from tnfr.mathematics._rational_interval import I, cos, pi_interval, sin, sqrt
 from tnfr.physics._organized_computable_prediction import _forecast_stages
 from tnfr.research._organized_forecast_inputs import _sample_times

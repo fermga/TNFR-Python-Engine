@@ -12,7 +12,11 @@ from typing import Any, Sequence
 import networkx as nx
 import numpy as np
 
-from .._exact_time import finite_represented_real
+from .._exact_time import (
+    bounded_represented_real,
+    finite_represented_real,
+    nonnegative_represented_time,
+)
 from .._spectral_expectation import (
     SPECTRAL_EXPECTATION_METRIC_KIND,
     finite_spectral_real,
@@ -23,6 +27,7 @@ from .._spectral_expectation import (
 )
 from ..alias import get_attr
 from ..config import apply_config
+from ..config.parsing import parse_bool
 from ..config.presets import PREFERRED_PRESET_NAMES, get_preset
 from ..constants import METRIC_DEFAULTS, VF_PRIMARY, get_aliases, get_param
 from ..dynamics import default_glyph_selector, parametric_glyph_selector, run
@@ -51,10 +56,11 @@ from ..operators._phase_gate import (
     resolve_u3_phase_limits,
     select_u3_phase_neighbors,
 )
-from ..sdk._topology import nonnegative_integer
+from ..rng import validate_seed
+from ..sdk._topology import nonnegative_integer, probability
 from ..sense import register_sigma_callback
 from ..trace import register_trace
-from ..types import ProgramTokens
+from ..types import ProgramTokens, require_finite_real_scalar_epi
 from ..utils import (
     StructuredFileError,
     angle_diff,
@@ -65,6 +71,7 @@ from ..utils import (
     safe_write,
 )
 from ..validation import NFRValidator, validate_canon
+from ..validation.window import validate_window
 from .arguments import _args_to_dict
 
 logger = get_logger(__name__)
@@ -159,12 +166,11 @@ def _persist_history(G: "nx.Graph", args: argparse.Namespace) -> None:
 def _to_float_array(values: Sequence[float] | None, *, name: str) -> np.ndarray | None:
     if values is None:
         return None
-    array = np.asarray(list(values), dtype=float)
-    if array.ndim != 1:
-        raise ValueError(f"{name} must be a one-dimensional sequence of numbers")
-    if not np.all(np.isfinite(array)):
-        raise ValueError(f"{name} must contain only finite real numbers")
-    return array
+    admitted = [
+        finite_spectral_real(value, label=f"{name}[{index}]")
+        for index, value in enumerate(values)
+    ]
+    return np.asarray(admitted, dtype=float)
 
 
 def _cli_spectral_value(
@@ -352,7 +358,7 @@ def _build_math_engine_config(
 
 
 def _configure_math_engine(G: "nx.Graph", args: argparse.Namespace) -> None:
-    if not getattr(args, "math_engine", False):
+    if not parse_bool(getattr(args, "math_engine", False)):
         G.graph.pop("MATH_ENGINE", None)
         return
     try:
@@ -366,16 +372,19 @@ def _configure_math_engine(G: "nx.Graph", args: argparse.Namespace) -> None:
 def build_basic_graph(args: argparse.Namespace) -> "nx.Graph":
     """Construct the base graph topology described by CLI ``args``."""
 
-    n = args.nodes
-    topology = getattr(args, "topology", "ring").lower()
-    seed = getattr(args, "seed", None)
+    n = nonnegative_integer(args.nodes, "nodes")
+    topology = getattr(args, "topology", "ring")
+    if not isinstance(topology, str):
+        raise ValueError("topology must be a registered name")
+    topology = topology.lower()
+    seed = validate_seed(getattr(args, "seed", None))
     if topology == "ring":
         G = nx.cycle_graph(n)
     elif topology == "complete":
         G = nx.complete_graph(n)
     elif topology == "erdos":
         if getattr(args, "p", None) is not None:
-            prob = float(args.p)
+            prob = probability(args.p)
         else:
             if n <= 0:
                 fallback = 0.0
@@ -390,7 +399,7 @@ def build_basic_graph(args: argparse.Namespace) -> "nx.Graph":
             f"Invalid topology '{topology}'. Accepted options are: ring, complete, erdos"
         )
     if seed is not None:
-        G.graph["RANDOM_SEED"] = int(seed)
+        G.graph["RANDOM_SEED"] = seed
     return G
 
 
@@ -404,10 +413,10 @@ def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
             logger.error("%s", exc)
             raise SystemExit(1) from exc
     arg_map = {
-        "dt": ("DT", float),
+        "dt": ("DT", lambda value: nonnegative_represented_time(value, "dt")[0]),
         "integrator": ("INTEGRATOR_METHOD", str),
         "remesh_mode": ("REMESH_MODE", str),
-        "glyph_hysteresis_window": ("GLYPH_HYSTERESIS_WINDOW", int),
+        "glyph_hysteresis_window": ("GLYPH_HYSTERESIS_WINDOW", validate_window),
     }
     for attr, (key, conv) in arg_map.items():
         val = getattr(args, attr, None)
@@ -429,7 +438,7 @@ def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
         **_args_to_dict(args, prefix="grammar_"),
     }
     if getattr(args, "grammar_canon", None) is not None:
-        gcanon["enabled"] = bool(args.grammar_canon)
+        gcanon["enabled"] = parse_bool(args.grammar_canon)
     G.graph["GRAMMAR_CANON"] = gcanon
 
     selector = getattr(args, "selector", None)
@@ -438,7 +447,9 @@ def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
             "basic": default_glyph_selector,
             "param": parametric_glyph_selector,
         }
-        G.graph["glyph_selector"] = sel_map.get(selector, default_glyph_selector)
+        if not isinstance(selector, str) or selector not in sel_map:
+            raise ValueError("selector must be 'basic' or 'param'")
+        G.graph["glyph_selector"] = sel_map[selector]
 
     if hasattr(args, "gamma_type"):
         G.graph["GAMMA"] = {
@@ -461,7 +472,9 @@ def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
 
     candidate_count = getattr(args, "um_candidate_count", None)
     if candidate_count is not None:
-        G.graph["UM_CANDIDATE_COUNT"] = int(candidate_count)
+        G.graph["UM_CANDIDATE_COUNT"] = nonnegative_integer(
+            candidate_count, "um_candidate_count"
+        )
 
     stop_window = getattr(args, "stop_early_window", None)
     stop_fraction = getattr(args, "stop_early_fraction", None)
@@ -472,9 +485,11 @@ def apply_cli_config(G: "nx.Graph", args: argparse.Namespace) -> None:
         else:
             next_cfg = deepcopy(METRIC_DEFAULTS["STOP_EARLY"])
         if stop_window is not None:
-            next_cfg["window"] = int(stop_window)
+            next_cfg["window"] = validate_window(stop_window, positive=True)
         if stop_fraction is not None:
-            next_cfg["fraction"] = float(stop_fraction)
+            next_cfg["fraction"] = bounded_represented_real(
+                stop_fraction, "stop_early_fraction", minimum=0, maximum=1
+            )[0]
         next_cfg["enabled"] = True
         G.graph["STOP_EARLY"] = next_cfg
 
@@ -489,7 +504,7 @@ def register_callbacks_and_observer(G: "nx.Graph") -> None:
 def _build_graph_from_args(args: argparse.Namespace) -> "nx.Graph":
     G = build_basic_graph(args)
     apply_cli_config(G, args)
-    if getattr(args, "observer", False):
+    if parse_bool(getattr(args, "observer", False)):
         G.graph["ATTACH_STD_OBSERVER"] = True
     prepare_network(G)
     register_callbacks_and_observer(G)
@@ -562,7 +577,7 @@ def run_program(
         job_overrides: dict[str, Any] = {}
         dnfr_jobs = getattr(args, "dnfr_n_jobs", None)
         if dnfr_jobs is not None:
-            job_overrides["dnfr_n_jobs"] = int(dnfr_jobs)
+            job_overrides["dnfr_n_jobs"] = dnfr_jobs
         if job_overrides:
             run_kwargs["n_jobs"] = job_overrides
 
@@ -596,7 +611,9 @@ def _run_cli_program(
 
 def _log_math_engine_summary(G: "nx.Graph") -> None:
     math_cfg = G.graph.get("MATH_ENGINE")
-    if not isinstance(math_cfg, Mapping) or not math_cfg.get("enabled"):
+    if not isinstance(math_cfg, Mapping) or not parse_bool(
+        math_cfg.get("enabled", False)
+    ):
         return
 
     nodes = list(G.nodes)
@@ -620,25 +637,24 @@ def _log_math_engine_summary(G: "nx.Graph") -> None:
     state_projector: BasicStateProjector = math_cfg.get(
         "state_projector", BasicStateProjector()
     )
-    validator: NFRValidator | None = math_cfg.get("validator")
-    if validator is None:
-        threshold_raw = resolve_compatibility_value(
-            math_cfg.get("spectral_expectation_threshold"),
-            math_cfg.get("coherence_threshold"),
-            canonical_name="MATH_ENGINE['spectral_expectation_threshold']",
-            legacy_name="MATH_ENGINE['coherence_threshold']",
-        )
-        spectral_threshold = finite_spectral_real(
-            threshold_raw if threshold_raw is not None else 0.0,
-            label="spectral expectation threshold",
-        )
-        validator = NFRValidator(
-            hilbert_space,
-            spectral_operator,
-            spectral_threshold,
-            frequency_operator=frequency_operator,
-        )
-        math_cfg["validator"] = validator
+    # A stored validator is derived from an earlier configuration. Rebuild it
+    # from the live operator and threshold before reporting their verdict.
+    threshold_raw = resolve_compatibility_value(
+        math_cfg.get("spectral_expectation_threshold"),
+        math_cfg.get("coherence_threshold"),
+        canonical_name="MATH_ENGINE['spectral_expectation_threshold']",
+        legacy_name="MATH_ENGINE['coherence_threshold']",
+    )
+    spectral_threshold = finite_spectral_real(
+        threshold_raw if threshold_raw is not None else 0.0,
+        label="spectral expectation threshold",
+    )
+    validator = NFRValidator(
+        hilbert_space,
+        spectral_operator,
+        spectral_threshold,
+        frequency_operator=frequency_operator,
+    )
 
     enforce_frequency = bool(frequency_operator is not None)
 
@@ -653,21 +669,37 @@ def _log_math_engine_summary(G: "nx.Graph") -> None:
 
     for node_id in nodes:
         data = G.nodes[node_id]
-        epi = float(
+        epi = require_finite_real_scalar_epi(
             get_attr(
                 data,
                 EPI_ALIAS_KEYS,
                 default=0.0,
+                strict=True,
+                conv=lambda value: value,
             )
         )
-        nu_f = float(
+        nu_f = finite_represented_real(
             get_attr(
                 data,
                 VF_ALIAS_KEYS,
-                default=float(data.get(VF_PRIMARY, 0.0)),
-            )
-        )
-        theta = float(data.get("theta", 0.0))
+                default=0.0,
+                strict=True,
+                conv=lambda value: value,
+            ),
+            "capacity nu_f",
+        )[0]
+        if nu_f < 0:
+            raise ValueError("capacity nu_f must be nonnegative")
+        theta = finite_represented_real(
+            get_attr(
+                data,
+                THETA_ALIAS_KEYS,
+                default=0.0,
+                strict=True,
+                conv=lambda value: value,
+            ),
+            "phase",
+        )[0]
         state = state_projector(
             epi=epi, nu_f=nu_f, theta=theta, dim=hilbert_space.dimension
         )
@@ -856,9 +888,9 @@ def cmd_epi_validate(args: argparse.Namespace) -> int:
         )
         return 1
 
-    check_coherence = getattr(args, "check_coherence", True)
-    check_frequency = getattr(args, "check_frequency", True)
-    check_phase = getattr(args, "check_phase", True)
+    check_coherence = parse_bool(getattr(args, "check_coherence", True))
+    check_frequency = parse_bool(getattr(args, "check_frequency", True))
+    check_phase = parse_bool(getattr(args, "check_phase", True))
     if not any((check_coherence, check_frequency, check_phase)):
         logger.error("[EPI.VALIDATE] Select at least one diagnostic check")
         return 1

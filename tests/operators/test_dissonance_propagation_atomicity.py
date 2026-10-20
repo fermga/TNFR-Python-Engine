@@ -5,6 +5,7 @@ from __future__ import annotations
 import math
 import sys
 from copy import deepcopy
+from fractions import Fraction
 
 import networkx as nx
 import pytest
@@ -96,6 +97,31 @@ def test_invalid_argument_rejects_without_state_or_telemetry_commit(
 
     with pytest.raises(TNFRValueError, match=message):
         propagate_dissonance(graph, 0, magnitude, propagation_mode=mode)
+
+    _assert_state_unchanged(graph, before)
+
+
+@pytest.mark.parametrize(
+    "location", ["magnitude", "pressure", "phase", "capacity", "weight", "threshold"]
+)
+def test_nonzero_propagation_inputs_cannot_silently_materialize_as_zero(location):
+    graph = _two_neighbor_graph()
+    tiny = Fraction(1, 10**400)
+    magnitude = tiny if location == "magnitude" else 0.2
+    if location == "pressure":
+        graph.nodes[2][ALIAS_DNFR[0]] = tiny
+    elif location == "phase":
+        graph.nodes[2][ALIAS_THETA[0]] = tiny
+    elif location == "capacity":
+        graph.nodes[2][ALIAS_VF[0]] = tiny
+    elif location == "weight":
+        graph.edges[0, 2]["weight"] = tiny
+    elif location == "threshold":
+        graph.graph["OZ_MIN_PROPAGATION"] = tiny
+    before = _state_snapshot(graph)
+
+    with pytest.raises(TNFRValueError, match="nonzero but underflows"):
+        propagate_dissonance(graph, 0, magnitude)
 
     _assert_state_unchanged(graph, before)
 

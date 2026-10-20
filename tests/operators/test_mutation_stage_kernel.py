@@ -6,13 +6,15 @@ import logging
 import math
 from copy import deepcopy
 from dataclasses import FrozenInstanceError
+from fractions import Fraction
 
 import networkx as nx
 import pytest
 
 from tnfr.errors import TNFRValueError
 from tnfr.glyph_history import push_glyph
-from tnfr.operators import GLYPH_OPERATIONS
+from tnfr.node import NodeNX
+from tnfr.operators import GLYPH_OPERATIONS, apply_glyph, apply_glyph_obj
 from tnfr.operators._mutation_stage_kernel import (
     commit_mutation_lifecycle,
     commit_mutation_structure,
@@ -191,3 +193,86 @@ def test_mutation_proposal_rejects_nonfinite_active_inputs(
 ) -> None:
     with pytest.raises(TNFRValueError, match=message):
         propose_mutation_stage(**kwargs)
+
+
+@pytest.mark.parametrize(
+    "field", ("theta", "delta_nfr", "theta_shift_factor", "fixed_shift")
+)
+@pytest.mark.parametrize(
+    "invalid",
+    (True, False, Fraction(1, 2**1200), Fraction(-1, 2**1200), "0.25", 0.25 + 0j),
+)
+def test_mutation_proposal_admits_active_scalars_before_materialization(field, invalid):
+    arguments = {"theta": 1.0, "delta_nfr": 0.2, "theta_shift_factor": 0.5}
+    arguments[field] = invalid
+    with pytest.raises(TNFRValueError):
+        propose_mutation_stage(**arguments)
+
+
+def _phase_admission_graph(phase, *, fixed=False, pressure=0.2):
+    graph = nx.Graph(
+        _t=1.0,
+        ZHIR_THRESHOLD_XI=0.1,
+        GLYPH_FACTORS={"ZHIR_theta_shift": 0.125} if fixed else {},
+    )
+    graph.add_node(
+        0,
+        EPI=0.25,
+        nu_f=1.0,
+        delta_nfr=pressure,
+        theta=phase,
+        epi_kind="wave",
+        epi_time_history=[(0.0, 0.0), (1.0, 0.25)],
+        glyph_history=["IL", "OZ"],
+    )
+    return graph
+
+
+@pytest.mark.parametrize("path", ("graph", "object", "network_proposal"))
+@pytest.mark.parametrize("fixed", (False, True))
+@pytest.mark.parametrize("invalid", (True, Fraction(1, 2**1200), Fraction(-1, 2**1200)))
+def test_raw_mutation_phase_rejection_preserves_state_and_cache(path, fixed, invalid):
+    graph = _phase_admission_graph(invalid, fixed=fixed)
+    node = NodeNX.from_graph(graph, 0) if path == "object" else None
+    before = deepcopy(dict(graph.nodes[0]))
+    # Keep identity for the deliberately pre-existing object-adapter cache.
+    metadata = dict(graph.graph)
+    with pytest.raises(TNFRValueError, match="phase state"):
+        if path == "graph":
+            apply_glyph(graph, 0, "ZHIR")
+        elif path == "object":
+            apply_glyph_obj(node, "ZHIR")
+        else:
+            factors = (
+                {"ZHIR_theta_shift": 0.125}
+                if fixed
+                else {"ZHIR_theta_shift_factor": 0.5}
+            )
+            propose_mutation_network_stage(graph, 0, factors)
+    assert dict(graph.nodes[0]) == before
+    assert graph.graph == metadata
+    if path != "object":
+        assert "_node_cache" not in graph.graph
+
+
+@pytest.mark.parametrize("pressure,expected_phase", ((0.0, 1.25), (-0.0, 0.75)))
+def test_scalar_admission_preserves_signed_zero_mutation_direction(
+    pressure, expected_phase
+):
+    graph = _phase_admission_graph(1.0, pressure=pressure)
+    proposal = propose_mutation_stage(1.0, pressure)
+    assert proposal.theta_after == expected_phase
+    apply_glyph(graph, 0, "ZHIR")
+    assert graph.nodes[0]["theta"] == expected_phase
+    assert math.copysign(1.0, graph.nodes[0]["delta_nfr"]) == math.copysign(
+        1.0, pressure
+    )
+
+
+def test_fixed_phase_proposal_does_not_admit_inactive_dynamic_scalars():
+    unused = object()
+    proposal = propose_mutation_stage(
+        1.0, unused, theta_shift_factor=unused, fixed_shift=0.125
+    )
+    assert proposal.theta_after == 1.125
+    assert proposal.fixed_mode

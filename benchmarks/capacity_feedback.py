@@ -293,13 +293,15 @@ def run_capacity_feedback_case(case):
         ),
         "cycles": [],
     }
-    _, rejected_word = _word(
+    _, repeated_word = _word(
         [Expansion(), Coherence()]
         + [Coupling() for _ in range(CYCLE_COUNT)]
         + [Silence()],
         initialized=True,
     )
-    record["direct_repeated_um_control"] = rejected_word
+    # Read-only admission of an alternative word does not change the evaluated
+    # UM/IL protocol or establish its response without Coherence separators.
+    record["direct_repeated_um_control"] = repeated_word
     for index in range(CYCLE_COUNT):
         before = current
         family_before = _family(before, initial, base_capacity=reference.base_capacity)

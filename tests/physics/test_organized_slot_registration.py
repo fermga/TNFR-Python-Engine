@@ -13,7 +13,6 @@ from tnfr.physics._organized_external_registration import (
     _observe_organized_external_registration,
 )
 
-
 _SLOTS = (1, 2, 0, 3, 8)
 _FORM = tuple(Q((7 * index) % 19 - 9, 64) for index in range(54))
 _PHASE = tuple(Q((11 * index) % 23 - 11, 256) for index in range(54))

@@ -26,6 +26,8 @@ history/event ownership, concurrent execution, signed-zero bit preservation,
 an exact affine realization of the binary64 average, solver properties, or
 full TNFR stability.  In particular, underflow can make the runtime consensus
 value differ from the exact-real half average while leaving ``q=0`` intact.
+Raw singleton-mean/blend proposals can have opposite zero signs; the current
+shared clipping admission canonicalizes those zeros before projection.
 """
 
 from __future__ import annotations
@@ -562,8 +564,9 @@ class P2HalfReceptionRemeshStabilityCertificate:
     ) -> Binary64Pair:
         """Replay the certified shared numeric EPI kernel on one class pair.
 
-        Equality is numeric.  The returned zero sign is an implementation
-        result and is deliberately absent from the theorem.
+        Equality is numeric. Current clipping admission canonicalizes zeros;
+        preservation of raw proposal signs is deliberately absent from the
+        theorem.
         """
 
         if not self.p2_half_reception_remesh_stability_certificate_certified:

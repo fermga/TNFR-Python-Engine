@@ -34,6 +34,7 @@ import numpy as np
 
 from tnfr.cache import CacheLevel, cache_tnfr_computation
 from tnfr.config.operator_names import CANONICAL_OPERATOR_NAMES
+from tnfr.config.parsing import parse_bool
 from tnfr.constants.canonical import (
     GRAD_PHI_CANONICAL_THRESHOLD,  # general |∇φ|: γ/π ≈ 0.1837 (heuristic, not derived)
 )
@@ -108,10 +109,12 @@ Dispatcher = Callable[[str, Dict[str, Any]], Any]
 def _generate_partition_hash_chain(
     partitioning: PartitionedPaleyGraph | None,
 ) -> Dict[str, Any] | None:
-    """Generate reproducible hash chain for all partitions.
+    """Hash selected partition records in their supplied iteration order.
 
-    Creates deterministic hash chain linking partition states, telemetry,
-    and structural transitions for complete reproducibility validation.
+    Each record includes sorted node/boundary/factor membership, the selected
+    telemetry fields below and metadata. Phase references, other telemetry,
+    graph state and execution history are outside this digest. Matching hashes
+    neither authenticate provenance nor establish complete replay equivalence.
     """
     if not partitioning:
         return None
@@ -3053,8 +3056,13 @@ def _build_http_dispatcher(url: str) -> Dispatcher | None:
         return None
 
     token = os.getenv("TNFR_FFT_AUTH_TOKEN")
+    allow_unsafe_pickle = parse_bool(os.getenv("TNFR_FFT_ALLOW_UNSAFE_PICKLE", "false"))
     try:
-        client = HTTPFFTDispatcher(base_url=url, auth_token=token)
+        client = HTTPFFTDispatcher(
+            base_url=url,
+            auth_token=token,
+            allow_unsafe_pickle=allow_unsafe_pickle,
+        )
     except Exception:
         return None
     _annotate_dispatcher(
@@ -3064,6 +3072,7 @@ def _build_http_dispatcher(url: str) -> Dispatcher | None:
             "source": "env",
             "base_url": url,
             "token_provided": bool(token),
+            "allow_unsafe_pickle": allow_unsafe_pickle,
         },
     )
     return client.dispatch

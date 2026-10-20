@@ -12,7 +12,6 @@ from tnfr.dynamics.relational import RelationalExchangeModel
 from tnfr.mathematics._rational_interval import I
 from tnfr.physics import _organized_outer_winding as owner
 
-
 _ERROR = Q(1, 10**10)
 _Q = Q(1, 10**70)
 _INTERNAL = tuple(

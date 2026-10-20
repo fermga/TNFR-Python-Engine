@@ -171,7 +171,15 @@ def run_validators(graph: TNFRGraph) -> None:
         vf = StructuralFrequency(_require_attr(data, ALIAS_VF, node, "VF"))
         _check_epi(epi, epi_min, epi_max, node)
         _check_range(vf, vf_min, vf_max, "VF", node)
-        _check_glyph(last_glyph(data), node)
+        try:
+            glyph = last_glyph(data)
+        except (TypeError, ValueError) as exc:
+            raise TNFRValueError(
+                f"Invalid glyph history or provenance in node {node}: {exc}",
+                context={"node": node, "reason": str(exc)},
+                suggestion="Provide admitted canonical history and operator provenance.",
+            ) from exc
+        _check_glyph(glyph, node)
 
     for validator in GRAPH_VALIDATORS:
         validator(graph)

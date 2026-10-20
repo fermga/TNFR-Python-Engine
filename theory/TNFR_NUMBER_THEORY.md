@@ -2,17 +2,15 @@
 
 **Status**: Arithmetic construction reference; exact restricted identities and finite diagnostics, not a derived physical or autonomous nodal model
 **Version source**: [pyproject.toml](../pyproject.toml)
-**Date**: March 2026
 
-> **Scope correction (2026-09-18).** Arithmetic functions, modular arithmetic,
-> graph constructors and assigned logarithmic frequencies are declared inputs.
-> Conditional spectral consequences can be derived from those inputs; this is
-> not a derivation of physical particles or of the arithmetic carrier itself
-> from the nodal equation. The retired prime-path model and unsupported
-> symmetry-complement and REMESH-infinity identifications are bounded by the current
-> [Riemann program memo](TNFR_RIEMANN_RESEARCH_NOTES.md): no analytic location
-> of `S(T)`, universal operator equivariance or RH result has been established.
-> Historical numerical results are retained, not re-executed by this correction.
+Arithmetic functions, modular arithmetic, graph constructors and assigned
+logarithmic capacities are declared inputs. Conditional consequences of those
+inputs can be derived; the nodal identity does not generate the arithmetic
+carrier. Static descriptors, supplied-graph spectral diagnostics and the
+optional arithmetic applications have distinct contracts.
+The [Riemann program memo](TNFR_RIEMANN_RESEARCH_NOTES.md) bounds the separate
+analytic comparisons: no analytic location of `S(T)`, universal operator
+equivariance or RH result follows from these constructions.
 
 ---
 
@@ -22,7 +20,7 @@
 2. [Arithmetic Networks as TNFR Systems](#2-arithmetic-networks-as-tnfr-systems)
 3. [The Arithmetic Structural Triad](#3-the-arithmetic-structural-triad)
 4. [Primality as Structural Equilibrium](#4-primality-as-structural-equilibrium)
-5. [Canonical Arithmetic Constants](#5-canonical-arithmetic-constants)
+5. [Configured Arithmetic Coefficients](#5-canonical-arithmetic-constants)
 6. [Pressure Component Analysis](#6-pressure-component-analysis)
 7. [The Arithmetic Tetrad](#7-the-arithmetic-tetrad)
 8. [Dual-Lever Decomposition](#8-dual-lever-decomposition)
@@ -48,7 +46,10 @@ construction studied here:
 
 - **Primes are the arithmetic pressure zero set**: $\Delta\mathrm{NFR}(p) = 0$ for all primes $p$.
 - **Composites carry structural pressure**: $\Delta\mathrm{NFR}(n) > 0$ whenever $n$ is composite, with a magnitude determined by the three selected arithmetic descriptors.
-- **Factorization as spectral decoding**: discovering the factors of a composite can be framed as resolving the coherent sub-modes of its structural pressure field.
+- **Spectral diagnostics of arithmetic structure**: prescribed residue graphs
+  can retain factor-conditioned periodicity. These results do not establish
+  that the optional lab recovers factors autonomously or without arithmetic
+  input.
 
 This document formalizes these observations, records the configured unit-weight
 arithmetic convention, and maps it to the implementations in the repository.
@@ -61,8 +62,9 @@ ledger](NODAL_PARAMETER_FOUNDATIONS.md#2-parameter-and-dependency-ledger).
 
 | Layer | Description | Source |
 |-------|-------------|--------|
-| **Primality** | Deterministic prime detection via $\Delta\mathrm{NFR}=0$ | `applications/primality-test/`, `src/tnfr/mathematics/number_theory.py` |
-| **Factorization** | Spectral factor discovery via Paley-Jacobi graphs | `applications/factorization-lab/` |
+| **Arithmetic pressure** | Exact prime zero set for positive weights and genuine divisor/factor terms; numerical predicates retain their tolerance and representation limits | `src/tnfr/mathematics/arithmetic_pressure.py`, `src/tnfr/mathematics/number_theory.py`, `applications/primality-test/` |
+| **Residue-graph diagnostics** | Conditional Paley, CRT and cyclotomy results for the prescribed graph/operator; distinct from the lab pipeline | §§9.5–9.13 and their linked instruments |
+| **Archived factorization lab** | Historical spectral heuristics with arithmetic telemetry and fallbacks; known acceptance/completeness defects exclude its labels as factor certificates | [Archive scope](../applications/factorization-lab/README.md) |
 | **Riemann program** | Declared arithmetic traces and finite pulse comparisons; historical prime-path prototype superseded | `src/tnfr/riemann/` |
 
 These layers reuse selected arithmetic functions, graph diagnostics and
@@ -77,12 +79,17 @@ do not supply such a history.
 
 ### 2.1 Network Construction
 
-A TNFR arithmetic network $G = (V, E)$ is a directed graph where:
+A supplied arithmetic network $G = (V, E)$ uses a single `DiGraph`:
 
 - **Nodes** $V = \{2, 3, \ldots, N\}$ are natural numbers.
-- **Edges** encode two types of structural relationship:
-  - **Divisibility edges**: $(d, n)$ for each divisor $d \mid n$ with $d < n$.
-  - **GCD coupling edges**: $(a, b)$ when $\gcd(a, b) > 1$, weighted by $\gcd(a, b) / \max(a, b)$.
+- **Edges** occur in both directions between distinct labels $a,b$ exactly
+  when $\gcd(a,b)>1$, with weight $\gcd(a,b)/\max(a,b)$ and type `gcd`.
+
+The builder first writes a divisibility edge, then overwrites that same edge
+with the GCD assignment. Since every represented divisor is at least 2,
+every divisibility edge meets the GCD condition. There are no parallel channels
+or retained independent divisibility weights: `2 -> 4` ends with weight `1/2`
+and type `gcd`, together with the reverse edge of the same weight.
 
 Each node $n$ is assigned the structural triad (EPI, $\nu_f$, $\phi$)
 from chosen arithmetic functions, together with a separate arithmetic pressure
@@ -91,11 +98,18 @@ law, phase law or event schedule.
 
 ### 2.2 Sieve-Based Computation
 
-Efficient computation uses a Lowest Prime Factor (LPF) sieve:
+The core arithmetic network stores a prime divisor for each integer:
 
-$$\text{lpf}[n] = \min\{p \text{ prime} : p \mid n\}$$
+$$\text{factor}[n]\in\{p \text{ prime} : p\mid n\},\qquad n\ge2.$$
 
-From the LPF array, factorization of any $n \leq N$ is $O(\log n)$, enabling computation of all arithmetic functions ($\Omega$, $\tau$, $\sigma$) for the entire network in $O(N \log \log N)$ sieve time plus $O(N \log N)$ factorization time.
+The compatibility attribute `_min_prime_factor` need not contain the least
+factor: later prime passes overwrite earlier entries (for example, the
+entry for 12 is 3). Repeated division still gives a factorization in
+$O(\log n)$ division steps. The sieve uses $O(N\log\log N)$ arithmetic marking
+steps and $O(N)$ entries, followed by at most $O(N\log N)$ division steps for
+all labels. These are arithmetic-operation counts; integer bit costs and
+graph construction are additional. The standalone application's sieve has a
+different post-processing cost (§4.3).
 
 ### 2.3 Phase Assignment
 
@@ -130,9 +144,9 @@ The Primary Information Structure of a natural number measures its overall arith
 $$\mathrm{EPI}(n) = 1 + \alpha \cdot \Omega(n) + \beta \cdot \ln(\tau(n)) + \gamma_{\mathrm{epi}} \cdot \left(\frac{\sigma(n)}{n} - 1\right)$$
 
 where:
-- $\alpha = 1$ — factorization complexity weight (canonical unit, §5)
-- $\beta = 1$ — divisor complexity weight (canonical unit, §5)
-- $\gamma_{\mathrm{epi}} = 1$ — abundance deviation weight (canonical unit, §5)
+- $\alpha = 1$ — factorization complexity weight (configured default, §5)
+- $\beta = 1$ — divisor complexity weight (configured default, §5)
+- $\gamma_{\mathrm{epi}} = 1$ — abundance deviation weight (configured default, §5)
 
 **Model interpretation**: EPI(n) is a chosen scalar arithmetic-complexity
 coordinate. Calling it form does not derive an oscillator or a physical state
@@ -145,9 +159,9 @@ The reorganization capacity of a number measures how rapidly its structural form
 $$\nu_f(n) = \nu_0 \cdot \left(1 + \delta \cdot \frac{\tau(n)}{n} + \varepsilon \cdot \frac{\Omega(n)}{\ln(n)}\right)$$
 
 where:
-- $\nu_0 = 1$ — base frequency (canonical unit, §5)
-- $\delta = 1$ — divisor density modulation (canonical unit, §5)
-- $\varepsilon = 1$ — factorization complexity modulation (canonical unit, §5)
+- $\nu_0 = 1$ — base capacity (configured default, §5)
+- $\delta = 1$ — divisor density modulation (configured default, §5)
+- $\varepsilon = 1$ — factorization complexity modulation (configured default, §5)
 
 **Model interpretation**: This positive arithmetic function supplies a candidate
 capacity if an evolution is declared. Its definition alone specifies neither
@@ -155,11 +169,13 @@ an observed reorganization rate nor a phase angular velocity.
 
 ### 3.3 Pressure: $\Delta\mathrm{NFR}(n)$
 
-The structural pressure equation is the central result of arithmetic TNFR:
+The selected arithmetic pressure descriptor is:
 
 $$\boxed{\Delta\mathrm{NFR}(n) = \zeta \cdot (\Omega(n) - 1) + \eta \cdot (\tau(n) - 2) + \theta \cdot \left(\frac{\sigma(n)}{n} - \left(1 + \frac{1}{n}\right)\right)}$$
 
-where $\Omega(n)$ is the prime factor count with multiplicity, $\tau(n)$ the divisor count, and $\sigma(n)$ the divisor sum. The coefficients are canonically $\zeta = \eta = \theta = 1$ (unit weights; see §5).
+where $\Omega(n)$ is the prime factor count with multiplicity, $\tau(n)$ the
+divisor count, and $\sigma(n)$ the divisor sum. The arithmetic network defaults
+to $\zeta=\eta=\theta=1$; this convention is not a uniquely derived law (§5).
 
 **Model interpretation**: This nonnegative arithmetic pressure vanishes exactly
 at primes under the stated positive coefficients. It is a selected measure of
@@ -172,7 +188,9 @@ From the pressure, local coherence is derived:
 
 $$C_{\text{local}}(n) = \frac{1}{1 + |\Delta\mathrm{NFR}(n)|}$$
 
-Primes have $C_{\text{local}} = 1$ (perfect coherence); composites have $C_{\text{local}} < 1$, decreasing with structural complexity.
+Primes have $C_{\text{local}}=1$ by this definition; composites have
+$C_{\text{local}}<1$ under positive weights. It decreases with the selected
+pressure magnitude, not necessarily with every notion of arithmetic complexity.
 
 ---
 
@@ -180,7 +198,8 @@ Primes have $C_{\text{local}} = 1$ (perfect coherence); composites have $C_{\tex
 
 ### 4.1 The Fundamental Theorem
 
-**Theorem (TNFR Primality Criterion)**: For any integer $n \geq 2$:
+**Theorem (arithmetic pressure criterion)**: For any integer $n\geq2$,
+its genuine divisor/factor statistics and strictly positive coefficients:
 
 $$n \text{ is prime} \iff \Delta\mathrm{NFR}(n) = 0$$
 
@@ -210,34 +229,38 @@ The primality criterion $\Delta\mathrm{NFR}(n) = 0$ is **independent of the coef
 
 ### 4.3 Computational Properties
 
-| Property | Value |
-|----------|-------|
-| **Determinism** | 100% (no probabilistic component) |
-| **Time complexity** | $O(\sqrt{n})$ per number (trial division for $\Omega$, $\tau$, $\sigma$) |
-| **Space complexity** | $O(1)$ basic; $O(\text{cache})$ with memoization |
-| **Sieve mode** | $O(N \log \log N)$ for all primes up to $N$ |
-| **Verified range** | $[2, 10^4]$ exhaustive, $[10^4, 10^{10}]$ selective |
-| **Accuracy** | 100% — 0 false positives, 0 false negatives |
+The exact theorem does not certify every floating-point API, arbitrary
+coefficient/tolerance combination or integer size. The implementations first
+compute the arithmetic statistics needed by the descriptor.
+
+| Route | Implemented scope |
+|-------|-------------------|
+| Standalone basic predicate | Deterministic divisor enumeration and trial factor counting, with $O(\sqrt n)$ arithmetic-loop iterations per uncached input. A bounded number of integer variables is not constant bit storage. |
+| Standalone cached/batch paths | Reuse computed pressures or loop over requested inputs; repeated-input timing is not a complexity improvement for new inputs. |
+| Standalone `sieve_primes(N)` | Classical sieve marking followed by pressure recomputation for each prime candidate. The sieve's $O(N\log\log N)$ marking bound alone does not bound the complete method. |
+| Core arithmetic network | Prime-factor table and assigned arithmetic coordinates (§2.2), plus the cost of constructing the supplied graph and any requested fields. |
+| Numerical decisions | API-specific tolerances and cuts (§5.5); changing them can change classification without changing the exact theorem. Float conversion, range and arithmetic representability retain separate obligations. |
+| Maintained controls | The standalone [installation checks](../applications/primality-test/test_installation.py) include `validate_tnfr_theory(100)` and selected cases. The [exact arithmetic owner](TNFR_ARITHMETIC_PRESSURE.md) supplies rational identities and independent channel controls. Finite passes do not establish universal software accuracy. |
 
 ---
 
-## 5. Canonical Arithmetic Constants
+<a id="5-canonical-arithmetic-constants"></a>
+## 5. Configured Arithmetic Coefficients
 
-### 5.1 Canonical Coefficients Are Unity
+<a id="51-canonical-coefficients-are-unity"></a>
+### 5.1 Unit-Weight Convention
 
-AGENTS.md §3 identifies $\pi$ as the exact phase-wrap scale; it does not prove
-that $\pi$ is the only possible structural constant or derive arithmetic weights
-from phase wrapping. This construction does not derive $\varphi$, $\gamma$ or
-$e$ as structural scales. Earlier versions wrote the triad weights as
-$(\varphi, \gamma, \pi, e)$ combinations, but that was a *post-hoc notational
-overlay* fitted to approximate empirical values ($\zeta = 1.0$, $\eta = 0.8$,
-$\theta = 0.6$) — not a derivation.
+The [parameter foundation](NODAL_PARAMETER_FOUNDATIONS.md#2-parameter-and-dependency-ledger)
+distinguishes the radian phase-wrap scale from configured arithmetic weights.
+Phase wrapping selects none of these coefficients. Writing them in terms of
+$\varphi$, $\gamma$, $\pi$ or $e$ would require an independent derivation.
 
 By the Coefficient Independence theorem (§4.2), the primality zero set is the
 same for **any** positive coefficients. That theorem does not select their
-magnitudes. The implementation chooses unit coefficients as the canonical
-parameter-free convention, so the arithmetic pressure introduces no additional
-scale; the structural content lives in $(\Omega, \tau, \sigma, n)$.
+magnitudes. The arithmetic network uses unit coefficients as its configured
+default. They fix relative channel weights and numerical pressure scale;
+other positive choices retain the zero set but can change pressure magnitudes
+and tolerance-based decisions.
 
 ### 5.2 Pressure Coefficients
 
@@ -287,13 +310,20 @@ report, including its optional metrics, is detached from the reusable cache.
 
 ### 5.6 Derivation Status
 
-The 9 arithmetic parameters (3 pressure + 3 EPI + 3 frequency) are positive
-operational weights applied to arithmetic functions (canonical units; the
-prime ⟺ ΔNFR = 0 criterion is coefficient-independent, §4.2). The arithmetic
-network uses the same tetrad implementation and selected warning policies as
-other TNFR graphs; these policies are not graph-independent bounds. The
-earlier φ/γ/e "arithmetic recalibration" was removed. The adapter's configurable
-pressure cut remains the separate policy described in §5.5.
+The 9 arithmetic parameters (3 pressure + 3 form + 3 capacity) are configured
+weights applied to arithmetic functions. The exact pressure criterion assumes
+positive weights and genuine arithmetic terms; the parameter dataclass does
+not enforce those premises. Unit defaults do not make the chosen scalar
+aggregation necessary or complete. Each channel already characterizes primes;
+their separate functional independence and redundancy for primality are proved
+in the [arithmetic-pressure owner](TNFR_ARITHMETIC_PRESSURE.md).
+
+`ArithmeticTNFRFormalism.prime_certificate` evaluates supplied terms under its
+tolerance. It does not independently establish that those terms belong to the
+claimed integer. Its compatibility name and acceptance flag do not authenticate
+primality or prove a complete-state equilibrium. The arithmetic
+network can also request the shared tetrad and warning policies; those
+diagnostics are not graph-independent bounds or a substitute for an evolution.
 
 ---
 
@@ -521,10 +551,15 @@ Operator-tetrad synergy experiments (examples 37-39) confirmed:
 
 ## 9. Factorization as Spectral Decoding
 
+Sections 9.1–9.4 describe an archived application, not a maintained factorization
+method. Sections 9.5 onward retain separate mathematical constructions and
+proofs under their stated domains; retirement of the lab changes none of those
+results.
+
 <a id="91-the-factorization-problem-in-tnfr-terms"></a>
 ### 9.1 Candidate generation is not factor recovery
 
-The lab constructs a supplied residue graph, computes spectral features and
+The archived lab constructs a supplied residue graph, computes spectral features and
 proposes candidates. A coherent label or spectral sub-mode does not prove that
 a candidate divides the input or arose autonomously from nodal evolution.
 Every claimed proper factor needs `1 < d < n` and `n % d == 0`.
@@ -532,7 +567,7 @@ Every claimed proper factor needs `1 < d < n` and `n % d == 0`.
 <a id="92-spectral-paley-jacobi-method"></a>
 ### 9.2 Spectral Paley-Jacobi scope
 
-The [application guide](../applications/factorization-lab/README.md)
+The [archive scope](../applications/factorization-lab/README.md)
 owns graph/modulus selection, combinatorial versus normalized spectra,
 capacity/time conversion, noncanonical field proxies and the partition
 attenuation surrogate. Its recorded operator labels are not a graph-owned
@@ -543,10 +578,12 @@ per-node information.
 <a id="93-structural-verification-criteria"></a>
 ### 9.3 Configured verification
 
-The [result and verification contract](../applications/factorization-lab/README.md#results-and-verification)
+The [archived result boundary](../applications/factorization-lab/README.md#results-and-verification)
 distinguishes heuristic acceptance from arithmetic divisibility. Thresholds,
 coverage and endorsement cuts are configured filters, not mathematical factor
-certificates or constants derived from the nodal identity.
+certificates or constants derived from the nodal identity. Concrete acceptance
+and completeness counterexamples are retained in the archive's retirement
+record; the source is outside maintained application verification.
 
 <a id="94-pure-mode"></a>
 ### 9.4 Partial pure-mode policy
@@ -941,14 +978,15 @@ Structural triad: $\mathrm{EPI}(30) \approx 7.48$, $\nu_f(30) \approx 2.15$, $C_
 |--------|------|-------|
 | **Arithmetic network** | `src/tnfr/mathematics/number_theory.py` | `ArithmeticTNFRNetwork`, `ArithmeticTNFRFormalism`, `PrimeCertificate` |
 | **Primality testing** | `applications/primality-test/tnfr_primality/core.py` | Standalone ΔNFR computation, validation |
-| **Canonical constants** | `applications/primality-test/tnfr_primality/constants.py` | Arithmetic pressure coefficients (separate subproject) |
-| **Advanced integration** | `applications/primality-test/tnfr_primality/advanced_core.py` | Full repo infrastructure bridge |
+| **Configured coefficients** | `applications/primality-test/tnfr_primality/constants.py` | Arithmetic pressure coefficients (separate subproject) |
 | **Optimized batch** | `applications/primality-test/tnfr_primality/optimized.py` | Caching, benchmarking, batch processing |
-| **Spectral factorization** | `applications/factorization-lab/tnfr_factorization/spectral_paley.py` | Paley-Jacobi spectral decoder |
-| **Factorization API** | `applications/factorization-lab/tnfr_factorization/api.py` | High-level `factorize()` function |
 | **Arithmetic pulse model** | `src/tnfr/riemann/nodal_pulse.py` | Finite spectral sums with assigned logarithmic frequencies; separate from native nodal dynamics or a derived NFR pulse |
 | **Prime-ladder Hamiltonian** | `src/tnfr/riemann/prime_ladder_hamiltonian.py` | Canonical $\nu_f$ prime-ladder (P14) |
 | **Canonical constants (repo)** | `src/tnfr/constants/canonical.py` | Repository-wide canonical constant definitions |
+
+The [factorization archive](../applications/factorization-lab/README.md) and
+[advanced primality recovery](../applications/primality-test/archive/README.md)
+preserve retired implementation scope. They are not alternative core owners.
 
 The primitive-root, Dirichlet-character, Gauss-sum and `AdelicOperator`
 helpers in `number_theory.py` accept integer/index values, including NumPy
@@ -990,11 +1028,13 @@ does not change their formulas or make their numerical outputs exact.
 
 | Test area | Location |
 |-----------|----------|
-| Primality validation (10k range) | `applications/primality-test/test_installation.py` |
+| Standalone primality installation checks (selected cases and validation through 100) | `applications/primality-test/test_installation.py` |
 | Arithmetic network construction | `tests/` (number_theory tests) |
-| Factorization spectral decoder | `applications/factorization-lab/tests/test_spectral_paley.py` |
-| Factorization verification | `applications/factorization-lab/tests/test_verification_robustness.py` |
 | Riemann operator spectral | `tests/` (riemann tests) |
+
+Archived application tests are recovery material, not maintained gates. The
+[testing policy](../TESTING.md) selects basic application and independent core
+controls without activating the retired lab.
 
 ---
 
@@ -1008,7 +1048,11 @@ arithmetic reuse does not replace the current joint nodal emergence objective.
 
 - **Sub-$O(\sqrt{n})$ primality**: Can spectral methods on arithmetic networks detect primes faster than trial division?
 - **Sieve optimization**: Can the TNFR pressure landscape guide more efficient sieve algorithms?
-- **Large-number factorization**: Scaling the spectral Paley-Jacobi method to numbers beyond current computational limits.
+
+The factorization lab has no active scaling study. Any future replacement would
+need independent arithmetic correctness and evidence separating spectral
+information from supplied factor statistics and fallback division; the
+residue-graph/CRT proofs do not provide that evidence for the archived pipeline.
 
 ### 13.2 Theoretical
 
@@ -1045,7 +1089,7 @@ arithmetic reuse does not replace the current joint nodal emergence objective.
 - [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) — U1-U6 grammar derivations
 - [STRUCTURAL_OPERATORS.md](STRUCTURAL_OPERATORS.md) — 13 canonical operators with tetrad synergies
 - [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) — Conservation laws
-- [Factorization application guide](../applications/factorization-lab/README.md) — Candidate policies, arithmetic verification, proxies and evaluation provenance
+- [Factorization archive](../applications/factorization-lab/README.md) — Retired candidate policies, known counterexamples and evidence recovery
 - [TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md) — Current arithmetic comparison scope and unresolved RH/Hilbert–Pólya boundary
 - [STRUCTURAL_FIELDS_TETRAD.md](../docs/STRUCTURAL_FIELDS_TETRAD.md) — Structural-field definitions, scale conventions and estimator provenance
 - [GLOSSARY.md](GLOSSARY.md) — Operational definitions

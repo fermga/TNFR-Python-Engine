@@ -72,10 +72,6 @@ class _ExecutionProposal:
 _GraphSnapshot = GraphTransactionSnapshot
 
 
-def _checked_sum(left: float, right: float, label: str) -> float:
-    return finite_real(left + right, operator=_OPERATOR, label=label)
-
-
 def _checked_product(left: float, right: float, label: str) -> float:
     return finite_real(left * right, operator=_OPERATOR, label=label)
 

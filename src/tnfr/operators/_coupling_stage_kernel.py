@@ -19,7 +19,7 @@ from fractions import Fraction
 from numbers import Integral
 from typing import Any
 
-from .._exact_time import finite_represented_real
+from .._exact_time import bounded_represented_real, finite_represented_real
 from ..alias import get_attr
 from ..constants import DEFAULTS
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_THETA, ALIAS_VF
@@ -156,13 +156,15 @@ def _nonnegative_real(value: Any, label: str) -> float:
 
 
 def _unit_interval(value: Any, label: str) -> float:
-    resolved = _finite_real(value, label)
-    if not 0.0 <= resolved <= 1.0:
+    try:
+        return bounded_represented_real(
+            value, f"Coupling {label}", minimum=0, maximum=1
+        )[0]
+    except (OverflowError, TypeError, ValueError) as exc:
         raise TNFRValueError(
-            f"Coupling {label} must lie in [0, 1]",
-            context={"operator": "Coupling", "field": label, "value": resolved},
-        )
-    return resolved
+            str(exc),
+            context={"operator": "Coupling", "field": label, "value": repr(value)},
+        ) from exc
 
 
 def _raw_alias(

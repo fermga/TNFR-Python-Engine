@@ -8,7 +8,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 TARGETS = (
-    "build",
+    # build/ also retains frozen research programs and local preparations.
+    # Only these declared documentation/package outputs are disposable.
+    "build/docs-source",
+    "build/lib",
     "dist",
     "site",
     "htmlcov",

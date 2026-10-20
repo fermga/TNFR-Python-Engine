@@ -18,6 +18,7 @@ from ..types import BEPIProtocol, require_finite_real_scalar_epi
 __all__ = (
     "MutationThresholdSample",
     "MutationRuntimeGate",
+    "mutation_trigger_certificate",
     "mutation_threshold_sample",
     "validate_mutation_capacity",
     "validate_mutation_runtime_gate",
@@ -72,14 +73,15 @@ def _first_alias(
     return default
 
 
-def _certificate(
+def mutation_trigger_certificate(
     node_data: Mapping[str, Any], graph_data: Mapping[str, Any]
 ) -> MutationTriggerCertificate:
     """Build the shared pure certificate from runtime mappings."""
 
     physical_history = node_data.get("epi_time_history")
-    current_epi = _first_alias(node_data, ALIAS_EPI, None)
-    if current_epi is None:
+    missing_epi = object()
+    current_epi = _first_alias(node_data, ALIAS_EPI, missing_epi)
+    if current_epi is missing_epi:
         # Legacy threshold-only callers historically needed only the sampled
         # values.  Timestamped evidence, by contrast, must be fresh against an
         # actual current EPI endpoint.
@@ -128,7 +130,7 @@ def mutation_threshold_sample(
     declared ``dEPI/dt > xi`` trigger.
     """
 
-    certificate = _certificate(node_data, graph_data)
+    certificate = mutation_trigger_certificate(node_data, graph_data)
     evidence = certificate.evidence
     if evidence is None or not certificate.evidence_valid:
         reason = certificate.reason or "invalid_history"

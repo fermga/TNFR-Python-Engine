@@ -18,7 +18,7 @@ from ..rng import validate_graph_seed
 from ..types import Glyph
 from ._argument_validation import finite_real, nonnegative_integer, strict_bool
 from ._thol_config import resolve_thol_bifurcation_threshold
-from .grammar_debt import require_replayable_history
+from .grammar_debt import require_grammar_state
 from .grammar_dynamics import validate_candidate
 from .network_stage import (
     TWO_PHASE_JACOBI,
@@ -207,7 +207,7 @@ def _observe(snapshot: Any, options: dict[str, Any]) -> SelfOrganizationEligibil
         grammar_violations = ()
         grammar_error = None
         try:
-            require_replayable_history(snapshot.nodes[node].get("glyph_history"))
+            require_grammar_state(snapshot.nodes[node])
             # Runtime grammar's own recent window is distinct from trace retention.
             grammar = validate_candidate(snapshot, node, Glyph.THOL)
             grammar_allowed = grammar.allowed

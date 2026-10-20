@@ -4,18 +4,17 @@ The source receipt is a provenance association, not execution authentication
 or physical evidence. No bound, assessor, driver or trajectory is imported.
 """
 
-from fractions import Fraction as Q
 import hashlib
+import subprocess
+from fractions import Fraction as Q
 from math import prod
 from pathlib import Path
-import subprocess
 
 import pytest
 
 from tnfr.mathematics._rational_interval import I, cos, pi_interval, sin, sqrt
 from tnfr.research.artifact_io import decode_exact_tree
 from tnfr.utils.io import json_loads
-
 
 ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE = ROOT / "docs/assets/organized_robust_current"

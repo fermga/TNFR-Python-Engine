@@ -22,7 +22,6 @@ from tnfr.mathematics._exact_linear_algebra import (
 from tnfr.mathematics._rational_interval import I, pi_interval
 from tnfr.physics import _organized_electrical_identification as owner
 
-
 PAIRS = tuple((a, b) for a in range(6) for b in range(a + 1, 6))
 WHEEL = tuple((a, b) for a, b in PAIRS if b == 5 or (a - b) % 5 in (1, 4))
 

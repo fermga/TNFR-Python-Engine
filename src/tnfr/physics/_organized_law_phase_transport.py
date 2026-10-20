@@ -14,8 +14,8 @@ from typing import Any
 
 from ._organized_computable_prediction import (
     _READING_ERROR,
-    _ForecastStage,
     _forecast_stages,
+    _ForecastStage,
 )
 from ._organized_law_observation import (
     _admit_carrier_stage,

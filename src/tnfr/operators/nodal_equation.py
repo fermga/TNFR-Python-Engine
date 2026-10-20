@@ -21,11 +21,12 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph
 
+from .._exact_time import finite_represented_real
 from ..alias import set_attr
 from ..config.defaults_core import CORE_DEFAULTS
 from ..constants.aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 from ..errors import TNFRValueError
-from ..types import BEPIProtocol, scalarize_epi
+from ..types import require_finite_real_scalar_epi
 
 __all__ = [
     "NodalEquationViolation",
@@ -115,9 +116,9 @@ def compute_expected_depi_dt(G: TNFRGraph, node: NodeId) -> float:
 
     Notes
     -----
-    The structural frequency (νf) is in Hz_str (structural hertz) units,
-    and ΔNFR is the dimensionless internal reorganization operator.
-    Their product gives the rate of structural reorganization.
+    The declared structural clock and capacity units determine pressure units:
+    ``[DeltaNFR] = [EPI] / ([nu_f] [time])``. Their product is a form rate;
+    this prediction supplies neither a laboratory clock nor observed history.
     """
     vf = _get_node_attr(G, node, ALIAS_VF)
     dnfr = _get_node_attr(G, node, ALIAS_DNFR)
@@ -221,8 +222,13 @@ def _validate_held_nodal_step(
         if not isinstance(flag, bool):
             raise TNFRValueError(f"{label} must be a boolean.")
 
-    measured = _finite_real_scalar((after - before) / step, "measured rate")
+    measured_delta = after - before
+    measured = _finite_real_scalar(measured_delta / step, "measured rate")
     expected = _finite_real_scalar(capacity * pressure, "expected rate")
+    if measured_delta != 0.0 and measured == 0.0:
+        raise TNFRValueError("measured rate is nonzero but underflows to zero.")
+    if capacity != 0.0 and pressure != 0.0 and expected == 0.0:
+        raise TNFRValueError("expected rate is nonzero but underflows to zero.")
     theoretical = _finite_real_scalar(
         euler_update(before, step, expected), "Euler EPI proposal"
     )
@@ -423,7 +429,7 @@ def observe_structural_acceleration(
     canonical legacy history precedes its private compatibility counterpart.
     Missing or short history returns explicit unavailability; its samples are
     not validated as a three-point window. Malformed complete windows, stale
-    physical endpoints and nonfinite derived intervals/rates raise
+    physical endpoints and nonfinite or underflowed derived intervals/rates raise
     :class:`TNFRValueError`, without a fallback to another source.
 
     Physical values use ``2*(s2-s1)/(dt1+dt2)``; legacy values use unit operator
@@ -491,11 +497,22 @@ def observe_structural_acceleration(
                 "epi_time_history final EPI must match the current nodal state.",
                 context={"history_endpoint": epi2, "current_epi": current_epi},
             )
-        slope1 = (epi1 - epi0) / dt1
-        slope2 = (epi2 - epi1) / dt2
+        delta1, delta2 = epi1 - epi0, epi2 - epi1
+        slope1 = delta1 / dt1
+        slope2 = delta2 / dt2
         if not math.isfinite(slope1) or not math.isfinite(slope2):
             raise TNFRValueError("epi_time_history secant rates must remain finite.")
-        d2epi = 2.0 * (slope2 - slope1) / span
+        if (delta1 != 0.0 and slope1 == 0.0) or (delta2 != 0.0 and slope2 == 0.0):
+            raise TNFRValueError(
+                "epi_time_history nonzero secant rates must not underflow to zero."
+            )
+        numerator = 2.0 * (slope2 - slope1)
+        d2epi = numerator / span
+        if numerator != 0.0 and d2epi == 0.0:
+            raise TNFRValueError(
+                "epi_time_history nonzero structural acceleration "
+                "must not underflow to zero."
+            )
         observed_samples = timed
     else:
         observed_samples = tuple(
@@ -531,35 +548,20 @@ def _first_present(data: Mapping[str, Any], aliases: tuple[str, ...]) -> Any:
 
 
 def _canonical_epi_scalar(value: Any, label: str) -> float:
-    serialized_bepi = isinstance(value, Mapping) and {
-        "continuous",
-        "discrete",
-        "grid",
-    }.issubset(value)
-    try:
-        if isinstance(value, BEPIProtocol) or serialized_bepi:
-            result = scalarize_epi(value)
-        elif isinstance(value, bool) or not isinstance(value, Real):
-            raise TypeError
-        else:
-            result = float(value)
-    except (OverflowError, TypeError, ValueError) as exc:
-        raise TNFRValueError(f"{label} must be a finite real scalar.") from exc
-    if not math.isfinite(result):
-        raise TNFRValueError(f"{label} must be finite.")
-    return result
+    if isinstance(value, Real):
+        return _finite_real_scalar(value, label)
+    return require_finite_real_scalar_epi(value, label)
 
 
 def _finite_real_scalar(value: Any, label: str) -> float:
     try:
-        if isinstance(value, bool) or not isinstance(value, Real):
-            raise TypeError
-        result = float(value)
-    except (OverflowError, TypeError, ValueError) as exc:
+        result = finite_represented_real(value, label)[0]
+    except TypeError as exc:
         raise TNFRValueError(f"{label} must be a finite real scalar.") from exc
-    if not math.isfinite(result):
-        raise TNFRValueError(f"{label} must be finite.")
-    return result
+    except ValueError as exc:
+        raise TNFRValueError(str(exc)) from exc
+    # Keep the original signed-zero sample after shared scalar admission.
+    return math.copysign(0.0, float(value)) if result == 0.0 else result
 
 
 def _history_length_or_error(history: Any, source: str) -> int:

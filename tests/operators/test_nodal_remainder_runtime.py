@@ -162,12 +162,18 @@ def test_mutation_uses_visible_secants_not_invisible_carried_area():
     assert not sample.crossed
 
 
-def test_actual_um_il_sha_preserve_nonzero_carry_and_visible_epi():
+@pytest.mark.parametrize(
+    "names",
+    [
+        ("coupling", "coherence", "silence"),
+        ("coupling", "coupling", "silence"),
+    ],
+)
+def test_actual_core_words_preserve_nonzero_carry_and_visible_epi(names):
     graph = _graph()
     initial_flow = _run(graph)
     initial = initial_flow.final_binding.state
     assert any(initial.remainder)
-    names = ("coupling", "coherence", "silence")
     result = runtime.execute_nodal_remainder_event_schedule(
         graph, _schedule(graph, names)
     )
@@ -249,7 +255,7 @@ def test_stale_persistent_binding_is_rejected_without_reset(change):
         ("reception", "silence"),
         ("emission", "silence"),
         ("recursivity", "silence"),
-        ("coupling", "coupling", "silence"),
+        ("coupling",),
     ),
 )
 def test_unsupported_or_grammar_refused_word_does_not_attach_carry(names):

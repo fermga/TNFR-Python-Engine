@@ -1,8 +1,9 @@
 """Full-state sine symmetries, exact reductions and winding obstructions.
 
-The supplied permutation is checked against the entire unit support, held
-capacity and exact initial form/phase lifts. A graph automorphism alone is not
-a symmetry of a prepared trajectory. No group or trajectory is enumerated.
+The supplied permutation is checked against complete support, held capacity
+and exact initial form/phase lifts. The separate weighted-support reader also
+retains every conductance and cell multiplicity. A graph automorphism alone
+is not a symmetry of a prepared trajectory. No group or trajectory is enumerated.
 """
 
 from __future__ import annotations
@@ -30,6 +31,8 @@ __all__ = (
     "SineInvolutionReduction",
     "SineInvolutionState",
     "assess_sine_involution_reduction",
+    "SineSupportInvolution",
+    "assess_sine_support_involution",
 )
 
 
@@ -458,3 +461,206 @@ def _evaluate_involution_state(report, form_coordinates, phase_coordinates):
         phase_rate_reconstruction_residual_bounds=residuals[1],
         full_row_equality_certified=True,
     )
+
+
+@dataclass(frozen=True)
+class SineSupportInvolution:
+    """Exact positive fixed-point reduction of the weighted conservative law.
+
+    Cell counts and conductance sums are per original member, not quotient
+    degrees or effective weights of a new simple graph. Membership concerns
+    the captured primitive state; independent surrounding errors need not
+    belong to this invariant family.
+    """
+
+    source: Any
+    permutation_indices: tuple[int, ...]
+    orbits: tuple[tuple[int, ...], ...]
+    representative_indices: tuple[int, ...]
+    node_orbits: tuple[int, ...]
+    multiplicities: tuple[int, ...]
+    reconstruction_matrix: tuple[tuple[Q, ...], ...]
+    bare_neighbor_counts: tuple[tuple[int, ...], ...]
+    conductance_sums: tuple[tuple[Q, ...], ...]
+    reduced_degrees: tuple[int, ...]
+    reduced_capacity: tuple[Q, ...]
+    source_form_coordinates: tuple[Q, ...]
+    source_phase_coordinates: tuple[Q, ...]
+    support_automorphism: bool
+    conductance_preserved: bool
+    capacity_preserved: bool
+    source_membership_certified: bool
+    family_invariance_certified: bool
+    source_trajectory_reduction_certified: bool
+    cell_reciprocity_certified: bool
+    reasons: tuple[str, ...]
+    clock: str = "original_structural_t"
+    scope: tuple[str, ...] = (
+        "complete_weighted_form_bare_phase_conservative_law_readmitted",
+        "positive_fixed_points_of_one_exact_involutive_permutation",
+        "every_support_edge_conductance_capacity_and_initial_phase_lift_retained",
+        "source_membership_is_not_membership_of_an_independent_uncertainty_box",
+        "per_member_counts_include_internal_and_zero_conductance_bare_edges",
+        "cell_multiplicities_restore_fine_storage_means_and_identity_observations",
+        "smooth_uniqueness_proves_continuous_invariance_not_event_preservation",
+        "no_event_selector_trajectory_or_physical_identification",
+    )
+
+    def to_dict(self):
+        """Rebuild consumed fields; a report does not authenticate its source."""
+        from ..sdk.relational_reports import _project
+
+        rebuilt = assess_sine_support_involution(
+            self.source, permutation_indices=self.permutation_indices
+        )
+        _validate_comparison_labels(rebuilt.source)
+        return {
+            "schema": "tnfr.sine-support-involution.v1",
+            "report": _project(rebuilt),
+        }
+
+
+def assess_sine_support_involution(source, *, permutation_indices):
+    """Admit an exact weighted-support fixed family without projecting state.
+
+    Noninvariant support, weights or capacities return explicit unavailable
+    flags. An invariant family and a source belonging to it are separate
+    conclusions. Malformed primitives or a noninvolutive permutation reject.
+    """
+    from .relational_sine_support import _rebuild_sine_support_comparison
+
+    source = _rebuild_sine_support_comparison(source)
+    size = len(source.nodes)
+    raw = _ordered(permutation_indices, "permutation_indices", limit=size + 1)
+    if any(type(value) is not int for value in raw):
+        raise ValueError("permutation_indices must contain nonboolean integer indices")
+    permutation = _validated_bijection(
+        dict(enumerate(raw)), {i: i for i in range(size)}
+    )
+    if any(permutation[permutation[i]] != i for i in range(size)):
+        raise ValueError("permutation_indices must define an involution")
+    orbits = tuple(
+        (i,) if i == j else (i, j) for i, j in enumerate(permutation) if i <= j
+    )
+    representatives = tuple(orbit[0] for orbit in orbits)
+    membership = {node: block for block, orbit in enumerate(orbits) for node in orbit}
+    node_orbits = tuple(membership[i] for i in range(size))
+    multiplicities = tuple(map(len, orbits))
+    positions = {node: i for i, node in enumerate(source.nodes)}
+    weighted = {
+        tuple(sorted((positions[left], positions[right]))): weight
+        for (left, right), weight in zip(source.edges, source.conductances)
+    }
+    mapped = {
+        tuple(sorted((permutation[i], permutation[j]))): weight
+        for (i, j), weight in weighted.items()
+    }
+    support_preserved = mapped.keys() == weighted.keys()
+    conductance_preserved = support_preserved and mapped == weighted
+    capacity_preserved = all(
+        source.capacity[i] == source.capacity[j] for i, j in enumerate(permutation)
+    )
+    member = all(
+        source.epi[i] == source.epi[j] and source.phase[i] == source.phase[j]
+        for i, j in enumerate(permutation)
+    )
+    counts = [[0] * len(orbits) for _ in range(size)]
+    sums = [[Q(0)] * len(orbits) for _ in range(size)]
+    for (i, j), weight in weighted.items():
+        counts[i][membership[j]] += 1
+        counts[j][membership[i]] += 1
+        sums[i][membership[j]] += weight
+        sums[j][membership[i]] += weight
+    reduced_counts = tuple(tuple(counts[i]) for i in representatives)
+    reduced_sums = tuple(tuple(sums[i]) for i in representatives)
+    equitable = all(
+        counts[i] == counts[representatives[membership[i]]]
+        and sums[i] == sums[representatives[membership[i]]]
+        for i in range(size)
+    )
+    reciprocal = equitable and all(
+        multiplicities[a] * reduced_counts[a][b]
+        == multiplicities[b] * reduced_counts[b][a]
+        and multiplicities[a] * reduced_sums[a][b]
+        == multiplicities[b] * reduced_sums[b][a]
+        for a in range(len(orbits))
+        for b in range(len(orbits))
+    )
+    invariant = (
+        support_preserved
+        and conductance_preserved
+        and capacity_preserved
+        and reciprocal
+    )
+    reasons = tuple(
+        reason
+        for passed, reason in (
+            (support_preserved, "full_support_not_preserved"),
+            (conductance_preserved, "full_conductance_not_preserved"),
+            (capacity_preserved, "held_capacity_not_preserved"),
+            (reciprocal, "per_member_cell_reciprocity_not_certified"),
+        )
+        if not passed
+    )
+    return SineSupportInvolution(
+        source=source,
+        permutation_indices=permutation,
+        orbits=orbits,
+        representative_indices=representatives,
+        node_orbits=node_orbits,
+        multiplicities=multiplicities,
+        reconstruction_matrix=tuple(
+            tuple(Q(membership[i] == a) for a in range(len(orbits)))
+            for i in range(size)
+        ),
+        bare_neighbor_counts=reduced_counts,
+        conductance_sums=reduced_sums,
+        reduced_degrees=tuple(source.degrees[i] for i in representatives),
+        reduced_capacity=tuple(source.capacity[i] for i in representatives),
+        source_form_coordinates=tuple(source.epi[i] for i in representatives),
+        source_phase_coordinates=tuple(source.phase[i] for i in representatives),
+        support_automorphism=support_preserved,
+        conductance_preserved=conductance_preserved,
+        capacity_preserved=capacity_preserved,
+        source_membership_certified=member,
+        family_invariance_certified=invariant,
+        source_trajectory_reduction_certified=invariant and member,
+        cell_reciprocity_certified=reciprocal,
+        reasons=reasons,
+    )
+
+
+def _support_involution_field(report):
+    """Prepare an admitted interval/jet field from rebuilt primitive evidence.
+
+    This supplies the invariant family's field, even if the captured source
+    is outside it. A trajectory consumer must separately require membership
+    and retain multiplicities in every fine-state observation.
+    """
+    from ._sine_flow import _held_sine_neighbor_field
+
+    if type(report) is not SineSupportInvolution:
+        raise TypeError("a SineSupportInvolution is required")
+    reduction = assess_sine_support_involution(
+        report.source, permutation_indices=report.permutation_indices
+    )
+    if not reduction.family_invariance_certified:
+        raise ValueError("a certified weighted invariant family is required")
+    rows = tuple(
+        tuple(
+            (j, count, weight)
+            for j, (count, weight) in enumerate(zip(counts, sums))
+            if count
+        )
+        for counts, sums in zip(
+            reduction.bare_neighbor_counts, reduction.conductance_sums
+        )
+    )
+    flow = _held_sine_neighbor_field(
+        reduction.source.reference_model,
+        reduction.reduced_degrees,
+        reduction.reduced_capacity,
+        rows,
+        reuse_pair_sines=False,
+    )
+    return reduction, flow

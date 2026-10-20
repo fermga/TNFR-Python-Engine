@@ -1,0 +1,43 @@
+{
+  "schema": "tnfr.maintained-parent-thol-protocol.v1",
+  "status": "fixed_before_reserved_event",
+  "maximum_reserved_evaluations": 1,
+  "source": "docs/assets/local_capacity_history/response.json:endpoint",
+  "preparation": "Restore the retained endpoint and execution context; re-admit the independently certified three-sample history and unchanged primitive law. Do not replay VAL or numerical integration.",
+  "parent": 2,
+  "structural_time": "7+2^-19",
+  "clock": "Original structural clock; zero-duration THOL jump; no laboratory-unit identification",
+  "event": "One canonical atomic SelfOrganization stage, target tuple (2,), step 1 of validated VAL,THOL,SHA context, core grammar, rejection=raise, strict unchanged policies",
+  "wall_metadata": "Deterministic stage metadata timestamp 2030-01-02T03:04:06+00:00, not the structural clock or execution receipt",
+  "threshold": "Unchanged represented default 0.1; actual observed acceleration 0.2513427734375 with the retained independent lower certificate",
+  "configuration": "All retained graph configuration, capacities, conductances, node/neighbor order and actual aliases; no THOL overrides, no new support or supplied hierarchy",
+  "prediction": "Independent interval metabolic construction and exact represented coefficient arithmetic in prediction.json, frozen before any THOL proposal",
+  "discriminator": "Exactly one isolated child 2_sub_0 with predicted amplitude/capacity/phase, correct hierarchy, unchanged old continuous coordinates and support, and an admitted explicit successor",
+  "numerical_budget": {
+    "arithmetic": "binary64 event; independent dyadic128 rational interval trigonometry and square root",
+    "child_amplitude_and_signal_allowance": "2^-44 absolute around independently bounded ideal operations using represented default coefficients",
+    "parent_raw_pressure_allowance": "2^-44 absolute",
+    "old_primary_support_clock_history": "exact represented equality",
+    "fresh_pressure": "Reuse the previous refined same-law pressure evaluator with its unchanged 2^-46 budget on the old component",
+    "newborn_capacity_phase": "Exact represented product and unchanged in-range phase",
+    "storage_work": "Exact zero only after checking unchanged edge arguments; no independent interval subtraction is reclassified as equality"
+  },
+  "successor_law": {
+    "nontrivial_components": "xdot_i=nu_i sum_j sin(theta_j-theta_i)/(pi d_i); thetadot_i=nu_i sum_j W_ij(x_i-x_j)/(pi d_i)",
+    "isolates": "Explicit p=xdot=thetadot=0; held form, phase and capacity",
+    "support_capacity": "Held after event; original weights and old capacities; newborn capacity is the actual admitted THOL output",
+    "forcing": "No Gamma, forcing or continuous loss",
+    "storage": "Edge-only H; no intrinsic isolated-node storage",
+    "refresh": "Capture raw post-event graph before constitutive refresh; then refresh each component and explicitly assign isolate pressure zero",
+    "dispatch": "Detached comparison and explicit callback, no new native flow dispatch"
+  },
+  "controls": [
+    "Connected-only whole-graph reader must reject the actual isolated successor",
+    "Old component restriction must preserve both complete continuous rows and its own weighted means",
+    "Child temporal observation remains unavailable; parent record is retained as pre-birth evidence",
+    "U2 debt changes from one to zero; full-word closure remains unexecuted",
+    "No global positive inverse-capacity mean, numerical U5 or cross-birth U6 certificate is supplied"
+  ],
+  "stop": "After this single event, record success or the precise rejection. No UM, SHA, new response trajectory, retuned policy or retry.",
+  "scope": "Conditional mathematical/software event on one supplied preparation and occurrence; no autonomous selection, coupled child dynamics, enlarged-system maintenance or physical identification"
+}

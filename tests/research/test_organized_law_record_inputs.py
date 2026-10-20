@@ -1,14 +1,13 @@
 """Read-only moment provenance and final instrument wiring controls."""
 
 import importlib.util
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import pytest
 
 from tnfr.physics import _organized_law_contrast_kernels as producer
 from tnfr.research import _organized_law_record_inputs as inputs
-
 
 ROOT = Path(__file__).resolve().parents[2]
 

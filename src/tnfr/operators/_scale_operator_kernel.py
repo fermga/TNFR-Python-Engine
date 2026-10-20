@@ -2,25 +2,27 @@
 
 Expansion and Contraction share one target-local numerical structure.  This
 module materializes that structure without mutating a node, graph, cache, log,
-or history.  The ordinary single-node glyph dispatcher and future all-target
-stages can therefore consume the same binary64 proposal.
+or history.  The ordinary single-node glyph dispatcher and all-target
+stages consume the same binary64 proposal.
 
 For ``NUL_scale = f`` in ``(0, 1)``, the kernel applies
 ``nu_f' = f * nu_f`` and ``DeltaNFR' = DeltaNFR / f``.  Their ideal-real
-product is unchanged, so Contraction redistributes the two nodal-equation
-levers while preserving the instantaneous drive.  The reported residual
-records the corresponding binary64 coefficient identity.
+stored-pressure product is unchanged.  This does not preserve a form rate
+after constitutive pressure refresh.  The reported residual records the
+corresponding binary64 coefficient identity.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Literal
+from typing import Any
 
 from .._exact_time import finite_represented_real
-from ..dynamics.structural_clip import structural_clip
+from ..config.defaults_core import CORE_DEFAULTS
+from ..dynamics.structural_clip import resolve_clip_policy, structural_clip
 from ..errors import TNFRValueError
 from ..types import Glyph
+from ._argument_validation import strict_bool
 from ._epi_domain import require_real_scalar_epi
 from .factor_contracts import GlyphFactorValidationError, validate_glyph_factor
 
@@ -156,6 +158,7 @@ def propose_scale_operator(
     epi_max: Any = 1.0,
     epsilon: Any = 1e-12,
     clip_mode: Any = "hard",
+    clip_soft_k: Any = CORE_DEFAULTS["CLIP_SOFT_K"],
 ) -> ScaleOperatorProposal:
     """Build the complete target-local VAL or NUL proposal without writes.
 
@@ -167,6 +170,9 @@ def propose_scale_operator(
     if glyph not in (Glyph.VAL, Glyph.NUL):
         raise ValueError("scale proposals support VAL and NUL only")
 
+    edge_aware_enabled = strict_bool(
+        edge_aware_enabled, operator=glyph.value, label="EDGE_AWARE_ENABLED"
+    )
     factor_key = "VAL_scale" if glyph is Glyph.VAL else "NUL_scale"
     resolved_factor = validate_glyph_factor(factor_key, factor)
     resolved_vf_before = _finite_scalar(vf_before, "nu_f before scale operator")
@@ -219,10 +225,22 @@ def propose_scale_operator(
         resolved_epsilon = _finite_scalar(epsilon, "EDGE_AWARE_EPSILON")
         if resolved_epsilon <= 0.0:
             raise TNFRValueError("EDGE_AWARE_EPSILON must be positive")
-        resolved_epi_min = _finite_scalar(epi_min, "EPI_MIN")
-        resolved_epi_max = _finite_scalar(epi_max, "EPI_MAX")
-        if resolved_epi_min > resolved_epi_max:
-            raise TNFRValueError("EPI_MIN must not exceed EPI_MAX")
+        try:
+            (
+                resolved_epi_min,
+                resolved_epi_max,
+                resolved_clip_mode,
+                resolved_soft_k,
+            ) = resolve_clip_policy(
+                {
+                    "EPI_MIN": epi_min,
+                    "EPI_MAX": epi_max,
+                    "CLIP_MODE": clip_mode,
+                    "CLIP_SOFT_K": clip_soft_k,
+                }
+            )
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise TNFRValueError(f"Invalid scale EPI boundary policy: {exc}") from exc
         resolved_epi_before = require_real_scalar_epi(
             epi_before,
             operator="Expansion" if glyph is Glyph.VAL else "Contraction",
@@ -255,15 +273,13 @@ def propose_scale_operator(
             resolved_epi_before * effective_epi_scale,
             f"{glyph.value} EPI proposal",
         )
-        resolved_clip_mode: Literal["hard", "soft"] = (
-            clip_mode if clip_mode in ("hard", "soft") else "hard"
-        )
         epi_after = _finite_scalar(
             structural_clip(
                 raw_epi_after,
                 lo=resolved_epi_min,
                 hi=resolved_epi_max,
                 mode=resolved_clip_mode,
+                k=resolved_soft_k,
                 record_stats=False,
             ),
             f"{glyph.value} bounded EPI proposal",

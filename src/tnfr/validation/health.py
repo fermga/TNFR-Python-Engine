@@ -1,4 +1,4 @@
-"""Structural health assessment utilities (Phase 3).
+"""Configured structural-health advisories from shared observations.
 
 Provides a concise health summary built on the enhanced validation
 aggregator. It does not advance structural state; shared observations may
@@ -17,9 +17,9 @@ compute_structural_health(G, sequence=None, baseline_phi_s=None,
 
 Return dict keys:
   risk_level            : low | elevated | critical
-  status                : valid | invalid (grammar)
+  status                : shared validation status
   thresholds_exceeded   : mapping of threshold flags
-  recommended_actions   : list of action mnemonics
+  recommended_actions   : descriptive suggestions, not executable operator tokens
   notes                 : explanatory strings
   field_metrics_subset  : selected scalar metrics for quick display
 
@@ -33,10 +33,12 @@ If |K_φ| flagged            -> ['local_inspection','coherence_cluster']
 If ξ_C critical             -> ['checkpoint_state','controlled_silence']
 If ξ_C watch only           -> ['monitor_scaling']
 
-Physics Traceability
---------------------
-All heuristics escalate stabilizing operators (IL, THOL) or coupling
-phase checks (UM prerequisites) aligned with U2/U3.
+Interpretation
+--------------
+The recommendations are policy labels derived from the declared thresholds.
+They neither execute operators nor guarantee improved coherence, future
+stability or successful live admission. Missing observations retain the
+aggregator's availability and threshold-reason fields.
 """
 
 from __future__ import annotations

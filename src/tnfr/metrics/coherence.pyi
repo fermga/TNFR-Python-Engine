@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
-from types import ModuleType
 from typing import Any
 from typing import TypeAlias as TypeAlias
 
@@ -74,14 +73,24 @@ PhaseSyncWeights: TypeAlias = (
     | FloatMatrix
 )
 SimilarityComponents = tuple[float, float, float, float]
-VectorizedComponents: TypeAlias
-ScalarOrArray: TypeAlias
+VectorizedComponents: TypeAlias = tuple[
+    FloatMatrix, FloatMatrix, FloatMatrix, FloatMatrix
+]
+ScalarOrArray: TypeAlias = float | FloatArray
 
-MetricValue: TypeAlias
+MetricValue: TypeAlias = CoherenceMetric
 MetricProvider = Callable[[], MetricValue]
-MetricRecord: TypeAlias
+MetricRecord: TypeAlias = tuple[MetricValue | MetricProvider, str]
 
 def _is_sparse_affinity_payload(value: Any) -> bool: ...
+def _partition_sparse_phase_sync_weights(
+    weights: PhaseSyncWeights, size: int
+) -> list[CoherenceMatrixSparse] | None: ...
+def _all_local_phase_sync_weighted(
+    G: TNFRGraph,
+    nodes_order: Sequence[NodeId],
+    weights: PhaseSyncWeights,
+) -> dict[NodeId, float]: ...
 def compute_wij_phase_epi_vf_si(
     inputs: SimilarityInputs,
     i: int | None = None,
@@ -92,7 +101,6 @@ def compute_wij_phase_epi_vf_si(
     nodes: Sequence[NodeId] | None = None,
     epi_range: float = 1.0,
     vf_range: float = 1.0,
-    np: ModuleType | None = None,
 ) -> SimilarityComponents | VectorizedComponents: ...
 def coherence_matrix(
     G: TNFRGraph,

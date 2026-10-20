@@ -2,6 +2,7 @@
 
 from argparse import Namespace
 from copy import deepcopy
+from fractions import Fraction
 
 import networkx as nx
 import pytest
@@ -36,6 +37,7 @@ def _graph():
         {"fraction": float("inf")},
         {"fraction": -0.1},
         {"fraction": 1.1},
+        {"fraction": Fraction(1) + Fraction(1, 2**100)},
     ],
 )
 def test_invalid_policy_rejects_before_step(monkeypatch, override):

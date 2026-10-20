@@ -44,7 +44,7 @@ def apply_glyph_with_grammar(
     later structural operation does not roll back earlier accepted targets.
     """
     from . import _resolve_glyph_operation, _validated_execution_window
-    from .grammar_debt import require_replayable_history
+    from .grammar_debt import require_grammar_state
 
     glyph, _ = _resolve_glyph_operation(glyph)
     window = _validated_execution_window(G, window)
@@ -66,7 +66,7 @@ def apply_glyph_with_grammar(
     # Invalid targets/histories must not leave an earlier target modified.
     # Runtime failures after valid operations are not a batch transaction.
     for node in nodes_iter:
-        require_replayable_history(G.nodes[node].get("glyph_history"))
+        require_grammar_state(G.nodes[node])
 
     for node in nodes_iter:
         selected_glyph = enforce_canonical_grammar(G, node, glyph)
@@ -161,9 +161,11 @@ def _recognize_applied_patterns(G, node) -> None:
 
 
 def on_applied_glyph(G, n, applied: Any) -> None:  # G: TNFRGraph, n: NodeId
-    """Record glyph application in node history.
+    """Record one supplied application without executing an operator.
 
-    Minimal stub for tracking operator sequences.
+    Preserve existing trace retention and update shared lifetime bookkeeping.
+    The caller supplies the occurrence and is responsible for recording it
+    exactly once; runtime-recorded actions must not be recorded again here.
 
     Parameters
     ----------
@@ -174,22 +176,9 @@ def on_applied_glyph(G, n, applied: Any) -> None:  # G: TNFRGraph, n: NodeId
     applied : Any
         Applied glyph or operator name
     """
-    from .grammar_debt import (
-        PRIOR_COHERENCE_KEY,
-        U2_DEBT_KEY,
-        advance_debt,
-        advance_prior_coherence,
-        node_debt,
-        node_has_prior_coherence,
-    )
+    from ..glyph_history import record_glyph_occurrence
 
-    debt = node_debt(G.nodes[n])
-    prior_coherence = node_has_prior_coherence(G.nodes[n])
-    if "glyph_history" not in G.nodes[n]:
-        G.nodes[n]["glyph_history"] = []
-    G.nodes[n]["glyph_history"].append(applied)
-    G.nodes[n][U2_DEBT_KEY] = advance_debt(debt, applied)
-    G.nodes[n][PRIOR_COHERENCE_KEY] = advance_prior_coherence(prior_coherence, applied)
+    record_glyph_occurrence(G.nodes[n], applied)
 
 
 def enforce_canonical_grammar(

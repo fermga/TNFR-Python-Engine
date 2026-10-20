@@ -37,7 +37,6 @@ from tnfr.dynamics.fused_dnfr import compute_fused_gradients_symmetric  # noqa: 
 from tnfr.research.core_manifests import current_git_source_provenance  # noqa: E402
 from tnfr.sdk import Network, diagnose_network  # noqa: E402
 
-
 SIZE = 8
 EPI_WEIGHT = PHASE_WEIGHT = 0.5
 _NODES = np.arange(SIZE)

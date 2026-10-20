@@ -3,8 +3,8 @@
 <a id="organized-compressed-memory-declaration"></a>
 ## Fixed analytical comparison
 
-The [active gate](../research/FIVE_STAGE_EXECUTION_PLAN.md#organized-predictive-compression-admission)
-asks for useful compression with propagated nonlinear error. The
+This comparison specifies useful compression with propagated nonlinear error.
+The
 [inherited-response owner](ORGANIZED_CONSTITUENT_MEMORY.md) derives the exact
 hidden history and excludes exact moment-only closure. Here a finite
 approximation retains five initial interface statistics; their uncertainty

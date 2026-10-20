@@ -12,7 +12,6 @@ from dataclasses import dataclass
 from typing import Any, Iterable
 
 from .._exact_time import finite_represented_real
-from ..constants import EPI_PRIMARY
 from ..constants.aliases import ALIAS_THETA
 from ..utils.numeric import angle_diff
 
@@ -265,32 +264,31 @@ def observe_winding_word(
 ) -> WindingWordObservation:
     """Execute a validated word and record each structural change.
 
-    The shared instance and named-sequence validators run before execution,
-    matching the structural sequence runner's grammar and adjacency checks.
+    The shared instance validator runs before execution under core word policy,
+    matching the structural sequence runner's default admission.
     Every operator receives its actual :class:`ValidatedSequenceStep`; live
     preconditions, including the hard U3 gate for Coupling and Resonance,
     remain authoritative.  A configured DeltaNFR hook is called exactly as in
-    the structural sequence runner. U1a admission uses the target's primary
-    EPI truth value, matching that runner. Cycle U3 margins use the current
-    configured hard graph gate, tightened by UM_MAX_PHASE_DIFF for a Coupling
-    step; cycle-wide admissibility remains separate from a local operator's
+    the structural sequence runner. U1a admission uses the target's actual
+    finite signed EPI, including admitted uniform-real embeddings. Cycle U3
+    margins use the current configured hard graph gate, tightened by
+    UM_MAX_PHASE_DIFF for a Coupling step; cycle-wide admissibility remains
+    separate from a local operator's
     compatible-neighbor check. Topology changes compare node and keyed edge
     identities, including direction, rather than only edge counts.
     """
-    from ..errors import TNFRValueError
+    from ..alias import get_attr
+    from ..constants.aliases import ALIAS_EPI
     from ..operators.grammar_execution import ValidatedSequence
-    from ..validation import validate_sequence
+    from ..types import require_finite_real_scalar_epi
 
     word = tuple(operators)
-    context = {"initial_epi_nonzero": bool(graph.nodes[node].get(EPI_PRIMARY, 0.0))}
+    epi = require_finite_real_scalar_epi(
+        get_attr(graph.nodes[node], ALIAS_EPI, strict=True, conv=lambda value: value),
+        "winding word initial EPI",
+    )
+    context = {"initial_epi_nonzero": epi != 0.0}
     validated = ValidatedSequence(word, context=context)
-    outcome = validate_sequence(validated.names, context=context)
-    if not outcome.passed:
-        message = outcome.summary.get("message", "validation failed")
-        raise TNFRValueError(
-            f"Invalid sequence: {message}",
-            context={"sequence": validated.names, "outcome": outcome.summary},
-        )
     cycle = tuple(cycle_nodes)
     initial = certify_phase_winding(graph, cycle, phase_gate=_runtime_phase_gate(graph))
     if not initial.is_defined:

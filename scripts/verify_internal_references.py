@@ -233,8 +233,13 @@ def _repository_url(target: str) -> str | None:
 
 
 def verify(search_roots: Iterable[str], verbose: bool = False) -> tuple[int, list[str]]:
+    search_roots = tuple(search_roots)
     references = 0
-    failures: list[str] = []
+    failures = [
+        f"missing search root: {value}"
+        for value in search_roots
+        if not (REPO_ROOT / value).resolve().exists()
+    ]
     anchor_cache: dict[Path, set[str]] = {}
 
     for source in _markdown_files(search_roots):

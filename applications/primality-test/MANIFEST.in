@@ -4,7 +4,8 @@ include pyproject.toml
 include test_installation.py
 
 recursive-include examples *.py
-recursive-include benchmarks *.py
+recursive-include tests *.py
+prune archive
 
 # Exclude development files
 exclude .gitignore

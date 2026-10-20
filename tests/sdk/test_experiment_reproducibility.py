@@ -4,6 +4,7 @@ import logging
 import random
 import threading
 from copy import deepcopy
+from fractions import Fraction
 from types import MappingProxyType
 
 import networkx as nx
@@ -100,6 +101,26 @@ def test_coupling_comparison_starts_with_identical_nodes():
     assert triads[0] == triads[1] == triads[2]
 
 
+@pytest.mark.parametrize("endpoint", ["initial_coupling", "final_coupling"])
+@pytest.mark.parametrize("value", [True, Fraction(1, 10**400), -0.1, 1.1])
+def test_coupling_sweep_admits_endpoints_before_creating_networks(
+    monkeypatch, endpoint, value
+):
+    def unexpected_network(*args, **kwargs):
+        pytest.fail("invalid preparation must reject before constructing a network")
+
+    monkeypatch.setattr("tnfr.sdk.builders.TNFRNetwork", unexpected_network)
+    with pytest.raises(ValueError, match="probability"):
+        Builders.phase_transition_study(**{endpoint: value}, steps_per_level=0)
+
+
+@pytest.mark.parametrize("parameter", ["coupling_levels", "steps_per_level"])
+@pytest.mark.parametrize("value", [True, 1.5, -1])
+def test_coupling_sweep_rejects_noninteger_counts(parameter, value):
+    with pytest.raises(ValueError, match=parameter):
+        Builders.phase_transition_study(**{parameter: value})
+
+
 def test_fallback_network_rng_does_not_reseed_or_consume_global_random(monkeypatch):
     monkeypatch.setattr(fluent, "_HAS_NUMPY", False)
     before = random.getstate()
@@ -114,6 +135,143 @@ def test_fallback_rng_streams_are_independent_when_interleaved(monkeypatch):
     TNFRNetwork(config=NetworkConfig(random_seed=9)).add_nodes(3)
     actual.add_nodes(2)
     assert _triad(reference.graph) == _triad(actual.graph)
+
+
+@pytest.mark.parametrize("numpy_available", [True, False])
+@pytest.mark.parametrize("seed", [True, "1", 1.5, -1, 2**32])
+def test_fluent_seed_domain_is_independent_of_numpy_availability(
+    monkeypatch, numpy_available, seed
+):
+    monkeypatch.setattr(fluent, "_HAS_NUMPY", numpy_available)
+    with pytest.raises(ValueError, match="[Ss][Ee][Ee][Dd]"):
+        TNFRNetwork(config=NetworkConfig(random_seed=seed))
+
+
+@pytest.mark.parametrize("seed", [True, "1", 1.5, -1, 2**32])
+def test_per_call_seed_rejects_before_nodes_or_rng_change(seed):
+    network = TNFRNetwork(config=NetworkConfig(random_seed=3)).add_nodes(2)
+    before = deepcopy(dict(network.graph.nodes(data=True)))
+    state = network._rng.get_state()
+    with pytest.raises(ValueError, match="[Ss][Ee][Ee][Dd]"):
+        network.add_nodes(2, random_seed=seed)
+    assert dict(network.graph.nodes(data=True)) == before
+    assert network._rng.get_state()[2:] == state[2:]
+    assert (network._rng.get_state()[1] == state[1]).all()
+
+
+def test_network_owns_configuration_through_clone_and_export(tmp_path):
+    from tnfr.sdk.utils import export_to_json, import_from_json
+
+    source = NetworkConfig(
+        random_seed=3, validate_invariants="false", default_vf_range=[0.5, 0.75]
+    )
+    actual = TNFRNetwork(config=source).add_nodes(2)
+    expected = TNFRNetwork(config=deepcopy(source)).add_nodes(2)
+    source.random_seed = 99
+    source.validate_invariants = True
+    source.default_vf_range = [10, 11]
+    actual.add_nodes(1)
+    expected.add_nodes(1)
+    assert _triad(actual.graph) == _triad(expected.graph)
+    cloned = actual.clone()
+    actual.add_nodes(1)
+    cloned.add_nodes(1)
+    assert _triad(actual.graph) == _triad(cloned.graph)
+    destination = tmp_path / "network.json"
+    export_to_json(actual, destination)
+    saved = import_from_json(destination)
+    assert saved["config"]["random_seed"] == 3
+    assert saved["config"]["validate_invariants"] is False
+    assert saved["config"]["vf_range"] == [0.5, 0.75]
+
+
+def test_mutated_configuration_is_readmitted_when_a_network_consumes_it():
+    config = NetworkConfig(random_seed=3)
+    config.random_seed = True
+    with pytest.raises(ValueError, match="SEED"):
+        TNFRNetwork(config=config)
+
+
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("random_seed", True),
+        ("validate_invariants", "not-a-boolean"),
+        ("auto_stabilization", "not-a-boolean"),
+    ],
+)
+def test_configuration_subclass_cannot_skip_engine_field_admission(field, value):
+    class CustomConfig(NetworkConfig):
+        def __post_init__(self):
+            pass
+
+    source = CustomConfig(**{field: value})
+    with pytest.raises((TypeError, ValueError)):
+        TNFRNetwork(config=source)
+    assert getattr(source, field) == value
+
+
+def test_configuration_subclass_is_copied_and_canonically_normalized():
+    class CustomConfig(NetworkConfig):
+        def __post_init__(self):
+            self.extra = ["retained"]
+
+    source = CustomConfig(
+        random_seed=3, validate_invariants="false", auto_stabilization="false"
+    )
+    network = TNFRNetwork(config=source).add_nodes(2)
+    cloned = network.clone()
+    assert network._config.validate_invariants is False
+    assert network._config.auto_stabilization is False
+    assert cloned._config.validate_invariants is False
+    assert type(network._config) is NetworkConfig
+    assert type(cloned._config) is NetworkConfig
+    assert not hasattr(network._config, "extra")
+    assert source.validate_invariants == "false"
+    assert source.auto_stabilization == "false"
+
+
+@pytest.mark.parametrize("hook_result", ["coerced", "aliased"])
+def test_configuration_copy_hook_cannot_replace_original_admission(hook_result):
+    calls = []
+
+    class CustomConfig(NetworkConfig):
+        def __post_init__(self):
+            pass
+
+        def __deepcopy__(self, memo):
+            calls.append(hook_result)
+            return NetworkConfig(random_seed=1) if hook_result == "coerced" else self
+
+    source = CustomConfig(random_seed=True)
+    with pytest.raises(ValueError, match="SEED"):
+        TNFRNetwork(config=source)
+    assert calls == []
+    assert source.random_seed is True
+
+
+def test_configuration_copy_hooks_cannot_alias_or_rewrite_owned_recipe():
+    class CustomConfig(NetworkConfig):
+        def __post_init__(self):
+            pass
+
+        def __deepcopy__(self, memo):
+            return self
+
+    source = CustomConfig(random_seed=3, default_vf_range=[0.5, 0.75])
+    actual = TNFRNetwork(config=source).add_nodes(2)
+    expected = TNFRNetwork(config=NetworkConfig(random_seed=3)).add_nodes(
+        2, vf_range=(0.5, 0.75)
+    )
+    source.random_seed = 99
+    source.default_vf_range[:] = [10, 11]
+    cloned = actual.clone()
+    actual.add_nodes(2)
+    cloned.add_nodes(2)
+    expected.add_nodes(2, vf_range=(0.5, 0.75))
+    assert _triad(actual.graph) == _triad(expected.graph) == _triad(cloned.graph)
+    assert actual._config.random_seed == 3
+    assert actual._config.default_vf_range == (0.5, 0.75)
 
 
 @pytest.mark.parametrize("graph_type", [nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph])

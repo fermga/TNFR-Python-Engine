@@ -9,7 +9,6 @@ import pytest
 from tests.sine_evidence_helpers import forbid_sine_regeneration
 from tnfr.physics import _organized_outer_response as owner
 
-
 _ERROR = Q(1, 10**10)
 _Q = Q(1, 10**70)
 _EPSILON = Q(1, 1000)

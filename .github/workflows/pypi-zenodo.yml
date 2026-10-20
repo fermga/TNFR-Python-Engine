@@ -16,7 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write  # For trusted publishing to PyPI
     
     steps:
     - uses: actions/checkout@v5
@@ -52,7 +51,10 @@ jobs:
 
     - name: Build distribution
       run: python -m build
-    
+
+    - name: Check distribution payload and size
+      run: python scripts/check_distribution.py dist
+
     - name: Check distribution
       run: python -m twine check dist/*
     
@@ -60,7 +62,8 @@ jobs:
       if: github.event_name == 'release' || inputs.force_publish
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        verbose: true
+        password: ${{ secrets.PYPI_API_TOKEN }}
+        attestations: false
     
     - name: External Zenodo integration reminder
       if: github.event_name == 'release'

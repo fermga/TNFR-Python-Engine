@@ -82,8 +82,12 @@ Use [the theory index](theory/README.md) to find derivation owners and
 [the documentation index](docs/README.md) for usage material. The
 [execution plan](theory/research/FIVE_STAGE_EXECUTION_PLAN.md) owns the single
 active queue; the [portfolio](TNFR_lineas_de_investigacion.txt) classifies research
-lines. Do not create a competing task list in an overview. Preserve valid anchors
-and historical evidence when consolidating documents.
+lines. Explain current behavior in maintained guides and contracts; keep results
+with their proof/evidence owners and avoid delivery logs in overviews. Preserve
+valid anchors and immutable evidence when consolidating documents. Check imports,
+public consumers and frozen dependencies before removing an obsolete file; record
+its recovery identity and replacement in the existing archive instead of copying
+unchanged committed source. Do not create a competing task list or catalog.
 
 ## Pull Request Process
 

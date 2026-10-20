@@ -2,18 +2,22 @@
 
 **Status**: Canonical reference
 **Version source**: [pyproject.toml](../pyproject.toml)
-**Origin**: March 2026
-**Scope review**: September 19, 2026
 
 ---
 
 ## 1. Scope
 
-This document describes the nodal equation, canonical structural diagnostics,
-operator policies, and explicitly specified model correspondences. The tetrad
-is a canonical selection of diagnostic channels; complete state reconstruction
-and universal minimality are not established. Mathematical hypotheses and
-counterexamples are centralized in
+This document owns the nodal identity, state and representation premises,
+conditional geometric constructions and diagnostic boundaries used to study
+organized TNFR objects. An object has a declared state, complete law and
+identity; its maintenance, interaction and admissible transformations are
+mathematical questions under those premises. The
+[ontology](EMERGENT_ONTOLOGY.md) owns these object-level distinctions and the
+[theory catalog](README.md#choose-a-question) locates their concrete models.
+
+The tetrad is a selected diagnostic interface; complete state reconstruction
+and universal minimality are not established. Hypotheses and counterexamples
+for diagnostics and grammar are centralized in
 [DIAGNOSTIC_AND_GRAMMAR_SCOPE.md](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md), which governs
 the interpretation of grammar calibration and field thresholds here.
 
@@ -88,9 +92,9 @@ neither subtraction nor integration is defined by a bare set of forms alone.
 
 ### 2.4 Physical concepts, mathematical types and implementation
 
-The research starting point is coherent form and its reorganization through
-the nodal law. A historical formula or a Python type is evidence of a proposed
-formalization, not an additional axiom that makes that formalization necessary.
+The starting point is coherent form and its reorganization through a declared
+nodal law. A proposed formula or a Python type does not establish that its
+formalization is necessary.
 The [joint closure review](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#14-constitutive-closure-audit-from-the-nodal-law)
 uses the following distinctions before selecting any new dynamics.
 
@@ -774,7 +778,7 @@ $$
 
 Measures circular phase curvature, with $|K_\phi| \leq \pi$ by construction.
 The displayed circular mean requires a nonzero resultant. The shared read-out
-now distinguishes nonzero represented direction from exact represented
+distinguishes nonzero represented direction from exact represented
 cancellation, with explicit unavailable evidence or a numeric API error; it
 does not invent an arithmetic phase direction. Exact sums of retained phasor
 components do not certify exact trigonometry. Curvature alone does not certify
@@ -789,7 +793,7 @@ $$
 q(r)=\operatorname{mean}_{d(i,j)=r}(c_i c_j)\approx A \exp(-r / \xi_C) \tag{7}
 $$
 
-Both backends now share the distance/pair/fit definition. This is not connected
+Both backends share the distance/pair/fit definition. This is not connected
 covariance and has no goodness-of-fit acceptance test. If unsuitable, fitting
 yields to a spectral fallback: the inverse square root of the smallest
 normalized-Laplacian eigenvalue above the implemented `1e-9` cutoff. On an
@@ -825,7 +829,8 @@ do not prove conservation, quantization or physical dimensional compatibility:
 
 ---
 
-## 4. The Structural-Field Tetrad
+<a id="4-the-structural-field-tetrad"></a>
+## 4. Diagnostic bounds and grammatical scope
 
 ### 4.1 Statement
 
@@ -845,29 +850,14 @@ physical necessity.
 | Coherence length | $\xi_C$ | Configured length comparisons | Correlation fit or spectral reference using the stated positive-mode cutoff |
 
 The phase bounds are kinematic identities. The warning margins and potential
-thresholds are unchanged engine policies. Fitted correlation lengths need not
+thresholds are engine policies. Fitted correlation lengths need not
 equal the graph-spectral reference for every state.
 The exact curvature exception and its support/chart premises belong to
 [the low-degree phase result](nodal/PRESSURE_CONSTITUTIVE_SCOPE.md#41-exact-low-degree-reduction-and-its-nonlinear-boundary).
 
-### 4.2 The four fields
-
-The tetrad groups four selected diagnostic channels by their construction:
-
-```text
-        Φ_s (0th — global aggregation)
-             /|\
-            / | \
-           /  |  \
-  |∇φ| ------+------ K_φ
-  (1st)      |  (2nd; π-bounded)
-          \   |   /
-           \  |  /
-            \|/
-          ξ_C (non-local — product fit / spectral fallback)
-```
-
-### 4.3 Derivation Outline
+<a id="42-the-four-fields"></a>
+<a id="43-derivation-outline"></a>
+### 4.2 Conditional field arguments
 
 The detailed arguments have one owner in
 [Minimal Structural Degrees, section 4](MINIMAL_STRUCTURAL_DEGREES.md#4-field-scales-and-selected-thresholds):
@@ -882,18 +872,15 @@ The detailed arguments have one owner in
 This summary does not replace the linked graph, distance, representation and
 estimator hypotheses.
 
-### 4.4 Grammar Integration
+<a id="44-grammar-integration"></a>
+### 4.3 Grammar integration
 
-Grammar obligations and field readouts have distinct enforcement paths:
-
-| Rule | Primary fields | Enforcement |
-|------|---------------|-------------|
-| U1 (Initiation/Closure) | Context and endpoint roles | Supported generator and closure contracts |
-| U2 (Convergence policy) | Operator roles and debt | Stabilizer presence and prefix debt at most 2 |
-| U3 (Resonant Coupling) | Actual wrapped phase mismatch | Phase alignment verified before UM/RA |
-| U4 (Bifurcation Control) | Operator context | Handlers, recent destabilizer, prior IL for Mutation |
-| U5 (Multi-scale Coherence) | Declared hierarchy | Deep Recursivity requires nearby scale stabilization |
-| U6 (Structural Confinement) | $\Phi_s$ | Read-only drift policy $\pi/2$ |
+Grammar obligations and field readouts have distinct enforcement paths.
+The [grammar owner](UNIFIED_GRAMMAR_RULES.md) defines the role, state and
+history contracts; its registry-generated tables are the shared rule reference.
+The [mathematical scope](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md) gives their conditional
+implications and counterexamples. A field threshold does not supply a missing
+event law, prove universal stability or select the next operator.
 
 ---
 
@@ -952,8 +939,10 @@ Model comparisons and research applications (each retains its own assumptions):
 
 ### 6.3 Tetrad Requirements per Domain
 
-Every domain study must report the four structural-field channels, including
-explicit unavailability when its state or estimator does not support one:
+When a study exposes the structural-field interface, report all four channels,
+including explicit unavailability when its state or estimator does not support
+one. The object's own identity and response claims additionally need their
+declared observations; tetrad output is not a substitute for them:
 
 - **$\Phi_s$**: Report distributions and gradients; compare against the selected $\pi/2 \approx 1.571$ drift policy with its baseline and aggregation.
 - **$|\nabla\phi|$**: Monitor the heuristic early-warning level ($\approx \pi/16 \approx 0.196$; not derived — the kinematic bound is $\pi$).
@@ -964,11 +953,15 @@ explicit unavailability when its state or estimator does not support one:
 
 ---
 
-## 7. Emergent Geometry from the Nodal Equation
+<a id="7-emergent-geometry-from-the-nodal-equation"></a>
+## 7. Conditional geometric constructions
 
 The following constructions have different coordinates and evolution laws.
 Their certificates apply to those specified models; identifying them with the
 full four-channel nodal dynamics requires an explicit mathematical bridge.
+Graph transport, state-space geometry and physical spacetime are distinct
+claims; the [relational geometry boundary](nodal/RELATION_FOUNDATIONS.md#operational-relational-geometry)
+states what an operational identification must retain.
 
 ### 7.1 Transport Layer (Structural Diffusion)
 
@@ -1032,10 +1025,12 @@ Dirichlet gradient flow, the graph-wave approximation, and the independent
 harmonic substrate should be reported separately.
 
 ---
-## 8. Empirical Validation
+<a id="8-empirical-validation"></a>
+## 8. Mathematical and numerical evidence
 
-Field and operator experiments test defined protocols, with topology, weights,
-initial state, gains, time steps, and seeds recorded. A correlation between
+Numerical field and operator experiments test defined protocols, with topology,
+weights, initial state, gains, time steps, and seeds recorded. They evaluate
+the chosen model, not its independent empirical validity. A correlation between
 potential drift and coherence loss is evidence for that protocol, not a
 universal upper bound or a proof of state reconstruction.
 
@@ -1087,20 +1082,18 @@ A test count measures tested behavior; it does not establish an open theorem.
 
 ### SDK Entry Points
 
-```python
-from tnfr.sdk import TNFR
-
-net = TNFR.create(20).ring().evolve(5)    # Configured engine evolution
-tetrad = net.tetrad()                      # Structural Field Tetrad
-telem = net.telemetry()                    # C(t), Si, phase, νf
-analysis = TNFR.analyze(net)               # Comprehensive analysis
-```
+The [README Quick start](../README.md#quick-start) constructs a prepared
+organized object, inspects its conditional recovery certificate and advances
+its joint form/phase state under the selected native relational law.
+The [execution guide](../docs/CLI_AND_SDK.md) distinguishes that path from
+requested operator words and detached diagnostics. Use those maintained
+examples rather than inferring an object or a complete law from topology alone.
 
 ### Executable Demonstrations
 
 | Example | Concept from this document |
 |---------|---------------------------|
-| [01_hello_world.py](../examples/01_foundations/01_hello_world.py) | SDK initialization, one requested operator word and canonical C/tetrad observations |
+| [01_hello_world.py](../examples/01_foundations/01_hello_world.py) | Prepared five-node winding object, conditional native-law recovery and a joint form/phase step with numerical defects |
 | [04_operator_sequences.py](../examples/01_foundations/04_operator_sequences.py) | Flat grammar admission versus an independent illustrative pressure proxy |
 | [07_phase_transitions.py](../examples/01_foundations/07_phase_transitions.py) | Prepared state ensembles and descriptive finite-size diagnostics |
 | [10_simplified_sdk_showcase.py](../examples/01_foundations/10_simplified_sdk_showcase.py) | SDK topology builders, configured evolution and comparison read-outs |

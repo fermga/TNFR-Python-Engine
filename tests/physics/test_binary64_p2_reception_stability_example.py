@@ -63,7 +63,9 @@ def test_example_keeps_signed_zero_and_execution_scope_explicit(
 
     assert report["signed_zero_boundary"] == {
         "numeric_consensus": True,
-        "output_hex": ["0x0.0p+0", "-0x0.0p+0"],
+        "raw_proposal_hex": ["0x0.0p+0", "-0x0.0p+0"],
+        "output_hex": ["0x0.0p+0", "0x0.0p+0"],
+        "zero_admission": "clipping canonicalizes signed zeros",
         "bit_preservation_certified": False,
     }
     assert report["scope"] == {

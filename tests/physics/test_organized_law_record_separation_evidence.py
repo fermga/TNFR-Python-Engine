@@ -5,11 +5,11 @@ Receipts associate exact bytes and source; they do not authenticate execution
 or turn this conditional mathematical distinction into a physical observation.
 """
 
-from fractions import Fraction as Q
 import hashlib
 import importlib
-from pathlib import Path
 import subprocess
+from fractions import Fraction as Q
+from pathlib import Path
 
 import pytest
 
@@ -18,7 +18,6 @@ from tnfr._exact_time import exp_unit_bounds
 from tnfr.mathematics._rational_interval import I, cos, pi_interval, sin, sqrt
 from tnfr.research.artifact_io import decode_exact_tree, exact_record, file_receipt
 from tnfr.utils.io import json_loads
-
 
 ROOT = Path(__file__).resolve().parents[2]
 DECLARATION = "theory/nodal/ORGANIZED_LAW_OBSERVATION.md"
@@ -44,12 +43,50 @@ FROZEN_PARENTS = (
     "docs/assets/organized_finite_observation",
     "docs/assets/organized_robust_current",
 )
+FROZEN_PARENT_EVIDENCE = tuple(
+    name for name in FROZEN_PARENTS if name.startswith("docs/assets/")
+)
 
 
 def _git(*arguments):
     return subprocess.check_output(
         ("git", *arguments), cwd=ROOT, stderr=subprocess.PIPE
     )
+
+
+def _git_inventory(listing):
+    inventory = {}
+    for entry in filter(None, listing.split(b"\0")):
+        metadata, path = entry.split(b"\t", 1)
+        mode, kind, blob = metadata.decode("ascii").split()
+        assert kind == "blob"
+        inventory[path.decode("utf-8")] = {"mode": mode, "blob": blob}
+    return inventory
+
+
+def _files_within(root, names):
+    paths = set()
+    for name in names:
+        path = root / name
+        if path.is_file():
+            paths.add(path)
+        elif path.is_dir():
+            paths.update(item for item in path.rglob("*") if item.is_file())
+    return tuple(sorted(paths))
+
+
+def _assert_parent_artifact_bytes(root, listing):
+    """Bind archived artifacts, without imposing an old source on maintenance."""
+    inventory = _git_inventory(listing)
+    paths = _files_within(root, FROZEN_PARENT_EVIDENCE)
+    assert {path.relative_to(root).as_posix() for path in paths} == set(inventory)
+    for path in paths:
+        raw = path.read_bytes()
+        blob = b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw
+        assert (
+            hashlib.sha1(blob).hexdigest()
+            == inventory[path.relative_to(root).as_posix()]["blob"]
+        )
 
 
 def _interval(value):
@@ -100,8 +137,14 @@ def source_snapshots(records):
         snapshots["parent_changes"] = _git(
             "diff", "--name-only", "cd0f8f30", SPECS[1][1], "--", *FROZEN_PARENTS
         )
-        snapshots["uncommitted_parent_changes"] = _git(
-            "diff", "--name-only", "--", *FROZEN_PARENTS
+        snapshots["parent_artifacts"] = _git(
+            "ls-tree",
+            "-r",
+            "-z",
+            "--full-tree",
+            SPECS[1][1],
+            "--",
+            *FROZEN_PARENT_EVIDENCE,
         )
     except (OSError, subprocess.CalledProcessError):
         return None
@@ -148,12 +191,8 @@ def exclude_execution_and_preserve_files(records, source_snapshots):
     imported = tuple(
         (importlib.import_module(name), functions) for name, functions in targets
     )
-    paths = tuple(
-        ROOT / "docs/assets" / name / filename
-        for name, _ in SPECS
-        for filename in ("attempt.json", "result.json")
-    )
-    paths += tuple(ROOT / name for name in FROZEN_PARENTS if (ROOT / name).is_file())
+    preserved = FROZEN_PARENTS + tuple("docs/assets/" + name for name, _ in SPECS)
+    paths = _files_within(ROOT, preserved)
     before = tuple(file_receipt(path) for path in paths)
 
     def forbidden(*args, **kwargs):
@@ -164,6 +203,7 @@ def exclude_execution_and_preserve_files(records, source_snapshots):
             for function in functions:
                 patch.setattr(module, function, forbidden)
         yield
+    assert _files_within(ROOT, preserved) == paths
     assert tuple(file_receipt(path) for path in paths) == before
 
 
@@ -204,12 +244,7 @@ def test_both_committed_declarations_source_inventories_and_attempts(
     if source_snapshots is None:
         pytest.skip("retained source revisions unavailable in this checkout")
     snapshot = source_snapshots[name]
-    inventory = {}
-    for entry in filter(None, snapshot["listing"].split(b"\0")):
-        metadata, path = entry.split(b"\t", 1)
-        mode, kind, blob = metadata.decode("ascii").split()
-        assert kind == "blob"
-        inventory[path.decode("utf-8")] = {"mode": mode, "blob": blob}
+    inventory = _git_inventory(snapshot["listing"])
     assert inventory == attempt["source_inventory"]
     assert (
         hashlib.sha256(snapshot["listing"]).hexdigest()
@@ -233,7 +268,41 @@ def test_both_committed_declarations_source_inventories_and_attempts(
     for record in (attempt, result):
         assert set(record["imported_sources"].values()) <= set(inventory)
     assert not source_snapshots["parent_changes"]
-    assert not source_snapshots["uncommitted_parent_changes"]
+    # Historical source association does not demand that maintained source in
+    # today's working tree remain identical to the old campaign. Its evidence
+    # bytes stay frozen, and the module guard forbids changes during this audit.
+    _assert_parent_artifact_bytes(ROOT, source_snapshots["parent_artifacts"])
+
+
+@pytest.mark.parametrize("mutation", ("bytes", "added", "removed"))
+def test_parent_evidence_admission_allows_source_maintenance_not_artifact_changes(
+    tmp_path, mutation
+):
+    name = "docs/assets/organized_robust_current/result.json"
+    evidence = tmp_path / name
+    evidence.parent.mkdir(parents=True)
+    raw = b'{"retained":true}\n'
+    evidence.write_bytes(raw)
+    blob = hashlib.sha1(
+        b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw
+    ).hexdigest()
+    listing = f"100644 blob {blob}\t{name}\0".encode()
+    source = tmp_path / FROZEN_PARENTS[0]
+    source.parent.mkdir(parents=True)
+    source.write_text("# earlier source\n", encoding="utf-8")
+    _assert_parent_artifact_bytes(tmp_path, listing)
+
+    source.write_text("# independently maintained source\n", encoding="utf-8")
+    _assert_parent_artifact_bytes(tmp_path, listing)
+
+    if mutation == "bytes":
+        evidence.write_bytes(raw + b" ")
+    elif mutation == "added":
+        (evidence.parent / "replacement.json").write_bytes(raw)
+    else:
+        evidence.unlink()
+    with pytest.raises(AssertionError):
+        _assert_parent_artifact_bytes(tmp_path, listing)
 
 
 def test_cross_record_receipts_and_preselected_primitive_inventory(records):

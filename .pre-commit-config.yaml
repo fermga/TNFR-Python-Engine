@@ -1,14 +1,16 @@
 repos:
   - repo: https://github.com/psf/black
-    rev: 25.9.0
+    rev: 26.3.1
     hooks:
       - id: black
         args: ["--config=pyproject.toml"]
+        exclude: ^(docs/assets/|build/|applications/factorization-lab/|applications/primality-test/archive/)
   - repo: https://github.com/PyCQA/isort
     rev: 5.13.2
     hooks:
       - id: isort
         args: ["--filter-files", "--settings-path=pyproject.toml"]
+        exclude: ^(docs/assets/|build/|applications/factorization-lab/|applications/primality-test/archive/)
   - repo: https://github.com/PyCQA/pydocstyle
     rev: 6.3.0
     hooks:

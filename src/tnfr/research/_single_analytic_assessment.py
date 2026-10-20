@@ -8,11 +8,11 @@ Previously frozen producers retain their own unchanged lifecycle code.
 
 from __future__ import annotations
 
-from dataclasses import asdict
-from pathlib import Path
 import platform
 import subprocess
 import sys
+from dataclasses import asdict
+from pathlib import Path
 
 from ..mathematics._rational_interval import INTERVAL_BITS, INTERVAL_METHOD
 from .artifact_io import (

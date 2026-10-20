@@ -1,21 +1,12 @@
-"""Performance guardrails instrumentation for TNFR Phase 3.
+"""Opt-in timing observations for functions and telemetry instrumentation.
 
-Lightweight timing utilities ensuring added structural validation / telemetry
-instrumentation remains below configured overhead thresholds.
+The standard-library registry records completed calls and summarizes their
+elapsed times. ``perf_guard`` measures only when supplied a registry;
+``compare_overhead`` compares two finite call batches after warmup.
 
-Design Goals
-------------
-1. Zero external dependencies (stdlib only).
-2. Minimal footprint: single perf_counter measurement plus registry append.
-3. Opt-in: instrumentation only active when explicitly passed a registry.
-4. Composable: decorator or manual timing blocks.
-
-Physics Alignment
------------------
-Performance measurement is purely operational and never alters TNFR physics;
-it wraps functions that perform read-only structural computations. The
-guardrails act as a containment layer ensuring added monitoring does not
-fragment coherence through excessive latency.
+These helpers do not enforce latency thresholds or alter the wrapped
+function's semantics. Measured overhead does not establish a bound on future
+runtime or a statement about structural coherence.
 """
 
 from __future__ import annotations

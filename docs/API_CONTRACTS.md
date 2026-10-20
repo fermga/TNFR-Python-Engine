@@ -27,23 +27,6 @@ The [relational contract index](contracts/RELATIONAL_DYNAMICS.md) distinguishes
 complete-state observations, exact collective families, finite maintenance
 bounds and observations of saved forecasts. Sharing a storage identity or
 export format does not make their support, law or evidence interchangeable.
-The [conservative source-admission readers](contracts/relational/SINE_REGIONAL_DYNAMICS.md#sine-cycle-sector-barrier)
-can exclude formation by a geometric storage barrier or by finite rapid-contact
-averaging. They assess the declared source without evolving it; an unavailable
-exclusion is not a formation certificate.
-The [directed saddle-corridor reader](contracts/relational/SINE_SADDLE_CERTIFICATES.md#sine-directed-saddle-corridor)
-instead certifies a finite winding passage from strict nonlinear storage and
-momentum bounds on an exact symmetric source. It supplies neither an acute
-retention certificate nor an independently uncertain source box.
-The [same-orbit formation reader](contracts/relational/SINE_SADDLE_CERTIFICATES.md#sine-conservative-formation-retention)
-combines both nonlinear passages with a retained band and full-state error
-bounds. It certifies conditional existence; its event-defined centers remain
-unavailable as numerical preparations and its captured-state flags stay false.
-The [retained-metric forecast](contracts/relational/SINE_SADDLE_CERTIFICATES.md#sine-saddle-metric-forecast)
-instead advances an actual admitted source with full-coordinate uncertainty
-and checked whole-time phase domains. Its finite enclosure and any partial
-coverage remain distinct from a formation or retention verdict.
-
 ## Contract model
 
 ### Word and operator controls
@@ -55,6 +38,34 @@ form or diagnostic permission, and unknown Boolean strings reject. Context is
 copied, leaving the caller's mapping unchanged. See the
 [grammar contract](../theory/UNIFIED_GRAMMAR_RULES.md#8-composition-and-implementation).
 
+<a id="word-profile-migration"></a>
+`validate_sequence`, `parse_sequence` and `ValidatedSequence` default to
+the shared `core` word contracts. String validation delegates to the same
+`GrammarValidator` checks used by typed execution, including causal debt and
+prior Coherence; a different input representation cannot bypass these checks.
+String words carry default operator metadata only. Use actual operator
+instances when, for example, Recursivity depth matters.
+
+The explicit context `{"compatibility_profile": "legacy"}` adds the historical
+adjacency and THOL-terminal preferences. `validate_sequence` and
+`parse_sequence` also accept that keyword directly, taking precedence over the
+context value. Both profiles retain the shared core checks; neither establishes
+live admission, trajectory stability or every manuscript sentence prescription.
+Callers requiring those additional preferences must select `legacy` explicitly.
+Both profiles reject violations of the shared causal checks. `parse_sequence`
+raises on rejection; `validate_sequence` returns its structured outcome.
+
+`TNFR.explain_sequence(operators, context=...)` reports this same word policy,
+ordered English display names in `operators`, its selected `compatibility_profile`
+and compact glyph `notation`, such as `AL → IL → SHA`. Lead reader-facing
+explanations with the English names. It accepts registered names or simple
+glyph codes, not arrow
+expressions, apostrophe spellings or bracket syntax as individual tokens.
+Invalid context yields `valid=False` with no selected profile; unknown operator
+identifiers raise. The report explicitly leaves manuscript syntax, live state
+and trajectory checks unassessed. Context is a declaration, not observed
+initialization or trigger evidence.
+
 `GrammarValidator.validate` and `collect_grammar_errors` consume the same
 immutable outcomes from `GrammarValidator.validate_checks`; diagnostic text
 does not decide whether a check passed. Strings use shared identifier normalization; supplied
@@ -62,6 +73,134 @@ operator objects retain their metadata, so unknown identifiers report `SYNTAX`
 and Recursivity depth remains subject to U5. `run_structural_validation` uses
 these errors for its word status. Omitting the sequence skips word validation;
 live U3 admission and temporal U6 evidence remain separate obligations.
+`structural.run_sequence` observes the target's actual admitted signed form
+when determining initialization context; a caller flag cannot promote zero
+or invalid form into permission. It records the last completed operator only
+after that invocation succeeds.
+
+<a id="grammar-history-and-selector-admission"></a>
+**Persistent grammar state.** Shared `require_grammar_state` admits stored
+`glyph_history` as an ordered list, tuple or deque of registered identifiers.
+Strings, mappings, sets, unknown tokens and explicitly stored `None` reject;
+one-shot iterators reject without consumption. Omit an absent history key,
+or materialize a valid owned sequence before execution. Present U2 debt must
+be a nonnegative integer excluding Booleans, and prior-Coherence state must
+be Boolean. Invalid present state cannot fall back to a shorter trace.
+The stored operator-step index likewise requires a nonnegative non-Boolean
+integer; only a missing index falls back to the retained trace length.
+Only absent bookkeeping is reconstructed from retained history; this cannot
+recover evicted facts. Deliberate full-trace replacement uses the shared reset
+helper; restoring a snapshot preserves its valid persistent context.
+`on_applied_glyph` delegates to the shared occurrence recorder: it normalizes
+glyph codes and updates the index, debt and prior IL while preserving deque
+bounds or unbounded list retention. Tuple traces become unbounded lists.
+This helper records a caller-supplied occurrence; it neither executes nor
+authenticates an operator. Do not record an already runtime-recorded action twice.
+
+`read_grammar_state` builds a fresh immutable view of canonical history codes,
+debt, prior Coherence and operator index. Recording admits each retained
+identifier once; it does not cache permission across mutations. History readers,
+repetition scores, hysteresis and direct Mutation/Dissonance context readers
+use shared admission, so equivalent supported names and codes give the same
+decisions. Malformed authoritative history cannot be hidden by a diagnostic
+shortcut. Graph validation retains its `TNFRValueError` error envelope.
+
+Native batches pre-admit consumed grammar context and lag counters before
+incrementing counters. Lag limits/counts reject Boolean, fractional or invalid
+values, and the hysteresis window uses shared integer admission. Grammar's
+`enabled` uses shared Boolean parsing. Lag resets follow the glyph actually
+applied, including grammar substitution; a blocked AL proposal replaced by IL
+does not reset `since_AL`. `_choose_glyph` applies the same grammar to forced
+candidates but neither increments counters nor executes them. Native batches
+remain sequential: a later operator failure can retain earlier completed
+operations and policy bookkeeping; this is not the atomic-stage contract.
+Mutation proposal screening and execution share raw authoritative-alias and
+signed-form certificate admission. Explicit invalid EPI cannot be replaced by
+a secondary alias or turned into missing temporal evidence. Recorded abstention
+clocks must be valid represented real values.
+Mutation admits raw authoritative phase and active proposal scalars before
+conversion. Boolean/nonreal values, nonfinite values and nonzero values lost
+to zero reject; direct graph rejection precedes adapter caching. The shared
+proposal preserves the consumed pressure's signed zero after admission.
+An explicit fixed shift still leaves dynamic proposal arguments unconsumed;
+the independent temporal/capacity gate remains required. Valid phase wrapping
+and public/direct/staged execution boundaries are unchanged.
+Native batch proposals resolve supported English names, tokens and glyph codes
+through the shared identifier owner before Mutation screening and lag accounting.
+Emission/Reception counters and Mutation abstention records therefore agree
+across those spellings, including with canonical grammar disabled. Unknown
+proposals retain the selected grammar rejection/substitution policy; this is
+not whole-batch prevalidation or rollback of an earlier executed prefix.
+
+With glyph execution enabled, `runtime.step` runs the same batch preflight
+before creating history, reserving an invocation ordinal or invoking callbacks.
+It re-admits at consumption after callbacks and pressure refresh. Disabled
+glyph execution does not consume lag limits or grammar policy. This covers
+the supplied batch configuration/context, not arbitrary callbacks or a full-step
+transaction. A late failure can retain observations and its invocation ordinal.
+
+Soft repetition thresholds `GRAMMAR.force_dnfr` and `force_accel` and consumed
+normalized scores admit original represented-real values in `[0,1]`; Boolean,
+text, nonfinite or lost nonzero values reject. Explicit malformed fallback
+operators reject. Context parameters must be mappings: optional constructor
+`None` remains absent, whereas explicitly malformed graph-owned configurations
+reject before defaults. Empty graph mappings retain the documented default
+overlay. These checks preserve the supplied normalization/selection policies;
+they do not infer global maxima from local input or derive a controller.
+Repeat checking and its error context reuse one fresh admitted history view,
+without a second permissive interpretation of the retained identifiers.
+
+Selector pressure/acceleration ratios use shared checked division on scalar,
+vector and worker paths. Nonfinite quotients and nonzero quotients rounded to
+zero reject before threshold comparisons. Valid represented ratios remain
+unclipped; a zero supplied normalization maximum retains its unit-divisor
+convention. This rejects unrepresentable observations rather than selecting
+an operator from an invented zero.
+
+The native selector runs at an outer call's left boundary. Lag counts measure
+decision batches, internal integration substeps add none, and `dt=0` still
+allows operator events. The [clock comparison](../theory/NATIVE_OPERATOR_DYNAMICS.md#native-selector-clock-admission)
+shows that additional outer decisions can change the physical endpoint at
+the same final time. Numerical comparisons must retain their declared event
+schedule and other per-call policies; `apply_glyphs=False` skips only the glyph
+batch, not phase/capacity policies or all runtime bookkeeping.
+
+Native execution consumes complete associated state: form, phase, capacity,
+stored and refreshed pressure, grammar and lag records, adaptation counters,
+prior rates, temporal observations and target-associated random-stream state.
+Default selection additionally uses graph-wide capacity and absolute-pressure
+maxima through Si and normalized pressure. Matching a component's local state
+or selected operator labels therefore does not establish a closed component
+law. Reception consumes live neighboring form; Resonance consumes the live
+U3-compatible subset and its associated form/phase data. Earlier target events
+can change a later target's branch. Integration consumes event capacities and
+held prepared pressure; later policies have their own observation boundaries.
+
+The [native dynamics owner](../theory/NATIVE_OPERATOR_DYNAMICS.md) derives the
+scoped selector, ordered-event and complete-call reductions and counterexamples.
+The [collective calculus](../theory/NATIVE_COLLECTIVE_CALCULUS.md) owns sufficient
+retained state, correlated enclosures and their composition requirements.
+The [aggregate operator owner](../theory/NATIVE_AGGREGATE_OPERATORS.md) states
+when an actual registered operator descends to a coarse representation and
+when it does not. These conditional results neither create a public collective
+executor nor let a summary report replace the source required by a later call.
+
+A collective prediction must retain the actual request origin, target order,
+live branches, state associations and relevant memory. Marginal bounds or
+matching means do not establish their joint realizability. A retained prefix
+is not a completed call; refreshed diagnostics, lag increments and invocation
+ordinals may survive a later failure on the sequential native path. Distinguish
+native rejection, observer interruption, unavailable temporal evidence and
+atomic-stage rollback. Ideal reductions and asymptotic theorems also retain
+their own arithmetic premises; they are not bitwise runtime guarantees.
+
+The following names are not supported `GRAMMAR_CANON` controls or
+`--grammar.*` CLI options: `zhir_requires_oz_window`,
+`zhir_dnfr_min`, `thol_min_len`, `thol_max_len`, `thol_close_dnfr`, and `si_high`.
+Remove these options from CLI invocations; arbitrary mapping extensions retain
+no admission meaning. The shared U4 context and measured Mutation gate own
+their actual requirements. Words supply their closure explicitly; no sense-index
+threshold chooses a THOL closure. There is no one-to-one threshold replacement.
 
 Coupling's four `UM_*` branch flags and `OZ_NOISE_MODE` use the same Boolean
 parser before active-factor resolution and proposals. Transition's `NAV_STRICT`
@@ -71,14 +210,103 @@ that branch's factor requirements. It does not waive live U3 or other operator
 preconditions. The [operator maps](../theory/STRUCTURAL_OPERATORS.md) and
 [event contracts](contracts/OPERATOR_EVENTS.md) specify the execution effects.
 
-### Removed unsupported helpers
+<a id="program-compilation-contract"></a>
+### Scoped program compilation and execution
 
-These removals have explicit replacements or scope boundaries; no compatibility
-alias substitutes a different mathematical model. The
-[recovery index](../theory/research/archive/README.md#recovery-records)
-retains the removed source identities.
+The existing [typed tokens](../src/tnfr/tokens.py),
+[parser/compiler](../src/tnfr/flatten.py) and
+[program executor](../src/tnfr/execution.py) own the `THOL`, `WAIT` and `TARGET`
+program syntax used by the specialized CLI sequence route. This is separate
+from complete-word validation and the atomic operator-stage route. Compilation
+does not admit a child NFR, choose a branch or install a continuous law. The
+[source comparison](../theory/UNIFIED_GRAMMAR_RULES.md#source-grammar-and-notation)
+retains the wider hierarchical and prosodic proposals with their open premises.
 
-| Removed interface | Migration or retained contract |
+`parse_program_tokens` returns owned typed bodies for explicit THOL blocks;
+plain iterable grouping remains sequential. `compile_sequence` returns ordered
+`(OpTag, payload)` operations. `BLOCK_ENTER` and `BLOCK_EXIT` carry immutable
+`BlockBoundary(path, iteration, repeat)` metadata identifying nested occurrences
+and zero-based body repetitions. These markers neither execute a structural
+operator nor advance time. Consumers of compiled streams must retain them;
+filtering only glyphs loses program scope. `THOLEvaluator` retains its iterator
+interface as an unscoped token view, not the execution representation.
+
+The THOL opening executes once per block invocation. Each body repetition
+inherits the enclosing targets; TARGET changes are local to that repetition
+and are restored at its exit. There is no automatic child-target selection.
+Before any explicit TARGET, the target is the current graph population at each
+glyph; `TARGET(None)` instead captures the population when that token executes.
+Ordered explicit target collections preserve their supplied order.
+
+Program construction follows these explicit contracts:
+
+| Input | Contract |
+| --- | --- |
+| Omitted THOL closure | `force_close=None`, or `block(..., close=None)`, adds no glyph. Supply `Glyph.NUL` explicitly when that action is intended. |
+| Explicit closure glyph | Every supplied registered glyph is emitted after each repetition and remains subject to live admission. Its position does not make it a valid grammatical closure. |
+| Nested TARGET assignment | Targets restore at each repetition exit. Put a TARGET after the block when subsequent operations require that selection. |
+| WAIT/repeat count | Counts must implement the integer-index protocol, be positive and be non-Boolean. Floats, fractions and strings reject, including integer-valued ones. |
+| Nested or reused group | Cyclic ancestry rejects; repeated occurrences of an ordered group remain present. Unordered sets, unknown token fields and malformed glyphs reject. |
+
+`max_materialize` is a nonnegative integer or `None`; the default is 1000.
+The finite bound covers parsed input and expanded operations, including scope
+markers. `play` completes syntax admission and compilation before changing graph
+history. Live targets, grammar and preconditions are still checked during
+execution; earlier accepted operations and callback effects are not rolled back
+if a later operation fails.
+
+Requested program glyphs use the native direct-glyph path and reject blocked
+requests without substitution, even when the graph's ordinary rejection policy
+is `fallback`. That original policy is restored before the step function runs.
+No future-handler context is invented across changing targets or scopes.
+The supplied `step_fn`, or the existing native runtime by default, runs after
+each actual glyph, including THOL and an explicit final glyph. WAIT requests
+additional step-function calls. The default step can select more operators and
+update phase/capacity: WAIT is not an event-free interval, and its count is
+neither seconds nor a newly derived clock.
+
+The bounded `history["program_trace"]` distinguishes supplied program requests
+from subsequent step-function execution. A glyph/THOL row is appended after
+successful glyph dispatch and before stepping, with `selection_origin` set to
+`supplied_program`, ordered pre-dispatch `targets`, `event_time`, and
+`event_boundary="after_requested_glyph"`. A later-created node cannot become a
+recorded target of that earlier dispatch. TARGET rows retain ordered node IDs;
+WAIT rows describe requested step calls and make no glyph-event claim.
+
+Rows begin with `step_status="pending"` and `record_boundary="before_step"`.
+They become `completed`/`after_step` on success, preserving the existing `t`
+field as the post-step clock. Failures retain a `failed`/`step_failed` row and
+the original exception; there is no rollback. Requested, started and normally
+returned call counts are `step_calls_requested`, `step_calls_started` and
+`step_calls_completed`. A returned call can still fail clock admission.
+`step_origin` distinguishes `native_runtime` from `supplied_step_function`;
+neither value enumerates operators selected internally by that function.
+
+The initial clock and each recorded clock sample use shared finite represented
+real admission. Missing `_t` uses the explicit zero convention. Boolean,
+nonfinite or nonzero unrepresentable clocks reject. If a callback leaves an
+invalid clock, its effects remain, the row retains its last admitted `t`, and
+`clock_sample_available=False` marks the unavailable current sample. A rejected
+glyph dispatch creates no completed-glyph row; earlier target effects can still
+exist on this non-atomic route. Trace truncation and callback effects prevent
+using missing rows as proof of no event or as a complete execution checkpoint.
+
+The `canonical_example` program preset requests Emission → Coherence → Silence
+(`AL → IL → SHA`). It is distinct from the SDK's registered `basic_activation`
+word. Presets retain their declared actions and contextual admission needs;
+`contained_mutation` and `coupling_exploration` request Contraction (NUL)
+explicitly. Controls:
+[program admission and execution](../tests/test_program_execution.py).
+
+<a id="removed-unsupported-helpers"></a>
+### Unsupported calls and current replacements
+
+The following interfaces are not part of the current API. Use the declared
+replacement where one exists; no compatibility alias substitutes a different
+mathematical model. Source recovery belongs to the
+[recovery index](../theory/research/archive/README.md#recovery-records).
+
+| Unsupported interface | Current replacement or scope boundary |
 | --- | --- |
 | `validate_grammar(..., collect_unified_telemetry=...)` | Remove the argument; word validation has no observed graph. Use `diagnose_network(actual_graph)` or `physics.fields.compute_unified_telemetry(actual_graph)` with explicit state. The removed option reported fields of a fixed demonstration graph, not the validated word or its execution. |
 | `tnfr.operators.algebra.validate_identity_property`, `validate_idempotence`, `validate_commutativity_nul` | Use the actual [operator event contracts](contracts/OPERATOR_EVENTS.md) and compare the same admitted transformations. The retired routines compared different words or unsupported words; they did not prove the advertised algebra. Silence attenuates capacity and is not generally idempotent. |
@@ -92,8 +320,36 @@ retains the removed source identities.
 | `tnfr.math.fields_symbolic` and its facade exports | Use `tnfr.physics.fields` for the implemented graph diagnostics. The removed continuum expressions were a different model, not symbolic versions of those fields. Nodal calculus in `tnfr.math.symbolic` remains available. |
 | `tnfr.riemann.operator_catalog_discipline_signature` and its facade exports | Use `TNFR.operators()` and `operator_contracts.verify_contract_consistency()` for canonical inventory checks. Those checks do not prove ontological completeness; compatibility class registration remains separate. |
 | `tnfr.operators.grammar.validate_sequence_cached`, `clear_validation_cache`, `get_validation_cache_stats` and `get_grammar_cache_stats` | Use `validate_grammar()` for operator objects, `validate_sequence()`/`parse_sequence()` for canonical names, and `GrammarValidator` for detailed configured checks. The retired cache wrapper did not validate live graph context; node/edge counts cannot replace live preconditions. |
+| Private duplicate start/end/U2 checks in `grammar_patterns` | Use the shared public word validators. Their core checks delegate to `GrammarValidator`; explicit `legacy` retains only additional compatibility preferences. Private helper names are not independent admission contracts. |
 | `tnfr.utils.clear_orjson_param_warnings` (also in `tnfr.utils.io`) and `tnfr.config.presets.legacy_preset_guidance` | Remove these no-op calls. Shared JSON admission/encoding and `get_preset()` retain their existing behavior; unknown presets still raise `KeyError`. |
 | Global `tnfr.validation.config.ValidationConfig` fields `epi_range`, `vf_range`, `phase_coupling_threshold`, `cache_validation_results`, `max_validation_time_ms` | Removed unconsumed settings. Scalar domains, live U3 admission and the separate cached-validator configuration retain their own owners. Construction rejects the removed keywords; `configure_validation()` rejects them without committing other supplied settings. |
+
+<a id="arithmetic-application-boundaries"></a>
+### Arithmetic application boundaries
+
+The [basic primality utility](../applications/primality-test/README.md) retains
+static arithmetic descriptors and a numerical predicate. Its CLI and
+`python -m tnfr_primality` use the same basic implementation; advanced
+adapters, advanced/legacy console names and the `full` extra are retired.
+Core arithmetic pressure and residue-graph theorems retain their own premises
+and implementations.
+
+`tnfr.factorization`, `TNFR.factorize` and `Network.factorize` are deprecated
+compatibility bridges for a separately supplied legacy `tnfr_factorization`
+package. They do not discover or activate the
+[archived lab](../applications/factorization-lab/README.md).
+An absent or archived implementation raises retirement guidance; an admitted
+external package emits `DeprecationWarning`. Historical factor-candidate,
+acceptance and completeness labels are not independent arithmetic certificates.
+
+The SDK self-optimization helpers keep generic manifest orchestration in the
+engine. They require the checkout scripts and an explicit graph payload;
+modulus-only lab reconstruction is no longer supported. Wheel-only calls
+without those drivers fail explicitly. These helpers propose and assess a
+dry run, do not dispatch operators, and return no promotable recommendations.
+The default operation-to-regression mapping is empty: unmapped operations
+remain pending, rather than inheriting an unrelated arithmetic suite's result.
+The [runner contract](../scripts/README.md) owns serialization and observations.
 
 ### Supplied-law symbolic calculus
 
@@ -130,8 +386,12 @@ does not establish a complete nodal state, and an operator-parameter check does
 not authenticate an event or certify its trajectory.
 
 The global `tnfr.validation.config.ValidationConfig`, also exported as
-`tnfr.validation.StructuralValidationConfig`, supplies only the flags and
-minimum severity consumed by `structural.run_sequence`. The existing facade
+`tnfr.validation.StructuralValidationConfig`, supplies invariant flags and
+minimum severity consumed by `structural.run_sequence`. Its
+`enable_semantic_validation` and `allow_semantic_warnings` fields remain accepted
+compatibility settings; neither disables the shared grammar or activates an
+independent heuristic gate. `SequenceSemanticValidator` retains its report
+interface by delegating to shared word admission. The existing facade
 name `tnfr.validation.ValidationConfig` retains its separate meaning: the
 configuration of `TNFRUnifiedValidationSystem`, including its cache policy.
 These are different consumers, not interchangeable configurations.
@@ -212,6 +472,13 @@ The extended model reuses the same EPI derivative owner. Validation certifies
 these numeric domains, not the model's physical derivation; an explicitly
 unchecked call does not acquire that certificate.
 
+Closed scalar configuration intervals use `bounded_represented_real` from
+`_exact_time.py` to check the original admitted source against their bounds.
+An exact value outside the interval cannot enter by rounding to an endpoint;
+accepted values retain the consumer's binary64 model. This boundary applies
+to selector/adaptation controls, stability fractions and active glyph factors.
+It does not prohibit rounded arithmetic already declared by a numerical model.
+
 Scalar operator inputs use the same admission before coercion, including
 incoming form consumed from a neighbor. Runtime Mutation-history recording
 also requires signed scalar EPI; a rich BEPI magnitude cannot become observed
@@ -242,6 +509,71 @@ compatibility policy; it is not a request to disable the corresponding model.
 
 ### Stored observations and validation
 
+`metrics.export_metrics` exports one detached snapshot of retained history;
+it does not initialize or repair history on the graph. CSV and JSON admit the
+same scalar values before any destination replacement. Missing samples,
+clocks and glyph entries remain JSON `null` or empty CSV cells; an observed
+zero remains zero. Sigma columns align by retained position, without borrowing
+another stream's timestamp or substituting a row index. Present Boolean,
+nonreal, nonfinite or unrepresentable numbers reject. This replaces the earlier
+zero-filling and inferred-clock behavior; consumers must handle availability.
+Each file uses the shared atomic writer, but the CSV file set is not one
+transaction if a later filesystem write fails.
+
+`Network.history()` shares retained-sample admission with the metric exporter.
+It returns detached `kuramoto_R`, `C_steps`, `phase_sync` and `Si_mean` series.
+An absent series is empty; an explicit missing sample remains `None`, so callers
+must retain that availability when analyzing the series. Lists, tuples, deques,
+other non-text sequences and one-dimensional NumPy arrays preserve stored order.
+Unordered collections, one-shot iterators and multidimensional arrays reject;
+readers do not consume an iterator, flatten coordinates or repair the graph.
+Present samples reject Boolean, nonreal, nonfinite and underflowed values
+before conversion. These series have no implied clock or formation certificate.
+
+SDK scalar and raw-map readers raise `ImportError` when their field or balance
+implementation is unavailable. In particular, `structural_charge()` and
+`candidate_energy()` cannot report an unavailable calculation as zero.
+The structured `conservation()` report retains its explicit availability
+envelope; missing capability and an observed zero are distinct outcomes.
+
+`NuFWindow` admits nonnegative integer counts, positive represented durations
+and each supplied finite timestamp before conversion. Booleans, fractional
+counts, malformed lone bounds and nonzero clock underflow reject. Two bounds
+must describe a nonempty window consistent with its duration. The
+`NuFTelemetryAccumulator` retains exact sums of represented durations, so
+evicting a large window cannot erase smaller retained windows. Counts, clock
+totals, estimates and unit conversions are admitted before a recording changes
+the window buffer or graph history; unrepresentable results reject.
+Configuration is validated even when an accumulator already exists. Explicit
+empty graph/mapping sinks take precedence over an attached graph.
+
+These are observed count-rate estimates under a supplied Poisson model, with
+approximate normal confidence intervals. Independence and nonoverlap are
+observation premises, not reducer guarantees. The estimate does not replace
+the capacity in a nodal law; the configured `HZ_STR_BRIDGE` is a conversion
+convention until independently calibrated. Empty evidence yields unavailable
+estimates. Controls: [count-rate telemetry](../tests/test_nu_f_telemetry.py).
+
+The standard observer supplies an unstable-node count proxy, derived from the
+configured pressure/rate thresholds. It is neither a count of operator events
+nor a measurement of primitive capacity. A matching `BEFORE_STEP`/`AFTER_STEP`
+pair requires a fresh stability observation and positive actual elapsed time;
+requested `dt` does not replace that interval. The runtime's initial zero clock
+is an explicit convention. Missing, stale or invalid stability evidence marks
+the observation unavailable without adding a zero or all-node count. A second
+`AFTER_STEP` cannot reuse the same interval. Metrics registration places its
+producer before this consumer regardless of attachment order, preserving other
+callbacks' relative order and existing telemetry configuration. Controls:
+[standard observer evidence](../tests/test_standard_observer_telemetry.py).
+The completed window publishes its existing snapshot and updates only the
+current observation's metric-history entry, without a second append. An
+unavailable observation preserves prior successful telemetry.
+Repeated diagnostic registration is idempotent, including strict callback
+registration; worker counts are resolved from live configuration when observed.
+Only advanced glyph-duration diagnostics consume the configured `DT`, admitting
+it before metric writes. That configured operation-time basis is distinct from
+the standard observer's measured elapsed interval.
+
 Global and local structural coherence share stored-alias admission, finite mean
 reduction and the reciprocal diagnostic in `metrics.common`. The radius-local
 observation includes its center; the legacy immediate-neighbor observation
@@ -257,6 +589,16 @@ Kuramoto magnitude; malformed present phases cannot be skipped to report perfect
 alignment. Its legacy empty-graph value of one is a convention, not evidence.
 A zero resultant has zero magnitude but no direction. Pairwise linear phase
 affinity is a configured score, distinct from structural C and live U3 admission.
+All-node pulse and dissonance observations share one live trigonometric capture
+across their weighted local rows. Sparse affinity entries are partitioned once
+per call, checking every index and weight before reducing rows. Entry order,
+duplicates and diagonal admission are retained.
+Each new observation detects raw phase/support edits; the public one-node reader
+still revalidates live state independently. No public input can supply a trusted
+snapshot, and the shared capture is not a persistent observation. Weights reject
+negative, nonfinite and nonzero-underflowing inputs before acceptance. Ordinary
+row summation order is unchanged; extreme finite weights use common positive
+rescaling to avoid overflow and subnormal-product loss in the weighted mean.
 
 The [declared-cycle winding reader](../src/tnfr/physics/winding_certificates.py)
 uses shared represented-real admission before circular reduction. A nonzero
@@ -293,6 +635,17 @@ cache switches remain compatibility arguments, since graph identity cannot
 capture changing state, selected checks or arbitrary custom-validator inputs.
 Returned violation records are detached while preserving node-label identity.
 
+The ten historical invariant-check identifiers retain API compatibility; they
+do not replace the six canonical invariants. Scalar checks admit authoritative
+aliases through the shared domain owners: uniform signed-real BEPI is valid
+form, while complex/nonuniform form cannot be projected into admission.
+Nonnegative capacity includes zero even at nonzero pressure. Configured bounds,
+edge-phase thresholds and low-capacity/high-pressure alerts remain diagnostic
+policies, separate from live U3 admission or NFR existence. A false optional
+operator-history marker with changed form produces a warning; that marker
+neither forbids declared continuous flow nor identifies the change's cause.
+See the [validator controls](../tests/test_legacy_invariant_admission.py).
+
 `run_structural_validation()` and its health summary distinguish field
 availability from threshold flags. Unavailable comparisons have no passing
 Boolean; empty support, undefined curvature or invalid thresholds cannot yield
@@ -324,6 +677,18 @@ one pre-action and one post-action state without initializing an unused backend.
 This remains a supplied controller, not an emergent operator-selection law or
 a transaction covering arbitrary later operator/callback failures.
 
+`TNFRSelfOptimizingEngine` admits consumed graph scalars before binary64
+conversion. Boolean/text/nonfinite values and nonzero values lost to zero
+raise `TNFRValueError`. Invalid optional performance measurements remain
+unavailable. Pressure magnitude and measured speedup, memory, charge-drift
+and Si means use shared finite reductions, retaining representable means
+even when a naive sum would overflow. EPI variance uses translated/scaled
+dispersion and becomes `None` when its nonzero square cannot be represented;
+that case does not trigger the low-variance policy. Exact zero remains valid.
+These are numerical and policy-admission rules, not new nodal dynamics.
+The [manifest workflow](../scripts/README.md#reproducibility-and-research)
+owns input-file admission and report handling.
+
 Phase coordination validates every proposed phase before its first phase
 write on NumPy, scalar and worker paths. Only its exact-reduction transaction
 also restores graph-owned caches/history after a late failure. Capacity
@@ -347,6 +712,17 @@ their positive cuts describe a diagnostic neighborhood, not exact equilibrium.
 Sense-index normalization shares these reads on Python and NumPy paths,
 including cache refresh. This changes invalid-input handling, not the Si law
 or its status as a configured diagnostic used by existing controllers.
+
+The shared scalar setters rebuild a cold absolute-maximum cache, or one
+without a live witness, from the whole consumed channel. Untargeted nodes
+therefore remain included after a selected-node write. Rebuilds admit
+authoritative real capacity/pressure values and signed scalar EPI through
+their respective shared owners; missing values retain zero, while invalid
+present values reject. A tied maximum witness is an implementation choice,
+not structural identity. Warm incremental caches require mutations to stay
+within their declared setter scope; arbitrary raw writes require rebuilding.
+Generic setters have no failure-atomicity promise. Snapshot operator stages
+retain their separate graph-owned rollback contract if a rebuild fails.
 
 Shared physics scalar and series readers also use represented-real admission:
 nonzero values lost in binary64 conversion reject before a diagnostic can
@@ -506,9 +882,18 @@ Capacity must be finite and nonnegative; pressure and retained derivatives
 must be finite represented reals. Missing values retain the documented defaults.
 The step, initial time and minimum step use the same raw scalar admission:
 Boolean/text inputs and nonzero values lost to zero during conversion reject.
-This retires the previous Boolean-timestep compatibility; use explicit numeric
+Use explicit numeric
 `0.0` or `1.0` when those durations are intended. Admitted zero-duration calls
 remain no-ops.
+
+Runtime consumption retains the authoritative timestep until shared
+represented-real admission, including values changed by `BEFORE_STEP`
+callbacks or pressure hooks. Earlier callback/pressure effects are not rolled
+back by this check. The auxiliary-engine handoff retains the duration supplied
+to the nodal integrator, rather than rereading a mutable `DT` afterward.
+The separate mechanical symplectic steppers use the same
+raw admission for signed timesteps, retaining negative reversible stages and
+zero-step identity.
 
 Every positive internal substep must advance a finite represented clock;
 checking only the requested final duration is insufficient under subdivision.
@@ -521,6 +906,27 @@ supplies its broader transaction.
 Clipping still separates the stored unconstrained rate from the realized EPI
 secant. These checks establish neither solver accuracy nor a physical clock.
 Controls: [integrator numerics](../tests/test_integrator_numerics.py).
+
+The separate `rk4_coupled_step(state, rhs, *, t, dt)` accepts a nonempty tuple
+of complete real coordinates and a callback returning the same-size tuple of
+rates. It refreshes that callback at every immutable full-state RK4 stage,
+reusing the existing Euler and quadrature arithmetic. Every coordinate, rate,
+time and output receives represented-real admission; the positive duration
+must retain strictly ordered start, midpoint and endpoint clocks. Invalid
+dimensions, nonfinite results and nonzero results lost to zero reject.
+This explicit helper supplies no model, clipping, phase wrapping, graph writes,
+history or accuracy certificate. The caller retains law, Gamma, clock and
+observation association; callback effects are outside rollback. The ordinary
+graph integrator's held-pressure semantics remain unchanged. Independent
+[coupled-step controls](../tests/test_coupled_rk4_step.py) exercise its numerical
+and admission boundaries.
+
+The extended scalar flux divergence retains its unique outgoing-neighbor law
+`sqrt(k) * (J_i - mean(J_j))`, including self-loops and excluding parallel-edge
+multiplicity. It reuses shared neighbor-difference arithmetic, so finite common
+offsets and mixed-sign cancellation do not create spurious overflow or
+divergence. Invalid consumed inputs and unrepresentable final values reject.
+This scalar contrast is not an incidence divergence or a conservation theorem.
 
 Active built-in Gamma sources validate authoritative phase aliases before
 trigonometric caching or array conversion. A vector source requires one phase
@@ -737,6 +1143,12 @@ zero steps compute none, and subsequent calls build it anew, including native
 gradient graphs. Subclasses and replaced public `step` methods retain their
 per-step dispatch.
 
+The nodal runtime's optional `MATH_ENGINE` path forwards authoritative raw
+coordinates to its projector; a rejected node is not silently omitted from
+the preparation. Tolerance and generator admission precede auxiliary evolution.
+Retained state uses the engine's declared backend, with explicit export for
+observation adapters. These handoff checks do not promise full-step rollback.
+
 The public mathematical phase readers apply the same raw-value admission to
 scalar, list and NumPy inputs. `normalize_phase` returns the represented
 half-open interval `[0, 2*pi)`; a modulo result rounded to its upper endpoint
@@ -763,7 +1175,17 @@ policies, not stability certificates.
 before writing: narrowing that erases a nonzero difference rejects and leaves
 the output unchanged, including its unselected entries.
 
-`BasicStateProjector` reuses the shared spectral-state normalization, scaling
+`BasicStateProjector` admits signed scalar EPI, nonnegative capacity, finite
+phase and a positive integer dimension before array construction or random
+excitation. It requires a complex dtype and admits its null tolerance before
+random draws. Boolean/text values and nonzero materialization loss reject,
+including nonzero components erased when narrowing the output dtype.
+The CLI math summary reads authoritative aliases under these same domains;
+invalid primary state cannot fall through to a secondary alias, and legacy
+phase storage is retained. This auxiliary map does not identify physical state.
+The summary rebuilds its validator from current admitted operators and
+thresholds; a cached verdict cannot substitute for those live premises.
+The projector reuses the shared spectral-state normalization, scaling
 finite amplitudes before evaluating their norm. Its null threshold must be a
 finite nonnegative represented real, matching the other normalization consumers.
 A representable large-amplitude vector therefore remains normalized instead

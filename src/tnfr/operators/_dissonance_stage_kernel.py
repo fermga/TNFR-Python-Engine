@@ -14,16 +14,13 @@ import math
 from collections.abc import Mapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass
-from numbers import Real
 from typing import Any
 
-import numpy as np
-
-from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR
 from ..dynamics.propagation import _prepare_dissonance_propagation
 from ..errors import TNFRValueError
 from ..types import Glyph
+from ._argument_validation import finite_node_real
 from .dissonance import _plan_local_dissonance
 
 
@@ -125,31 +122,13 @@ class DissonanceStageProposal:
 def _snapshot_pressure(snapshot: Any, node: Any) -> float:
     """Read one finite signed pressure without permissive fallback."""
 
-    try:
-        raw = get_attr(
-            snapshot.nodes[node],
-            ALIAS_DNFR,
-            0.0,
-            strict=True,
-            conv=lambda value: value,
-        )
-    except (OverflowError, TypeError, ValueError) as exc:
-        raise TNFRValueError(
-            f"OZ snapshot pressure {node!r} must be a finite real scalar"
-        ) from exc
-    if isinstance(raw, (bool, np.bool_)) or not isinstance(raw, Real):
-        raise TNFRValueError(
-            f"OZ snapshot pressure {node!r} must be a finite real scalar"
-        )
-    try:
-        value = float(raw)
-    except (OverflowError, TypeError, ValueError) as exc:
-        raise TNFRValueError(
-            f"OZ snapshot pressure {node!r} must be a finite real scalar"
-        ) from exc
-    if not math.isfinite(value):
-        raise TNFRValueError(f"OZ snapshot pressure {node!r} must be finite")
-    return value
+    return finite_node_real(
+        snapshot.nodes[node],
+        ALIAS_DNFR,
+        0.0,
+        operator="Dissonance",
+        label=f"OZ snapshot pressure {node!r}",
+    )
 
 
 def propose_dissonance_stage(

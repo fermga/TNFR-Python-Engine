@@ -156,7 +156,7 @@ def _joint_readout(capture, band, domain):
     }
 
 
-def _repeat_refusal_control(graph):
+def _repeat_admission_control(graph):
     before = _captured_state(graph)
     _, word = _word((Coupling(), Coupling(), Silence()), initialized=True)
     candidates = tuple(asdict(validate_candidate(graph, node, "UM")) for node in graph)
@@ -169,9 +169,10 @@ def _repeat_refusal_control(graph):
         "history_at_probe": before["state"]["glyph_history"],
         "materialized_state_preserved": True,
         "scope": (
-            "Both whole-word validators and the current incremental gate are retained. "
-            "No direct repeated UM is executed; a string-word refusal is not silently "
-            "promoted to a generic kernel or live-candidate refusal"
+            "Both whole-word validators use shared core admission; the current "
+            "incremental gate is recorded separately. No direct repeated UM is "
+            "executed. Admission does not transfer the evaluated UM/IL response "
+            "to a word without Coherence separators"
         ),
     }
 
@@ -298,7 +299,7 @@ def run_c6_joint_case(mode, epsilon):
         )
         um_winding = _winding_state(graph)
         if cycle == 0:
-            record["repeated_um_control"] = _repeat_refusal_control(graph)
+            record["repeated_um_control"] = _repeat_admission_control(graph)
         current, il = _observed_stage(
             graph,
             ops[2 * cycle + 1],

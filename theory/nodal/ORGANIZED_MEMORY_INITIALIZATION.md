@@ -3,8 +3,8 @@
 <a id="organized-memory-initialization-declaration"></a>
 ## Fixed analytical comparison
 
-The [initialization gate](../research/FIVE_STAGE_EXECUTION_PLAN.md#organized-compressed-initialization-admission)
-asks whether independent preparation or existing observations supply the
+This comparison asks whether independent preparation or existing observations
+supply the
 information consumed by the [compressed forecast](ORGANIZED_COMPRESSED_MEMORY.md).
 Distinguish the actual prepared image from its larger norm enclosure. The
 original recovery retained separate form and phase bounds before replacing

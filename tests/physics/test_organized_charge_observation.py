@@ -16,7 +16,6 @@ from tnfr.physics._organized_slot_registration import (
     _observe_organized_slot_registration,
 )
 
-
 _ZERO = (Q(0),) * 54
 _SLOTS = (0,) * 5
 _GAMMA = 1 / (1023 * pi)

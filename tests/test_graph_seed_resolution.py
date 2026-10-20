@@ -17,7 +17,7 @@ from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_VF
 from tnfr.dynamics.sampling import update_node_sample
 from tnfr.initialization import init_node_attrs
 from tnfr.node import NodeNX
-from tnfr.operators import _um_select_candidates, apply_glyph
+from tnfr.operators import apply_glyph
 from tnfr.operators.definitions import Dissonance
 from tnfr.operators.jitter import (
     JitterCache,
@@ -127,17 +127,49 @@ def test_recorded_seed_replays_initialization_operators_sampling_and_remesh(seed
         )
 
 
-def test_coupling_candidate_stream_accepts_none_and_replays_recorded_seed():
-    source = _graph(None, 12)
-    source_node = NodeNX(source, 0)
-    chosen = _um_select_candidates(
-        source_node, iter(NodeNX(source, n) for n in range(1, 12)), 4, "random", 0
+@pytest.mark.parametrize("mode", ["random", "sample"])
+def test_coupling_candidate_stream_accepts_none_and_replays_recorded_seed(
+    monkeypatch, mode
+):
+    calls = []
+    monkeypatch.setattr(
+        random.SystemRandom,
+        "getrandbits",
+        lambda self, bits: calls.append(bits) or 314159,
     )
-    replay = _graph(source.graph["RANDOM_SEED"], 12)
-    repeated = _um_select_candidates(
-        NodeNX(replay, 0), iter(NodeNX(replay, n) for n in range(1, 12)), 4, "random", 0
-    )
-    assert [n.n for n in chosen] == [n.n for n in repeated]
+
+    def coupling_graph(seed):
+        graph = _graph(seed, 12)
+        graph.graph.update(
+            UM_FUNCTIONAL_LINKS=True,
+            UM_COMPAT_THRESHOLD=0.0,
+            UM_CANDIDATE_COUNT=4,
+            UM_CANDIDATE_MODE=mode,
+        )
+        for node in graph:
+            graph.nodes[node].update(EPI=0.5, nu_f=1.0, theta=0.0, dnfr=0.0, Si=1.0)
+        return graph
+
+    source = coupling_graph(None)
+    apply_glyph(source, 0, "UM")
+    replay = coupling_graph(source.graph["RANDOM_SEED"])
+    apply_glyph(replay, 0, "UM")
+
+    # Node 0 and its existing neighbor are not functional-link candidates.
+    candidates = list(range(2, 12))
+    expected = candidates[:4]
+    rng = _legacy_rng(source.graph["RANDOM_SEED"], 0)
+    for index, candidate in enumerate(candidates[4:], start=4):
+        replacement = rng.randint(0, index)
+        if replacement < 4:
+            expected[replacement] = candidate
+    if mode == "sample":
+        rng.shuffle(expected)
+
+    assert set(source.neighbors(0)) - {1} == set(expected)
+    assert list(source.neighbors(0)) == list(replay.neighbors(0))
+    assert set(source.edges()) == set(replay.edges())
+    assert calls == [64]
 
 
 def test_copy_after_resolution_has_independent_recorded_jitter_progress():

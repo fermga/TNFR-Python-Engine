@@ -10,8 +10,8 @@ and correlation information. They do not reconstruct a complete network state:
 
 All fields are read-only telemetry that never mutate EPI.
 
-PRECISION MODE INTEGRATION (Nov 2025):
---------------------------------------
+Precision and cache scope
+-------------------------
 Fields record global precision_mode from tnfr.config. Some accumulators use
 longdouble in research mode where available, but circular-curvature components
 always use explicitly materialized NumPy binary64 trigonometry. Exactness there
@@ -19,35 +19,15 @@ concerns the component sums only; the angle and wrapped curvature remain
 approximations. Changing precision does not change a policy definition, but a
 finite decision near a threshold can change with numerical error.
 
-CACHE INVALIDATION (root cause corrected + fixed, May 2026):
-------------------------------------------------------------
 compute_structural_potential (and estimate_coherence_length, J_ΔNFR) is
 cached via @cache_tnfr_computation with graph_topology and node_dnfr
 dependencies. Precision-aware canonical fields additionally declare
 precision_mode, so changing either the source or numerical mode cannot reuse
 an incompatible cached field. The cache key embeds a dependency hash of the
-node fields, so changing ΔNFR on a fixed topology MUST invalidate the entry.
-
-**Historical bug (now fixed)**: the dependency hash
-(tnfr.utils.cache._compute_dependency_hash) read node values by hardcoded
-English keys ('delta_nfr', 'vf', 'epi'), but the canonical writer
-(tnfr.alias.set_attr) stores each field under its FIRST alias — the
-Greek/canonical key ('ΔNFR', 'νf', 'EPI'). The mismatch made the hash read
-None for every node, so the cache key was BLIND to ΔNFR: Φ_s returned stale
-values after ANY ΔNFR change (uniform or not), and two distinct graphs with
-identical topology but different ΔNFR collided.
-
-**Earlier misdiagnosis (superseded)**: this was previously attributed to
-"uniform ΔNFR scaling producing no spatial gradient", with an
-alpha-variation (2.0→2.001) workaround to force cache misses. That analysis
-was incorrect — Φ_s is linear in ΔNFR (Φ_s(k·ΔNFR) = k·Φ_s), so uniform
-scaling DOES change Φ_s and DOES yield a non-zero drift (k−1)·Φ_s; the
-zero-drift symptom was entirely the cache bug, not the physics.
-
-**Fix**: tnfr.utils.cache._compute_dependency_hash now resolves
-dependencies through the canonical alias tuples (_dependency_alias_keys),
-so ΔNFR/νf/EPI changes correctly invalidate dependent caches. No
-alpha-variation workaround is needed.
+node fields resolved through canonical alias tuples. Changes to ΔNFR, νf or
+EPI invalidate every cache declaring that dependency, including on fixed
+topology. Structural potential is linear in the supplied pressure at fixed
+geometry, so uniform pressure scaling is observable.
 
 See: tests/physics/test_field_cache_invalidation.py for regression coverage
 """

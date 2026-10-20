@@ -2,7 +2,6 @@
 
 **Status**: Technical reference
 **Version source**: [pyproject.toml](../pyproject.toml)
-**Reviewed**: 2026-10-06
 
 ---
 
@@ -19,7 +18,7 @@ unimplemented thermal proxies are not research routes or validation evidence.
 
 This is also the single owner of the physical-emergence atlas: correspondence
 cards, reuse and evidence boundaries. The
-[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#physical-atlas-selection-and-dependencies)
+[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 alone selects work and its order. The atlas does not replace the generative
 objective or establish that physical entities emerge from TNFR.
 
@@ -64,6 +63,102 @@ representation, not an independently derived mechanism. Replace intuitive
 ratings such as "very high correspondence" with the evidence states below.
 No entry currently has complete physical admission under the P2 protocol.
 
+<a id="observed-pattern-admission"></a>
+#### Starting from observed organizations
+
+An experimentally established pattern can anchor the identity and response
+question before choosing a tractable TNFR family. Its existence is independent
+evidence of the phenomenon, not of a TNFR realization. Establish the measured
+property, source, boundary conditions, clock and uncertainty first; then admit
+the complete candidate dynamics and observation map. A picture, fitted spectrum
+or reconstructed pressure does not establish the underlying nodal state.
+
+Distinguish spontaneous pattern selection from absence of energy supply,
+prepared geometry, feedback or perturbations. For example, experimentally
+measured [chemical wave organizations](https://arxiv.org/html/1406.5964v2#S2)
+offer spatial organization and continued propagation, while
+[laboratory atomic spectra](https://www.nist.gov/pml/atomic-spectra-database)
+offer reproducible transition observations. These are different claims and
+measurement problems: a chemical pattern does not derive elementary matter,
+and an atomic line list does not reveal a complete internal trajectory or
+demonstrate atomic formation. In spectroscopy, retain the distinction between
+[observed and Ritz wavelengths](https://physics.nist.gov/PhysRefData/ASD/Html/lineshelp.html),
+laboratory and astronomical sources, and measured versus calculated strengths.
+
+Use the [existing oscillator-source inventory](research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#primitive-phase-information-boundary)
+before reopening a data search. Choose a candidate for independently observable
+formation, persistence or response and discriminating predictions, not visual
+similarity. Published results are known constraints; reserve independent whole
+acquisitions before evaluating predictions and compare equally informed
+alternatives. The [sole execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns the bounded selection task; this criterion admits no physical fit or new
+universal law by itself.
+
+<a id="observed-pattern-admission-result"></a>
+#### Bounded methods comparison: no physical prediction admitted
+
+The 2026-10-16 comparison inspected the existing quartz lead, one chemical
+wave study and one terrestrial hydrogen-spectrum source route. None supplies
+the complete state, law, measurement and independent-acquisition bridge needed
+to evaluate a TNFR prediction. This is an explicit admission insufficiency,
+not a negative test of TNFR against measured responses. Existing TCLab results
+and excluded oscillator bridges remain unchanged.
+
+| Reviewed case | Independently reported property | Bounded decision |
+| --- | --- | --- |
+| [Quartz resonators in one accelerometer](research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#quartz-observed-organization-admission) | Relative phase/frequency locking and perturbation response | Observational lead only; park until the same apparatus's sustaining/control law, joint readout and independent acquisitions are available. |
+| [Photosensitive BZ scroll ring](https://arxiv.org/html/1406.5964v2#S2) | Maintained chemical wave source near a boundary after controlled initialization | Physical data admission remains open. The published reaction-diffusion model provides a concrete conditional state-sufficiency question. |
+| [Terrestrial hydrogen Balmer emission](https://www.nist.gov/publications/critical-compilation-experimental-data-spectral-lines-and-energy-levels-hydrogen) | Laboratory spectral-line positions | Retain as a future fundamental-property benchmark; no TNFR emission/detector bridge or reserved acquisition is admitted. |
+
+**Chemical preparation and observation.** Azhand, Totz and Engel's
+[2014 primary study, Sections 2-3](https://arxiv.org/html/1406.5964v2)
+uses continuous chemical feed, controlled illumination and a confining
+boundary. A patterned illumination and partial-annihilation pulse initialize
+the scroll ring. Its subsequent maintenance is distinct from unprepared
+spontaneous formation. Transmitted light records the catalyst-related channel;
+the published comparator retains three chemical fields and diffusion.
+The reviewed article did not establish accessible raw acquisitions, independent
+repeat identities, calibrated optical uncertainty or camera timing. This does
+not prove that such records do not exist. Its breathing pacemaker is a numerical
+result, explicitly not an experimentally observed counterpart in that study.
+
+**Atomic provenance.** The candidate is hydrogen Balmer emission from a
+terrestrial discharge, not an undifferentiated ASD line list. The
+[NIST output documentation](https://physics.nist.gov/PhysRefData/ASD/Html/lineshelp.html)
+separates observed wavelengths, level-derived Ritz values, uncertainties and
+source-dependent intensities. Even an observed entry marked `:` may substitute
+a rounded Ritz value. [Kramida's compilation, Section 10.1](https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=842564)
+identifies Curtis's 1914 laboratory discharge measurements
+([original DOI](https://doi.org/10.1098/rspa.1914.0093)); other sections contain
+solar-derived products and model-dependent unresolved-line centers. Original
+full acquisition records were not accessible here. Every eventual benchmark
+must retain original-source and processing provenance. A TNFR organization
+still needs justified excitation, emission, detector and laboratory-clock
+maps; tuning graph eigenvalues to known lines would not supply them.
+
+**Foundational consequence.** The [chemical observation result](research/CHEMICAL_OBSERVATION_ADMISSION.md#chemical-observation-result)
+uses the supplied three-field model to prove regular reconstruction from the
+ideal catalyst field and its first two derivatives, and a `3n` lower bound
+for smooth exact realizations on open source-state families. Its singular
+cases, conditioning and independent illumination input prevent interpreting
+that inverse as automatic prediction from camera images. This excludes the
+same-site-count, held-capacity `2n` form/phase realization in that scope;
+it neither excludes all TNFR models nor admits a larger one by counting
+coordinates. Optical observation, structural-to-laboratory clock, independent
+acquisitions and constitutive identification remain open. The
+[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns further work; no physical fit follows from the conditional theorem.
+The source's spatial operator and model clock are supplied premises. Its
+state-recovery result does not derive their origin; the
+[relational geometry boundary](nodal/RELATION_FOUNDATIONS.md#operational-relational-geometry)
+separates response identification from physical spacetime emergence.
+
+No raw experimental acquisition or video was downloaded or evaluated; no ASD
+line-table query or spectral fit was performed. Published methods, qualitative
+results and incidental numerical excerpts are known prior information, not
+reserved predictions. No new simulation, fitting campaign, apparatus purchase
+or identification with fundamental matter follows.
+
 #### Six fields for each correspondence card
 
 1. **Phenomenon:** precise regime and evidence status, rather than a whole
@@ -100,10 +195,10 @@ of cards and prerequisites, not independently active campaigns.
 | Turing / reaction–diffusion | **Conditional mechanisms and obstructions reusable:** pure diffusion versus the same [multichannel capacity closure](CAPACITY_LOCALIZATION_BALANCE.md#8-a-local-form-capacity-relation-dissipation-and-restoration-criteria) | A justified local reaction/feedback law and a spatial-mode instability test; nonuniform appearance alone is insufficient. |
 | Critical phenomena | **No identified physical critical observable:** [field scope](../docs/STRUCTURAL_FIELDS_TETRAD.md#coherence-length) and spectral relaxation remain useful controls | Physical connected correlations, ensemble/dynamics, finite-size protocol and uncertainties; no critical exponent follows from the name `xi_C`. |
 | Vortices / topological defects | **Conditional discrete winding evidence:** [retention and branch loss](COUPLING_WINDING_PERSISTENCE.md#6-canonical-loss-branch-crossings-and-observation-limits) | Spatial/cell realization, interpolation, physical order parameter and defect core; graph winding alone is not a physical vortex. |
-| Solitons / localized coherent structures | **Conditional prepared transport and source obstruction:** a [finite full-state tube](nodal/LOCALIZED_IDENTITY_TRANSPORT.md) under positive-loss normalized-sine dynamics, with a [phase-uniform source exclusion](nodal/LOCALIZED_TRANSPORT_SOURCES.md#phase-flat-source-obstruction) for that directional identity | Prepared localization and direction remain premises; other mobile properties and bilateral organization remain open. Formation, collision, permanent motion and physical soliton/particle identification need separate evidence; the [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#localized-mobile-interaction-admission) owns interaction admission. |
+| Solitons / localized coherent structures | **Conditional prepared transport and source obstruction:** a [finite full-state tube](nodal/LOCALIZED_IDENTITY_TRANSPORT.md) under positive-loss normalized-sine dynamics, with a [phase-uniform source exclusion](nodal/LOCALIZED_TRANSPORT_SOURCES.md#phase-flat-source-obstruction) for that directional identity | Prepared localization and direction remain premises; other mobile properties and bilateral organization remain open. Formation, collision, permanent motion and physical soliton/particle identification need separate evidence; the [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) owns interaction admission. |
 | BEC / superfluidity | **Deferred physical bridge:** classical phase observations are available | Quantum state/statistics, observables and constitutive bridge; classical phase order does not establish condensation or superfluidity. |
 | Renormalization / universality | **Exact restricted coarse reductions and memory:** [scale bridge](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md), [elimination](DERIVED_EPI_MEMORY.md) | Declared scale/time/field transformations and effective-model flow/fixed points; REMESH and nesting are not automatically RG. |
-| Emergent geometry | **Conditional inherited geometry:** the same scale and observation owners | Demonstrate realizability and retained dynamics; a tetrad readout does not derive a fundamental physical geometry. |
+| Emergent geometry | **Conditional inherited geometry:** the same scale and observation owners; [operational identification boundary](nodal/RELATION_FOUNDATIONS.md#operational-relational-geometry) | Distinguish supplied support/length, state-space metrics and identifiable response geometry. Physical distance, clock, dimension and causal propagation require their own bridge; a tetrad readout supplies none by itself. |
 | Time-dependent directional response | **Exact tangent representation and controlled finite kicks:** [moving-pulse oscillator/reversal identities](nodal/SINE_REPLICA_PULSE.md#sine-moving-pulse-parametric-representation), [physical comparisons](#moving-pattern-physical-synergies) | Transient, steady-state, work and power responses differ. Physical preparation, observation, clock and uncertainty remain unadmitted. |
 | Fundamental particle properties / quantum theory | **Collective-property admission:** compare the [mechanisms and missing observations below](#collective-properties-and-fundamental-phenomena) | No particle or quantum identification; a bounded symmetry/interaction comparison is distinct from deriving a complete physical theory. Gravity, cosmology and substrate-origin campaigns remain deferred. |
 

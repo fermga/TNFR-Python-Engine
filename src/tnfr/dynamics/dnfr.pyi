@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, MutableMapping
 
 from tnfr.types import DeltaNFRHook, TNFRGraph
 from tnfr.utils.cache import DnfrCache as DnfrCache
@@ -12,6 +12,7 @@ def default_compute_delta_nfr(
     *,
     cache_size: int | None = ...,
     n_jobs: int | None = ...,
+    profile: MutableMapping[str, Any] | None = ...,
 ) -> None: ...
 def dnfr_epi_vf_mixed(G: TNFRGraph, *, n_jobs: int | None = ...) -> None: ...
 def dnfr_laplacian(G: TNFRGraph, *, n_jobs: int | None = ...) -> None: ...

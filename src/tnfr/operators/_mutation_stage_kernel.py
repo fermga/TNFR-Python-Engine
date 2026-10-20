@@ -14,6 +14,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from .. import glyph_history
+from .._exact_time import finite_represented_real
 from ..alias import get_attr, set_attr
 from ..constants.aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_EPI_KIND, ALIAS_THETA
 from ..constants.canonical import INV_PI
@@ -42,20 +43,19 @@ _TelemetryValue = bool | float | int
 
 
 def _finite_scalar(value: Any, label: str) -> float:
-    """Match the low-level glyph boundary for finite binary64 values."""
+    """Admit represented real scalars while retaining Mutation's zero sign."""
 
     try:
-        resolved = float(value)
+        resolved = finite_represented_real(value, label)[0]
     except (OverflowError, TypeError, ValueError) as exc:
         raise TNFRValueError(
-            f"{label} must be representable as a finite scalar",
+            str(exc),
             context={"field": label, "value": repr(value)},
         ) from exc
-    if not math.isfinite(resolved):
-        raise TNFRValueError(
-            f"{label} must remain finite",
-            context={"field": label, "value": repr(value)},
-        )
+    # The shared scalar reader normalizes zero for clock consumers. Mutation
+    # consumes the original pressure sign bit; admission precedes restoring it.
+    if resolved == 0.0:
+        resolved = math.copysign(0.0, value)
     return resolved
 
 
@@ -191,15 +191,24 @@ def propose_mutation_network_stage(
     """
 
     gate = validate_mutation_runtime_gate(graph.nodes[node], graph.graph)
+    raw_phase = get_attr(
+        graph.nodes[node], ALIAS_THETA, 0.0, strict=True, conv=lambda value: value
+    )
     if "ZHIR_theta_shift" in factors:
         phase = propose_mutation_stage(
-            get_attr(graph.nodes[node], ALIAS_THETA, 0.0, strict=True),
+            raw_phase,
             fixed_shift=factors["ZHIR_theta_shift"],
         )
     else:
         phase = propose_mutation_stage(
-            get_attr(graph.nodes[node], ALIAS_THETA, 0.0, strict=True),
-            get_attr(graph.nodes[node], ALIAS_DNFR, 0.0, strict=True),
+            raw_phase,
+            get_attr(
+                graph.nodes[node],
+                ALIAS_DNFR,
+                0.0,
+                strict=True,
+                conv=lambda value: value,
+            ),
             theta_shift_factor=factors["ZHIR_theta_shift_factor"],
         )
 

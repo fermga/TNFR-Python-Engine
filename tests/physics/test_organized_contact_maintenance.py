@@ -16,7 +16,6 @@ from tnfr.mathematics._rational_interval import I
 from tnfr.physics import _organized_contact_maintenance as owner
 from tnfr.physics import _organized_external_interaction as external
 
-
 _ERROR = Q(1, 10**10)
 _EDGES = (
     tuple((9 * c + j, 9 * c + (j + 1) % 9) for c in range(6) for j in range(9))

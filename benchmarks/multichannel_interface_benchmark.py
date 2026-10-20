@@ -33,6 +33,7 @@ Usage (PowerShell)::
     # Offline synthetic Kuramoto fixture:
     python benchmarks/multichannel_interface_benchmark.py --source synthetic
 """
+
 from __future__ import annotations
 
 import argparse

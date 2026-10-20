@@ -21,50 +21,95 @@ def run_partition_self_optimization(
     operation_type: str = "paley_partition",
     output_root: Path | str | None = None,
 ) -> dict[str, Any] | None:
-    """Run the CLI-driven self-optimization pipeline for a partition manifest.
+    """Collect dry-run recommendations for explicit graph partitions.
+
+    This checkout-only workflow uses the repository's ``scripts`` package.
+    It neither executes recommended operator words nor promotes them. Mapped
+    regression suites assess current code, not recommendation effects; an
+    operation without a mapped suite remains ``pending``.
 
     Parameters
     ----------
     manifest_path:
-        Path to the partition manifest JSON produced by a factorization workflow.
+        Path to a manifest whose partition files contain serialized graphs from
+        ``tnfr.engines.manifest.encode_graph`` or ``write_manifest_bundle``.
     manifest_summary_path:
         Optional path to the manifest summary emitted alongside the manifest.
     base_name:
         Optional override for the payload directory name. Defaults to the manifest stem.
     operation_type:
-        Operation label passed to the CLI runner (defaults to ``"paley_partition"``).
+        Operation label passed to the CLI runner. The historical default
+        ``"paley_partition"`` is only a label; it does not reconstruct a graph.
     output_root:
         Optional directory under which all self-optimization payloads should be stored.
+
+    Returns
+    -------
+    dict[str, Any]
+        Payload/report paths, runner and validation summaries, and an empty
+        ``promotable`` mapping. Errors propagate rather than returning ``None``.
     """
 
     manifest_path_obj = Path(manifest_path).resolve()
     summary_path_obj = (
         Path(manifest_summary_path).resolve() if manifest_summary_path else None
     )
-    payload_root = Path(output_root).resolve() if output_root else None
     effective_base_name = base_name or manifest_path_obj.stem
 
     if not manifest_path_obj.exists():
         raise FileNotFoundError(f"Manifest not found: {manifest_path_obj}")
 
     try:
-        from tnfr_factorization.self_opt_support import (
-            run_partition_self_optimization as _runner,
-        )
-    except (
-        ImportError
-    ) as exc:  # pragma: no cover - optional dependency in minimal installs
+        from scripts import run_self_opt_validation as validator
+        from scripts import run_self_optimization as runner
+    except ImportError as exc:
         raise RuntimeError(
-            "Self-optimization helpers require the 'tnfr_factorization' package to be available"
+            "Self-optimization orchestration requires a TNFR repository checkout "
+            "with scripts.run_self_optimization and scripts.run_self_opt_validation "
+            "importable; these drivers are not included in the installed wheel."
         ) from exc
 
-    return _runner(
-        manifest_path=manifest_path_obj,
-        manifest_summary_path=summary_path_obj,
-        base_name=effective_base_name,
-        operation_type=operation_type,
-        output_root=payload_root,
+    default_root = Path(__file__).resolve().parents[3] / "results" / "self_optimization"
+    payload_root = (
+        (Path(output_root) if output_root else default_root) / effective_base_name
+    ).resolve()
+    summary_path = payload_root / "_summary.json"
+    runner_args = [
+        "--manifest",
+        str(manifest_path_obj),
+        "--output-dir",
+        str(payload_root),
+        "--operation-type",
+        operation_type,
+        "--capture-snapshots",
+        "--summary",
+        str(summary_path),
+        "--quiet",
+    ]
+    if summary_path_obj is not None:
+        runner_args.extend(["--manifest-summary", str(summary_path_obj)])
+    runner_summary = runner.run(runner.parse_args(runner_args))
+
+    validation_report = payload_root / "_validation.json"
+    validation_summary = validator.run(
+        validator.parse_args(
+            [
+                "--payload-root",
+                str(payload_root),
+                "--report",
+                str(validation_report),
+                "--quiet",
+            ]
+        )
     )
+    return {
+        "payload_root": str(payload_root),
+        "summary_path": str(summary_path),
+        "validation_report": str(validation_report),
+        "promotable": {},
+        "runner_summary": runner_summary,
+        "validation_summary": validation_summary,
+    }
 
 
 def run_pattern_discovery_optimization(
@@ -74,7 +119,7 @@ def run_pattern_discovery_optimization(
     base_name: str | None = None,
     output_root: Path | str | None = None,
 ) -> dict[str, Any] | None:
-    """Run self-optimization pipeline for pattern discovery results.
+    """Collect checkout-only dry-run recommendations for pattern discovery.
 
     Parameters
     ----------
@@ -90,7 +135,7 @@ def run_pattern_discovery_optimization(
     Returns
     -------
     dict[str, Any] | None
-        Summary of the self-optimization run, or None if unsuccessful.
+        Dry-run summary; errors propagate. See ``run_partition_self_optimization``.
 
     Examples
     --------
@@ -116,7 +161,7 @@ def run_fractal_partition_optimization(
     base_name: str | None = None,
     output_root: Path | str | None = None,
 ) -> dict[str, Any] | None:
-    """Run self-optimization pipeline for fractal partition results.
+    """Collect checkout-only dry-run recommendations for fractal partitions.
 
     Parameters
     ----------
@@ -132,7 +177,7 @@ def run_fractal_partition_optimization(
     Returns
     -------
     dict[str, Any] | None
-        Summary of the self-optimization run, or None if unsuccessful.
+        Dry-run summary; errors propagate. See ``run_partition_self_optimization``.
 
     Examples
     --------
@@ -158,12 +203,12 @@ def run_batch_certificate_optimization(
     base_name: str | None = None,
     output_root: Path | str | None = None,
 ) -> dict[str, Any] | None:
-    """Run self-optimization pipeline for batch certificate processing.
+    """Collect checkout-only dry-run recommendations for a graph-manifest batch.
 
     Parameters
     ----------
     manifest_path:
-        Path to the batch_optimization_manifest.json from analyze_patterns.generate_optimization_manifest().
+        Path to an explicit graph-partition manifest for the batch.
     manifest_summary_path:
         Optional path to the batch_optimization_summary.json file.
     base_name:
@@ -174,7 +219,7 @@ def run_batch_certificate_optimization(
     Returns
     -------
     dict[str, Any] | None
-        Summary of the self-optimization run, or None if unsuccessful.
+        Dry-run summary; errors propagate. See ``run_partition_self_optimization``.
 
     Examples
     --------

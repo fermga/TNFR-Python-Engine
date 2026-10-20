@@ -2,14 +2,14 @@ cff-version: 1.2.0
 title: "TNFR-Python-Engine: Resonant Fractal Nature Theory Implementation"
 message: "If you use this software, please cite it as below."
 type: software
-version: "0.0.3.8"
-date-released: "2026-09-27"
+version: "0.0.3.9"
+date-released: "2026-10-20"
 authors:
   - given-names: "F. F."
     family-names: "Martinez Gamo"
     orcid: "https://orcid.org/0009-0007-6116-0613"
 repository-code: "https://github.com/fermga/TNFR-Python-Engine"
-url: "https://github.com/fermga/TNFR-Python-Engine/releases/tag/v0.0.3.8"
+url: "https://github.com/fermga/TNFR-Python-Engine/releases/tag/v0.0.3.9"
 # Project concept DOI (all versions); the URL above identifies this release.
 doi: "10.5281/zenodo.17602860"
 license: "MIT"
@@ -26,15 +26,17 @@ keywords:
   - "nodal equation"
   - "phase synchronization"
 abstract: >-
-  Python framework for graph-coupled nodal dynamics and coherent-pattern research.
-  The engine provides named structural operators, grammar admission, diagnostic
-  fields and an explicitly selected relational form-phase model with shared
-  SDK execution and reports. Conditional results cover pattern recovery,
-  formation on supplied support, composition, memory and an identity-preserving
-  bridge relocation. Read-only observers retain storage, rate, support-cut and
-  declared-supply evidence without selecting or executing support changes.
-  This release consolidates numerical admission, JSON/report contracts and
-  documentation, and separates optional arithmetic applications from the engine.
-  Exact identities, conditional theorems and finite observations retain their
-  assumptions. Autonomous event selection, its clock and physical identification
-  remain open; the software is not evidence of established particle physics.
+  Python framework for investigating organized mathematical objects under
+  declared nodal laws. Objects retain the form, capacity, phase, support,
+  constituent information and context needed for their identity and response.
+  The engine integrates registered structural operators, grammar admission,
+  atomic execution stages, continuous and relational dynamics, and detached
+  observations and conditional certificates. Mathematical results address
+  formation, recovery, interaction, memory and collective actions under their
+  specific models. Identity, state sufficiency, supplied intervention and
+  autonomous occurrence remain distinct claims. Shared numerical admission,
+  report contracts and reproducible instruments support this investigation.
+  The basic primality utility remains separate; unsupported advanced arithmetic
+  integrations and the factorization lab are retired from active research.
+  Exact identities, conditional proofs and finite computational evidence do not
+  constitute empirical validation or select a unique fundamental law.

@@ -537,13 +537,17 @@ def test_uniform_offset_is_not_full_return_even_when_centered_error_is_zero():
     assert result["full_H_energy"] == F(27, 2)
 
 
-def test_nested_bepi_metadata_preserves_complex_component_bits_and_history_retention():
+def test_nested_stored_bepi_metadata_preserves_component_bits_and_history_retention():
     from benchmarks.thol_preparation_policy import _literal
-    from tnfr.mathematics.epi import BEPIElement
 
     values = (complex(-0.0, 0.0), complex(0.25, -0.0))
-    element = BEPIElement(values, (complex(-0.5, 0.125),), (0.0, 1.0))
-    state = element.__getstate__()
+    # Observe stored metadata directly: constructing a BEPIElement first would
+    # intentionally canonicalize zero components before this projection.
+    state = {
+        "continuous": values,
+        "discrete": (complex(-0.5, 0.125),),
+        "grid": (0.0, 1.0),
+    }
     source = {"bepi": state, "history": deque([state], maxlen=3)}
     encoded = _literal(source)
     expected = tuple(
@@ -557,6 +561,22 @@ def test_nested_bepi_metadata_preserves_complex_component_bits_and_history_reten
     json.dumps(encoded, allow_nan=False)
     state["continuous"] = (complex(7.0, 8.0),)
     assert encoded["bepi"]["continuous"] == expected
+
+
+def test_constructed_bepi_projection_records_admitted_component_bits():
+    from benchmarks.thol_preparation_policy import _literal
+    from tnfr.mathematics.epi import BEPIElement
+
+    values = (complex(-0.0, 0.0), complex(0.25, -0.0))
+    element = BEPIElement(values, (complex(-0.5, 0.125),), (0.0, 1.0))
+    encoded = _literal(element.__getstate__())
+
+    assert encoded["continuous"] == (
+        ("complex", ("binary64", "0x0.0p+0"), ("binary64", "0x0.0p+0")),
+        ("complex", ("binary64", "0x1.0000000000000p-2"), ("binary64", "0x0.0p+0")),
+    )
+    assert values[0].real.hex() == "-0x0.0p+0"
+    assert values[1].imag.hex() == "-0x0.0p+0"
 
 
 @pytest.mark.parametrize(

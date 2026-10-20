@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import warnings
 from copy import deepcopy
+from fractions import Fraction
 from typing import Any
 
 import networkx as nx
@@ -13,8 +14,11 @@ import pytest
 from tnfr.alias import get_attr
 from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from tnfr.errors import TNFRValueError
+from tnfr.node import NodeNX
+from tnfr.operators import apply_glyph, apply_glyph_obj
 from tnfr.operators._dissonance_stage_kernel import propose_dissonance_stage
 from tnfr.operators.definitions import Coherence, Dissonance, Emission, Silence
+from tnfr.operators.factor_contracts import GlyphFactorValidationError
 from tnfr.operators.grammar_execution import ValidatedSequence
 from tnfr.operators.network_stage import (
     OPERATOR_MAJOR_GAUSS_SEIDEL,
@@ -23,6 +27,8 @@ from tnfr.operators.network_stage import (
     TWO_PHASE_JACOBI,
     execute_dissonance_stage,
 )
+from tnfr.operators.preconditions import OperatorPreconditionError
+from tnfr.operators.preconditions.dissonance import validate_dissonance_strict
 from tnfr.operators.word_execution import run_network_sequence
 
 
@@ -356,16 +362,200 @@ def test_self_loop_local_and_propagated_overlap_matches_direct_execution():
     assert staged.nodes[0]["_oz_propagation"] == direct.nodes[0]["_oz_propagation"]
 
 
-@pytest.mark.parametrize("invalid_pressure", [np.bool_(True), "0.2"])
-def test_non_real_pressure_is_rejected_by_snapshot_domain(invalid_pressure):
+@pytest.mark.parametrize("route", ["proposal", "glyph", "node", "public", "stage"])
+@pytest.mark.parametrize(
+    "invalid_pressure",
+    [True, np.bool_(True), "0.2", Fraction(1, 10**400), float("nan"), float("inf")],
+)
+def test_invalid_pressure_rejects_before_oz_lifecycle_or_zero_seed(
+    route, invalid_pressure
+):
     graph = _graph(nx.DiGraph)
     graph.nodes[0][ALIAS_DNFR[0]] = invalid_pressure
+    graph.nodes[0][ALIAS_DNFR[1]] = 0.2
+    adapter = NodeNX(graph, 0) if route == "node" else None
+    cache = graph.graph.get("_node_cache")
+    before = _snapshot(graph)
+    if adapter is not None:
+        before[0].pop("_node_cache")
+
+    errors = (
+        (OperatorPreconditionError, TNFRValueError)
+        if adapter
+        else OperatorPreconditionError
+    )
+    with pytest.raises(errors):
+        if route == "proposal":
+            propose_dissonance_stage(graph, (0,), propagate=False)
+        elif route == "glyph":
+            apply_glyph(graph, 0, "OZ")
+        elif route == "node":
+            apply_glyph_obj(adapter, "OZ")
+        elif route == "public":
+            Dissonance()(
+                graph, 0, sequence_context=_context(), propagate_to_network=False
+            )
+        else:
+            execute_dissonance_stage(
+                graph,
+                Dissonance(),
+                (0,),
+                sequence_context=_context(),
+                propagate_to_network=False,
+            )
+
+    after = _snapshot(graph)
+    if adapter is not None:
+        assert graph.graph["_node_cache"] is cache
+        assert cache == {0: adapter}
+        after[0].pop("_node_cache")
+    assert after == before
+
+
+@pytest.mark.parametrize("route", ["validator", "public", "stage"])
+@pytest.mark.parametrize(
+    ("key", "value"),
+    [
+        ("OZ_MIN_EPI", float("nan")),
+        ("OZ_MIN_EPI", True),
+        ("OZ_MIN_EPI", Fraction(1, 10**400)),
+        ("OZ_MAX_DNFR", float("nan")),
+        ("OZ_MAX_DNFR", float("inf")),
+        ("OZ_MAX_DNFR", False),
+        ("OZ_MAX_DNFR", -0.1),
+        ("OZ_MIN_VF", float("nan")),
+        ("OZ_MIN_VF", "0.1"),
+        ("OZ_MIN_VF", -0.1),
+        ("OZ_MIN_DEGREE", True),
+        ("OZ_MIN_DEGREE", 1.5),
+        ("OZ_MIN_DEGREE", -1),
+    ],
+)
+def test_invalid_oz_thresholds_cannot_certify_readiness(route, key, value):
+    graph = _graph()
+    graph.graph.update(VALIDATE_OPERATOR_PRECONDITIONS=True, **{key: value})
     before = _snapshot(graph)
 
-    with pytest.raises(TNFRValueError, match="finite real scalar"):
-        propose_dissonance_stage(graph, (0,), propagate=False)
+    with pytest.raises(OperatorPreconditionError, match=key):
+        if route == "validator":
+            validate_dissonance_strict(graph, 0)
+        elif route == "public":
+            Dissonance()(graph, 0, sequence_context=_context())
+        else:
+            execute_dissonance_stage(
+                graph, Dissonance(), (0,), sequence_context=_context()
+            )
 
     assert _snapshot(graph) == before
+
+
+@pytest.mark.parametrize(
+    ("aliases", "value"),
+    [
+        (ALIAS_EPI, True),
+        (ALIAS_EPI, float("nan")),
+        (ALIAS_EPI, Fraction(1, 10**400)),
+        (ALIAS_VF, True),
+        (ALIAS_VF, float("nan")),
+        (ALIAS_VF, -0.1),
+        (ALIAS_DNFR, True),
+        (ALIAS_DNFR, float("nan")),
+        (ALIAS_DNFR, Fraction(1, 10**400)),
+    ],
+)
+def test_strict_oz_readiness_rejects_invalid_authoritative_state(aliases, value):
+    graph = _graph()
+    graph.nodes[0][aliases[0]] = value
+    graph.nodes[0][aliases[1]] = 0.5
+    before = _snapshot(graph)
+
+    error_type = TNFRValueError if aliases == ALIAS_EPI else OperatorPreconditionError
+    with pytest.raises(error_type):
+        validate_dissonance_strict(graph, 0)
+
+    assert _snapshot(graph) == before
+
+
+def test_strict_oz_preserves_signed_epi_and_inclusive_thresholds():
+    graph = _graph()
+    graph.nodes[0][ALIAS_EPI[0]] = -0.25
+    graph.nodes[0][ALIAS_VF[0]] = 0.0
+    graph.nodes[0][ALIAS_DNFR[0]] = -0.5
+    graph.graph.update(OZ_MIN_EPI=-0.25, OZ_MIN_VF=0.0, OZ_MAX_DNFR=0.5)
+
+    validate_dissonance_strict(graph, 0)
+
+    assert graph.nodes[0]["_oz_precondition_context"] == {
+        "epi": -0.25,
+        "dnfr": -0.5,
+        "vf": 0.0,
+        "degree": 1,
+        "validation_passed": True,
+    }
+
+
+@pytest.mark.parametrize("pressure", [0.0, Fraction(1, 10**12)])
+def test_oz_near_zero_branch_remains_admitted_for_representable_pressure(pressure):
+    graph = _graph()
+    graph.nodes[0][ALIAS_DNFR[0]] = pressure
+
+    Dissonance()(graph, 0, sequence_context=_context(), propagate_to_network=False)
+
+    assert graph.nodes[0][ALIAS_DNFR[0]] == 0.1
+
+
+@pytest.mark.parametrize("route", ["proposal", "glyph", "node", "public", "stage"])
+@pytest.mark.parametrize(
+    "invalid_sigma",
+    [True, np.bool_(True), "0.2", Fraction(1, 10**400), float("nan"), float("inf")],
+)
+def test_invalid_active_noise_strength_rejects_before_oz_mutation(route, invalid_sigma):
+    graph = _graph(nx.DiGraph)
+    graph.graph.update(OZ_NOISE_MODE=True, OZ_SIGMA=invalid_sigma)
+    adapter = NodeNX(graph, 0) if route == "node" else None
+    cache = graph.graph.get("_node_cache")
+    before = _snapshot(graph)
+    if adapter is not None:
+        before[0].pop("_node_cache")
+
+    with pytest.raises(GlyphFactorValidationError, match="OZ_SIGMA"):
+        if route == "proposal":
+            propose_dissonance_stage(graph, (0,), propagate=False)
+        elif route == "glyph":
+            apply_glyph(graph, 0, "OZ")
+        elif route == "node":
+            apply_glyph_obj(adapter, "OZ")
+        elif route == "public":
+            Dissonance()(
+                graph, 0, sequence_context=_context(), propagate_to_network=False
+            )
+        else:
+            execute_dissonance_stage(
+                graph,
+                Dissonance(),
+                (0,),
+                sequence_context=_context(),
+                propagate_to_network=False,
+            )
+
+    after = _snapshot(graph)
+    if adapter is not None:
+        assert graph.graph["_node_cache"] is cache
+        assert cache == {0: adapter}
+        after[0].pop("_node_cache")
+    assert after == before
+
+
+@pytest.mark.parametrize("sigma", [0, Fraction(-1, 10), Fraction(1, 10**400)])
+def test_noise_strength_preserves_branch_and_nonpositive_noop(sigma):
+    graph = _graph()
+    enabled = sigma <= 0
+    graph.graph.update(OZ_NOISE_MODE=enabled, OZ_SIGMA=sigma)
+    plan = propose_dissonance_stage(graph, (0,), propagate=False)
+    target = plan.target_proposals[0]
+
+    assert target.dnfr_local_after == (0.2 if enabled else 0.4)
+    assert not target.has_jitter_progress_after
 
 
 def test_missing_seed_is_materialized_once_with_per_node_progress():

@@ -24,7 +24,6 @@ from tnfr.mathematics.linear_observation import (
     derive_linear_observation,
 )
 
-
 Matrix = tuple[tuple[Q, ...], ...]
 
 

@@ -3,7 +3,6 @@
 ## Noether-Like Balance Candidates and Restricted Exact Laws
 
 **Status**: CANONICAL DIAGNOSTIC REFERENCE — algebraic balance plus measured residuals
-**Date**: September 2026
 **Version source**: [pyproject.toml](../pyproject.toml)
 **Prerequisite**: [AGENTS foundations](../AGENTS.md#2-foundations), [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) §U2, §U6
 

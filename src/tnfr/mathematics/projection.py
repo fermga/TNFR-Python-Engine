@@ -5,8 +5,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
+from .._spectral_expectation import finite_spectral_real
 from ..errors import TNFRValueError
-from ._complex_arrays import normalized_complex_vector
+from ._complex_arrays import nonnegative_tolerance, normalized_complex_vector
 from .unified_numerical import np
 
 if TYPE_CHECKING:  # pragma: no cover - typing hook when numpy.typing is available
@@ -69,12 +70,20 @@ class BasicStateProjector:
         dim: int,
         rng: np.random.Generator | None = None,
     ) -> ComplexVector:
-        if dim <= 0:
-            raise TNFRValueError(
-                "State dimension must be a positive integer.",
-                context={"dimension": dim},
-                suggestion="Provide a positive integer for dimension.",
-            )
+        # Keep the types owner lazy while the mathematics package initializes.
+        from ..types import require_finite_real_scalar_epi
+        from .spaces import HilbertSpace
+
+        space = HilbertSpace(dim, dtype=self.dtype)
+        if space.dtype.kind != "c":
+            raise TNFRValueError("projected state dtype must be complex")
+        dim = space.dimension
+        tolerance = nonnegative_tolerance(self.atol)
+        epi = require_finite_real_scalar_epi(epi)
+        nu_f = finite_spectral_real(nu_f, label="capacity nu_f")
+        if nu_f < 0:
+            raise TNFRValueError("capacity nu_f must be nonnegative")
+        theta = finite_spectral_real(theta, label="phase")
 
         indices = np.arange(1, dim + 1, dtype=float)
         phase_progression = theta + (nu_f + 1.0) * indices / max(dim, 1)
@@ -89,6 +98,6 @@ class BasicStateProjector:
             base_vector = base_vector + stochastic
 
         normalised = normalized_complex_vector(
-            base_vector, atol=self.atol, label="projected state vector"
+            base_vector, atol=tolerance, label="projected state vector"
         )
-        return np.asarray(normalised, dtype=self.dtype)
+        return space._as_vector(normalised)

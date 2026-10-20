@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 from copy import deepcopy
+from fractions import Fraction
 
 import networkx as nx
 import pytest
@@ -97,6 +98,33 @@ def test_default_tolerance_and_explicit_override_use_one_owner():
     graph.graph["NODAL_EQUATION_TOLERANCE"] = 1e-6
     assert validate_nodal_equation(graph, 0, 0.5, after, 1.0)
     assert not validate_nodal_equation(graph, 0, 0.5, after, 1.0, tolerance=1e-8)
+
+
+@pytest.mark.parametrize("field", ["epi_before", "epi_after", "dt", "tolerance"])
+def test_nonzero_comparison_inputs_cannot_underflow_to_zero(field):
+    graph = _graph(epi=0.0, pressure=0.0)
+    arguments = dict(epi_before=0.0, epi_after=0.0, dt=1.0, tolerance=0.0)
+    arguments[field] = Fraction(1, 10**400)
+    with pytest.raises(TNFRValueError, match="underflows"):
+        validate_nodal_equation(graph, 0, **arguments)
+
+
+@pytest.mark.parametrize("field", [VF_PRIMARY, DNFR_PRIMARY])
+def test_nonzero_comparison_coefficients_cannot_underflow_to_zero(field):
+    graph = _graph(epi=0.0, pressure=0.0)
+    graph.nodes[0][field] = Fraction(1, 10**400)
+    with pytest.raises(TNFRValueError, match="underflows"):
+        validate_nodal_equation(graph, 0, 0.0, 0.0, 1.0)
+
+
+def test_nonzero_comparison_rate_products_and_secants_cannot_underflow():
+    smallest = float.fromhex("0x0.0000000000001p-1022")
+    graph = _graph(epi=0.0, capacity=0.5, pressure=smallest)
+    with pytest.raises(TNFRValueError, match="expected rate.*underflows"):
+        validate_nodal_equation(graph, 0, 0.0, 0.0, 1.0)
+    graph.nodes[0][DNFR_PRIMARY] = 0.0
+    with pytest.raises(TNFRValueError, match="measured rate.*underflows"):
+        validate_nodal_equation(graph, 0, 0.0, smallest, 2.0)
 
 
 @pytest.mark.parametrize(

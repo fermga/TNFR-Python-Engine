@@ -6,9 +6,9 @@ exercise identities valid for every positive gamma; they do not replace the
 model's fixed coefficient in its finite prediction.
 """
 
+import hashlib
 from dataclasses import fields
 from fractions import Fraction as Q
-import hashlib
 from math import factorial
 from pathlib import Path
 

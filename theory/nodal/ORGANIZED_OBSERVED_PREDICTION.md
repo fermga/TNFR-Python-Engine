@@ -356,6 +356,10 @@ owns any subsequent work; this owner creates no parallel campaign.
 <a id="organized-observed-prediction-result"></a>
 ## Retained static certificate
 
+The declaration above preserves its pre-evaluation wording, including the
+historical active-gate reference. This assessment is closed; current task
+selection belongs to the [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).
+
 The single assessment declared at
 `de5b500f70b1626d75f12484af0e6381fc9d93af` certified the prospective
 diameter. Its [attempt](../../docs/assets/organized_observed_prediction/attempt.json),

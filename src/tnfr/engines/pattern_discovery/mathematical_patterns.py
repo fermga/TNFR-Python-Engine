@@ -373,6 +373,10 @@ class TNFREmergentPatternEngine:
         Laplacian eigenvalues define frequencies for the auxiliary graph-wave
         comparison. This does not assert oscillatory solutions of the
         first-order nodal equation.
+
+        ``time_window`` and ``frequency_resolution`` are retained compatibility
+        arguments and do not affect this snapshot calculation. No temporal
+        samples or frequency grid are constructed from them.
         """
         patterns = []
 

@@ -1,26 +1,61 @@
 # CLI and SDK usage
 
-For operator studies, the CLI and Python SDK share the same declared study
-runner. Use a `Network` for direct manipulation, or a `StudySpec` to retain a
-reusable preparation and operator word. The SDK also exposes the separate
-[conditional relational model](guides/relational/RELATIONAL_EXECUTION.md#execute-the-conditional-relational-model).
-Each route delegates to its engine execution and observation owners; the
-interface adds no physical law.
+Use the SDK to prepare an organized state, select its complete law, evolve or
+assess it, and retain the evidence needed for the next question. A `Network`
+holds graph-owned state; the object's identity, admissible actions and
+observation map belong to the selected model and its contracts.
+
+The native object route below combines public execution and recovery readers.
+Other collective constructions use scoped mathematical owners. Requested
+operator words have a shared CLI/Python runner through `StudySpec` and
+`run_study`. Choose the interface that implements the intended law and action;
+an API name or shared report format does not make those routes interchangeable.
 
 ## Install and discover
 
 ```bash
-python -m pip install tnfr
+python -m pip install -e .
 tnfr --help
 python -m tnfr --help
 ```
 
-For the checked-out repository, install it with `python -m pip install -e .`.
-The commands below need the core package only. Plotting and optional numerical
-backends have separate extras listed in the [root README](../README.md#installation).
-Use the installed command's help to check its available options.
+Run these commands at the repository root to use the source documented here.
+`python -m pip install tnfr` instead installs the published release; inspect
+that installation's help for its available interfaces. The examples below
+need the core package only. Plotting and optional numerical backends have
+separate extras listed in the [root README](../README.md#installation).
 
-## Create, evolve and diagnose
+## Work with an organized object
+
+Start with the [maintained introductory construction](../examples/01_foundations/01_hello_world.py).
+It prepares a winding-one cycle with nonuniform signed form and keeps its
+complete state in `Network`. `RelationalExchangeModel` declares the native
+joint form/phase law. The
+[report-reading guide](guides/relational/RELATIONAL_CAPTURE_AND_MEMORY.md#read-an-organized-objects-recovery-report)
+explains the returned records:
+
+- `Network.relational_cycle_capture` assesses sufficient conditions for ideal
+  recovery from the supplied state and declared cycle.
+- `Network.step_relational` advances the live state through one admitted
+  finite step and reports the numerical storage-balance defect.
+- Reassessing capture at the endpoint applies the theorem to that snapshot;
+  retaining the full state and law supports a subsequent response study.
+
+Winding labels this object's recovery class. It does not replace the internal
+form, phase, capacity or support needed to predict an interaction. The example
+supplies the initial organization; its prior formation is a separate claim.
+The [regional workflow index](guides/REGIONAL_AND_RELATIONAL.md) routes other
+preparations, collective state descriptions and observation interfaces.
+
+For operator actions, retain the actual targets and the history/context consumed
+by their preconditions. Applying an operator to a constituent is not
+automatically an action on the organization as a whole. Use the
+[collective action criterion](../theory/STRUCTURAL_OPERATORS.md#collective-grammar-descent)
+before interpreting a requested word as collective evolution. The registered
+word example below exercises its own prepared graph and execution path.
+
+<a id="create-evolve-and-diagnose"></a>
+## Create, evolve and diagnose an operator study
 
 ```python
 from tnfr.sdk import TNFR, diagnose_network
@@ -44,6 +79,22 @@ requiring resonance with a neighbor can fail on an isolated node in a random
 graph. A topology seed makes the random construction repeatable within its
 runtime; it does not make an inadmissible preparation valid.
 
+`Network.evolve(..., record=True)` records diagnostics after each completed
+word within the same shared invocation as unrecorded execution. All cycles
+retain the initial target order and whole-request preflight, including when a
+stage creates new support. A failed partial word adds no sample. Earlier
+completed stages remain applied, and a post-word diagnostic failure does not
+roll back that word; recording adds no transaction beyond the stage contract.
+
+Construction and cloning of a fluent `TNFRNetwork` build an owned canonical
+`NetworkConfig` from its five declared fields, re-admitting flags, seed and
+initialization ranges. Ranges become owned numeric endpoint tuples.
+Subclass copy hooks and undeclared extra fields do not define the engine's
+recipe. Later changes to the external declaration cannot alter that recipe
+or the network's random stream. A supplied seed for NumPy-backed SDK
+initialization must be an integer in `[0, 2**32)`; `None` retains unseeded
+initialization. Other topology seed consumers retain their declared domain.
+
 `evolve_grammar_aware` is a separate sequential direct-glyph policy. It resolves
 the complete candidate list before selection, uses the supplied order to choose
 the first incrementally admitted glyph and abstains when none is admitted.
@@ -57,6 +108,9 @@ than substituting a different word.
 it does not refresh pressure, evolve the network, infer a phase law, or supply
 missing temporal observations. A nodal product `nu_f * DeltaNFR` is a model-rate
 read-out, not a measured finite-time change.
+Its state projection admits nonnegative capacity, including zero at nonzero
+pressure. An invalid authoritative alias remains unavailable with an error;
+it cannot become a valid observation by falling through to another alias.
 
 Invalid or unavailable diagnostics retain explicit error/availability data
 instead of inventing a number. Circular curvature can be unavailable at
@@ -74,6 +128,13 @@ criterion. Signed pressure means and population spreads reuse stable shared
 reductions, so an overflowing intermediate sum cannot turn a finite constant
 sample into infinite dispersion. Density follows the graph's directedness;
 loops and parallel edges can give density above one.
+
+`compare_networks` and `compute_network_statistics` re-admit consumed report
+values before calculation: coherence lies in `[0, 1]`, average capacity is
+nonnegative, and supplied numerical observations must be finite represented
+reals. Invalid values raise; absent optional averages remain omitted.
+Comparisons inspect only the selected columns. Extrema and reductions use the
+admitted representation while signed pressure retains its sign.
 
 Fluent `measure()` computes its metrics on one detached graph snapshot. Core
 metric failures propagate; optional unified-field failures retain explicit
@@ -109,7 +170,8 @@ conditional joint evolution, pattern reports, bridge/joint-reset comparisons
 and capture certificates. Its
 [coefficient-response workflow](guides/relational/OBSERVATION_AND_INFORMATION.md#bound-a-prepared-coefficient-response)
 also covers module-level jet/sample uncertainty, exact export and read-only
-acquisition audits. These are not `Network` methods or extra CLI study modes.
+acquisition audits. Those uncertainty and acquisition readers are module-level
+functions, separate from the native `Network` methods and CLI operator studies.
 Detailed admission and report fields belong to the
 [relational contracts](contracts/RELATIONAL_DYNAMICS.md); their theorems remain
 in the [theory catalog](../theory/README.md).
@@ -182,9 +244,17 @@ report = replayed.to_dict()
 Supported topologies are `ring`, `path`, `star`, `complete` and `random`;
 `probability` configures random edges. `sequence` names a registered word.
 Each call creates its own prepared network rather than continuing another run.
+SDK topology probabilities admit the original nonboolean real in `[0, 1]`
+before binary64 conversion; a nonzero source cannot become zero. Coupling
+sweeps validate both endpoints and integer counts before array or network
+construction, using the same topology owner.
 
 The result records the declaration, runtime provenance, realized initial and
-final triad/support, and final diagnostics. `to_dict()` returns detached data;
+final triad/support, and final diagnostics. The registered word is captured
+before dispatch, so later registry edits cannot change its reported declaration.
+The validated word rejects blocked steps without substituting operators; its
+declaration is not a per-target execution trace or an occurrence law.
+`to_dict()` returns detached data;
 `export_to_json` uses the shared JSON writer. Without `--output`, the CLI writes
 JSON to standard output and sends messages to standard error. An output path
 receives the report instead. Retain the declaration together with the report
@@ -196,6 +266,8 @@ and `null`, not a nonstandard `NaN` or `Infinity` token.
 The generic exporter also rejects recursively colliding encoded object keys
 (for example integer `1` and string `"1"`) before replacing the destination.
 Non-colliding key conversions retain the existing JSON encoder's behavior.
+`Results.to_dict()` checks tetrad node labels before converting them to
+strings, so this conversion cannot silently merge distinct nodes either.
 `import_from_json`, also used for CLI recipe input, rejects duplicate decoded
 keys at every depth, nonfinite numbers and nonzero fractional literals that
 underflow to binary64 zero. Integer literals remain Python integers; ordinary
@@ -204,6 +276,21 @@ report provenance nor replaces `StudySpec` field validation.
 The shared decoder is `tnfr.utils.io.json_loads`; JSON configuration files use
 the same admission policy before injection. YAML/TOML keep their parser
 semantics and still require validation by the consuming model.
+
+For stored metric histories, `metrics.export_metrics` supports CSV and JSON
+with the same admission and availability rules. Missing samples are empty CSV
+cells or JSON `null`; clocks come only from their retained stream. It never
+replaces absent measurements with zero or invents timestamps. See the
+[stored-observation contract](API_CONTRACTS.md#stored-observations-and-validation)
+for invalid-value rejection and the scope of atomic output.
+
+Decimal scalar flags share a CLI parser that rejects nonfinite values and
+nonzero literals lost to binary64 zero before command execution. Exact zero
+and representable subnormals remain valid; each consumer still checks its
+range, sign and model domain. Programmatic namespaces receive the same
+scalar, count, probability and Boolean admission at their consumers, before
+coercion or spectral array construction. Text flags use shared Boolean parsing;
+Python truthiness cannot turn a supplied `"false"` into an enabled policy.
 
 | Report key | Content |
 | --- | --- |
@@ -241,6 +328,35 @@ The [operator contracts](API_CONTRACTS.md) own operator metadata, while
 [grammar scope](../theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md) distinguishes admission
 policies from mathematical stability results.
 
+Use English operator names when explaining a word. The SDK already returns
+these names alongside compact glyph notation; pass ordered executable tokens
+when requesting an explanation:
+
+```python
+from tnfr.sdk import TNFR
+
+report = TNFR.explain_sequence(["emission", "coherence", "silence"])
+print(" → ".join(report["operators"]))  # Emission → Coherence → Silence
+print(report["notation"])               # AL → IL → SHA (compact form)
+print(report["compatibility_profile"])  # core
+print(report["valid"])                  # True
+
+legacy = TNFR.explain_sequence(
+    ["emission", "silence"], context={"compatibility_profile": "legacy"}
+)
+print(legacy["valid"])                  # False: historical adjacency preference
+```
+
+The default `core` profile uses the shared word contracts. Explicit `legacy`
+adds historical adjacency and THOL-terminal preferences; it does not restore
+an alternate causal validator. Both profiles still require live admission
+when executing. `context={"initial_epi_nonzero": True}` can describe prior
+initialization to a detached word validator; it cannot supply live state or
+Mutation evidence. The report leaves manuscript syntax and trajectory checks
+unassessed. Arrows are display notation: pass `["AL", "SHA"]`, not
+`["AL → SHA"]`, apostrophe spellings or `"THOL[...]"` to this flat-word API.
+See the [profile migration contract](API_CONTRACTS.md#word-profile-migration).
+
 ## Reproducibility and scope
 
 `Network.nodal_scan()` returns supplied prediction/readout records. Their
@@ -264,6 +380,9 @@ that alert. Nonzero unrepresentable temporal rates reject instead of reporting
 perfect balance. Failed combined observations do not append partial evidence;
 returned tracker snapshots and reports are detached from retained data.
 Neither observation establishes general dynamical stability.
+Raw scalar and field-map getters require their implementation to be available;
+otherwise they raise `ImportError`. Use the structured report's availability
+metadata when a caller needs an explicit unavailable result.
 
 `Network.nfr()` is a stored-state observation, not a certificate that an NFR
 has formed. Its radial/annular/multinodal labels classify the unit-source
@@ -274,9 +393,8 @@ explicit `topology_status`. Consumers must handle that availability state.
 An all-zero centrality profile caused by numeric underflow reports
 `centrality_below_represented_range`; it cannot establish annular geometry.
 
-Its `coherence_length` now uses the shared tetrad estimator, with
-`coherence_length_available` and `coherence_length_provenance`, instead of the
-old untagged topology-only spectral proxy. A fitted length has structural
+Its `coherence_length` uses the shared tetrad estimator, with explicit
+`coherence_length_available` and `coherence_length_provenance`. A fitted length has structural
 distance units; the spectral fallback is a separate dimensionless scale.
 Neither is a fractal dimension. Pressure observations remain available even
 when rate/capacity information is missing. Partial or invalid stored rates do
@@ -292,7 +410,7 @@ retain unavailable fields, and their overall safety advisory requires matching
 nonempty local field support; an empty snapshot cannot pass it.
 
 `Network.phase()` exposes the classifier's actual imbalance ratios, node count,
-and coherence-length availability/provenance. Its historical phase labels are
+and coherence-length availability/provenance. Its phase labels are
 configured, size-sensitive diagnostics, not autonomous events or a biological
 claim. See the [phase classification scope](../theory/STRUCTURAL_STABILITY_AND_DYNAMICS.md#22-phase-classification).
 
@@ -322,6 +440,75 @@ specialized execution/configuration paths. Their `--help` output owns the
 available flags. They are not aliases for `network`, and their history formats
 are not `StudySpec` declarations. Prefer `network` for the shared SDK/CLI study
 workflow and use a specialized route when its actual configuration is needed.
+
+### Scoped sequence programs
+
+`tnfr sequence` uses the minimal `canonical_example` preset, `AL → IL → SHA`,
+when no explicit preset or sequence file is supplied. It is a different program
+from the SDK's registered `basic_activation` word. Select one input source;
+`--preset` and `--sequence-file` cannot be combined. A JSON sequence file can
+contain `["AL", "IL", "SHA", {"WAIT": 2}]`, directly or under a `sequence` key.
+Use `tnfr sequence --sequence-file program.json` to execute it with the route's
+configured graph and native runtime steps.
+
+For explicit nesting, inspect the existing typed program representation before
+execution:
+
+```python
+from tnfr.execution import block, compile_sequence, target
+from tnfr.tokens import OpTag
+from tnfr.types import Glyph
+
+program = [
+    target([0]),
+    block(target([1]), Glyph.IL, repeat=2, close=Glyph.SHA),
+    Glyph.SHA,
+]
+operations = compile_sequence(program)
+print([payload for tag, payload in operations
+       if tag in {OpTag.THOL, OpTag.GLYPH}])
+# ['THOL', 'IL', 'SHA', 'IL', 'SHA', 'SHA']
+```
+
+This example compiles only. Its THOL opening still needs admitted live history
+and state; compilation does not supply them. The complete `operations` list
+also retains `BLOCK_ENTER`/`BLOCK_EXIT` metadata. Each repeated body inherits
+target 0, selects target 1 locally, and restores target 0 on exit. The final
+SHA therefore targets 0. Brackets do not implicitly select newly created
+children or execute parallel branches.
+
+Closure is explicit: omitted `close` adds nothing; use `close=Glyph.NUL` to
+retain the old implicit NUL. Every supplied closing glyph is emitted and must
+pass its actual admission. WAIT and repeat counts are positive non-Boolean
+integers; values such as `2.0`, `"2"` or `False` reject. Ordered groups are
+retained, cyclic groups and unordered sets reject, and unsupported mapping
+fields are not silently ignored.
+
+`play(graph, program, step_fn=...)` validates the complete program syntax before
+execution, then dispatches native glyphs and the supplied step function.
+Requested glyphs reject grammar failures instead of being replaced. Accepted
+earlier operations are not rolled back after a later live failure. The step
+function runs after every glyph; WAIT adds further calls. The default native
+step may itself select operators and change phase/capacity, so WAIT is not an
+operator-free pause or a duration in seconds. Use the
+[program contract](API_CONTRACTS.md#program-compilation-contract) for compiled
+metadata and migration details, and the
+[event contract](contracts/OPERATOR_EVENTS.md) for separately declared hybrid
+events and flow intervals. Source prosody or manuscript nesting adds no
+unimplemented clock, child law or selector to either route.
+
+For execution provenance, inspect `graph.graph["history"]["program_trace"]`.
+Explicit glyph rows name their ordered targets and
+`selection_origin="supplied_program"`; `step_origin` identifies the separate
+step function. The row exists before stepping, so a failed callback retains
+the successful supplied glyph with `step_status="failed"` and its call counts.
+`event_time` precedes the step; `t` is the admitted post-step clock on success.
+An invalid callback clock leaves the last admitted `t` with
+`clock_sample_available=False`. WAIT reports calls without claiming a glyph.
+The trace is bounded and cannot replace a complete checkpoint or independent
+evidence of which events a controller selected internally.
+
+### Diagnostics and runtime controls
 
 `epi.validate` reports stored affinity, capacity and all-edge phase diagnostics.
 Its compatibility flag `--check-coherence` checks the sign of stored `W_mean`
@@ -368,6 +555,14 @@ cooldown remains independent. Limiting history does not remove metric names or
 prevent bounded REMESH transactions, and detached stage validation cannot append
 advisory events into the live history.
 
+The auxiliary `dynamics.computational_hub.batch_execute_computations` dispatcher
+accepts a positive integer `max_parallel` and limits that batch's outstanding
+requests through the shared hub. Results retain request order, including
+adapter failures. A 300-second collection timeout raises `TimeoutError` before
+further submissions; already submitted work continues without cancellation or
+rollback. This limit does not govern unrelated hub clients. Execution durations
+use one monotonic clock.
+
 The [example index](../examples/README.md) classifies the other demonstrations.
 The SDK's fluent builders, auxiliary physics adapters and optimizer policies
 have their own scopes; this guide does not promote them into autonomous nodal
@@ -384,6 +579,6 @@ its timings are machine/input dependent. Automatic arithmetic execution uses
 NumPy and requires no GPU runtime.
 
 The historical `tnfr.tools.tnfr_is_prime_cli_optimized` module delegates to this
-same command. Its `benchmark_basic` compatibility call now returns the shared
+same command. Its `benchmark_basic` compatibility call returns the shared
 benchmark schema (`total_numbers_tested`, `total_time_ms`, `cache_statistics`,
 and related fields), replacing its former basic-versus-cached timing schema.

@@ -17,7 +17,7 @@ from typing import Any, Callable
 import networkx as nx
 import numpy as np
 
-from .._exact_time import finite_represented_real
+from .._exact_time import bounded_represented_real, finite_represented_real
 from ..config import get_precision_mode
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ..physics.fields import (
@@ -25,11 +25,10 @@ from ..physics.fields import (
     estimate_coherence_length_with_provenance,
     observe_phase_curvature,
 )
-from ..rng import validate_seed
 from ..types import require_finite_real_scalar_epi
 from ..utils.io import json_dumps
 from ._state import copy_graph_state
-from ._topology import nonnegative_integer, positive_integer, probability
+from ._topology import nonnegative_integer, numpy_seed, positive_integer, probability
 from .simple import TNFR, Network
 
 __all__ = [
@@ -90,9 +89,7 @@ class StudySpec:
         object.__setattr__(self, "cycles", nonnegative_integer(self.cycles, "cycles"))
         if not isinstance(self.topology, str) or self.topology not in STUDY_TOPOLOGIES:
             raise ValueError(f"topology must be one of {STUDY_TOPOLOGIES}")
-        seed = validate_seed(self.seed, allow_none=False)
-        if not 0 <= seed < 2**32:
-            raise ValueError("seed must satisfy 0 <= seed < 2**32")
+        seed = numpy_seed(self.seed, allow_none=False)
         object.__setattr__(self, "seed", seed)
         object.__setattr__(self, "probability", probability(self.probability))
         list_sequences(self.sequence)
@@ -194,6 +191,8 @@ def _state_projection(graph: nx.Graph) -> dict[str, Any]:
                 raw = _raw_field(data, aliases)
                 if name == "epi":
                     return require_finite_real_scalar_epi(raw, aliases[0])
+                if name == "nu_f":
+                    return bounded_represented_real(raw, aliases[0], minimum=0)[0]
                 return finite_represented_real(raw, aliases[0])[0]
 
             row[name] = _capture(read_field)
@@ -305,8 +304,10 @@ def run_study(spec: StudySpec) -> StudyResult:
     """Construct, execute and observe a declared finite study using current owners.
 
     Errors from construction, grammar or operators propagate. This wrapper adds
-    no repair or selection policy. The engine's existing grammar policy, including
-    permitted glyph substitutions, remains active inside ``Network.evolve``.
+    no repair or selection policy. ``Network.evolve`` validates the complete
+    word and rejects blocked steps without substituting another operator.
+    The reported word is captured before dispatch; it is not a realized trace
+    or a later reading of the mutable sequence registry.
     """
     from .. import __version__
 
@@ -321,6 +322,7 @@ def run_study(spec: StudySpec) -> StudyResult:
     else:
         getattr(network, spec.topology)()
     initial = _state_projection(network.G)
+    declared_word = list_sequences(spec.sequence)
     network.evolve(steps=spec.cycles, sequence=spec.sequence)
     return StudyResult(
         {
@@ -334,7 +336,7 @@ def run_study(spec: StudySpec) -> StudyResult:
                     "networkx": nx.__version__,
                 },
                 "precision_mode": str(get_precision_mode()),
-                "sequence": list_sequences(spec.sequence),
+                "sequence": declared_word,
                 "sequence_scope": "requested word; not a per-node realized operator trace",
                 "cycles_completed": spec.cycles,
                 "seed": spec.seed,

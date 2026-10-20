@@ -16,22 +16,20 @@ THOL-terminal restrictions are additional compatibility policies.
 
 from __future__ import annotations
 
+from types import SimpleNamespace
 from typing import Any, Mapping, Sequence
 
 from ..config.operator_names import (
     CANONICAL_OPERATOR_NAMES,
-    COHERENCE,
-    DESTABILIZERS,
     INTERMEDIATE_OPERATORS,
     SELF_ORGANIZATION,
     SELF_ORGANIZATION_CLOSURES,
-    VALID_END_OPERATORS,
-    VALID_START_OPERATORS,
 )
 from ..types import Glyph
 from ..validation.compatibility import CompatibilityLevel, get_compatibility_level
 from .grammar_context import _normalize_sequence_context
 from .grammar_types import (
+    STABILIZERS,
     SequenceSyntaxError,
     SequenceValidationResult,
     StructuralPattern,
@@ -76,88 +74,13 @@ def _compute_metadata(tokens: list[str]) -> dict[str, object]:
     meta["has_reception"] = "reception" in tokens
     meta["has_coherence"] = "coherence" in tokens
     meta["has_dissonance"] = "dissonance" in tokens
-    meta["has_stabilizer"] = any(t in {COHERENCE, SELF_ORGANIZATION} for t in tokens)
+    meta["has_stabilizer"] = any(t in STABILIZERS for t in tokens)
     try:
         pattern = detect_pattern(tokens)
         meta["detected_pattern"] = getattr(pattern, "value", str(pattern))
     except Exception:
         meta["detected_pattern"] = StructuralPattern.UNKNOWN.value
     return meta
-
-
-def _check_start_rule(
-    tokens: list[str], *, context: Mapping[str, Any] | None = None
-) -> tuple[bool, str | None]:
-    """Validate sequence start token (U1a: initiation).
-
-    ABSOLUTE canonicity: If the initial EPI is undefined (birth
-    context) the first operator MUST be a generator in
-    VALID_START_OPERATORS: emission | transition | recursivity.
-
-    Without explicit external context we conservatively assume
-    birth when the first token is not a known generator. Thus
-    non-generator starts fail fast with a U1a violation message.
-    """
-    if not tokens:
-        return False, "empty sequence"
-    first = tokens[0]
-    if first not in VALID_START_OPERATORS:
-        # Allow override if caller declares pre-existing EPI form
-        epi_nonzero = False
-        if context is not None:
-            epi_nonzero = bool(context.get("initial_epi_nonzero", False))
-        if epi_nonzero:
-            return True, None  # Prior form means initiation already satisfied
-        return (
-            False,
-            (
-                "must start with emission, recursivity, transition "
-                "(U1a generator requirement)"
-            ),
-        )
-    return True, None
-
-
-def _check_end_rule(
-    tokens: list[str], *, context: Mapping[str, Any] | None = None
-) -> tuple[bool, str | None]:
-    """Validate terminal operator (U1b: closure).
-
-    Closure set: silence | transition | recursivity | dissonance.
-    A terminal dissonance (OZ) is only valid if a stabilizer
-    (coherence or self_organization) occurred earlier, ensuring
-    contained destabilization per U2/U4 handler requirements.
-    """
-    # Ephemeral bifurcation probe pattern: dissonance -> mutation
-    # Used for ZHIR bifurcation detection tests; treated as a
-    # diagnostic micro-sequence whose structural closure is
-    # deferred to subsequent stabilizer steps. We allow this
-    # two-token pattern to pass U1b with a diagnostic waiver.
-    if len(tokens) == 2 and tokens == ["dissonance", "mutation"]:
-        # Allow only under explicit diagnostic context
-        diag = bool(context.get("diagnostic", False)) if context else False
-        if diag:
-            return True, None
-    last = tokens[-1]
-    if last not in VALID_END_OPERATORS:
-        return (
-            False,
-            (
-                "must end with closure "
-                "(silence|transition|recursivity|dissonance) - violates U1b"
-            ),
-        )
-    if last == "dissonance" and not any(
-        t in {COHERENCE, SELF_ORGANIZATION} for t in tokens[:-1]
-    ):
-        return (
-            False,
-            (
-                "terminal dissonance requires prior stabilizer "
-                "(coherence|self_organization) per U1b/U2"
-            ),
-        )
-    return True, None
 
 
 def _check_thol_closure(tokens: list[str]) -> tuple[bool, str | None]:
@@ -173,7 +96,7 @@ def _check_adjacent_compatibility(
     tokens: list[str],
 ) -> tuple[bool, int | None, str | None]:
     # Check for therapeutic patterns overriding compatibility rules
-    if _is_canonical_therapeutic_pattern(tokens):
+    if _is_legacy_therapeutic_pattern(tokens):
         return True, None, None
 
     prev = tokens[0]
@@ -207,11 +130,10 @@ def _check_adjacent_compatibility(
     return True, None, None
 
 
-def _is_canonical_therapeutic_pattern(tokens: list[str]) -> bool:
-    """Check if sequence matches a known canonical therapeutic pattern.
+def _is_legacy_therapeutic_pattern(tokens: list[str]) -> bool:
+    """Retain the historical named recipe's adjacency-policy exception.
 
-    Therapeutic patterns may override standard compatibility rules for
-    crisis containment scenarios (e.g., OZ → SHA direct transition).
+    The recipe name establishes no therapeutic effect or core grammar rule.
     """
     # CONTAINED_CRISIS: emission,reception,coherence,dissonance,silence
     if len(tokens) == 5 and tokens == [
@@ -224,6 +146,21 @@ def _is_canonical_therapeutic_pattern(tokens: list[str]) -> bool:
         return True
 
     return False
+
+
+def _legacy_word_preference_error(tokens: list[str]) -> tuple[int, str] | None:
+    """Apply only the explicitly requested historical word preferences.
+
+    Callers first admit the shared core contracts. These preferences contain
+    no live state evidence and never replace U3 or an operator precondition.
+    """
+    ok, message = _check_thol_closure(tokens)
+    if not ok:
+        return len(tokens) - 1, message or "legacy THOL closure preference"
+    ok, index, message = _check_adjacent_compatibility(tokens)
+    if not ok:
+        return index or 1, message or "legacy adjacency preference"
+    return None
 
 
 def _build_result(
@@ -272,7 +209,7 @@ def validate_sequence(
     compatibility_profile: str | None = None,
     **kwargs: Any,
 ) -> SequenceValidationResult:
-    """Validate canonical word rules plus the retained pair/THOL policies.
+    """Validate shared core word contracts, with explicit legacy preferences.
 
     Optional context keys:
     - initial_epi_nonzero: bool -> if True, permits non-generator start
@@ -280,14 +217,12 @@ def validate_sequence(
     - diagnostic: bool -> the exact two-token OZ/ZHIR probe may waive word
       requirements; this never supplies runtime preconditions or admission.
 
-    Ordinary words delegate debt, transformer history and depth-default rules
-    to the shared canonical validator. The legacy adjacency/THOL restrictions
-    are additional language policies, not consequences of U1-U6 alone.
-    ``compatibility_profile='core'`` omits only those extra restrictions;
-    it retains canonical word contracts, including calibrated U2/U4 policies.
-    The default ``legacy`` profile preserves prior behavior. If the argument
-    is omitted, context may declare ``compatibility_profile`` so an existing
-    word/event executor can carry the same explicit choice through validation.
+    Ordinary words delegate initialization, closure, debt, transformer history
+    and depth-default checks to the same core validator as typed execution.
+    The default ``core`` profile retains U1-U5 contracts, including calibrated
+    U2/U4 policies. Explicit ``legacy`` adds historical adjacency/THOL-terminal
+    preferences; these are not consequences of U1-U6 alone. Context may carry
+    the profile through execution; an explicit argument overrides that value.
     Neither profile certifies live preconditions or autonomous dynamics.
 
     Any other unexpected keyword raises TypeError (legacy guard).
@@ -295,13 +230,10 @@ def validate_sequence(
     if kwargs:
         bad = ", ".join(sorted(kwargs.keys()))
         raise TypeError(f"unexpected keyword argument(s): {bad}")
-    context = _normalize_sequence_context(context)
-    if compatibility_profile is None:
-        compatibility_profile = (context or {}).get("compatibility_profile", "legacy")
-    if type(compatibility_profile) is not str:
-        raise TypeError("compatibility_profile must be 'legacy' or 'core'")
-    if compatibility_profile not in {"legacy", "core"}:
-        raise ValueError("compatibility_profile must be 'legacy' or 'core'")
+    context = _normalize_sequence_context(
+        context, compatibility_profile=compatibility_profile
+    )
+    compatibility_profile = context["compatibility_profile"]
 
     # type checks and canonicalization
     if not isinstance(names, (list, tuple)):
@@ -350,105 +282,49 @@ def validate_sequence(
                 error=err,
             )
 
-    # Structural rules
-    ok, msg = _check_start_rule(tokens, context=context)
-    if not ok:
-        return _build_result(
-            names=names,  # type: ignore[arg-type]
-            canonical=tokens,
-            passed=False,
-            message=msg or "invalid start",
-            metadata=meta,
-            error=SequenceSyntaxError(0, tokens[0], msg or "invalid start"),
-        )
-    ok, msg = _check_end_rule(tokens, context=context)
-    if not ok:
-        return _build_result(
-            names=names,  # type: ignore[arg-type]
-            canonical=tokens,
-            passed=False,
-            message=msg or "invalid end",
-            metadata=meta,
-            error=SequenceSyntaxError(
-                len(tokens) - 1, tokens[-1], msg or "invalid end"
-            ),
-        )
-    ok, msg = (
-        _check_thol_closure(tokens)
-        if compatibility_profile == "legacy"
-        else (True, None)
-    )
-    if not ok:
-        return _build_result(
-            names=names,  # type: ignore[arg-type]
-            canonical=tokens,
-            passed=False,
-            message=msg or "thol requires closure",
-            metadata=meta,
-            error=SequenceSyntaxError(
-                len(tokens) - 1, tokens[-1], msg or "thol closure"
-            ),
-        )
-
-    # U2: Destabilizers require stabilizers (IL or THOL). The destabilizer set
-    # is the canonical {OZ, ZHIR, VAL} (config.operator_names.DESTABILIZERS,
-    # derived in physics_derivation.increases_structural_pressure); NUL
-    # (contraction) is NOT a U2 destabilizer (dual-lever 'both', U2-neutral).
-    has_destabilizer = any(t in DESTABILIZERS for t in tokens)
-    has_stabilizer = any(t in {COHERENCE, SELF_ORGANIZATION} for t in tokens)
-
-    if has_destabilizer and not has_stabilizer:
-        diag = bool(context.get("diagnostic", False)) if context else False
-        if not (diag and len(tokens) == 2 and tokens == ["dissonance", "mutation"]):
-            return _build_result(
-                names=names,  # type: ignore[arg-type]
-                canonical=tokens,
-                passed=False,
-                message="missing stabilizer (coherence or self_organization)",
-                metadata=meta,
-            )
-
-    # Adjacent compatibility
-    ok, idx, msg = (
-        _check_adjacent_compatibility(tokens)
-        if compatibility_profile == "legacy"
-        else (True, None, None)
-    )
-    if not ok:
-        err = SequenceSyntaxError(
-            idx or 1,
-            tokens[idx or 1],
-            msg or "incompatible",
-        )
-        return _build_result(
-            names=names,  # type: ignore[arg-type]
-            canonical=tokens,
-            passed=False,
-            message=msg or "incompatible transition",
-            metadata=meta,
-            error=err,
-        )
-
-    diagnostic_probe = bool(context and context.get("diagnostic", False)) and (
-        tokens == ["dissonance", "mutation"]
+    # The exact diagnostic fragment is descriptive only. It still requires
+    # declared prior initialization and never constructs an executable word.
+    diagnostic_probe = (
+        context.get("diagnostic", False)
+        and context.get("initial_epi_nonzero", False)
+        and tokens == ["dissonance", "mutation"]
     )
     meta["diagnostic_probe"] = diagnostic_probe
     meta["canonical_word_checked"] = not diagnostic_probe
     if not diagnostic_probe:
-        from .grammar_memoization import validate_sequence_optimized
+        from .grammar_core import GrammarValidator
 
-        initialized = bool(context and context.get("initial_epi_nonzero", False))
-        ok, messages = validate_sequence_optimized(
-            tokens,
+        initialized = context.get("initial_epi_nonzero", False)
+        checks = GrammarValidator().validate_checks(
+            [SimpleNamespace(name=token) for token in tokens],
             epi_initial=1.0 if initialized else 0.0,
         )
-        if not ok:
+        failures = [check for check in checks if check.blocking and not check.passed]
+        if failures:
+            message = "; ".join(check.legacy_message() for check in failures)
+            # Local endpoint attribution follows the shared rule identifier,
+            # not an additional admission condition or a parsed message.
+            index = len(tokens) - 1 if failures[0].rule == "U1b" else 0
             return _build_result(
                 names=names,
                 canonical=tokens,
                 passed=False,
-                message="; ".join(messages),
+                message=message,
                 metadata=meta,
+                error=SequenceSyntaxError(index, tokens[index], message),
+            )
+
+    if compatibility_profile == "legacy":
+        preference_error = _legacy_word_preference_error(tokens)
+        if preference_error is not None:
+            index, message = preference_error
+            return _build_result(
+                names=names,
+                canonical=tokens,
+                passed=False,
+                message=message,
+                metadata=meta,
+                error=SequenceSyntaxError(index, tokens[index], message),
             )
 
     # All good

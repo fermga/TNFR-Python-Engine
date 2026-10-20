@@ -7,9 +7,8 @@ import mpmath
 import pytest
 
 from tests.sine_evidence_helpers import forbid_sine_regeneration
-from tnfr.physics import _organized_source_port as owner
 from tnfr.physics import _organized_parent_reservoir_exchange as auxiliary
-
+from tnfr.physics import _organized_source_port as owner
 
 _ZERO = (Q(0),) * 45
 _ERROR = Q(1, 10**10)

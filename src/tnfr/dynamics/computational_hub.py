@@ -9,6 +9,7 @@ equation alone. Cache services remain auxiliary stores rather than executors.
 import threading
 import time
 import uuid
+from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from enum import Enum
@@ -17,6 +18,7 @@ from typing import Any, Callable
 
 from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import np
+from ..validation.window import validate_window
 from .optimization_orchestrator import (
     FFT_EPI_DIFFUSION_OPERATION,
     TNFROptimizationOrchestrator,
@@ -398,7 +400,7 @@ class TNFRComputationalHub:
 
     def _execute_computation(self, request: ComputationRequest) -> ComputationResult:
         """Execute single computation request."""
-        start_time = time.time()
+        start_time = time.perf_counter()
 
         if request.operation == "system_status":
             return ComputationResult(
@@ -816,19 +818,33 @@ def execute_unified_computation(
 def batch_execute_computations(
     requests: list, max_parallel: int = 4
 ) -> dict[str, ComputationResult]:
-    """Execute multiple computations in parallel."""
+    """Dispatch at most ``max_parallel`` outstanding requests through the hub.
+
+    The positive integer limit applies to this batch, not other hub clients.
+    Results retain request order. A failed adapter result is returned normally;
+    a 300-second collection timeout raises ``TimeoutError`` before any further
+    submission. Already submitted work is not cancelled or rolled back.
+    """
+    parallel_limit = validate_window(max_parallel, positive=True)
     hub = get_computational_hub()
+    pending: deque[str] = deque()
+    results: dict[str, ComputationResult] = {}
 
-    # Submit all requests
-    request_ids = []
-    for req in requests:
-        req_id = hub.submit_computation(req)
-        request_ids.append(req_id)
-
-    # Collect results
-    results = {}
-    for req_id in request_ids:
+    def collect_next() -> None:
+        req_id = pending[0]
         result = hub.get_result(req_id, timeout=300.0)
+        if result is None:
+            raise TimeoutError(
+                f"Computation {req_id!r} timed out; submitted work remains active"
+            )
         results[req_id] = result
+        pending.popleft()
 
+    for request in requests:
+        if len(pending) == parallel_limit:
+            collect_next()
+        pending.append(hub.submit_computation(request))
+
+    while pending:
+        collect_next()
     return results

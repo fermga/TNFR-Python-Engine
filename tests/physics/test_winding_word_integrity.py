@@ -2,10 +2,12 @@
 
 import math
 from copy import deepcopy
+from fractions import Fraction
 
 import networkx as nx
 import pytest
 
+from tnfr.mathematics import BEPIElement
 from tnfr.operators.definitions import Coherence, Coupling, Emission, Silence
 from tnfr.operators.grammar_execution import ValidatedSequence
 from tnfr.operators.preconditions import OperatorPreconditionError
@@ -54,7 +56,9 @@ def test_non_generator_word_cannot_invent_initial_epi_admission(missing):
         graph.nodes[0]["EPI"] = 0.0
     before = deepcopy(list(graph.nodes(data=True)))
 
-    with pytest.raises(ValueError, match="U1a"):
+    with pytest.raises(
+        ValueError, match="finite uniform-real EPI" if missing else "U1a"
+    ):
         observe_winding_word(graph, range(8), 0, [Coherence(), Silence()])
 
     assert list(graph.nodes(data=True)) == before
@@ -90,21 +94,69 @@ def test_generator_word_still_starts_from_zero_primary_epi():
     "operator_types",
     [(Coupling, Coupling, Silence), (Emission, Silence, Silence)],
 )
-def test_instance_valid_words_still_require_shared_adjacency_admission(
+def test_core_admitted_words_preserve_actual_history_without_legacy_adjacency(
     operator_types,
 ):
     graph = _graph()
     word = [operator_type() for operator_type in operator_types]
     ValidatedSequence(word, context={"initial_epi_nonzero": True})
-    before = deepcopy(
-        (graph.graph, list(graph.nodes(data=True)), list(graph.edges(data=True)))
-    )
+    result = observe_winding_word(graph, range(8), 0, word)
+    assert result.history_preserved
+    assert result.actual_history == tuple(operator.glyph.value for operator in word)
 
-    with pytest.raises(ValueError, match="Invalid sequence"):
-        observe_winding_word(graph, range(8), 0, word)
 
-    after = (graph.graph, list(graph.nodes(data=True)), list(graph.edges(data=True)))
-    assert after == before
+@pytest.mark.parametrize(
+    "invalid",
+    [
+        True,
+        "0.5",
+        None,
+        float("nan"),
+        1j,
+        Fraction(1, 10**400),
+        BEPIElement((0.0, 1.0), (0.0, 1.0), (0.0, 1.0)),
+    ],
+)
+def test_invalid_authoritative_form_rejects_before_word_effects(invalid):
+    graph = _graph()
+    graph.nodes[0]["EPI"] = invalid
+    graph.nodes[0]["epi"] = 0.5
+    before = deepcopy(graph.nodes[0])
+    with pytest.raises(ValueError):
+        observe_winding_word(graph, range(8), 0, [Emission(), Silence()])
+    assert graph.nodes[0]["EPI"] is invalid
+    assert {key: value for key, value in graph.nodes[0].items() if key != "EPI"} == {
+        key: value for key, value in before.items() if key != "EPI"
+    }
+
+
+@pytest.mark.parametrize("form", [-0.5, 0.0])
+def test_uniform_real_form_uses_its_signed_value_for_initialization(form):
+    graph = _graph()
+    graph.nodes[0]["EPI"] = BEPIElement((form, form), (form, form), (0.0, 1.0))
+    if form == 0.0:
+        with pytest.raises(ValueError, match="U1a"):
+            observe_winding_word(graph, range(8), 0, [Coherence(), Silence()])
+        assert graph.nodes[0]["glyph_history"] == []
+    else:
+        result = observe_winding_word(graph, range(8), 0, [Coherence(), Silence()])
+        assert result.history_preserved
+        assert result.actual_history == ("IL", "SHA")
+
+
+def test_actual_instance_admission_occurs_once(monkeypatch):
+    from tnfr.operators.grammar_core import GrammarValidator
+
+    calls = []
+    original = GrammarValidator.validate_checks
+
+    def checked(self, *args, **kwargs):
+        calls.append(1)
+        return original(self, *args, **kwargs)
+
+    monkeypatch.setattr(GrammarValidator, "validate_checks", checked)
+    observe_winding_word(_graph(), range(8), 0, [Emission(), Silence()])
+    assert calls == [1]
 
 
 def test_word_uses_runtime_graph_gate_without_changing_standalone_default():

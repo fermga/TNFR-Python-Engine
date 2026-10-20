@@ -13,7 +13,6 @@ from tnfr.physics import _organized_alternative_outer_acquisition as owner
 from tnfr.physics import _organized_outer_winding as sine_owner
 from tnfr.physics import relational_sine_entry
 
-
 _ERROR = Q(1, 10**10)
 _SYNTHETIC_RADIUS = Q(1, 10**4)
 _EDGES = tuple(

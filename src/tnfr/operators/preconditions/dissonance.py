@@ -41,7 +41,7 @@ def validate_dissonance_strict(G: TNFRGraph, node: Any) -> None:
     According to TNFR canonical theory, Dissonance (OZ - Disonancia) requires:
 
     1. **Coherence base**: EPI >= threshold (sufficient structure to withstand disruption)
-    2. **ΔNFR safety**: |ΔNFR| < critical (avoid overload/collapse)
+    2. **ΔNFR safety**: |ΔNFR| <= critical (configured inclusive pressure limit)
     3. **Active νf**: νf >= threshold (capacity to respond to dissonance)
     4. **No overload**: < 2 consecutive OZ without resolution (IL/THOL/NUL)
     5. **Network connectivity**: degree >= 1 (warning only - enables bifurcation paths)
@@ -100,18 +100,38 @@ def validate_dissonance_strict(G: TNFRGraph, node: Any) -> None:
     """
     from ...alias import get_attr
     from ...constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
+    from .._argument_validation import finite_node_real
+    from .._epi_domain import require_real_scalar_epi
+    from .._oz_config import resolve_oz_strict_policy
 
-    # Get current node state
-    epi = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
-    vf = float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
-    dnfr = float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
+    # Admit authoritative values before conversion or policy comparisons.
+    epi = require_real_scalar_epi(
+        get_attr(G.nodes[node], ALIAS_EPI, 0.0, strict=True, conv=lambda value: value),
+        operator="Dissonance",
+        label="EPI state",
+    )
+    vf = finite_node_real(
+        G.nodes[node],
+        ALIAS_VF,
+        0.0,
+        operator="Dissonance",
+        label="nu_f state",
+        lower=0.0,
+    )
+    dnfr = finite_node_real(
+        G.nodes[node],
+        ALIAS_DNFR,
+        0.0,
+        operator="Dissonance",
+        label="DeltaNFR state",
+    )
     degree = G.degree(node)
 
-    # Get configurable thresholds
-    min_epi = float(G.graph.get("OZ_MIN_EPI", 0.2))
-    max_dnfr = float(G.graph.get("OZ_MAX_DNFR", 0.8))
-    min_vf = float(G.graph.get("OZ_MIN_VF", 0.1))
-    min_degree = int(G.graph.get("OZ_MIN_DEGREE", 1))
+    # The EPI threshold remains signed; the magnitude/capacity/degree bounds
+    # are nonnegative policies. Invalid thresholds cannot certify readiness.
+    policy = resolve_oz_strict_policy(G.graph)
+    min_epi, max_dnfr = policy.min_epi, policy.max_dnfr
+    min_vf, min_degree = policy.min_vf, policy.min_degree
 
     # Precondition 1: Minimum coherence base (EPI)
     # OZ requires existing structure to perturb - without it, OZ causes collapse
@@ -209,9 +229,10 @@ def _validate_oz_no_overload(G: TNFRGraph, node: Any) -> None:
     paso a mutación"
     """
     from ...operators.grammar import glyph_function_name
+    from ..grammar_debt import read_grammar_state
 
-    # Get glyph history from node
-    history = G.nodes[node].get("glyph_history", [])
+    # Missing evidence remains unavailable; malformed stored evidence rejects.
+    history = read_grammar_state(G.nodes[node]).history
     if not history:
         # No history - first operator application, cannot be overload
         return

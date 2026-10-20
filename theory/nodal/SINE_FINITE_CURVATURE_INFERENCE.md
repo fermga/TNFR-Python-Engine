@@ -711,5 +711,6 @@ routine checkout newline conversions. Hashes associate retained records;
 they do not independently authenticate execution chronology or acquisition.
 The [read-only evidence audit](../../tests/physics/test_sine_curvature_evidence.py)
 checks retained primitives and certificate arithmetic without rerunning the
-producer or inverse. The [closed gate record](../research/FIVE_STAGE_EXECUTION_PLAN.md#reserved-curvature-inference-admission)
-retains this evaluation's status; the execution plan alone selects current work.
+producer or inverse. The [retained first evaluation](#sine-curvature-inference-result)
+owns this result; the [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+alone selects current work.

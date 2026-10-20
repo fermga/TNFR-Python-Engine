@@ -1,0 +1,71 @@
+{
+  "scope": "Retired optional advanced adapters and unsupported benchmark advertising. Preserved sources are inert text, not maintained runtime or tests.",
+  "core_mathematics": "unchanged",
+  "files": [
+    {
+      "original_path": "applications/primality-test/tnfr_primality/advanced_core.py",
+      "bytes": 21767,
+      "sha256": "b217508538ad450f6819a856ea9ba8bcca168cff06c7bd1c00518083100d90ba",
+      "action": "retire_recoverable_git_source",
+      "replacement": "tnfr_primality.cli and the basic arithmetic API; no advanced adapter is substituted",
+      "revision": "a5ff1882a488667ea818f79bbbe7a989ca5d23f1",
+      "blob": "dbbb0435d1cbf0e7e0bfef47f14ff717a468cc19",
+      "git_sha256": "277f64b15bfd7229f03d0ea70f7ecfea0363a6cef37f9a867b5995e8eaea6b75",
+      "recovery_note": "Git contains equivalent text with LF; the working bytes used CRLF. Exact pre-retirement working bytes also remain in the external audit source-before.zip."
+    },
+    {
+      "original_path": "applications/primality-test/tnfr_primality/advanced_cli.py",
+      "bytes": 11605,
+      "sha256": "06f5ea42d8ae467fcb92b3e2d493163720c782f4e3e1962180b71a8acc1bdd4f",
+      "action": "retire_recoverable_git_source",
+      "replacement": "tnfr_primality.cli and the basic arithmetic API; no advanced adapter is substituted",
+      "revision": "a5ff1882a488667ea818f79bbbe7a989ca5d23f1",
+      "blob": "a8e4e67f85a750837ab450b6825a40ac376921d4",
+      "git_sha256": "93130c5e098db600ae60932b7931a5abb78a8dd92c6a6f6326fdc2fd4d33cc2e",
+      "recovery_note": "Git contains equivalent text with LF; the working bytes used CRLF. Exact pre-retirement working bytes also remain in the external audit source-before.zip."
+    },
+    {
+      "original_path": "applications/primality-test/examples/advanced_examples.py",
+      "bytes": 12210,
+      "sha256": "865f96259341f754c0843f15ddb1885af157cc77f41f1237dfc7b1c5d1da6a55",
+      "action": "preserve_move",
+      "replacement": "tnfr_primality.cli and the basic arithmetic API; no advanced adapter is substituted",
+      "preserved_path": "applications/primality-test/archive/examples/advanced_examples.py.txt"
+    },
+    {
+      "original_path": "applications/primality-test/tests/test_advanced_cli.py",
+      "bytes": 4641,
+      "sha256": "c1cef204e129b0e55d08a4bb444d8a712895f0889d66d662588908322bfdbc92",
+      "action": "retire_recoverable_git_source",
+      "replacement": "tnfr_primality.cli and the basic arithmetic API; no advanced adapter is substituted",
+      "revision": "a5ff1882a488667ea818f79bbbe7a989ca5d23f1",
+      "blob": "de1b4e5ad439e8b0ccb68569a702a8986fdda6db",
+      "git_sha256": "f876e6db23d5c8e77719f17c3cda6f1947ee37d4c521f65a2eb7c67056858017",
+      "recovery_note": "Git contains equivalent text with LF; the working bytes used CRLF. Exact pre-retirement working bytes also remain in the external audit source-before.zip."
+    },
+    {
+      "original_path": "applications/primality-test/benchmarks/comprehensive_benchmark.py",
+      "bytes": 9902,
+      "sha256": "f69f895ff7cba10377ba23f67d66c272c951dd2474c9bead308a47b99803dd39",
+      "action": "retire_recoverable_git_source",
+      "replacement": "tnfr_primality.cli and the basic arithmetic API; no advanced adapter is substituted",
+      "revision": "a5ff1882a488667ea818f79bbbe7a989ca5d23f1",
+      "blob": "1a2c9f5eb695e21878d2151dacf67f48a3930f6d",
+      "git_sha256": "a0503d78d325109be4231839fc029c4b4d45e2111f3664fd9cb68c01e380985a",
+      "recovery_note": "Git contains equivalent text with LF; the working bytes used CRLF. Exact pre-retirement working bytes also remain in the external audit source-before.zip."
+    },
+    {
+      "original_path": "applications/primality-test/tests/test_examples.py",
+      "bytes": 3657,
+      "sha256": "70ae020d58b85d1db734fe251b1b7755f2bd23579a2c9cce378da0a40215b76b",
+      "action": "preserve_copy",
+      "replacement": "tnfr_primality.cli and the basic arithmetic API; no advanced adapter is substituted",
+      "preserved_path": "applications/primality-test/archive/tests/test_examples.py.txt"
+    }
+  ],
+  "working_tree_backup": {
+    "source_archive": "C:\\Users\\nuevo\\AppData\\Local\\Temp\\tnfr-arithmetic-retirement-k81lmo9w\\source-before.zip",
+    "manifest": "C:\\Users\\nuevo\\AppData\\Local\\Temp\\tnfr-arithmetic-retirement-k81lmo9w\\before.json",
+    "scope": "Exact pre-retirement working bytes; no frozen producer or response was changed."
+  }
+}

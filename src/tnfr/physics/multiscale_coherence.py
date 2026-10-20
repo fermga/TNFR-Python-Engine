@@ -7,7 +7,8 @@ it cannot infer the trajectory-level target
 
 This module evaluates that target only for a concrete hierarchy and an explicit
 non-negative alpha. Every coherence value uses the canonical TNFR kernel
-1 / (1 + |DeltaNFR| + |dEPI|).
+1 / (1 + |DeltaNFR| + |dEPI|), with both stored inputs explicitly supplied.
+Absent observations cannot establish zero pressure/rate or a passing target.
 """
 
 from __future__ import annotations
@@ -26,7 +27,7 @@ from ._helpers import finite_real_scalar
 
 @dataclass(frozen=True, slots=True)
 class U5CoherenceAssessment:
-    """Measured result for one declared parent/child U5 target."""
+    """Stored-input result for one declared parent/child U5 target."""
 
     parent: NodeId
     children: tuple[NodeId, ...]
@@ -51,31 +52,16 @@ def _node_coherence(graph: TNFRGraph, node: NodeId) -> float:
     if node not in graph:
         raise KeyError(f"hierarchy node {node!r} is not present in the graph")
     data = graph.nodes[node]
-    pressure = abs(
-        finite_real_scalar(
-            get_attr(
-                data,
-                ALIAS_DNFR,
-                0.0,
-                strict=True,
-                conv=lambda value: value,
-            ),
-            f"node {node!r} DeltaNFR",
-        )
+    missing = object()
+    channels = []
+    for aliases, label in ((ALIAS_DNFR, "DeltaNFR"), (ALIAS_DEPI, "dEPI")):
+        raw = get_attr(data, aliases, missing, strict=True, conv=lambda value: value)
+        if raw is missing:
+            raise ValueError(f"node {node!r} is missing required stored {label}")
+        channels.append(abs(finite_real_scalar(raw, f"node {node!r} {label}")))
+    return finite_real_scalar(
+        structural_coherence(*channels), f"node {node!r} coherence"
     )
-    rate = abs(
-        finite_real_scalar(
-            get_attr(
-                data,
-                ALIAS_DEPI,
-                0.0,
-                strict=True,
-                conv=lambda value: value,
-            ),
-            f"node {node!r} dEPI",
-        )
-    )
-    return float(structural_coherence(pressure, rate))
 
 
 def assess_u5_parent_child_coherence(
@@ -92,8 +78,12 @@ def assess_u5_parent_child_coherence(
     tolerance is an explicit additive comparison margin and is recorded in the
     returned certificate. If children is omitted, the function reads the
     parent's sub_nodes.
-    Each child must declare parent_node == parent. The result is a
-    trajectory-level diagnostic; it does not replace U5 sequence coverage.
+    Each child must declare parent_node == parent. Every selected node must
+    explicitly supply finite stored pressure and dEPI inputs. Missing channels
+    raise ValueError rather than implying zero; this reader does not derive a
+    rate from capacity/pressure or authenticate temporal provenance. Scalar
+    materialization and output arithmetic must remain representable. The result
+    is a stored-state diagnostic; it does not replace U5 sequence coverage.
     """
 
     alpha_value = _finite_nonnegative(alpha, label="alpha")
@@ -132,9 +122,14 @@ def assess_u5_parent_child_coherence(
 
     parent_coherence = _node_coherence(graph, parent)
     child_coherences = tuple(_node_coherence(graph, child) for child in child_nodes)
-    child_sum = math.fsum(child_coherences)
-    required = alpha_value * child_sum
-    residual = parent_coherence - required
+    child_sum = finite_real_scalar(math.fsum(child_coherences), "child coherence sum")
+    required = finite_real_scalar(alpha_value * child_sum, "required parent coherence")
+    if alpha_value != 0.0 and child_sum != 0.0 and required == 0.0:
+        raise ValueError("required parent coherence is nonzero but underflows to zero")
+    residual = finite_real_scalar(parent_coherence - required, "U5 coherence residual")
+    comparison_bound = finite_real_scalar(
+        parent_coherence + tolerance_value, "tolerated parent coherence"
+    )
 
     return U5CoherenceAssessment(
         parent=parent,
@@ -146,7 +141,7 @@ def assess_u5_parent_child_coherence(
         child_coherence_sum=child_sum,
         required_parent_coherence=required,
         residual=residual,
-        satisfies_target=parent_coherence + tolerance_value >= required,
+        satisfies_target=comparison_bound >= required,
     )
 
 

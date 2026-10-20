@@ -5,227 +5,67 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Python Engine 0.0.3.8** — mathematical research, a network engine and
-reproducible computational evidence.
+**Python Engine 0.0.3.9** — organized mathematical objects, nodal dynamics and
+reproducible computational research.
 
 ## Summary
 
-### The question TNFR asks
+<a id="the-question-tnfr-asks"></a>
 
 How can interacting parts form a recognizable pattern, keep its identity while
 changing, and influence other patterns? TNFR studies this question through
-networks and mathematical laws. Its long-term hypothesis is that properties
-of physical objects might emerge from such organization.
+**organized mathematical objects**: nodal patterns with a specified identity,
+retained internal state and a declared evolution law. The repository provides
+constructions, conditional proofs, a Python engine and numerical instruments
+for working with these objects. Its purpose is to investigate the scope of
+TNFR: which organizations its dynamics admit, what they retain when interacting,
+and which collective properties follow from their structure.
 
-Think of a stadium wave: a pattern moves around the stadium while each person
-stays near their seat. This illustrates how organization can belong to a group
-and persist while its parts change. It is an analogy for the question, not a
-derivation of physical matter.
+The network represents constituent relations and supports execution. Object
+studies test whether a state description retains the information needed for
+response, which consequences follow from a law, and which operator actions
+are defined on the organized target.
 
-A [conditional transport proof](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/LOCALIZED_IDENTITY_TRANSPORT.md)
-shows that a prepared localized pattern can move across fixed sites while
-retaining its full-state identity for a finite interval under one specified
-law. Its initial organization and direction are supplied; explaining how
-such a pattern forms remains a separate question. The
-[transport contract](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/EMERGENT_ONTOLOGY.md#localized-identity-transport)
-states what localization, displacement and identity mean here.
+<a id="what-a-tnfr-network-contains"></a>
+### From nodal state to an organized object
 
-This repository contains the Python engine, mathematical definitions, proofs
-with stated assumptions, and numerical experiments. It establishes results
-for specified models. Identifying those models with physical constituents
-remains an open research problem.
+An **NFR**, or fractal-resonant node, is a modeled unit at a chosen scale.
+A collective NFR retains the constituent and boundary information needed for
+its declared dynamics. Its constituents can remain distinct and internally
+active; equal group averages need not imply equal future responses.
 
-### What a TNFR network contains
+The scalar engine represents the underlying nodal state through:
 
-A network specifies which nodes can interact. Each node has:
+- **Form (`EPI`):** a signed real structural coordinate.
+- **Capacity (`nu_f`):** a nonnegative factor scaling the form response.
+- **Phase (`phi` or `theta`):** a circular coordinate.
+- **Support and consumed history:** the connections, constituent relationships
+  and temporal evidence required by the selected model.
 
-- **Form (`EPI`):** its structural state, represented by a signed real number
-  in the scalar engine. A whole pattern depends on the arrangement of states
-  and connections, not one number alone.
-- **Capacity (`nu_f`):** a nonnegative factor that scales how quickly form
-  responds to structural pressure.
-- **Phase (`phi` or `theta`):** a circular coordinate, like a position on a
-  clock face. Positions just before and after a full turn are close.
-
-A complete model supplies **structural pressure (`DeltaNFR`)**, the term
-driving form change. It may depend on differences between neighboring states
-and on declared inputs. It is not automatically pressure measured in pascals.
-The unforced nodal equation is
+The unforced nodal equation relates form to independently specified
+**structural pressure (`DeltaNFR`)**:
 
 $$
 \frac{\partial \mathrm{EPI}}{\partial t}=\nu_f\,\Delta\mathrm{NFR}.
 $$
 
-In words: **the rate of change of form equals capacity times structural
-pressure**. Zero capacity freezes this form row even when pressure is nonzero;
-it does not establish equilibrium of all variables.
-
-To predict a trajectory, the model must also specify how pressure is calculated,
-how phase, capacity and connections behave, and which clock measures change.
-Holding something fixed is an explicit assumption. The nodal equation alone
-does not select these laws. Calculating pressure backward from the response
-being evaluated would make the equation fit without predicting that response.
-
-### What counts as a coherent pattern
-
-A pattern has an identity when specified relationships can be followed over
-time. Its parts need not have equal values or stop moving. For example, phases
-may make a full turn around a loop while internal states continue to exchange
-form. A claim of persistence must say which relationship survives, under which
-law, for how long and against which disturbances.
-
-An **NFR**, or fractal-resonant node, is a modeled node or region at a chosen
-scale. Assigning that description does not prove that it forms or persists.
-The research asks when a larger organization can itself be described as a node
-while its smaller constituents keep existing and evolving. Grouping nodes is
-not enough: their interaction must remain predictable.
-
-Two groups can have the same averages but behave differently because their
-internal arrangements differ. The current mathematics therefore retains the
-internal information required by the law, including cases where opposing
-phases cancel and their average angle becomes undefined. A missing average
-does not mean that the underlying parts have disappeared.
-
-The engine's **operators** are named transformations of admitted state. Its
-**grammar** checks words of operators and relevant live preconditions.
-Numerical solvers separately evolve specified equations. These mechanisms
-support experiments; an admitted word is not a guarantee of indefinite
-stability or a rule that autonomously selects the next event.
-
-### What resonance means here
-
-Resonance asks whether a pattern responds more strongly to some input rhythms
-than others. In a specified sine-based model, a response maximum at a nonzero
-frequency follows from the joint form/phase equations near a stable pattern,
-for a stated input and observation. The observation matters: a different
-readout need not show the same peak.
-
-A **pulse** is a different question: can internal activity continue? Exact
-periodic exchange exists for a prepared isolated pair in the admitted
-zero-loss sine model. This does not explain why that loss value or initial
-preparation should be selected. Nor does a response peak imply perpetual
-free vibration. The [resonance foundation](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/RESONANCE_FOUNDATIONS.md)
-states these distinctions and their hypotheses. The named Resonance operator
-has its own execution contract.
-
-### What the research establishes
-
-TNFR can construct and study mathematical organizations under supplied complete
-laws. The results fix support, capacity, clock and preparation; combining them
-requires compatible full-state handoffs and explicit event work.
-
-Some models use a mathematical **storage** quantity to account for exchanges
-and losses. Identifying it with measured physical energy needs a separate
-measurement model.
-
-- **Acquired, distinguishable organizations:** in the smooth-sine model,
-  declared preparations on
-  nine-node cycles reach [two nonzero winding classes](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-pair).
-  Their internal phase geometry produces a [different response to the same probe](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/SINE_PATTERN_DYNAMICS.md#sine-formed-class-response).
-- **Collective identity and observation:** five acquired cycles can form a
-  larger NFR with an [additional winding](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/ORGANIZED_OUTER_WINDING.md)
-  in their mutual relations. Prescribed probes and collective form readings
-  can [identify that winding along one continuing history](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/ORGANIZED_SEQUENTIAL_OBSERVATION.md)
-  without supplying the observer with the constituent phase origins. The
-  proof retains the complete constituent state, probe work and finite identity
-  bounds. A declared [external-contact comparison](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/ORGANIZED_EXTERNAL_REGISTRATION.md)
-  separates a uniformly small finite response from a larger response available
-  at some relative alignment. The winding alone does not predict every future
-  interaction or its long-term survival.
-- **Retention and recovery:** admitted patterns remain in protected regions
-  and recover after bounded inputs. [Repeated joined interaction](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/SINE_CLASS_REPEATED_INTERACTION.md)
-  retains each branch's state, accumulated means and work under its supplied
-  protocol; finite retention alone does not establish indefinite maintenance.
-- **Identity with internal motion:** specified conservative sine families can
-  preserve a collective arrangement while constituents remain active. An
-  exact periodic orbit and resistance to disturbances are separate properties.
-- **Interaction and memory:** an acquired mediator's class changes its
-  [transmitted response](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/SINE_CLASS_MEDIATED_RESPONSE.md#sine-class-mediated-result).
-  [Causal reductions](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/SINE_CLASS_MEDIATED_MEMORY.md)
-  retain hidden initialization and nonlinear error. A separate [full-law comparison](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL.md#sine-neighbor-forward-reserved-result)
-  confirms that two neighbors' combined response need not equal the sum of
-  their individual responses after subtracting the common baseline.
-- **Obstructions and counterexamples:** equal averages, available storage or
-  matching local responses need not produce the same future. Some proposed
-  formations are excluded by symmetry or storage constraints.
-
-The [theory-to-execution map](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md#theory-to-execution) routes models and responsibilities
-to their mathematical owners, implementation and representative checks. Proofs show
-what follows from premises; tests check code; finite experiments establish
-evidence for their declared cases. These objects do not yet establish physical
-particles, autonomous substrate birth or selection of their own preparation.
-
-The [formed-object SDK workflow](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/guides/relational/SINE_PATTERNS.md#formed-object-sdk-workflow)
-explains how to use their mathematical interfaces and preserve exact evidence
-through the shared exporter. The [regional guide](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/guides/REGIONAL_AND_RELATIONAL.md#detached-collective-organization-instruments)
-separately routes the private analytical instruments for collective identity
-and observation; they are not public SDK execution methods.
-
-### How pulse, resonance and fractality fit together
-
-Internal motion can change how a group responds to its surroundings. A local
-signal may fade because activity has moved into neighboring parts, even when
-the whole system conserves its structural storage. If those parts are hidden,
-their influence can remain as memory in the observed description.
-
-This connects to the question behind fractality: **what must a larger node
-retain about its smaller constituents to inherit their dynamics?** Exact
-descriptions answer parts of that question on supplied networks. They do not
-yet explain the autonomous formation of every scale or a universal fractal
-structure. The [connection map](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/EMERGENT_ONTOLOGY.md#pulse-resonance-scale-connections)
-identifies results whose assumptions allow them to be combined.
-
-### The research direction
-
-The main route is **sufficient information -> justified interaction laws ->
-collective organization -> independent observation**. We first specify the
-state and complete laws, check their consistency, then seek a prediction,
-equivalence or obstruction that distinguishes competing explanations.
-
-Constructed organizations also test the foundations: which properties follow
-from their retained structure, and which depend on a supplied law or event?
-NFR properties and operator contracts constrain that question without selecting
-a unique continuous law. Changed coupling can alter the
-[collective response and storage](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/ORGANIZED_EFFECTIVE_LAW.md),
-so their complete law and retained state need admission before a new physical
-observation protocol. The
-[execution plan](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-owns the precise task, acceptance conditions and next step. The
-[strategy](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_RESEARCH_STRATEGY.md) explains the rationale; the
-[portfolio](https://github.com/fermga/TNFR-Python-Engine/blob/main/TNFR_lineas_de_investigacion.txt) classifies supporting branches.
-
-Why a particular law, starting state or set of connections should arise on its
-own remains open. Identifying the resulting patterns physically also needs
-independent evidence. Conditional results help identify which assumptions
-matter; they do not make those assumptions inevitable.
-
-### How this could connect to physical reality
-
-A physical property could depend on a whole pattern of form, capacity, phase
-and connections. EPI need not equal a sensor reading such as voltage or
-temperature. Any proposed correspondence still needs independently justified
-preparation, measurement, clock and uncertainty models.
-
-Physical evaluation requires separate calibration and reserved data, predictions
-fixed before evaluation, and comparison with suitable alternatives. The scope
-is public terrestrial data and ordinary laboratory-scale protocols accessible
-with a workstation. No dataset has yet passed the complete physical admission.
-Deriving particles, spin and quantum behavior from TNFR, and explaining the
-initial network's origin, remain open goals. The immediate value is a framework
-for testing precisely which mechanisms work, which information they require
-and where they fail.
+Zero capacity freezes this form row, not necessarily the whole state. A
+complete model also declares pressure, phase, capacity, support, clock, inputs
+and event laws; holding a quantity fixed is a premise. The nodal identity alone
+does not select these laws. [Parameter foundations](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md)
+owns their domains, units and unresolved choices.
 
 ## Installation
 
-Requires Python 3.10 or later. Install the package:
+Requires Python 3.10 or later. The examples on this page target the current
+checkout. From its repository root, install that source:
 
 ```bash
-python -m pip install tnfr
+python -m pip install -e .
 python -m tnfr --version
 ```
 
-For the checked-out source, run `python -m pip install -e .` from the repository
-root. NumPy, SciPy and NetworkX are core dependencies. Optional tools are grouped
+NumPy, SciPy and NetworkX are core dependencies. Optional tools are grouped
 in [package metadata](https://github.com/fermga/TNFR-Python-Engine/blob/main/pyproject.toml):
 
 ```bash
@@ -234,61 +74,103 @@ python -m pip install -e ".[compute-jax]"   # optional JAX backend
 python -m pip install -e ".[compute-torch]" # optional Torch numerical backend
 ```
 
-Published packages describe their release; research on a checkout can include
-later changes. Record the source revision and effective backend for a study.
+`python -m pip install tnfr` installs the published release, whose API can
+precede these checkout examples. Record the source revision and effective
+backend for a study.
 Backend availability does not imply acceleration on every execution path.
 
 ## Quick start
 
-```python
-from tnfr.sdk import TNFR
+Start with a small organized object: five nodes whose phases make one complete
+turn around a ring, with a small signed form contrast. Specify the native
+relational law, assess recovery, advance form and phase, then assess the new
+state.
 
-net = TNFR.create(20, seed=42).ring()
-net.evolve(steps=5, sequence="basic_activation")
-print(net.results().summary())
-print(net.tetrad().summary())
+```python
+from fractions import Fraction as Q
+
+import networkx as nx
+
+from tnfr.sdk import Network, RelationalExchangeModel
+
+graph = nx.cycle_graph(5)
+cycle = tuple(range(5))
+for node, contrast in enumerate((1, -1, 0, 0, 0)):
+    graph.nodes[node].update(EPI=Q(contrast, 1024), theta=Q(5 * node, 4), nu_f=1)
+nx.set_edge_attributes(graph, 1, "weight")
+graph.graph["GAMMA"] = {"type": "none"}
+network = Network(graph)
+model = RelationalExchangeModel(
+    storage_scale=1, epi_weight=0.5, phase_weight=0.5, phase_domain="acute"
+)
+
+before = network.relational_cycle_capture(model, cycle=cycle)
+step = network.step_relational(model, dt=Q(1, 1024), t=0)
+after = network.relational_cycle_capture(model, cycle=cycle)
+print(f"Winding: {before.cycle_winding} -> {after.cycle_winding}")
+print(f"Recovery: {before.status} -> {after.status}")
+print(f"Form changed: {step.before.epi != step.after.epi}")
+print(f"Phase changed: {step.before.phase != step.after.phase}")
+print(f"Euler storage-balance defect: {float(step.energy_step_defect):.6g}")
 ```
 
-Output for this uniform preparation in the checked environment:
+Output in the checked environment:
 
 ```text
-C=1.000, Si=1.000, N=20, E=20, rho=0.105
-Phi_s=0.0000, |grad_phi|=0.0000, |K_phi|=0.0000, xi_C=4.5201 (N=20)
+Winding: 1 -> 1
+Recovery: admitted -> admitted
+Form changed: True
+Phase changed: True
+Euler storage-balance defect: 3.18216e-11
 ```
 
-This supplies a ring with `EPI=0`, `nu_f=1` and phase zero, then executes five
-complete operator words. It illustrates a uniform baseline and the interface;
-it does not demonstrate formation. `C` and `Si` are diagnostics. Estimator
-availability and safety-policy flags have their own
-[observation contracts](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/STRUCTURAL_FIELDS_TETRAD.md).
-`results()` also records a balance-tracker sample; use `diagnose_network()`
-when a detached stored-state observation is needed.
+Winding counts the net phase turns around the ordered cycle. Here it labels
+the object's recovery class; the full state and law remain necessary to
+describe its identity and evolution. Each certificate admits recovery under
+ideal continuous evolution from its own snapshot, with held support,
+positive held capacities and no forcing. The finite Euler step reports its
+storage-balance defect separately; two admitted endpoints are not an
+error bound for the intervening numerical path.
 
-The CLI and SDK share one operator-study runner:
+This example prepares the object. Its formation is a separate research
+question, as are operator events and the comparison of different laws.
+Time is structural time, not laboratory seconds or an operator count.
+The [complete hello world](https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/01_foundations/01_hello_world.py)
+retains the network and all reports. Continue with the
+[example learning route](https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/README.md)
+and [capture and memory guide](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/guides/relational/RELATIONAL_CAPTURE_AND_MEMORY.md).
 
-```bash
-tnfr network --nodes 6 --topology ring --seed 42 --steps 1 --export-spec study.json --output report.json
-python -m tnfr network --spec study.json --output replay-report.json
-tnfr sequences basic_activation
-tnfr operators emission
-```
+<a id="what-counts-as-a-coherent-pattern"></a>
+<a id="what-the-research-establishes"></a>
+## Mathematical objects and their status
 
-Use `StudySpec`, `run_study` and `diagnose_network` from `tnfr.sdk` for the
-corresponding Python workflow. Cycles count operator words, not seconds.
-The study runner sets topology and execution seeds; `TNFR.create(..., seed=...)`
-sets the topology seed. A recipe or diagnostic report is not a complete
-resumable checkpoint. The [CLI/SDK guide](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/CLI_AND_SDK.md) owns full usage.
+The available constructions address distinct aspects of organization.
+An initialized pattern, a recovered pattern and an acquired identity establish
+different claims:
+
+| Capability | Established scope | Mathematical owner |
+| --- | --- | --- |
+| Native winding-pattern recovery | A prepared five-node unit ring (C5) and its ideal continuation under admitted capacity, phase and storage premises | [Native recovery](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/RELATIONAL_EFFECTIVE_CONNECTIONS.md#relational-pattern-detachment) |
+| Formation, retention and recovery | Prepared families under specified laws, with source, stability and uncertainty conditions | [Pattern dynamics](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/SINE_PATTERN_DYNAMICS.md#reading-map) |
+| Collective state, interaction and memory | Exact reductions or bounded descriptions that retain required constituent and boundary information | [Emergent ontology](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/EMERGENT_ONTOLOGY.md) |
+| Localized motion | Finite transport of a prepared full-state identity on supplied support | [Identity transport](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/LOCALIZED_IDENTITY_TRANSPORT.md) |
+| Operator actions on organized states | Admitted actions and conditional compositions, with explicit event work, capacity and live grammar requirements | [Structural operators](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/STRUCTURAL_OPERATORS.md#collective-grammar-descent) |
+
+Combine results only when their state, law, support, capacity, clock and
+preparation agree. Proofs establish consequences of premises, tests check
+implementation, and numerical experiments describe their cases and error
+controls. Empirical validation requires independent measurements; mathematical
+storage is not identified with measured energy by its name.
 
 ## Choose an execution path
 
-The models below have different complete laws. Sharing variables or a storage
-formula does not transfer a theorem between them.
+Choose the interface for the intended model and action:
 
 | Task | Interface or owner | Contract |
 | --- | --- | --- |
-| Run operator words | `TNFR`, `StudySpec`, `run_study`, `tnfr network` | Registered transformations, grammar, live preconditions and declared hybrid events |
 | Evolve native relational form and phase | `RelationalExchangeModel`, `Network.step_relational` | Resultant-direction pressure and a joint phase law; supplied support, held capacity and admitted phase domain |
 | Assess the normalized-sine model | [Shared assessment owners](https://github.com/fermga/TNFR-Python-Engine/blob/main/ARCHITECTURE.md#normalized-sine-proof-adapters) and [usage guide](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/guides/relational/SINE_COMPARISON_AND_INFERENCE.md) | A distinct form/phase law using neighboring sine differences; scoped observations, certificates and continuous enclosures |
+| Run operator words | `TNFR`, `StudySpec`, `run_study`, `tnfr network` | Registered transformations, grammar, live preconditions and declared hybrid events |
 | Read stored network state | `diagnose_network` | Detached diagnostics with explicit availability; stored pressure is not refreshed |
 | Study regions, contacts and retained responses | [Regional workflows](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/guides/REGIONAL_AND_RELATIONAL.md) | Declared regions, hypothetical support changes, preparation-specific bounds and evidence |
 
@@ -298,11 +180,40 @@ not add a live edge. Continuous theorems, numerical steps and validated
 enclosures provide different guarantees. The [API contracts](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/API_CONTRACTS.md)
 define admission, mutation scope, provenance and reporting.
 
-## Observe the network
+### Operators, grammar and evolution
+
+The 13 registered operators specify transformations of NFR state and relations:
+Emission (AL), Reception (EN), Coherence (IL) and Silence (SHA), for example.
+English names lead explanations; codes abbreviate words and formulas.
+Grammar checks composition and execution context, while every action must
+satisfy its target's live preconditions. Admitting a requested action does not
+derive its occurrence. The
+[collective readiness criterion](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/EMERGENT_ONTOLOGY.md#collective-grammar-readiness)
+states what an organization must retain to support collective actions.
+
+For requested words, the CLI and SDK share the operator-study runner:
+
+```bash
+tnfr network --nodes 6 --topology ring --seed 42 --steps 1 --export-spec study.json --output report.json
+python -m tnfr network --spec study.json --output replay-report.json
+tnfr sequences basic_activation
+tnfr operators emission
+```
+
+Use `StudySpec`, `run_study` and `diagnose_network` from `tnfr.sdk` for the
+Python workflow. Cycles count complete words, not seconds. The runner sets
+topology and execution seeds; `TNFR.create(..., seed=...)` sets only the topology seed.
+Recipes and reports are not complete checkpoints. The
+[CLI/SDK guide](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/CLI_AND_SDK.md)
+owns usage and directs collective studies to their scoped instruments.
+
+<a id="observe-the-network"></a>
+## Observe state and response
 
 The **structural tetrad** is a shared set of diagnostics. Like a dashboard,
 it reveals selected features without describing the complete internal state
-or predicting its future by itself.
+or predicting its future by itself. Use it alongside the object's identity
+criterion and response records; a diagnostic score cannot replace either.
 
 | Tetrad field | What it measures | Interpretation |
 | --- | --- | --- |
@@ -332,6 +243,35 @@ own premises. The catalog identifies their scope; their presence does not
 make them part of the same generative model. Evaluated evidence, negative
 results and retirement provenance remain in the [research archive](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/research/archive/README.md).
 
+<a id="how-pulse-resonance-and-fractality-fit-together"></a>
+<a id="the-research-direction"></a>
+<a id="how-this-could-connect-to-physical-reality"></a>
+<a id="research-direction-and-physical-scope"></a>
+### Research scope
+
+Developing TNFR means testing the constructions above, their limits and the
+additional premises needed for more complex organization. Fractality asks
+what a larger node must retain to inherit its constituents' dynamics and
+admissible actions. Grouping nodes alone does not establish that inheritance
+or autonomous formation across scales.
+
+The execution plan linked above is the sole task queue; the
+[portfolio](https://github.com/fermga/TNFR-Python-Engine/blob/main/TNFR_lineas_de_investigacion.txt)
+classifies supporting branches. Comparisons with independent observations
+require preparation, measurement, clock and uncertainty models, separate
+calibration and reserved evaluation, and suitable alternatives. EPI need not
+equal a sensor reading. The conditional results do not select a unique
+fundamental law.
+
+### What resonance means here
+
+Resonance is an input/output response property of a declared model. Internal
+pulses, recurrence and the registered Resonance operator have separate
+contracts; a response peak alone proves none of them. The
+[resonance foundation](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/RESONANCE_FOUNDATIONS.md)
+and [scale connection map](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/EMERGENT_ONTOLOGY.md#pulse-resonance-scale-connections)
+explain when internal motion, memory and collective response can be combined.
+
 ## Repository map
 
 | Location | Responsibility |
@@ -342,7 +282,7 @@ results and retirement provenance remain in the [research archive](https://githu
 | `tests/` | Contract checks and explicitly selected research tests; selection in [Testing](https://github.com/fermga/TNFR-Python-Engine/blob/main/TESTING.md) |
 | `examples/`, `benchmarks/` | [Runnable illustrations](https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/README.md) and [scoped instruments](https://github.com/fermga/TNFR-Python-Engine/blob/main/benchmarks/README.md) |
 | `docs/assets/`, `artifacts/` | Published evidence and local protocols, source archives and responses; missing local evidence remains unavailable |
-| [applications/](https://github.com/fermga/TNFR-Python-Engine/blob/main/applications/README.md) | Optional arithmetic applications with separate verification boundaries |
+| [applications/](https://github.com/fermga/TNFR-Python-Engine/blob/main/applications/README.md) | Basic arithmetic utility and retired application scope |
 
 ## Contribute and verify
 

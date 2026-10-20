@@ -4,8 +4,8 @@ These static controls do not evaluate the prospective uncertainty corner,
 generate a trajectory, or establish a physical preparation or instrument.
 """
 
-from fractions import Fraction as Q
 import hashlib
+from fractions import Fraction as Q
 from pathlib import Path
 
 import mpmath

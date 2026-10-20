@@ -3,9 +3,8 @@
 <a id="organized-constituent-memory-declaration"></a>
 ## Analytical question and fixed comparison
 
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#organized-inherited-response-admission)
-asks which collective response follows from the existing fine dynamics,
-instead of a separately supplied response matrix. The
+This comparison asks which collective response follows from the existing fine
+dynamics, instead of a separately supplied response matrix. The
 [electrical protocol](ORGANIZED_ELECTRICAL_PROTOCOL.md) owns the complete
 five-child law and source. Its sine-covariance remainder, quadratic norm bound
 and uniform-child input/work pairing are starting results, not this question's

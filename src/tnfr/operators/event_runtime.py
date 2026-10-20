@@ -49,7 +49,7 @@ from ..physics._exact_metric import (
 from ..physics._exact_metric import (
     normalized_positive_fraction_metric as _normalized_fraction_metric,
 )
-from ..types import Glyph
+from ..types import Glyph, real_scalar_epi
 from ..utils._structural_signature import (
     binary64_vectors_are_identical as _binary64_vectors_are_identical,
 )
@@ -1332,7 +1332,12 @@ def _reception_observation_matches_neighbor_step(
         local = step.local_certificates[index]
         runtime_neighbors = tuple(local.runtime_neighbors)
         neighbor_indices = tuple(local.runtime_neighbor_indices)
-        state_before = tuple(float(item) for item in local.state_before)
+        # The realization retains its source payloads; the runtime EN reader
+        # consumes signed-scalar EPI, whose zero representation is canonical.
+        # Compare the admitted coordinates without altering the retained seal.
+        state_before = tuple(real_scalar_epi(item) for item in local.state_before)
+        if any(item is None for item in state_before):
+            return False
         neighbor_values = tuple(
             state_before[neighbor_index] for neighbor_index in neighbor_indices
         )
@@ -2852,28 +2857,21 @@ def _prepare_word(
     if not schedule.operator_names:
         return (), None
 
-    from ..validation import validate_sequence
     from .grammar_execution import ValidatedSequence
     from .registry import get_operator_class
 
     operators = tuple(get_operator_class(name)() for name in schedule.operator_names)
-    outcome = validate_sequence(
-        list(schedule.operator_names),
-        context=context,
-    )
-    if not outcome.passed:
+    try:
+        word = ValidatedSequence(operators, context=context)
+    except TNFRValueError as exc:
         raise TNFRValueError(
-            "Invalid operator-event sequence: "
-            + outcome.summary.get("message", "validation failed"),
+            "Invalid operator-event sequence: " + exc.message,
             context={
                 "sequence": schedule.operator_names,
-                "outcome": outcome.summary,
+                "admission": exc.context,
             },
-        )
-    return operators, ValidatedSequence(
-        operators,
-        context=context,
-    )
+        ) from exc
+    return operators, word
 
 
 def _resolve_schedule_integrator_instance(

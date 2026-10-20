@@ -10,7 +10,6 @@ from tests.sine_evidence_helpers import forbid_sine_regeneration
 from tnfr.physics import _organized_parent_acquisition as owner
 from tnfr.physics import _repeated_organized_composition as composition
 
-
 _ERROR = Q(1, 10**10)
 _RECOVERED = Q(1, 10**70)
 

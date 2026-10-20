@@ -15,16 +15,32 @@ from ..config.parsing import parse_bool
 from .grammar_types import GrammarConfigurationError
 
 
-def _normalize_sequence_context(context: Mapping[str, Any] | None) -> dict[str, Any]:
-    """Copy word context and admit its flags through shared Boolean parsing."""
+def _normalize_sequence_context(
+    context: Mapping[str, Any] | None, *, compatibility_profile: str | None = None
+) -> dict[str, Any]:
+    """Copy admitted word context, defaulting to the shared core contracts.
+
+    Legacy adjacency and THOL-terminal preferences require explicit selection.
+    The explicit argument retains precedence over a context profile.
+    """
     if context is None:
-        return {}
+        context = {}
     if not isinstance(context, Mapping):
         raise TypeError("sequence context must be a mapping")
     normalized = dict(context)
     for name in ("initial_epi_nonzero", "diagnostic"):
         if name in normalized:
             normalized[name] = parse_bool(normalized[name])
+    profile = (
+        normalized.get("compatibility_profile", "core")
+        if compatibility_profile is None
+        else compatibility_profile
+    )
+    if type(profile) is not str:
+        raise TypeError("compatibility_profile must be 'core' or 'legacy'")
+    if profile not in {"core", "legacy"}:
+        raise ValueError("compatibility_profile must be 'core' or 'legacy'")
+    normalized["compatibility_profile"] = profile
     return normalized
 
 
@@ -53,14 +69,14 @@ class GrammarContext:
     def __init__(
         self,
         G,  # TNFRGraph
-        cfg_soft: dict[str, Any] | None = None,
-        cfg_canon: dict[str, Any] | None = None,
-        norms: dict[str, Any] | None = None,
+        cfg_soft: Mapping[str, Any] | None = None,
+        cfg_canon: Mapping[str, Any] | None = None,
+        norms: Mapping[str, Any] | None = None,
     ):
         self.G = G
-        self.cfg_soft = cfg_soft or {}
-        self.cfg_canon = cfg_canon or {}
-        self.norms = norms or {}
+        self.cfg_soft = _context_mapping(cfg_soft, "cfg_soft")
+        self.cfg_canon = _context_mapping(cfg_canon, "cfg_canon")
+        self.norms = _context_mapping(norms, "norms")
 
     @classmethod
     def from_graph(cls, G):  # TNFRGraph
@@ -89,6 +105,10 @@ class GrammarContext:
         # Extract configs from graph if present, otherwise use defaults
         cfg_soft = G.graph.get("GRAMMAR", {})
         cfg_canon = G.graph.get("GRAMMAR_CANON", {})
+        if not isinstance(cfg_soft, Mapping):
+            raise TypeError("GRAMMAR must be a mapping")
+        if not isinstance(cfg_canon, Mapping):
+            raise TypeError("GRAMMAR_CANON must be a mapping")
 
         # If empty or missing configs, use defaults
         if not cfg_soft:
@@ -118,32 +138,24 @@ class GrammarContext:
         GrammarConfigurationError
             If configuration is invalid
         """
+        from ..validation.window import validate_window
+
         errors = []
 
         # Validate cfg_soft
-        if not isinstance(cfg_soft, dict):
+        if not isinstance(cfg_soft, Mapping):
             errors.append("cfg_soft must be a mapping/dictionary")
         else:
             # Validate window parameter
             if "window" in cfg_soft:
-                window = cfg_soft["window"]
-                if not isinstance(window, int) or window < 0:
+                try:
+                    validate_window(cfg_soft["window"])
+                except (TypeError, ValueError):
                     errors.append("cfg_soft.window must be a non-negative integer")
 
         # Validate cfg_canon
-        if not isinstance(cfg_canon, dict):
+        if not isinstance(cfg_canon, Mapping):
             errors.append("cfg_canon must be a mapping/dictionary")
-        else:
-            # Validate thol length constraints
-            if "thol_min_len" in cfg_canon and "thol_max_len" in cfg_canon:
-                min_len = cfg_canon["thol_min_len"]
-                max_len = cfg_canon["thol_max_len"]
-                if (
-                    isinstance(min_len, (int, float))
-                    and isinstance(max_len, (int, float))
-                    and min_len > max_len
-                ):
-                    errors.append("cfg_canon.thol_min_len must not exceed thol_max_len")
 
         if errors:
             # Determine section based on error content
@@ -156,3 +168,15 @@ class GrammarContext:
             raise GrammarConfigurationError(
                 section=section, messages=errors, details=[]
             )
+
+
+def _context_mapping(value: Mapping[str, Any] | None, label: str) -> Mapping[str, Any]:
+    """Keep optional absence distinct from malformed supplied configuration.
+
+    Supplied mappings remain live references; this is not a frozen policy.
+    """
+    if value is None:
+        return {}
+    if not isinstance(value, Mapping):
+        raise TypeError(f"{label} must be a mapping or None")
+    return value

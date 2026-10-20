@@ -238,20 +238,45 @@ def test_private_reseal_cannot_forge_the_executor_abstention_reason(
         certify_executed_p2_half_reception_stage(kernel, altered_execution)
 
 
-def test_signed_zero_bits_are_observed_without_becoming_a_global_claim(
+def test_raw_signed_zero_source_binds_to_admitted_reception_coordinates(
     signed_zero_case,
 ) -> None:
-    _execution, _kernel_certificate, certificate = signed_zero_case
+    execution, _kernel_certificate, certificate = signed_zero_case
+    stage = execution.glyph_stage_evidence[0]
+
+    # The realization retains raw scalar storage; runtime reads and endpoints
+    # use canonical signed-form admission. The seal must bind that same map.
+    assert stage.certificate.steps[0].state_before[1].hex() == (-0.0).hex()
+    assert stage.left.epi[1].hex() == (0.0).hex()
+    assert stage.reception_observations[0].neighbor_epi_values[0].hex() == (0.0).hex()
+    assert stage._proof_fields_are_intact()
+    assert execution._proof_fields_are_intact()
 
     assert tuple(value.hex() for value in certificate.binary64_epi_after) == (
         "0x0.0p+0",
-        "-0x0.0p+0",
+        "0x0.0p+0",
     )
     assert certificate.binary64_epi_after[0] == certificate.binary64_epi_after[1]
-    assert not certificate.observed_output_binary64_bits_identical
+    assert certificate.observed_output_binary64_bits_identical
     assert certificate.runtime_kernel_replay_matches_by_bits
     assert certificate.exact_centered_energy_after == 0
     assert certificate.observed_numeric_consensus_certified
+
+
+@pytest.mark.parametrize("endpoint", ("left", "right"))
+def test_admitted_endpoint_zero_bit_tamper_rejects_even_after_outer_reseal(
+    signed_zero_case, endpoint
+) -> None:
+    execution, _kernel_certificate, _certificate = signed_zero_case
+    stage = execution.glyph_stage_evidence[0]
+    original = getattr(stage, endpoint)
+    changed_values = original.epi[:1] + (-0.0,)
+    assert changed_values == original.epi
+    altered = replace(stage, **{endpoint: replace(original, epi=changed_values)})
+    altered = replace(
+        altered, _proof_stamp=event_runtime_module._executed_glyph_stage_stamp(altered)
+    )
+    assert not altered._proof_fields_are_intact()
 
 
 def test_canonical_default_en_factor_cannot_be_promoted_to_the_half_mix_class(

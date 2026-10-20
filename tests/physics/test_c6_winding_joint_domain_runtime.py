@@ -219,11 +219,11 @@ def test_each_cycle_uses_one_bound_default_interval_with_four_held_pressure_subs
     assert record["final_before_closure"]["state"]["time"] == 0.5
 
 
-def test_readonly_repeat_control_preserves_the_validator_disagreement(cases):
+def test_readonly_repeat_control_records_shared_admission_without_execution(cases):
     for record in cases.values():
         control = record["repeated_um_control"]
         assert control["word"]["names"] == ("coupling", "coupling", "silence")
-        assert not control["word"]["string_validator_passed"]
+        assert control["word"]["string_validator_passed"]
         assert control["word"]["instance_validator_passed"]
         assert control["materialized_state_preserved"]
         assert all(

@@ -14,7 +14,6 @@ from tnfr.physics import _organized_external_registration as sine_registration
 from tnfr.physics import _organized_outer_winding as sine_source
 from tnfr.physics import _organized_sequential_observation as word_owner
 
-
 _ERROR = Q(1, 10**10)
 _SYNTHETIC_Q = Q(1, 10**12)
 _INTERNAL = tuple((9 * c + j, 9 * c + (j + 1) % 9) for c in range(6) for j in range(9))

@@ -35,12 +35,23 @@ def test_branches_have_identical_actual_preparations_and_target(cases):
         assert record["final_before_closure"]["state"]["time"] == 4.0
 
 
-def test_uninterrupted_repeated_um_is_rejected_before_execution(cases):
+def test_uninterrupted_repeated_um_control_records_shared_word_admission(cases):
     for record in cases.values():
         control = record["direct_repeated_um_control"]
-        assert not control["string_validator_passed"]
+        assert control["string_validator_passed"]
         assert control["instance_validator_passed"]
         assert control["names"][2:4] == ("coupling", "coupling")
+        # The evaluated protocol retains Coherence separators. Admission of
+        # another word does not execute it or transfer the measured response.
+        if record["case"] == "coupled":
+            assert record["word"]["names"][2:6] == (
+                "coupling",
+                "coherence",
+                "coupling",
+                "coherence",
+            )
+        else:
+            assert record["word"]["names"] == ("expansion", "coherence", "silence")
 
 
 def test_actual_events_keep_default_factors_and_record_every_admission(cases):

@@ -1,5 +1,10 @@
-"""The midpoint comparison preserves historical inputs and finite experiment scope."""
+"""Reconstruct the retained midpoint comparison without replaying its producers.
 
+The archived ``current`` keys describe the B20 evaluation's source, not today's
+engine. Primitive captures, exact controls and original source links stay bound.
+"""
+
+import hashlib
 import json
 import math
 from copy import deepcopy
@@ -9,25 +14,64 @@ from pathlib import Path
 import pytest
 
 from benchmarks import c6_winding_phase_kernel as campaign
+from benchmarks.c6_winding_pressure_cells import _validate_parent
+from tnfr.dynamics.integrators import DefaultIntegrator
+from tnfr.utils.io import json_loads
 
 INPUT = (
     Path(__file__).resolve().parents[2]
     / "artifacts/research/c6_winding_joint_domain.json"
 )
+COMPARISON = INPUT.with_name("c6_winding_phase_kernel.json")
 
 
 @pytest.fixture(scope="module")
 def parent():
     if not INPUT.is_file():
         pytest.skip("retained B16 local artifact is unavailable")
-    return json.loads(INPUT.read_bytes())
+    return json_loads(INPUT.read_bytes())
 
 
 @pytest.fixture(scope="module")
 def comparison(parent):
+    if not COMPARISON.is_file():
+        pytest.skip("retained B20 phase-kernel comparison is unavailable")
+    original_bytes = INPUT.read_bytes(), COMPARISON.read_bytes()
     original = deepcopy(parent)
-    result = campaign.compare_c6_phase_kernel(parent)
+    recorded = json_loads(original_bytes[1])
+    assert (
+        recorded["input_evidence"]["sha256"]
+        == hashlib.sha256(original_bytes[0]).hexdigest()
+    )
+    assert recorded["input_evidence"]["producer_manifest"] == parent["manifest"]
+    assert recorded["input_evidence"]["producer_source_scope"] == parent["source_scope"]
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("retained phase-kernel validation must not replay a producer")
+
+    result = deepcopy(recorded)
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(campaign, "compare_c6_phase_kernel", forbidden)
+        patch.setattr(campaign, "run_c6_joint_case", forbidden)
+        patch.setattr(DefaultIntegrator, "integrate", forbidden)
+        current_cases = _validate_parent(recorded)
+        old_audits = campaign.analyze_c6_defect_report(parent)
+        result["retained"] = [
+            campaign._summary(case, campaign.analyze_rounding_case(case, audit))
+            for case, audit in zip(parent["cases"], old_audits["cases"], strict=True)
+        ]
+        result["current"] = [
+            campaign._summary(
+                case,
+                campaign.analyze_rounding_case(
+                    case, campaign.analyze_c6_defect_case(case)
+                ),
+            )
+            for case in current_cases
+        ]
+    assert campaign._payload(result) == recorded
     assert parent == original
+    assert (INPUT.read_bytes(), COMPARISON.read_bytes()) == original_bytes
     return result
 
 

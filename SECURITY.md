@@ -32,6 +32,21 @@ because its filename or structural contents look valid. Use a data-only format
 and explicit schema when supported; resource limits and semantic validation
 remain separate requirements.
 
+`HTTPFFTDispatcher` also retains an executable pickle wire format. Remote
+pickle responses are refused by default, even when an outgoing bearer token is
+configured. Existing trusted deployments must explicitly set the keyword-only
+`allow_unsafe_pickle=True`; this trusts both the server and transport and permits
+Python code execution during decoding. Authenticate and protect the transport,
+for example with correctly verified TLS. The opt-in is not a pickle sandbox,
+and TLS alone does not make an untrusted server safe. Direct JSON responses
+without a pickle payload retain their existing behavior.
+
+The [archived factorization lab](applications/factorization-lab/README.md)
+retains this same opt-in as
+`--dispatcher-allow-unsafe-pickle` or, for its environment-configured dispatcher,
+`TNFR_FFT_ALLOW_UNSAFE_PICKLE=true`. Both default to refusal. These options do
+not change the request encoding or introduce a new remote JSON protocol.
+
 ### Secure Cache Configuration
 
 [cache_layers.py](src/tnfr/utils/cache_layers.py) owns the implementation,

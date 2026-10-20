@@ -1049,5 +1049,5 @@ invariant-manifold coefficients, initialization and critical decay
 identities.
 No source producer, frozen response, trajectory, parameter scan or
 numerical root search is used. The
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#weak-contact-constitutive-transition)
+[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 owns task status and subsequent research.

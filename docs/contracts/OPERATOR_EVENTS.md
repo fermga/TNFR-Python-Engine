@@ -42,6 +42,37 @@ integrator write is rejected and rolls back the graph transaction, and only
 declared flow boundaries, including explicit physical-segment boundaries, are
 appended.
 
+The detached Mutation certificate checks the supplied final EPI value and
+positive timestamp interval; it has no independent live-clock or execution
+provenance input. The schedule's boundary ownership above provides those
+associations for its own execution path. A value-equal endpoint alone does
+not authenticate its time or identify another complete law. Shared Mutation
+admission rejects nonzero scalars lost during binary64 conversion and nonzero
+nodal products lost to zero. A lost nonzero secant yields unavailable growth
+evidence with `underflowed_observed_rate`, preserving authoritative history
+precedence and the signed strict threshold.
+
+The shared [structural-acceleration reader](../../src/tnfr/operators/nodal_equation.py)
+likewise admits signed scalar EPI before materialization, including uniform-real
+BEPI, and rejects complex/nonuniform magnitude projections. Nonzero samples,
+times, secants or acceleration lost to zero raise `TNFRValueError` before
+telemetry writes; invalid timestamped evidence remains authoritative. Missing
+or short histories still produce explicit unavailability, with the numerical
+wrapper's existing zero compatibility value. The optional held-step comparator
+uses the same scalar boundary and rejects underflowed predicted/observed rates;
+its declared Euler endpoint rounding convention remains unchanged.
+
+The optional [parent/child U5 assessment](../../src/tnfr/physics/multiscale_coherence.py)
+requires an explicit hierarchy, nonnegative alpha and finite stored pressure
+and `dEPI` for every selected node. Absent inputs raise `ValueError`; explicit
+zero is valid. Authoritative malformed aliases cannot fall back to a secondary
+alias, and unrepresentable required-coherence arithmetic rejects. This is a
+stored-input diagnostic, not authentication of a temporal observation or a
+derived child law. THOL birth does not initialize an observed child rate.
+Consumers must supply the required rate evidence or handle rejection. When
+requested THOL U5 metrics encounter missing evidence, rejection propagates through the enclosing graph
+transaction; unrequested diagnostics add no such execution requirement.
+
 For each positive call, the integrator write footprint is limited to EPI,
 `dEPI_dt`, `d2EPI_dt2` and the runtime clock. A custom integrator or subclass
 must additionally realize the held-input nodal equation exactly in the
@@ -67,6 +98,16 @@ including supported date/time, `Fraction`, `Decimal`, regular-expression and
 `ZoneInfo` values, are safe atomic metadata. The rollback boundary covers state capturable from the graph;
 already emitted I/O and warnings, external resources, and references reachable
 only through external aliases are outside it.
+
+Captured NumPy arrays retain their original shape, dtype, strides, values and
+writeability when these can be restored in place, including arrays in nested
+metadata. Restoring the original layout before values preserves graph-owned
+views sharing a buffer. Temporarily unlocked ndarray bases regain their
+writeability flags; unchanged immutable buffers need no write. Custom ndarray
+layout properties reject during capture, before execution.
+If repair is refused, graph-visible aliases are rebound to detached captured
+values. This fallback does not preserve shared buffers, repair aliases held
+only outside the graph or undo operations that invalidate their allocation.
 
 ### Captured flow and executor provenance
 
@@ -94,7 +135,7 @@ substep durations and the declared interval, and a matching sequential replay.
 A custom integrator or subclass, RK4, any other Gamma type, active clipping,
 extended dynamics or a duration-sum mismatch prevents that identification.
 
-The older one-step binary64 property and exact rational pure-EPI affine
+The one-step binary64 property and exact rational pure-EPI affine
 promotion remain restricted to one Euler substep. The latter additionally
 requires at least two
 nodes, fixed symmetric nonnegative conductance with positive row strengths,
@@ -127,10 +168,19 @@ node and edge support, every edge attribute, effective conductance, the clock,
 persistent graph configuration, capturable state owned by a callable hook and
 any existing non-`None` cached `_dnfr_weights`. Only the canonical default hook
 may initialize missing or `None` cached weights. The same restriction applies
-to stage pressure callbacks. The executor freezes hook presence and identity
+to stage pressure callbacks invoked through this event-schedule executor.
+The executor freezes hook presence and identity
 for the complete schedule and checks them before invocation. A failed
 preservation check, callback or later segment restores the complete graph
 transaction; effects emitted outside the graph remain outside rollback.
+
+A direct `execute_network_operator_stage` callback is an opaque hook at the
+stage boundary. The stage provides its own transaction/failure behavior,
+but does not install this executor's pressure-only preservation guard or
+sealed refresh evidence. A caller studying a different complete law must
+declare the callback and independently check its write scope. This schedule
+also uses its own target and flow rules; it is not interchangeable with a
+selected-target, two-row sine-law study merely because both refresh pressure.
 
 `ExecutedPressureRefreshedFlowPartition` stores all boundary observations,
 segment `ExecutedNodalFlowInterval` records and one segment-start
@@ -228,6 +278,34 @@ Supported false strings for UM options and `OZ_NOISE_MODE` disable their
 branch; NAV options retain strict Boolean admission. Invalid controls reject
 before proposals or writes. These admission rules do not make a standalone
 public operator call transactional; the stage supplies that separate boundary.
+Closed factor bounds and active UM compatibility thresholds check the original
+scalar, so an out-of-domain exact value cannot enter by rounding to a bound.
+Strict and no-op boundaries of the represented execution still apply.
+SHA rejects a positive capacity product lost to represented zero before
+commit; intentional zero capacity or a zero factor remains admitted. The
+[pointwise admission controls](../../tests/operators/test_pointwise_state_admission.py)
+exercise the direct glyph, public class and atomic stage boundaries.
+
+Enabled strict AL/SHA preconditions admit consumed state and policy thresholds
+before numeric comparison. Boolean, nonfinite and nonzero-underflow values
+reject; authoritative aliases cannot fall through. AL admits signed scalar
+EPI (including uniform-real BEPI), requires it strictly below `EPI_LATENT_MAX`
+and nonnegative capacity at least `VF_BASAL_THRESHOLD`. SHA uses the inclusive
+`SHA_MIN_VF` floor. Finite signed policy thresholds retain their comparison
+meaning; they do not redefine the nonnegative capacity domain. AL's
+`MIN_NETWORK_DEGREE_COUPLING` is a nonnegative, non-Boolean integer controlling
+an advisory. The exported legacy `validate_emission` retains its distinct
+`AL_MAX_EPI_FOR_EMISSION` ceiling; public/staged AL does not use that policy.
+
+The [collective NAV assessment](../../theory/nodal/SINE_COLLECTIVE_TRANSITION.md)
+uses the existing pointwise proposal and one supplied stage instant. Its
+SHA successor retains the latent flag and preserved form; equal physical
+coordinates without that context can select different NAV outputs. The
+elapsed wall-clock latency is telemetry and does not advance structural
+flow time. For accepted draws, immediate pressure-only sine refresh can
+erase raw-jitter differences while preserving phase/capacity changes and
+distinct RNG/transition records. Its sector and finite-U6 claims retain
+their separate source and configuration premises.
 
 Every accepted two-phase ZHIR `NetworkStageResult` also contains one ordered,
 sealed `MutationStageDecisionObservation` per target, independent of the EPI
@@ -253,6 +331,73 @@ the stored value has the canonical list-of-triples form. Standalone
 does not identify the call that produced it. `auxiliary_stability_certified` is
 always false because this record describes one accepted finite stage rather
 than a trajectory invariant.
+
+Strict EN preconditions admit stored signed scalar EPI, stored signed pressure
+and both configured Reception ceilings before numeric comparison. Boolean,
+nonfinite and unrepresentable values reject; valid negative ceilings retain
+their signed upper-bound meaning. The
+[weighted collective Reception contract](../../theory/nodal/SINE_COLLECTIVE_RECEPTION.md)
+uses this same stage and the complete live word. Its event work includes
+target-to-target cross terms. No passivity claim follows merely from convex
+mixing, and its unchanged fresh sine pressure is specific to that declared law.
+The [organized-source word contract](../../theory/nodal/ORGANIZED_SOURCE_PORT.md#organized-source-word-reuse)
+uses this same stage on a complete law with a diffusive form term and declared
+reciprocal phase row. Its initialized Reception → Coherence → Silence word
+has conditional ideal passivity and joint form/mean retention on an acute
+domain. The theorem retains constituent coordinates, positive held capacities,
+phase lifts and discrete grammar/policy context. Neither convex mixing nor a
+stored endpoint alone supplies those premises. Each stage is independently
+atomic; a later rejection does not roll back completed stages of the word.
+
+The [represented handoff](../../theory/nodal/ORGANIZED_SOURCE_PORT.md#organized-source-coherence-handoff)
+and [Silence suffix](../../theory/nodal/ORGANIZED_SOURCE_PORT.md#organized-source-silence-handoff)
+retain separate execution evidence. Endpoint readers admit raw form, actual
+capacities and declared phase lifts; stored event pressure is captured before
+constitutive refresh. The [open word domain](../../theory/nodal/ORGANIZED_SOURCE_PORT.md#organized-source-robust-word)
+requires checked form/reset defects, policy/factor association and the
+pressure-only callback contract for represented transfer. These checks neither
+identify a rounded endpoint with an exact symmetry sector nor establish a
+uniform platform trigonometry bound. An activity-policy rejection differs from
+geometric inadmissibility or grammar rejection.
+
+Silence preserves form and phase at its jump while attenuating capacity;
+that event map does not select the subsequent phase law or imply future form
+preservation. Its lifecycle timestamp is not a structural clock. The
+finite-reuse capacity bound is conditional on its configured factor and floor,
+not a receipt for repeated network executions or a universal lifetime. Core
+contextual Silence-to-Reception admission neither restores capacity nor erases
+latency metadata, and every later stage still needs live admission.
+
+<a id="coherence-activity-policy"></a>
+Strict Coherence uses one shared target-state and policy admission owner for
+direct validation, advisory collection, readiness and public/atomic preflight.
+`G.graph["IL_PRECONDITIONS"]["activity_policy"]` defaults to
+`"signed_threshold"`: signed EPI must exceed `min_epi` and capacity must
+exceed nonnegative `min_vf` (both default zero). The explicit alternative
+`"event_domain"` admits finite signed EPI including zero and nonnegative
+capacity; `min_epi`/`min_vf` keys then reject as conflicting configuration.
+The [domain derivation and source audit](../../theory/STRUCTURAL_OPERATORS.md#coherence-activity-admission)
+justify this boundary without equating event-domain validity with autonomous
+activity. The pressure and phase maps themselves are unchanged.
+
+Both policies retain finite signed pressure, admitted phase, authoritative
+attribute precedence and signed uniform-real BEPI admission. All consumed
+thresholds and warning controls are normalized before comparison/publication;
+invalid physical scalars cannot pass through NaN comparisons or truthiness.
+Existing missing-attribute defaults do not permit fallback from an invalid
+authoritative value. Public execution admits common control flags before its
+strict branch and still applies grammar, proposal, neighbor and lifecycle
+checks. Direct strict validation does not certify those later checks.
+
+`diagnose_coherence_readiness` retains its existing checks and reports the
+selected policy. `epi_active`/`vf_active` describe policy admission only;
+`ready` is neither an existence test nor a full execution certificate. Warning
+configuration changes advisories, not grammar or event selection. Selecting
+`event_domain` requires removing threshold keys; keep that configuration with
+the experiment. Evidence acquired under the default policy
+retains that policy association. Zero form does not
+waive initialization, and zero capacity permits this event without implying
+unforced continuous motion.
 
 On directed support, an arc `source -> receiver` is an incoming EN input: the
 snapshot reads predecessors and source detection follows paths in that same
@@ -303,6 +448,60 @@ schedules or repeated execution. The underlying flow certificate and the
 operation/composition records seal their proof fields; wrapper and aggregate
 properties revalidate those seals and fail closed if a factor or claim flag is
 replaced.
+
+<a id="scale-stage-configuration"></a>
+### Scale-stage configuration and strict policies
+
+VAL/NUL direct and all-target stages reuse the
+[same scale proposal](../../src/tnfr/operators/_scale_operator_kernel.py).
+`EDGE_AWARE_ENABLED` must be a Boolean; truthy strings and numeric flags
+reject. With form scaling active, the shared clip-policy resolver admits
+finite ordered EPI bounds, a supported `CLIP_MODE` and positive finite
+`CLIP_SOFT_K` (also required by that policy in hard mode). Invalid modes
+do not fall back to hard projection. Direct, atomic and pointwise-certificate
+paths consume the configured soft steepness through the same proposal.
+
+The disabled numerical form branch does not validate or use inactive clipping
+inputs.
+This does not broaden public execution: its existing scalar EPI preflight
+still applies. Other operators' clipping adapters have their own contracts.
+An atomic scale rejection restores graph-owned state; a public single-node
+call does not gain a general transaction promise from these validations.
+
+When strict VAL/NUL preconditions are enabled, consumed policy thresholds
+must be finite, non-Boolean real scalars. Invalid authoritative state does
+not fall through to another alias. `VAL_CHECK_NETWORK_CAPACITY` is a Boolean;
+its active `VAL_MAX_NETWORK_SIZE` is a nonnegative, non-Boolean integer.
+NUL's density proxy is also checked for representable finite output. These
+are supplied admission policies, not universal safety, storage-reduction or
+identity theorems. The [complete action analysis](../../theory/nodal/SINE_FORM_CAPACITY_ACTION.md)
+owns the separate refreshed-law and collective maintenance questions.
+
+### Retained primitive context reconstruction
+
+The research-only [recorded-state reader/writer](../../src/tnfr/research/retained_graph_state.py)
+preserves its supported finite tagged containers, bounded history deques,
+node/neighbor order and persistent attributes. It rejects malformed duplicate
+keys, nonfinite binary64 records, unsupported classes and histories that would
+be truncated on reconstruction. Declared cache omissions remain explicit;
+the shared cache owners may rebuild them. This creates a fresh preparation
+from recorded inputs and is neither an authenticated execution history nor
+a general checkpoint API.
+
+Node identifiers are exact integers or nonempty strings. Boolean, floating,
+empty-string and custom-object identifiers reject before reconstruction;
+integer `2` and string `"2"` remain distinct. The same typed admission applies
+to node records, edges and neighbor order. This permits canonical THOL child
+identifiers and their retained hierarchy without relabeling old nodes. Earlier
+integer-only captures retain their representation and interpretation; archived
+producer bytes remain separate from a later compatible reader.
+
+Subsequent words still use the shared sequence context, live grammar and
+physical preconditions. A reconstructed source's outstanding U2 debt is not
+erased. Canonical U6 consumes separately acquired before/after potential
+snapshots, not the sequence validator's return value. The
+[directional study](../../theory/nodal/SINE_DIRECTIONAL_MAINTENANCE.md)
+illustrates these distinct obligations under one selected complete law.
 
 ### One event and REMESH cycle
 
@@ -614,6 +813,39 @@ The additional REMESH equations and runtime boundary are centralized in
 The public `2/4/8`-segment construction is
 [`166_event_remesh_reference_family.py`](../../examples/02_physics_regimes/166_event_remesh_reference_family.py).
 
+<a id="structural-identity-observation"></a>
+### Structural identity snapshot admission
+
+[`StructuralIdentity`](../../src/tnfr/operators/remesh.py) is a configured
+snapshot matcher, distinct from a maintained NFR identity, delayed REMESH
+history and the causal memory obtained by eliminating dynamical state. Its
+signature consumes signed scalar EPI, a finite ordered nonnegative capacity
+range, an optional circular phase target and a finite nonnegative tolerance.
+The constructor validates those premises; matching re-admits mutable fields
+and any tolerance override. Uniform-real BEPI uses shared signed-scalar
+admission, including serialized form. Rich form is not projected to magnitude.
+
+`matches` returns false for a missing required observation or a valid mismatch.
+Invalid present data and invalid signature settings raise `TNFRValueError`;
+they cannot become zero, pass a comparison involving NaN, or fall through to a
+later alias. Phase is consumed only when the signature declares a target.
+`capture_from_node` requires EPI and capacity, preserves absent optional phase
+as `None`, and rejects invalid present phase. Both readers leave their source
+mapping unchanged. Exact comparisons of represented form/capacity values avoid
+overflow in differences and tolerance-expanded bounds. Phase uses the shared
+circular difference directly, preserving small differences near zero and
+rejecting phase subtraction that cannot be represented finitely.
+
+The historical `frozen_by_sha`/`is_sha_frozen` flag is supplied metadata parsed
+with the shared Boolean policy. It allows the configured low-capacity matching
+branch; it neither authenticates an executed SHA nor certifies that the nodal
+product vanishes. Lineage is likewise supplied provenance, not a derivation of
+autonomous action. Callers previously relying on missing EPI/capacity becoming
+zero, absent phase becoming angle zero, or malformed values receiving a match
+must now supply observations or handle rejection. The
+[admission controls](../../tests/operators/test_structural_identity_admission.py)
+exercise these boundaries independently of any REMESH trajectory.
+
 ### Exact REMESH memory and schedule certificates
 
 [`certify_uniform_remesh_history_stability`](../../src/tnfr/physics/remesh_history_stability.py)
@@ -813,11 +1045,16 @@ then verifies ordered P2 targets, mutual singleton runtime neighbors, exact
 binary64 mix `0.5`, the source hard interval, unchanged capacity and effective
 conductance, the source diffusion-metric ray, accepted output identity and a
 bit-exact replay through the shared production mean/blend/clipping kernel.
+Binding re-admits stored local EPI through the shared signed-scalar contract
+before comparing it with the consumed stage coordinates. Raw source seals and
+bitwise checks on admitted observations remain separate requirements.
 
 The sealed `ExecutedP2HalfReceptionStageCertificate` therefore binds the
 global `q=0` conclusion to one executed EPI stage with finite grammar admission
-and whole-schedule graph atomicity. Opposite signed-zero output bits remain
-valid numeric consensus. The certificate does not bind the source REMESH
+and whole-schedule graph atomicity. Raw mean/blend proposals can have opposite
+zero signs; current clipping admission canonicalizes both endpoints to positive
+zero. Numeric consensus does not promise preservation of raw proposal bits.
+The certificate does not bind the source REMESH
 history or configuration to the graph, audit all auxiliary Reception state or
 raw topology, retain current live-graph identity, or certify future/repeated
 runtime stability, solver accuracy or full TNFR stability.

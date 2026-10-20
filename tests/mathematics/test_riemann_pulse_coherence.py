@@ -152,8 +152,7 @@ def test_zeta_import_and_fixed_precision_leave_caller_context_unchanged(
 ):
     # A fresh interpreter catches import-time precision mutation and the former
     # invalid mp.mp attribute access independently of pytest's import order.
-    script = textwrap.dedent(
-        """
+    script = textwrap.dedent("""
         import mpmath as mp
         mp.mp.dps = 67
         from tnfr.mathematics import zeta
@@ -163,8 +162,7 @@ def test_zeta_import_and_fixed_precision_leave_caller_context_unchanged(
         observed = zeta.zeta_function(2)
         assert abs(mp.mpf(observed) - mp.zeta(2)) < mp.mpf('1e-24')
         assert mp.mp.dps == 67
-        """
-    )
+        """)
     result = subprocess.run(
         [sys.executable, "-c", script],
         env=source_tree_environment,

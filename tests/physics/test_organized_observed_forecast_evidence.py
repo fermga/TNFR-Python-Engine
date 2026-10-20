@@ -6,12 +6,12 @@ the audit rebuilds source/record association, ball propagation and the final
 sample-residual/error decision. Receipts do not authenticate execution.
 """
 
-from dataclasses import asdict
-from fractions import Fraction as Q
 import hashlib
-from pathlib import Path
 import subprocess
 import zipfile
+from dataclasses import asdict
+from fractions import Fraction as Q
+from pathlib import Path
 
 import pytest
 
@@ -25,7 +25,6 @@ from tnfr.research.artifact_io import (
     verify_archive_members,
 )
 from tnfr.utils.io import json_loads
-
 
 ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE = ROOT / "docs/assets/organized_observed_forecast"

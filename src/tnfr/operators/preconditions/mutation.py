@@ -24,7 +24,7 @@ from .._mutation_gate import (
     validate_mutation_capacity,
     validate_mutation_threshold,
 )
-from ..grammar_debt import node_has_prior_coherence
+from ..grammar_debt import read_grammar_state
 from . import OperatorPreconditionError
 
 __all__ = [
@@ -207,7 +207,8 @@ def validate_grammar_u4b(
         logger = logging.getLogger(__name__)
 
     # Get glyph history
-    glyph_history = G.nodes[node].get("glyph_history", [])
+    grammar_state = read_grammar_state(G.nodes[node])
+    glyph_history = grammar_state.history
     strict_validation = bool(G.graph.get("VALIDATE_OPERATOR_PRECONDITIONS", False))
     require_il = strict_validation or bool(
         G.graph.get("ZHIR_REQUIRE_IL_PRECEDENCE", False)
@@ -236,7 +237,7 @@ def validate_grammar_u4b(
     history_names = [glyph_function_name(g) for g in glyph_history]
 
     # Part 1: Check for prior IL (Coherence)
-    il_found = node_has_prior_coherence(G.nodes[node])
+    il_found = grammar_state.prior_coherence
 
     if require_il and not il_found:
         raise OperatorPreconditionError(
@@ -313,10 +314,10 @@ def record_destabilizer_context(
     structural tracing and post-hoc analysis. This enables understanding
     of bifurcation pathways without breaking TNFR structural invariants.
 
-    The reach is a SINGLE emergent window (BIFURCATION_WINDOW): the
-    structural-pressure relaxation time is topology-independent (the mean
-    L_rw eigenvalue is exactly trace/N = 1), so the earlier graduated
-    strong/moderate/weak split does not survive the dynamics.
+    The reach uses the shared BIFURCATION_WINDOW recency policy. Its scalar
+    surrogate calibration does not establish a topology-independent physical
+    relaxation time. The same operator-position window applies to every
+    registered destabilizer, without strong/moderate/weak subdivisions.
 
     Examples
     --------
@@ -334,9 +335,9 @@ def record_destabilizer_context(
         logger = logging.getLogger(__name__)
 
     # Get glyph history from node
-    history = G.nodes[node].get("glyph_history", [])
+    history = read_grammar_state(G.nodes[node]).history
     if not history:
-        # No history available, mutation enabled by external factors
+        # No retained history supplies a recent destabilizer observation.
         context = {
             "destabilizer_operator": None,
             "destabilizer_distance": None,
@@ -510,16 +511,8 @@ def diagnose_mutation_readiness(G: TNFRGraph, node: NodeId) -> dict:
                 f"xi={sample.xi:.3f}."
             )
 
-    # Check 3: IL precedence
-    glyph_history = G.nodes[node].get("glyph_history", [])
-    if glyph_history:
-        from ..grammar import glyph_function_name
-
-        history_names = [glyph_function_name(g) for g in glyph_history]
-    else:
-        history_names = []
-
-    il_found = node_has_prior_coherence(G.nodes[node])
+    # Check 3: IL precedence. Admit the trace without consuming an iterator.
+    il_found = read_grammar_state(G.nodes[node]).prior_coherence
 
     checks["il_precedence"] = {
         "passed": il_found,

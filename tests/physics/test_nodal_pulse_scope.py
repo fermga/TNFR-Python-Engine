@@ -136,7 +136,7 @@ def test_finite_extreme_capacity_statistics_do_not_overflow(capacities, mean, sp
     (
         "tnfr.gamma.kuramoto_R_psi",
         "tnfr.metrics.coherence.coherence_matrix",
-        "tnfr.metrics.coherence.local_phase_sync_weighted",
+        "tnfr.metrics.coherence._all_local_phase_sync_weighted",
     ),
 )
 def test_failed_synchrony_owner_is_not_reported_as_zero(owner, monkeypatch):
@@ -154,8 +154,8 @@ def test_nonfinite_synchrony_result_is_rejected(channel, monkeypatch):
         monkeypatch.setattr("tnfr.gamma.kuramoto_R_psi", lambda graph: (math.nan, 0.0))
     else:
         monkeypatch.setattr(
-            "tnfr.metrics.coherence.local_phase_sync_weighted",
-            lambda *args, **kwargs: math.inf,
+            "tnfr.metrics.coherence._all_local_phase_sync_weighted",
+            lambda graph, order, weights: {node: math.inf for node in order},
         )
     with pytest.raises(ValueError, match="finite"):
         compute_nodal_pulse(_snapshot((0.5, 0.5, 0.5)))

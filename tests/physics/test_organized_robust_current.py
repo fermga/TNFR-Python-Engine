@@ -6,13 +6,13 @@ not supplied as realizable histories. Independent decimal trigonometry checks
 the directed rational current enclosures.
 """
 
+import subprocess
+import sys
 from copy import deepcopy
 from decimal import Decimal
 from fractions import Fraction as Q
 from itertools import product
 from pathlib import Path
-import subprocess
-import sys
 
 import mpmath
 import pytest
@@ -20,7 +20,6 @@ import pytest
 from tests.sine_evidence_helpers import forbid_sine_regeneration
 from tnfr.mathematics._rational_interval import I
 from tnfr.physics import _organized_robust_current as owner
-
 
 _RATIOS = (
     "capacitance_ratio",

@@ -4,10 +4,10 @@ Exact archive associations do not authenticate execution or replace the
 source, counterfactual-preparation and complete-law hypotheses of the proof.
 """
 
-from fractions import Fraction as Q
 import hashlib
-from pathlib import Path
 import subprocess
+from fractions import Fraction as Q
+from pathlib import Path
 
 import pytest
 
@@ -15,7 +15,6 @@ from tests.sine_evidence_helpers import forbid_sine_regeneration
 from tnfr.mathematics._rational_interval import I, cos, pi_interval, sin
 from tnfr.research.artifact_io import decode_exact_tree
 from tnfr.utils.io import json_loads
-
 
 ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE = ROOT / "docs/assets/organized_interface_factorization"

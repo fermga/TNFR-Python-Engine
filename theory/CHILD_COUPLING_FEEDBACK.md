@@ -906,11 +906,15 @@ identities, boundary cases, the domain obstruction and invalid-input checks.
 
 ## 14. Finite admission and the represented capacity obstruction
 
-The supplied word `VAL IL UM UM ... SHA` fails the string-based canonical
-transition validator at `UM -> UM`; the separate `ValidatedSequence` check
-alone accepts it. Both results are retained. No transition policy is changed
-to obtain a run. The declared finite study instead uses `VAL IL`, then sixteen
-`UM IL / refresh / Euler` blocks, and finally SHA after measurement. Within
+With initialized-form context, the shared `core` grammar admits the supplied
+word `VAL IL UM UM ... SHA` in both string and typed form. Explicit `legacy`
+admission rejects `UM -> UM` in both interfaces; the earlier disagreement
+remains part of its recorded evidence, not the current contract. Word admission
+does not execute this alternative or establish its response. The evaluated
+finite protocol retains `VAL IL`, then sixteen `UM IL / refresh / Euler`
+blocks, and finally SHA after measurement. Its Coherence separators are a
+premise of those results; admitting consecutive Coupling does not authorize
+their removal or transfer the measured response. Within
 this zero-phase P2 fixture, each separator IL leaves EPI, capacity and support
 unchanged. Its raw pressure reduction is recorded, and fresh canonical
 pressure matches the pre-IL pressure exactly. This verified identity explains
@@ -1064,9 +1068,10 @@ $$
 The integer inequality puts the upper envelope below seven after 512
 numeric updates for every initial index in the class. Together with the
 no-skipping result, this proves arrival at six from above. It does not
-execute 512 graph cycles or admit a repeated UM word; the grammar refusal
-from section 14 remains unchanged. The result concerns only this fixed
-numeric capacity map. The
+execute 512 graph cycles or establish the response of a repeated Coupling
+word. Such a schedule separately requires its selected admission profile and
+live operator gates; section 14 retains its evaluated UM/IL protocol.
+The result concerns only this fixed numeric capacity map. The
 [42 lattice controls](../tests/physics/test_binary64_capacity_feedback.py)
 cover independent endpoints, both directions of final halfway rounding,
 factor/platform restrictions, cache rebuilding and fabricated endpoint refusal.

@@ -14,12 +14,12 @@ from __future__ import annotations
 import math
 from collections.abc import Mapping, MutableMapping
 from dataclasses import dataclass
-from numbers import Real
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from ..types import NodeId, TNFRGraph
 
+from .._exact_time import finite_represented_real
 from ..alias import get_attr, set_attr
 from ..constants.aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_THETA, ALIAS_VF
 from ..constants.canonical import DELTA_PHI_MAX
@@ -28,6 +28,8 @@ from ..errors import TNFRValueError
 from ..utils import angle_diff
 
 __all__ = [
+    "DissonancePropagationPolicy",
+    "resolve_dissonance_propagation_policy",
     "propagate_dissonance",
     "compute_network_dissonance_field",
     "detect_bifurcation_cascade",
@@ -37,6 +39,14 @@ __all__ = [
 _PROPAGATION_MODES = frozenset({"phase_weighted", "uniform", "frequency_weighted"})
 _PROPAGATION_EVENTS_KEY = "_oz_propagation"
 _MISSING = object()
+
+
+@dataclass(frozen=True, slots=True)
+class DissonancePropagationPolicy:
+    """Admitted phase and magnitude cutoffs for neighbor propagation."""
+
+    phase_threshold: float
+    min_propagation: float
 
 
 @dataclass(frozen=True, slots=True)
@@ -64,15 +74,10 @@ class _DissonancePropagationPlan:
 def _finite_scalar(value: Any, label: str) -> float:
     """Materialize one finite real scalar for the propagation transaction."""
 
-    if isinstance(value, bool) or not isinstance(value, Real):
-        raise TNFRValueError(f"{label} must be a finite real scalar")
     try:
-        result = float(value)
-    except (OverflowError, TypeError, ValueError) as exc:
-        raise TNFRValueError(f"{label} must be a finite real scalar") from exc
-    if not math.isfinite(result):
-        raise TNFRValueError(f"{label} must be finite")
-    return result
+        return finite_represented_real(value, label)[0]
+    except (TypeError, ValueError) as exc:
+        raise TNFRValueError(str(exc)) from exc
 
 
 def _finite_nonnegative(value: Any, label: str) -> float:
@@ -80,6 +85,30 @@ def _finite_nonnegative(value: Any, label: str) -> float:
     if result < 0.0:
         raise TNFRValueError(f"{label} must be nonnegative")
     return result
+
+
+def resolve_dissonance_propagation_policy(
+    graph_data: Mapping[str, Any],
+) -> DissonancePropagationPolicy:
+    """Admit propagation thresholds without preparing or applying an event.
+
+    These graph-level values are supplied policies, not glyph factors. The
+    phase threshold must be positive because it divides the phase separation.
+    A zero minimum propagation is permitted; zero contributions still do not
+    propagate. Runtime resolution remains conditional on a nonempty outgoing
+    neighborhood.
+    """
+    phase_threshold = _finite_scalar(
+        graph_data.get("OZ_PHASE_THRESHOLD", DELTA_PHI_MAX),
+        "OZ phase threshold",
+    )
+    if phase_threshold <= 0.0:
+        raise TNFRValueError("OZ phase threshold must be positive")
+    min_propagation = _finite_nonnegative(
+        graph_data.get("OZ_MIN_PROPAGATION", 0.05),
+        "OZ minimum propagation",
+    )
+    return DissonancePropagationPolicy(phase_threshold, min_propagation)
 
 
 def _read_node_scalar(
@@ -188,18 +217,8 @@ def _prepare_dissonance_propagation(
         f"OZ source structural frequency {source_node!r}",
     )
 
-    # These graph-level values are propagation policy thresholds, not glyph
-    # factors. A zero phase threshold makes the compatibility weight undefined.
-    phase_threshold = _finite_scalar(
-        G.graph.get("OZ_PHASE_THRESHOLD", DELTA_PHI_MAX),
-        "OZ phase threshold",
-    )
-    if phase_threshold <= 0.0:
-        raise TNFRValueError("OZ phase threshold must be positive")
-    min_propagation = _finite_nonnegative(
-        G.graph.get("OZ_MIN_PROPAGATION", 0.05),
-        "OZ minimum propagation",
-    )
+    policy = resolve_dissonance_propagation_policy(G.graph)
+    phase_threshold, min_propagation = policy.phase_threshold, policy.min_propagation
 
     # Phase one validates the complete outgoing neighborhood and materializes
     # every proposal without mutating nodal state or propagation telemetry.

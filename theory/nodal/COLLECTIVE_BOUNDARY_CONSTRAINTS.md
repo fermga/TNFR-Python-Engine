@@ -612,5 +612,5 @@ The result leaves actual boundary curvature, constitutive choice,
 equilibrium, event occurrence and physical observation as inputs
 requiring their own admission. It does not derive a universal
 restoring law from connectivity, dissipation or the nodal identity.
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#collective-boundary-foundation-admission)
-owns this gate's status and the sole subsequent research queue.
+The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns the sole subsequent research queue; the conditional result remains here.

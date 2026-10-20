@@ -75,12 +75,29 @@ def validate_emission(G: "TNFRGraph", node: "NodeId") -> None:
     Raises
     ------
     OperatorPreconditionError
-        If EPI is already too high for emission to be meaningful
+        If signed scalar EPI or the configured ceiling is invalid, or EPI
+        reaches that ceiling
     """
-    epi = _get_node_attr(G, node, ALIAS_EPI)
+    from ...alias import get_attr
+    from ...types import require_finite_real_scalar_epi
+    from .._argument_validation import finite_real
+
+    try:
+        epi = require_finite_real_scalar_epi(
+            get_attr(
+                G.nodes[node], ALIAS_EPI, 0.0, strict=True, conv=lambda value: value
+            ),
+            "AL stored EPI",
+        )
+    except (OverflowError, TypeError, ValueError) as exc:
+        raise OperatorPreconditionError("Emission", str(exc)) from exc
     # Emission is meant to activate latent nodes, not boost already active ones
     # This is a soft threshold - configurable via graph metadata
-    max_epi = float(G.graph.get("AL_MAX_EPI_FOR_EMISSION", 0.8))
+    max_epi = finite_real(
+        G.graph.get("AL_MAX_EPI_FOR_EMISSION", 0.8),
+        operator="Emission",
+        label="AL_MAX_EPI_FOR_EMISSION",
+    )
     if epi >= max_epi:
         raise OperatorPreconditionError(
             "Emission", f"Node already active (EPI={epi:.3f} >= {max_epi:.3f})"
@@ -113,11 +130,10 @@ def validate_reception(G: "TNFRGraph", node: "NodeId") -> None:
 
 
 def validate_coherence(G: "TNFRGraph", node: "NodeId") -> None:
-    """IL - Coherence requires active EPI, νf, and manageable ΔNFR.
+    """Validate target state under the configured Coherence activity policy.
 
-    This function delegates to the strict validation implementation
-    in coherence.py module, which provides comprehensive canonical
-    precondition checks according to TNFR.pdf §2.2.1.
+    Delegates to the shared signed_threshold/event_domain reader. This
+    target-only check does not authorize grammar, a phase proposal or an event.
 
     Parameters
     ----------
@@ -129,12 +145,14 @@ def validate_coherence(G: "TNFRGraph", node: "NodeId") -> None:
     Raises
     ------
     ValueError
-        If critical preconditions are not met (active EPI, νf, non-saturated state)
+        If the selected signed-threshold policy rejects admitted state.
+    OperatorPreconditionError
+        If consumed primitives or policy configuration are invalid.
 
     Warnings
     --------
     UserWarning
-        For suboptimal conditions (zero ΔNFR, critical ΔNFR, isolated node)
+        For configured stored-pressure or isolation advisories.
 
     Notes
     -----
@@ -153,8 +171,8 @@ def validate_coherence(G: "TNFRGraph", node: "NodeId") -> None:
 def diagnose_coherence_readiness(G: "TNFRGraph", node: "NodeId") -> dict:
     """Diagnose node readiness for IL (Coherence) operator.
 
-    Provides comprehensive diagnostic report with readiness status and
-    actionable recommendations for IL operator application.
+    Reports normalized target state and the selected activity policy.
+    Neighbor phases, proposal arithmetic, grammar and occurrence remain separate.
 
     Parameters
     ----------
@@ -473,7 +491,10 @@ def diagnose_resonance_readiness(G: "TNFRGraph", node: "NodeId") -> dict:
 
 
 def validate_silence(G: "TNFRGraph", node: "NodeId") -> None:
-    """SHA - Silence requires vf > 0 to reduce.
+    """Admit nonnegative capacity at or above the configured SHA floor.
+
+    Equality is allowed, including zero capacity when the floor is zero.
+    This optional policy does not promise a strictly positive reduction.
 
     Parameters
     ----------
@@ -485,10 +506,17 @@ def validate_silence(G: "TNFRGraph", node: "NodeId") -> None:
     Raises
     ------
     OperatorPreconditionError
-        If structural frequency already near zero
+        If capacity or the configured floor is invalid, capacity is negative,
+        or capacity is below the floor
     """
-    vf = _get_node_attr(G, node, ALIAS_VF)
-    min_vf = float(G.graph.get("SHA_MIN_VF", 0.01))
+    from .._argument_validation import finite_node_real, finite_real
+
+    vf = finite_node_real(
+        G.nodes[node], ALIAS_VF, 0.0, operator="Silence", label="nu_f", lower=0.0
+    )
+    min_vf = finite_real(
+        G.graph.get("SHA_MIN_VF", 0.01), operator="Silence", label="SHA_MIN_VF"
+    )
     if vf < min_vf:
         raise OperatorPreconditionError(
             "Silence",
@@ -497,22 +525,11 @@ def validate_silence(G: "TNFRGraph", node: "NodeId") -> None:
 
 
 def validate_expansion(G: "TNFRGraph", node: "NodeId") -> None:
-    """VAL - Expansion requires comprehensive canonical preconditions.
+    """Validate the optional VAL state and network-size policies.
 
-    Canonical Requirements (TNFR Physics):
-    1. **νf < max_vf**: Structural frequency below saturation
-    2. **ΔNFR > 0**: Positive reorganization gradient (growth pressure)
-    3. **EPI >= min_epi**: Sufficient base coherence for expansion
-    4. **(Optional) Network capacity**: Check if network can support expansion
-
-    Physical Basis:
-    ----------------
-    From nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
-
-    For coherent expansion:
-    - ΔNFR > 0 required: expansion needs outward pressure
-    - EPI > threshold: must have coherent base to expand from
-    - νf < max: must have capacity for increased reorganization
+    These configured thresholds supplement scalar admission and grammar.
+    They are supplied policies, not consequences of the nodal identity or
+    certificates of growth, identity preservation or subsequent stability.
 
     Parameters
     ----------
@@ -526,8 +543,8 @@ def validate_expansion(G: "TNFRGraph", node: "NodeId") -> None:
     OperatorPreconditionError
         If any precondition fails:
         - Structural frequency at maximum
-        - ΔNFR non-positive (no growth pressure)
-        - EPI below minimum (insufficient coherence base)
+        - Stored ΔNFR below its configured minimum
+        - Signed EPI below its configured minimum
         - (Optional) Network at capacity
 
     Configuration Parameters
@@ -535,9 +552,9 @@ def validate_expansion(G: "TNFRGraph", node: "NodeId") -> None:
     VAL_MAX_VF : float, default 10.0
         Maximum structural frequency threshold
     VAL_MIN_DNFR : float, default 1e-6
-        Minimum ΔNFR for expansion (must be positive, very low to minimize breaking changes)
+        Inclusive lower bound on stored signed pressure
     VAL_MIN_EPI : float, default 1/(2π) ≈ 0.159
-        Minimum EPI for coherent expansion
+        Inclusive lower bound on signed scalar EPI
     VAL_CHECK_NETWORK_CAPACITY : bool, default False
         Enable network capacity validation
     VAL_MAX_NETWORK_SIZE : int, default 1000
@@ -557,19 +574,57 @@ def validate_expansion(G: "TNFRGraph", node: "NodeId") -> None:
     >>> G.nodes[node]['delta_nfr'] = -0.1
     >>> validate_expansion(G, node)  # Raises OperatorPreconditionError
 
-    Notes
-    -----
-    VAL increases both EPI magnitude and νf, enabling exploration of new
-    structural configurations while maintaining core identity (fractality).
-
     See Also
     --------
     Expansion : VAL operator implementation
-    validate_contraction : NUL preconditions (inverse operation)
+    validate_contraction : Separate NUL admission policies
     """
-    # 1. νf below maximum (existing check)
-    vf = _get_node_attr(G, node, ALIAS_VF)
-    max_vf = float(G.graph.get("VAL_MAX_VF", 10.0))
+    from ...alias import get_attr
+    from .._argument_validation import (
+        finite_node_real,
+        finite_real,
+        nonnegative_integer,
+        strict_bool,
+    )
+    from .._epi_domain import require_real_scalar_epi
+
+    operator = "Expansion"
+    max_vf = finite_real(
+        G.graph.get("VAL_MAX_VF", 10.0), operator=operator, label="VAL_MAX_VF"
+    )
+    min_dnfr = finite_real(
+        G.graph.get("VAL_MIN_DNFR", 1e-6), operator=operator, label="VAL_MIN_DNFR"
+    )
+    min_epi = finite_real(
+        G.graph.get("VAL_MIN_EPI", VAL_MIN_EPI),
+        operator=operator,
+        label="VAL_MIN_EPI",
+    )
+    check_capacity = strict_bool(
+        G.graph.get("VAL_CHECK_NETWORK_CAPACITY", False),
+        operator=operator,
+        label="VAL_CHECK_NETWORK_CAPACITY",
+    )
+    max_network_size = (
+        nonnegative_integer(
+            G.graph.get("VAL_MAX_NETWORK_SIZE", 1000),
+            operator=operator,
+            label="VAL_MAX_NETWORK_SIZE",
+        )
+        if check_capacity
+        else None
+    )
+    vf = finite_node_real(
+        G.nodes[node], ALIAS_VF, 0.0, operator=operator, label="nu_f", lower=0.0
+    )
+    dnfr = finite_node_real(
+        G.nodes[node], ALIAS_DNFR, 0.0, operator=operator, label="DeltaNFR"
+    )
+    epi = require_real_scalar_epi(
+        get_attr(G.nodes[node], ALIAS_EPI, 0.0, strict=True, conv=lambda value: value),
+        operator=operator,
+        label="target EPI state",
+    )
     if vf >= max_vf:
         raise OperatorPreconditionError(
             "Expansion",
@@ -577,31 +632,22 @@ def validate_expansion(G: "TNFRGraph", node: "NodeId") -> None:
             f"Node at reorganization capacity limit.",
         )
 
-    # 2. ΔNFR positivity check (NEW - CRITICAL)
-    dnfr = _get_node_attr(G, node, ALIAS_DNFR)
-    min_dnfr = float(G.graph.get("VAL_MIN_DNFR", 1e-6))
     if dnfr < min_dnfr:
         raise OperatorPreconditionError(
             "Expansion",
-            f"ΔNFR must be positive for expansion (ΔNFR={dnfr:.3f} < {min_dnfr:.3f}). "
-            f"No outward growth pressure detected. Consider OZ (Dissonance) to generate ΔNFR.",
+            f"Stored ΔNFR is below the configured VAL minimum "
+            f"(ΔNFR={dnfr:.3f} < {min_dnfr:.3f}).",
         )
 
-    # 3. EPI minimum check (NEW - IMPORTANT)
-    epi = _get_node_attr(G, node, ALIAS_EPI)
-    min_epi = float(G.graph.get("VAL_MIN_EPI", VAL_MIN_EPI))
     if epi < min_epi:
         raise OperatorPreconditionError(
             "Expansion",
-            f"EPI too low for coherent expansion (EPI={epi:.3f} < {min_epi:.3f}). "
-            "Insufficient structural base. Consider AL (Emission) "
-            "to source EPI first.",
+            f"EPI is below the configured VAL minimum "
+            f"(EPI={epi:.3f} < {min_epi:.3f}).",
         )
 
-    # 4. Network capacity check (OPTIONAL - for large-scale systems)
-    check_capacity = bool(G.graph.get("VAL_CHECK_NETWORK_CAPACITY", False))
     if check_capacity:
-        max_network_size = int(G.graph.get("VAL_MAX_NETWORK_SIZE", 1000))
+        assert max_network_size is not None
         current_size = G.number_of_nodes()
         if current_size >= max_network_size:
             raise OperatorPreconditionError(
@@ -612,25 +658,12 @@ def validate_expansion(G: "TNFRGraph", node: "NodeId") -> None:
 
 
 def validate_contraction(G: "TNFRGraph", node: "NodeId") -> None:
-    """NUL - Enhanced precondition validation with over-compression check.
+    """Validate the optional NUL capacity, signed-form and density policies.
 
-    Canonical Requirements (TNFR Physics):
-    1. **νf > min_vf**: Structural frequency above minimum for reorganization
-    2. **EPI >= min_epi**: Sufficient structural form to contract safely
-    3. **density <= max_density**: Not already at critical compression
-
-    Physical Basis:
-    ----------------
-    From nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
-
-    For safe contraction:
-    - EPI must meet the configured minimum; zero EPI is not an absent node
-    - Density ρ = |ΔNFR| / EPI must not exceed critical threshold
-    - Over-compression (ρ → ∞) causes structural collapse
-
-    Density is the structural pressure per unit form. When EPI contracts
-    while ΔNFR increases (canonical densification), density rises. If already
-    at critical density, further contraction risks fragmentation.
+    The density proxy is ``abs(stored_pressure) / max(EPI, 1e-9)``. Its
+    threshold is a supplied policy, not a derived collapse or safety bound.
+    Passing these checks neither makes NUL an inverse of VAL nor proves
+    storage reduction, identity preservation or future stability.
 
     Parameters
     ----------
@@ -644,15 +677,15 @@ def validate_contraction(G: "TNFRGraph", node: "NodeId") -> None:
     OperatorPreconditionError
         If any precondition fails:
         - Structural frequency at minimum
-        - EPI too low for safe contraction
-        - Node already at critical density
+        - Signed EPI below its configured minimum
+        - Density proxy above its configured maximum
 
     Configuration Parameters
     ------------------------
     NUL_MIN_VF : float, default 0.1
         Minimum structural frequency threshold
     NUL_MIN_EPI : float, default 0.1
-        Minimum EPI for safe contraction
+        Inclusive lower bound on signed scalar EPI
     NUL_MAX_DENSITY : float, default 10.0
         Maximum density threshold (ρ = |ΔNFR| / max(EPI, ε))
 
@@ -678,40 +711,59 @@ def validate_contraction(G: "TNFRGraph", node: "NodeId") -> None:
     See Also
     --------
     Contraction : NUL operator implementation
-    validate_expansion : VAL preconditions (inverse operation)
+    validate_expansion : Separate VAL admission policies
     """
-    vf = _get_node_attr(G, node, ALIAS_VF)
-    epi = _get_node_attr(G, node, ALIAS_EPI)
-    dnfr = _get_node_attr(G, node, ALIAS_DNFR)
+    from ...alias import get_attr
+    from .._argument_validation import finite_node_real, finite_real
+    from .._epi_domain import require_real_scalar_epi
 
-    # Check 1: νf must be above minimum
-    min_vf = float(G.graph.get("NUL_MIN_VF", 0.1))
+    operator = "Contraction"
+    min_vf = finite_real(
+        G.graph.get("NUL_MIN_VF", 0.1), operator=operator, label="NUL_MIN_VF"
+    )
+    min_epi = finite_real(
+        G.graph.get("NUL_MIN_EPI", 0.1), operator=operator, label="NUL_MIN_EPI"
+    )
+    max_density = finite_real(
+        G.graph.get("NUL_MAX_DENSITY", 10.0),
+        operator=operator,
+        label="NUL_MAX_DENSITY",
+    )
+    vf = finite_node_real(
+        G.nodes[node], ALIAS_VF, 0.0, operator=operator, label="nu_f", lower=0.0
+    )
+    dnfr = finite_node_real(
+        G.nodes[node], ALIAS_DNFR, 0.0, operator=operator, label="DeltaNFR"
+    )
+    epi = require_real_scalar_epi(
+        get_attr(G.nodes[node], ALIAS_EPI, 0.0, strict=True, conv=lambda value: value),
+        operator=operator,
+        label="target EPI state",
+    )
     if vf <= min_vf:
         raise OperatorPreconditionError(
             "Contraction",
             f"Structural frequency at minimum (νf={vf:.3f} <= {min_vf:.3f})",
         )
 
-    # Check 2: EPI must be above minimum for contraction
-    min_epi = float(G.graph.get("NUL_MIN_EPI", 0.1))
     if epi < min_epi:
         raise OperatorPreconditionError(
             "Contraction",
-            f"EPI too low for safe contraction (EPI={epi:.3f} < {min_epi:.3f}). "
-            f"Cannot compress structure below minimum coherent form.",
+            f"EPI is below the configured NUL minimum "
+            f"(EPI={epi:.3f} < {min_epi:.3f}).",
         )
 
-    # Check 3: Density must not exceed critical threshold
-    # Density ρ = |ΔNFR| / max(EPI, ε) - structural pressure per unit form
     epsilon = 1e-9
-    density = abs(dnfr) / max(epi, epsilon)
-    max_density = float(G.graph.get("NUL_MAX_DENSITY", 10.0))
+    density = finite_real(
+        abs(dnfr) / max(epi, epsilon),
+        operator=operator,
+        label="NUL density proxy",
+    )
     if density > max_density:
         raise OperatorPreconditionError(
             "Contraction",
-            f"Node already at critical density (ρ={density:.3f} > {max_density:.3f}). "
-            f"Further contraction risks structural collapse. "
-            f"Consider IL (Coherence) to stabilize or reduce ΔNFR first.",
+            f"NUL density proxy exceeds its configured maximum "
+            f"(ρ={density:.3f} > {max_density:.3f}).",
         )
 
 
@@ -887,10 +939,17 @@ def validate_recursivity(G: "TNFRGraph", node: "NodeId") -> None:
     Raises
     ------
     OperatorPreconditionError
-        If the network is too small for a REMESH advisory
+        If the configured minimum is not a nonnegative integer or the network
+        is too small for a REMESH advisory
     """
+    from .._argument_validation import nonnegative_integer
+
     # The advisory represents a network-scale request.
-    min_nodes = int(G.graph.get("REMESH_MIN_NODES", 2))
+    min_nodes = nonnegative_integer(
+        G.graph.get("REMESH_MIN_NODES", 2),
+        operator="Recursivity",
+        label="REMESH_MIN_NODES",
+    )
     if G.number_of_nodes() < min_nodes:
         raise OperatorPreconditionError(
             "Recursivity",

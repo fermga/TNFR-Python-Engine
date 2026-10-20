@@ -84,6 +84,11 @@ def _build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Optional bearer token for HTTP dispatchers (distributed backend only).",
     )
+    parser.add_argument(
+        "--dispatcher-allow-unsafe-pickle",
+        action="store_true",
+        help="Allow executable pickle responses from a trusted HTTP server and transport.",
+    )
     return parser
 
 
@@ -246,6 +251,7 @@ def _build_dispatcher_from_args(
         client = HTTPFFTDispatcher(
             base_url=dispatcher_name,
             auth_token=getattr(args, "dispatcher_http_token", None),
+            allow_unsafe_pickle=getattr(args, "dispatcher_allow_unsafe_pickle", False),
         )
         annotate_dispatcher(
             client.dispatch,
@@ -254,6 +260,9 @@ def _build_dispatcher_from_args(
                 "source": "cli",
                 "base_url": dispatcher_name,
                 "token_provided": bool(getattr(args, "dispatcher_http_token", None)),
+                "allow_unsafe_pickle": getattr(
+                    args, "dispatcher_allow_unsafe_pickle", False
+                ),
             },
         )
         return client.dispatch

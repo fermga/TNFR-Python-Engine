@@ -58,6 +58,143 @@ The [effective-link theorem](RELATIONAL_EFFECTIVE_CONNECTIONS.md#effective-link-
 and [hidden-memory owner](RELATIONAL_MEDIATOR_DYNAMICS.md#9-a-nodal-intermediary-mediates-joint-formphase-interaction)
 retain these distinctions.
 
+<a id="operational-relational-geometry"></a>
+### 1.1 Relational geometry and its observational identification
+
+A state specified by nodal coordinates and relations does not require an
+embedding in ambient Euclidean space. Such positions become additional model
+data if a law, preparation or observation consumes them. Bare support `U`,
+transport conductance `W` and supplied structural length `ell` retain the
+different roles above. A geometry inferred from response is another object:
+it depends on the complete law, preparation, inputs, clock and observation
+map. A proposed response-based distance must establish its metric properties
+and identifiable equivalence class; the name "distance" does not supply them.
+Neither construction alone identifies physical space or spacetime.
+
+For a precise nonidentifiability condition, fix a deterministic complete model
+with unique evolution on its admitted domain, including its event rules, and
+fix the preparation, inputs, clock and readout protocol. If `ell` enters none
+of these, changing only `ell` leaves the state response and every protocol
+observation unchanged. It therefore cannot be identified from that response.
+Consuming `ell` in a path-based diagnostic removes this particular hypothesis;
+computing that diagnostic from a supplied length still does not independently
+calibrate a physical distance. Conversely, dependence on `ell` somewhere in
+the protocol is necessary for this identification, not sufficient for it:
+distinct lengths can still give identical observations.
+
+A claimed relabeling symmetry of the complete model requires equivariance:
+state, relations, parameters, prepared histories, event targets, input ports
+and readout associations are transported together. The resulting observations
+agree under their corresponding relabeling. Permuting the state while holding
+an asymmetric contact or named measurement port fixed generally changes the
+experiment. This criterion does not assert bitwise invariance of an arbitrary
+numerical implementation.
+
+A regular positive clock reparameterization likewise transforms every
+evolution row and the corresponding input, event, preparation/history and
+sampling schedules. Keeping a physical drive or observation schedule fixed
+while changing only the nodal rate generally changes the protocol. The
+[whole-law clock transformation](../NODAL_PARAMETER_FOUNDATIONS.md#pressure-clock-full-state-closure)
+and [relational-clock obstruction](FORCED_SOURCE_AND_CLOCK.md#25-relational-time-and-synchronization-are-separate-claims)
+own the precise conditions: synchronization need not advance monotonically,
+and an admissible change of clock does not select a missing evolution law.
+
+Hidden state also matters to geometric inference. Under a fixed fine law,
+eliminating unobserved coordinates can leave memory and hidden-initial-state
+forcing in the retained response; these terms must accompany any inferred
+effective relation. The [exact elimination](../DERIVED_EPI_MEMORY.md#3-exact-elimination-including-the-initial-hidden-state)
+and [joint nonlinear intermediary](RELATIONAL_MEDIATOR_DYNAMICS.md#derived-memory-with-two-indispensable-hidden-coordinates)
+retain their own hypotheses. The
+[inherited geometric-observation counterexample](../TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#geometric-observation-can-require-an-additional-state-coordinate)
+shows that closed coarse form dynamics can still omit a coordinate needed
+for a geometric readout. The
+[fixed-topology state metric](../TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#fixed-topology-structural-state-metric)
+is a separate declared construction. These results provide identification
+conditions, not a derivation of a unique physical metric from nodal dynamics.
+
+Removing a clock factor from two response rates does not by itself remove
+hidden state. The [maintained-contact counterexample](SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-relational-observation-result)
+preserves both observed forms and the weighted phase mean while changing
+their projected orbit direction. This is stronger than unequal speeds on
+one projected curve. A curve in observation space is not a spatial separation
+between its underlying organizations. An operational interaction claim needs
+declared interventions and readout/calibration premises; a conversion from
+identified coupling to physical distance would be another hypothesis.
+
+<a id="matched-finite-phase-probe"></a>
+### 1.2 Matched finite-phase probes under a held weighted-sine law
+
+Fix a finite simple connected undirected support with at least two nodes,
+nonnegative conductances `W`, positive held capacities `nu`, degree `d_i` and weighted strength
+`s_i=sum_j W_ij`. In the original structural clock, select the zero-loss,
+unit-exchange, unit-beta law used by the
+[retained contact](SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-canonical-contact-retention):
+
+\[
+\dot x_i=F_i(\theta)=\frac{\nu_i}{\pi d_i}
+  \sum_{j\sim i}\sin(\theta_j-\theta_i),\qquad
+\dot\theta=Kx,\qquad K=\operatorname{diag}(\nu_i/(\pi d_i))L_W.
+\]
+
+There are no inputs or events during the comparison interval. Retain continuous
+phase lifts and all fine coordinates. Compare two solutions of this same law
+whose initial phases coincide and whose initial form difference is `v`.
+Writing `q=theta_plus-theta_minus` and `delta=||v||_infinity` gives exactly
+`q(0)=0`, `q_dot(0)=Kv` and `q_ddot(0)=0`: the initial form velocities agree
+because `F` consumes only phase. This is a derived cancellation, not a linear
+approximation to the continuing nonlinear dynamics.
+
+Global supremum-norm Lipschitz constants are
+`A=2*max_i(nu_i)/pi` for `F` and
+`B=2*max_i(nu_i*s_i/d_i)/pi` for `K`. Upper bounds on these constants work as
+well. Their units are respectively form/(phase*time) and phase/(form*time),
+so `A*B*h^2` is dimensionless. The existing
+[same-law perturbation reader](../../src/tnfr/physics/relational_sine_support.py)
+rebuilds these bounds from primitive state. For `h>0` and `D=1-A*B*h^2>0`,
+its integral comparison gives a whole-window form difference
+`X<=delta/D`. At each `0<=t<=h`, successively integrating the two rows yields
+
+\[
+\|q(t)\|_\infty\le BtX,\qquad
+\|\Delta x(t)-v\|_\infty\le ABt^2X/2,\qquad
+\|q(h)-hKv\|_\infty\le
+ \frac{\delta AB^2h^3}{6(1-ABh^2)}.
+\]
+
+Thus a matched finite phase difference has cubic temporal remainder and its
+rate estimate has quadratic bias. This conservative rational bound reuses the
+existing coefficients; it requires no new integrator or reduced dynamical
+state. If `D<=0`, this sufficient bound is unavailable, not a proof of failure.
+Initial phase/source mismatch, unequal capacities within a pair, changed law,
+clock uncertainty and readout/numerical error require their own terms.
+
+For the retained contact, a candidate canonical preparation uses two positive
+AL boosts `a0<a1` at each donor `j in {5,0}`, followed by the same SHA factor
+`0<f<1`. The four branches must separately pass the complete word and live
+preconditions, with actual unclipped form differences `Delta a` matched
+between donor pairs. Neither zero AL boost nor unit SHA factor supplies a
+canonical sham. Within each pair the post-SHA capacities coincide; they can
+differ between the two donor pairs. Receiver `4` is untouched, so each
+pair's initial difference is `g_j=-(13/(32*pi))*W_4j*Delta a` and
+`g_5/g_0=w_A/2`. This conditional algebra does not authenticate the operator
+preparations or select amplitudes, a horizon or an error budget.
+
+A local donor action can break the old five-block family. Retain the full
+fine state and each pair's own post-event law when bounding finite readings;
+re-admit identity/storage independently of grammar. For a common duration,
+let `q_j(h)=h*g_j+eta_j`, with `|eta_j|<=E_j` including all admitted errors in
+common units. If `h*|g_0|>E_0`, then, for `r=g_5/g_0`,
+
+\[
+\left|\frac{q_5(h)}{q_0(h)}-r\right|
+\le\frac{E_5+|r|E_0}{h|g_0|-E_0}.
+\]
+
+The shared duration cancels from the ideal ratio; it remains in its error
+bound. Common gain and clock factors cancel only under their declared
+association. These are conditional operational identities, not measured
+responses or a coupling-to-distance identification.
+
 ## 2. What currently changes support
 
 The continuous relational executor selects a simple connected unit support,

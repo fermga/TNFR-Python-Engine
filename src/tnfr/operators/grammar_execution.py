@@ -19,26 +19,55 @@ from .grammar_types import BIFURCATION_HANDLERS, glyph_function_name
 
 @dataclass(frozen=True, init=False)
 class ValidatedSequence:
-    """Validate actual operator instances once, preserving their metadata."""
+    """Validate actual instances once under core or explicit legacy policy.
+
+    Instance metadata remains visible to U5. Diagnostic-only fragment waivers
+    do not grant executable admission, and live operator gates remain separate.
+    """
 
     names: tuple[str, ...]
+    compatibility_profile: str
 
     def __init__(
         self, operators: Iterable[Any], *, context: Mapping[str, Any] | None = None
     ):
         sequence = list(operators)
         context = _normalize_sequence_context(context)
+        if context.get("diagnostic", False) and [
+            operator.name for operator in sequence
+        ] == ["dissonance", "mutation"]:
+            raise TNFRValueError(
+                "The diagnostic OZ/ZHIR waiver does not admit an executable word"
+            )
         initialized = bool(context and context.get("initial_epi_nonzero", False))
-        valid, messages = GrammarValidator().validate(
+        checks = GrammarValidator().validate_checks(
             sequence,
             epi_initial=1.0 if initialized else 0.0,
         )
-        if not valid:
+        if any(check.blocking and not check.passed for check in checks):
             raise TNFRValueError(
-                "Invalid canonical sequence: " + "; ".join(messages),
+                "Invalid canonical sequence: "
+                + "; ".join(
+                    check.legacy_message()
+                    for check in checks
+                    if check.blocking and not check.passed
+                ),
                 context={"sequence": [operator.name for operator in sequence]},
             )
+        profile = context["compatibility_profile"]
+        if profile == "legacy":
+            from .grammar_patterns import _legacy_word_preference_error
+
+            error = _legacy_word_preference_error(
+                [operator.name for operator in sequence]
+            )
+            if error is not None:
+                raise TNFRValueError(
+                    "Invalid legacy sequence preference: " + error[1],
+                    context={"sequence": [operator.name for operator in sequence]},
+                )
         object.__setattr__(self, "names", tuple(operator.name for operator in sequence))
+        object.__setattr__(self, "compatibility_profile", profile)
 
     def step(self, index: int) -> ValidatedSequenceStep:
         """Bind the current operator and the remaining suffix of this word."""

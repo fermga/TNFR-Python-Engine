@@ -1,8 +1,8 @@
-"""
-Basic usage examples for TNFR primality testing.
+"""Small static arithmetic-pressure examples, including cache observations.
 
-This script demonstrates the core functionality of the TNFR-based
-primality testing package with simple, clear examples.
+The package computes divisor and factor statistics before evaluating pressure.
+These examples do not evolve a nodal network or establish a general accuracy,
+physical interpretation or algorithmic speedup.
 """
 
 import os
@@ -12,7 +12,12 @@ import time
 # Add parent directory for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from tnfr_primality import OptimizedTNFRPrimality, tnfr_delta_nfr, tnfr_is_prime
+from tnfr_primality import (
+    OptimizedTNFRPrimality,
+    tnfr_component_breakdown,
+    tnfr_is_prime,
+)
+from tnfr_primality.constants import ETA_CANONICAL, THETA_CANONICAL, ZETA_CANONICAL
 
 
 def basic_example():
@@ -24,11 +29,12 @@ def basic_example():
     for n in test_numbers:
         is_prime, delta_nfr = tnfr_is_prime(n)
         print(
-            f"{n:3d}: {'Prime' if is_prime else 'Composite':10} (ΔNFR = {delta_nfr:.6f})"
+            f"{n:3d}: {'Prime' if is_prime else 'Composite':10} "
+            f"(DeltaNFR = {delta_nfr:.6f})"
         )
 
-    print("\nKey insight: Prime numbers have ΔNFR = 0 exactly!")
-    print("Composite numbers have ΔNFR > 0 due to structural pressure.")
+    print("\nWith positive coefficients, exact arithmetic pressure vanishes at primes.")
+    print("The implementation applies a numerical tolerance to floating values.")
 
 
 def performance_example():
@@ -44,7 +50,7 @@ def performance_example():
 
         print(
             f"{n:,}: {'Prime' if is_prime else 'Composite'} "
-            f"(Time: {elapsed_ms:.2f} ms, ΔNFR = {delta_nfr:.6f})"
+            f"(Time: {elapsed_ms:.2f} ms, DeltaNFR = {delta_nfr:.6f})"
         )
 
 
@@ -74,7 +80,13 @@ def optimized_example():
     second_pass_time = time.perf_counter() - start
 
     print(f"Second pass time: {second_pass_time*1000:.2f} ms")
-    print(f"Cache speedup: {first_pass_time/second_pass_time:.1f}x")
+    if second_pass_time > 0:
+        print(
+            f"Observed first/cached time ratio: {first_pass_time/second_pass_time:.1f}"
+        )
+    else:
+        print("Observed time ratio unavailable at this clock resolution")
+    print("This compares repeated inputs in one process, not algorithmic complexity.")
 
     # Show statistics
     stats = optimizer.get_statistics()
@@ -82,53 +94,47 @@ def optimized_example():
 
 
 def theory_example():
-    """Demonstrate the underlying TNFR theory."""
-    print("\n=== TNFR Theory Demonstration ===")
+    """Expose the actual default coefficients and arithmetic inputs."""
+    print("\n=== Arithmetic-Pressure Components ===")
 
-    print("TNFR Equation: ΔNFR(n) = ζ·(ω(n)−1) + η·(τ(n)−2) + θ·(σ(n)/n − (1+1/n))")
-    print("Where: ω(n) = prime factors, τ(n) = divisors, σ(n) = sum of divisors")
-    print("Constants: ζ=1.0, η=0.8, θ=0.6 (TNFR structural parameters)")
+    print("DeltaNFR = zeta*(Omega-1) + eta*(tau-2) + theta*(sigma/n-(1+1/n))")
+    print(
+        "Omega counts prime factors WITH multiplicity; tau and sigma count/sum divisors."
+    )
+    print(
+        f"Selected weights: zeta={ZETA_CANONICAL}, eta={ETA_CANONICAL}, "
+        f"theta={THETA_CANONICAL}"
+    )
     print()
 
     examples = [
         (7, "Prime example"),
-        (15, "Composite example (3×5)"),
-        (25, "Perfect square (5²)"),
+        (15, "Composite example (3*5)"),
+        (25, "Perfect square (5**2)"),
     ]
 
     for n, description in examples:
-        delta_nfr = tnfr_delta_nfr(n)
+        components = tnfr_component_breakdown(n)
         is_prime, _ = tnfr_is_prime(n)
 
         print(f"{description}:")
         print(f"  n = {n}")
-        print(f"  ΔNFR({n}) = {delta_nfr:.6f}")
-        print(f"  Result: {'Prime' if is_prime else 'Composite'}")
+        print(f"  DeltaNFR({n}) = {components['delta_nfr']:.6f}")
         print(
-            f"  Explanation: {'Perfect coherence (ΔNFR=0)' if is_prime else 'Structural pressure (ΔNFR>0)'}"
+            f"  Omega={components['omega']}, tau={components['tau']}, "
+            f"sigma={components['sigma']}"
         )
+        print(f"  Result: {'Prime' if is_prime else 'Composite'}")
         print()
 
 
 def comparison_example():
-    """Compare TNFR with traditional methods conceptually."""
-    print("=== TNFR vs Traditional Primality Testing ===")
-
-    print("Traditional approaches:")
-    print("  • Trial division: Test divisibility by all numbers up to √n")
-    print("  • Miller-Rabin: Probabilistic testing based on Fermat's little theorem")
-    print("  • AKS: Polynomial-time deterministic (but impractical)")
-    print()
-
-    print("TNFR approach:")
-    print("  • Arithmetic pressure analysis: Measure structural coherence")
-    print("  • Deterministic: Always gives correct answer (no probability)")
-    print("  • Novel foundation: Based on resonant fractal nature theory")
-    print("  • Competitive performance: O(√n) with caching optimizations")
-    print()
-
-    print("Key advantage: TNFR provides insight into WHY a number is prime")
-    print("(perfect structural coherence) rather than just IF it is prime.")
+    """State the computation's scope without an unmeasured comparison."""
+    print("=== Interpretation ===")
+    print("Divisor enumeration and trial factorization supply the inputs.")
+    print("Positive weights preserve the exact prime zero set; they are not unique.")
+    print("Finite checks and cached timings do not prove arbitrary-integer accuracy")
+    print("or improve the complexity of established primality methods.")
 
 
 def main():
@@ -143,9 +149,8 @@ def main():
     comparison_example()
 
     print("\n" + "=" * 50)
-    print("✅ All examples completed successfully!")
-    print("📖 See README.md for more detailed documentation")
-    print("🔬 Run benchmarks/comprehensive_benchmark.py for performance analysis")
+    print("[OK] Examples completed")
+    print("See applications/primality-test/README.md for usage and limits.")
 
 
 if __name__ == "__main__":

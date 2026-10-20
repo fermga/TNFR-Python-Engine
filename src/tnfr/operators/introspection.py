@@ -1,6 +1,6 @@
-"""Operator introspection metadata (Phase 3).
+"""Operator introspection metadata from shared execution contracts.
 
-Provides a lightweight, immutable metadata registry describing each
+Provides frozen metadata records in a read-only-typed registry describing each
 canonical structural operator's physics category, grammar roles, and
 contracts for tooling (telemetry enrichment, validation messaging,
 documentation generation).
@@ -10,21 +10,19 @@ Design Constraints
 1. Read-only: No mutation of operator classes or graph state.
 2. Traceability: Grammar roles reference U1-U5 identifiers verbatim.
 3. Fidelity: Shared fields derive from operator_contracts and grammar_canon.
-4. Backward compatibility: Optional; absence of this module should not
-   break existing imports.
 
 Public API
 ----------
 get_operator_meta(name_or_glyph) -> OperatorMeta
 iter_operator_meta() -> iterator[OperatorMeta]
-OPERATOR_METADATA: dict[str, OperatorMeta]
+OPERATOR_METADATA: Mapping[str, OperatorMeta]
 
 Fields
 ------
 OperatorMeta.name          Title-case display/class name (e.g. Emission)
 OperatorMeta.mnemonic      Glyph code (AL, EN, ...)
 OperatorMeta.category      High-level functional category
-OperatorMeta.grammar_roles list of grammar rule roles (U1a, U1b, U2, ...)
+OperatorMeta.grammar_roles tuple of grammar rule roles (U1a, U1b, U2, ...)
 OperatorMeta.contracts     Short, stable contract statements
 OperatorMeta.doc           Canonical purpose from operator_contracts
 

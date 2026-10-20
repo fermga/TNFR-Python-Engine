@@ -298,7 +298,12 @@ def emission_epi_proposal(
 
 
 def silence_capacity_proposal(value: Any, factor: float) -> tuple[float, float]:
-    """Validate raw capacity before the already admitted SHA factor acts."""
+    """Admit capacity and reject loss of a positive attenuated value to zero.
+
+    The factor is already admitted in ``[0, 1)``. An intentional zero factor
+    or source capacity remains valid; a positive product rounded to zero does
+    not represent that declared attenuation.
+    """
     try:
         before = finite_represented_real(value, "SHA nu_f state")[0]
     except (TypeError, ValueError) as exc:
@@ -307,7 +312,19 @@ def silence_capacity_proposal(value: Any, factor: float) -> tuple[float, float]:
         raise TNFRValueError("SHA nu_f state must be nonnegative")
     # The factor belongs to [0,1); the represented product is finite,
     # nonnegative and no larger than this admitted capacity.
-    return before, factor * before
+    after = factor * before
+    if before > 0.0 and factor > 0.0 and after == 0.0:
+        raise TNFRValueError(
+            "SHA capacity product is positive but underflows to represented zero",
+            context={
+                "operator": "Silence",
+                "reason": "capacity_product_underflow",
+                "nu_f_before": before,
+                "factor": factor,
+                "nu_f_after": after,
+            },
+        )
+    return before, after
 
 
 def commit_emission_lifecycle(

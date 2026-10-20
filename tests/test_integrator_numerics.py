@@ -103,6 +103,30 @@ def test_symplectic_nonfinite_steps_are_rejected_before_mutation(method, dt):
     assert node[DNFR_PRIMARY] is pressure
 
 
+@pytest.mark.parametrize("method", SYMPLECTIC_METHODS)
+@pytest.mark.parametrize("dt", [True, np.bool_(False), "0.1", Fraction(1, 2**2000)])
+def test_symplectic_clock_admission_precedes_conversion_and_force_calls(method, dt):
+    node = _mechanical_node(1.0, 0.3)
+    epi, pressure = node[EPI_PRIMARY], node[DNFR_PRIMARY]
+
+    def unexpected_force(_):
+        pytest.fail("invalid primitive time must reject before force evaluation")
+
+    with pytest.raises((TypeError, ValueError), match="timestep"):
+        getattr(TNFRSymplecticIntegrator, method)(node, dt, unexpected_force)
+    assert node[EPI_PRIMARY] is epi
+    assert node[DNFR_PRIMARY] is pressure
+
+
+@pytest.mark.parametrize("method", SYMPLECTIC_METHODS)
+def test_symplectic_signed_rational_step_uses_shared_represented_time(method):
+    node = _mechanical_node()
+    getattr(TNFRSymplecticIntegrator, method)(
+        node, Fraction(-1, 8), lambda _: np.zeros(2)
+    )
+    assert node[EPI_PRIMARY] == pytest.approx([-0.125, 1.0], abs=1e-15)
+
+
 def _graph(*, extended=False):
     graph = nx.empty_graph(1)
     inject_defaults(graph)
@@ -293,6 +317,53 @@ def test_flux_divergence_is_independent_of_graph_size_and_disconnected_padding(
     assert actual[0] == pytest.approx(expected[0])
     assert actual[1] == pytest.approx(expected[1])
     assert all(actual[node] == 0.0 for node in range(2, 101))
+
+
+@pytest.mark.parametrize("vectorized", [False, True])
+@pytest.mark.parametrize("graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph])
+def test_flux_divergence_preserves_constant_extreme_fields(
+    monkeypatch, vectorized, graph_type
+):
+    graph = graph_type(nx.complete_graph(3))
+    if graph.is_multigraph():
+        graph.add_edge(0, 1, weight=9.0)
+    if not vectorized:
+        monkeypatch.setattr(integrators, "np", None)
+    assert integrators.compute_flux_divergence_vectorized(
+        graph, {node: 1e308 for node in graph}
+    ) == {node: 0.0 for node in graph}
+
+
+def test_flux_divergence_retains_a_small_offset_contrast_and_unique_support():
+    graph = nx.MultiDiGraph()
+    graph.add_edges_from([(0, 1), (0, 1), (0, 2), (0, 0)])
+    base = 2.0**53
+    field = {0: base, 1: base + 2.0, 2: base}
+    actual = integrators.compute_flux_divergence_vectorized(graph, field)
+    # The duplicate edge is not a second neighbor; the self-loop contributes
+    # one zero difference to the mean. The finite mean contrast is -2/3.
+    assert actual[0] == pytest.approx(-2.0 / math.sqrt(3.0), rel=1e-15)
+    assert actual[1] == actual[2] == 0.0
+
+
+def test_flux_divergence_reduces_mixed_extreme_signs_before_rounding():
+    graph = nx.DiGraph([(0, 1), (0, 2)])
+    field = {0: 1.0, 1: 1e308, 2: -1e308}
+    actual = integrators.compute_flux_divergence_vectorized(graph, field)
+    assert actual[0] == math.sqrt(2.0)
+
+
+@pytest.mark.parametrize("value", [True, "1.0", Fraction(1, 2**2000), math.nan])
+def test_flux_divergence_rejects_invalid_active_readings_before_coercion(value):
+    graph = nx.path_graph(2)
+    with pytest.raises(NetworkConfigError, match="flux"):
+        integrators.compute_flux_divergence_vectorized(graph, {0: value, 1: 0.0})
+
+
+def test_flux_divergence_rejects_an_unrepresentable_final_contrast():
+    graph = nx.path_graph(2)
+    with pytest.raises(ValueError, match="finite"):
+        integrators.compute_flux_divergence_vectorized(graph, {0: 1e308, 1: -1e308})
 
 
 def test_cpu_canonical_integrator_does_not_import_optional_gpu_system(monkeypatch):

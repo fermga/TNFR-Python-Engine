@@ -12,15 +12,15 @@ from fractions import Fraction as Q
 
 from .._exact_time import exact_or_represented_real as _exact
 from ..mathematics._rational_interval import I, sin, sqrt
+from ._organized_external_interaction import _Q as _RECOVERED_PHASE_BOUND
 from ._organized_external_interaction import (
-    _OrganizedExternalInteraction,
-    _OrganizedExternalInteractionObservation,
     _SOURCE_FAILURE_NAMES,
     _assess_organized_external_interaction,
     _derive_organized_external_interaction,
     _observe_admitted_external_interaction,
+    _OrganizedExternalInteraction,
+    _OrganizedExternalInteractionObservation,
 )
-from ._organized_external_interaction import _Q as _RECOVERED_PHASE_BOUND
 from ._repeated_organized_composition import _bounded_sine_edge_fields
 from ._sine_preparation import _prepared_coordinate_vector as _vector
 

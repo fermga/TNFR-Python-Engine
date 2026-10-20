@@ -537,6 +537,9 @@ and synchronization (PDF page 83), and internal process time on
 pages 218-219. This motivates a relational-clock hypothesis; it is not a
 derivation that global synchronization equals elapsed time. Section 23 owns
 the existing accumulated-capacity identity and its source/units audit.
+The [relational-geometry identification boundary](RELATION_FOUNDATIONS.md#operational-relational-geometry)
+places this clock question within the complete preparation, input and
+observation protocol, alongside support, length and hidden-state inference.
 
 **Alignment need not advance, even while form evolves.** On pure-EPI unit P2,
 positive equal capacities and phase consensus give `R=1`. Holding those phases

@@ -8,7 +8,6 @@ the current code's suite exit status, not recommendation-specific evidence.
 from __future__ import annotations
 
 import argparse
-import json
 import shlex
 import subprocess
 import sys
@@ -16,12 +15,15 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
+from tnfr.sdk.utils import export_to_json
+from tnfr.utils.io import json_dumps, json_loads
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_PAYLOAD_ROOT = REPO_ROOT / "results" / "self_optimization"
 DEFAULT_REPORT_PATH = REPO_ROOT / "results" / "self_optimization_validation.json"
-OPERATION_TESTS: Dict[str, List[str]] = {
-    "paley_partition": ["applications/factorization-lab/tests/test_spectral_paley.py"],
-}
+# The historical arithmetic suite did not validate recommendation effects and
+# is not an active regression owner. Unmapped operations remain pending.
+OPERATION_TESTS: Dict[str, List[str]] = {}
 
 
 @dataclass
@@ -76,6 +78,8 @@ def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
 def run(args: argparse.Namespace) -> Dict[str, Any]:
     payload_root = args.payload_root
     payloads = _discover_payloads(payload_root)
+    if any(record.path.resolve() == args.report.resolve() for record in payloads):
+        raise ValueError("validation report cannot replace a recommendation payload")
     grouped = _group_by_tests(payloads)
     test_runs: List[Dict[str, Any]] = []
 
@@ -110,14 +114,12 @@ def run(args: argparse.Namespace) -> Dict[str, Any]:
             )
 
     summary = _build_summary(payload_root, payloads, test_runs)
-    args.report.parent.mkdir(parents=True, exist_ok=True)
-    args.report.write_text(json.dumps(summary, indent=2), encoding="utf-8")
+    export_to_json(summary, args.report)
 
     if not args.quiet:
         print(f"[validation] summary written to {args.report}")
 
-    json.dump(summary, sys.stdout, indent=2)
-    sys.stdout.write("\n")
+    sys.stdout.write(json_dumps(summary, indent=2, allow_nan=False) + "\n")
 
     if args.fail_on_regression and summary["status_counts"].get("regressed", 0) > 0:
         raise SystemExit(1)
@@ -130,20 +132,22 @@ def _discover_payloads(root: Path) -> List[RecommendationRecord]:
         return []
     payloads: List[RecommendationRecord] = []
     for path in sorted(root.rglob("*.json")):
-        if path.name.endswith(".sha256"):
-            continue
         try:
-            data = json.loads(path.read_text(encoding="utf-8"))
-        except Exception:
-            continue
+            data = json_loads(path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, ValueError) as exc:
+            raise ValueError(f"invalid payload JSON {path}: {exc}") from exc
         if not isinstance(data, dict):
             continue
-        metadata = data.get("metadata")
-        if not isinstance(metadata, dict):
+        if "metadata" not in data:
             continue
-        operation_type = str(
-            metadata.get("operation_type") or data.get("operation_type") or "unknown"
+        metadata = data["metadata"]
+        if not isinstance(metadata, dict):
+            raise ValueError(f"recommendation metadata must be an object: {path}")
+        operation_type = metadata.get(
+            "operation_type", data.get("operation_type", "unknown")
         )
+        if not isinstance(operation_type, str) or not operation_type.strip():
+            raise ValueError(f"operation_type must be a nonempty string: {path}")
         tests = list(OPERATION_TESTS.get(operation_type, []))
         payloads.append(
             RecommendationRecord(

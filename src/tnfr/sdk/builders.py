@@ -44,6 +44,7 @@ from ._defaults import (
     SDK_VF_RANGE_MODERATE_MAX,
     SDK_VF_RANGE_MODERATE_MIN,
 )
+from ._topology import nonnegative_integer, probability
 from .fluent import NetworkConfig, NetworkResults, TNFRNetwork
 
 __all__ = ["TNFRExperimentBuilder"]
@@ -331,6 +332,10 @@ class TNFRExperimentBuilder:
         ...     print(f"Coupling {coupling:.2f}: C(t)={res.coherence:.3f}")
         """
 
+        initial_coupling = probability(initial_coupling)
+        final_coupling = probability(final_coupling)
+        coupling_levels = nonnegative_integer(coupling_levels, "coupling_levels")
+        steps_per_level = nonnegative_integer(steps_per_level, "steps_per_level")
         coupling_values = np.linspace(initial_coupling, final_coupling, coupling_levels)
         results = {}
 

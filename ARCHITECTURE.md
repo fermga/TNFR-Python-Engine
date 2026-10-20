@@ -1,32 +1,39 @@
 # TNFR Python Engine Architecture
 
-**Version:** 0.0.3.8
-**Status:** Implemented architecture reference
+**Python Engine 0.0.3.9**
 
-This document describes the repository as implemented. Mathematical claims are
-owned by the scoped specifications under
-[`theory/`](theory/README.md); [AGENTS](AGENTS.md) provides contributor and agent instructions.
-This guide links to those sources rather than
-strengthening their claims.
+This reference maps implementation responsibilities and execution boundaries.
+Start with the object's [state and execution boundary](#objects-state-and-execution),
+choose its [public interface](#public-api) and
+[execution path](#relational-execution-and-observation-dependencies), then use
+the implementation owners below. Mathematical definitions and proofs belong to
+[theory](theory/README.md); detailed admission and mutation guarantees belong
+to [API contracts](docs/API_CONTRACTS.md). [AGENTS](AGENTS.md) owns contributor
+instructions.
 
-Shared edge artifacts are owned by `utils.cache.edge_version_cache`. For
-NetworkX graphs it checks ordered support, node/parallel-key identity and raw
-`weight`/`length` channels before reuse, so direct edits with unchanged graph
-size cannot retain old neighbor arrays, pressure preparation or Si inputs.
-That check costs O(V+E) per access for scalar edge channels; it is a correctness
-boundary, not a measured speedup. Other state/configuration dependencies remain
-part of each consumer's key or explicit invalidation contract. Graph views use
-fresh computations; concurrent mutation during a read is unsupported.
+## Objects, state and execution
 
-The structural random-walk verifier reuses one resistance geometry within a
-call for resistance and commute-time projections. The comparison still uses
-the separate component-volume multiplication of materialized resistance.
-There is no persistent geometry cache; a later call re-admits the graph.
+An organized mathematical object is represented by admitted nodal or collective
+state, its constituent and boundary relations, a complete law and an identity
+criterion. Its implementation can span a graph, a model declaration and scoped
+reports; there is no universal report or Python wrapper that makes every
+organization a node of the full operator runtime.
 
-LRU storage and callback handling have one implementation in
-[`utils/unified_cache.py`](src/tnfr/utils/unified_cache.py). The compatibility
-`InstrumentedLRUCache` and `ManagedLRUCache` names remain aliases in `utils.cache`;
-graph invalidation and persistence retain their separate responsibilities.
+`Network` provides access to graph-owned state and selected execution methods.
+For the introductory native object, `RelationalExchangeModel` declares the
+joint law, `relational_cycle_capture` assesses recovery and `step_relational`
+commits a finite form/phase step. More specialized collective constructions use
+their mathematical owners and detached reports. The
+[regional workflow guide](docs/guides/REGIONAL_AND_RELATIONAL.md) routes them
+without replacing their laws or importing an unrelated execution path.
+
+Keep three boundaries explicit when extending an object study: state sufficient
+for its response, transformations admitted on that state, and observations of
+the resulting behavior. Collective means or identity labels do not automatically
+close a law. Requested operator actions require live targets and grammar
+context; their availability does not select their occurrence. The
+[collective readiness contract](theory/EMERGENT_ONTOLOGY.md#collective-grammar-readiness)
+owns these mathematical obligations.
 
 ## Implementation owners
 
@@ -38,7 +45,7 @@ graph invalidation and persistence retain their separate responsibilities.
 | Operator-role derivation | [`physics_derivation.py`](src/tnfr/config/physics_derivation.py) |
 | Grammar specification | [`grammar_canon.py`](src/tnfr/operators/grammar_canon.py) |
 | Grammar validation facade | [`grammar.py`](src/tnfr/operators/grammar.py) |
-| Canonical and operational constants | [`constants/`](src/tnfr/constants) |
+| Structural constants and operational defaults | [`constants/`](src/tnfr/constants); mathematical status in the parameter foundations |
 | Shared selector and Si threshold resolution | [`selector_thresholds.py`](src/tnfr/config/selector_thresholds.py) |
 | U3 admission limits and phase-neighbor selection | [`_phase_gate.py`](src/tnfr/operators/_phase_gate.py) |
 | Resonance capacity proposal and identity predicates | [`_resonance_identity.py`](src/tnfr/operators/_resonance_identity.py) |
@@ -61,6 +68,7 @@ graph invalidation and persistence retain their separate responsibilities.
 | JSON report I/O | [`sdk/utils.py`](src/tnfr/sdk/utils.py); delegates to shared decoding/writing, also used by the CLI and fluent `save()` |
 | Research artifact records and byte integrity | [`research/artifact_io.py`](src/tnfr/research/artifact_io.py); exact tagged records, bounded reads/hashes, receipts, ZIP inventory and exclusive creation; scientific admission remains with each consumer |
 | Pinned frozen-source preparation | [`research/frozen_source.py`](src/tnfr/research/frozen_source.py); explicit freeze-schema inspection and detached source restoration, without evaluator execution or runtime certification |
+| Model-specific research instruments | [Theory-to-execution map](theory/README.md#theory-to-execution); each instrument retains its own state, law and evidence admission |
 | Configured validation orchestration | [`validation/validator.py`](src/tnfr/validation/validator.py); fresh checks, shared input/precondition owners and explicit runtime clamp effects |
 | Manifest graph transport | [`engines/manifest.py`](src/tnfr/engines/manifest.py); strict v1 records for the supported finite JSON state subset |
 | Buffered event storage | [`telemetry/unified_telemetry_system.py`](src/tnfr/telemetry/unified_telemetry_system.py); shared capture/flush path using `utils.io` atomic writes |
@@ -85,16 +93,6 @@ The core dependencies declared in `pyproject.toml` include NumPy, SciPy and
 NetworkX. Individual consumers retain availability checks and fallback behavior;
 acceleration backends are optional.
 
-The shared [`relational_report_to_dict`](src/tnfr/sdk/relational_reports.py)
-exporter keeps owner-managed report registration in one explicit dispatch map.
-It resolves the registered owner of an actual report or its registered base
-class, then delegates to that owner's projection without importing unrelated
-research owners for dispatch. Native reports retain their shared label checks.
-This includes complete port readouts and the prepared full/tangent storage
-readout; exact fractions, null availability and nested evidence remain intact.
-Dispatch establishes supported Python types, not scientific admission or
-provenance. Detached mathematical objects do not install a law in `Network.G`.
-
 ## Nodal execution flow
 
 The ordinary runtime composes the following configured operations. The diagram
@@ -112,7 +110,7 @@ flowchart TD
     F -.-> R[Metrics, tetrad and reports under their declared mutation scope]
 ```
 
-1. Nodes store EPI, structural frequency, phase, pressure, and trace metadata.
+1. Nodes retain signed form, capacity, circular phase, pressure and consumed history.
 2. `tnfr.dynamics.dnfr` computes the configured pressure channels. The EPI
    channel realizes random-walk graph diffusion; other channels retain their
    documented circular, capacity, and topology semantics.
@@ -126,82 +124,55 @@ flowchart TD
    secondary effects; a low-level map is not a full sequence certificate.
    Coupling and Resonance retain their path-specific circular U3 checks.
 
-[`runtime.step`](src/tnfr/dynamics/runtime.py) rejects malformed initial
-selector, capacity and phase policies before callbacks or state evolution.
-The default integrator additionally preflights its own numerical parameters.
-This is not validation of every configuration field or a transaction covering
-arbitrary callbacks, custom integrators or later
-configuration changes; consumption-time validation remains necessary.
-Setting `apply_glyphs=False` also skips selector construction. Pressure/Si
-freshness is explicit: the native capacity gate reads retained inputs after
-integration and phase coordination. Research compositions that refresh them
-at a later boundary implement a different declared schedule and must not
-transfer their conclusions to this path automatically.
+[`runtime.step`](src/tnfr/dynamics/runtime.py) preflights built-in selector,
+capacity and phase policies; the default integrator preflights its numerical
+parameters. Consumption-time admission still applies, and arbitrary callbacks
+or custom integrators do not acquire transaction guarantees from preflight.
+With `apply_glyphs=False`, selector construction is skipped.
 
-Built-in glyph selectors share one validated metric snapshot and decision
-kernel across scalar, vector and worker paths. Standalone decisions and each
-new `prepare` read current stored metrics, normalizers and score weights.
-Engine-owned batches release their snapshot on success or failure; a manually
-prepared selector stays frozen until `prepare` or `clear`. Snapshot freshness
-does not itself refresh pressure or Si. Live operator admission remains separate.
+Built-in selectors share a graph-bound metric snapshot and decision kernel
+across scalar, vector and worker paths. Engine batches release their snapshots
+on success or failure; manual preparation remains fixed until refreshed or
+cleared. Reading a fresh snapshot does not refresh pressure or Si. Default
+selection also consumes graph-wide capacity/pressure maxima, so its policy
+depends on more than the selected node's local state.
+
+Selection occurs at each outer call's left boundary; integrator subdivision
+does not add decisions. The capacity gate reads retained pressure and Si after
+integration and phase coordination. Changing those decision times or refreshing
+inputs at another boundary changes the supplied hybrid model; see
+[native selector timing and inputs](theory/NATIVE_OPERATOR_DYNAMICS.md#native-selector-clock-admission).
 
 ### Foundational integration boundaries
 
-The [parameter ledger](theory/NODAL_PARAMETER_FOUNDATIONS.md#11-thresholds-constants-and-numerical-settings-have-different-duties)
-owns the mathematical status and units of thresholds. The principal engine
-uses shared configuration for selector decisions, capacity admission and Si
-aggregation; partial phase policies inherit the same defaults as complete
-ones. CLI and structural U3 diagnostics read the same hard gate as operators,
-without adding numerical slack. Operator preconditions retain independent
-state requirements; a diagnostic warning is not a new physical selection law.
+Shared admission precedes materialization, caching and arithmetic:
+`_exact_time.py` admits represented real values, `types.py` signed scalar form,
+and `alias.py` authoritative attribute access. Each consuming law declares
+required coordinates and defaults. The
+[parameter ledger](theory/NODAL_PARAMETER_FOUNDATIONS.md#11-thresholds-constants-and-numerical-settings-have-different-duties)
+classifies units and thresholds; a diagnostic policy does not select a law.
 
-Temporal parameters and consumed phase/rate aliases retain their raw type until
-shared admission. Trigonometric caches cannot hide an invalid current phase.
-Generic error guidance describes these domains and points to current references;
-it supplies neither arbitrary global EPI/pressure/capacity bounds nor universal
-coherence monotonicity. Consumer-specific bounds remain explicit configuration.
+Pressure and integration keep distinct owners. Graph/dense pure-EPI paths use
+`mathematics/_neighbor_differences.py`; unique-neighbor phase, capacity and
+degree channels retain their separate support semantics. The integrator
+preserves the registry's live Gamma source in addition to the nodal product.
+`dynamics/structural_clip.py` owns numerical clipping policy. Held-step
+comparators reuse these arithmetic boundaries but do not authenticate pressure,
+prove a continuous solution or convert a hybrid jump into a finite flow.
 
-Shared scalar and alias admission does not select a complete evolution law.
-Ordinary nodal integration retains its held pressure and live Gamma source;
-native relational execution retains its declared resultant normalization;
-detached sine calculations retain their separate pairwise law and clock.
-Missing-state defaults, required full coordinates and represented-output
-checks belong to the consuming path. Reusing a held-law evaluator is valid
-only while its coefficients, capacity and support remain the admitted ones;
-it does not refresh stored pressure or turn an observation into evolution.
+Rebuildable caches retain their mutation scope. `utils.cache.edge_version_cache`
+checks ordered support, node/parallel-key identity and raw `weight`/`length`
+channels, including direct edits that leave graph size unchanged. Its scalar
+edge check costs O(V+E); other state dependencies belong to the consumer key
+or invalidation contract. Graph views compute afresh and concurrent mutation
+during a read is unsupported. `utils/unified_cache.py` owns LRU storage and
+callbacks; established names in `utils.cache` remain aliases.
 
-Nodal held-step validation and THOL proposal validation share a comparison
-kernel and the configured tolerance/clipping policy. They check a supplied
-single held-input step; they do not authenticate pressure provenance, account
-for an undeclared Gamma input or turn an instantaneous operator event into a
-continuous solution. Actual integration and the exact event certificates
-remain the owners of their stronger execution evidence.
-
-The clipping resolver in `dynamics/structural_clip.py` owns numerical-policy
-admission for execution and held-step comparisons. The shared Euler arithmetic
-also serves detached proposals; their unforced/unclipped scope does not include
-the runtime's forcing, projection or history effects. Optimized pure-EPI
-proposals and graph/dense CPU adapters reuse
-`mathematics/_neighbor_differences.py` rather than average absolute form or
-multiply rounded transition probabilities. Spectral matrices remain separate
-representations with their own rounding scope. Dense DNFR support counts each
-neighbor once; parallel edges contribute multiplicity only to conductance.
-
-Gamma dispatch is registry-owned for both scalar and array execution. Runtime
-evaluation is strict, and custom/replaced entries take the staged scalar path;
-a fast path cannot silently omit a declared source. The Kuramoto cache follows
-phase content as well as time. Structural path admission and distance-weighted
-source accumulation also have shared owners across dense/streamed field paths.
-SDK summaries reuse stable metric reductions and one circular-mean availability
-adapter; they do not install another phase or pressure law.
-
-Tetrad reports preserve unavailable values and estimator provenance. A fitted
-coherence length uses the same length-aware geometry as its comparison;
-dimensionless spectral fallback is not silently compared with path lengths.
-A multiscale curvature fit cannot override a measured variance-cut violation.
-These are diagnostic consistency requirements, not a complete state basis or
-a stability proof. Numerical precision settings preserve intended definitions
-but do not guarantee identical rounded decisions at every strict threshold.
+Field and metric consumers share the owners in
+[structural fields](#structural-fields-and-scope). Invalid authoritative values
+cannot be hidden by a cache or another alias, and unavailable observations do
+not become zero or a passing verdict. Higher precision does not guarantee
+identical rounded decisions at strict thresholds.
 
 ### Relational execution and observation dependencies
 
@@ -211,7 +182,8 @@ same complete law.
 
 | Path | Entry point | Execution boundary |
 | --- | --- | --- |
-| Configured operator runtime | `runtime.step`, `StudySpec` / `run_study` | Pressure refresh, operator policy, integration and later updates follow their declared schedule. |
+| Operator-word studies | `StudySpec` / `run_study`, `Network.evolve` | Registered words execute through shared atomic stages; cycles count complete words. |
+| Configured nodal runtime | `runtime.step` | Pressure refresh, optional selection, integration and later phase/capacity updates follow the schedule above. |
 | Native relational law | `Network.relational_exchange`, `Network.step_relational` | `dynamics/relational.py` owns the neighbor-resultant Arg field and atomic Euler step. |
 | Normalized-sine comparison law | `physics/relational_sine_*` functions | Detached observations, theorem assessments and separately requested validated flow bounds; no native dispatch or default replacement. |
 | Supplied observations or linear models | Regional, sample-jet and exact linear-observation functions | The caller supplies the observation map, input law or error premises; a reader does not create them. |
@@ -246,11 +218,11 @@ lost in that conversion.
 | [`physics/source_relative_form.py`](src/tnfr/physics/source_relative_form.py) | Composes the form observer with an independently supplied held rate source; `Network.source_relative_form` is the adapter. |
 | [`physics/relational_observations.py`](src/tnfr/physics/relational_observations.py) | Native field, region and hypothetical support-change reports; separately, graph-independent coefficient/rate/sample-jet bounds. Sample adapters share stencils and outward error propagation. |
 | [`mathematics/linear_observation.py`](src/tnfr/mathematics/linear_observation.py) | Exact row-space realization and visible/hidden memory for a supplied rational generator; scoped lower bounds distinguish conservative observation from a supplied form-loss model. `physics/epi_memory.py` retains its own diffusion admission. |
-| [`mathematics/_exact_linear_algebra.py`](src/tnfr/mathematics/_exact_linear_algebra.py) | Shared exact products, powers, inverses and semidefinite tests; compatibility physics imports, fixed-map network-stage powers and p-adic tower products delegate here. The tower adapter retains its mutable list rows. Products skip exact zero factors while retaining full rational output shapes and the consumers' product-call accounting. |
+| [`mathematics/_exact_linear_algebra.py`](src/tnfr/mathematics/_exact_linear_algebra.py) | Shared rational products, powers, inverses and semidefinite tests; observation, fixed-map stage and arithmetic consumers retain their own model admission. |
 | [`mathematics/krylov.py`](src/tnfr/mathematics/krylov.py) | Exact rational rank, Krylov reachability and Hankel moment calculations under their declared input/output premises. |
 | [`mathematics/_phase_resultant_chamber.py`](src/tnfr/mathematics/_phase_resultant_chamber.py) | Rational trigonometric/resultant bounds, principal-argument charts and supplied-rate kinematics. Reused geometry does not transfer a law. |
 | [`mathematics/_validated_taylor.py`](src/tnfr/mathematics/_validated_taylor.py) | Strict Picard tubes and Taylor remainders; comparison propagation retains its 1–24-coordinate policy, while direct source-box propagation has its separate 1–64-coordinate policy. Each flow adapter retains its layout and other admission budgets. |
-| [`physics/_sine_flow.py`](src/tnfr/physics/_sine_flow.py) | Complete normalized-sine form/phase field on admitted geometry, reusing held degree/law factors for interval and jet evaluation; the old two-port owner retains a compatibility import. |
+| [`physics/_sine_flow.py`](src/tnfr/physics/_sine_flow.py) | Complete normalized-sine form/phase field on admitted geometry, reusing held degree/law factors for interval and jet evaluation. |
 | [`mathematics/_validated_metric.py`](src/tnfr/mathematics/_validated_metric.py) | Reuses Picard/Taylor machinery while retaining an SPD-metric radius between steps. The caller proves its whole-tube logarithmic bound; local truncation/rounding errors enter the same norm. Coordinate projections do not replace the retained uncertainty. |
 | [`sdk/relational_reports.py`](src/tnfr/sdk/relational_reports.py) | Shared exact JSON projection and supported report delegation, using the atomic SDK writer; not a checkpoint or provenance authenticator. |
 
@@ -285,62 +257,38 @@ The sine layer shares four boundaries:
    these primitives while retaining their own complete-law identifiers.
 3. `_sine_preparation.py` supplies weighted preparation and uncertainty bounds.
    It also owns exact bounded-length admission of ordered coordinate rows;
-   observation and composition consumers share that admission without loading
-   one another's acquisition machinery.
-   Its report reader re-admits original source primitives before the shared
-   row calculation. Fixed-source consumers can use that calculation after
-   admitting their law, support, capacities and exact rows, without constructing
-   an observation report whose derived rates they do not consume.
-   Forecasts share validated Taylor/metric kernels and retain environmental
-   coordinates, hidden initialization and original error associations.
+   consumers reuse that admission without loading unrelated acquisition
+   machinery. Forecasts share validated Taylor/metric kernels and retain
+   environmental state, hidden initialization and original error associations.
 4. `sdk/relational_reports.py` delegates reports and projects exact JSON values;
    it neither installs a solver nor authenticates an evaluated response.
 
-The private `_organized_*` instruments are fixed-model analytical assessors,
-not public SDK dispatch or native evolution methods. Their
-[matched-source](src/tnfr/physics/_organized_outer_observation.py) and
-[single-history](src/tnfr/physics/_organized_sequential_observation.py) winding
-readers share initial-moment interval geometry and cycle inference, while
-each owns its finite-motion, noise, work and identity premises. Reading an
-unknown record does not load or execute the organized acquisition/recovery chain.
-The separate source-inclusion check admits its original primitives before
-loading and rebuilding the acquisition evidence. These import boundaries
-are checked in isolated processes rather than inferred from warm caches.
-
-An inferred sector is partial information, not an evolved source for a later
-interaction. The next consumer still needs actual carried coordinates or an
-admitted endpoint enclosure, the complete joined law and its contact work.
+The private `_organized_*` and `_localized_*` instruments assess collective
+state, interaction, identity, event work and observations under declared
+complete laws. They are not public SDK dispatch or native evolution methods.
+For example, organized winding readers share moment/cycle geometry without
+loading source acquisition; separate inclusion checks rebuild the required
+source evidence. Isolated-process checks enforce these dependency boundaries.
+An observed sector remains partial information: a later interaction still
+needs carried coordinates or an endpoint enclosure and the actual contact law.
 The [regional instrument guide](docs/guides/REGIONAL_AND_RELATIONAL.md#detached-collective-organization-instruments)
-routes these conditional interfaces without presenting them as SDK methods.
+routes these interfaces, and the [theory-to-execution map](theory/README.md#theory-to-execution)
+owns their source and test inventory.
 
-The separate [prepared C5 matrix law](theory/nodal/ORGANIZED_EFFECTIVE_LAW.md)
-supplies collective state directly; it inherits no acquired fine-source
-certificate. `_organized_c5_preparation.py` shares its initial energy bound,
-while `_organized_loaded_pulse.py` admits the loaded pulse and bounds its
-energy and identity. The window and recovery observation consumers share
-that owner without depending on one another's response calculation. Their
-mean and signed-area errors have different units, and extending recovery
-does not change the pulse or sensor time constant. These private proofs
-install no runtime law or SDK execution path.
+The [organized source port](theory/nodal/ORGANIZED_SOURCE_PORT.md) connects
+continuous maintenance with operator work and finite reuse. Its detached
+passivity and capacity instruments do not execute operator words. Admission,
+represented event errors and occurrence remain separate. Prepared matrix-law
+observations likewise retain their supplied collective state and measurement
+model rather than inheriting a fine-state acquisition certificate.
 
-`relational_sine_pair.py` owns exact global pair state, cancellation
-observations and finite exchange/receiver certificates. It depends directly on
-shared scalar, phasor and rational-interval admission. The larger
-`relational_sine_scale.py` retains replica geometry, grouping and emission.
-`relational_sine_replica_pulse.py` owns prepared internal pulses, their
-variations, splitting and work-response assessments, including the validated
-Taylor solver dependency. The scale module re-exports the established pair
-and pulse APIs for compatibility. Their defining classes/functions live in
-the corresponding owners; old imports resolve to those same objects,
-including SDK dispatch and older pickle class lookups. These boundaries
-change neither the complete laws nor the report schemas.
-
-`relational_sine_formation_response.py` combines the shared preparation kernel
-with exact Poisson and interval bounds for its fixed positive-loss sources.
-One fresh domain admission serves both source rows in a call; all public
-budgets are admitted anew. It keeps its own complete-law and clock premises,
-independent of the conservative pair certificates. No prepared-state or
-verdict cache substitutes for source admission.
+Public pair state and cancellation belong to `relational_sine_pair.py`;
+prepared pulse assessments belong to `relational_sine_replica_pulse.py`.
+`relational_sine_scale.py` owns replica geometry, grouping and emission and
+re-exports the established pair/pulse APIs. Those imports resolve to the
+defining owner objects, including report dispatch and supported pickle names.
+Positive-loss formation readers reuse preparation and interval kernels while
+retaining their separate law and source domains.
 
 Downstream calculations re-admit the producer's primitive source and rebuild
 consumed gradients, rates, work and bounds. Forecast readers also check the
@@ -350,22 +298,18 @@ owns those interfaces. A static correlated error set, a captured state, a
 symbolic invariant family and a validated endpoint box are different inputs.
 A chosen moving reference is not a frozen environmental node.
 
-See the [theory-to-execution map](theory/README.md#theory-to-execution) for each
-proof adapter and its independent tests, and the
-[regional guide](docs/guides/REGIONAL_AND_RELATIONAL.md) for usage. Prepared
-periodicity, recurrence and orbital stability do not select an execution law.
-A tangent memory kernel cannot replace a different nonlinear environment;
-actual off-family deviations remain part of collective interaction.
 The [scientific connection map](theory/EMERGENT_ONTOLOGY.md#pulse-resonance-scale-connections)
-owns the mathematical implications of this reuse.
+owns the mathematical implications of reuse. A tangent memory kernel cannot
+replace a different nonlinear environment; off-family deviations remain part
+of collective interaction.
 
 #### Retained evidence adapters
 
 `research/artifact_io.py` owns shared exact-record encoding, bounded byte reads
 and digests, receipts, exact ZIP inventory verification and exclusive record
 creation. JSON syntax and finite-value policy still belong to `utils/io.py`.
-Historical private imports delegate to the shared mechanics; their consumers
-retain their existing schemas, admission errors and scientific domains.
+Model-specific adapters retain their schemas, admission errors and scientific
+domains while sharing those mechanics.
 
 Model-specific `tnfr.research` readers reconstruct consumed source, law, clock,
 event and observation evidence through shared numerical owners. Generic artifact
@@ -398,13 +342,13 @@ alone schedules research.
 
 ### Operator events and history
 
-For THOL, grammar admission, the optional public precondition gate, acceleration
+For SelfOrganization (THOL), grammar admission, the optional public precondition gate, acceleration
 threshold crossing and a viable birth proposal are distinct checks. The public
 operator and simultaneous THOL stage share proposal/commit logic; the ordinary
 glyph selector's primitive THOL route writes pressure without creating children.
 `validate_self_organization` delegates to the shared read-only public
 gate and does not write execution telemetry. Gate activation remains a caller/
-configuration choice. Birth metadata does not create a transport edge; UM and
+configuration choice. Birth metadata does not create a transport edge; Coupling (UM) and
 its candidate inventory retain their separate owners. These boundaries also
 apply to research readiness observations, which must not implement competing
 gates or silently select an execution policy.
@@ -426,11 +370,10 @@ Mutation's two-sample signed secant and the integrator's cached RHS-rate
 difference are distinct quantities. Neither a threshold crossing nor a
 historical propagation record proves that an operator caused a bifurcation.
 
-Approximate diffusion readouts reject nonrepresentable nonzero balance terms;
-exact support observers retain their rational domain. Forced-support event and
-reset observations share a private reset core after public inputs have been
-reconstructed and validated within the invocation. No cross-graph result cache
-or second transport law is introduced.
+The [event contract](docs/contracts/OPERATOR_EVENTS.md) owns stage atomicity,
+history, optional diagnostics and event-schedule transactions. A stage, a
+multi-stage word and a scheduled flow/event transaction have distinct rollback
+boundaries.
 
 ## Package boundaries
 
@@ -471,13 +414,21 @@ or second transport law is introduced.
 
 ### Domain and research modules
 
-`tnfr.riemann`, `tnfr.factorization`, and arithmetic modules under
-`tnfr.mathematics` supply explicitly constructed arithmetic/spectral models.
+`tnfr.riemann` and arithmetic modules under `tnfr.mathematics` supply explicitly
+constructed arithmetic/spectral models.
 `tnfr.research` owns reusable evidence and admission infrastructure. These
 modules do not redefine the operator catalog, grammar, coherence kernel or
 tetrad. Their constructions keep explicit premises; arithmetic or spectral
 results do not identify a physical mechanism. Shared graph diffusion, phase
 geometry and conditional algebra can be reused under their own contracts.
+
+The [standalone primality utility](applications/primality-test/README.md)
+retains basic arithmetic descriptors and a numerical predicate.
+`tnfr.factorization` is a deprecated bridge to a separately supplied legacy
+package, not a core spectral implementation. It cannot activate the
+[archived lab](applications/factorization-lab/README.md) from this checkout.
+SDK manifest orchestration is independent of both applications; its dry-run
+reports do not execute operator words or establish an optimization result.
 
 ## Structural fields and scope
 
@@ -501,29 +452,56 @@ registration. Runtime package scanning is not part of registration. The
 canonical inventory remains `operator_contracts`; registering a class does not
 add a canonical glyph, grammar role or atomic-stage contract.
 
-Public operator identifiers are the canonical English tokens. Glyphs remain
-internal structural symbols. The grammar authority is split deliberately:
+Public operator identifiers are the canonical lowercase English tokens.
+Reader-facing explanations lead with registered English display names, such
+as Coherence (IL); glyphs abbreviate compact words and formulas. The grammar
+authority is split deliberately:
 
 1. contract predicates derive operator roles;
 2. `grammar_canon.py` materializes U1-U6;
 3. `grammar.py` exposes validation;
 4. precondition modules enforce state-dependent requirements during execution.
 
+Name and typed words share `GrammarValidator.validate_checks`, defaulting to
+`core`; historical adjacency/terminal preferences require explicit `legacy`.
+The semantic-validation adapter reports those same checks. Candidate generation
+uses this admission before heuristic ranking. Sequential programs separately
+retain block/target scope and explicit closure; they use native glyph execution,
+not simultaneous network stages or a derived collective event law.
+
 Passing a word validator does not prove infinite-horizon convergence or future
 U6 confinement. The exact scope is stated in
 [Unified Grammar Rules](theory/UNIFIED_GRAMMAR_RULES.md).
+`grammar_debt.read_grammar_state` owns fresh normalized history/bookkeeping
+admission. Recording, observations and selector consumers reuse that view;
+it is not a cached permission or a certificate of historical execution.
 
 ## Public API
 
-`tnfr.sdk.TNFR` owns the Simple interface; `tnfr.sdk.fluent.TNFRNetwork` owns
-fluent construction and measurement. Both delegate to shared runtime and report
-owners. `StudySpec` / `run_study` owns the common operator-study workflow used
-by the CLI. Public serialization uses the same strict JSON reader and atomic
-writer; exports retain their stated projection scope.
+`tnfr.sdk.Network` wraps graph-owned nodal state and exposes the native
+relational flow and report adapters. `RelationalExchangeModel` supplies that
+route's coefficients and domain; it does not configure all other model families.
+The [organized-object introduction](examples/01_foundations/01_hello_world.py)
+uses these public interfaces together.
+
+`tnfr.sdk.TNFR` owns the Simple construction interface;
+`tnfr.sdk.fluent.TNFRNetwork` owns fluent construction and measurement.
+`StudySpec` / `run_study` owns the common requested-word workflow used by the
+CLI. All routes delegate to their shared runtime and report owners. Public
+serialization uses the same strict JSON reader and atomic writer; exports
+retain their stated projection scope.
 
 The [CLI/SDK guide](docs/CLI_AND_SDK.md) owns executable usage, and the
 [API contracts](docs/API_CONTRACTS.md) own admission and migration. Low-level
 operator and dynamics APIs retain their separate event/runtime contracts.
+
+[`relational_report_to_dict`](src/tnfr/sdk/relational_reports.py) uses one
+explicit owner registry for supported report types and delegates to their
+projections without importing unrelated research modules. Exact fractions,
+unavailable values and nested evidence retain their representation. Dispatch
+establishes supported Python types; scientific admission remains with the
+consuming model. A report export neither authenticates a source nor installs
+a law in `Network.G`.
 
 ## Numerical backends
 
@@ -556,6 +534,10 @@ being discarded or collapsed. The execution script reads manifest, summary
 and partition JSON through the SDK's strict decoder before graph construction.
 This preserves supported state transport; it does not restore arbitrary
 callbacks, backend/RNG objects or a complete runtime checkpoint.
+The [script contracts](scripts/README.md#reproducibility-and-research) apply
+the same JSON admission and atomic report writing to recovery, replay metadata
+and mapped regression suites. A file-list digest does not authenticate file
+contents; a passing mapped suite does not measure a recommendation's effect.
 
 ## Event storage
 
@@ -593,8 +575,8 @@ to [workflow YAML and its guide](.github/WORKFLOWS.md).
 
 ### Single-file public facades
 
-These modules remain files, not importable same-named directories. Their
-functions/stubs own API details; this compact map replaces the separate guide.
+These modules are files, not importable same-named directories. Their
+functions and stubs own API details.
 
 | Module | Responsibility |
 | --- | --- |

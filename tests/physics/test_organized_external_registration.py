@@ -16,7 +16,6 @@ from tnfr.mathematics._rational_interval import I
 from tnfr.physics import _organized_external_interaction as external
 from tnfr.physics import _organized_external_registration as owner
 
-
 _ERROR = Q(1, 10**10)
 _ZERO = (Q(0),) * 54
 _FORMS = tuple(Q((7 * i) % 19 - 9, 64) for i in range(54))

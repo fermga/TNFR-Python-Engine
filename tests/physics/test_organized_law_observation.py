@@ -180,6 +180,7 @@ def test_stage_primitives_reject_before_geometry_materialization(
     attribute, bad, monkeypatch
 ):
     from dataclasses import replace
+
     from tnfr.physics import _organized_law_observation as owner
 
     stage = replace(_ForecastStage(Q(200), Q(1), "ramp", 2), **{attribute: bad})

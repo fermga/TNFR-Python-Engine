@@ -21,12 +21,11 @@ from ..mathematics._prediction_transfer import (
 )
 from ..mathematics._rational_interval import I
 from ._organized_computable_prediction import (
-    _ForecastLeg,
     _forecast_leg,
     _forecast_stages,
+    _ForecastLeg,
 )
 from ._organized_observed_prediction import _observation_budget
-
 
 _READING_ERROR = Q(1, 10**14)
 _OUTPUT_POLICY = Q(1, 10**13)

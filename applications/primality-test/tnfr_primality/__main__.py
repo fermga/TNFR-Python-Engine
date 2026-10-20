@@ -1,20 +1,6 @@
-#!/usr/bin/env python3
-"""
-TNFR Primality Testing Package
-Entry point for the TNFR primality testing system.
+"""Run the same basic arithmetic CLI as the installed tnfr-primality command."""
 
-This module provides a command-line interface for testing primality using
-the Resonant Fractal Nature Theory (TNFR) with advanced repository integration.
-
-Author: F. F. Martinez Gamo
-"""
-
-# Import advanced CLI if available, fallback to standard CLI
-try:
-    from .advanced_cli import main
-
-except ImportError:
-    from .cli import main
+from .cli import main
 
 if __name__ == "__main__":
     raise SystemExit(main())

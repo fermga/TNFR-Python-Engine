@@ -9,6 +9,7 @@ from typing import Any
 
 from ..sdk.utils import export_to_json, import_from_json
 from ..utils.io import json_dumps
+from .utils import probability_argument
 
 
 def _emit(data: Any, output: Path | None) -> None:
@@ -106,7 +107,9 @@ def add_study_parsers(sub: argparse._SubParsersAction) -> None:
         help="Number of complete operator-word cycles, not physical time",
     )
     network.add_argument(
-        "--probability", type=float, help="Random-topology edge probability"
+        "--probability",
+        type=probability_argument,
+        help="Random-topology edge probability",
     )
     network.add_argument("--name", help="Name stored in the study declaration")
     network.add_argument(

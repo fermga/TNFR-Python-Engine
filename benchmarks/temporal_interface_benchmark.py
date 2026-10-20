@@ -40,6 +40,7 @@ Usage (PowerShell)::
     # Offline synthetic sanity fixture:
     python benchmarks/temporal_interface_benchmark.py --source synthetic
 """
+
 from __future__ import annotations
 
 import argparse

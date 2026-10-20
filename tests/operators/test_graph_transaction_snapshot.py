@@ -1409,6 +1409,130 @@ def test_snapshot_restores_array_shapes_dtypes_and_graph_node_aliases() -> None:
     assert graph.graph["ordinary_marker"] == "before"
 
 
+@pytest.mark.parametrize("layout", ["C", "F", "strided"])
+def test_snapshot_restores_array_strides_before_shared_view_values(layout) -> None:
+    np = pytest.importorskip("numpy")
+    if layout == "strided":
+        array = np.arange(16, dtype=np.int64).reshape(4, 4)[::2, ::2]
+    else:
+        array = np.array([[0, 1], [2, 3]], order=layout, dtype=np.int64)
+    row = array[0]
+    expected = array.copy()
+    original_strides = array.strides
+    graph = nx.Graph()
+    graph.graph["array"] = array
+    graph.add_node(0, row=row, array_alias=array)
+    snapshot = GraphTransactionSnapshot(graph)
+
+    array.strides = array.strides[::-1]
+    array[:] = 9
+    array.flags.writeable = False
+    snapshot.restore(graph)
+
+    assert graph.graph["array"] is array
+    assert graph.nodes[0]["array_alias"] is array
+    assert graph.nodes[0]["row"] is row
+    assert np.shares_memory(array, row)
+    assert np.array_equal(array, expected)
+    assert np.array_equal(row, expected[0])
+    assert array.strides == original_strides
+    assert array.flags.writeable
+    row[1] = 17
+    assert array[0, 1] == 17
+
+
+@pytest.mark.parametrize("location", ["direct", "nested", "callback"])
+@pytest.mark.parametrize("base_writeable", [True, False])
+@pytest.mark.parametrize("reversed_view", [True, False])
+def test_snapshot_restores_shared_array_views_across_readonly_bases(
+    location, base_writeable, reversed_view
+) -> None:
+    np = pytest.importorskip("numpy")
+    base = np.arange(6, dtype=np.int64)
+    view = base[::-2] if reversed_view else base[1::2]
+    base.flags.writeable = base_writeable
+    graph = nx.Graph()
+
+    class Worker:
+        def __init__(self):
+            self.view = view
+            self.base = base
+
+        def __call__(self, _graph):
+            return None
+
+    if location == "direct":
+        graph.graph["view"] = view
+        graph.add_node(0, base=base)
+    elif location == "nested":
+        graph.graph["nested"] = {"view": view, "base": base}
+    else:
+        graph.graph["compute_delta_nfr"] = Worker()
+    snapshot = GraphTransactionSnapshot(graph)
+
+    base.flags.writeable = True
+    base[:] = 99
+    view.flags.writeable = False
+    base.flags.writeable = False
+    snapshot.restore(graph)
+
+    if location == "direct":
+        restored_view, restored_base = graph.graph["view"], graph.nodes[0]["base"]
+    elif location == "nested":
+        restored_view = graph.graph["nested"]["view"]
+        restored_base = graph.graph["nested"]["base"]
+    else:
+        worker = graph.graph["compute_delta_nfr"]
+        restored_view, restored_base = worker.view, worker.base
+    assert restored_view is view
+    assert restored_base is base
+    assert np.shares_memory(restored_view, restored_base)
+    assert np.array_equal(base, np.arange(6))
+    assert np.array_equal(view, [5, 3, 1] if reversed_view else [1, 3, 5])
+    assert view.flags.writeable
+    assert bool(base.flags.writeable) is base_writeable
+    view[0] = 17
+    assert base[5 if reversed_view else 1] == 17
+
+
+@pytest.mark.parametrize("attribute", ["base", "dtype", "flags", "shape", "strides"])
+def test_snapshot_rejects_array_layout_properties_without_running_them(attribute):
+    np = pytest.importorskip("numpy")
+    calls = []
+
+    def forbidden(_self):
+        calls.append(attribute)
+        raise RuntimeError("array layout property must not execute")
+
+    array_type = type("LayoutTrap", (np.ndarray,), {attribute: property(forbidden)})
+    array = np.arange(2.0).view(array_type)
+    graph = nx.Graph()
+    graph.graph["array"] = array
+    with pytest.raises(TNFRValueError, match="custom array/copy hooks"):
+        GraphTransactionSnapshot(graph)
+    assert calls == []
+    assert graph.graph["array"] is array
+
+
+def test_snapshot_restores_immutable_buffer_views_without_copying_their_storage():
+    np = pytest.importorskip("numpy")
+    base = np.frombuffer(np.arange(6, dtype=np.int64).tobytes(), dtype=np.int64)
+    view = base[1::2]
+    graph = nx.Graph()
+    graph.graph["nested"] = {"view": view, "base": base}
+    snapshot = GraphTransactionSnapshot(graph)
+    base.shape = (2, 3)
+    snapshot.restore(graph)
+    assert graph.graph["nested"]["base"] is base
+    assert graph.graph["nested"]["view"] is view
+    assert base.shape == (6,)
+    assert np.array_equal(base, np.arange(6))
+    assert np.array_equal(view, [1, 3, 5])
+    assert np.shares_memory(view, base)
+    assert not base.flags.writeable
+    assert not view.flags.writeable
+
+
 def test_snapshot_rebinds_array_when_tuple_member_refuses_resize() -> None:
     np = pytest.importorskip("numpy")
 

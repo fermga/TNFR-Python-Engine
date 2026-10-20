@@ -1,5 +1,16 @@
 # Frozen raw archives preserve original bytes, including historical whitespace.
 # Live source and documentation retain the normal whitespace checks.
+# Preserve evidence and retired applications across Windows/Linux checkouts.
+# Their manifests authenticate raw bytes, including recorded line endings.
+docs/assets/** -text -whitespace
+theory/research/archive/** -text -whitespace
+applications/factorization-lab/** -text -whitespace
+applications/primality-test/archive/** -text -whitespace
+# These maintained producer files still match their pinned raw-source receipts.
+src/tnfr/research/local_capacity_history.py -text
+src/tnfr/research/local_capacity_history_certificate.py -text
+build/organized-receiver-enclosure-freeze/evaluate_receiver.py -text
+build/organized-receiver-enclosure-freeze/freeze_receiver.py -text
 docs/assets/organized_alternative_contact/*.json -text
 docs/assets/organized_alternative_outer_acquisition/*.json -text
 docs/assets/organized_joint_resources/*.json -text

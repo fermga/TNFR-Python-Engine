@@ -20,6 +20,10 @@ import math
 from fractions import Fraction
 from typing import Any
 
+from tnfr.operators._neighbor_epi_kernel import (
+    neighbor_epi_blend_value,
+    neighbor_epi_unweighted_mean,
+)
 from tnfr.physics import (
     certify_alpha_one_hard_clip_remesh_class,
     certify_p2_half_reception_remesh_stability,
@@ -39,12 +43,18 @@ def run_protocol() -> dict[str, Any]:
     )
     certificate = certify_p2_half_reception_remesh_stability(source)
     tiny = math.ulp(0.0)
+    left, right = -tiny, -0.0
+    raw_proposals = (
+        neighbor_epi_blend_value(left, neighbor_epi_unweighted_mean((right,)), 0.5),
+        neighbor_epi_blend_value(right, neighbor_epi_unweighted_mean((left,)), 0.5),
+    )
     return {
         "certificate": certificate,
         "ordinary_output": certificate.evaluate_binary64_schedule_pair((-1.0, 0.5)),
         "signed_zero_boundary": certificate.evaluate_binary64_schedule_pair(
-            (-tiny, -0.0)
+            (left, right)
         ),
+        "signed_zero_raw_proposals": raw_proposals,
     }
 
 
@@ -89,7 +99,11 @@ def build_report(protocol: dict[str, Any]) -> dict[str, Any]:
         "ordinary_output": list(ordinary),
         "signed_zero_boundary": {
             "numeric_consensus": signed_zero[0] == signed_zero[1],
+            "raw_proposal_hex": [
+                value.hex() for value in protocol["signed_zero_raw_proposals"]
+            ],
             "output_hex": [value.hex() for value in signed_zero],
+            "zero_admission": "clipping canonicalizes signed zeros",
             "bit_preservation_certified": (
                 certificate.signed_zero_bit_preservation_certified
             ),

@@ -14,6 +14,7 @@ local graph audit that prioritizes chemically ambiguous samples for review.
 Run:
     python examples/10_applications/92_wine_quality_phase_gate_demo.py
 """
+
 from __future__ import annotations
 
 import csv
@@ -477,9 +478,7 @@ th {{ background: #f3f5f7; }}
 {body}
 </body>
 </html>
-""".format(
-        body="\n".join(body)
-    )
+""".format(body="\n".join(body))
 
 
 def main() -> None:

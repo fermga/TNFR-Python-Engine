@@ -1,5 +1,7 @@
 """Frozen one-assessment lifecycle exercised only with synthetic reports."""
 
+import importlib
+import subprocess
 from dataclasses import dataclass
 from fractions import Fraction as Q
 from types import SimpleNamespace
@@ -7,7 +9,7 @@ from types import SimpleNamespace
 import pytest
 
 from benchmarks import organized_interface_factorization as driver
-from tests.sine_evidence_helpers import forbid_sine_regeneration
+from tests.sine_evidence_helpers import _TARGETS, forbid_sine_regeneration
 from tnfr.mathematics._rational_interval import I as Interval
 from tnfr.research import _single_analytic_assessment as owner
 from tnfr.research.artifact_io import decode_exact_tree, file_receipt, sha256_bytes
@@ -25,13 +27,31 @@ def _read(path):
     return decode_exact_tree(json_loads(path.read_text(encoding="utf-8")))
 
 
+@pytest.fixture(scope="module", autouse=True)
+def preserve_execution_bindings():
+    """Synthetic overrides must not leave expired guards in later audits."""
+    bindings = tuple(
+        (importlib.import_module(name), attribute)
+        for name, attributes in _TARGETS
+        for attribute in attributes
+    ) + tuple((subprocess, name) for name in ("run", "Popen", "check_output"))
+    originals = tuple(getattr(module, name) for module, name in bindings)
+    yield
+    assert all(
+        getattr(module, name) is original
+        for (module, name), original in zip(bindings, originals, strict=True)
+    ), "synthetic lifecycle overrides leaked outside their execution guard"
+
+
 @pytest.fixture(autouse=True)
-def no_scientific_execution(monkeypatch):
+def no_scientific_execution():
     def forbidden():
         pytest.fail("lifecycle test attempted the actual factorization assessment")
 
-    monkeypatch.setattr(driver, "_assess", forbidden)
-    with forbid_sine_regeneration():
+    # Test-scoped monkeypatch overrides must unwind before this outer guard.
+    # Depending on that fixture here would reverse their finalization order.
+    with forbid_sine_regeneration(), pytest.MonkeyPatch.context() as patch:
+        patch.setattr(driver, "_assess", forbidden)
         yield
 
 

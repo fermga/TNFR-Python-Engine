@@ -4,8 +4,6 @@
 P5 finite-history error bounds, and nested P5 orbit closure with an obstruction to direct REMESH substitution;
 exact controls and finite numerical/runtime observations. General multichannel
 closure and broader memory-to-operator realizations remain open.
-**Research links:** B2/O4.a, S3, S8, S9 and S16.
-**Updated:** 2026-09-18.
 **Implementation:** [epi_memory.py](../src/tnfr/physics/epi_memory.py), using the
 reversible partition geometry in
 [structural_morphism.py](../src/tnfr/physics/structural_morphism.py).

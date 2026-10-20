@@ -8,6 +8,7 @@ local coupling along graph edges.
 Run:
     python examples/10_applications/90_phase_gate_monitor_demo.py
 """
+
 from __future__ import annotations
 
 import math

@@ -2029,6 +2029,6 @@ This supporting block is complete. The principal unresolved chain is how an
 existing nodal configuration requires a transformation that generates and
 sustains a new coherence region. Canonical action contracts are retained;
 activation, targets and ordering still need their structural justification.
-The [single execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#2-one-status-board-and-dependency-chain)
+The [single execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 owns that bounded derivation or underdetermination test. No longer native
 window follows automatically from the present result.

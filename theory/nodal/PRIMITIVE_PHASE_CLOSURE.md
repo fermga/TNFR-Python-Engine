@@ -105,8 +105,12 @@ D_N\le q^N D_0+
 These are comparison observations, not added forcing or an event policy.
 No unobserved phase write may be assigned `r_j=0`. Uniform common phase
 advance alone contributes no diameter increase. For the ideal no-increase
-case, repeated coordination exhausts phase contrast; the finite defect
-ledger does not by itself supply a uniform asymptotic binary64 bound.
+case, phase contrast tends to zero along an infinite admitted ideal sequence.
+It may remain positive at every finite invocation. A fixed positive identity
+margin has a separate finite crossing bound; strict complete-call growth is
+not a general maintenance requirement. The [observable admission](../NATIVE_COLLECTIVE_CALCULUS.md#native-canonical-observable-admission)
+states those distinctions. The finite defect ledger does not by itself supply
+a uniform asymptotic binary64 bound.
 The interval must remain admissible at every invocation, and its coherent
 lift must be verified rather than inferred from wrapped maxima/minima.
 
@@ -123,6 +127,10 @@ capacities remain equal. Positive phase contrast is also insufficient for
 positive EPI work. That separate test is the
 [joint transfer budget](../TNFR_VARIATIONAL_PRINCIPLE.md#1318-source-sensitivity-joint-work-and-the-passive-transfer-limit).
 Controls: [configured diameter and finite ledger](../../tests/physics/test_native_phase_diameter_budget.py).
+The [complete native relative-phase map](../NATIVE_COLLECTIVE_CALCULUS.md#native-relative-phase-descent)
+integrates this common-target cancellation with five live event maps, fresh
+selection and associated memory. It keeps resultant magnitude and gain state
+even when the absolute common origin is omitted.
 
 <a id="native-phase-writer-closure"></a>
 

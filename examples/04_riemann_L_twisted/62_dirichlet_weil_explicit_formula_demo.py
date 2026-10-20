@@ -148,8 +148,7 @@ def step_3_certificate_summaries() -> None:
 
 def step_4_honest_scope() -> None:
     banner("Honest scope — what P35 closes and what it does NOT")
-    print(
-        """
+    print("""
 P35 establishes (operational closure of gap G3_χ):
 
   • Both sides of the χ-twisted Weil-Guinand explicit formula for
@@ -175,8 +174,7 @@ Restriction
 P35 currently supports only primitive REAL characters (χ_3, χ_4,
 χ_5).  The complex-χ extension requires a Hermitisation of W^(χ)
 that is intentionally left for a future increment.
-"""
-    )
+""")
 
 
 def main() -> None:

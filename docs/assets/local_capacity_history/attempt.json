@@ -1,0 +1,13 @@
+{
+  "schema":"tnfr.local-capacity-history-attempt.v1",
+  "created_utc":"2026-10-14T22:45:40.202510+00:00",
+  "freeze_sha256":"13a7c60622c71eeceaf6e9ce8534f8c80eee320aee27bce7240c2abc56bc1e9a",
+  "python":"3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+  "executable":"C:\\TNFR-Python-Engine\\.venv313\\Scripts\\python.exe",
+  "versions":{
+    "numpy":"2.5.3",
+    "networkx":"3.6.1",
+    "mpmath":"1.3.0"
+  },
+  "maximum_evaluations":1
+}

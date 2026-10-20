@@ -340,8 +340,13 @@ def test_one_radian_chart_boundary_is_admitted_but_configured_u3_still_applies()
 
 @pytest.mark.parametrize("capacity", (0, -1))
 def test_observation_rejects_nonpositive_capacity(capacity):
+    # Construct a valid live graph before testing the detached reader's gate.
+    # The fixture's pressure refresh independently rejects negative capacity.
+    graph = triangle()
+    for node in graph:
+        graph.nodes[node]["nu_f"] = capacity
     with pytest.raises((TypeError, ValueError)):
-        observe_k3_transverse_state(triangle(capacity=capacity))
+        observe_k3_transverse_state(graph)
 
 
 def test_observation_rejects_heterogeneous_capacity():

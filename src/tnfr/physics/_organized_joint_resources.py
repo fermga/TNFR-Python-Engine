@@ -19,17 +19,17 @@ from ._organized_outer_observation import (
     _OUTER_ANGLE_BOUND,
 )
 from ._organized_outer_winding import (
-    _OrganizedOuterResourceBounds,
     _derive_organized_outer_resource_bounds,
+    _OrganizedOuterResourceBounds,
 )
 from ._organized_sequential_observation import (
-    _OrganizedSequentialObservationProtocol,
     _assess_organized_sequential_observation_resources,
+    _OrganizedSequentialObservationProtocol,
 )
 from ._sine_preparation import _prepared_coordinate_vector as _vector
 from ._sine_recovery_resources import (
-    _SineRecoveryResources,
     _assess_sine_recovery_resources,
+    _SineRecoveryResources,
 )
 
 _SOURCE_LIMIT = Q(1, 10**6)

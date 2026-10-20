@@ -305,8 +305,7 @@ def main() -> None:
 
     # ── Summary ──────────────────────────────────────────────────────────
     banner("Summary")
-    print(
-        """
+    print("""
   Self-optimisation in this engine is rule-based strategy selection.
   The engine:
     1. Analyses the mathematical landscape (unified fields, conservation,
@@ -322,8 +321,7 @@ def main() -> None:
   conservation feedback theorem is claimed.
 
   See: AGENTS.md § Self-Optimizing Dynamics
-"""
-    )
+""")
 
 
 if __name__ == "__main__":

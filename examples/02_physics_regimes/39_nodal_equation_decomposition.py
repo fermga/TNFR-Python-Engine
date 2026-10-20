@@ -586,8 +586,7 @@ def main():
     print("\n" + "=" * 72)
     print("  SUMMARY: Nodal Equation Decomposition Findings")
     print("=" * 72)
-    print(
-        """
+    print("""
   1. Operator calls produce reproducible state differences on the declared
      seed. The dominant-delta labels describe this sample; operator contracts
      remain the authority for canonical channel assignments.
@@ -602,8 +601,7 @@ def main():
   4. The finite DELTA_NFR scan shows that the tetrad channels respond
      differently on this graph. It supports joint diagnostic use but does not
      prove that the tetrad is minimal, complete, irreducible, or reconstructive.
-"""
-    )
+""")
 
 
 if __name__ == "__main__":

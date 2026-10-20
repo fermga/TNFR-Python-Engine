@@ -6,13 +6,13 @@ this audit independently rebuilds their enclosure and decision arithmetic.
 Receipts establish content associations, not execution authentication.
 """
 
-from fractions import Fraction as Q
-from functools import lru_cache
 import hashlib
-from math import factorial
-from pathlib import Path
 import subprocess
 import zipfile
+from fractions import Fraction as Q
+from functools import lru_cache
+from math import factorial
+from pathlib import Path
 
 import pytest
 
@@ -26,7 +26,6 @@ from tnfr.research.artifact_io import (
     verify_archive_members,
 )
 from tnfr.utils.io import json_loads
-
 
 ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE = ROOT / "docs/assets/organized_computable_prediction"

@@ -328,9 +328,11 @@ executing an acquired-source or physical response.
 The operational gate closes with an unfitted conditional relation (2)-(4)
 and a specific obstruction (10)-(11) to directly implementing the existing
 instantaneous preparation word. No physical evaluation is admitted. The
-remaining task belongs solely to the [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate):
-the [admitted finite observation](ORGANIZED_FINITE_OBSERVATION.md#finite-observation-result)
+[admitted finite observation](ORGANIZED_FINITE_OBSERVATION.md#finite-observation-result)
 still requires a complete physical observation, clock and preparation bridge
-before the circuit comparison can support an experimental protocol.
+before the circuit comparison can support an experimental protocol. Those
+requirements do not activate a physical campaign; the
+[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+alone selects further work.
 The supplied gamma and Josephson constant remain
 independent constitutive premises throughout.

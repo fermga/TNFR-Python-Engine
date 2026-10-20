@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
-import math
 from fractions import Fraction
 from numbers import Real
 from typing import Any
 
 from ..alias import get_attr
-from ..constants import DEFAULTS
 from ..constants.aliases import ALIAS_EPI
 from ..mathematics.unified_numerical import np
 from ..operators._neighbor_epi_kernel import neighbor_epi_represented_affine_row
@@ -98,16 +96,9 @@ def fraction_float_or_infinity(value: Fraction) -> float:
 
 
 def resolve_epi_bounds(G: Any) -> tuple[float, float, str]:
-    try:
-        lower = float(G.graph.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)))
-        upper = float(G.graph.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)))
-    except (TypeError, ValueError, OverflowError) as exc:
-        raise ValueError("EPI bounds must be finite real scalars") from exc
-    if not math.isfinite(lower) or not math.isfinite(upper) or lower > upper:
-        raise ValueError("EPI bounds must be finite and ordered")
-    mode = str(G.graph.get("CLIP_MODE", "hard"))
-    if mode not in ("hard", "soft"):
-        mode = "hard"
+    from ..operators import _operator_epi_clip_policy
+
+    lower, upper, mode, _steepness = _operator_epi_clip_policy(G.graph)
     return lower, upper, mode
 
 

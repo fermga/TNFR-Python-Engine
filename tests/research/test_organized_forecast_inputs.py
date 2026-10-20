@@ -10,7 +10,6 @@ from tnfr.mathematics._rational_interval import I
 from tnfr.research import _organized_forecast_inputs as owner
 from tnfr.research.artifact_io import file_receipt
 
-
 ROOT = Path(__file__).resolve().parents[2]
 
 

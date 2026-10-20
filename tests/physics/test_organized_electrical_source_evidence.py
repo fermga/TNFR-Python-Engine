@@ -5,11 +5,11 @@ authenticate execution nor replace the model hypotheses. No assessor or
 scientific producer is imported or invoked by these tests.
 """
 
-from fractions import Fraction as Q
 import hashlib
-from pathlib import Path
 import re
 import subprocess
+from fractions import Fraction as Q
+from pathlib import Path
 
 import pytest
 
@@ -17,7 +17,6 @@ from tests.sine_evidence_helpers import forbid_sine_regeneration
 from tnfr.mathematics._rational_interval import I, pi_interval
 from tnfr.research.artifact_io import decode_exact_tree
 from tnfr.utils.io import json_loads
-
 
 ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE = ROOT / "docs/assets/organized_electrical_source"

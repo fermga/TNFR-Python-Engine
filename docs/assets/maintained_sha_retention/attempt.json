@@ -1,0 +1,15 @@
+{
+  "schema":"tnfr.maintained-sha-retention-attempt.v1",
+  "freeze":{
+    "path":"freeze.json",
+    "bytes":137399,
+    "sha256":"15efefdd094c02d2f7d7261694d1253e9f92073119716ee925e0cc9b15b4bec2"
+  },
+  "evaluation_status_at_start":"not_evaluated",
+  "attempt_number":1,
+  "created_utc":"2026-10-15T11:35:55.826099+00:00",
+  "python":"3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+  "platform":"Windows-11-10.0.26300-SP0",
+  "seed":null,
+  "backend":"Python exact Fraction / rational dyadic128 intervals"
+}

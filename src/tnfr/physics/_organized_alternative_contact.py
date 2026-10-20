@@ -28,8 +28,8 @@ from ._organized_alternative_outer_acquisition import (
     _derive_organized_alternative_outer_bounds,
 )
 from ._organized_external_interaction import (
-    _OrganizedExternalInteractionGeometry,
     _derive_organized_external_interaction,
+    _OrganizedExternalInteractionGeometry,
 )
 from ._sine_class_constitutive_comparison import (
     _current_derivative_bound,
@@ -37,8 +37,8 @@ from ._sine_class_constitutive_comparison import (
     _edge_law,
 )
 from ._sine_constitutive_recovery import (
-    _ConstitutiveRecovery,
     _assess_constitutive_recovery,
+    _ConstitutiveRecovery,
 )
 from ._sine_preparation import _prepared_coordinate_vector as _vector
 from ._sine_preparation import _prepared_form_costs

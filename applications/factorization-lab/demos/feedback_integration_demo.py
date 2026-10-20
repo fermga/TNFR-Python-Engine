@@ -61,8 +61,7 @@ class FeedbackLearningDemo:
     def _init_database(self):
         """Initialize demo database."""
         with sqlite3.connect(self.db_path) as conn:
-            conn.execute(
-                """
+            conn.execute("""
                 CREATE TABLE IF NOT EXISTS verification_feedback (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     n INTEGER NOT NULL,
@@ -75,11 +74,9 @@ class FeedbackLearningDemo:
                     factor_pattern TEXT,
                     timestamp REAL
                 )
-            """
-            )
+            """)
 
-            conn.execute(
-                """
+            conn.execute("""
                 CREATE TABLE IF NOT EXISTS strategy_performance (
                     strategy TEXT PRIMARY KEY,
                     total_attempts INTEGER DEFAULT 0,
@@ -87,8 +84,7 @@ class FeedbackLearningDemo:
                     avg_runtime_ms REAL DEFAULT 0,
                     success_rate REAL DEFAULT 0
                 )
-            """
-            )
+            """)
 
     def simulate_factorization_attempts(self, num_attempts=50):
         """Simulate a series of factorization attempts with feedback."""
@@ -294,26 +290,22 @@ class FeedbackLearningDemo:
 
         with sqlite3.connect(self.db_path) as conn:
             # Find underperforming strategies
-            underperforming = conn.execute(
-                """
+            underperforming = conn.execute("""
                 SELECT partition_strategy, AVG(CAST(was_certified AS FLOAT)) as success_rate
                 FROM verification_feedback 
                 GROUP BY partition_strategy
                 HAVING COUNT(*) >= 5 AND success_rate < 0.4
-            """
-            ).fetchall()
+            """).fetchall()
 
             # Find slow strategies
-            slow_strategies = conn.execute(
-                """
+            slow_strategies = conn.execute("""
                 SELECT partition_strategy, AVG(runtime_ms) as avg_runtime
                 FROM verification_feedback
                 GROUP BY partition_strategy  
                 HAVING COUNT(*) >= 5
                 ORDER BY avg_runtime DESC
                 LIMIT 2
-            """
-            ).fetchall()
+            """).fetchall()
 
             # Generate recommendations
             recommendations = []
@@ -333,15 +325,13 @@ class FeedbackLearningDemo:
                         )
 
             # Success patterns
-            successful_patterns = conn.execute(
-                """
+            successful_patterns = conn.execute("""
                 SELECT partition_strategy, AVG(CAST(was_certified AS FLOAT)) as success_rate
                 FROM verification_feedback
                 GROUP BY partition_strategy
                 HAVING COUNT(*) >= 5 AND success_rate > 0.7
                 ORDER BY success_rate DESC
-            """
-            ).fetchall()
+            """).fetchall()
 
             if successful_patterns:
                 best_strategy, best_rate = successful_patterns[0]
@@ -368,15 +358,12 @@ class FeedbackLearningDemo:
             total_attempts = conn.execute(
                 "SELECT COUNT(*) FROM verification_feedback"
             ).fetchone()[0]
-            overall_success = conn.execute(
-                """
+            overall_success = conn.execute("""
                 SELECT AVG(CAST(was_certified AS FLOAT)) FROM verification_feedback
-            """
-            ).fetchone()[0]
+            """).fetchone()[0]
 
             # Get strategy breakdown
-            strategy_stats = conn.execute(
-                """
+            strategy_stats = conn.execute("""
                 SELECT 
                     partition_strategy,
                     COUNT(*) as attempts,
@@ -384,8 +371,7 @@ class FeedbackLearningDemo:
                     AVG(runtime_ms) as avg_runtime
                 FROM verification_feedback
                 GROUP BY partition_strategy
-            """
-            ).fetchall()
+            """).fetchall()
 
             report = {
                 "summary": {

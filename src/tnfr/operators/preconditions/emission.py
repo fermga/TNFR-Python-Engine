@@ -44,6 +44,7 @@ def validate_emission_strict(G: TNFRGraph, node: Any) -> None:
     Raises
     ------
     ValueError
+        If consumed state or policy values are invalid
         If EPI >= latent threshold (node already active - consider IL/Coherence instead)
         If νf < basal threshold (frequency too low - consider NAV/Transition first)
 
@@ -75,6 +76,7 @@ def validate_emission_strict(G: TNFRGraph, node: Any) -> None:
     tnfr.operators.preconditions : Base precondition validators
     tnfr.operators.definitions.Emission : Emission operator implementation
     """
+    from ..._exact_time import finite_represented_real
     from ...alias import get_attr
     from ...config.thresholds import (
         EPI_LATENT_MAX,
@@ -82,17 +84,41 @@ def validate_emission_strict(G: TNFRGraph, node: Any) -> None:
         VF_BASAL_THRESHOLD,
     )
     from ...constants.aliases import ALIAS_EPI, ALIAS_VF
+    from ...types import require_finite_real_scalar_epi
+    from .._argument_validation import nonnegative_integer
+    from . import OperatorPreconditionError
 
-    # Get current node state
-    epi = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
-    vf = float(get_attr(G.nodes[node], ALIAS_VF, 0.0))
-
-    # Get configurable thresholds (allow override via graph metadata)
-    epi_threshold = float(G.graph.get("EPI_LATENT_MAX", EPI_LATENT_MAX))
-    vf_threshold = float(G.graph.get("VF_BASAL_THRESHOLD", VF_BASAL_THRESHOLD))
-    min_degree = int(
-        G.graph.get("MIN_NETWORK_DEGREE_COUPLING", MIN_NETWORK_DEGREE_COUPLING)
-    )
+    # Admit authoritative state and policies before comparisons: NaN must not
+    # authorize emission, and signed scalar BEPI must not become a magnitude.
+    try:
+        epi = require_finite_real_scalar_epi(
+            get_attr(
+                G.nodes[node], ALIAS_EPI, 0.0, strict=True, conv=lambda value: value
+            ),
+            "AL stored EPI",
+        )
+        vf = finite_represented_real(
+            get_attr(
+                G.nodes[node], ALIAS_VF, 0.0, strict=True, conv=lambda value: value
+            ),
+            "AL stored nu_f",
+        )[0]
+        if vf < 0.0:
+            raise ValueError("AL stored nu_f must be nonnegative")
+        epi_threshold = finite_represented_real(
+            G.graph.get("EPI_LATENT_MAX", EPI_LATENT_MAX), "EPI_LATENT_MAX"
+        )[0]
+        vf_threshold = finite_represented_real(
+            G.graph.get("VF_BASAL_THRESHOLD", VF_BASAL_THRESHOLD),
+            "VF_BASAL_THRESHOLD",
+        )[0]
+        min_degree = nonnegative_integer(
+            G.graph.get("MIN_NETWORK_DEGREE_COUPLING", MIN_NETWORK_DEGREE_COUPLING),
+            operator="Emission",
+            label="MIN_NETWORK_DEGREE_COUPLING",
+        )
+    except (OverflowError, TypeError, ValueError, OperatorPreconditionError) as exc:
+        raise TNFRValueError(f"AL precondition failed: {exc}") from exc
 
     # Precondition 1: EPI must be below latent threshold (node in latent state)
     # Emission is for activating nascent/latent structures, not boosting active ones

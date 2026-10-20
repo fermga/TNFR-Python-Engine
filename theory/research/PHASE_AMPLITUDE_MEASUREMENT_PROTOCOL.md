@@ -292,10 +292,10 @@ they do not admit this annex's original six-state law, the two-C6 discriminator
 or a particle model. No raw signal archive was downloaded or decoded in this
 review. Published methods and qualitative results are prior exposure.
 
-| Supporting source | Metadata inspected on 2026-10-06 | Remaining admission boundary |
+| Supporting source | Metadata (initial review 2026-10-06) | Remaining admission boundary |
 | --- | --- | --- |
 | [28 Rössler circuits](https://zenodo.org/records/3521009) | CC BY 4.0; documented supports and three repetition labels; only the second circuit coordinate is recorded | [Direct-source admission below](#rossler-phase-information-admission) closes application of the existing star test. Additional state, a proved invariant preparation or controlled approximation would require separate admission. |
-| [Two resonant accelerometers](https://datadryad.org/dataset/doi:10.5061/dryad.xwdbrv1q2) | CC0; about 48.7 MB, figure-organized recordings including phase and mechanical perturbations | Independent acquisition identities, phase extraction and feedback/input laws are not yet admitted. Published curves cannot be recast as unseen predictions. |
+| [Two quartz resonators in one differential accelerometer](https://datadryad.org/dataset/doi:10.5061/dryad.xwdbrv1q2) | CC0; the 48.7 MB figure archive is part of a 1.17 GB dataset; apparatus identity and size corrected in the [2026-10-16 admission](#quartz-observed-organization-admission) | An observed interaction lead only: sustaining dynamics, joint readout/clock and independent acquisition identities remain unadmitted. |
 | [Two coupled MEMS resonators](https://zenodo.org/records/18336535) | CC BY 4.0; 125 kHz sensor records, coupling/feedback settings, about 35 GB total with smaller regime archives | External driving and feedback remain supplied. No verified independent-repeat allocation or TNFR measurement bridge. |
 | [Three Rössler circuits with higher-order interactions](https://zenodo.org/records/10392385) | CC BY 4.0; x/y channels for three oscillators, 30,000 samples per record; one block about 23.5 GB | Hidden z coordinates, programmed nonlinear coupling and unverified repeated acquisitions. Interaction order is not a phase-harmonic order. |
 
@@ -313,6 +313,57 @@ constituents. The [collective-property comparison](../PHYSICAL_REGIME_CORRESPOND
 has the main generative scope. The
 [execution plan](FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) owns selection;
 no archive size, available repetition or attractive waveform starts a campaign.
+
+<a id="quartz-observed-organization-admission"></a>
+### Quartz organization: methods admission
+
+**Decision, 2026-10-16:** an observational lead, with
+`physical_status=not_admitted` and `evaluation=not_tested`.
+This review concerns the source's own measured organization, not admission
+of the six-state law above or another direct application of the star test.
+
+The [primary paper](https://doi.org/10.1016/j.ijmecsci.2026.111444)
+reports interacting quartz resonators within one differential accelerometer.
+The [Dryad methods and README](https://datadryad.org/dataset/doi:10.5061/dryad.xwdbrv1q2)
+describe rotation-controlled acceleration at fixed temperature, frequency
+counters, oscilloscope phase recordings and separate analyzer measurements.
+Self-sustained operating modes, imposed frequency sweeps and applied shocks
+are different preparations. Figure/sheet labels do not establish independent
+reset acquisitions, and some movies are edited.
+
+The [version metadata](https://datadryad.org/api/v2/versions/332142)
+identify version 8, record 332142, under CC0. The
+[file metadata](https://datadryad.org/api/v2/versions/332142/files)
+give 48,665,523 bytes for `Data_of_figures.zip` and 1,172,345,384 bytes
+in total. The earlier inventory mislabeled the apparatus and treated one
+archive's size as the whole dataset; neither correction changes a response.
+
+The inspected material does not admit the complete sustaining electronics,
+feedback, mechanical state, initialization or environment law. Full publisher
+methods and a circuit supplement were not accessible in this review. That
+is a source-access limitation, not a mathematical impossibility theorem.
+Constant controls could permit an autonomous conditional model; sustained
+oscillation does not establish absence of external energy supply.
+
+A prospective property could be a specified relative-frequency/phase relation
+and its loss or recovery under an independently declared perturbation. It
+still needs a source-specific state/readout map, joint timing and instrument
+uncertainties, and independent whole acquisitions. Separate instrument records
+cannot simply be assembled into one simultaneous complete state. A reported
+phase trace is not automatically primitive TNFR phase, and visible locking
+does not justify discarding amplitude, inertia or controller memory.
+
+Reopening requires the **same apparatus's** complete model and acquisition
+metadata. A different oscillator's circuit, response-derived pressure or
+the weighted-star coefficients cannot supply them. Existing circular-observation
+and hidden-state methods can transfer only after their premises are matched.
+This source remains parked under the
+[bounded comparison outcome](../PHYSICAL_REGIME_CORRESPONDENCES.md#observed-pattern-admission-result).
+
+Only methods, metadata, README text and published descriptions were inspected;
+those descriptions are prior exposure. No response archive, movie, spreadsheet
+array or plotting script was opened, and no fit or reserved response was
+evaluated. This admission does not identify a physical NFR or elementary matter.
 
 <a id="rossler-phase-information-admission"></a>
 ### Selected source: 28 electronic oscillators

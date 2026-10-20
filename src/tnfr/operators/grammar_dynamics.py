@@ -88,7 +88,7 @@ _TRANSFORMER_CODES = frozenset(
 )
 _CLOSURE_CODES = frozenset(_NAME_TO_CODE[n] for n in CLOSURES if n in _NAME_TO_CODE)
 
-# Canonical fallback when all else fails — IL (Coherence) is always safe
+# Canonical fallback for incremental grammar; live execution admits IL separately.
 _FALLBACK_CODE = "IL"
 
 # How many recent glyphs to consider for incremental grammar context
@@ -462,8 +462,9 @@ def suggest_alternative(
 ) -> str:
     """Suggest the best grammar-safe alternative when *rejected* is invalid.
 
-    Iterates a priority-ordered list of safe candidates and returns the first
-    that passes incremental grammar checks.  Falls back to ``IL`` (always safe).
+    Iterates priority-ordered candidates and returns the first that passes
+    incremental grammar checks, with ``IL`` as the configured fallback.
+    This decision does not establish live-state admission or future stability.
 
     Parameters
     ----------

@@ -40,7 +40,8 @@ def validate_reception_strict(G: TNFRGraph, node: Any) -> None:
     Raises
     ------
     ValueError
-        If EPI or signed DNFR reaches its configured Reception upper bound.
+        If a consumed scalar or ceiling is invalid, or EPI or signed DNFR
+        reaches its configured Reception upper bound.
 
     Notes
     -----
@@ -69,17 +70,37 @@ def validate_reception_strict(G: TNFRGraph, node: Any) -> None:
     tnfr.operators.preconditions : Base precondition validators
     tnfr.operators.definitions.Reception : Reception operator implementation
     """
+    from ..._exact_time import finite_represented_real
     from ...alias import get_attr
     from ...config.thresholds import DNFR_RECEPTION_MAX, EPI_SATURATION_MAX
     from ...constants.aliases import ALIAS_DNFR, ALIAS_EPI
+    from ...types import require_finite_real_scalar_epi
 
-    # Get current node state
-    epi = float(get_attr(G.nodes[node], ALIAS_EPI, 0.0))
-    dnfr = float(get_attr(G.nodes[node], ALIAS_DNFR, 0.0))
-
-    # Get configurable thresholds (allow override via graph metadata)
-    epi_threshold = float(G.graph.get("EPI_SATURATION_MAX", EPI_SATURATION_MAX))
-    dnfr_threshold = float(G.graph.get("DNFR_RECEPTION_MAX", DNFR_RECEPTION_MAX))
+    # Admit authoritative values before conversion: NaN comparisons must not
+    # silently authorize EN, and a scalar BEPI must retain its signed form.
+    try:
+        epi = require_finite_real_scalar_epi(
+            get_attr(
+                G.nodes[node], ALIAS_EPI, 0.0, strict=True, conv=lambda value: value
+            ),
+            "EN stored EPI",
+        )
+        dnfr = finite_represented_real(
+            get_attr(
+                G.nodes[node], ALIAS_DNFR, 0.0, strict=True, conv=lambda value: value
+            ),
+            "EN stored DNFR",
+        )[0]
+        epi_threshold = finite_represented_real(
+            G.graph.get("EPI_SATURATION_MAX", EPI_SATURATION_MAX),
+            "EPI_SATURATION_MAX",
+        )[0]
+        dnfr_threshold = finite_represented_real(
+            G.graph.get("DNFR_RECEPTION_MAX", DNFR_RECEPTION_MAX),
+            "DNFR_RECEPTION_MAX",
+        )[0]
+    except (OverflowError, TypeError, ValueError) as exc:
+        raise TNFRValueError(f"EN precondition failed: {exc}") from exc
 
     # Precondition 1: enforce the selected stored-EPI upper admission bound.
     if epi >= epi_threshold:

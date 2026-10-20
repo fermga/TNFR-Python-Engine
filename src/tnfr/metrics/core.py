@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
+from collections import deque
 from collections.abc import Mapping, MutableMapping
 from typing import Any, NamedTuple, cast
 
+from .._exact_time import bounded_represented_real
 from ..constants import get_param
 from ..errors import TNFRValueError
 from ..glyph_history import append_metric, ensure_history
-from ..telemetry import ensure_nu_f_telemetry
+from ..telemetry import NuFSnapshot, NuFTelemetryAccumulator, ensure_nu_f_telemetry
+from ..telemetry.nu_f import _ACCUMULATOR_KEY
 from ..telemetry.verbosity import (
     TELEMETRY_VERBOSITY_DEFAULT,
     TELEMETRY_VERBOSITY_LEVELS,
@@ -35,6 +38,7 @@ from .capacity_rates import (
 from .coherence import (
     GLYPH_LOAD_STABILIZERS_KEY,
     _aggregate_si,
+    _stability_observation_revision,
     _track_stability,
     _update_coherence,
     _update_phase_sync,
@@ -171,11 +175,26 @@ def _update_nu_f_snapshot(
     hist: MutableMapping[str, Any],
     *,
     record_history: bool,
+    snapshot: NuFSnapshot | None = None,
+    replace_current_history: bool = False,
 ) -> None:
-    """Refresh νf telemetry snapshot and optionally persist it in history."""
+    """Publish νf telemetry, optionally completing this observation's history.
 
-    accumulator = ensure_nu_f_telemetry(G, confidence_level=None)
-    snapshot = accumulator.snapshot(graph=G)
+    A completed standard-observer window supplies its existing snapshot. Only
+    an entry appended for this same stability observation may be replaced;
+    publication neither recomputes the reduction nor adds another entry.
+    """
+
+    if snapshot is None:
+        existing = G.graph.get(_ACCUMULATOR_KEY)
+        accumulator = ensure_nu_f_telemetry(
+            G,
+            confidence_level=None,
+            history_limit=(
+                None if isinstance(existing, NuFTelemetryAccumulator) else 128
+            ),
+        )
+        snapshot = accumulator.snapshot(graph=G)
     payload = snapshot.as_payload()
     bridge: float | None
     try:
@@ -192,13 +211,21 @@ def _update_nu_f_snapshot(
     telemetry["nu_f_snapshot"] = payload
     telemetry["nu_f_bridge"] = bridge
 
+    observation = (id(hist), _stability_observation_revision(G))
+    replace_history = (
+        replace_current_history
+        and G.graph.get("_nu_f_history_observation") == observation
+    )
+    for key in _METRICS_NU_F_HISTORY_KEYS:
+        value = payload[key.removeprefix("nu_f_")]
+        if record_history:
+            append_metric(hist, key, value)
+        elif replace_history:
+            values = hist.get(key)
+            if isinstance(values, (list, deque)) and values:
+                values[-1] = value
     if record_history:
-        append_metric(hist, "nu_f_rate_hz_str", snapshot.rate_hz_str)
-        append_metric(hist, "nu_f_rate_hz", snapshot.rate_hz)
-        append_metric(hist, "nu_f_ci_lower_hz_str", snapshot.ci_lower_hz_str)
-        append_metric(hist, "nu_f_ci_upper_hz_str", snapshot.ci_upper_hz_str)
-        append_metric(hist, "nu_f_ci_lower_hz", snapshot.ci_lower_hz)
-        append_metric(hist, "nu_f_ci_upper_hz", snapshot.ci_upper_hz)
+        G.graph["_nu_f_history_observation"] = observation
 
     G.graph["_nu_f_snapshot_payload"] = payload
 
@@ -229,6 +256,14 @@ def _metrics_step(G: TNFRGraph, ctx: dict[str, Any] | None = None) -> None:
         return
 
     spec = _resolve_metrics_verbosity(cfg)
+    # Only the advanced glyph-duration diagnostics consume configured DT.
+    # Preserve their operation-time basis while admitting the raw clock before
+    # any history or sampled-state writes; lower tiers do not invent this input.
+    dt = (
+        bounded_represented_real(get_param(G, "DT"), "metrics DT", minimum=0.0)[0]
+        if spec.enable_advanced
+        else 0.0
+    )
     eps_dnfr, eps_depi = _equilibrium_tolerances(
         get_param(G, "EPS_DNFR_STABLE"), get_param(G, "EPS_DEPI_STABLE")
     )
@@ -263,9 +298,8 @@ def _metrics_step(G: TNFRGraph, ctx: dict[str, Any] | None = None) -> None:
                 hist.setdefault(key, [])
         G.graph[metrics_sentinel_key] = history_id
 
-    # Configured operation-time diagnostics below retain DT. Capacity secants
-    # in _track_stability instead use explicitly recorded runtime timestamps.
-    dt = float(get_param(G, "DT"))
+    # Capacity secants use explicitly recorded runtime timestamps; the advanced
+    # duration diagnostics separately retain the admitted configured DT above.
     t = float(G.graph.get("_t", 0.0))
 
     raw_jobs = cfg.get("n_jobs")
@@ -337,6 +371,9 @@ def register_metrics_callbacks(G: TNFRGraph) -> None:
         event=CallbackEvent.AFTER_STEP.value,
         func=_metrics_step,
         name="metrics_step",
+    )
+    callback_manager._order_callback_after(
+        G, CallbackEvent.AFTER_STEP, "std_reorg_after", "metrics_step"
     )
     if spec.attach_coherence_hooks:
         register_coherence_callbacks(G)

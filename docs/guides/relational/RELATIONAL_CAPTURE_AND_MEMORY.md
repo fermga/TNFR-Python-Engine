@@ -4,6 +4,47 @@ Native capture and exclusions, cycle/contact memory, transit, reflected proofs, 
 
 Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.md). Section links remain stable; hypotheses and model changes remain local to each result.
 
+## Read an organized object's recovery report
+
+The [introductory example](../../../examples/01_foundations/01_hello_world.py)
+prepares one five-node winding pattern, applies the isolated-cycle capture
+certificate, takes a shared native step and assesses the endpoint again.
+Use that maintained construction as the starting point; it retains the
+complete reports alongside the resulting `Network`.
+
+Read the returned records according to what they establish:
+
+- `initial_capture` describes the prepared state and selected law.
+  `cycle_winding` records the oriented phase class. An admitted certificate
+  also requires the state, capacity, geometry and storage premises; inspect
+  `storage_margin_lower_bound` and the complete `field`.
+- `step` retains `before`, `after`, the structural time interval and numerical
+  defects. Its changes describe the implemented joint step. The
+  `energy_step_defect` is the difference between its storage change and the
+  initial continuous storage rate times the step duration.
+- `final_capture` applies the same sufficient recovery theorem to the new
+  snapshot. It certifies ideal continuation from there; it does not bound
+  numerical error relative to the original continuous trajectory.
+- `network` contains the actual endpoint state. Keep its complete coordinates
+  and support when studying a subsequent response; winding alone does not
+  determine that response.
+
+For this prepared object, recovery means convergence to uniform form and a
+cycle twist modulo common offsets under the declared native law. Its prior
+formation is a separate question. `unavailable` retains the failed sufficient
+conditions; it does not prove that recovery is impossible. Invalid source
+state or unsupported topology raises through shared admission.
+The [isolated-cycle contract](../../contracts/relational/RELATIONAL_CAPTURE_AND_MEMORY.md#isolated-cycle-capture-and-hypothetical-detachment)
+owns these premises and output fields; the
+[execution guide](RELATIONAL_EXECUTION.md#execute-the-conditional-relational-model)
+explains finite-step admission.
+
+## Capture and formation on connected rings
+
+The following examples supply their own two-ring preparations and model
+parameters. Choose their certificates independently; they do not continue the
+introductory object's trajectory.
+
 ### Check relaxation from phase consensus
 
 For the fixed native law below, copied reflected form with total initial

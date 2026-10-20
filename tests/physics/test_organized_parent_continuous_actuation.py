@@ -12,7 +12,6 @@ from tnfr.physics import _organized_parent_continuous_actuation as owner
 from tnfr.physics import _organized_parent_restoring_response as intervention
 from tnfr.physics import _repeated_organized_composition as composition
 
-
 _ERROR = Q(1, 10**10)
 
 

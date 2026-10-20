@@ -12,7 +12,6 @@ from tnfr.physics import _organized_alternative_contact as contact_owner
 from tnfr.physics import _organized_alternative_outer_acquisition as source_owner
 from tnfr.physics import _organized_contact_preparation_sensitivity as owner
 
-
 _ZERO = (Q(0),) * 54
 _INTERNAL = tuple((9 * c + j, 9 * c + (j + 1) % 9) for c in range(6) for j in range(9))
 _OUTER = tuple((9 * c + j, 9 * ((c + 1) % 5) + j) for j in range(9) for c in range(5))

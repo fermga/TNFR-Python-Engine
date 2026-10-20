@@ -2952,7 +2952,7 @@ def compute_nodal_pulse(G: Any) -> dict[str, Any]:
     """
     from ..constants.canonical import DELTA_PHI_MAX
     from ..gamma import kuramoto_R_psi
-    from ..metrics.coherence import coherence_matrix, local_phase_sync_weighted
+    from ..metrics.coherence import _all_local_phase_sync_weighted, coherence_matrix
     from ..metrics.common import finite_mean_absolute, finite_population_std
     from ._helpers import get_phase
 
@@ -2984,9 +2984,10 @@ def compute_nodal_pulse(G: Any) -> dict[str, Any]:
     order, W = coherence_matrix(G, _record_history=False)
     if order is None or W is None:
         raise ValueError("local phase synchrony is unavailable: coherence is disabled")
+    local_sync = _all_local_phase_sync_weighted(G, order, W)
     local = tuple(
         finite_real_scalar(
-            local_phase_sync_weighted(G, k, nodes_order=order, W_row=W),
+            local_sync[k],
             f"local phase synchrony[{k!r}]",
         )
         for k in order

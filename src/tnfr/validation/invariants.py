@@ -5,12 +5,12 @@ report compatibility. AGENTS.md defines six canonical invariants; the checks
 below split their implementation concerns and do not define a second canon.
 
 Legacy check identifiers:
-1. EPI as coherent form: changes only via structural operators
-2. Structural units: νf expressed in Hz_str (structural hertz)
-3. ΔNFR semantics: sign and magnitude modulate reorganization rate
-4. Operator closure: composition yields valid TNFR states
-5. Phase check: explicit phase verification for coupling
-6. Node birth/collapse: minimal conditions maintained
+1. Signed form, configured bounds and optional operator-history marker
+2. Nonnegative structural capacity and configured bounds
+3. Signed pressure admission and magnitude advisory
+4. Required attributes and pressure-hook metadata
+5. Circular phase admission and an advisory edge threshold
+6. Capacity and pressure activity advisories
 7. Operational fractality: EPIs can nest without losing identity
 8. Controlled determinism: reproducible and traceable
 9. Structural metrics: expose C(t), Si, phase, νf
@@ -26,16 +26,18 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any
 
-from ..constants import DEFAULTS, DNFR_PRIMARY, EPI_PRIMARY, THETA_PRIMARY, VF_PRIMARY
+from .._exact_time import bounded_represented_real, finite_represented_real
+from ..alias import get_attr
+from ..constants import DEFAULTS, EPI_PRIMARY
+from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_SI, ALIAS_THETA, ALIAS_VF
 from ..constants.canonical import DELTA_PHI_MAX
-from ..types import NodeId, TNFRGraph
+from ..types import NodeId, TNFRGraph, require_finite_real_scalar_epi
 from ..utils import angle_diff
 
 # ---------------------------------------------------------------------------
 # Invariant guardrail thresholds
 # ---------------------------------------------------------------------------
 _VF_MIN_SUSTAINED = 0.001
-_VF_MAX_REASONABLE = 1000.0
 _DNFR_MAGNITUDE_WARNING = 1000.0
 _DNFR_EXTREME_DISSONANCE = 10.0
 
@@ -78,6 +80,65 @@ class InvariantViolation:
     suggestion: str | None = None
 
 
+def _node_scalar(
+    graph: TNFRGraph,
+    node: NodeId,
+    aliases: tuple[str, ...],
+    label: str,
+    violations: list[InvariantViolation],
+    invariant_id: int,
+    *,
+    signed_form: bool = False,
+    nonnegative: bool = False,
+    severity: InvariantSeverity = InvariantSeverity.CRITICAL,
+) -> float | None:
+    """Admit one authoritative scalar or record a failed observation.
+
+    Absent channels retain the legacy zero default; check 4 separately reports
+    missing required attributes. An invalid present alias never falls through.
+    """
+    try:
+        raw = get_attr(
+            graph.nodes[node], aliases, 0.0, strict=True, conv=lambda value: value
+        )
+        if signed_form:
+            return require_finite_real_scalar_epi(raw, label)
+        return bounded_represented_real(
+            raw, label, minimum=0.0 if nonnegative else None
+        )[0]
+    except (TypeError, ValueError, OverflowError) as exc:
+        violations.append(
+            InvariantViolation(
+                invariant_id=invariant_id,
+                severity=severity,
+                description=f"{label} has an invalid scalar domain",
+                node_id=str(node),
+                expected_value=(
+                    "finite uniform-real signed form"
+                    if signed_form
+                    else (
+                        "finite nonnegative real scalar"
+                        if nonnegative
+                        else "finite real scalar"
+                    )
+                ),
+                actual_value=str(exc),
+                suggestion="Correct the authoritative source value without projection",
+            )
+        )
+        return None
+
+
+def _configured_bounds(graph: TNFRGraph, low: str, high: str) -> tuple[float, float]:
+    """Read finite ordered diagnostic bounds without creating physical laws."""
+    config = graph.graph
+    lower = finite_represented_real(config.get(low, DEFAULTS[low]), low)[0]
+    upper = finite_represented_real(config.get(high, DEFAULTS[high]), high)[0]
+    if lower > upper:
+        raise ValueError(f"{low} must not exceed {high}")
+    return lower, upper
+
+
 class TNFRInvariant(ABC):
     """Base class for TNFR invariant validators."""
 
@@ -97,319 +158,187 @@ class TNFRInvariant(ABC):
 
 
 class Invariant1_EPIOnlyThroughOperators(TNFRInvariant):
-    """Invariant 1: EPI changes only through structural operators."""
+    """Legacy check 1: signed form, configured bounds and optional history marker.
+
+    The retained class name does not prohibit declared continuous nodal flow.
+    The optional operator marker alone cannot determine a change's provenance.
+    """
 
     invariant_id = 1
-    description = "EPI changes only through structural operators"
+    description = "Signed form and optional operator-history diagnostic"
 
     def __init__(self) -> None:
         self._previous_epi_values: dict[Any, float] = {}
 
     def validate(self, graph: TNFRGraph) -> list[InvariantViolation]:
-        violations = []
-
-        # Get configuration bounds
-        config = getattr(graph, "graph", {})
-        epi_min = config.get("EPI_MIN", DEFAULTS.get("EPI_MIN", 0.0))
-        epi_max = config.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0))
-
-        for node_id in graph.nodes():
-            node_data = graph.nodes[node_id]
-            current_epi = node_data.get(EPI_PRIMARY, 0.0)
-
-            # Handle complex EPI structures (dict, complex numbers)
-            # Extract scalar value for validation
-            if isinstance(current_epi, dict):
-                # EPI can be a dict with 'continuous', 'discrete', 'grid' keys
-                # Try to extract a scalar value for validation
-                if "continuous" in current_epi:
-                    epi_value = current_epi["continuous"]
-                    if isinstance(epi_value, (tuple, list)) and len(epi_value) > 0:
-                        epi_value = epi_value[0]
-                    if isinstance(epi_value, complex):
-                        epi_value = abs(epi_value)
-                    current_epi = (
-                        float(epi_value)
-                        if isinstance(epi_value, (int, float, complex))
-                        else 0.0
-                    )
-                else:
-                    # Skip validation for complex structures we can't interpret
-                    continue
-
-            elif isinstance(current_epi, complex):
-                # For complex numbers, use magnitude
-                current_epi = abs(current_epi)
-
-            # Verify valid EPI range
-            if not (epi_min <= current_epi <= epi_max):
+        violations: list[InvariantViolation] = []
+        epi_min, epi_max = _configured_bounds(graph, "EPI_MIN", "EPI_MAX")
+        admitted = {}
+        for node_id in graph:
+            current = _node_scalar(
+                graph, node_id, ALIAS_EPI, "EPI", violations, 1, signed_form=True
+            )
+            if current is None:
+                continue
+            admitted[node_id] = current
+            if not epi_min <= current <= epi_max:
                 violations.append(
                     InvariantViolation(
                         invariant_id=1,
                         severity=InvariantSeverity.ERROR,
-                        description=f"EPI out of valid range [{epi_min},{epi_max}]",
+                        description=f"EPI outside configured bounds [{epi_min}, {epi_max}]",
                         node_id=str(node_id),
                         expected_value=f"{epi_min} <= EPI <= {epi_max}",
-                        actual_value=current_epi,
-                        suggestion="Check operator implementation for EPI clamping",
+                        actual_value=current,
+                        suggestion="Review the configured bounds for the declared model",
                     )
                 )
-
-            # Verify that EPI is a finite number
-            if not isinstance(current_epi, (int, float)) or not math.isfinite(
-                current_epi
+            previous = self._previous_epi_values.get(node_id)
+            if (
+                previous is not None
+                and getattr(graph, "_last_operator_applied", None) is False
+                and not math.isclose(current, previous, rel_tol=0.0, abs_tol=1e-10)
             ):
                 violations.append(
                     InvariantViolation(
                         invariant_id=1,
-                        severity=InvariantSeverity.CRITICAL,
-                        description="EPI is not a finite number",
+                        severity=InvariantSeverity.WARNING,
+                        description="EPI changed while the optional operator marker was false",
                         node_id=str(node_id),
-                        expected_value="finite float",
-                        actual_value=f"{type(current_epi).__name__}: {current_epi}",
-                        suggestion="Check operator implementation for EPI assignment",
+                        expected_value=previous,
+                        actual_value=current,
+                        suggestion="Check the declared flow or event record; this marker does not identify the cause",
                     )
                 )
-
-            # Detect unauthorized changes (requires tracking)
-            # Only verify if there is a previously registered operator
-            if hasattr(graph, "_last_operator_applied"):
-                if node_id in self._previous_epi_values:
-                    prev_epi = self._previous_epi_values[node_id]
-                    if abs(current_epi - prev_epi) > 1e-10:  # Change detected
-                        if not graph._last_operator_applied:
-                            violations.append(
-                                InvariantViolation(
-                                    invariant_id=1,
-                                    severity=InvariantSeverity.CRITICAL,
-                                    description="EPI changed without operator application",
-                                    node_id=str(node_id),
-                                    expected_value=prev_epi,
-                                    actual_value=current_epi,
-                                    suggestion="Ensure all EPI modifications go through structural operators",
-                                )
-                            )
-
-        # Actualizar tracking
-        for node_id in graph.nodes():
-            epi_value = graph.nodes[node_id].get(EPI_PRIMARY, 0.0)
-            # Store scalar value for tracking
-            if isinstance(epi_value, dict) and "continuous" in epi_value:
-                epi_val = epi_value["continuous"]
-                if isinstance(epi_val, (tuple, list)) and len(epi_val) > 0:
-                    epi_val = epi_val[0]
-                if isinstance(epi_val, complex):
-                    epi_val = abs(epi_val)
-                epi_value = (
-                    float(epi_val)
-                    if isinstance(epi_val, (int, float, complex))
-                    else 0.0
-                )
-            elif isinstance(epi_value, complex):
-                epi_value = abs(epi_value)
-
-            self._previous_epi_values[node_id] = epi_value
-
+        self._previous_epi_values = admitted
         return violations
 
 
 class Invariant2_VfInHzStr(TNFRInvariant):
-    """Invariante 2: νf stays in Hz_str units."""
+    """Legacy check 2: nonnegative capacity and configured range policy."""
 
     invariant_id = 2
-    description = "νf stays in Hz_str units"
+    description = "Nonnegative structural capacity and configured bounds"
 
     def validate(self, graph: TNFRGraph) -> list[InvariantViolation]:
-        violations = []
-
-        # Get configuration bounds
-        config = getattr(graph, "graph", {})
-        vf_min = config.get("VF_MIN", DEFAULTS.get("VF_MIN", _VF_MIN_SUSTAINED))
-        vf_max = config.get("VF_MAX", DEFAULTS.get("VF_MAX", _VF_MAX_REASONABLE))
-
-        for node_id in graph.nodes():
-            node_data = graph.nodes[node_id]
-            vf = node_data.get(VF_PRIMARY, 0.0)
-
-            # Verify valid structural range (Hz_str)
-            if not (vf_min <= vf <= vf_max):
+        violations: list[InvariantViolation] = []
+        vf_min, vf_max = _configured_bounds(graph, "VF_MIN", "VF_MAX")
+        for node_id in graph:
+            capacity = _node_scalar(
+                graph, node_id, ALIAS_VF, "Capacity", violations, 2, nonnegative=True
+            )
+            if capacity is not None and not vf_min <= capacity <= vf_max:
                 violations.append(
                     InvariantViolation(
                         invariant_id=2,
                         severity=InvariantSeverity.ERROR,
-                        description=f"νf outside typical Hz_str range [{vf_min}, {vf_max}]",
+                        description=f"Capacity outside configured bounds [{vf_min}, {vf_max}]",
                         node_id=str(node_id),
-                        expected_value=f"{vf_min} <= νf <= {vf_max} Hz_str",
-                        actual_value=vf,
-                        suggestion="Verify νf units and operator calculations",
+                        expected_value=f"{vf_min} <= capacity <= {vf_max}",
+                        actual_value=capacity,
+                        suggestion="Review the configured capacity bounds; zero is admitted by the unforced nodal row",
                     )
                 )
-
-            # Verify that it's a valid number
-            if not isinstance(vf, (int, float)) or not math.isfinite(vf):
-                violations.append(
-                    InvariantViolation(
-                        invariant_id=2,
-                        severity=InvariantSeverity.CRITICAL,
-                        description="νf is not a finite number",
-                        node_id=str(node_id),
-                        expected_value="finite float",
-                        actual_value=f"{type(vf).__name__}: {vf}",
-                        suggestion="Check operator implementation for νf assignment",
-                    )
-                )
-
-            # Verify νf is positive (structural requirement)
-            if isinstance(vf, (int, float)) and vf <= 0:
-                violations.append(
-                    InvariantViolation(
-                        invariant_id=2,
-                        severity=InvariantSeverity.ERROR,
-                        description="νf must be positive (structural frequency)",
-                        node_id=str(node_id),
-                        expected_value="νf > 0",
-                        actual_value=vf,
-                        suggestion="Structural frequency must be positive for coherent nodes",
-                    )
-                )
-
         return violations
 
 
 class Invariant5_ExplicitPhaseChecks(TNFRInvariant):
-    """Invariant 5: Explicit circular phase checks for coupling."""
+    """Legacy check 5: admitted circular phases and an advisory edge threshold."""
 
     invariant_id = 5
-    description = "Explicit phase checks for coupling"
+    description = "Circular phase observations under a selected advisory threshold"
 
     def __init__(self, phase_coupling_threshold: float = DELTA_PHI_MAX) -> None:
-        self.phase_coupling_threshold = phase_coupling_threshold
+        self.phase_coupling_threshold = bounded_represented_real(
+            phase_coupling_threshold, "phase coupling threshold", minimum=0.0
+        )[0]
 
     def validate(self, graph: TNFRGraph) -> list[InvariantViolation]:
-        violations = []
-
-        for node_id in graph.nodes():
-            node_data = graph.nodes[node_id]
-            phase = node_data.get(THETA_PRIMARY, 0.0)
-
-            # Verify that phase is a finite number
-            if not isinstance(phase, (int, float)) or not math.isfinite(phase):
-                violations.append(
-                    InvariantViolation(
-                        invariant_id=5,
-                        severity=InvariantSeverity.CRITICAL,
-                        description="Phase is not a finite number",
-                        node_id=str(node_id),
-                        expected_value="finite float",
-                        actual_value=f"{type(phase).__name__}: {phase}",
-                        suggestion="Check operator implementation for phase assignment",
-                    )
-                )
+        threshold = bounded_represented_real(
+            self.phase_coupling_threshold, "phase coupling threshold", minimum=0.0
+        )[0]
+        violations: list[InvariantViolation] = []
+        phases = {}
+        for node_id in graph:
+            phase = _node_scalar(graph, node_id, ALIAS_THETA, "Phase", violations, 5)
+            if phase is None:
                 continue
-
-            # Verify phase range [0, 2π] or normalizable
-            # TNFR allows phases outside this range if they can be normalized
-            # Emit warning if phase is not in canonical range
-            if not (0.0 <= phase <= 2 * math.pi):
+            phases[node_id] = phase
+            if not 0.0 <= phase <= math.tau:
                 violations.append(
                     InvariantViolation(
                         invariant_id=5,
                         severity=InvariantSeverity.WARNING,
-                        description="Phase outside [0, 2π] range (normalization possible)",
+                        description="Phase representative outside the [0, 2pi] display convention",
                         node_id=str(node_id),
-                        expected_value="0.0 <= phase <= 2π",
+                        expected_value="Optional display convention only",
                         actual_value=phase,
-                        suggestion="Consider normalizing phase to [0, 2π] range",
+                        suggestion="Retain the real phase lift when the declared model requires it",
                     )
                 )
-
-        # Verify synchronization in coupled nodes (edges)
-        if hasattr(graph, "edges"):
-            for edge in graph.edges():
-                node1, node2 = edge
-                phase1 = graph.nodes[node1].get(THETA_PRIMARY, 0.0)
-                phase2 = graph.nodes[node2].get(THETA_PRIMARY, 0.0)
-
-                # Verify that both phases are finite numbers before calculating difference
-                if not (
-                    isinstance(phase1, (int, float))
-                    and math.isfinite(phase1)
-                    and isinstance(phase2, (int, float))
-                    and math.isfinite(phase2)
-                ):
-                    continue
-
-                phase_diff = abs(angle_diff(phase1, phase2))
-
-                # If the difference is very large, it may indicate decoupling
-                if phase_diff > self.phase_coupling_threshold:
-                    violations.append(
-                        InvariantViolation(
-                            invariant_id=5,
-                            severity=InvariantSeverity.WARNING,
-                            description="Large phase difference between coupled nodes",
-                            node_id=f"{node1}-{node2}",
-                            expected_value=f"< {self.phase_coupling_threshold}",
-                            actual_value=phase_diff,
-                            suggestion="Check coupling strength or phase coordination",
-                        )
+        for node1, node2 in graph.edges():
+            if node1 not in phases or node2 not in phases:
+                continue
+            try:
+                phase_diff = abs(angle_diff(phases[node1], phases[node2]))
+            except (TypeError, ValueError, OverflowError) as exc:
+                violations.append(
+                    InvariantViolation(
+                        invariant_id=5,
+                        severity=InvariantSeverity.ERROR,
+                        description="Phase difference is not representable",
+                        node_id=f"{node1}-{node2}",
+                        actual_value=str(exc),
                     )
-
+                )
+                continue
+            if phase_diff > threshold:
+                violations.append(
+                    InvariantViolation(
+                        invariant_id=5,
+                        severity=InvariantSeverity.WARNING,
+                        description="Large phase difference between coupled nodes",
+                        node_id=f"{node1}-{node2}",
+                        expected_value=f"<= {threshold}",
+                        actual_value=phase_diff,
+                        suggestion="Review the declared coupling policy; this observation does not execute U3 admission",
+                    )
+                )
         return violations
 
 
 class Invariant3_DNFRSemantics(TNFRInvariant):
-    """Invariante 3: ΔNFR semantics - sign and magnitude modulate reorganization rate."""
+    """Legacy check 3: finite signed pressure and a magnitude advisory."""
 
     invariant_id = 3
-    description = "ΔNFR semantics: sign and magnitude modulate reorganization rate"
+    description = "Signed pressure admission and diagnostic magnitude policy"
 
     def validate(self, graph: TNFRGraph) -> list[InvariantViolation]:
-        violations = []
-
-        for node_id in graph.nodes():
-            node_data = graph.nodes[node_id]
-            dnfr = node_data.get(DNFR_PRIMARY, 0.0)
-
-            # Verify that ΔNFR is a finite number
-            if not isinstance(dnfr, (int, float)) or not math.isfinite(dnfr):
+        violations: list[InvariantViolation] = []
+        for node_id in graph:
+            pressure = _node_scalar(
+                graph, node_id, ALIAS_DNFR, "DeltaNFR", violations, 3
+            )
+            if pressure is not None and abs(pressure) > _DNFR_MAGNITUDE_WARNING:
                 violations.append(
                     InvariantViolation(
                         invariant_id=3,
-                        severity=InvariantSeverity.CRITICAL,
-                        description="ΔNFR is not a finite number",
+                        severity=InvariantSeverity.WARNING,
+                        description="DeltaNFR exceeds the diagnostic magnitude threshold",
                         node_id=str(node_id),
-                        expected_value="finite float",
-                        actual_value=f"{type(dnfr).__name__}: {dnfr}",
-                        suggestion="Check operator implementation for ΔNFR calculation",
+                        expected_value=f"|DeltaNFR| <= {_DNFR_MAGNITUDE_WARNING}",
+                        actual_value=abs(pressure),
+                        suggestion="Review this advisory against the declared pressure law and units",
                     )
                 )
-
-            # Verify ΔNFR is not treated as error/loss gradient
-            # (this is more conceptual, but we can verify reasonable ranges)
-            if isinstance(dnfr, (int, float)) and math.isfinite(dnfr):
-                # Excessively large ΔNFR could indicate erroneous treatment
-                if abs(dnfr) > _DNFR_MAGNITUDE_WARNING:
-                    violations.append(
-                        InvariantViolation(
-                            invariant_id=3,
-                            severity=InvariantSeverity.WARNING,
-                            description="ΔNFR magnitude is unusually large",
-                            node_id=str(node_id),
-                            expected_value="|ΔNFR| < 1000",
-                            actual_value=abs(dnfr),
-                            suggestion="Verify ΔNFR is not being misused as error gradient",
-                        )
-                    )
-
         return violations
 
 
 class Invariant4_OperatorClosure(TNFRInvariant):
-    """Invariante 4: Operator closure - composition yields valid TNFR states."""
+    """Legacy check 4: attribute and pressure-hook presence, not a closure proof."""
 
     invariant_id = 4
-    description = "Operator closure: composition yields valid TNFR states"
+    description = "Required nodal attributes and configured pressure-hook metadata"
 
     def validate(self, graph: TNFRGraph) -> list[InvariantViolation]:
         violations = []
@@ -419,8 +348,12 @@ class Invariant4_OperatorClosure(TNFRInvariant):
             node_data = graph.nodes[node_id]
 
             # Verify essential attributes exist
-            required_attrs = [EPI_PRIMARY, VF_PRIMARY, THETA_PRIMARY]
-            missing_attrs = [attr for attr in required_attrs if attr not in node_data]
+            required_attrs = (ALIAS_EPI, ALIAS_VF, ALIAS_THETA)
+            missing_attrs = [
+                aliases[0]
+                for aliases in required_attrs
+                if not any(alias in node_data for alias in aliases)
+            ]
 
             if missing_attrs:
                 violations.append(
@@ -453,55 +386,44 @@ class Invariant4_OperatorClosure(TNFRInvariant):
 
 
 class Invariant6_NodeBirthCollapse(TNFRInvariant):
-    """Invariante 6: Node birth/collapse - minimal conditions maintained."""
+    """Legacy check 6: activity advisories, not existence or collapse criteria."""
 
     invariant_id = 6
-    description = "Node birth/collapse: minimal conditions maintained"
+    description = "Capacity and pressure activity advisories"
 
     def validate(self, graph: TNFRGraph) -> list[InvariantViolation]:
-        violations = []
-
-        for node_id in graph.nodes():
-            node_data = graph.nodes[node_id]
-            vf = node_data.get(VF_PRIMARY, 0.0)
-            dnfr = node_data.get(DNFR_PRIMARY, 0.0)
-
-            # Extract scalar values if needed
-            if isinstance(vf, dict) and "continuous" in vf:
-                continue  # Skip complex structures
-
-            if isinstance(dnfr, dict):
-                continue  # Skip complex structures
-
-            # Minimum birth conditions: sufficient νf
-            if isinstance(vf, (int, float)) and vf < _VF_MIN_SUSTAINED:
+        violations: list[InvariantViolation] = []
+        for node_id in graph:
+            capacity = _node_scalar(
+                graph, node_id, ALIAS_VF, "Capacity", violations, 6, nonnegative=True
+            )
+            pressure = _node_scalar(
+                graph, node_id, ALIAS_DNFR, "DeltaNFR", violations, 6
+            )
+            if capacity is not None and capacity < _VF_MIN_SUSTAINED:
                 violations.append(
                     InvariantViolation(
                         invariant_id=6,
                         severity=InvariantSeverity.WARNING,
-                        description="Node has insufficient νf for sustained existence",
+                        description="Capacity below the selected activity threshold",
                         node_id=str(node_id),
-                        expected_value="νf >= 0.001",
-                        actual_value=vf,
-                        suggestion="Node may be approaching collapse condition",
+                        expected_value=f"capacity >= {_VF_MIN_SUSTAINED} for this advisory",
+                        actual_value=capacity,
+                        suggestion="Zero capacity freezes unforced form; this threshold does not decide NFR existence",
                     )
                 )
-
-            # Collapse conditions: extreme ΔNFR or νf near zero
-            if isinstance(dnfr, (int, float)) and math.isfinite(dnfr):
-                if abs(dnfr) > _DNFR_EXTREME_DISSONANCE:  # Dissonance extrema
-                    violations.append(
-                        InvariantViolation(
-                            invariant_id=6,
-                            severity=InvariantSeverity.WARNING,
-                            description="Node experiencing extreme dissonance (collapse risk)",
-                            node_id=str(node_id),
-                            expected_value="|ΔNFR| < 10",
-                            actual_value=abs(dnfr),
-                            suggestion="High dissonance may trigger node collapse",
-                        )
+            if pressure is not None and abs(pressure) > _DNFR_EXTREME_DISSONANCE:
+                violations.append(
+                    InvariantViolation(
+                        invariant_id=6,
+                        severity=InvariantSeverity.WARNING,
+                        description="Pressure exceeds the selected activity threshold",
+                        node_id=str(node_id),
+                        expected_value=f"|DeltaNFR| <= {_DNFR_EXTREME_DISSONANCE} for this advisory",
+                        actual_value=abs(pressure),
+                        suggestion="A collapse event requires its own admission and occurrence law",
                     )
-
+                )
         return violations
 
 
@@ -613,29 +535,18 @@ class Invariant9_StructuralMetrics(TNFRInvariant):
     def validate(self, graph: TNFRGraph) -> list[InvariantViolation]:
         violations: list[InvariantViolation] = []
 
-        # Si is canonically nonnegative and may exceed one. It is a heuristic
-        # capacity index, not a probability or the bounded C(t) constitutive map.
+        # Missing Si is unavailable; a present source must retain its domain.
         for node_id, node_data in graph.nodes(data=True):
-            if "Si" not in node_data and "si" not in node_data:
-                continue
-            raw_si = node_data.get("Si", node_data.get("si"))
-            try:
-                if isinstance(raw_si, bool):
-                    raise TypeError
-                si = float(raw_si)
-            except (TypeError, ValueError, OverflowError):
-                si = float("nan")
-            if not math.isfinite(si) or si < 0.0:
-                violations.append(
-                    InvariantViolation(
-                        invariant_id=9,
-                        severity=InvariantSeverity.WARNING,
-                        description="Sense index (Si) must be finite and nonnegative",
-                        node_id=str(node_id),
-                        expected_value="finite Si >= 0.0",
-                        actual_value=raw_si,
-                        suggestion="Recompute Si from canonical structural channels",
-                    )
+            if any(alias in node_data for alias in ALIAS_SI):
+                _node_scalar(
+                    graph,
+                    node_id,
+                    ALIAS_SI,
+                    "Sense index (Si)",
+                    violations,
+                    9,
+                    nonnegative=True,
+                    severity=InvariantSeverity.WARNING,
                 )
 
         if not hasattr(graph, "graph"):

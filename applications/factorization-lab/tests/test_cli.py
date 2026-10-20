@@ -74,7 +74,14 @@ def test_cli_distributed_queue_with_custom_dispatcher() -> None:
 
 def test_cli_distributed_http_dispatcher(monkeypatch: pytest.MonkeyPatch) -> None:
     class _FakeHTTPDispatcher:
-        def __init__(self, base_url: str, auth_token: str | None = None) -> None:
+        def __init__(
+            self,
+            base_url: str,
+            auth_token: str | None = None,
+            *,
+            allow_unsafe_pickle: bool = False,
+        ) -> None:
+            assert allow_unsafe_pickle is False
             self.base_url = base_url
             self.auth_token = auth_token
             self.dispatch = lambda action, payload: None
@@ -94,6 +101,26 @@ def test_cli_distributed_http_dispatcher(monkeypatch: pytest.MonkeyPatch) -> Non
     )
 
     assert exit_code == 0
+
+
+@pytest.mark.parametrize("opt_in", [False, True])
+def test_cli_http_pickle_trust_requires_explicit_flag(monkeypatch, opt_in):
+    captured = {}
+
+    class _FakeHTTPDispatcher:
+        def __init__(self, base_url, auth_token=None, *, allow_unsafe_pickle=False):
+            captured["allow_unsafe_pickle"] = allow_unsafe_pickle
+            self.dispatch = lambda action, payload: None
+
+    monkeypatch.setattr(cli, "HTTPFFTDispatcher", _FakeHTTPDispatcher)
+    arguments = ["5", "--fft-dispatcher", "https://example.invalid"]
+    if opt_in:
+        arguments.append("--dispatcher-allow-unsafe-pickle")
+    args = cli._build_parser().parse_args(arguments)
+
+    cli._build_dispatcher_from_args(args)
+
+    assert captured["allow_unsafe_pickle"] is opt_in
 
 
 def test_cli_distributed_callable_dispatcher(monkeypatch: pytest.MonkeyPatch) -> None:

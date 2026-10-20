@@ -24,7 +24,9 @@ from .definitions_base import _PREPARED_OPERATOR_STATE_KEY, Operator
 class Reception(Operator):
     """Blend local and neighbour EPI and update the semantic EPI kind.
 
-    Typical: AL->EN->IL, RA->EN, EN->THOL, EN->UM. Avoid EN with SHA.
+    Typical: AL->EN->IL, RA->EN, EN->THOL, EN->UM. The optional legacy
+    profile discourages immediate EN->SHA; core admission uses the shared
+    grammar and live state.
     Metrics: EPI delta, observed stored ΔNFR and source count.
     """
 

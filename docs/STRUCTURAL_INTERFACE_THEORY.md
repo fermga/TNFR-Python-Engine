@@ -7,10 +7,9 @@ plus separate frozen-calibration forecast APIs. This guide owns their current
 engineering contracts; field definitions belong to the
 [tetrad guide](STRUCTURAL_FIELDS_TETRAD.md), and physical admission and priorities
 belong to the [research execution plan](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#supporting-measurement-bridge).
-Historical numerical summaries are retained in the
-[reported-observation archive](../theory/research/archive/REPORTED_INTERFACE_OBSERVATIONS.md),
-not as independently reproduced validation or current API evidence. This guide
-maintains no separate research queue.
+The [reported-observation archive](../theory/research/archive/REPORTED_INTERFACE_OBSERVATIONS.md)
+retains source-bound static, grid-frequency and EEG summaries with their replay
+limits. They are not current API validation or reserved forecasts.
 
 This is an **operational framework**, not a new fundamental physical law.  It
 reuses the existing TNFR Structural Field Tetrad (Φ_s, |∇φ|, K_φ, ξ_C) and the
@@ -75,6 +74,16 @@ recommendation policies (see
 - incident gate-violation pressure;
 - a configured operator recommendation with declared grammar rationale.
 
+The advisory analyzer in `validation.phase_gate` defaults to a supplied
+`pi/4` threshold. It is distinct from the runtime U3 gate and grants no operator
+permission. Its gate must be finite and nonnegative, and minimum-compliance
+policies must lie in `[0,1]`, including on empty support. By default it reads
+authoritative `theta` before the `phase` alias and wraps finite phase
+differences through the shared circular owner. Invalid present phase rejects;
+an entirely absent phase retains this analyzer's explicit zero default.
+Custom `phase_keys` also control its detached field view so scoring channels
+cannot silently read different aliases.
+
 ### Operator prescription
 
 Prescriptions are **read-only recommendations for an already-active state**.
@@ -86,14 +95,15 @@ or execute those tuples. The
 patterns using explicit `initial_epi_nonzero=True` context and initialized
 graphs. The principal nonempty-support network patterns are:
 
-| Interface state | Sequence | Meaning |
+| Interface state | Recommended operators | Compact word |
 | --- | --- | --- |
-| Fully phase-compatible | `UM → RA → SHA` | couple, propagate resonance, close |
-| Mostly compatible with local hotspots | `IL → UM → SHA` | stabilize, then guarded coupling |
-| Failed interface / boundary hotspot | `IL → OZ → THOL → SHA` | stabilize, open controlled reorganization, self-organize, close |
+| Fully phase-compatible | Coupling, Resonance, Silence | `UM → RA → SHA` |
+| Mostly compatible with local hotspots | Coherence, Coupling, Silence | `IL → UM → SHA` |
+| Failed interface / boundary hotspot | Coherence, Dissonance, SelfOrganization, Silence | `IL → OZ → THOL → SHA` |
 
-Additional branches return `SHA` for an edgeless graph or `IL → SHA` for
-selected node guidance. None of these recommendations is a standalone
+Additional branches recommend Silence (`SHA`) for an edgeless graph or
+Coherence followed by Silence (`IL → SHA`) for selected node guidance.
+None of these recommendations is a standalone
 initiation certificate. Validate the actual word/history context and refresh
 state-dependent U3 admission before execution. The selection does not prove
 causal efficacy, future stress reduction or an autonomous intervention law.
@@ -133,11 +143,7 @@ Non-circular targets (at least one required for any claim): independent
 expert/review label, **held-out downstream model error**, temporal transition,
 perturbation sensitivity, or an explicit classical-interface target.
 
-### Results (held-out model-error target)
-
-Historical static rankings and their replay limits are retained in the
-[reported observations](../theory/research/archive/REPORTED_INTERFACE_OBSERVATIONS.md#reported-static-ranking).
-They do not establish superiority or supply a current benchmark result.
+<a id="results-held-out-model-error-target"></a>
 
 ## Setting 2 — temporal single-series interfaces
 
@@ -155,12 +161,7 @@ primitive TNFR phase. The classical baselines are the
 standard early-warning signals (EWS) for critical slowing down: rolling variance
 and lag-1 autocorrelation (Scheffer et al. 2009; Dakos et al. 2012).
 
-### Result (grid-frequency real data)
-
-The historical grid-frequency trends are retained in the
-[reported observations](../theory/research/archive/REPORTED_INTERFACE_OBSERVATIONS.md#reported-grid-frequency-trends).
-Variance and autocorrelation remain necessary comparators; no reported trend
-alone establishes a transition mechanism.
+<a id="result-grid-frequency-real-data"></a>
 
 ## Setting 3 — multi-channel coupled oscillators
 
@@ -178,7 +179,8 @@ comparators include the Kuramoto order parameter `R`, mean phase-locking value
 (PLV) and phase dispersion. PLV construction is an observational choice, not
 measured canonical wiring or a complete nodal state map.
 
-### Honest redundancy caveat
+<a id="honest-redundancy-caveat"></a>
+### Information and estimator provenance
 
 The phase-gradient field `|∇φ|` measures local neighbor mismatch, whereas `R`
 uses a global phasor sum. They can correlate, but neither generally determines
@@ -205,11 +207,7 @@ classifier frozen on calibration data or a reserved prediction. No finite
 scores or a one-class window sample return the helper's neutral 0.5 convention,
 which is not evidence that an informative two-class comparison was available.
 
-### Result (EEG Eye State real data)
-
-The historical EEG Eye State rankings are retained in the
-[reported observations](../theory/research/archive/REPORTED_INTERFACE_OBSERVATIONS.md#reported-eeg-eye-state-ranking).
-They lack a pinned replay and uncertainty interval and are not reserved forecasts.
+<a id="result-eeg-eye-state-real-data"></a>
 
 ## How to run
 
@@ -235,8 +233,8 @@ initialized low/high-coupling Kuramoto blocks.
 
 ### Benchmark entry points
 
-The historical `make.cmd` wrapper is absent. Run the maintained Python CLIs
-from the repository root, selecting the intended inputs explicitly:
+Run the maintained Python CLIs from the repository root, selecting the intended
+inputs explicitly:
 
 ```bash
 python benchmarks/structural_interface_benchmark.py --dataset offline --target model_error

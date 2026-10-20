@@ -12,7 +12,9 @@ from fractions import Fraction as Q
 from typing import Any, Callable
 
 from .._exact_time import exact_or_represented_real
-from ..mathematics._interval_taylor import Jet, cos as jet_cos, sin as jet_sin
+from ..mathematics._interval_taylor import Jet
+from ..mathematics._interval_taylor import cos as jet_cos
+from ..mathematics._interval_taylor import sin as jet_sin
 from ..mathematics._rational_interval import I, cos, pi_interval, sin
 from ._organized_computable_prediction import _ForecastStage
 from ._organized_electrical_source import (
@@ -29,7 +31,6 @@ from ._organized_outer_winding import _derive_organized_outer_winding
 from ._sine_class_constitutive_comparison import _current_derivative_bound, _edge_law
 from .relational_observations import _ordered
 from .relational_sine_comparison import _sine_form_gradient
-
 
 _G = Q(1, 3000)
 _DURATION = Q(16)

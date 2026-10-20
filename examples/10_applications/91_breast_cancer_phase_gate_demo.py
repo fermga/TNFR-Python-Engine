@@ -19,6 +19,7 @@ cannot localize.
 Run:
     python examples/10_applications/91_breast_cancer_phase_gate_demo.py
 """
+
 from __future__ import annotations
 
 import html
@@ -419,9 +420,7 @@ th {{ background: #f3f5f7; }}
 {body}
 </body>
 </html>
-""".format(
-        body="\n".join(body)
-    )
+""".format(body="\n".join(body))
 
 
 def main() -> None:

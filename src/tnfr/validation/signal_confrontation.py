@@ -270,11 +270,6 @@ def diagnose_modal_roots(signals: Any, *, k_neighbours: int = 4) -> ModalRootDia
     return _modal_roots_from_graph(graph, data)
 
 
-def _wave_fraction_from_graph(graph: Any, data: np.ndarray) -> float | None:
-    """Compatibility scalar; None means the modal diagnostic is unavailable."""
-    return _modal_roots_from_graph(graph, data).complex_root_fraction
-
-
 def emergent_wave_fraction(signals: Any, *, k_neighbours: int = 4) -> float | None:
     """Legacy name for the descriptive complex-root energy fraction.
 

@@ -9,7 +9,6 @@ import pytest
 from tests.sine_evidence_helpers import forbid_sine_regeneration
 from tnfr.physics import _organized_parent_reservoir_exchange as owner
 
-
 _ERROR = Q(1, 10**10)
 _EDGES = tuple(
     sorted(

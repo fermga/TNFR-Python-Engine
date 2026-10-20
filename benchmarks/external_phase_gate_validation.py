@@ -23,6 +23,7 @@ measures phase differences along actual coupling edges.
 This benchmark is not a proof of broad physical validity.  It is a small,
 reproducible example showing where TNFR-style telemetry is operationally useful.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -766,9 +767,7 @@ th {{ background: #f3f5f7; }}
 {body}
 </body>
 </html>
-""".format(
-        body="\n".join(body)
-    )
+""".format(body="\n".join(body))
 
 
 def print_console_summary(summary: dict[str, Any]) -> None:

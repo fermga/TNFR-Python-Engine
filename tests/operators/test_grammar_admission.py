@@ -40,7 +40,7 @@ from tnfr.validation.aggregator import run_structural_validation
 def test_false_initialization_flags_cannot_grant_word_permission(flag):
     context = {"initial_epi_nonzero": flag}
     assert not validate_sequence(["coherence", "silence"], context=context).passed
-    with pytest.raises(SequenceSyntaxError, match="start"):
+    with pytest.raises(SequenceSyntaxError, match="U1a"):
         parse_sequence(["coherence", "silence"], context=context)
     with pytest.raises(TNFRValueError, match="U1a"):
         ValidatedSequence([Coherence(), Silence()], context=context)

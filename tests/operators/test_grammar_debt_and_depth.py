@@ -152,21 +152,23 @@ def test_debt_can_be_reset_from_deliberately_replaced_history():
     assert validate_candidate(graph, 0, "VAL").allowed
 
 
-def test_invalid_saved_debt_reconstructs_available_history():
+def test_invalid_saved_debt_cannot_be_replaced_by_available_history():
     from tnfr.operators.grammar_debt import U2_DEBT_KEY
 
     graph = _graph(["VAL", "VAL"])
     graph.nodes[0][U2_DEBT_KEY] = float("nan")
-    assert not validate_candidate(graph, 0, "VAL").allowed
+    with pytest.raises(TypeError, match=U2_DEBT_KEY):
+        validate_candidate(graph, 0, "VAL")
 
 
 @pytest.mark.parametrize("history", [None, 5, "VAL", b"VAL"])
-def test_recording_discards_malformed_legacy_history(history):
+def test_recording_rejects_malformed_legacy_history_without_discarding_it(history):
     graph = _graph()
     graph.nodes[0]["glyph_history"] = history
-    push_glyph(graph.nodes[0], "EN", 7)
-    assert list(graph.nodes[0]["glyph_history"]) == ["EN"]
-    assert validate_candidate(graph, 0, "VAL").allowed
+    before = dict(graph.nodes[0])
+    with pytest.raises((TypeError, ValueError), match="glyph_history"):
+        push_glyph(graph.nodes[0], "EN", 7)
+    assert graph.nodes[0] == before
 
 
 def test_legacy_full_sequence_catalog_passes_canonical_grammar():

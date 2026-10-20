@@ -1,220 +1,139 @@
-# TNFR spectral factorization lab
+# TNFR spectral factorization lab — archived
 
-This [optional arithmetic application](../README.md) combines supplied Jacobi-residue graphs, spectral
-heuristics, arithmetic statistics and optional partition workflows. It returns
-factor candidates and diagnostic records. It establishes neither autonomous
+**Reference only; not maintained or part of the current application workflow.**
+The source and historical outputs remain at their original paths to preserve
+uncommitted changes and recorded path associations. The
+[retirement record](RETIREMENT.json) identifies retained source, recovery
+revisions, retired integration tests and concrete counterexamples.
+
+This pipeline combines supplied Jacobi-residue graphs, spectral heuristics,
+arithmetic statistics and partition workflows. Its acceptance and completeness
+labels are not reliable factor certificates. It establishes neither autonomous
 factor recovery from the nodal equation nor a complexity improvement or a
-cryptographic factorization capability.
+cryptographic capability. This page records the archived implementation's scope;
+it is not an installation or execution recommendation.
 
-This README owns the application's usage, configuration and evaluation scope.
-[TNFR number theory](../../theory/TNFR_NUMBER_THEORY.md) owns arithmetic
-definitions. Separate prime-ladder and analytic-function constructions retain
-their declared domains and supplied clocks in the
-[Riemann memo](../../theory/TNFR_RIEMANN_RESEARCH_NOTES.md); they do not establish
-an autonomous factorization mechanism for this pipeline.
+The maintained [arithmetic utility](../primality-test/README.md) and
+[number-theory owner](../../theory/TNFR_NUMBER_THEORY.md) retain exact
+arithmetic and independently proved residue-graph results. The Paley, CRT and
+cyclotomy constructions have their own hypotheses; sharing a graph operator
+does not validate this application's candidate pipeline.
 
 ## Results and verification
 
-| Result | What it means |
-|---|---|
-| `candidate_factors` | Union of heuristic seeds, arithmetic refinements and later partition hints; provenance depends on mode. It need not be a complete prime factorization. |
-| `tnfr_certified_factors` | Compatibility name for the configured structural acceptance rule. The verifier records `support_divisible` but does not require it in its final acceptance condition. |
-| `tnfr_verification` | Per-candidate scores, thresholds, endorsements and a separate divisibility observation. |
-| `factor_signature`, `composite_signature` | Serialized analysis/signature records; hashes check recorded content, not mathematical truth. Pure-mode composite powers and `structural_complete` are hypotheses. |
-| `certificate_path`, partition paths | Optional exported analysis and workflow records; a proposed grammar-valid word is not by itself an executed operator trace. |
+The retirement is based on implementation counterexamples, not only a change
+of research priority:
 
-Check every claimed proper factor independently:
+- The structural verifier can accept candidate `6` for target `35` while its
+  own `support_divisible` field is false.
+- An integer `size_hint` can enable an exception to the stabilization condition.
+- A composite signature for `35` with candidates `[5, 7, 11]` can report
+  completeness although their product is `385`.
+- Both modes compute arithmetic telemetry by factoring the input. Integer-size
+  candidates, divisibility checks and trial-division fallback remain involved;
+  a spectral result does not isolate the source of factor information.
 
-```python
-verified = sorted({d for d in result.candidate_factors if 1 < d < n and n % d == 0})
-```
+| Archived result | Actual boundary |
+| --- | --- |
+| `candidate_factors` | Heuristic seeds, arithmetic refinements and partition hints; neither complete nor necessarily prime |
+| `tnfr_certified_factors`, `tnfr_verification` | Configured acceptance scores with a separate divisibility observation; the acceptance rule need not require divisibility |
+| `factor_signature`, `composite_signature` | Serialized records; hashes check recorded content, not the truth of powers or completeness |
+| `certificate_path`, partition paths | Analysis/workflow records; a proposed word is not an executed operator trace |
 
-Divisibility establishes that a candidate is a factor. It does not establish
-that the factor is prime, that all multiplicities were recovered, or that
-factor recovery came from a TNFR mechanism. A complete prime factorization
-requires those additional checks.
+Independent proper-divisor, primality, product and multiplicity checks are
+necessary before interpreting any historical factor list. Passing them would
+not show that recovery came from a TNFR mechanism.
 
 ## Setup and public interfaces
 
-Use a supported Python environment for the main engine. From the repository
-root, install its dependencies and make the source package available:
+The engine no longer adds this directory to its import path. The deprecated
+`tnfr.factorization.factorize`, `TNFR.factorize` and `Network.factorize`
+interfaces remain compatibility bridges for a separately supplied legacy
+`tnfr_factorization` package. Missing or archived-checkout implementations
+produce retirement guidance; an external implementation produces a deprecation
+warning. Keeping these names does not maintain or certify the archived lab.
+See the [API migration](../../docs/API_CONTRACTS.md#arithmetic-application-boundaries).
 
-```bash
-python -m pip install -e .
-```
+Generic manifest preparation, dry-run assessment and report validation remain
+engine responsibilities. They do not bootstrap this lab, reconstruct a residue
+graph from a modulus, or apply a proposed operator word implicitly.
 
-The local lab is a source directory, without its own `setup.py` or
-`pyproject.toml`. To import its high-level interface directly, run Python from
-the lab directory:
-
-```bash
-cd applications/factorization-lab
-python -m tnfr_factorization.cli 221 --max-nodes 4097 --json
-```
-
-```python
-from tnfr_factorization import factorize
-
-n = 221
-result = factorize(n, pure=False, trace=False, max_nodes=4097)
-verified = sorted({d for d in result.candidate_factors if 1 < d < n and n % d == 0})
-print(verified)
-print(result.tnfr_verification)
-```
-
-There are three related interfaces; their arguments and result types differ:
-
-| Interface | Configuration | Return |
-|---|---|---|
-| `tnfr_factorization.factorize` | `pure`, `trace`, `max_nodes`, `modulus` | `FactorizationResult` |
-| `SpectralPaleyFactorizer(...).analyze` | Constructor sets `max_nodes`, backend and diagnostic options; `analyze` takes `modulus`, `trace_certificates`, `certificate_dir` | `SpectralAnalysisResult` |
-| `tnfr.factorization.factorize` | `modulus`, `trace_certificates`, `certificate_dir`; reuses one default factorizer and reads the environment policy | `SpectralAnalysisResult` |
-
-The engine wrapper discovers this application in a source checkout. A deployment
-without that directory needs an importable `tnfr_factorization` package.
-
-Implementation owners are the [engine wrapper](../../src/tnfr/factorization/__init__.py),
-[lab API](tnfr_factorization/api.py),
-[candidate and verification pipeline](tnfr_factorization/spectral_paley.py),
+The retained source owners are the [lab API](tnfr_factorization/api.py),
+[candidate pipeline](tnfr_factorization/spectral_paley.py),
 [partition planner](tnfr_factorization/partitioning.py),
-[seed handling](seed_management.py) and [snapshot/replay](snapshot_system.py).
-
-**Node cap:** omitting the low-level constructor argument uses 4097. Passing
-`None` disables the cap. The high-level wrapper and CLI currently pass `None`
-when their argument is omitted.
-Set an explicit positive `max_nodes` / `--max-nodes` for consistent behavior.
-CLI `--max-nodes 0` also disables the cap; the Python constructor does not give
-zero that special meaning.
-
-Automatic modulus selection rounds upward to a value at least `n` and 5 that
-is 1 modulo 4. It does not prove the modulus prime. For explicit overrides,
-odd values 1 modulo 4 are the intended domain; the builder currently enforces
-only the lower bound 5. Classical prime-modulus Paley spectral identities need
-their own hypotheses. This graph is an arithmetic input construction, not an
-emergent support selected by a closed nodal law.
+[seed handling](seed_management.py) and [snapshot records](snapshot_system.py).
+Their original CLI and helper files are historical source, not supported
+entry points. The lab has no separate `setup.py` or `pyproject.toml`.
 
 ## Candidate policy and configuration
 
-`pure=True` sets `TNFR_PURE_MODE` temporarily and restores its prior value.
-`pure=None` inherits the environment. This override is process-wide during the
-call, so concurrent callers using different policies must coordinate.
+Historical `pure=True` changes a process-wide environment policy for the call.
+It skips arithmetic-statistic hints and gcd refinement in the initial candidate
+stage, but does not make the complete pipeline arithmetic-free:
 
-The pure policy skips arithmetic-statistic seed hints and gcd refinement in
-the **initial candidate stage**, and uses a periodic-confidence rule in one
-partition stage. It does not make the complete pipeline arithmetic-free:
-
-- `_compute_arithmetic_telemetry` factors `n` to obtain `Omega`, `tau` and
-  `sigma` in both modes. Its cached results remain arithmetic inputs.
+- `_compute_arithmetic_telemetry` factors the input to obtain `Omega`, `tau`
+  and `sigma` in both modes.
 - Even-number hints, integer-size seeds and later partition-size divisibility
-  checks remain active.
-- An empty initial candidate list reaches trial division without a pure-mode
-  guard. Its default bound is `isqrt(n)`.
-- The structural verifier records `n % factor == 0` separately from acceptance.
+  checks remain.
+- Empty initial candidates reach trial division without a pure-mode guard;
+  its default bound is `isqrt(n)`.
+- `TNFR_PURE_MODE_VERIFY_DIVISIBILITY` filters one initial stage, not every
+  later candidate or final acceptance label.
 
-| Setting | Actual role |
-|---|---|
-| `TNFR_PURE_MODE` | Select the partial pure policy; truthy values are `1`, `true`, `yes`, `on`. |
-| `TNFR_PURE_MODE_VERIFY_DIVISIBILITY` | Filter initial pure seeds by proper divisibility. It is not a final filter over every later candidate or acceptance label. |
-| `TNFR_FACTOR_FALLBACK_MAX_DIVISOR` | Positive integer cap for the empty-candidate trial fallback. Missing, invalid or nonpositive values use `isqrt(n)`. It does not cap arithmetic telemetry factorization. |
-| `TNFR_DISABLE_OPTIMIZER` | Disable the optional sequence optimizer; it does not change candidate verification into a theorem. |
-| `TNFR_FAILURE_TELEMETRY` | Control failure diagnostics. For isolated low-level calls use the constructor's `failure_telemetry=False`. |
-| `TNFR_PARTITION_TARGET_SIZE`, `TNFR_PARTITION_OVERLAP` | Partition planner settings; defaults are 256 and 4. An explicit overlap of `0` creates disjoint chunks. Planning may further adapt partition size. |
-| `TNFR_PARTITION_OUTPUT_DIR` | Override partition-export destination. |
+Automatic modulus selection rounds upward to at least `n` and `5`, with
+residue `1 mod 4`, without proving primality. Distinct inputs can therefore
+share a graph (`35` and `37` both select modulus `37`). Explicit overrides
+enforce only the lower bound `5`, while prime-modulus Paley identities require
+their own domain. Support is supplied arithmetically, not formed by a nodal law.
 
-The CLI exposes backend/dispatcher choices through `--fft-backend`,
-`--fft-dispatcher` and related options; consult `--help` for their spelling.
-Its `--json` output is one JSON list of target results. Pure mode is selected
-through the environment, not a CLI `--pure` flag. Explicit trace export uses
-the Python APIs; `trace=False` does not guarantee the absence of all optional
-diagnostic writes. Trace output normally uses `applications/factorization-lab/results/`;
-the low-level API accepts an explicit certificate directory.
+The low-level constructor defaults to a node cap of `4097`; `None` removes it.
+The historical high-level wrapper and CLI pass `None` when omitted.
+CLI zero also removes the cap, unlike the constructor. These differences
+matter when interpreting retained records, as do cache, backend and mode.
 
-Certificate and partition-manifest JSON uses `null` for nonfinite diagnostics,
-with `numeric_availability` recording each affected JSON Pointer and its reason
-(`positive_infinity`, `negative_infinity` or `undefined_nan`). An infinite
-inverse-gap proxy is not a finite observed coherence scale; an undefined ratio
-is not zero. Internal calculations and existing hash inputs remain unchanged.
-When this projection is needed, `numeric_projection.retained_hash_scope`
-explicitly identifies the hashes as belonging to internal pre-projection
-records, not as authentication of the exported JSON payload.
+Archived JSON projections encode nonfinite diagnostics as `null` with
+`numeric_availability` reasons. When projection changes the payload,
+`numeric_projection.retained_hash_scope` distinguishes internal hash inputs
+from exported bytes. This is neither provenance authentication nor a guarantee
+that the underlying diagnostic has physical meaning.
 
 ## Telemetry and mechanism boundaries
 
-The lab's compatibility field names are not interchangeable with canonical
-nodewise fields from `tnfr.physics.fields`:
+The lab's field names differ from canonical `tnfr.physics.fields`:
 
 | Lab field | Computation or source |
-|---|---|
-| `phi_s` | Normalized edge density; no nodewise pressure or path-distance input. |
-| `phase_gradient` | Selected spectral gap divided by node count. |
-| `phase_curvature` | Largest supplied eigenvalue divided by node count. |
-| `coherence_length` | Backend-provided value when positive, otherwise inverse selected gap. Record backend and normalization before comparison. |
-| Arithmetic EPI, capacity, pressure | Static functions of already computed factor/divisor statistics. They supply no phase or autonomous evolution law. |
-| Energy/Noether proxies | Algebraic combinations of lab features; their names do not prove an energy balance or conserved charge. |
+| --- | --- |
+| `phi_s` | Normalized edge density, without nodewise pressure or path distance |
+| `phase_gradient` | Selected spectral gap divided by node count |
+| `phase_curvature` | Largest supplied eigenvalue divided by node count |
+| `coherence_length` | Positive backend value, otherwise inverse selected gap |
+| Arithmetic EPI, capacity, pressure | Static factor/divisor readouts without phase or autonomous evolution |
+| Energy/Noether proxies | Algebraic lab features, without an established balance or conserved charge |
 
-The fallback spectrum on regular unit-weight graphs equals the combinatorial
-Laplacian spectrum `d * spectrum(L_rw)`. Its inverse selected gap is not the
-normalized EPI diffusion timescale `1 / (nu * lambda_2(L_rw))` without the
-corresponding degree/time conversion. Selection skips eigenvalues at or below
-`1e-9`, so it need not select the true second eigenvalue.
+On regular unit-weight graphs the fallback combinatorial spectrum is
+`d * spectrum(L_rw)`. Its inverse selected gap is not the normalized diffusion
+timescale `1 / (nu * lambda_2(L_rw))` without degree/time conversion. The
+selection discards eigenvalues at or below `1e-9`, so it need not select the
+true second eigenvalue.
 
-Partition pressure reduction includes a fixed scalar attenuation surrogate.
-That calculation alone is not execution of the named TNFR operators or a
-convergence theorem. Optional optimizer/workflow records must be assessed on
-their actual captured execution. Lab thresholds are configured heuristic
-criteria, not universal TNFR constants or a proof of U5.
+Partition pressure reduction includes a fixed attenuation surrogate. It is
+not operator execution or a convergence theorem. Grammar-valid proposals,
+configured thresholds and finite score changes do not prove U5, autonomous
+selection, conservation or a factorization mechanism.
 
-Read active configuration and the actual recorded operator word. A schematic
-UM/RA/IL/THOL sequence is not a standalone grammar certificate. Pressure gain,
-coherence ratios, field deltas, periodicity confidence, coverage and endorsements
-are configured filters; they do not replace the independent factor check.
+<a id="verification-and-historical-evidence"></a>
+## Verification and evidence
 
-## Verification and historical evidence
+Archived tests and benchmark source are retained for interpretation and
+recovery, outside the maintained test selection and automatic validation maps.
+Their finite passing cases do not override the counterexamples above.
+Do not rerun frozen producers to update these records.
 
-From the repository root, existing focused regression modules include:
+Historical JSON, notebook records and captured paths retain their original
+bytes. Partition hashes cover selected members, telemetry and metadata in
+supplied order, excluding other state; they are not complete checkpoints.
+Snapshot demonstrations use synthetic persistence records.
 
-```bash
-python -m pytest applications/factorization-lab/tests/test_spectral_paley.py applications/factorization-lab/tests/test_cli.py -q
-```
-
-These exercise selected candidate, fallback, serialization and CLI cases. The
-[false-positive tests](tests/test_false_positive_verifier.py) test a finite
-selection of adversarial inputs; acceptance on that selection is not a general
-factor certificate. Benchmarks apply only to recorded inputs, environment,
-backend and cache state. Arithmetic telemetry and fallback costs belong in any
-end-to-end comparison.
-
-Reserved evaluation must freeze thresholds before scoring, disclose arithmetic
-labels entering construction, compare declared baselines and report failures
-alongside successes. Retain input, source, configuration, candidate lists,
-independent arithmetic checks and fallback provenance. Optional artifacts do
-not automatically contain a seed or hash. These finite controls establish
-neither universal recovery nor a complexity improvement; this documentation
-consolidation makes no new benchmark claim. A physical interpretation would
-additionally require the [measurement protocol](../../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md).
-
-Run the actual verifier and configured-criteria controls directly:
-
-```bash
-python -m pytest applications/factorization-lab/tests/test_false_positive_verifier.py applications/factorization-lab/tests/test_verification_robustness.py -q
-```
-
-These suites read the production implementation. The copied-criteria simulation
-and duplicate standalone runners have been retired. The verifier suite uses a
-finite curated sample by default; `TNFR_RUN_LONG_TESTS=1` opts into its larger
-generated input set. Criteria-range checks preserve a configured policy; they
-do not derive the thresholds or certify general false-positive resistance.
-
-The obsolete spectral-history notebook is recoverable from its
-[immutable Git revision](https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/applications/factorization-lab/notebooks/archive/spectral_history_legacy_2026_09_19.ipynb).
-It uses the removed `_fft_engine`, a synthetic spectrum and a
-notebook-incompatible `__file__` path. The maintained tests above replace its
-regression role; no executable notebook copy is retained. Byte-level recovery
-is recorded in the [retirement manifest](../../theory/research/archive/DEEP_CLEANUP_2026-10-06.json).
-
-The root [LICENSE.md](../../LICENSE.md) is authoritative for this repository.
-
-The snapshot demonstrations create synthetic persistence records under the
-working directory's ignored `output/` tree. Their old checked-in SQLite outputs
-have been retired; they were demonstration products, not research fixtures.
-The snapshot and integration tests construct their own temporary databases.
+The current [testing policy](../../TESTING.md) covers independent core
+arithmetic controls, the basic primality utility and compatibility admission.
+The root [LICENSE.md](../../LICENSE.md) remains authoritative.

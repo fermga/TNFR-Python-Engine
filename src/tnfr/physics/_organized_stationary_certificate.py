@@ -15,7 +15,7 @@ from ..mathematics._exact_linear_algebra import (
     exact_matrix_product,
     exact_symmetric_semidefinite,
 )
-from ..mathematics._rational_interval import I, INTERVAL_METHOD
+from ..mathematics._rational_interval import INTERVAL_METHOD, I
 from ._repeated_organized_composition import _bounded_sine_edge_fields
 from ._sine_preparation import _prepared_coordinate_vector
 from .relational_observations import _ordered

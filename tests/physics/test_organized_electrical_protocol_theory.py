@@ -6,10 +6,10 @@ phase from raw current quadratures without using a predicted amplitude as a
 normalization or a phase measurement.
 """
 
+import hashlib
 from fractions import Fraction as Q
 from itertools import product
 from pathlib import Path
-import hashlib
 
 import mpmath
 import pytest

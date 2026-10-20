@@ -18,7 +18,8 @@ from tnfr.constants.aliases import (
 )
 from tnfr.errors import TNFRValueError
 from tnfr.operators import GLYPH_OPERATIONS, apply_glyph, get_glyph_factors
-from tnfr.types import Glyph, real_scalar_epi
+from tnfr.operators.factor_contracts import GlyphFactorValidationError
+from tnfr.types import Glyph
 
 
 def _graph(*, factors: dict | None = None, **config) -> nx.Graph:
@@ -114,14 +115,20 @@ def test_rejected_random_overflow_restores_jitter_progress(glyph):
     assert "_rng_jitter_progress" not in graph.nodes[0]
 
 
-def test_oz_noise_rejects_nonfinite_sigma_before_draw_or_state_commit():
+def test_oz_noise_rejects_nonfinite_sigma_before_draw_or_state_commit(monkeypatch):
     graph = _graph(OZ_NOISE_MODE=True, OZ_SIGMA=float("nan"), RANDOM_SEED=7)
     node_before = deepcopy(graph.nodes[0])
+    graph_before = deepcopy(graph.graph)
 
-    with pytest.raises(TNFRValueError, match="OZ noise sigma"):
+    def forbidden_draw(*_args, **_kwargs):
+        raise AssertionError("invalid active sigma reached a random draw")
+
+    monkeypatch.setattr("tnfr.operators.random_jitter", forbidden_draw)
+    with pytest.raises(GlyphFactorValidationError, match="^OZ_SIGMA must be finite$"):
         apply_glyph(graph, 0, "OZ")
 
     assert graph.nodes[0] == node_before
+    assert graph.graph == graph_before
     assert "_rng_jitter_progress" not in graph.nodes[0]
 
 

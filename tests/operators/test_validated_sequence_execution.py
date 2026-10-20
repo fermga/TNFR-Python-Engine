@@ -37,21 +37,25 @@ def _graph():
     return graph
 
 
-def _run(graph, operators, driver):
+def _run(graph, operators, driver, *, context=None):
     if driver == "sdk":
         from tnfr.sdk.simple import _run_network_sequence
 
-        _run_network_sequence(graph, [operator.name for operator in operators])
+        _run_network_sequence(
+            graph, [operator.name for operator in operators], context=context
+        )
     elif driver == "fluent":
         from tnfr.sdk.fluent import TNFRNetwork
 
         network = TNFRNetwork()
         network._graph = graph
-        network.apply_sequence([operator.name for operator in operators])
+        network.apply_sequence(
+            [operator.name for operator in operators], context=context
+        )
     else:
         from tnfr.structural import run_sequence
 
-        run_sequence(graph, 0, operators)
+        run_sequence(graph, 0, operators, context=context)
 
 
 @pytest.mark.parametrize("driver", ["sdk", "fluent", "structural"])
@@ -198,14 +202,24 @@ def test_failed_legacy_validation_result_is_not_ignored(driver):
     graph = _graph()
     before = deepcopy(graph.nodes[0])
     # U2 permits debt two, but the retained compatibility layer rejects VAL->VAL.
-    with pytest.raises(ValueError, match="Invalid sequence"):
+    with pytest.raises(ValueError, match="Invalid legacy sequence"):
         _run(
             graph,
             [Emission(), Expansion(), Expansion(), Coherence(), Silence()],
             driver,
+            context={"compatibility_profile": "legacy"},
         )
     assert graph.nodes[0] == before
     assert graph.graph == {}
+
+
+@pytest.mark.parametrize("driver", ["sdk", "fluent"])
+def test_default_core_execution_preserves_admitted_pair_and_live_debt(driver):
+    graph = _graph()
+    _run(graph, [Emission(), Expansion(), Expansion(), Coherence(), Silence()], driver)
+    assert list(graph.nodes[0]["glyph_history"]) == ["AL", "VAL", "VAL", "IL", "SHA"]
+    # Two VAL events incur two units; one IL consumes one, and SHA adds none.
+    assert graph.nodes[0][U2_DEBT_KEY] == 1
 
 
 def test_executor_without_word_validation_retains_incremental_fallback():

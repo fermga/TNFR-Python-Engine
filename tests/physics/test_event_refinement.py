@@ -1242,7 +1242,7 @@ def test_refinement_claim_boundaries_preserve_compatible_fixed_surfaces() -> Non
     )
 
 
-def test_held_observation_preserves_signed_zero_in_its_comparison_inputs() -> None:
+def test_held_observation_seals_admitted_epi_and_raw_pressure_zero_bits() -> None:
     observation = _observation(
         epi=(-0.0,),
         pressure=(-0.0,),
@@ -1250,48 +1250,47 @@ def test_held_observation_preserves_signed_zero_in_its_comparison_inputs() -> No
         xi=0.0,
     )
 
-    assert observation.binary64_initial_epi[0].hex() == (-0.0).hex()
+    # Signed-form admission canonicalizes zero; raw stored pressure does not.
+    assert observation.binary64_initial_epi[0].hex() == (0.0).hex()
     assert observation.binary64_pressure[0].hex() == (-0.0).hex()
     assert not replace(
         observation,
-        binary64_initial_epi=(0.0,),
+        binary64_initial_epi=(-0.0,),
+    ).pre_jump_observation_certified
+    assert not replace(
+        observation,
+        binary64_pressure=(0.0,),
     ).pre_jump_observation_certified
 
 
-@pytest.mark.parametrize(
-    (
-        "field",
-        "baseline_epi",
-        "candidate_epi",
-        "baseline_pressure",
-        "candidate_pressure",
-    ),
-    (
-        ("binary64_initial_epi", (0.0,), (-0.0,), (0.0,), (0.0,)),
-        ("binary64_pressure", (0.0,), (0.0,), (0.0,), (-0.0,)),
-    ),
-)
-def test_held_comparison_rejects_binary64_signed_zero_mismatch(
-    field: str,
-    baseline_epi: tuple[float, ...],
-    candidate_epi: tuple[float, ...],
-    baseline_pressure: tuple[float, ...],
-    candidate_pressure: tuple[float, ...],
-) -> None:
+def test_held_comparison_uses_the_same_admitted_epi_zero() -> None:
     baseline = _observation(
-        epi=baseline_epi,
-        pressure=baseline_pressure,
+        epi=(0.0,),
+        pressure=(0.0,),
         substeps=1,
         xi=0.0,
     )
     candidate = _observation(
-        epi=candidate_epi,
-        pressure=candidate_pressure,
+        epi=(-0.0,),
+        pressure=(0.0,),
         substeps=2,
         xi=0.0,
     )
 
-    with pytest.raises(ValueError, match=field):
+    comparison = compare_event_local_zhir_held_pressure_subdivision(baseline, candidate)
+    assert baseline.binary64_initial_epi[0].hex() == (0.0).hex()
+    assert candidate.binary64_initial_epi[0].hex() == (0.0).hex()
+    assert comparison._proof_fields_are_intact()
+    assert comparison.exact_endpoint_epi_difference == (0,)
+    assert comparison.observed_strict_gate_decisions_agree
+    assert not comparison.event_local_gate_invariance_certified  # On threshold.
+
+
+def test_held_comparison_rejects_raw_pressure_signed_zero_mismatch() -> None:
+    baseline = _observation(epi=(0.0,), pressure=(0.0,), substeps=1, xi=0.0)
+    candidate = _observation(epi=(0.0,), pressure=(-0.0,), substeps=2, xi=0.0)
+
+    with pytest.raises(ValueError, match="binary64_pressure"):
         compare_event_local_zhir_held_pressure_subdivision(
             baseline,
             candidate,

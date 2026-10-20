@@ -3,17 +3,24 @@
 from __future__ import annotations
 
 import statistics
+from collections import deque
 from collections.abc import Mapping
 from functools import partial
 from statistics import StatisticsError, pvariance
 
+from ._exact_time import bounded_represented_real, finite_represented_real
 from .alias import get_theta_attr
 from .config.constants import GLYPH_GROUPS
 from .gamma import kuramoto_R_psi
 from .glyph_history import append_metric, count_glyphs, ensure_history
 from .mathematics.unified_numerical import np
 from .metrics.common import compute_coherence
-from .telemetry import ensure_nu_f_telemetry, record_nu_f_window
+from .telemetry import (
+    NuFTelemetryAccumulator,
+    ensure_nu_f_telemetry,
+    record_nu_f_window,
+)
+from .telemetry.nu_f import _ACCUMULATOR_KEY
 from .types import Glyph, GlyphLoadDistribution, TNFRGraph
 from .utils import (
     CallbackEvent,
@@ -70,77 +77,103 @@ def _resolve_reorg_state(G: TNFRGraph) -> dict[str, object]:
 
 
 def _before_step_reorg(G: TNFRGraph, ctx: Mapping[str, object] | None) -> None:
-    """Capture structural time metadata before the step starts."""
+    """Capture one runtime interval and the current stability revision."""
+    from .metrics.coherence import _stability_observation_revision
 
-    ensure_nu_f_telemetry(G, confidence_level=None)
     state = _resolve_reorg_state(G)
-    step_idx = ctx.get("step") if ctx else None
-    try:
-        state["step"] = int(step_idx) if step_idx is not None else None
-    except (TypeError, ValueError):
-        state["step"] = None
-    start_t = float(G.graph.get("_t", 0.0))
-    state["start_t"] = start_t
-    dt_raw = ctx.get("dt") if ctx else None
-    try:
-        state["dt"] = float(dt_raw) if dt_raw is not None else None
-    except (TypeError, ValueError):
-        state["dt"] = None
+    state.update(pending=False, status="unavailable", reason="missing_step")
+    if ctx is None or "step" not in ctx:
+        return
+    step = validate_window(ctx["step"])
+    # The runtime's initial clock defaults to zero. Later boundaries must be
+    # actual clock observations; a requested dt never supplies elapsed time.
+    start_t = finite_represented_real(G.graph.get("_t", 0.0), "start time")[0]
+    revision = _stability_observation_revision(G)
+    state.update(
+        step=step,
+        start_t=start_t,
+        stability_revision=revision,
+        pending=True,
+        status="pending",
+        reason=None,
+    )
 
 
 def _after_step_reorg(G: TNFRGraph, ctx: Mapping[str, object] | None) -> None:
-    """Record the reorganisation window for νf telemetry."""
+    """Record the fresh unstable-node proxy once for a completed interval.
+
+    This counts nodes outside the stored pressure/rate stability thresholds,
+    not observed operator events or primitive capacity changes. The optional
+    count-rate/Poisson interpretation belongs to the telemetry model. Missing,
+    stale or invalid stability evidence contributes no window, not zero or a
+    count of every node. Callback context can contain the previous history
+    value, so freshness and the latest reading come from the metrics owner.
+    """
+    from .metrics.coherence import _stability_observation_revision
+    from .metrics.core import _update_nu_f_snapshot
 
     state = _resolve_reorg_state(G)
+    if state.get("pending") is not True or ctx is None or "step" not in ctx:
+        return
     pending_step = state.get("step")
-    ctx_step = ctx.get("step") if ctx else None
-    if pending_step is not None and ctx_step is not None and pending_step != ctx_step:
-        # Ignore mismatched callbacks to avoid double counting.
+    ctx_step = validate_window(ctx["step"])
+    if pending_step != ctx_step:
         return
-
-    try:
-        start_t = float(state.get("start_t", float(G.graph.get("_t", 0.0))))
-    except (TypeError, ValueError):
-        start_t = float(G.graph.get("_t", 0.0))
-    end_t = float(G.graph.get("_t", start_t))
-    dt_raw = state.get("dt")
-    try:
-        duration = float(dt_raw) if dt_raw is not None else end_t - start_t
-    except (TypeError, ValueError):
-        duration = end_t - start_t
-    if duration <= 0.0:
-        duration = end_t - start_t
-    if duration <= 0.0:
+    # Consume the matching callback even when its evidence is unavailable or
+    # raises. A later duplicate must not reinterpret a different observation.
+    state.update(
+        pending=False,
+        step=None,
+        status="unavailable",
+        reason="missing_clock",
+        last_duration=None,
+        last_reorganisations=None,
+        last_end_t=None,
+    )
+    if "_t" not in G.graph:
         return
-
-    stable_frac = ctx.get("stable_frac") if ctx else None
-    if stable_frac is None:
-        hist = ensure_history(G)
-        series = hist.get("stable_frac", [])
-        stable_frac = series[-1] if series else None
+    start_t = finite_represented_real(state["start_t"], "start time")[0]
+    end_t = finite_represented_real(G.graph["_t"], "end time")[0]
+    duration = finite_represented_real(end_t - start_t, "elapsed time")[0]
+    if duration <= 0.0:
+        state["reason"] = "nonpositive_interval"
+        return
+    if _stability_observation_revision(G) <= state["stability_revision"]:
+        state["reason"] = "missing_current_stability"
+        return
+    hist = G.graph.get("history")
+    series = hist.get("stable_frac") if isinstance(hist, Mapping) else None
+    if not isinstance(series, (list, tuple, deque)) or not series:
+        state["reason"] = "missing_current_stability"
+        return
     try:
-        stable_frac_f = float(stable_frac) if stable_frac is not None else None
+        frac = bounded_represented_real(
+            series[-1], "stable fraction", minimum=0.0, maximum=1.0
+        )[0]
     except (TypeError, ValueError):
-        stable_frac_f = None
+        state["reason"] = "invalid_current_stability"
+        return
     total_nodes = G.number_of_nodes()
-    if stable_frac_f is None:
-        reorganisations = total_nodes
-    else:
-        frac = min(max(stable_frac_f, 0.0), 1.0)
-        stable_nodes = int(round(frac * total_nodes))
-        reorganisations = max(total_nodes - stable_nodes, 0)
-
-    record_nu_f_window(
+    stable_nodes = int(round(frac * total_nodes))
+    reorganisations = total_nodes - stable_nodes
+    snapshot = record_nu_f_window(
         G,
         reorganisations,
         duration,
         start=start_t,
         end=end_t,
     )
+    _update_nu_f_snapshot(
+        G,
+        hist,
+        record_history=False,
+        snapshot=snapshot,
+        replace_current_history=True,
+    )
     state["last_duration"] = duration
     state["last_reorganisations"] = reorganisations
     state["last_end_t"] = end_t
-    state["step"] = None
+    state.update(status="recorded", reason=None)
 
 
 def attach_standard_observer(G: TNFRGraph) -> TNFRGraph:
@@ -161,7 +194,12 @@ def attach_standard_observer(G: TNFRGraph) -> TNFRGraph:
         _after_step_reorg,
         name="std_reorg_after",
     )
-    ensure_nu_f_telemetry(G, confidence_level=None)
+    existing = G.graph.get(_ACCUMULATOR_KEY)
+    ensure_nu_f_telemetry(
+        G,
+        confidence_level=None,
+        history_limit=None if isinstance(existing, NuFTelemetryAccumulator) else 128,
+    )
     G.graph["_STD_OBSERVER"] = "attached"
     return G
 

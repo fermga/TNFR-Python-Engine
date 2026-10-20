@@ -5,12 +5,12 @@ records solve a static quadrature identity and are not trajectories, acquired
 sources or reserved responses. No physical calibration or experiment runs.
 """
 
+import subprocess
+import sys
 from copy import deepcopy
 from decimal import Decimal
 from fractions import Fraction as Q
 from pathlib import Path
-import subprocess
-import sys
 
 import mpmath
 import pytest
@@ -23,7 +23,6 @@ from tnfr.mathematics._exact_linear_algebra import (
 from tnfr.mathematics._rational_interval import I, pi_interval
 from tnfr.physics import _organized_electrical_protocol as owner
 from tnfr.physics import _organized_electrical_readout as readout
-
 
 PAIRS = tuple((i, j) for i in range(5) for j in range(i + 1, 5))
 RING = tuple((i, j) for i, j in PAIRS if (i - j) % 5 in (1, 4))

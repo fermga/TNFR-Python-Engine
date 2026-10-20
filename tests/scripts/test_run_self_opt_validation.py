@@ -85,10 +85,13 @@ def test_validation_fail_on_regression(monkeypatch, tmp_path) -> None:
 def test_payload_discovery_skips_non_record_json_and_groups_shared_suites(
     tmp_path, monkeypatch
 ):
+    monkeypatch.setattr(
+        validator, "OPERATION_TESTS", {"fixture_operation": ["tests/fixture_suite.py"]}
+    )
     (tmp_path / "unrelated.json").write_text("[]", encoding="utf-8")
     for index in range(2):
         (tmp_path / f"record_{index}.json").write_text(
-            json.dumps({"metadata": {"operation_type": "paley_partition"}}),
+            json.dumps({"metadata": {"operation_type": "fixture_operation"}}),
             encoding="utf-8",
         )
     calls = []
@@ -108,3 +111,65 @@ def test_payload_discovery_skips_non_record_json_and_groups_shared_suites(
     assert len(calls) == 1
     assert result["status_counts"]["validated"] == 2
     assert result["recommendation_effects_evaluated"] is False
+
+
+def test_unmapped_operations_remain_pending_without_running_retired_suites(
+    tmp_path, monkeypatch
+):
+    assert "paley_partition" not in validator.OPERATION_TESTS
+    monkeypatch.setattr(
+        validator, "_run_pytest", lambda *a, **k: pytest.fail("no suite is mapped")
+    )
+    result = validator.run(validator.parse_args(_build_args(tmp_path)))
+    assert result["status_counts"]["pending"] == 3
+    assert result["test_runs"] == []
+    assert result["recommendations_applied"] is False
+    assert result["recommendation_effects_evaluated"] is False
+
+
+@pytest.mark.parametrize(
+    "payload",
+    (
+        '{"metadata":{"operation_type":"wrong","operation_type":"paley_partition"}}',
+        '{"metadata":{"value":NaN}}',
+        '{"metadata":{"value":1e-999}}',
+        '{"metadata":{"operation_type":false}}',
+        '{"metadata":{"operation_type":""}}',
+        '{"metadata":null}',
+        '{"metadata":[]}',
+        "{broken",
+    ),
+)
+def test_invalid_payload_rejects_before_any_suite_or_report_write(
+    tmp_path, monkeypatch, payload
+):
+    root = tmp_path / "payloads"
+    root.mkdir()
+    (root / "invalid.json").write_text(payload, encoding="utf-8")
+    report = tmp_path / "report.json"
+    original = b'{"retained":"report"}\n'
+    report.write_bytes(original)
+    monkeypatch.setattr(
+        validator, "_run_pytest", lambda *a, **k: pytest.fail("suite must not execute")
+    )
+    args = validator.parse_args(
+        ["--payload-root", str(root), "--report", str(report), "--quiet"]
+    )
+    with pytest.raises(ValueError):
+        validator.run(args)
+    assert report.read_bytes() == original
+
+
+def test_report_cannot_replace_recommendation_payload(tmp_path, monkeypatch):
+    record = tmp_path / "record.json"
+    original = b'{"metadata":{"operation_type":"paley_partition"}}\n'
+    record.write_bytes(original)
+    monkeypatch.setattr(
+        validator, "_run_pytest", lambda *a, **k: pytest.fail("suite must not execute")
+    )
+    args = validator.parse_args(
+        ["--payload-root", str(tmp_path), "--report", str(record), "--quiet"]
+    )
+    with pytest.raises(ValueError, match="cannot replace"):
+        validator.run(args)
+    assert record.read_bytes() == original

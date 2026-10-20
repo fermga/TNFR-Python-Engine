@@ -1,52 +1,86 @@
-"""Optional entry points for the experimental spectral factorization lab.
+"""Deprecated compatibility bridge for an externally supplied factorization lab.
 
 The wrapper returns lab candidates, arithmetic telemetry and configured
 acceptance reports. These are not a general factorization theorem or evidence
 that factors emerge autonomously from the nodal equation. Grammar validation
 of a proposed word does not verify its execution or arithmetic divisibility.
 
-The ``tnfr_factorization`` package is optional; a source checkout can load the
-``applications/factorization-lab`` directory. Missing dependencies are reported when
-the factorizer is first requested."""
+The in-repository lab is archived and is never discovered or imported by this
+bridge. A separately supplied ``tnfr_factorization`` package may still serve
+legacy callers, with a deprecation warning. Its results retain that package's
+heuristic contracts and are not maintained engine certificates."""
 
 from __future__ import annotations
 
+import sys
+import warnings
+from importlib.util import find_spec
 from pathlib import Path
 from typing import Any
 
-from .._optional_apps import bootstrap_application
-
 __all__ = ["factorize", "SpectralAnalysisResult", "SpectralPaleyFactorizer"]
 
+_RETIREMENT_GUIDANCE = (
+    "The in-repository factorization lab is archived and is no longer "
+    "loaded by the engine. Core arithmetic and spectral instruments are "
+    "documented in theory/TNFR_NUMBER_THEORY.md. This deprecated bridge "
+    "requires a separately supplied 'tnfr_factorization' package."
+)
 
-def _bootstrap_factorization_lab() -> None:
-    """Ensure the tnfr_factorization package is importable.
 
-    In development checkouts the factorization lab lives in the
-    ``applications/factorization-lab`` directory. When the standalone ``tnfr-factorization``
-    package is installed, this function becomes a no-op.
-    """
+def _reject_archived_checkout() -> None:
+    """Reject the archived source even when another consumer exposed its path."""
+    from ..errors import TNFRUserError
 
-    bootstrap_application("tnfr_factorization", "factorization-lab")
+    repository = Path(__file__).resolve().parents[3]
+    archive = repository / "applications" / "factorization-lab"
+    if not archive.is_dir():
+        return
+    loaded = sys.modules.get("tnfr_factorization")
+    spec = (
+        getattr(loaded, "__spec__", None)
+        if loaded is not None
+        else find_spec("tnfr_factorization")
+    )
+    origins = [
+        getattr(loaded, "__file__", None),
+        getattr(spec, "origin", None),
+        *(getattr(spec, "submodule_search_locations", None) or ()),
+    ]
+    cached_child = sys.modules.get("tnfr_factorization.spectral_paley")
+    origins.extend(
+        (
+            getattr(cached_child, "__file__", None),
+            getattr(getattr(cached_child, "__spec__", None), "origin", None),
+        )
+    )
+    for origin in origins:
+        if origin and Path(origin).resolve().is_relative_to(archive.resolve()):
+            raise TNFRUserError(_RETIREMENT_GUIDANCE)
 
 
 def _load_spectral_paley() -> tuple[Any, Any]:
-    """Lazy-load the spectral_paley module, raising a clear error if missing."""
+    """Load only an explicitly supplied package, without checkout discovery."""
     from ..errors import TNFRUserError
 
-    _bootstrap_factorization_lab()
+    _reject_archived_checkout()
     try:
         from tnfr_factorization.spectral_paley import (
             SpectralAnalysisResult,
             SpectralPaleyFactorizer,
         )
 
-        return SpectralPaleyFactorizer, SpectralAnalysisResult
     except ModuleNotFoundError as exc:
-        raise TNFRUserError(
-            "tnfr_factorization is not available. Install the tnfr-factorization "
-            "package or keep the applications/factorization-lab directory in your workspace."
-        ) from exc
+        if exc.name not in {"tnfr_factorization", "tnfr_factorization.spectral_paley"}:
+            raise
+        raise TNFRUserError(_RETIREMENT_GUIDANCE) from exc
+    warnings.warn(
+        "tnfr.factorization is a deprecated bridge to an external legacy lab. "
+        "Its heuristic results are not maintained factorization certificates.",
+        DeprecationWarning,
+        stacklevel=3,
+    )
+    return SpectralPaleyFactorizer, SpectralAnalysisResult
 
 
 # Lazy accessors for type re-exports
@@ -77,7 +111,7 @@ def factorize(
     trace_certificates: bool = False,
     certificate_dir: Path | None = None,
 ) -> Any:
-    """Run the experimental lab analysis and return its full result.
+    """Run an externally supplied legacy analysis and return its full result.
 
     Parameters
     ----------
@@ -100,10 +134,12 @@ def factorize(
 
     Notes
     -----
-    This wrapper reuses one factorizer with its class default node cap. It has
+    The repository lab is archived; this function does not load it. The
+    compatibility wrapper reuses one external factorizer with its default node cap. It has
     ``trace_certificates`` rather than the lab wrapper's ``trace`` argument and
     no ``pure`` argument. ``TNFR_PURE_MODE`` selects a partial heuristic policy,
-    not an arithmetic-free execution; see ``applications/factorization-lab/README.md``.
+    not an arithmetic-free execution. See ``applications/factorization-lab/README.md``
+    for the retirement boundary and known limitations of the archived source.
     """
 
     factorizer = _get_factorizer()

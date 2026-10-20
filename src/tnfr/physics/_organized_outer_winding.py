@@ -16,8 +16,8 @@ from ..dynamics.relational import RelationalExchangeModel
 from ..mathematics._rational_interval import I, cos, pi_interval, sqrt
 from ._repeated_organized_composition import _bounded_sine_edge_fields, _vector
 from ._sine_constitutive_recovery import (
-    _ConstitutiveRecovery,
     _assess_constitutive_recovery,
+    _ConstitutiveRecovery,
 )
 from ._sine_preparation import _prepared_form_costs, _prepared_heat_error_radii
 from .relational_sine_comparison import bound_relational_sine_exchange

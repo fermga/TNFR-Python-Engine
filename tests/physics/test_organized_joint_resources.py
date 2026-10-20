@@ -13,7 +13,6 @@ import pytest
 from tests.sine_evidence_helpers import forbid_sine_regeneration
 from tnfr.physics import _organized_joint_resources as owner
 
-
 _SOURCE = Q(1, 10**10)
 _RADIUS = Q(1, 10**70)
 _DWELL = Q(2 * 10**13)

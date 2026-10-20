@@ -1,8 +1,10 @@
 """Structural frequency (νf) telemetry estimators.
 
 This module aggregates discrete reorganisation counts observed over
-time windows and exposes Poisson maximum likelihood estimators (MLE) for
-the structural frequency νf.  Results are provided both in canonical
+time windows and exposes count-rate estimators under a supplied Poisson
+observation model, with approximate normal confidence intervals. These
+observations do not replace the capacity consumed by a nodal law. Results are
+provided both in canonical
 ``Hz_str`` and converted ``Hz`` using :mod:`tnfr.units`, allowing callers
 to surface telemetry without duplicating conversion logic.
 
@@ -19,12 +21,15 @@ import weakref
 from collections import deque
 from collections.abc import MutableMapping
 from dataclasses import dataclass
+from fractions import Fraction
 from statistics import NormalDist
 from typing import Any, Deque, Mapping
 
+from .._exact_time import finite_represented_real
 from ..errors import TNFRValueError
 from ..types import GraphLike
 from ..units import get_hz_bridge, hz_str_to_hz
+from ..validation.window import validate_window
 
 __all__ = (
     "NuFWindow",
@@ -35,9 +40,24 @@ __all__ = (
 )
 
 
+def _finite_real(value: Any, name: str) -> float:
+    """Use shared admission while preserving telemetry's value-error type."""
+    try:
+        return finite_represented_real(value, name)[0]
+    except ValueError as exc:
+        raise TNFRValueError(str(exc)) from exc
+
+
+def _confidence(value: float) -> float:
+    value = _finite_real(value, "confidence_level")
+    if not 0.0 < value < 1.0:
+        raise TNFRValueError("confidence_level must be in the open interval (0, 1)")
+    return value
+
+
 @dataclass(frozen=True)
 class NuFWindow:
-    """Discrete reorganisation observations captured over a time window."""
+    """Integer counts over positive represented time, with optional finite bounds."""
 
     reorganisations: int
     """Number of reorganisations counted within the window."""
@@ -52,31 +72,27 @@ class NuFWindow:
     """Optional exclusive window end timestamp."""
 
     def __post_init__(self) -> None:
-        reorganisations = int(self.reorganisations)
-        duration = float(self.duration)
+        reorganisations = validate_window(self.reorganisations)
+        duration = _finite_real(self.duration, "duration")
         object.__setattr__(self, "reorganisations", reorganisations)
         object.__setattr__(self, "duration", duration)
-        if reorganisations < 0:
-            raise TNFRValueError(
-                "reorganisations must be non-negative",
-                context={"reorganisations": reorganisations},
-            )
-        if not math.isfinite(duration) or duration <= 0.0:
+        if duration <= 0.0:
             raise TNFRValueError(
                 "duration must be a positive finite number",
                 context={"duration": duration},
             )
+        for name in ("start", "end"):
+            value = getattr(self, name)
+            if value is not None:
+                object.__setattr__(self, name, _finite_real(value, name))
         if self.start is not None and self.end is not None:
-            start = float(self.start)
-            end = float(self.end)
-            object.__setattr__(self, "start", start)
-            object.__setattr__(self, "end", end)
+            start, end = self.start, self.end
             if end < start:
                 raise TNFRValueError(
                     "end must be greater than or equal to start",
                     context={"start": start, "end": end},
                 )
-            window = end - start
+            window = _finite_real(end - start, "window duration")
             if window <= 0.0:
                 raise TNFRValueError(
                     "start and end must describe a non-empty window",
@@ -84,7 +100,7 @@ class NuFWindow:
                 )
             # Allow minor numerical discrepancies when duration is supplied
             # independently from ``start``/``end``.
-            if not math.isclose(window, duration, rel_tol=1e-9, abs_tol=1e-9):
+            if not math.isclose(window, duration, rel_tol=1e-9, abs_tol=0.0):
                 raise TNFRValueError(
                     "duration does not match the difference between start and end",
                     context={"duration": duration, "window": window},
@@ -94,15 +110,15 @@ class NuFWindow:
     def from_bounds(cls, reorganisations: int, start: float, end: float) -> "NuFWindow":
         """Construct a window inferring the duration from ``start``/``end``."""
 
-        start_f = float(start)
-        end_f = float(end)
+        start_f = _finite_real(start, "start")
+        end_f = _finite_real(end, "end")
         if end_f <= start_f:
             raise TNFRValueError(
                 "end must be greater than start",
                 context={"start": start_f, "end": end_f},
             )
         return cls(
-            reorganisations=int(reorganisations),
+            reorganisations=reorganisations,
             duration=end_f - start_f,
             start=start_f,
             end=end_f,
@@ -156,7 +172,12 @@ class NuFSnapshot:
 
 
 class NuFTelemetryAccumulator:
-    """Accumulate reorganisation telemetry and produce νf estimates."""
+    """Accumulate admitted counts with exact sums of represented durations.
+
+    Invalid evidence or unrepresentable estimates reject before changing the
+    observation buffer or history. Window overlap and Poisson independence
+    remain the caller's observation premises, not conclusions of this reducer.
+    """
 
     def __init__(
         self,
@@ -166,31 +187,24 @@ class NuFTelemetryAccumulator:
         window_limit: int | None = None,
         graph: GraphLike | MutableMapping[str, Any] | None = None,
     ) -> None:
-        if not 0.0 < confidence_level < 1.0:
-            raise TNFRValueError(
-                "confidence_level must be in the open interval (0, 1)",
-                context={"confidence_level": confidence_level},
-            )
-        if history_limit is not None and history_limit <= 0:
-            raise TNFRValueError(
-                "history_limit must be positive when provided",
-                context={"history_limit": history_limit},
-            )
-        if window_limit is not None and window_limit <= 0:
-            raise TNFRValueError(
-                "window_limit must be positive when provided",
-                context={"window_limit": window_limit},
-            )
-
-        self._confidence_level = float(confidence_level)
-        self._history_limit = history_limit
-        self._window_limit = window_limit
+        self._confidence_level = _confidence(confidence_level)
+        self._history_limit = (
+            validate_window(history_limit, positive=True)
+            if history_limit is not None
+            else None
+        )
+        self._window_limit = (
+            validate_window(window_limit, positive=True)
+            if window_limit is not None
+            else None
+        )
         self._windows: Deque[NuFWindow] = deque()
         self._total_reorganisations = 0
-        self._total_duration = 0.0
+        self._total_duration = Fraction(0)
         self._graph_ref: (
             weakref.ReferenceType[GraphLike | MutableMapping[str, Any]] | None
         ) = None
+        self._graph_mapping_ref: MutableMapping[str, Any] | None = None
         self.attach_graph(graph)
 
     @property
@@ -218,22 +232,21 @@ class NuFTelemetryAccumulator:
             return
         try:
             self._graph_ref = weakref.ref(graph)  # type: ignore[arg-type]
+            self._graph_mapping_ref = None
         except TypeError:  # pragma: no cover - mapping instances are not weakrefable
             self._graph_ref = None
+            self._graph_mapping_ref = (
+                graph if isinstance(graph, MutableMapping) else None
+            )
 
     def _resolve_graph(
         self,
     ) -> GraphLike | MutableMapping[str, Any] | None:
-        return self._graph_ref() if self._graph_ref is not None else None
-
-    def _coerce_window(self, window: NuFWindow) -> None:
-        if self._window_limit is not None and len(self._windows) >= self._window_limit:
-            removed = self._windows.popleft()
-            self._total_reorganisations -= removed.reorganisations
-            self._total_duration -= removed.duration
-        self._windows.append(window)
-        self._total_reorganisations += window.reorganisations
-        self._total_duration += window.duration
+        return (
+            self._graph_ref()
+            if self._graph_ref is not None
+            else self._graph_mapping_ref
+        )
 
     def record_window(
         self,
@@ -243,10 +256,30 @@ class NuFTelemetryAccumulator:
     ) -> NuFSnapshot:
         """Record ``window`` and return the updated telemetry snapshot."""
 
-        self._coerce_window(window)
-        graph_obj = graph or self._resolve_graph()
-        snapshot = self.snapshot(graph=graph_obj)
+        if not isinstance(window, NuFWindow):
+            raise TypeError("window must be a NuFWindow")
+        # Re-admit primitive evidence, even for a manually altered frozen record.
+        window = NuFWindow(
+            window.reorganisations, window.duration, window.start, window.end
+        )
+        windows = tuple(self._windows)
+        total_count = self._total_reorganisations + window.reorganisations
+        total_duration = self._total_duration + Fraction.from_float(window.duration)
+        if self._window_limit is not None and len(windows) >= self._window_limit:
+            removed = windows[0]
+            windows = windows[1:]
+            total_count -= removed.reorganisations
+            total_duration -= Fraction.from_float(removed.duration)
+        windows += (window,)
+        graph_obj = graph if graph is not None else self._resolve_graph()
+        # Validate all result arithmetic before changing the buffer or history.
+        snapshot = self._snapshot(windows, total_count, total_duration, graph_obj)
         self._persist_snapshot(snapshot, graph_obj)
+        if self._window_limit is not None and len(self._windows) >= self._window_limit:
+            self._windows.popleft()
+        self._windows.append(window)
+        self._total_reorganisations = total_count
+        self._total_duration = total_duration
         return snapshot
 
     def record_counts(
@@ -261,10 +294,10 @@ class NuFTelemetryAccumulator:
         """Record a window described by ``reorganisations`` and ``duration``."""
 
         window = NuFWindow(
-            reorganisations=int(reorganisations),
-            duration=float(duration),
-            start=float(start) if start is not None else None,
-            end=float(end) if end is not None else None,
+            reorganisations=reorganisations,
+            duration=duration,
+            start=start,
+            end=end,
         )
         return self.record_window(window, graph=graph)
 
@@ -273,7 +306,7 @@ class NuFTelemetryAccumulator:
 
         self._windows.clear()
         self._total_reorganisations = 0
-        self._total_duration = 0.0
+        self._total_duration = Fraction(0)
 
     def _normal_dist(self) -> NormalDist:
         return NormalDist()
@@ -295,9 +328,21 @@ class NuFTelemetryAccumulator:
     ) -> NuFSnapshot:
         """Return a νf telemetry snapshot without mutating internal state."""
 
-        total_duration = self._total_duration
-        total_reorganisations = self._total_reorganisations
-        windows = tuple(self._windows)
+        return self._snapshot(
+            tuple(self._windows),
+            self._total_reorganisations,
+            self._total_duration,
+            graph if graph is not None else self._resolve_graph(),
+        )
+
+    def _snapshot(
+        self,
+        windows: tuple[NuFWindow, ...],
+        total_reorganisations: int,
+        exact_duration: Fraction,
+        graph: GraphLike | MutableMapping[str, Any] | None,
+    ) -> NuFSnapshot:
+        total_duration = _finite_real(exact_duration, "total duration")
 
         if total_duration <= 0.0:
             rate_hz_str = None
@@ -306,25 +351,33 @@ class NuFTelemetryAccumulator:
             ci_upper_str = None
             confidence_level: float | None = None
         else:
-            rate_hz_str = total_reorganisations / total_duration
-            variance_hz_str = rate_hz_str / total_duration
+            exact_rate = total_reorganisations / exact_duration
+            exact_variance = exact_rate / exact_duration
+            rate_hz_str = _finite_real(exact_rate, "estimated rate")
+            variance_hz_str = _finite_real(exact_variance, "estimated variance")
             std_error = math.sqrt(variance_hz_str)
-            z = self._normal_dist().inv_cdf(0.5 + (self._confidence_level / 2.0))
+            # The lower tail remains representable when confidence is near one.
+            z = -self._normal_dist().inv_cdf((1.0 - self._confidence_level) / 2.0)
             ci_lower_str = max(rate_hz_str - z * std_error, 0.0)
-            ci_upper_str = rate_hz_str + z * std_error
+            ci_upper_str = _finite_real(
+                rate_hz_str + z * std_error, "interval upper bound"
+            )
             confidence_level = self._confidence_level
 
-        graph_obj = graph or self._resolve_graph()
         rate_hz = variance_hz = ci_lower_hz = ci_upper_hz = None
-        if rate_hz_str is not None and graph_obj is not None:
-            if not isinstance(graph_obj, MutableMapping):
-                bridge = get_hz_bridge(graph_obj)
-                rate_hz = hz_str_to_hz(rate_hz_str, graph_obj)
+        if rate_hz_str is not None and graph is not None:
+            if not isinstance(graph, MutableMapping):
+                bridge = get_hz_bridge(graph)
+                rate_hz = hz_str_to_hz(rate_hz_str, graph)
                 if variance_hz_str is not None:
-                    variance_hz = variance_hz_str * (bridge**2)
+                    variance_hz = _finite_real(
+                        Fraction.from_float(variance_hz_str)
+                        * Fraction.from_float(bridge) ** 2,
+                        "converted variance",
+                    )
                 if ci_lower_str is not None and ci_upper_str is not None:
-                    ci_lower_hz = hz_str_to_hz(ci_lower_str, graph_obj)
-                    ci_upper_hz = hz_str_to_hz(ci_upper_str, graph_obj)
+                    ci_lower_hz = hz_str_to_hz(ci_lower_str, graph)
+                    ci_upper_hz = hz_str_to_hz(ci_upper_str, graph)
 
         return NuFSnapshot(
             windows=windows,
@@ -370,6 +423,71 @@ class NuFTelemetryAccumulator:
 
 
 _ACCUMULATOR_KEY = "_tnfr_nu_f_accumulator"
+_UNSPECIFIED_HISTORY = object()
+
+
+def _configured_accumulator(
+    graph: GraphLike,
+    *,
+    confidence_level: float | None = None,
+    history_limit: Any = _UNSPECIFIED_HISTORY,
+    window_limit: int | None = None,
+) -> NuFTelemetryAccumulator:
+    """Select or prepare an accumulator without installing it on the graph."""
+
+    mapping = getattr(graph, "graph", None)
+    if not isinstance(mapping, MutableMapping):
+        raise TypeError("graph.graph must be a mutable mapping for telemetry storage")
+
+    if confidence_level is not None:
+        confidence_level = _confidence(confidence_level)
+    history_specified = history_limit is not _UNSPECIFIED_HISTORY
+    if history_specified and history_limit is not None:
+        history_limit = validate_window(history_limit, positive=True)
+    if window_limit is not None:
+        window_limit = validate_window(window_limit, positive=True)
+    accumulator = mapping.get(_ACCUMULATOR_KEY)
+    replace = False
+    if isinstance(accumulator, NuFTelemetryAccumulator):
+        if (
+            (
+                confidence_level is not None
+                and accumulator.confidence_level != confidence_level
+            )
+            or (
+                history_specified
+                and history_limit is not None
+                and accumulator.history_limit != history_limit
+            )
+            or (window_limit is not None and accumulator.window_limit != window_limit)
+        ):
+            replace = True
+    if not isinstance(accumulator, NuFTelemetryAccumulator) or replace:
+        previous = (
+            accumulator if isinstance(accumulator, NuFTelemetryAccumulator) else None
+        )
+        requested_confidence = (
+            confidence_level
+            if confidence_level is not None
+            else previous.confidence_level if previous is not None else 0.95
+        )
+        requested_history = (
+            previous.history_limit
+            if previous is not None and (not history_specified or history_limit is None)
+            else history_limit if history_specified else 128
+        )
+        requested_window = (
+            previous.window_limit
+            if previous is not None and window_limit is None
+            else window_limit
+        )
+        accumulator = NuFTelemetryAccumulator(
+            confidence_level=requested_confidence,
+            history_limit=requested_history,
+            window_limit=requested_window,
+            graph=graph,
+        )
+    return accumulator
 
 
 def ensure_nu_f_telemetry(
@@ -382,38 +500,17 @@ def ensure_nu_f_telemetry(
     """Ensure ``graph`` exposes a :class:`NuFTelemetryAccumulator`.
 
     When ``confidence_level`` is ``None`` the existing accumulator is preserved
-    and new accumulators default to ``0.95``.
+    and new accumulators default to ``0.95``. Explicit configuration changes
+    replace its accumulated windows.
     """
-
-    mapping = getattr(graph, "graph", None)
-    if not isinstance(mapping, MutableMapping):
-        raise TypeError("graph.graph must be a mutable mapping for telemetry storage")
-
-    accumulator = mapping.get(_ACCUMULATOR_KEY)
-    replace = False
-    if isinstance(accumulator, NuFTelemetryAccumulator):
-        if (
-            (
-                confidence_level is not None
-                and abs(accumulator.confidence_level - confidence_level) > 1e-12
-            )
-            or (
-                history_limit is not None and accumulator.history_limit != history_limit
-            )
-            or (window_limit is not None and accumulator.window_limit != window_limit)
-        ):
-            replace = True
-    if not isinstance(accumulator, NuFTelemetryAccumulator) or replace:
-        requested_confidence = 0.95 if confidence_level is None else confidence_level
-        accumulator = NuFTelemetryAccumulator(
-            confidence_level=requested_confidence,
-            history_limit=history_limit,
-            window_limit=window_limit,
-            graph=graph,
-        )
-        mapping[_ACCUMULATOR_KEY] = accumulator
-    else:
-        accumulator.attach_graph(graph)
+    accumulator = _configured_accumulator(
+        graph,
+        confidence_level=confidence_level,
+        history_limit=history_limit,
+        window_limit=window_limit,
+    )
+    accumulator.attach_graph(graph)
+    graph.graph[_ACCUMULATOR_KEY] = accumulator
     return accumulator
 
 
@@ -430,6 +527,7 @@ def record_nu_f_window(
 ) -> NuFSnapshot:
     """Record a νf observation for ``graph`` and persist the snapshot."""
 
+    window = NuFWindow(reorganisations, duration, start, end)
     kwargs: dict[str, Any] = {}
     if confidence_level is not None:
         kwargs["confidence_level"] = confidence_level
@@ -438,11 +536,8 @@ def record_nu_f_window(
     if window_limit is not None:
         kwargs["window_limit"] = window_limit
 
-    accumulator = ensure_nu_f_telemetry(graph, **kwargs)
-    return accumulator.record_counts(
-        reorganisations,
-        duration,
-        start=start,
-        end=end,
-        graph=graph,
-    )
+    accumulator = _configured_accumulator(graph, **kwargs)
+    snapshot = accumulator.record_window(window, graph=graph)
+    accumulator.attach_graph(graph)
+    graph.graph[_ACCUMULATOR_KEY] = accumulator
+    return snapshot

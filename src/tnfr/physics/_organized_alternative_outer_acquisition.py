@@ -11,6 +11,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from fractions import Fraction as Q
 
+from .._exact_time import exact_or_represented_real as _exact
 from ..mathematics._rational_interval import (
     INTERVAL_METHOD,
     I,
@@ -19,15 +20,14 @@ from ..mathematics._rational_interval import (
     sin,
     sqrt,
 )
-from .._exact_time import exact_or_represented_real as _exact
 from ._organized_outer_winding import (
-    _OrganizedOuterWindingGeometry,
     _derive_organized_outer_winding,
+    _OrganizedOuterWindingGeometry,
 )
 from ._sine_class_constitutive_comparison import _current_derivative_bound, _edge_law
 from ._sine_constitutive_recovery import (
-    _ConstitutiveRecovery,
     _assess_constitutive_recovery,
+    _ConstitutiveRecovery,
 )
 from ._sine_preparation import (
     _prepared_coordinate_vector,

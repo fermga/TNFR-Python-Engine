@@ -9,7 +9,7 @@ from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from typing import Any, TypeVar, cast
 
-from .._exact_time import finite_represented_real
+from .._exact_time import bounded_represented_real, finite_represented_real
 from ..alias import get_theta_attr, set_theta
 from ..constants import (
     DEFAULTS,
@@ -129,16 +129,22 @@ def _finite_adaptive_config(cfg: Mapping[str, Any]) -> Mapping[str, Any]:
         if key != "enabled"
     }
     for key in ("R_hi", "R_lo", "disr_hi", "disr_lo", "up", "down"):
-        if not 0.0 <= resolved[key] <= 1.0:
-            raise TNFRValueError(f"PHASE_ADAPT[{key!r}] must be in [0, 1]")
+        try:
+            bounded_represented_real(cfg[key], key, minimum=0.0, maximum=1.0)
+        except ValueError as exc:
+            raise TNFRValueError(f"PHASE_ADAPT[{key!r}] must be in [0, 1]") from exc
     for lower, upper in (
         ("R_lo", "R_hi"),
         ("disr_lo", "disr_hi"),
         ("kG_min", "kG_max"),
         ("kL_min", "kL_max"),
     ):
-        if not 0.0 <= resolved[lower] <= resolved[upper]:
-            raise TNFRValueError(f"PHASE_ADAPT requires 0 <= {lower} <= {upper}")
+        try:
+            bounded_represented_real(cfg[lower], lower, minimum=0.0, maximum=cfg[upper])
+        except ValueError as exc:
+            raise TNFRValueError(
+                f"PHASE_ADAPT requires 0 <= {lower} <= {upper}"
+            ) from exc
     return resolved
 
 

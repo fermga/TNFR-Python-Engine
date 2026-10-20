@@ -11,20 +11,18 @@ grammar or prescribe canonical operators.
 """
 
 import hashlib
-import json
 import math
 import re
 import threading
 import time
 from collections import defaultdict, deque
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from enum import Enum
-from numbers import Real
 from pathlib import Path
-from statistics import fmean
-from typing import Any, Mapping, Sequence
+from typing import Any, Mapping, Sequence, cast
 
+from .._exact_time import finite_represented_real
 from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 from ..constants.canonical import PI  # π ≈ 3.1416 (structural scale)
@@ -49,8 +47,10 @@ from ..constants.operational import (
 )
 from ..errors import TNFRValueError
 from ..mathematics.unified_numerical import np
+from ..metrics.common import finite_mean, finite_mean_absolute, finite_population_std
 from ..operators.grammar import glyph_function_name, validate_sequence
 from ..types import require_finite_real_scalar_epi
+from ..utils.io import json_dumps, safe_write
 
 try:
     import networkx as nx
@@ -66,13 +66,9 @@ def _finite_measurement(
 ) -> float | None:
     """Return a finite measured scalar, or ``None`` when evidence is absent."""
 
-    if isinstance(value, (bool, np.bool_)) or not isinstance(value, Real):
-        return None
     try:
-        measured = float(value)
+        measured, _ = finite_represented_real(value, "measurement")
     except (OverflowError, TypeError, ValueError):
-        return None
-    if not math.isfinite(measured):
         return None
     if positive and measured <= 0.0:
         return None
@@ -143,7 +139,10 @@ def _result_evidence(result: Any) -> dict[str, float | int]:
 
 # Import Unified Fields (New Nov 2025)
 try:
-    from ..physics.fields import compute_unified_telemetry
+    from ..physics.fields import (
+        compute_unified_telemetry,
+        estimate_coherence_length_with_provenance,
+    )
 
     HAS_UNIFIED_FIELDS = True
 except ImportError:
@@ -219,22 +218,13 @@ def _sanitize_label(value: Any | None, default: str) -> str:
 
 
 def _finite_population_variance(values: Sequence[float]) -> float | None:
-    """Return population variance, or ``None`` when it exceeds binary64."""
+    """Return population variance, or ``None`` when its square is unrepresentable."""
 
-    if not values:
+    if not values or min(values) == max(values):
         return 0.0
-    scale = max(abs(value) for value in values)
-    if scale == 0.0:
-        return 0.0
-    normalized = [value / scale for value in values]
-    mean = fmean(normalized)
-    normalized_variance = fmean((value - mean) ** 2 for value in normalized)
-    if normalized_variance == 0.0:
-        return 0.0
-    if scale > math.sqrt(float(np.finfo(float).max) / normalized_variance):
-        return None
-    result = scale * scale * normalized_variance
-    return result if math.isfinite(result) else None
+    spread = finite_population_std(values, name="EPI")
+    result = spread * spread
+    return result if math.isfinite(result) and result > 0.0 else None
 
 
 def _mean_numeric(values: Sequence[Any]) -> float | None:
@@ -248,7 +238,7 @@ def _mean_numeric(values: Sequence[Any]) -> float | None:
         data.append(measured)
     if not data:
         return None
-    return fmean(data)
+    return finite_mean(data, name="measurements")
 
 
 def _graph_structure(graph: Any) -> dict[str, Any]:
@@ -279,7 +269,7 @@ def _sense_index_mean(payload: Any) -> float | None:
     if isinstance(payload, dict):
         return _mean_numeric(list(payload.values()))
     try:
-        array = np.asarray(payload, dtype=float)
+        array = np.asarray(payload, dtype=object)
     except Exception:
         return None
     if array.size == 0:
@@ -413,7 +403,7 @@ class TNFRSelfOptimizingEngine:
         learning_strategy: LearningStrategy = LearningStrategy.MATHEMATICAL_ANALYSIS,
         optimization_objective: OptimizationObjective = OptimizationObjective.BALANCE_ALL,
         max_experience_history: int = 1000,
-    ):
+    ) -> None:
         self.learning_strategy = learning_strategy
         self.optimization_objective = optimization_objective
         self.max_experience_history = max_experience_history
@@ -426,7 +416,7 @@ class TNFRSelfOptimizingEngine:
         # Performance tracking
         self.optimization_attempts = 0
         self.successful_optimizations = 0
-        self.cumulative_improvements = defaultdict(float)
+        self.cumulative_improvements: defaultdict[str, float] = defaultdict(float)
 
         # Adaptive configuration
         self.adaptive_config = {
@@ -459,7 +449,7 @@ class TNFRSelfOptimizingEngine:
         Uses the mathematical properties of the nodal equation to identify
         natural optimization strategies.
         """
-        insights = {}
+        insights: dict[str, Any] = {}
 
         if not HAS_NETWORKX or G is None:
             return insights
@@ -576,8 +566,8 @@ class TNFRSelfOptimizingEngine:
 
         # Mathematical properties for optimization
         epi_variance = _finite_population_variance(epi_values)
-        vf_range = np.max(vf_values) - np.min(vf_values) if vf_values else 0
-        dnfr_magnitude = np.mean(np.abs(dnfr_values)) if dnfr_values else 0
+        vf_range = max(vf_values) - min(vf_values) if vf_values else 0.0
+        dnfr_magnitude = finite_mean_absolute(dnfr_values, name="DeltaNFR")
 
         # Optimization recommendations based on mathematical properties
         recommendations = []
@@ -730,7 +720,7 @@ class TNFRSelfOptimizingEngine:
                 for strategy, improvements in strategy_performance.items():
                     if len(improvements) < 3:
                         continue
-                    avg_improvement = fmean(improvements)
+                    avg_improvement = finite_mean(improvements, name="speedup")
                     if avg_improvement > best_avg_improvement:
                         best_avg_improvement = avg_improvement
                         best_sample_count = len(improvements)
@@ -833,8 +823,12 @@ class TNFRSelfOptimizingEngine:
                 memory_speedup_pairs.append((memory, speedup))
 
         if memory_speedup_pairs:
-            avg_memory = fmean(pair[0] for pair in memory_speedup_pairs)
-            avg_speedup = fmean(pair[1] for pair in memory_speedup_pairs)
+            avg_memory = finite_mean(
+                (pair[0] for pair in memory_speedup_pairs), name="memory"
+            )
+            avg_speedup = finite_mean(
+                (pair[1] for pair in memory_speedup_pairs), name="speedup"
+            )
 
             if (
                 avg_memory
@@ -868,7 +862,7 @@ class TNFRSelfOptimizingEngine:
         if backend_performance:
             best_backend = max(
                 backend_performance.keys(),
-                key=lambda b: np.mean(backend_performance[b]),
+                key=lambda b: finite_mean(backend_performance[b], name="speedup"),
             )
             self.adaptive_config["backend_preference"] = best_backend
 
@@ -883,7 +877,7 @@ class TNFRSelfOptimizingEngine:
             if drift is not None:
                 structural_charge_drifts.append(drift)
         if structural_charge_drifts:
-            mean_drift = fmean(structural_charge_drifts)
+            mean_drift = finite_mean(structural_charge_drifts, name="charge drift")
             self.adaptive_config["mean_structural_charge_drift"] = mean_drift
             # Backward-compatible configuration alias.
             self.adaptive_config["mean_conservation_drift"] = mean_drift
@@ -982,7 +976,7 @@ class TNFRSelfOptimizingEngine:
         )
 
     def optimize_automatically(
-        self, G: Any, operation_type: str = "general", **kwargs
+        self, G: Any, operation_type: str = "general", **kwargs: Any
     ) -> dict[str, Any]:
         """
         Apply one configured recommendation through the computation dispatcher.
@@ -1288,8 +1282,13 @@ class TNFRSelfOptimizingEngine:
                 self.mathematical_insights.update(knowledge["mathematical_insights"])
 
     def _capture_structural_snapshot(self, G: Any) -> dict[str, Any] | None:
-        """Capture graph metrics and unified telemetry for reporting."""
+        """Capture diagnostics with explicit coherence-length availability.
+
+        Only the estimator's declared unavailable NaN becomes ``None``.
+        Other invalid diagnostic values remain failed observations.
+        """
         timestamp = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        snapshot: dict[str, Any]
         if G is None or not HAS_NETWORKX:
             snapshot = {"timestamp": timestamp, "graph": None, "telemetry": None}
         else:
@@ -1303,7 +1302,33 @@ class TNFRSelfOptimizingEngine:
         if HAS_UNIFIED_FIELDS and G is not None:
             try:
                 telemetry = compute_unified_telemetry(G)
-                snapshot["telemetry"] = _json_safe(telemetry)
+                estimate = estimate_coherence_length_with_provenance(G)
+                canonical = dict(telemetry["canonical"])
+                raw_xi = canonical["xi_c"]
+                if estimate.method == "unavailable":
+                    if not isinstance(raw_xi, (float, np.floating)) or not math.isnan(
+                        raw_xi
+                    ):
+                        raise ValueError(
+                            "unavailable coherence-length estimate requires its NaN sentinel"
+                        )
+                    canonical["xi_c"] = None
+                    canonical["xi_c_available"] = False
+                else:
+                    xi = finite_represented_real(raw_xi, "coherence length")[0]
+                    if xi <= 0:
+                        raise ValueError("available coherence length must be positive")
+                    canonical["xi_c"] = xi
+                    canonical["xi_c_available"] = True
+                provenance = asdict(estimate)
+                provenance.pop("value")
+                canonical["xi_c_provenance"] = provenance
+                projected = _json_safe({**telemetry, "canonical": canonical})
+                # Required field failures are not missing observations. Validate
+                # every other projected diagnostic without replacing nonfinite
+                # values or changing the generic JSON admission contract.
+                json_dumps(projected, allow_nan=False)
+                snapshot["telemetry"] = projected
             except (
                 Exception
             ) as exc:  # pragma: no cover - telemetry errors are informational
@@ -1314,12 +1339,14 @@ class TNFRSelfOptimizingEngine:
             sense_value: float | None = None
             try:
                 coherence_value = (
-                    float(compute_coherence(G)) if compute_coherence else None
+                    float(compute_coherence(G))
+                    if compute_coherence is not None
+                    else None
                 )
             except Exception:
                 coherence_value = None
             try:
-                if compute_Si:
+                if compute_Si is not None:
                     si_payload = compute_Si(G, inplace=False)
                     sense_value = _sense_index_mean(si_payload)
             except Exception:
@@ -1499,27 +1526,32 @@ class TNFRSelfOptimizingEngine:
         safe_seed: str,
         safe_node: str,
     ) -> tuple[Path, str]:
-        """Write payload to disk and emit SHA-256 signature."""
+        """Strictly serialize, then atomically write each payload/signature file."""
         base_dir = Path(output_dir)
         target_dir = base_dir / safe_seed
-        target_dir.mkdir(parents=True, exist_ok=True)
         file_path = target_dir / f"{safe_node}.json"
-        serialized = json.dumps(payload, indent=2, sort_keys=True)
-        file_path.write_text(serialized, encoding="utf-8")
-        signature = hashlib.sha256(serialized.encode("utf-8")).hexdigest()
+        serialized = cast(
+            str, json_dumps(payload, indent=2, sort_keys=True, allow_nan=False)
+        )
+        encoded = serialized.encode("utf-8")
+        signature = hashlib.sha256(encoded).hexdigest()
         signature_path = file_path.with_suffix(file_path.suffix + ".sha256")
-        signature_path.write_text(f"{signature}  {file_path.name}\n", encoding="utf-8")
+        safe_write(file_path, lambda stream: stream.write(encoded), mode="wb")
+        safe_write(
+            signature_path,
+            lambda stream: stream.write(f"{signature}  {file_path.name}\n"),
+        )
         return file_path, signature
 
 
 # Factory functions
-def create_self_optimizing_engine(**kwargs) -> TNFRSelfOptimizingEngine:
+def create_self_optimizing_engine(**kwargs: Any) -> TNFRSelfOptimizingEngine:
     """Create self-optimizing engine."""
     return TNFRSelfOptimizingEngine(**kwargs)
 
 
 def auto_optimize_tnfr_computation(
-    G: Any, operation_type: str = "general", **kwargs
+    G: Any, operation_type: str = "general", **kwargs: Any
 ) -> dict[str, Any]:
     """Convenience function for automatic optimization."""
     engine = create_self_optimizing_engine()

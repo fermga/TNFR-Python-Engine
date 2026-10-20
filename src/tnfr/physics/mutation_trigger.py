@@ -20,6 +20,7 @@ from dataclasses import dataclass
 from numbers import Real
 from typing import Any
 
+from .._exact_time import finite_represented_real
 from ..constants.canonical import ZHIR_THRESHOLD_XI_CANONICAL
 
 __all__ = (
@@ -109,17 +110,20 @@ class MutationTriggerCertificate:
 
 
 def _finite_real(value: Any, field: str) -> float:
-    if isinstance(value, bool) or not isinstance(value, Real):
-        raise MutationTriggerInputError(field, value, "must be a finite real scalar")
     try:
-        result = float(value)
-    except (OverflowError, TypeError, ValueError) as exc:
+        result = finite_represented_real(value, field)[0]
+    except TypeError as exc:
         raise MutationTriggerInputError(
-            field, value, "must be representable as a finite real scalar"
+            field, value, "must be a finite real scalar"
         ) from exc
-    if not math.isfinite(result):
-        raise MutationTriggerInputError(field, value, "must be finite")
-    return result
+    except ValueError as exc:
+        reason = str(exc).removeprefix(f"{field} ")
+        if reason == "must be representable as binary64":
+            reason = "must be representable as a finite real scalar"
+        raise MutationTriggerInputError(field, value, reason) from exc
+    # The shared admission normalizes signed zero; this certificate preserves
+    # the original channel sign, also consumed by ZHIR's phase-reset branch.
+    return math.copysign(0.0, float(value)) if result == 0.0 else result
 
 
 def _history_length(history: Any) -> int | None:
@@ -137,13 +141,10 @@ def _last_two(history: Any) -> tuple[Any, Any] | None:
 
 
 def _history_scalar(value: Any) -> float | None:
-    if isinstance(value, bool) or not isinstance(value, Real):
-        return None
     try:
-        result = float(value)
-    except (OverflowError, TypeError, ValueError):
+        return _finite_real(value, "history sample")
+    except MutationTriggerInputError:
         return None
-    return result if math.isfinite(result) else None
 
 
 def _history_pair(value: Any) -> tuple[float, float] | None:
@@ -264,7 +265,12 @@ def _physical_evidence(
 
     epi_delta = current_sample_epi - previous_epi
     observed_depi_dt = epi_delta / sample_interval
+    rate_reason = None
     if not math.isfinite(epi_delta) or not math.isfinite(observed_depi_dt):
+        rate_reason = "non_finite_observed_rate"
+    elif epi_delta != 0.0 and observed_depi_dt == 0.0:
+        rate_reason = "underflowed_observed_rate"
+    if rate_reason is not None:
         evidence = MutationTriggerEvidence(
             previous_epi=previous_epi,
             current_epi=current_sample_epi,
@@ -277,7 +283,7 @@ def _physical_evidence(
             physical_time_resolved=True,
             current_endpoint_matches_state=None,
             is_valid=False,
-            reason="non_finite_observed_rate",
+            reason=rate_reason,
         )
         return evidence, True, evidence.reason
 
@@ -372,13 +378,17 @@ def certify_mutation_trigger(
     Parameters
     ----------
     current_epi, nu_f, delta_nfr : Real
-        Finite current nodal channels.  The instantaneous prediction is exactly
-        the represented operation ``float(nu_f) * float(delta_nfr)``.
+        Finite current nodal channels admitted by the shared represented-real
+        contract; nonzero inputs may not become zero during materialization.
+        The instantaneous prediction is the represented operation
+        ``float(nu_f) * float(delta_nfr)``; overflow or a nonzero product
+        underflowing to zero is rejected.
     xi : Real, default=ZHIR_THRESHOLD_XI_CANONICAL
         Finite nonnegative strict Mutation threshold.
     epi_time_history : object, optional
         Preferred timestamped history.  Its last two records must be indexed
         pairs ``(time, epi)`` with a finite strictly positive time interval.
+        A nonzero secant underflowing to zero is invalid evidence.
         When supplied, it is authoritative and invalid data do not fall back
         to a legacy history.
     epi_history, legacy_epi_history : object, optional
@@ -424,6 +434,12 @@ def certify_mutation_trigger(
             "predicted_depi_dt",
             predicted_depi_dt,
             "must be finite for the represented nu_f * delta_nfr product",
+        )
+    if predicted_depi_dt == 0.0 and nu_f_value != 0.0 and delta_nfr_value != 0.0:
+        raise MutationTriggerInputError(
+            "predicted_depi_dt",
+            predicted_depi_dt,
+            "is nonzero but underflows to represented zero for nu_f * delta_nfr",
         )
     predicted_crossed = predicted_depi_dt > xi_value
 

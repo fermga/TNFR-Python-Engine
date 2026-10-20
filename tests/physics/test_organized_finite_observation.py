@@ -20,7 +20,6 @@ from tnfr.physics import _organized_finite_observation as owner
 from tnfr.physics import _organized_finite_observation_source as source
 from tnfr.physics._organized_outer_winding import _derive_organized_outer_winding
 
-
 _H, _EPSILON, _NOISE = Q(1, 10**5), Q(1, 10), Q(1, 10**15)
 _TOTAL = 15 * (1 + _H)
 _SHAPE = (5, 3, 2, 5)

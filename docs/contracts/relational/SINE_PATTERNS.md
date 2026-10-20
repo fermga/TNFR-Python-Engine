@@ -250,7 +250,7 @@ retains the [four-reading source, input and observation domains](#sine-curvature
 including `H=probe_duration>0`, `rho_plus*H<=1/2`, all original coordinate
 uncertainty and the four ordered reading pairs at `0,H/2,H,2*H`.
 
-The clock premise is now a positive `C1` function `rho(s)` on `[0,2*H]`,
+The clock premise is a positive `C1` function `rho(s)` on `[0,2*H]`,
 with global pointwise bounds `clock_rate_bounds=(rho_minus,rho_plus)` and
 `abs(rho'(s))<=L=clock_rate_derivative_bound`. The derivative bound is a
 finite nonnegative exact/represented scalar; shared admission rejects
@@ -683,15 +683,11 @@ numerical work and unresolved signs; unresolved comparisons cannot exclude
 candidates. The direct schema is `tnfr.sine-two-port-inference.v1`, with
 shared exact SDK projection and atomic export.
 
-See the [usage guide](../../guides/relational/SINE_PATTERNS.md#sine-two-port-inference)
-and the [single execution queue](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-for the distinction between this conditional theorem and the separately
+The [usage guide](../../guides/relational/SINE_PATTERNS.md#sine-two-port-inference)
+separates this conditional API from the
 [retained inference assessment](../../../theory/nodal/SINE_TWO_PORT_INFERENCE.md#sine-two-port-inference-result).
-That first three-case evaluation passes its forty-three frozen conditions
-using full-law response enclosures and independently supplied software
-calibration references. Its public-packet boundary and posterior truth
-checks establish only the declared computational result. They do not admit
-an arbitrary source or replace an independent physical measurement bridge.
+That software experiment's source, calibration and public-packet checks
+neither admit an arbitrary source nor supply a physical measurement bridge.
 
 <a id="sine-two-port-dipole"></a>
 ### Interior phase dipole after a finite complete-law warmup
@@ -759,18 +755,13 @@ replaced by zero. A separate heat warmup must place its residual below
 has its own complete law. Sine-law acquisition and recovery certificates
 are not transferred to it.
 
-The frozen protocol fixes `warmup_duration=285934809600000`,
-`form_radius=phase_radius=2^-40`, `phase_increment=2^-12`,
-`probe_duration=2^-10`, `readout_error_bound=2^-50`,
-`contrast_threshold=2^-38` and `work_allowance=2^-21`. The warmup
-starts at the unchanged capture handoff `sigma=1025`, so its end is at
-`tau=1025*1023**2*pi**2+warmup_duration`. The actual readout adds
-`probe_duration` in that same fast clock. The original thirty-six source
-errors remain `1/65536`. This is a new continuation from that preparation;
-the earlier uniform form pulse is not inserted into its history. The
+The [frozen protocol](../../../theory/nodal/SINE_TWO_PORT_DIPOLE.md#sine-two-port-dipole-protocol)
+owns the selected inputs and source handoff. Warmup and readout continue
+from that handoff in the same fast clock; the earlier uniform form pulse
+is not inserted into this history. The
 [retained capture audit](#sine-two-port-probe) and the unjoined original-family
-trapping argument supply separate source obligations. No laboratory clock
-or measurement calibration follows from these values.
+trapping argument supply separate source obligations. These structural
+budgets supply no laboratory clock or measurement calibration.
 
 `target_admitted`, `warmup_certified`, `geometry_certified`,
 `response_certified`, `heat_warmup_certified`, `heat_control_excluded`,
@@ -792,19 +783,12 @@ export. The assessment installs no event and runs no trajectory or earlier
 capture producer. Failed sufficient margins do not demonstrate a failed
 physical response.
 
-The [execution plan](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#sine-two-port-dipole-admission)
-owns the gate's status. The
-[retained first assessment](../../../theory/nodal/SINE_TWO_PORT_DIPOLE.md#sine-two-port-dipole-result)
-passes all thirteen fixed conditions, including both original-source handoffs,
-finite warmup, response, the heat comparison and post-event identities.
-Its protocol, proof and producing source were preserved before evaluation;
-no source, threshold or horizon was changed afterward. The earlier
-form-probe export failure and recovery remain separate historical evidence.
-The certified contrast concerns local geometric response under the declared
-preparation, supports and complete laws. It excludes the specified
-phase-blind comparator; it does not select a
-unique constitutive law or establish a topology-independent intrinsic or
-physical property. See the
+The [result owner](../../../theory/nodal/SINE_TWO_PORT_DIPOLE.md#sine-two-port-dipole-result)
+retains the first assessment and its frozen evidence. Its contrast concerns
+local geometric response under the declared preparation, supports and complete
+laws. Excluding the specified phase-blind comparator does not select a unique
+constitutive law or establish a topology-independent intrinsic or physical
+property. See the
 [inspection guide](../../guides/relational/SINE_PATTERNS.md#sine-two-port-dipole).
 
 <a id="sine-two-port-probe"></a>
@@ -882,16 +866,12 @@ The direct report schema is
 export. Projection alone neither authenticates source acquisition nor
 installs the declared intervention on a live network.
 
-The original frozen assessment attempt failed during control-report export
-after executing the primary assessment; it saved no complete response.
 The [retained result](../../../theory/nodal/SINE_TWO_PORT_PROBE.md#sine-two-port-probe-result)
-comes from a separately archived deterministic export recovery and passes
-all ten fixed conditions. It preserves the original failure and scientific
-inputs; it is not a successful first attempt. The correction changes only
-projection of the auxiliary control mapping and does not change the
-scientific runtime. The
-[execution plan](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#sine-two-port-probe-admission)
-owns its status. The source-evidence audit must re-admit primitive source,
+comes from a separately archived export recovery: the original attempt
+executed its primary assessment but failed during control-report export,
+saving no complete response. Only auxiliary mapping projection changed;
+scientific inputs and runtime did not. This is not a successful first attempt.
+The source-evidence audit must re-admit primitive source,
 law, geometry and retained numerical evidence and rebuild consumed handoff
 bounds. It must state which obligations rely on the retained execution:
 matching hashes and a consistent chain are not independent numerical
@@ -985,20 +965,12 @@ chart premise proved. The invariance principle gives subsequent convergence
 only if that entire chain passes. A small reference phase distance does
 not establish actual capture or remove the retained form coordinate.
 
-The [execution plan](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#sine-two-port-capture-admission)
-owns the gate's status. Before the first assessment, preserve its protocol,
-proof and complete producing source; keep the frozen horizon, precision,
-step, order, root and preparation budgets unchanged afterward. An incomplete
+The [result owner](../../../theory/nodal/SINE_TWO_PORT_CAPTURE.md#sine-two-port-capture-result)
+retains the first assessment, frozen protocol and producing source. Its
+convergence certificate covers the original uncertainty family on each
+member's conserved-mean leaf, not only the numerical reference. An incomplete
 reference, unresolved sign or failed sufficient handoff remains unavailable
-evidence, not a trajectory failure or permission to retune the protocol.
-Earlier compatibility, obstruction and finite-transit results retain their
-original scope and evidence.
-
-The [retained first assessment](../../../theory/nodal/SINE_TWO_PORT_CAPTURE.md#sine-two-port-capture-result)
-passed all ten frozen conditions at the declared inputs, including every
-reference step and the complete-state capture handoff. Its certified later
-convergence concerns the entire original uncertainty family on each member's
-conserved-mean leaf, not only the numerical reference.
+evidence, not a trajectory failure or permission to retune frozen inputs.
 
 `preparation_admitted`, `target_admitted`, `reference_validated`,
 `reference_endpoint_certified`, `full_comparison_certified` and
@@ -1032,9 +1004,9 @@ The direct schema is
 atomic export. A current-source assessment and an archived first response
 have distinct provenance; projection alone does not authenticate either.
 
-This assessment installs no contact event, forcing or state reset. A
-successful capture certificate would concern the supplied source and fixed
-support; it would not derive contact occurrence, passive attachment work,
+This assessment installs no contact event, forcing or state reset. A capture
+certificate concerns the supplied source and fixed support; it does not
+derive contact occurrence, passive attachment work,
 laboratory time or physical binding. The
 [inspection guide](../../guides/relational/SINE_PATTERNS.md#sine-two-port-capture)
 keeps prospective setup and the subsequent retained response separate.
@@ -1121,7 +1093,7 @@ with shared SDK exact projection and atomic export.
 This finite directional result does not establish basin entry, final
 convergence or all-future acute retention. The earlier
 [scalar-storage obstruction](#sine-two-port-handoff-obstruction) remains
-valid, as do the frozen compatibility reports. The new theorem executes
+valid, as do the frozen compatibility reports. The theorem executes
 no numerical trajectory or frozen producer. Contact work, support birth
 and physical identification remain separate questions. The
 [usage example](../../guides/relational/SINE_PATTERNS.md#sine-two-port-transit)
@@ -1151,20 +1123,14 @@ The report is conditional evidence for that family, not admission of an
 observed live state.
 
 The [proof](../../../theory/nodal/SINE_TWO_PORT_COMPATIBILITY.md#sine-two-port-handoff-obstruction)
-constructs a realizable state on the acute-sector boundary whose storage is
-below every source's total storage whenever its strict gap passes. The
-explicit path to this witness is a geometric proof device, not a solution
-of the evolution rows. Its full edge reconstruction and integer periods
-preserve the correlations required by the sector. It follows that **no**
-valid lower bound on every boundary face can put these sources below the
-boundary, as required by the
+constructs a realizable acute-sector boundary state below every source's
+storage when the strict gap passes. Thus no valid all-face boundary lower
+bound can admit these sources to the
 [target-free capture theorem](../../../theory/nodal/SINE_PATTERN_DYNAMICS.md#sine-target-free-sector-capture).
-For an initially nonacute source that theorem also lacks its initial-domain
-premise. Neither exclusion implies dynamical escape or failed capture.
-The displayed zero-form, zero-mean witness represents any source conserved
-mean leaf after a uniform form shift and common phase shift, both of which
-preserve its storage and edge geometry. These proof representatives are
-not state resets.
+Initially nonacute sources also lack that theorem's initial-domain premise.
+The witness preserves the sector's edge correlations and represents every
+conserved-mean leaf by uniform shifts. Its path is geometric, not a flow or
+state reset; the obstruction proves neither dynamical escape nor failed capture.
 
 `ideal_storage_gap_lower_bound=17/13824` is the conservative rational
 consequence of the proved ideal gap `17*pi/41472` and `pi>3`.
@@ -1512,7 +1478,7 @@ Its horizon domain is `0<=delay<=total_duration<=2`; the older
 superposition API retains its `1/4` ceiling. Signed amplitudes, ordinary
 integer class admission, radius and budget domains are otherwise unchanged.
 Shared exact-or-represented-real admission occurs before model arithmetic.
-The [new proof](../../../theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-class-nonlinear-protocol)
+The [nonlinear proof](../../../theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-class-nonlinear-protocol)
 replaces the short-time comparison with heat contraction; it does not
 extend an invalid `1/(1-3*T)` bound.
 
@@ -1580,7 +1546,7 @@ the short-window record-overlap theorem remain unchanged.
 [`bound_sine_class_comparison_readout`](../../../src/tnfr/physics/relational_sine_class_comparison_readout.py)
 returns `SineClassComparisonReadout`. Its nine mandatory inputs retain the
 single-source names: each of `initial_form_bounds` and `initial_phase_bounds`
-now contains two ordered 27-node covers. The other inputs are the shared two
+contains two ordered 27-node covers. The other inputs are the shared two
 amplitudes, delay, duration, time step, Taylor order and total `max_steps`.
 Single-source scalar domains remain unchanged; the global ordinary-integer
 attempt cap is `1..8192`, with at most 4096 attempts per child.
@@ -3055,24 +3021,12 @@ The report retains the complete preparation, law coefficients, exact and
 outward bounded quantities, proof time and reasons. Shared JSON projection
 supports SDK export without authenticating provenance.
 
-With the plan's default coefficients, analytic proofs exclude both profiles
-throughout `abs(amplitude)<=2`, `abs(capacity_contrast)<1`. At `amplitude=2`,
-`capacity_contrast=1/2`, computational exclusion passes with proof horizon
-`1/5` for localized and `3/5` for balanced. These are restrictions on the
-supplied preparation families, not a general impossibility of pattern formation.
-The theory's constant-donor corollary also covers arbitrary constant donor
-form `D` and intermediary form `H` at `((D-H)**2+H**2)/2<=4` under those
-coefficients. Explicit donor vectors extend preparation admission without
-changing the target, phase state, support or receiver initialization. The
-[internal-form analysis](../../../theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-internal-form-geometry)
-derives the full six-coordinate quadratic forms and causal response maps.
-Its nonuniform example has donor forms `(10,13,14,14,13)/3`, intermediary
-`4/3` and contrast `1/2`. It passes initial and short-window necessary checks,
-but the wider certificate excludes its joint entry by `6/5`. Independently,
-the global functional excludes maintained-target convergence for every
-six-coordinate preparation with `F<=4` throughout the sufficient ratio domain,
-at unit storage scale and positive half contrast. The earlier entry exclusions retain
-their own scopes; transient acute-region visits are not generally excluded.
+The [formation bounds](../../../theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-formation-eligibility)
+and [internal-form analysis](../../../theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-internal-form-geometry)
+own the profile exclusions, constant-donor corollary and nonuniform example.
+These source-specific obstructions do not establish a general impossibility
+of pattern formation. Timed entry exclusion and maintained-target exclusion
+remain distinct; the latter does not exclude every transient acute-region visit.
 
 ### Source geometry and the necessary nonlinear receiver correction
 
@@ -3158,7 +3112,7 @@ formation verdict.
 one validated preparation, retains this report in its optional trailing
 `receiver_localization` field and adds `weighted_receiver_localization` as
 an endpoint-exclusion reason when certified. Necessary passage/work fields
-retain their conditional meaning; legacy reports leave the new field `None`.
+retain their conditional meaning; reports without this observation leave the field `None`.
 
 ### Receiver identity transfer with donor unwinding
 
@@ -3311,7 +3265,7 @@ admission; the actual sufficient condition is checked against the source.
 certified. Its older acute-face allowance `F+V5-B5`, phase-action time and
 early-loss evidence retain their own definitions: the minimax level is not
 substituted into a bound derived for another passage. The original coexistence
-report is unchanged. The new export schema is
+report is unchanged. The export schema is
 `tnfr.relational-sine-donor-well-retention.v1`, using shared exact JSON
 projection and the SDK atomic writer. A public report remains distinct from
 authenticated provenance or a checkpoint.
@@ -3923,7 +3877,7 @@ assesses the complete conservative sine law on an acute cycle. `source` is
 a `SineRelativePattern` or `SineRelativeForecast`. The same source admission,
 exact target, centered norm, Taylor remainder and coercive barrier serve
 the existing recovery certificate. Positive-loss recovery still requires
-`e>0`; this new assessment requires exactly `e=0` and positive held capacities.
+`e>0`; this assessment requires exactly `e=0` and positive held capacities.
 No model coefficient is changed to make either theorem apply.
 
 The target has integer winding `k` with `4*abs(k)<n`. The supplied radius

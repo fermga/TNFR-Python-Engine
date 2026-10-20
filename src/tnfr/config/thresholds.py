@@ -70,23 +70,25 @@ DNFR_RECEPTION_MAX: float = 0.15
 # IL (Coherence) Thresholds
 # -------------------------
 
-# Strict IL admission requires signed EPI above this selected lower bound.
+# The default signed_threshold IL policy requires signed EPI above this bound.
 # Negative scalar EPI remains a valid structural coordinate; rejection by this
 # configured policy does not establish absence of form or pressure.
+# Explicit event_domain selects the instantaneous scalar event domain instead
+# and rejects min_epi/min_vf keys rather than silently ignoring these bounds.
 EPI_IL_MIN: float = 0.0
 
 # Deprecated compatibility value. IL does not write EPI, so this bound is not
 # consumed by strict readiness and supplies no EPI-headroom condition.
 EPI_IL_MAX: float = 1.0
 
-# Strict IL admission requires capacity above this selected lower bound.
+# The signed_threshold IL policy requires capacity above this lower bound.
 # Zero capacity suppresses unforced EPI evolution, not the mathematical ability
 # to apply an instantaneous pressure-contraction map.
 VF_IL_MIN: float = 0.0
 
 # Critical |ΔNFR| warning threshold. Either pressure sign is an IL input;
-# above this magnitude, repeated IL or THOL may be needed. This is advisory,
-# not a hard failure.
+# above this magnitude, the shared reader reports the selected advisory bound.
+# This neither requires repetition nor predicts refreshed pressure or stability.
 DNFR_IL_CRITICAL: float = 0.8
 
 # -------------------------

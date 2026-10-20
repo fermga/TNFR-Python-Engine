@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any, cast
 
-from .._exact_time import finite_represented_real
+from .._exact_time import bounded_represented_real
 from ..types import SelectorThresholds, TNFRGraph
 from .defaults_core import SELECTOR_THRESHOLD_DEFAULTS
 
@@ -33,10 +33,8 @@ def resolve_selector_thresholds(graph: TNFRGraph) -> SelectorThresholds:
         value: Any = configured.get(key, default)
         label = f"SELECTOR_THRESHOLDS[{key!r}]"
         try:
-            number = finite_represented_real(value, label)[0]
+            number = bounded_represented_real(value, label, minimum=0.0, maximum=1.0)[0]
         except TypeError as exc:
             raise ValueError(str(exc)) from exc
-        if not 0.0 <= number <= 1.0:
-            raise ValueError(f"{label} must be a finite real number in [0, 1]")
         resolved[key] = number
     return cast(SelectorThresholds, resolved)

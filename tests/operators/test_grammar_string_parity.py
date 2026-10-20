@@ -90,7 +90,8 @@ def test_diagnostic_waiver_is_exact_and_explicit():
 def test_additional_legacy_thol_policy_is_not_conflated_with_canonical_core():
     word = ["emission", "expansion", "self_organization", "transition"]
     assert GrammarValidator().validate([SimpleNamespace(name=name) for name in word])[0]
-    result = validate_sequence(word)
+    assert validate_sequence(word).passed
+    result = validate_sequence(word, compatibility_profile="legacy")
     assert not result.passed
     assert "self_organization requires terminal closure" in result.message
 
@@ -107,9 +108,9 @@ def test_additional_legacy_thol_policy_is_not_conflated_with_canonical_core():
     ],
 )
 def test_parser_preserves_local_error_position(word, index, token):
-    result = validate_sequence(word)
+    result = validate_sequence(word, compatibility_profile="legacy")
     assert not result.passed
     with pytest.raises(SequenceSyntaxError) as caught:
-        parse_sequence(word)
+        parse_sequence(word, compatibility_profile="legacy")
     assert caught.value.index == index
     assert caught.value.token == token

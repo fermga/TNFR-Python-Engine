@@ -20,7 +20,6 @@ from .artifact_io import (
     sha256_bytes,
 )
 
-
 _REVISION = "0b21a040270c7c7653cd09e9f3076fdb1ca9e08f"
 _HASHES = {
     "attempt.json": "da33f61594c40ae1ce2a0d046086d103c433c267015c7cbbda2cdffe9181977e",

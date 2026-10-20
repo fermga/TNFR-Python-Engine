@@ -1,19 +1,19 @@
-"""Metrics export."""
+"""Admitted stored-history snapshots shared by CSV and JSON exports."""
 
 from __future__ import annotations
 
 import csv
-import math
-from collections.abc import Iterable, Iterator, Sequence
-from itertools import tee, zip_longest
-from typing import Mapping, TextIO
+from collections.abc import Iterable, Mapping, Sequence
+from typing import Any, TextIO, cast
 
 from ..config.constants import GLYPHS_CANONICAL
 from ..errors import TNFRValueError
-from ..glyph_history import ensure_history
+from ..glyph_history import ensure_history as ensure_history  # noqa: F401
 from ..types import Graph, SigmaTrace
 from ..utils import json_dumps, safe_write
-from .core import glyphogram_series
+from ._history import stored_sequence as _stored_sequence
+from ._history import stored_value as _stored_value
+from .reporting import glyphogram_series as glyphogram_series  # noqa: F401
 
 
 def _write_csv(
@@ -32,17 +32,20 @@ def _write_csv(
     safe_write(path, _write, newline="", base_dir=output_dir)
 
 
-def _iter_glif_rows(
-    glyph: Mapping[str, Sequence[float]],
-) -> Iterator[list[float]]:
-    ts = glyph.get("t", [])
-    # Precompute columns for each glyph to avoid repeated lookups.
-    # ``default_col`` is shared by reference for missing glyphs to prevent
-    # unnecessary list allocations.
-    default_col = [0] * len(ts)
-    cols = [glyph.get(g, default_col) for g in GLYPHS_CANONICAL]
-    for i, t in enumerate(ts):
-        yield [t] + [col[i] for col in cols]
+def _stored_rows(value: Any, label: str) -> list[dict[str, float | None]]:
+    rows = []
+    for index, row in enumerate(_stored_sequence(value, label)):
+        if not isinstance(row, Mapping):
+            raise TypeError(f"{label}[{index}] must be a mapping")
+        if any(not isinstance(key, str) for key in row):
+            raise TypeError(f"{label}[{index}] keys must be strings")
+        rows.append(
+            {
+                key: _stored_value(value, f"{label}[{index}].{key}")
+                for key, value in row.items()
+            }
+        )
+    return rows
 
 
 def export_metrics(
@@ -52,7 +55,16 @@ def export_metrics(
     *,
     output_dir: str | None = None,
 ) -> None:
-    """Dump glyphogram and σ(t) trace to compact CSV or JSON files.
+    """Export one admitted snapshot of stored metric history.
+
+    Missing samples and clocks remain ``null`` in JSON and empty CSV cells.
+    Sigma columns align by retained position only; timestamps are never borrowed
+    from another stream or inferred from row indices. Present nonfinite,
+    Boolean, nonreal or unrepresentable values reject before any output is
+    replaced. The graph and its history are not changed.
+
+    Each output uses the shared atomic writer. The set of CSV files is not one
+    transaction: filesystem failure can leave earlier files replaced.
 
     Parameters
     ----------
@@ -74,50 +86,8 @@ def export_metrics(
         If path traversal is detected when output_dir is provided.
     """
 
-    hist = ensure_history(G)
-    glyph = glyphogram_series(G)
-    sigma_x = hist.get("sense_sigma_x", [])
-    sigma_y = hist.get("sense_sigma_y", [])
-    sigma_mag = hist.get("sense_sigma_mag", [])
-    sigma_angle = hist.get("sense_sigma_angle", [])
-    t_series = hist.get("sense_sigma_t", []) or glyph.get("t", [])
-    rows_raw = zip_longest(
-        t_series, sigma_x, sigma_y, sigma_mag, sigma_angle, fillvalue=None
-    )
-
-    def _clean(value: float | None) -> float:
-        """Return ``0`` for ``None`` or ``NaN`` values."""
-        if value is None or (isinstance(value, float) and math.isnan(value)):
-            return 0
-        return value
-
-    def _gen_rows() -> Iterator[tuple[float, float, float, float, float]]:
-        for i, (t, x, y, m, a) in enumerate(rows_raw):
-            yield (
-                i if t is None else t,
-                _clean(x),
-                _clean(y),
-                _clean(m),
-                _clean(a),
-            )
-
-    rows_csv, rows_sigma = tee(_gen_rows())
-
-    sigma: SigmaTrace = {
-        "t": [],
-        "sigma_x": [],
-        "sigma_y": [],
-        "mag": [],
-        "angle": [],
-    }
-    for t, x, y, m, a in rows_sigma:
-        sigma["t"].append(t)
-        sigma["sigma_x"].append(x)
-        sigma["sigma_y"].append(y)
-        sigma["mag"].append(m)
-        sigma["angle"].append(a)
-    morph: Sequence[Mapping[str, float]] = hist.get("morph", [])
-    epi_supp: Sequence[Mapping[str, float]] = hist.get("EPI_support", [])
+    if not isinstance(fmt, str):
+        raise TypeError("fmt must be a string")
     fmt = fmt.lower()
     if fmt not in {"csv", "json"}:
         raise TNFRValueError(
@@ -125,17 +95,49 @@ def export_metrics(
             suggestion="Use 'csv' or 'json'",
             context={"format": fmt, "supported": ["csv", "json"]},
         )
+    hist = G.graph.get("history", {})
+    if not isinstance(hist, Mapping):
+        raise TypeError("history must be a mapping")
+    glyph_rows = _stored_rows(hist.get("glyphogram", ()), "glyphogram")
+    glyph_headers = ("t", *GLYPHS_CANONICAL)
+    glyph = (
+        {key: [row.get(key) for row in glyph_rows] for key in glyph_headers}
+        if glyph_rows
+        else {"t": []}
+    )
+    sigma_sources = {
+        "t": "sense_sigma_t",
+        "sigma_x": "sense_sigma_x",
+        "sigma_y": "sense_sigma_y",
+        "mag": "sense_sigma_mag",
+        "angle": "sense_sigma_angle",
+    }
+    sigma_columns: dict[str, list[float | None]] = {
+        key: [
+            _stored_value(value, f"{source}[{index}]")
+            for index, value in enumerate(
+                _stored_sequence(hist.get(source, ()), source)
+            )
+        ]
+        for key, source in sigma_sources.items()
+    }
+    sample_count = max(map(len, sigma_columns.values()), default=0)
+    for values in sigma_columns.values():
+        values.extend([None] * (sample_count - len(values)))
+    sigma = cast(SigmaTrace, sigma_columns)
+    morph = _stored_rows(hist.get("morph", ()), "morph")
+    epi_supp = _stored_rows(hist.get("EPI_support", ()), "EPI_support")
     if fmt == "csv":
         specs: list[tuple[str, Sequence[str], Iterable[Sequence[object]]]] = [
             (
                 "_glyphogram.csv",
-                ["t", *GLYPHS_CANONICAL],
-                _iter_glif_rows(glyph),
+                glyph_headers,
+                ([row.get(key) for key in glyph_headers] for row in glyph_rows),
             ),
             (
                 "_sigma.csv",
                 ["t", "x", "y", "mag", "angle"],
-                ([t, x, y, m, a] for t, x, y, m, a in rows_csv),
+                zip(*(sigma_columns[key] for key in sigma_sources)),
             ),
         ]
         if morph:
@@ -178,6 +180,6 @@ def export_metrics(
         json_path = base_path + ".json"
 
         def _write_json(f: TextIO) -> None:
-            f.write(json_dumps(data))
+            f.write(cast(str, json_dumps(data)))
 
         safe_write(json_path, _write_json, base_dir=output_dir)

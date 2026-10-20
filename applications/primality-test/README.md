@@ -40,21 +40,10 @@ From the repository root:
 python -m pip install ./applications/primality-test
 ```
 
-The core package is independent of the engine and retains Python 3.8+ support.
-The optional full adapter installation uses the engine's dependency metadata:
-
-```bash
-python -m pip install "./applications/primality-test[full]"
-```
-
-That extra requires an interpreter supported by `tnfr` (currently Python 3.10+).
-Availability of engine adapters does not turn an arithmetic predicate into a
-physical nodal-evolution result.
-
-Documentation is built from the repository root using the root `.[docs]` extra;
-follow [the documentation checks](../../TESTING.md#code-quality-and-documentation-checks).
-This package's `[docs]` extra remains an empty compatibility alias and does not
-install a separate documentation toolchain.
+The basic package is independent of the engine and retains Python 3.8+ support.
+Its runtime uses the standard library. The optional `dev` extra installs the
+local test/build tools; documentation uses the root repository's `.[docs]`
+extra and [documentation checks](../../TESTING.md#code-quality-and-documentation-checks).
 
 ```python
 from tnfr_primality import (
@@ -78,7 +67,7 @@ results = optimizer.batch_test([17, 21, 97])
 | `tnfr_is_prime(n, *, tolerance=1e-10)` | `(abs(pressure) < tolerance, pressure)` using unit coefficients. This is a strict numerical predicate; custom tolerances can alter classification. |
 | `tnfr_component_breakdown(...)` | Weighted pressure components and arithmetic statistics; the retained key `omega` means multiplicity count `Omega`. |
 | `tnfr_structural_triad(...)` | Compatibility bundle with `EPI`, `vf`, `delta_nfr`, `local_coherence`, `components`. Despite its name it does not return canonical `(EPI, capacity, phase)`; phase is absent. |
-| `OptimizedTNFRPrimality` | Cache of final pressure values, batch loop, timing statistics and a classical sieve followed by pressure checks. `is_prime` uses fixed strict tolerance `1e-10`. |
+| `OptimizedTNFRPrimality` | Cache of final pressure values, batch loop, timing statistics and a classical sieve followed by pressure checks. `is_prime` uses fixed strict tolerance `1e-10`. The bounded cache retains its first entries; it is not an LRU policy. |
 
 Arithmetic EPI/capacity formulas are configured readouts of the same statistics.
 Returning them does not derive their dynamics or make the integer a maintained
@@ -96,48 +85,57 @@ tnfr-primality --batch --optimized 17 21 97
 tnfr-primality --validate 1000
 ```
 
-The equivalent explicit module is `python -m tnfr_primality.cli`. Standard
-options include `--optimized`, `--batch`, `--timing`, `--benchmark`, `--validate`,
-`--compare`, `--stats` and `--sieve`. `--validate` compares finite arithmetic
-outputs; it does not validate TNFR as a physical theory.
-
-`tnfr-primality-advanced` uses the separate `advanced_cli` parser. Use its own
-`--help`; its options are not automatically accepted by the standard parser.
-For example:
+`python -m tnfr_primality` and `python -m tnfr_primality.cli` use this same
+basic parser without importing advanced adapters. Options include `--optimized`,
+`--batch`, `--timing`, `--benchmark`, `--validate`, `--compare`, `--stats`,
+`--sieve` and `--json-output`. `--validate` compares finite arithmetic outputs;
+it does not validate TNFR as a physical theory.
 
 ```bash
-tnfr-primality-advanced --validate 7 --json-output
-tnfr-primality-advanced 2 4 --json-output
+python -m tnfr_primality 2 4 1 --json-output
+python -m tnfr_primality --validate 100 --json-output
 ```
 
-JSON mode emits one document on stdout and sends human progress summaries to
-stderr. Numeric result fields retain the selected helper's schema: basic
-validation uses `tested` and `correct`, while the optional advanced helper uses
-`tested_numbers` and `correct_predictions`. Infrastructure JSON contains
-`status` and `system_info`, with `system_info=null` if the optional interface is
-unavailable. Its benchmark times a fixed prime-only sample bounded by the
-requested maximum; it does not test all integers up to that value or measure
-composite rejection.
-`python -m tnfr_primality` tries the advanced entry point first, so use the
-explicit `.cli` module when the standard behavior is intended.
+JSON mode emits one document on stdout. Number rows contain `number`,
+`is_prime`, `delta_nfr`, `delta_nfr_available`, `method` and `time_ms`.
+For `n < 2`, unavailable pressure is `null` with availability `false`, rather
+than a nonstandard JSON infinity. Validation uses the basic `tested`/`correct`
+schema; sieve output is `{"primes": [...]}`. Benchmark and comparison modes
+retain their basic reports. Human progress and requested cache statistics go
+to stderr.
 
 ## Optional repository integration
 
-[advanced_core.py](tnfr_primality/advanced_core.py) tries repository arithmetic
-helpers and falls back when imports or calls fail. Infrastructure availability
-does not certify that every advertised cache/backend is active. The
-`use_cache` parameter on `tnfr_delta_nfr_advanced` is retained but its body does
-not use it; cached wrappers are separate functions.
+The engine's `tnfr.primality` adapter can use these basic arithmetic functions.
+It does not need an advanced module or a `full` extra. Core engine arithmetic
+also remains independently available under `tnfr.mathematics`.
 
-`tnfr_is_prime_advanced(n, return_certificate=True)` can return an arithmetic
-`PrimeCertificate` when the repository call succeeds. It still returns a
-`(bool, pressure)` tuple for `n <= 1`, `n == 2`, absent infrastructure or a caught
-certificate failure. Inspect the actual return type. The certificate concerns
-supplied arithmetic statistics and a numerical zero test, not independent
-proof of nodal emergence or a full structural-field evolution.
+The former advanced adapters and CLI are retired. `tnfr-primality-advanced`,
+`tnfr-primality-legacy` and the `full`, `benchmark` and `docs` extras are no
+longer installation targets. Use `tnfr-primality` or the basic module command
+for supported arithmetic output; advanced-only options are rejected.
+[Archive recovery](archive/README.md) preserves their source identities and
+unique working-tree examples/tests outside runtime discovery and package
+payloads.
 
-Package threshold names and legacy constants are compatibility configuration.
-They do not redefine engine-wide phase bounds, coherence fields or grammar.
+The former optional `PrimeCertificate` route classified supplied arithmetic
+terms against a tolerance. It did not independently authenticate those terms
+or prove primality from an untrusted report. Its retirement changes neither
+the exact zero-set theorem nor the core arithmetic implementation. Package
+threshold names do not redefine phase bounds, fields or operator grammar.
+
+## Executable examples
+
+After installing this application, run the maintained example:
+
+```bash
+python applications/primality-test/examples/basic_usage.py
+```
+
+It reports selected unit coefficients, factor multiplicity and cache timings.
+It neither benchmarks arbitrary integer sizes nor validates physical TNFR.
+The advanced example and former promotional benchmark belong to archive
+recovery, not the current learning or performance route.
 
 ## Verification and limits
 
@@ -148,11 +146,11 @@ python applications/primality-test/test_installation.py
 ```
 
 The installation checks cover imports, selected known integers, caching and
-batch behavior. The focused CLI regression module checks both validation
-schemas and clean JSON output across numeric and infrastructure routes:
+batch behavior. The application suite checks basic CLI/module parity, strict
+JSON, examples, package contents and the absence of advanced auto-imports:
 
 ```bash
-python -m pytest applications/primality-test/tests/test_advanced_cli.py -q
+python -m pytest applications/primality-test/tests -q
 ```
 
 Their finite timings depend on the environment and workload;

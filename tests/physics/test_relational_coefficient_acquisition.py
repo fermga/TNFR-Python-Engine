@@ -1,7 +1,8 @@
 """P2 acquisition bounds, short wiring controls and read-only retained evidence.
 
-No test regenerates the full frozen temporal response. The two-step wiring
-fixture has a different horizon; the full record audit is optional if absent.
+No test regenerates the full frozen temporal response. The synthetic two-step
+fixture declares the current pressure path and its own protocol identity;
+the frozen v1 source boundary and retained-record audit remain unchanged.
 """
 
 import hashlib
@@ -123,17 +124,52 @@ def test_imported_source_must_belong_to_the_frozen_checkout(monkeypatch, tmp_pat
 
 @pytest.fixture
 def two_step_protocol(monkeypatch, small_source):
-    # This short wiring test is not the reserved 0,h,2h acquisition window.
+    # Exercise current native wiring under an explicitly different declaration.
+    # Neither its shortened horizon nor its pressure arithmetic reproduces v1.
     monkeypatch.setattr(acquisition, "STEP_COUNT", 2)
     monkeypatch.setattr(acquisition, "SAMPLE_STEP", acquisition.EULER_STEP)
     monkeypatch.setattr(acquisition, "HORIZON", 2 * acquisition.EULER_STEP)
     monkeypatch.setattr(acquisition, "SAMPLE_INDICES", (0, 1, 2))
+    monkeypatch.setattr(acquisition, "PRESSURE_PATH", "relative_resultant_canonical")
+    original_prepare = acquisition.prepare_protocol
+
+    def prepare_synthetic_protocol():
+        protocol = original_prepare()
+        protocol["protocol"] = "synthetic-current-p2-two-step-wiring-v1"
+        protocol["scientific_scope"] = (
+            "test-only current native wiring; no frozen acquisition replay or verdict"
+        )
+        protocol["source_archive_scope"] = (
+            "test fixture plumbing; not the archived computational P2 source"
+        )
+        return protocol
+
+    monkeypatch.setattr(acquisition, "prepare_protocol", prepare_synthetic_protocol)
     return acquisition.prepare_protocol()
+
+
+def test_original_v1_rejects_the_current_pressure_path_before_any_step(
+    monkeypatch, small_source
+):
+    protocol = acquisition.prepare_protocol()
+    assert protocol["protocol"] == "relational-p2-coefficient-acquisition-v1"
+    assert protocol["runtime"]["pressure_path"] == "fused_canonical"
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("the original pressure-path refusal must precede all steps")
+
+    monkeypatch.setattr(acquisition, "step_relational_exchange", forbidden)
+    with pytest.raises(ValueError, match="pressure path changed"):
+        acquisition.evaluate_protocol(protocol)
 
 
 def test_two_native_steps_retain_actual_clock_rates_and_update_defects(
     two_step_protocol,
 ):
+    assert two_step_protocol["protocol"] == "synthetic-current-p2-two-step-wiring-v1"
+    assert (
+        two_step_protocol["runtime"]["pressure_path"] == "relative_resultant_canonical"
+    )
     result = acquisition.evaluate_protocol(two_step_protocol)
     assert result["completed"], result["stopped"]
     assert len(result["frames"]) == 3

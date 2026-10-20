@@ -220,8 +220,7 @@ class PartitionSnapshotManager:
         """Initialize snapshot database schema."""
 
         with sqlite3.connect(self.db_path) as conn:
-            conn.execute(
-                """
+            conn.execute("""
                 CREATE TABLE IF NOT EXISTS snapshots (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     snapshot_id TEXT UNIQUE NOT NULL,
@@ -238,29 +237,22 @@ class PartitionSnapshotManager:
                     state_hash TEXT NOT NULL,
                     created_at REAL DEFAULT (strftime('%s', 'now'))
                 )
-            """
-            )
+            """)
 
-            conn.execute(
-                """
+            conn.execute("""
                 CREATE INDEX IF NOT EXISTS idx_snapshots_modulus 
                 ON snapshots(modulus_n)
-            """
-            )
+            """)
 
-            conn.execute(
-                """
+            conn.execute("""
                 CREATE INDEX IF NOT EXISTS idx_snapshots_stage
                 ON snapshots(verification_stage)
-            """
-            )
+            """)
 
-            conn.execute(
-                """
+            conn.execute("""
                 CREATE INDEX IF NOT EXISTS idx_snapshots_timestamp
                 ON snapshots(timestamp)
-            """
-            )
+            """)
 
     def create_snapshot(
         self,

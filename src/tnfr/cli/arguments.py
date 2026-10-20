@@ -9,7 +9,7 @@ from ..config.presets import PREFERRED_PRESET_NAMES
 from ..gamma import GAMMA_REGISTRY
 from ..telemetry.verbosity import TELEMETRY_VERBOSITY_LEVELS
 from ..types import ArgSpec
-from .utils import spec
+from .utils import finite_real_argument, probability_argument, spec
 
 _PRESET_HELP = "Available presets: {}.".format(
     ", ".join(PREFERRED_PRESET_NAMES),
@@ -19,12 +19,6 @@ TELEMETRY_VERBOSITY_CHOICES = TELEMETRY_VERBOSITY_LEVELS
 
 GRAMMAR_ARG_SPECS: tuple[ArgSpec, ...] = (
     spec("--grammar.enabled", action=argparse.BooleanOptionalAction),
-    spec("--grammar.zhir_requires_oz_window", type=int),
-    spec("--grammar.zhir_dnfr_min", type=float),
-    spec("--grammar.thol_min_len", type=int),
-    spec("--grammar.thol_max_len", type=int),
-    spec("--grammar.thol_close_dnfr", type=float),
-    spec("--grammar.si_high", type=float),
     spec("--glyph.hysteresis_window", type=int),
 )
 
@@ -42,7 +36,7 @@ COMMON_ARG_SPECS: tuple[ArgSpec, ...] = (
     spec("--seed", type=int, default=1),
     spec(
         "--p",
-        type=float,
+        type=probability_argument,
         help="Edge probability when topology=erdos",
     ),
     spec("--observer", action="store_true", help="Attach standard observer"),
@@ -57,15 +51,15 @@ COMMON_ARG_SPECS: tuple[ArgSpec, ...] = (
         help="Select the metrics capture preset",
     ),
     spec("--config", type=str),
-    spec("--dt", type=float),
+    spec("--dt", type=finite_real_argument),
     spec("--integrator", choices=["euler", "rk4"]),
     spec("--remesh-mode", choices=["knn", "mst", "community"]),
     spec("--gamma-type", choices=list(GAMMA_REGISTRY.keys()), default="none"),
-    spec("--gamma-beta", type=float, default=0.0),
-    spec("--gamma-R0", type=float, default=0.0),
+    spec("--gamma-beta", type=finite_real_argument, default=0.0),
+    spec("--gamma-R0", type=finite_real_argument, default=0.0),
     spec("--um-candidate-count", type=int),
     spec("--stop-early-window", type=int),
-    spec("--stop-early-fraction", type=float),
+    spec("--stop-early-fraction", type=probability_argument),
 )
 
 
@@ -189,7 +183,7 @@ def _add_run_parser(sub: argparse._SubParsersAction) -> None:
         "--math-spectral-expectation-spectrum",
         "--math-coherence-spectrum",
         dest="math_spectral_expectation_spectrum",
-        type=float,
+        type=finite_real_argument,
         nargs="+",
         metavar="λ",
         help=(
@@ -201,19 +195,19 @@ def _add_run_parser(sub: argparse._SubParsersAction) -> None:
         "--math-spectral-expectation-floor",
         "--math-coherence-c-min",
         dest="math_spectral_expectation_floor",
-        type=float,
+        type=finite_real_argument,
         help="Finite auxiliary spectral expectation floor",
     )
     math_group.add_argument(
         "--math-spectral-expectation-threshold",
         "--math-coherence-threshold",
         dest="math_spectral_expectation_threshold",
-        type=float,
+        type=finite_real_argument,
         help="Finite spectral expectation threshold used by validation",
     )
     math_group.add_argument(
         "--math-frequency-diagonal",
-        type=float,
+        type=finite_real_argument,
         nargs="+",
         metavar="ν",
         help=(
@@ -223,7 +217,7 @@ def _add_run_parser(sub: argparse._SubParsersAction) -> None:
     )
     math_group.add_argument(
         "--math-generator-diagonal",
-        type=float,
+        type=finite_real_argument,
         nargs="+",
         metavar="ω",
         help=(
@@ -246,9 +240,8 @@ def _add_sequence_parser(sub: argparse._SubParsersAction) -> None:
         epilog=(
             "JSON sequence example:\n"
             "[\n"
-            '  "A",\n'
-            '  {"WAIT": 1},\n'
-            '  {"THOL": {"body": ["A", {"WAIT": 2}], "repeat": 2}}\n'
+            '  "AL", "IL", "SHA",\n'
+            '  {"WAIT": 1}\n'
             "]"
         ),
     )
@@ -325,7 +318,7 @@ def _add_math_run_parser(sub: argparse._SubParsersAction) -> None:
         "--math-spectral-expectation-spectrum",
         "--math-coherence-spectrum",
         dest="math_spectral_expectation_spectrum",
-        type=float,
+        type=finite_real_argument,
         nargs="+",
         metavar="λ",
         help="Eigenvalues for the auxiliary spectral-expectation operator",
@@ -334,26 +327,26 @@ def _add_math_run_parser(sub: argparse._SubParsersAction) -> None:
         "--math-spectral-expectation-floor",
         "--math-coherence-c-min",
         dest="math_spectral_expectation_floor",
-        type=float,
+        type=finite_real_argument,
         help="Finite auxiliary spectral expectation floor",
     )
     math_group.add_argument(
         "--math-spectral-expectation-threshold",
         "--math-coherence-threshold",
         dest="math_spectral_expectation_threshold",
-        type=float,
+        type=finite_real_argument,
         help="Finite spectral expectation threshold for validation",
     )
     math_group.add_argument(
         "--math-frequency-diagonal",
-        type=float,
+        type=finite_real_argument,
         nargs="+",
         metavar="ν",
         help="Diagonal entries for the frequency operator",
     )
     math_group.add_argument(
         "--math-generator-diagonal",
-        type=float,
+        type=finite_real_argument,
         nargs="+",
         metavar="ω",
         help="ΔNFR generator diagonal",
@@ -413,7 +406,7 @@ def _add_epi_validate_parser(sub: argparse._SubParsersAction) -> None:
     )
     validation_group.add_argument(
         "--tolerance",
-        type=float,
+        type=finite_real_argument,
         default=1e-6,
         help=(
             "Finite nonnegative slack for the affinity sign diagnostic only; "

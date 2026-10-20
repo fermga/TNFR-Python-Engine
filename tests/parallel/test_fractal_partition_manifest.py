@@ -105,10 +105,7 @@ def test_summary_structure_is_valid(sample_network):
         assert "average_community_size" in summary
 
 
-def test_sdk_wrapper_accepts_fractal_partition_manifests(sample_network, monkeypatch):
-    monkeypatch.syspath_prepend(
-        str(Path(__file__).resolve().parents[2] / "applications/factorization-lab")
-    )
+def test_sdk_wrapper_accepts_fractal_partition_manifests(sample_network):
     """Test that SDK wrapper can process fractal partition manifests."""
     partitioner = FractalPartitioner(max_partition_size=10)
 
@@ -134,6 +131,10 @@ def test_sdk_wrapper_accepts_fractal_partition_manifests(sample_network, monkeyp
         assert runner["success_count"] == len(result["partitions"])
         assert runner["failure_count"] == 0
         assert opt_result["promotable"] == {}
+        assert opt_result["validation_summary"]["status_counts"]["pending"] == len(
+            result["partitions"]
+        )
+        assert not opt_result["validation_summary"]["recommendation_effects_evaluated"]
         for entry in runner["partition_results"]:
             assert entry["telemetry_deltas"]["delta_c"] == 0.0
 

@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from types import MappingProxyType
 from typing import Any
 
-from .._exact_time import finite_represented_real
+from .._exact_time import bounded_represented_real, finite_represented_real
 from ..config.parsing import parse_bool
 from ..types import Glyph
 
@@ -173,8 +173,11 @@ def canonical_glyph_factor_defaults() -> dict[str, float]:
 
 
 def _coerce_known_factor(key: str, value: Any) -> float:
+    spec = GLYPH_FACTOR_SPECS[key]
     try:
-        return finite_represented_real(value, key)[0]
+        return bounded_represented_real(
+            value, key, minimum=spec.lower, maximum=spec.upper
+        )[0]
     except (OverflowError, TypeError, ValueError) as exc:
         raise GlyphFactorValidationError(str(exc)) from exc
 
@@ -349,8 +352,19 @@ def _resolve_coupling_flags(graph_data: Mapping[str, Any]) -> _CouplingFlags:
 
 
 def _resolve_dissonance_noise_mode(graph_data: Mapping[str, Any]) -> bool:
-    """Use one OZ noise branch for factor admission, preparation and execution."""
-    return _parse_runtime_flag(graph_data, "OZ_NOISE_MODE", False)
+    """Admit the active OZ noise branch before preparation or execution."""
+    enabled = _parse_runtime_flag(graph_data, "OZ_NOISE_MODE", False)
+    if enabled:
+        _resolve_dissonance_noise_sigma(graph_data)
+    return enabled
+
+
+def _resolve_dissonance_noise_sigma(graph_data: Mapping[str, Any]) -> float:
+    """Materialize active noise strength, retaining the nonpositive no-op."""
+    try:
+        return finite_represented_real(graph_data.get("OZ_SIGMA", 0.1), "OZ_SIGMA")[0]
+    except (OverflowError, TypeError, ValueError) as exc:
+        raise GlyphFactorValidationError(str(exc)) from exc
 
 
 def _resolve_transition_flags(graph_data: Mapping[str, Any]) -> tuple[bool, bool]:

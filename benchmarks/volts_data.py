@@ -15,7 +15,6 @@ import zlib
 
 from tnfr.validation.nodal_prediction import NodalMeasurementRun
 
-
 SOURCE_SHA256 = "e50e505783dbf9b6d477165c92328e805e5d8bb0d27e3458862e2d5ba7f00a52"
 SOURCE_BYTES = 767
 MAX_COMPRESSED_BYTES = 1024

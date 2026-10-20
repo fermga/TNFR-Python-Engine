@@ -48,39 +48,11 @@
     },
     "cfg_canon": {
       "type": "object",
-      "description": "Canonical grammar thresholds enforced by the automaton.",
+      "description": "Native incremental grammar enforcement configuration; operator and word contracts own admission.",
       "properties": {
         "enabled": {
           "description": "Toggle canonical grammar enforcement during metric runs.",
           "type": "boolean"
-        },
-        "zhir_requires_oz_window": {
-          "description": "Window requiring a DISSONANCE glyph before a MUTATION.",
-          "type": "integer",
-          "minimum": 0
-        },
-        "zhir_dnfr_min": {
-          "description": "Minimum normalised |ΔNFR| required to allow MUTATION without recent DISSONANCE.",
-          "type": "number",
-          "minimum": 0.0
-        },
-        "thol_min_len": {
-          "description": "Minimum number of THOL glyphs before canonical closure is allowed.",
-          "type": "integer",
-          "minimum": 0
-        },
-        "thol_max_len": {
-          "description": "Maximum number of THOL glyphs tolerated before forcing closure.",
-          "type": "integer",
-          "minimum": 0
-        },
-        "thol_close_dnfr": {
-          "description": "Upper bound on normalised |ΔNFR| that triggers THOL closure.",
-          "$ref": "#/definitions/probability"
-        },
-        "si_high": {
-          "description": "Sense index threshold: Si at or above this resolves THOL closures with silence; lower Si forces contraction.",
-          "$ref": "#/definitions/probability"
         }
       },
       "additionalProperties": true

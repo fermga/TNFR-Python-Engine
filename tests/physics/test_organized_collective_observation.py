@@ -10,7 +10,6 @@ from tests.sine_evidence_helpers import forbid_sine_regeneration
 from tnfr.mathematics._rational_interval import I, pi_interval
 from tnfr.physics import _organized_collective_observation as owner
 
-
 _FORM = tuple(Q((7 * node) % 19 - 9, 64) for node in range(54))
 _PHASE = tuple(Q((11 * node) % 23 - 11, 128) for node in range(54))
 

@@ -105,10 +105,7 @@ def test_summary_structure_is_valid(sample_network):
         assert "predictive_accuracy" in summary
 
 
-def test_sdk_wrapper_accepts_pattern_discovery_manifests(sample_network, monkeypatch):
-    monkeypatch.syspath_prepend(
-        str(Path(__file__).resolve().parents[2] / "applications/factorization-lab")
-    )
+def test_sdk_wrapper_accepts_pattern_discovery_manifests(sample_network):
     """Test that SDK wrapper can process pattern discovery manifests."""
     engine = TNFREmergentPatternEngine()
     discovery_result = engine.discover_all_patterns(sample_network)
@@ -136,6 +133,8 @@ def test_sdk_wrapper_accepts_pattern_discovery_manifests(sample_network, monkeyp
         assert runner["success_count"] == 1
         assert runner["failure_count"] == 0
         assert opt_result["promotable"] == {}
+        assert opt_result["validation_summary"]["status_counts"]["pending"] == 1
+        assert not opt_result["validation_summary"]["recommendation_effects_evaluated"]
         for entry in runner["partition_results"]:
             assert entry["telemetry_deltas"]["delta_c"] == 0.0
 

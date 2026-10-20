@@ -2,8 +2,10 @@
 
 Base Operator class with common functionality for all structural operators.
 
-**Physics**: All operators derive from nodal equation ∂EPI/∂t = νf · ΔNFR(t)
-**Implementation**: Each operator applies structural transformations via glyphs
+The nodal equation ∂EPI/∂t = νf · ΔNFR(t) specifies continuous form flow.
+Named operators implement separately supplied hybrid transformations, with
+their own grammar, live preconditions and lifecycle effects. Their admission
+does not derive autonomous occurrence or stability from that identity.
 """
 
 from __future__ import annotations
@@ -74,13 +76,13 @@ class Operator(metaclass=OperatorMetaAuto):
 
         from . import _validated_execution_window
         from .grammar_application import enforce_canonical_grammar
-        from .grammar_debt import require_replayable_history
+        from .grammar_debt import require_grammar_state
         from .grammar_types import glyph_function_name
         from .registry import get_operator_class
 
         kw["window"] = _validated_execution_window(G, kw.get("window"))
         validate_graph_seed(G)
-        require_replayable_history(G.nodes[node].get("glyph_history"))
+        require_grammar_state(G.nodes[node])
 
         # Hard structural invariants — always enforced before any state
         # mutation, independent of VALIDATE_OPERATOR_PRECONDITIONS.  Coupling

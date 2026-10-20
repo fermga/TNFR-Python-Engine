@@ -191,15 +191,24 @@ def test_noncentered_extreme_intervals_remain_forward_invariant(
     assert lower <= output[0] <= upper
 
 
-def test_signed_zero_adversary_is_equal_numerically_but_not_bitwise() -> None:
+def test_signed_zero_raw_adversary_is_canonicalized_by_boundary_admission() -> None:
     tiny = float.fromhex("0x0.0000000000001p-1022")
     certificate = _certificate()
 
-    output = certificate.evaluate_binary64_schedule_pair((-tiny, -0.0))
+    left, right = -tiny, -0.0
+    raw = (
+        neighbor_epi_blend_value(left, neighbor_epi_unweighted_mean((right,)), 0.5),
+        neighbor_epi_blend_value(right, neighbor_epi_unweighted_mean((left,)), 0.5),
+    )
+    # The binary64 mean/blend counterexample remains true before clipping.
+    assert raw[0] == raw[1] == 0.0
+    assert tuple(value.hex() for value in raw) == ("0x0.0p+0", "-0x0.0p+0")
+
+    output = certificate.evaluate_binary64_schedule_pair((left, right))
 
     assert output[0] == output[1] == 0.0
     assert output[0].hex() == "0x0.0p+0"
-    assert output[1].hex() == "-0x0.0p+0"
+    assert output[1].hex() == "0x0.0p+0"
     assert not certificate.signed_zero_bit_preservation_certified
 
 

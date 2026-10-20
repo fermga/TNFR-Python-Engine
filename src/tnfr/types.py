@@ -595,13 +595,13 @@ class SigmaVector(_SigmaVectorRequired, _SigmaVectorOptional):
 
 
 class SigmaTrace(TypedDict):
-    """Time-aligned σ(t) trace exported alongside glyphograms."""
+    """Position-aligned σ trace with explicit missing samples and clocks."""
 
-    t: list[float]
-    sigma_x: list[float]
-    sigma_y: list[float]
-    mag: list[float]
-    angle: list[float]
+    t: list[float | None]
+    sigma_x: list[float | None]
+    sigma_y: list[float | None]
+    mag: list[float | None]
+    angle: list[float | None]
 
 
 class SelectorThresholds(TypedDict):

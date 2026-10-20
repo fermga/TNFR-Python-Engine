@@ -25,7 +25,6 @@ from ._organized_finite_observation import (
 )
 from ._sine_flow import _full_sine_field
 
-
 _FORMATION = Q(200)
 _HORIZON = Q(216)
 _MAX_STEP = Q(1, 8)

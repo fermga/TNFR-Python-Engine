@@ -5,11 +5,11 @@ Receipts associate retained bytes and source; they do not authenticate an
 experiment or independently establish the conditional theorem.
 """
 
-from fractions import Fraction as Q
 import hashlib
 import importlib
-from pathlib import Path
 import subprocess
+from fractions import Fraction as Q
+from pathlib import Path
 
 import pytest
 
@@ -17,7 +17,6 @@ from tests.sine_evidence_helpers import forbid_organized_response_evaluation
 from tnfr.mathematics._rational_interval import I, cos, pi_interval, sin, sqrt
 from tnfr.research.artifact_io import decode_exact_tree, exact_record, file_receipt
 from tnfr.utils.io import json_loads
-
 
 ROOT = Path(__file__).resolve().parents[2]
 NAME = "organized_alternative_contact"

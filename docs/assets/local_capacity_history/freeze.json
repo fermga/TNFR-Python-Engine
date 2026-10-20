@@ -1,0 +1,45 @@
+{
+  "schema":"tnfr.local-capacity-history-freeze.v1",
+  "created_utc":"2026-10-14T22:45:09.546494+00:00",
+  "evaluation_status_at_freeze":"not_evaluated",
+  "artifacts":[
+    {
+      "path":"protocol.json",
+      "bytes":5393,
+      "sha256":"a8158b62ba1593e2f65e49705234662af82e59c3c5f61f8659c4dcf07622cc86"
+    },
+    {
+      "path":"source.json",
+      "bytes":157843,
+      "sha256":"54a93494d501526c8937b696c97bd3d90205471b653519b57e8f63d30026bae6"
+    },
+    {
+      "path":"evaluate.py",
+      "bytes":4401,
+      "sha256":"815a6100d72e4a316690c87c8f323b62eecf75c5de0ebb5b907bc805d777c513"
+    },
+    {
+      "path":"source.zip",
+      "bytes":4096090,
+      "sha256":"6e430bb36bf4edbd82b60f02a814abb6482a3a5fb96ea0f9aee8d7fdc21065f7"
+    },
+    {
+      "path":"source-manifest.json",
+      "bytes":161266,
+      "sha256":"28faabc6f366f9c2626c0067ba600d41a773c03e8d34533855d6e4ba4e5b3d6b"
+    }
+  ],
+  "prior_artifacts":[
+    {
+      "path":"docs/assets/collective_pressure_handoff/source.zip",
+      "bytes":4041184,
+      "sha256":"176b7fc114bd404d2753c417981e2c725d160e9f9fd068ed189d271a7268a1ce"
+    },
+    {
+      "path":"docs/assets/collective_pressure_handoff/correction_v2/response.json",
+      "bytes":3454510,
+      "sha256":"39ddab82885e4171ed67bf61eb77a67a1e081039e48d7ca760c0ee494befb3b4"
+    }
+  ],
+  "semantics":"Content association, not provenance authentication; no reserved response evaluated before freeze"
+}

@@ -13,13 +13,9 @@ from dataclasses import dataclass
 from fractions import Fraction as Q
 
 from .._exact_time import exact_or_represented_real as _exact
-from ..mathematics._rational_interval import (
-    INTERVAL_METHOD,
-    I as Interval,
-    cos,
-    pi_interval,
-    sin,
-)
+from ..mathematics._rational_interval import INTERVAL_METHOD
+from ..mathematics._rational_interval import I as Interval
+from ..mathematics._rational_interval import cos, pi_interval, sin
 from ._organized_alternative_contact import _geometry
 from ._organized_external_interaction import _OrganizedExternalInteractionGeometry
 from ._sine_class_constitutive_comparison import _edge_law

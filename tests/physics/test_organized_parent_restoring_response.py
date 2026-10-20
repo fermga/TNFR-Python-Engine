@@ -11,7 +11,6 @@ from tnfr.physics import _organized_parent_restoring_response as owner
 from tnfr.physics import _repeated_organized_composition as composition
 from tnfr.physics._sine_preparation import _prepared_heat_error_radii
 
-
 _ERROR = Q(1, 10**10)
 _RECOVERED = Q(1, 10**70)
 

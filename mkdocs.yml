@@ -90,6 +90,20 @@ nav:
           - "Pressure premises": theory/nodal/PRESSURE_CONSTITUTIVE_SCOPE.md
           - "Joint parameter response": theory/nodal/JOINT_PARAMETER_RESPONSE.md
           - "Glossary": theory/GLOSSARY.md
+      - "Organized objects and retained identity":
+          - "Emergence and ontology": theory/EMERGENT_ONTOLOGY.md
+          - "Scale, geometry and collective-state index": theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md
+          - "Resonance foundations": theory/nodal/RESONANCE_FOUNDATIONS.md
+      - "Operators, grammar and support events":
+          - "Structural operators": theory/STRUCTURAL_OPERATORS.md
+          - "Unified grammar": theory/UNIFIED_GRAMMAR_RULES.md
+          - "Diagnostic and grammar scope": theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md
+          - "Relational support events": theory/nodal/RELATIONAL_SUPPORT_EVENTS.md
+      - "Diagnostics and geometry":
+          - "Minimal structural degrees": theory/MINIMAL_STRUCTURAL_DEGREES.md
+          - "Structural conservation diagnostics": theory/STRUCTURAL_CONSERVATION_THEOREM.md
+          - "Stability and dynamics diagnostics": theory/STRUCTURAL_STABILITY_AND_DYNAMICS.md
+          - "Extended fields": theory/EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md
       - "Form, phase and coherent patterns":
           - "Inherited form dynamics": theory/nodal/INHERITED_FORM_DYNAMICS.md
           - "Phase-to-form exchange": theory/nodal/PHASE_FORM_EXCHANGE.md
@@ -101,85 +115,14 @@ nav:
           - "Free relative-phase access between organized children": theory/nodal/ORGANIZED_FREE_PHASE_PROBE.md
           - "Reciprocal form-resource envelope": theory/nodal/RECIPROCAL_FORM_RESOURCE_ENVELOPE.md
           - "Information from a small phase preparation": theory/nodal/ORGANIZED_SMALL_RESOURCE_INFORMATION.md
-          - "Finite transport of a localized identity": theory/nodal/LOCALIZED_IDENTITY_TRANSPORT.md
-          - "Source resources for localized mobile identities": theory/nodal/LOCALIZED_TRANSPORT_SOURCES.md
-          - "Prepared mobile encounter and interaction observation": theory/nodal/LOCALIZED_MOBILE_INTERACTION.md
-          - "Certified observation of a mobile encounter": theory/nodal/LOCALIZED_MOBILE_RESPONSE.md
-          - "Geometry and formation of localized organization": theory/nodal/LOCALIZED_ORGANIZATION_GEOMETRY.md
-          - "Constitutive freedom of organized patterns": theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md
-          - "Constitutive inheritance through organized interfaces": theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md
-          - "Predictive repeated organized composition": theory/nodal/REPEATED_ORGANIZED_COMPOSITION.md
-          - "Parent registration acquired from organized children": theory/nodal/ORGANIZED_PARENT_ACQUISITION.md
-          - "Restoring response of an acquired organized parent": theory/nodal/ORGANIZED_PARENT_RESTORING_RESPONSE.md
-          - "Continuous form actuation of the acquired-parent phase event": theory/nodal/ORGANIZED_PARENT_CONTINUOUS_ACTUATION.md
-          - "Constructive continuous realization of the acquired-parent phase event": theory/nodal/ORGANIZED_PARENT_CONSTRUCTIVE_ACTUATION.md
-          - "Collective actuation with unresolved fine state": theory/nodal/ORGANIZED_PARENT_COLLECTIVE_ACTUATION.md
-          - "Autonomous exchange with a finite auxiliary reservoir": theory/nodal/ORGANIZED_PARENT_RESERVOIR_EXCHANGE.md
-          - "Retained reservoir information and local organized equilibria": theory/nodal/ORGANIZED_PARENT_RESERVOIR_MEMORY.md
-          - "Complete port inherited from an organized C9 source": theory/nodal/ORGANIZED_SOURCE_PORT.md
-          - "Full-state capture and collective registration of the organized source": theory/nodal/ORGANIZED_SOURCE_CAPTURE.md
-          - "Acquisition of an outer winding by five acquired C9 organizations": theory/nodal/ORGANIZED_OUTER_WINDING.md
-          - "Alternative-law outer acquisition": theory/nodal/ORGANIZED_ALTERNATIVE_OUTER_ACQUISITION.md
-          - "Alternative-law finite interaction": theory/nodal/ORGANIZED_ALTERNATIVE_CONTACT.md
-          - "Dynamical cancellation on ideal organized contact": theory/nodal/ORGANIZED_CONTACT_DYNAMIC_CANCELLATION.md
-          - "Fine preparation and hidden contact response": theory/nodal/ORGANIZED_CONTACT_PREPARATION_SENSITIVITY.md
-          - "Finite probe response of the acquired outer organization": theory/nodal/ORGANIZED_OUTER_RESPONSE.md
-          - "Observing outer winding with unknown child phase origins": theory/nodal/ORGANIZED_OUTER_OBSERVATION.md
-          - "Observing outer winding on one continuing organization": theory/nodal/ORGANIZED_SEQUENTIAL_OBSERVATION.md
-          - "External interaction of an acquired collective organization": theory/nodal/ORGANIZED_EXTERNAL_INTERACTION.md
-          - "Finite interaction across relative phase origins": theory/nodal/ORGANIZED_EXTERNAL_REGISTRATION.md
-          - "Joint preparation resources for finite interaction": theory/nodal/ORGANIZED_JOINT_RESOURCES.md
-          - "Finite coupling across normalized interfaces": theory/nodal/ORGANIZED_INTERFACE_FACTORIZATION.md
-          - "Conserved charge observations": theory/nodal/ORGANIZED_CHARGE_OBSERVATION.md
-          - "Complete-state electrical realization": theory/nodal/ORGANIZED_ELECTRICAL_REALIZATION.md
-          - "Actual-source electrical comparison": theory/nodal/ORGANIZED_ELECTRICAL_SOURCE.md
-          - "Operational electrical identification": theory/nodal/ORGANIZED_ELECTRICAL_IDENTIFICATION.md
-          - "Finite input on the actual five-child organization": theory/nodal/ORGANIZED_ELECTRICAL_ACTUATION.md
-          - "Observing collective winding with finite form inputs": theory/nodal/ORGANIZED_FINITE_OBSERVATION.md
-          - "Five-child electrical observation protocol": theory/nodal/ORGANIZED_ELECTRICAL_PROTOCOL.md
-          - "Collective response inherited from constituents": theory/nodal/ORGANIZED_CONSTITUENT_MEMORY.md
-          - "Finite collective prediction with frozen variances": theory/nodal/ORGANIZED_COMPRESSED_MEMORY.md
-          - "Preparation-aware collective initialization": theory/nodal/ORGANIZED_MEMORY_INITIALIZATION.md
-          - "Computable post-observation prediction": theory/nodal/ORGANIZED_COMPUTABLE_PREDICTION.md
-          - "Predictive sufficiency of joint observations": theory/nodal/ORGANIZED_OBSERVED_PREDICTION.md
-          - "Admission of an observation-based forecast": theory/nodal/ORGANIZED_OBSERVED_FORECAST.md
-          - "Constitutive law and unknown initialization": theory/nodal/ORGANIZED_LAW_OBSERVATION.md
-          - "Current discrimination under uncertainty": theory/nodal/ORGANIZED_ROBUST_CURRENT.md
-          - "Physical feasibility of organized current observation": theory/research/ORGANIZED_ELECTRICAL_FEASIBILITY.md
-          - "Collective state and matrix response": theory/nodal/ORGANIZED_EFFECTIVE_LAW.md
-          - "Loaded finite-window collective observation": theory/research/ORGANIZED_FINITE_WINDOW_DESIGN.md
-          - "Integrated sensor response during recovery": theory/research/ORGANIZED_RECOVERY_OBSERVATION.md
-          - "Organized identity under continued external contact": theory/nodal/ORGANIZED_CONTACT_MAINTENANCE.md
-          - "Organized identity under weak external contact": theory/nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md
-          - "Alternative-law weak-contact registration and capture": theory/nodal/ORGANIZED_ALTERNATIVE_WEAK_CONTACT.md
-          - "Constitutive transition of collective registration": theory/nodal/ORGANIZED_CONSTITUTIVE_TRANSITION.md
-          - "A marked interaction of a critical parent": theory/nodal/CRITICAL_PARENT_INTERACTION.md
-          - "Collective boundary constraints and the scope of restoration": theory/nodal/COLLECTIVE_BOUNDARY_CONSTRAINTS.md
-          - "Reflection obstruction for full-fine contact identity": theory/nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md
-          - "Full-fine stationary contact and marked chambers": theory/nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md
-          - "Composition-compatible constitutive laws": theory/nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md
-          - "Oriented-interface profile inheritance": theory/nodal/ORIENTED_INTERFACE_PROFILE_INHERITANCE.md
-          - "Network-wide organized compatibility": theory/nodal/ORGANIZED_NETWORK_COMPATIBILITY.md
-          - "Capture of the acquired three-object assembly": theory/nodal/ACQUIRED_ORGANIZED_NETWORK_CAPTURE.md
-          - "Identity-preserving assembly work": theory/nodal/ORGANIZED_ASSEMBLY_WORK.md
-          - "Joint acquisition on preexisting fine support": theory/nodal/ORGANIZED_JOINT_ACQUISITION.md
-          - "Locally unprepared receiver mechanism": theory/nodal/ORGANIZED_RECEIVER_MECHANISM.md
-          - "Controlled slow receiver admission": theory/nodal/ORGANIZED_RECEIVER_SLOW_ADMISSION.md
-          - "Source-preserving receiver enclosure": theory/nodal/ORGANIZED_RECEIVER_ENCLOSURE.md
-          - "Regional work and winding retention": theory/nodal/ORGANIZED_REGIONAL_RETENTION.md
-          - "Constitutive identity barriers and work": theory/nodal/CONSTITUTIVE_IDENTITY_BARRIERS.md
-          - "Constitutive receiver source and comparison": theory/nodal/CONSTITUTIVE_RECEIVER_COMPARISON.md
-          - "Preparation information and acquired modes": theory/nodal/SINE_PREPARATION_MODE_SELECTION.md
-          - "Preparation paths, capture and forced phase passage": theory/nodal/SINE_PREPARATION_PATH_SELECTION.md
-          - "Terminal restrictions on the same preparation path": theory/nodal/SINE_PREPARATION_PATH_LIMITS.md
-          - "Source-specific capture through the actual phase passage": theory/nodal/SINE_PREPARATION_PATH_CAPTURE.md
-          - "Constitutive robustness of source-path capture": theory/nodal/SINE_PREPARATION_PATH_ROBUSTNESS.md
+      - "Native formation and composition":
           - "Native local recovery and regional interaction": theory/nodal/RELATIONAL_RECOVERY_AND_INTERACTION.md
           - "Native phase domains and capture": theory/nodal/RELATIONAL_DOMAIN_AND_CAPTURE.md
           - "Native validated transit and preparation controls": theory/nodal/RELATIONAL_FORMATION_CONTROLS.md
           - "Relational pattern composition": theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md
           - "Effective mediated connections": theory/nodal/RELATIONAL_EFFECTIVE_CONNECTIONS.md
           - "Native formation and its obstructions": theory/nodal/RELATIONAL_NATIVE_FORMATION.md
+      - "Formed sine classes and collective interfaces":
           - "Smooth-sine pattern dynamics": theory/nodal/SINE_PATTERN_DYNAMICS.md
           - "Repeated probes of formed sine classes": theory/nodal/SINE_FORMED_CLASS_MAINTENANCE.md
           - "Contact of actually formed sine classes": theory/nodal/SINE_FORMED_CLASS_CONTACT.md
@@ -204,21 +147,12 @@ nav:
           - "Nonlinear excess storage and loss": theory/nodal/SINE_CLASS_STORAGE_EXCESS.md
           - "Uniform tracking of reduced sine ports": theory/nodal/SINE_PORT_RELAXATION.md
           - "Form tracking by ordered heat comparison": theory/nodal/SINE_PORT_FORM_TRACKING.md
-          - "Two-port compatibility of sine classes": theory/nodal/SINE_TWO_PORT_COMPATIBILITY.md
-          - "Finite transit of two-port sine classes": theory/nodal/SINE_TWO_PORT_TRANSIT.md
-          - "Prepared capture of two-port sine classes": theory/nodal/SINE_TWO_PORT_CAPTURE.md
-          - "Supplied probe of the acquired two-port composite": theory/nodal/SINE_TWO_PORT_PROBE.md
-          - "Interior phase probe of acquired two-port deformation": theory/nodal/SINE_TWO_PORT_DIPOLE.md
-          - "Two-port geometry from a calibrated local response": theory/nodal/SINE_TWO_PORT_INFERENCE.md
-          - "Geometry and gain from two successive phase inputs": theory/nodal/SINE_TWO_PULSE_INFERENCE.md
-          - "Geometry, sensor gain and a declared uncertain clock": theory/nodal/SINE_CLOCK_INFERENCE.md
-          - "Finite curvature from one additional reading": theory/nodal/SINE_FINITE_CURVATURE_INFERENCE.md
-          - "Clock drift, sampled exposure and robust mean-rate inference": theory/nodal/SINE_CLOCK_DRIFT_INFERENCE.md
-          - "Finite-aperture observations and mean-clock inference": theory/nodal/SINE_APERTURE_INFERENCE.md
-          - "Finite-noise and horizon resolution for the four boxcar observations": theory/nodal/SINE_APERTURE_RESOLUTION.md
+      - "Conservative organization, pulses and memory":
           - "Exact and controlled form-phase reductions": theory/nodal/SINE_FORM_PHASE_REDUCTION.md
           - "Conservative regional formation and its barriers": theory/nodal/SINE_REGIONAL_FORMATION.md
           - "Collective phase families and live contact feedback": theory/nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md
+          - "Canonical contact between maintained weighted stars": theory/nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md
+          - "Finite registration and collective identity after contact": theory/nodal/SINE_WEIGHTED_STAR_FINITE_IDENTITY.md
           - "Conservative source preparation and finite retention": theory/nodal/SINE_CONSERVATIVE_PREPARATION.md
           - "Native reduction and memory index": theory/nodal/RELATIONAL_PATTERN_MEMORY.md
           - "Native mediated pattern dynamics": theory/nodal/RELATIONAL_MEDIATOR_DYNAMICS.md
@@ -226,8 +160,6 @@ nav:
           - "Return-path geometry and collective response": theory/nodal/RELATIONAL_RETURN_PATH_GEOMETRY.md
           - "Retained phase records and finite contact readout": theory/nodal/RELATIONAL_PHASE_MEMORY.md
           - "Sine relative state, recovery and conservative identity": theory/nodal/SINE_PATTERN_RECOVERY.md
-          - "Resonance foundations": theory/nodal/RESONANCE_FOUNDATIONS.md
-          - "Emergence and ontology": theory/EMERGENT_ONTOLOGY.md
       - "Transport, memory and clocks":
           - "EPI diffusion stability": theory/TNFR_DIFFUSION_STABILITY_THEOREM.md
           - "Directed nonnormal dynamics": theory/TNFR_DIRECTED_NONNORMAL_DYNAMICS.md
@@ -242,27 +174,146 @@ nav:
           - "Winding generation and native writer boundaries": theory/nodal/FORCED_WINDING_AND_WRITERS.md
           - "Geometric identity and capacity-feedback bounds": theory/nodal/FORCED_GEOMETRIC_IDENTITY.md
           - "REMESH fixed-delay models": theory/REMESH_INFINITY_DERIVATION.md
-          - "Scale, geometry and collective-state index": theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md
           - "Sufficient unordered pair state": theory/nodal/SINE_PAIR_STATE.md
           - "Internal replica pulses and their perturbations": theory/nodal/SINE_REPLICA_PULSE.md
           - "Phase and joint form-phase grouping": theory/nodal/SINE_PAIR_GROUPING.md
           - "Pair geometry under alternative reciprocal mobility": theory/nodal/SINE_PAIR_MOBILITY.md
           - "Pair actions, regional exchange and cancellation": theory/nodal/SINE_PAIR_INTERACTION.md
-      - "Operators, grammar and support events":
-          - "Structural operators": theory/STRUCTURAL_OPERATORS.md
-          - "Unified grammar": theory/UNIFIED_GRAMMAR_RULES.md
-          - "Diagnostic and grammar scope": theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md
+          - "One admitted collective word": theory/nodal/SINE_PAIR_WORD.md
+          - "Collective Resonance and internal geometry": theory/nodal/SINE_PAIR_RESONANCE.md
+          - "Collective Coupling and support-law admission": theory/nodal/SINE_PAIR_COUPLING.md
+          - "Actual contact between maintained organizations": theory/nodal/SINE_ORGANIZATION_CONTACT.md
+          - "Stationary and energy geometry of the actual contact": theory/nodal/SINE_CONTACT_STATIONARY_GEOMETRY.md
+          - "Phase-nearest UM contact, maintenance and finite exchange": theory/nodal/SINE_PROXIMITY_CONTACT.md
+      - "Organized sources and parent dynamics":
+          - "Constitutive freedom of organized patterns": theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md
+          - "Constitutive inheritance through organized interfaces": theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md
+          - "Predictive repeated organized composition": theory/nodal/REPEATED_ORGANIZED_COMPOSITION.md
+          - "Parent registration acquired from organized children": theory/nodal/ORGANIZED_PARENT_ACQUISITION.md
+          - "Restoring response of an acquired organized parent": theory/nodal/ORGANIZED_PARENT_RESTORING_RESPONSE.md
+          - "Continuous form actuation of the acquired-parent phase event": theory/nodal/ORGANIZED_PARENT_CONTINUOUS_ACTUATION.md
+          - "Constructive continuous realization of the acquired-parent phase event": theory/nodal/ORGANIZED_PARENT_CONSTRUCTIVE_ACTUATION.md
+          - "Collective actuation with unresolved fine state": theory/nodal/ORGANIZED_PARENT_COLLECTIVE_ACTUATION.md
+          - "Autonomous exchange with a finite auxiliary reservoir": theory/nodal/ORGANIZED_PARENT_RESERVOIR_EXCHANGE.md
+          - "Retained reservoir information and local organized equilibria": theory/nodal/ORGANIZED_PARENT_RESERVOIR_MEMORY.md
+          - "Complete port inherited from an organized C9 source": theory/nodal/ORGANIZED_SOURCE_PORT.md
+          - "Full-state capture and collective registration of the organized source": theory/nodal/ORGANIZED_SOURCE_CAPTURE.md
+      - "Collective winding and contact response":
+          - "Acquisition of an outer winding by five acquired C9 organizations": theory/nodal/ORGANIZED_OUTER_WINDING.md
+          - "Alternative-law outer acquisition": theory/nodal/ORGANIZED_ALTERNATIVE_OUTER_ACQUISITION.md
+          - "Alternative-law finite interaction": theory/nodal/ORGANIZED_ALTERNATIVE_CONTACT.md
+          - "Dynamical cancellation on ideal organized contact": theory/nodal/ORGANIZED_CONTACT_DYNAMIC_CANCELLATION.md
+          - "Fine preparation and hidden contact response": theory/nodal/ORGANIZED_CONTACT_PREPARATION_SENSITIVITY.md
+          - "Finite probe response of the acquired outer organization": theory/nodal/ORGANIZED_OUTER_RESPONSE.md
+          - "Observing outer winding with unknown child phase origins": theory/nodal/ORGANIZED_OUTER_OBSERVATION.md
+          - "Observing outer winding on one continuing organization": theory/nodal/ORGANIZED_SEQUENTIAL_OBSERVATION.md
+          - "External interaction of an acquired collective organization": theory/nodal/ORGANIZED_EXTERNAL_INTERACTION.md
+          - "Finite interaction across relative phase origins": theory/nodal/ORGANIZED_EXTERNAL_REGISTRATION.md
+          - "Joint preparation resources for finite interaction": theory/nodal/ORGANIZED_JOINT_RESOURCES.md
+      - "Organized observation and predictive information":
+          - "Finite coupling across normalized interfaces": theory/nodal/ORGANIZED_INTERFACE_FACTORIZATION.md
+          - "Conserved charge observations": theory/nodal/ORGANIZED_CHARGE_OBSERVATION.md
+          - "Complete-state electrical realization": theory/nodal/ORGANIZED_ELECTRICAL_REALIZATION.md
+          - "Actual-source electrical comparison": theory/nodal/ORGANIZED_ELECTRICAL_SOURCE.md
+          - "Operational electrical identification": theory/nodal/ORGANIZED_ELECTRICAL_IDENTIFICATION.md
+          - "Finite input on the actual five-child organization": theory/nodal/ORGANIZED_ELECTRICAL_ACTUATION.md
+          - "Observing collective winding with finite form inputs": theory/nodal/ORGANIZED_FINITE_OBSERVATION.md
+          - "Five-child electrical observation protocol": theory/nodal/ORGANIZED_ELECTRICAL_PROTOCOL.md
+          - "Collective response inherited from constituents": theory/nodal/ORGANIZED_CONSTITUENT_MEMORY.md
+          - "Finite collective prediction with frozen variances": theory/nodal/ORGANIZED_COMPRESSED_MEMORY.md
+          - "Preparation-aware collective initialization": theory/nodal/ORGANIZED_MEMORY_INITIALIZATION.md
+          - "Computable post-observation prediction": theory/nodal/ORGANIZED_COMPUTABLE_PREDICTION.md
+          - "Predictive sufficiency of joint observations": theory/nodal/ORGANIZED_OBSERVED_PREDICTION.md
+          - "Admission of an observation-based forecast": theory/nodal/ORGANIZED_OBSERVED_FORECAST.md
+          - "Constitutive law and unknown initialization": theory/nodal/ORGANIZED_LAW_OBSERVATION.md
+          - "Current discrimination under uncertainty": theory/nodal/ORGANIZED_ROBUST_CURRENT.md
+          - "Physical feasibility of organized current observation": theory/research/ORGANIZED_ELECTRICAL_FEASIBILITY.md
+          - "Collective state and matrix response": theory/nodal/ORGANIZED_EFFECTIVE_LAW.md
+          - "Loaded finite-window collective observation": theory/research/ORGANIZED_FINITE_WINDOW_DESIGN.md
+          - "Integrated sensor response during recovery": theory/research/ORGANIZED_RECOVERY_OBSERVATION.md
+      - "Collective maintenance and assembly":
+          - "Organized identity under continued external contact": theory/nodal/ORGANIZED_CONTACT_MAINTENANCE.md
+          - "Organized identity under weak external contact": theory/nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md
+          - "Alternative-law weak-contact registration and capture": theory/nodal/ORGANIZED_ALTERNATIVE_WEAK_CONTACT.md
+          - "Constitutive transition of collective registration": theory/nodal/ORGANIZED_CONSTITUTIVE_TRANSITION.md
+          - "A marked interaction of a critical parent": theory/nodal/CRITICAL_PARENT_INTERACTION.md
+          - "Collective boundary constraints and the scope of restoration": theory/nodal/COLLECTIVE_BOUNDARY_CONSTRAINTS.md
+          - "Reflection obstruction for full-fine contact identity": theory/nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md
+          - "Full-fine stationary contact and marked chambers": theory/nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md
+          - "Composition-compatible constitutive laws": theory/nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md
+          - "Oriented-interface profile inheritance": theory/nodal/ORIENTED_INTERFACE_PROFILE_INHERITANCE.md
+          - "Network-wide organized compatibility": theory/nodal/ORGANIZED_NETWORK_COMPATIBILITY.md
+          - "Capture of the acquired three-object assembly": theory/nodal/ACQUIRED_ORGANIZED_NETWORK_CAPTURE.md
+          - "Identity-preserving assembly work": theory/nodal/ORGANIZED_ASSEMBLY_WORK.md
+          - "Joint acquisition on preexisting fine support": theory/nodal/ORGANIZED_JOINT_ACQUISITION.md
+          - "Locally unprepared receiver mechanism": theory/nodal/ORGANIZED_RECEIVER_MECHANISM.md
+          - "Controlled slow receiver admission": theory/nodal/ORGANIZED_RECEIVER_SLOW_ADMISSION.md
+          - "Source-preserving receiver enclosure": theory/nodal/ORGANIZED_RECEIVER_ENCLOSURE.md
+          - "Regional work and winding retention": theory/nodal/ORGANIZED_REGIONAL_RETENTION.md
+      - "Constitutive barriers and source preparation":
+          - "Constitutive identity barriers and work": theory/nodal/CONSTITUTIVE_IDENTITY_BARRIERS.md
+          - "Constitutive receiver source and comparison": theory/nodal/CONSTITUTIVE_RECEIVER_COMPARISON.md
+          - "Preparation information and acquired modes": theory/nodal/SINE_PREPARATION_MODE_SELECTION.md
+          - "Preparation paths, capture and forced phase passage": theory/nodal/SINE_PREPARATION_PATH_SELECTION.md
+          - "Terminal restrictions on the same preparation path": theory/nodal/SINE_PREPARATION_PATH_LIMITS.md
+          - "Source-specific capture through the actual phase passage": theory/nodal/SINE_PREPARATION_PATH_CAPTURE.md
+          - "Constitutive robustness of source-path capture": theory/nodal/SINE_PREPARATION_PATH_ROBUSTNESS.md
+      - "Sine contact, observation and inference":
+          - "Two-port compatibility of sine classes": theory/nodal/SINE_TWO_PORT_COMPATIBILITY.md
+          - "Finite transit of two-port sine classes": theory/nodal/SINE_TWO_PORT_TRANSIT.md
+          - "Prepared capture of two-port sine classes": theory/nodal/SINE_TWO_PORT_CAPTURE.md
+          - "Supplied probe of the acquired two-port composite": theory/nodal/SINE_TWO_PORT_PROBE.md
+          - "Interior phase probe of acquired two-port deformation": theory/nodal/SINE_TWO_PORT_DIPOLE.md
+          - "Two-port geometry from a calibrated local response": theory/nodal/SINE_TWO_PORT_INFERENCE.md
+          - "Geometry and gain from two successive phase inputs": theory/nodal/SINE_TWO_PULSE_INFERENCE.md
+          - "Geometry, sensor gain and a declared uncertain clock": theory/nodal/SINE_CLOCK_INFERENCE.md
+          - "Finite curvature from one additional reading": theory/nodal/SINE_FINITE_CURVATURE_INFERENCE.md
+          - "Clock drift, sampled exposure and robust mean-rate inference": theory/nodal/SINE_CLOCK_DRIFT_INFERENCE.md
+          - "Finite-aperture observations and mean-clock inference": theory/nodal/SINE_APERTURE_INFERENCE.md
+          - "Finite-noise and horizon resolution for the four boxcar observations": theory/nodal/SINE_APERTURE_RESOLUTION.md
+      - "Localized transport and organization":
+          - "Finite transport of a localized identity": theory/nodal/LOCALIZED_IDENTITY_TRANSPORT.md
+          - "Source resources for localized mobile identities": theory/nodal/LOCALIZED_TRANSPORT_SOURCES.md
+          - "Prepared mobile encounter and interaction observation": theory/nodal/LOCALIZED_MOBILE_INTERACTION.md
+          - "Certified observation of a mobile encounter": theory/nodal/LOCALIZED_MOBILE_RESPONSE.md
+          - "Geometry and formation of localized organization": theory/nodal/LOCALIZED_ORGANIZATION_GEOMETRY.md
+          - "Localized formation compatibility": theory/nodal/LOCALIZED_FORMATION_COMPATIBILITY.md
+          - "Same-band source and regional work": theory/nodal/LOCALIZED_SINGLE_BAND_WORK.md
+          - "Localized retention mechanisms": theory/nodal/LOCALIZED_RETENTION_MECHANISMS.md
+      - "Model-specific operator and hierarchy studies":
+          - "Native operator dynamics": theory/NATIVE_OPERATOR_DYNAMICS.md
+          - "Native collective calculus": theory/NATIVE_COLLECTIVE_CALCULUS.md
+          - "Aggregate operators and native transitions": theory/NATIVE_AGGREGATE_OPERATORS.md
+          - "Collective IL/OZ pressure handoff": theory/nodal/SINE_COLLECTIVE_PRESSURE_HANDOFF.md
+          - "Pressure-completion compatibility": theory/nodal/SINE_PRESSURE_COMPLETION.md
+          - "Complete form-capacity actions": theory/nodal/SINE_FORM_CAPACITY_ACTION.md
+          - "Directional maintenance": theory/nodal/SINE_DIRECTIONAL_MAINTENANCE.md
+          - "Collective identity through form-capacity action": theory/nodal/SINE_COLLECTIVE_IDENTITY_TRANSITION.md
+          - "Collective Reception": theory/nodal/SINE_COLLECTIVE_RECEPTION.md
+          - "Collective Transition": theory/nodal/SINE_COLLECTIVE_TRANSITION.md
+          - "Collective Mutation admission": theory/nodal/SINE_COLLECTIVE_MUTATION_ADMISSION.md
+          - "Collective Mutation action": theory/nodal/SINE_COLLECTIVE_MUTATION_ACTION.md
+          - "Collective hierarchy": theory/nodal/SINE_COLLECTIVE_HIERARCHY.md
+          - "Hierarchy-to-contact composition": theory/nodal/SINE_HIERARCHY_CONTACT.md
+          - "Maintained-source birth obstruction": theory/nodal/SINE_ORGANIZED_BIRTH_OBSTRUCTION.md
+          - "Capacity and temporal access": theory/nodal/SINE_CAPACITY_TEMPORAL_ACCESS.md
+          - "Local capacity and joint temporal admission": theory/nodal/SINE_LOCAL_CAPACITY_ADMISSION.md
+          - "Acquired local-capacity history": theory/nodal/SINE_LOCAL_HISTORY_ACQUISITION.md
+          - "THOL birth on a certified maintained parent": theory/nodal/SINE_MAINTAINED_PARENT_THOL.md
+          - "Default UM on the retained THOL successor": theory/nodal/SINE_MAINTAINED_PARENT_UM.md
+          - "Maintained-parent SHA closure and changed law": theory/nodal/SINE_MAINTAINED_PARENT_CLOSURE.md
+          - "Connected child's temporal capability": theory/nodal/SINE_CHILD_TEMPORAL_READINESS.md
+          - "Child OZ and observation timing": theory/nodal/SINE_CHILD_GRAMMAR_TIMING.md
+          - "Acquired-child THOL and word completion": theory/nodal/SINE_CHILD_THOL_ADMISSION.md
+          - "Stationary geometry of the proposed UM successor": theory/nodal/SINE_SUCCESSOR_STATIONARY_GEOMETRY.md
+          - "Principal-chamber minimum exclusion": theory/nodal/SINE_SUCCESSOR_PRINCIPAL_REDUCTION.md
+          - "Successor motion and sufficient state": theory/nodal/SINE_SUCCESSOR_NONSTATIONARY.md
+          - "Collective Recursivity": theory/nodal/SINE_COLLECTIVE_RECURSIVITY.md
           - "Coupling and winding": theory/COUPLING_WINDING_PERSISTENCE.md
-          - "Relational support events": theory/nodal/RELATIONAL_SUPPORT_EVENTS.md
           - "Coherent pattern contact": theory/COHERENT_PATTERN_CONTACT.md
           - "THOL pressure feedback": theory/THOL_PRESSURE_FEEDBACK.md
           - "THOL birth and transport": theory/THOL_BIRTH_AND_TRANSPORT.md
           - "Child coupling feedback": theory/CHILD_COUPLING_FEEDBACK.md
-      - "Diagnostics and geometry":
-          - "Minimal structural degrees": theory/MINIMAL_STRUCTURAL_DEGREES.md
-          - "Structural conservation diagnostics": theory/STRUCTURAL_CONSERVATION_THEOREM.md
-          - "Stability and dynamics diagnostics": theory/STRUCTURAL_STABILITY_AND_DYNAMICS.md
-          - "Extended fields": theory/EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md
       - "Auxiliary models and physical comparisons":
           - "Variational and exchange models": theory/TNFR_VARIATIONAL_PRINCIPLE.md
           - "Dissipative/open-system models": theory/DISSIPATIVE_AND_OPEN_SYSTEMS.md
@@ -284,9 +335,11 @@ nav:
           - "Research strategy": theory/NODAL_RESEARCH_STRATEGY.md
           - "Passive transport protocol": theory/research/PASSIVE_TRANSPORT_PROTOCOL.md
           - "Regional phase/amplitude protocol": theory/research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md
+          - "Chemical observation and predictive information": theory/research/CHEMICAL_OBSERVATION_ADMISSION.md
           - "Physical admission of the delayed digital-PLL realization": theory/research/DPLL_PHYSICAL_ADMISSION.md
           - "TCLab comparison boundary": theory/research/TCLAB_EXPLORATORY_PROTOCOL.md
           - "Parked C6 evidence boundary": theory/C6_RESEARCH_MECHANISM_AUDIT.md
+          - "Relative-coupling observation admission": theory/research/RELATIVE_COUPLING_PROBE.md
 # END GENERATED THEORY NAVIGATION
       - Historical archive: theory/research/archive/README.md
       - Retired programme boundaries: theory/research/archive/RETIRED_PROGRAMME_BOUNDARIES.md
@@ -294,8 +347,7 @@ nav:
   - Benchmarks: benchmarks/README.md
   - Applications:
       - Scope and retained projects: applications/README.md
-      - Factorization lab: applications/factorization-lab/README.md
-      - Primality: applications/primality-test/README.md
+      - Basic primality utility: applications/primality-test/README.md
   - Development:
       - Testing: TESTING.md
       - Contributing: CONTRIBUTING.md

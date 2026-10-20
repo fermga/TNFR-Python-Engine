@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 from copy import deepcopy
+from fractions import Fraction
 
 import networkx as nx
 import pytest
@@ -109,6 +110,24 @@ def test_contract_reversing_or_noop_values_are_rejected(key, value):
 def test_known_factors_require_representable_finite_real_scalars(value):
     with pytest.raises(GlyphFactorValidationError, match="EN_mix"):
         validate_glyph_factor("EN_mix", value)
+
+
+@pytest.mark.parametrize(
+    "key",
+    [
+        key
+        for key, spec in GLYPH_FACTOR_SPECS.items()
+        if spec.upper is not None and spec.upper_inclusive
+    ],
+)
+def test_exact_factors_cannot_round_into_a_closed_upper_boundary(key):
+    upper = Fraction(GLYPH_FACTOR_SPECS[key].upper)
+    outside = upper + Fraction(1, 10**100)
+    assert outside > upper and float(outside) == float(upper)
+    with pytest.raises(GlyphFactorValidationError, match=key):
+        validate_glyph_factor(key, outside)
+    assert validate_glyph_factor(key, upper) == float(upper)
+    assert validate_glyph_factor(key, upper - Fraction(1, 10**100)) == float(upper)
 
 
 @pytest.mark.parametrize(

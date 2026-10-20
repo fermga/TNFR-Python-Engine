@@ -2,6 +2,7 @@
 
 import math
 from copy import deepcopy
+from fractions import Fraction
 
 import networkx as nx
 import pytest
@@ -83,7 +84,19 @@ def test_single_node_ring_has_no_self_coupling(api):
     assert graph.number_of_edges() == 0
 
 
-@pytest.mark.parametrize("probability", [True, False, -0.1, 1.1, math.nan, math.inf])
+@pytest.mark.parametrize(
+    "probability",
+    [
+        True,
+        False,
+        -0.1,
+        1.1,
+        math.nan,
+        math.inf,
+        Fraction(1, 10**400),
+        Fraction(10**400 + 1, 10**400),
+    ],
+)
 @pytest.mark.parametrize("api", ["simple", "fluent"])
 def test_invalid_random_probability_fails_before_topology_changes(api, probability):
     network = TNFR.create(4) if api == "simple" else TNFRNetwork().add_nodes(4)
@@ -94,3 +107,36 @@ def test_invalid_random_probability_fails_before_topology_changes(api, probabili
             network.connect_nodes(probability)
     graph = network.G if api == "simple" else network.graph
     assert graph.number_of_edges() == 0
+
+
+def test_representable_subnormal_probability_retains_its_source_value():
+    from tnfr.sdk import StudySpec
+
+    smallest = math.nextafter(0.0, 1.0)
+    assert StudySpec(probability=Fraction.from_float(smallest)).probability == smallest
+
+
+@pytest.mark.parametrize("seed", [True, False, "1", 1.0, 1.5])
+def test_simple_construction_rejects_invalid_seed_before_creating_nodes(
+    monkeypatch, seed
+):
+    def unexpected_node(*args, **kwargs):
+        pytest.fail("seed admission must precede node construction")
+
+    monkeypatch.setattr("tnfr.sdk.simple.create_nfr", unexpected_node)
+    with pytest.raises(ValueError, match="SEED"):
+        TNFR.create(2, seed=seed)
+
+
+@pytest.mark.parametrize(
+    "method,kwargs",
+    [("random", {}), ("small_world", {"k": 2}), ("scale_free", {"m": 1})],
+)
+@pytest.mark.parametrize("seed", [True, "1", 1.5])
+def test_topology_seed_override_cannot_bypass_construction_admission(
+    method, kwargs, seed
+):
+    network = TNFR.create(6, seed=1)
+    with pytest.raises(ValueError, match="SEED"):
+        getattr(network, method)(seed=seed, **kwargs)
+    assert network.G.number_of_edges() == 0

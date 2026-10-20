@@ -249,6 +249,11 @@ the composite suites and collects only the core metrics and individual tetrad.
 Successful unified collection reuses its extended block instead of calculating
 that suite twice. If it fails, safe mode can still collect the extended fields
 independently.
+The core `sense_index` is the arithmetic mean of freshly computed configured
+Si through `compute_Si(..., inplace=False)`, without overwriting stored node
+Si or nodal state. An empty-network mean remains unavailable. Safe core-metric
+failures use the same `field_errors` metadata; they do not hide other
+available observations.
 JSON emission supports NumPy arrays/scalars through the shared JSON writer;
 unsupported objects still raise, and serialization completes before opening
 the output file. Safe field collection does not silently discard export errors.
@@ -427,6 +432,14 @@ state-dependent preconditions. Field verification should test definitions and
 edge cases, including pressure scaling and wrapped phases. Reproducibility
 requires declared inputs, execution order and backend as well as a seed; no
 universal monotonicity or post-Silence freezing follows from an operator name.
+
+Grammar telemetry admits finite positive gradient/curvature thresholds and
+ordered positive length multipliers before reading fields. Consumed fit policies
+require a positive reference decay exponent (or `None`) and an R² cut in `[0, 1]`.
+Unrepresentable inputs or derived path thresholds reject the request. Empty
+phase observations and missing field dependencies return `safe=False` with
+`available=False`; an unavailable observation is not a measured instability.
+The nonblocking grammar aggregator reports invalid requests as telemetry errors.
 
 ## 6. Minimal read-only example
 

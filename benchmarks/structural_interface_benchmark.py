@@ -41,6 +41,7 @@ Run a single dataset::
 
     python benchmarks/structural_interface_benchmark.py --dataset wdbc
 """
+
 from __future__ import annotations
 
 import argparse
@@ -723,13 +724,6 @@ def run_dataset_model_error_benchmark(
         result["report_paths"] = {key: str(path) for key, path in paths.items()}
 
     return result
-
-
-def _auc_by_score(result: Mapping[str, Any]) -> dict[str, Any]:
-    return {
-        row["score"]: row.get("auc")
-        for row in result.get("evaluation", {}).get("score_comparison", [])
-    }
 
 
 def _tnfr_vs_reference_baselines(result: Mapping[str, Any]) -> dict[str, Any]:

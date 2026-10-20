@@ -1,16 +1,16 @@
 """Synthetic arithmetic and wiring controls; no declared kernel is evaluated."""
 
-from fractions import Fraction as Q
 import importlib.util
+from fractions import Fraction as Q
 from pathlib import Path
 
 import pytest
 
 from tnfr.mathematics._rational_interval import I, cos, sin
 from tnfr.physics._organized_law_contrast_kernels import (
-    _MomentKernel,
     _across_mode_contrast,
     _enclose_moment,
+    _MomentKernel,
     _ramp_monomial_moment,
     _series_tails,
     _three_ramp_contrast,

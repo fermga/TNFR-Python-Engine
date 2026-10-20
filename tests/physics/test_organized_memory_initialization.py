@@ -4,8 +4,8 @@ The source trap is an explicit hypothesis. Arithmetic certificates below do
 not reacquire a source, replay an assessor or manufacture a measured record.
 """
 
-from fractions import Fraction as Q
 import hashlib
+from fractions import Fraction as Q
 from pathlib import Path
 
 import pytest

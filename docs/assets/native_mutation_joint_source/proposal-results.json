@@ -1,0 +1,5594 @@
+[
+  {
+    "pair": [
+      "stable",
+      "stable"
+    ],
+    "start": 0,
+    "evaluations": 2210,
+    "iterations": 147,
+    "elapsed_seconds": 0.6495164999942062,
+    "termination": {
+      "success": true,
+      "status": 0,
+      "message": "Optimization terminated successfully",
+      "scipy_iterations": 147,
+      "scipy_evaluations": 2210
+    },
+    "best": {
+      "loss": 9.181251597961947e-07,
+      "unit": [
+        0.14234749900898522,
+        0.6658252829726424,
+        0.4489126145984646,
+        1.0,
+        0.47477706077800674,
+        0.6782088832884784,
+        0.5097607087544213,
+        0.5603363183789087,
+        0.673861319856694,
+        0.5286747154148475,
+        0.4727841016695635,
+        0.5155487175825265,
+        0.504196690336556
+      ],
+      "rows": [
+        [
+          "source.fifth_pressure_bound",
+          0.957591549993013,
+          false
+        ],
+        [
+          "common_form_offset",
+          0.0002944473833844663,
+          false
+        ],
+        [
+          "source_lift_width",
+          0.6435822334230433,
+          false
+        ],
+        [
+          "first_common_arc",
+          0.8046124603447568,
+          true
+        ],
+        [
+          "mutation_common_arc",
+          0.7212791270114235,
+          true
+        ],
+        [
+          "negative_outward_gap",
+          0.24258508370953324,
+          true
+        ],
+        [
+          "complete_renewal",
+          -0.0006802346836890146,
+          true
+        ],
+        [
+          "target_not_capacity_maximum",
+          0.8555196941943296,
+          true
+        ],
+        [
+          "terminal_target_minimum_1",
+          0.237262659414324,
+          false
+        ],
+        [
+          "terminal_target_minimum_2",
+          0.059273158019747633,
+          false
+        ],
+        [
+          "terminal_target_minimum_3",
+          0.11715486122731604,
+          false
+        ],
+        [
+          "terminal_target_minimum_4",
+          0.24190485616815185,
+          false
+        ],
+        [
+          "source.target.oz_tiny",
+          0.05734943014334036,
+          true
+        ],
+        [
+          "source.target.oz_ratio",
+          0.04972195652934552,
+          true
+        ],
+        [
+          "source.target.acquired_rate",
+          -3.086626410964133e-05,
+          true
+        ],
+        [
+          "source.target.si_low",
+          0.018828054156076496,
+          false
+        ],
+        [
+          "source.il.b1",
+          0.13117970490346054,
+          false
+        ],
+        [
+          "source.il.b2",
+          0.013094263413352736,
+          false
+        ],
+        [
+          "source.il.b3",
+          0.48045779936478317,
+          false
+        ],
+        [
+          "source.il.b4",
+          0.009209947914524563,
+          false
+        ],
+        [
+          "successor.target.strict_negative",
+          -0.0005907350838465486,
+          true
+        ],
+        [
+          "successor.peak.positive",
+          0.0005907350838465486,
+          true
+        ],
+        [
+          "successor.target.zhir_ratio",
+          0.0006693028499981396,
+          false
+        ],
+        [
+          "successor.target.si_low",
+          -0.0003207469365280602,
+          false
+        ],
+        [
+          "successor.il.b1",
+          0.19833025396638304,
+          false
+        ],
+        [
+          "successor.il.b2",
+          0.012630808439624497,
+          false
+        ],
+        [
+          "successor.il.b3",
+          0.4526053454516302,
+          false
+        ],
+        [
+          "successor.il.b4",
+          0.049491400241054695,
+          false
+        ],
+        [
+          "controller.1.stable",
+          0.22406125674427024,
+          false
+        ],
+        [
+          "controller.2.stable",
+          0.2803215396963189,
+          false
+        ]
+      ],
+      "state": {
+        "capacities": [
+          0.9077965346150012,
+          4.1887251150759495,
+          2.829211884649544,
+          6.283185307179586,
+          2.9913188608916252
+        ],
+        "phases": [
+          0.0,
+          1.0692532997308701,
+          0.058564252526527305,
+          0.3620179102734524,
+          1.0431679191401635
+        ],
+        "pressure_coordinates": [
+          0.08355656257320287,
+          -0.0793056488593975,
+          0.04530811813897628,
+          0.0122289275981875
+        ],
+        "source_pressure": [
+          0.08355656257320287,
+          -0.0793056488593975,
+          0.04530811813897628,
+          0.0122289275981875,
+          -0.061787959450969154
+        ],
+        "successor_pressure": [
+          0.0008606849672874589,
+          9.426793134068023e-05,
+          -0.0006293736812347447,
+          -0.0005795579063555944,
+          0.0002539786889622017
+        ],
+        "first_rate": 0.09999691337358904,
+        "offset_interval": [
+          1.5213829625377846,
+          1.5219718573045535
+        ]
+      },
+      "evaluation": 2195
+    }
+  },
+  {
+    "pair": [
+      "stable",
+      "stable"
+    ],
+    "start": 1,
+    "evaluations": 2002,
+    "iterations": 128,
+    "elapsed_seconds": 0.5899993000057293,
+    "termination": {
+      "success": true,
+      "status": 0,
+      "message": "Optimization terminated successfully",
+      "scipy_iterations": 128,
+      "scipy_evaluations": 2002
+    },
+    "best": {
+      "loss": 0.00022650579133955858,
+      "unit": [
+        0.11208762028943463,
+        0.43665131812647373,
+        0.3089549301981128,
+        0.42654629150571505,
+        0.752208394342323,
+        0.6810347142462398,
+        0.5124396168962662,
+        0.5345445938879878,
+        0.6791321530171294,
+        0.5362411446251981,
+        0.4802559889534813,
+        0.5131394236674207,
+        0.501826948651568
+      ],
+      "rows": [
+        [
+          "source.fifth_pressure_bound",
+          0.9370729882046638,
+          false
+        ],
+        [
+          "common_form_offset",
+          -0.0007772120633402491,
+          false
+        ],
+        [
+          "source_lift_width",
+          0.6379305715075203,
+          false
+        ],
+        [
+          "first_common_arc",
+          0.8007644115836713,
+          true
+        ],
+        [
+          "mutation_common_arc",
+          0.717431078250338,
+          true
+        ],
+        [
+          "negative_outward_gap",
+          0.2464312019337758,
+          true
+        ],
+        [
+          "complete_renewal",
+          -0.0044034426007016165,
+          true
+        ],
+        [
+          "target_not_capacity_maximum",
+          0.6385289242815395,
+          true
+        ],
+        [
+          "terminal_target_minimum_1",
+          0.2400040085435663,
+          false
+        ],
+        [
+          "terminal_target_minimum_2",
+          0.05643397552025147,
+          false
+        ],
+        [
+          "terminal_target_minimum_3",
+          0.08173171236798041,
+          false
+        ],
+        [
+          "terminal_target_minimum_4",
+          0.24202969701222476,
+          false
+        ],
+        [
+          "source.target.oz_tiny",
+          0.0724822885640416,
+          true
+        ],
+        [
+          "source.target.oz_ratio",
+          0.06284214478009349,
+          true
+        ],
+        [
+          "source.target.acquired_rate",
+          -0.0002059744073844294,
+          true
+        ],
+        [
+          "source.target.si_low",
+          0.014674786667758954,
+          false
+        ],
+        [
+          "source.il.b1",
+          0.0899238739263516,
+          false
+        ],
+        [
+          "source.il.b2",
+          -2.083285472687102e-06,
+          false
+        ],
+        [
+          "source.il.b3",
+          0.14831750349278394,
+          false
+        ],
+        [
+          "source.il.b4",
+          0.3927678801367801,
+          false
+        ],
+        [
+          "successor.target.strict_negative",
+          -0.013386987439983447,
+          true
+        ],
+        [
+          "successor.peak.positive",
+          0.013386987439983447,
+          true
+        ],
+        [
+          "successor.target.zhir_ratio",
+          0.015167456769501243,
+          false
+        ],
+        [
+          "successor.target.si_low",
+          -0.005217429222015069,
+          false
+        ],
+        [
+          "successor.il.b1",
+          0.08146015483453828,
+          false
+        ],
+        [
+          "successor.il.b2",
+          0.02996026477916247,
+          false
+        ],
+        [
+          "successor.il.b3",
+          0.098545431187263,
+          false
+        ],
+        [
+          "successor.il.b4",
+          0.4016045886383207,
+          false
+        ],
+        [
+          "controller.1.stable",
+          0.20573512891174728,
+          false
+        ],
+        [
+          "controller.2.stable",
+          0.2712776232826245,
+          false
+        ]
+      ],
+      "state": {
+        "capacities": [
+          0.7181409198522777,
+          2.752363469567133,
+          1.9520186572171316,
+          2.6890296058158727,
+          4.7301364751072335
+        ],
+        "phases": [
+          0.0,
+          1.086208285477439,
+          0.07463770137759695,
+          0.20726756332792684,
+          1.0747929181027764
+        ],
+        "pressure_coordinates": [
+          0.1056047261425268,
+          -0.05753297532641688,
+          0.038287566588165234,
+          0.005323629096724236
+        ],
+        "source_pressure": [
+          0.1056047261425268,
+          -0.05753297532641688,
+          0.038287566588165234,
+          0.005323629096724236,
+          -0.0916829465009994
+        ],
+        "successor_pressure": [
+          0.01950447698456448,
+          0.019496437356550447,
+          -4.0557385196773876e-05,
+          -0.0195044738836916,
+          -0.01945588307222655
+        ],
+        "first_rate": 0.09997940255926156,
+        "offset_interval": [
+          1.5890496894877892,
+          1.5874952653611087
+        ]
+      },
+      "evaluation": 1969
+    }
+  },
+  {
+    "pair": [
+      "stable",
+      "stable"
+    ],
+    "start": 2,
+    "evaluations": 1882,
+    "iterations": 118,
+    "elapsed_seconds": 0.5553325999935623,
+    "termination": {
+      "success": true,
+      "status": 0,
+      "message": "Optimization terminated successfully",
+      "scipy_iterations": 119,
+      "scipy_evaluations": 1882
+    },
+    "best": {
+      "loss": 1.274541962019615e-05,
+      "unit": [
+        0.13299302015784423,
+        0.46310922405613253,
+        0.4207853942946236,
+        0.9101301036417458,
+        0.4669691672915749,
+        0.6890306002527785,
+        0.5118432309153866,
+        0.5919031067214576,
+        0.6824036751844457,
+        0.5306457318787592,
+        0.4711285495537301,
+        0.5202097959851643,
+        0.49933839308775174
+      ],
+      "rows": [
+        [
+          "source.fifth_pressure_bound",
+          0.9573550589891894,
+          false
+        ],
+        [
+          "common_form_offset",
+          -4.9322364629622584e-05,
+          false
+        ],
+        [
+          "source_lift_width",
+          0.6219387994944429,
+          false
+        ],
+        [
+          "first_common_arc",
+          0.7889742040145826,
+          true
+        ],
+        [
+          "mutation_common_arc",
+          0.7056408706812493,
+          true
+        ],
+        [
+          "negative_outward_gap",
+          0.2580153261365005,
+          true
+        ],
+        [
+          "complete_renewal",
+          -0.002036881272107216,
+          true
+        ],
+        [
+          "target_not_capacity_maximum",
+          0.7752045021042692,
+          true
+        ],
+        [
+          "terminal_target_minimum_1",
+          0.24848785638474394,
+          false
+        ],
+        [
+          "terminal_target_minimum_2",
+          0.06696017438001028,
+          false
+        ],
+        [
+          "terminal_target_minimum_3",
+          0.15863892443117952,
+          false
+        ],
+        [
+          "terminal_target_minimum_4",
+          0.25618646590990785,
+          false
+        ],
+        [
+          "source.target.oz_tiny",
+          0.0612914630711638,
+          true
+        ],
+        [
+          "source.target.oz_ratio",
+          0.05313969907776845,
+          true
+        ],
+        [
+          "source.target.acquired_rate",
+          -0.00031782506983171754,
+          true
+        ],
+        [
+          "source.target.si_low",
+          0.01919768977822095,
+          false
+        ],
+        [
+          "source.il.b1",
+          0.009473404176450595,
+          false
+        ],
+        [
+          "source.il.b2",
+          0.00983152664782061,
+          false
+        ],
+        [
+          "source.il.b3",
+          0.49691531493756025,
+          false
+        ],
+        [
+          "source.il.b4",
+          0.04336308910824105,
+          false
+        ],
+        [
+          "successor.target.strict_negative",
+          -0.0028415141256731297,
+          true
+        ],
+        [
+          "successor.peak.positive",
+          0.0028415141256731297,
+          true
+        ],
+        [
+          "successor.target.zhir_ratio",
+          0.0032194355043876554,
+          false
+        ],
+        [
+          "successor.target.si_low",
+          -0.0006391329013074598,
+          false
+        ],
+        [
+          "successor.il.b1",
+          0.08139898139817248,
+          false
+        ],
+        [
+          "successor.il.b2",
+          0.00561161353678985,
+          false
+        ],
+        [
+          "successor.il.b3",
+          0.44040764185720704,
+          false
+        ],
+        [
+          "successor.il.b4",
+          0.03954286618663427,
+          false
+        ],
+        [
+          "controller.1.stable",
+          0.20976456976653324,
+          false
+        ],
+        [
+          "controller.2.stable",
+          0.26882547760625675,
+          false
+        ]
+      ],
+      "state": {
+        "capacities": [
+          0.8491667742732391,
+          2.918189990582954,
+          2.652922835121894,
+          5.719920311954249,
+          2.942382417593379
+        ],
+        "phases": [
+          0.0,
+          1.1341836015166713,
+          0.07105938549231983,
+          0.5514186403287455,
+          1.0944220511066742
+        ],
+        "pressure_coordinates": [
+          0.08929999744664463,
+          -0.08412983776444949,
+          0.05889024732749992,
+          -0.0019278865914571508
+        ],
+        "source_pressure": [
+          0.08929999744664463,
+          -0.08412983776444949,
+          0.05889024732749992,
+          -0.0019278865914571508,
+          -0.06213252041823791
+        ],
+        "successor_pressure": [
+          0.0041400088790682354,
+          0.00018029553256090902,
+          0.0039298657986419835,
+          -0.004139728071746664,
+          -0.004110442138524482
+        ],
+        "first_rate": 0.09996821749301683,
+        "offset_interval": [
+          1.5295809390987158,
+          1.5294822943694566
+        ]
+      },
+      "evaluation": 1868
+    }
+  },
+  {
+    "pair": [
+      "stable",
+      "stable"
+    ],
+    "start": 3,
+    "evaluations": 2824,
+    "iterations": 184,
+    "elapsed_seconds": 0.8460958000068786,
+    "termination": {
+      "success": true,
+      "status": 0,
+      "message": "Optimization terminated successfully",
+      "scipy_iterations": 184,
+      "scipy_evaluations": 2824
+    },
+    "best": {
+      "loss": 3.7865355650274183e-06,
+      "unit": [
+        0.14154575779442802,
+        0.6023580254540141,
+        0.33933375479898453,
+        0.9590866833201359,
+        0.4993451298583228,
+        0.6862168660630903,
+        0.6167656179067519,
+        0.5632781100520292,
+        0.6906839607120071,
+        0.5288693302436557,
+        0.48069174703071343,
+        0.5020974753547625,
+        0.5144454700249276
+      ],
+      "rows": [
+        [
+          "source.fifth_pressure_bound",
+          0.9477919546918817,
+          false
+        ],
+        [
+          "common_form_offset",
+          0.0006387722181131483,
+          false
+        ],
+        [
+          "source_lift_width",
+          0.6186320785759859,
+          false
+        ],
+        [
+          "first_common_arc",
+          0.7800384699398997,
+          true
+        ],
+        [
+          "mutation_common_arc",
+          0.6967051366065663,
+          true
+        ],
+        [
+          "negative_outward_gap",
+          0.2670524576886815,
+          true
+        ],
+        [
+          "complete_renewal",
+          -0.001671774277130389,
+          true
+        ],
+        [
+          "target_not_capacity_maximum",
+          0.8155078680338745,
+          true
+        ],
+        [
+          "terminal_target_minimum_1",
+          0.2654873069795676,
+          false
+        ],
+        [
+          "terminal_target_minimum_2",
+          0.2031976783046039,
+          false
+        ],
+        [
+          "terminal_target_minimum_3",
+          0.14195599665635147,
+          false
+        ],
+        [
+          "terminal_target_minimum_4",
+          0.26039837349877887,
+          false
+        ],
+        [
+          "source.target.oz_tiny",
+          0.05773865980095669,
+          true
+        ],
+        [
+          "source.target.oz_ratio",
+          0.05005941864249888,
+          true
+        ],
+        [
+          "source.target.acquired_rate",
+          0.0011831729648378864,
+          true
+        ],
+        [
+          "source.target.si_low",
+          0.019140299489676105,
+          false
+        ],
+        [
+          "source.il.b1",
+          0.13488514193483314,
+          false
+        ],
+        [
+          "source.il.b2",
+          0.004077029039868729,
+          false
+        ],
+        [
+          "source.il.b3",
+          0.4391903962823416,
+          false
+        ],
+        [
+          "source.il.b4",
+          0.02898185435163858,
+          false
+        ],
+        [
+          "successor.target.strict_negative",
+          -0.0009905480068240604,
+          true
+        ],
+        [
+          "successor.peak.positive",
+          0.0009905480068240604,
+          true
+        ],
+        [
+          "successor.target.zhir_ratio",
+          0.0011222908917316603,
+          false
+        ],
+        [
+          "successor.target.si_low",
+          -7.203348146628263e-05,
+          false
+        ],
+        [
+          "successor.il.b1",
+          0.17160251044402808,
+          false
+        ],
+        [
+          "successor.il.b2",
+          -2.347447422945681e-06,
+          false
+        ],
+        [
+          "successor.il.b3",
+          0.4521091751277537,
+          false
+        ],
+        [
+          "successor.il.b4",
+          0.0412161495668536,
+          false
+        ],
+        [
+          "controller.1.stable",
+          0.24647190001376484,
+          false
+        ],
+        [
+          "controller.2.stable",
+          0.2807890651451136,
+          false
+        ]
+      ],
+      "state": {
+        "capacities": [
+          0.9027715732020126,
+          3.7909402510466492,
+          2.1424197724643257,
+          6.026758627521802,
+          3.1453007154834602
+        ],
+        "phases": [
+          0.0,
+          1.1173011963785413,
+          0.7005937074405111,
+          0.3796686603121753,
+          1.1441037642720424
+        ],
+        "pressure_coordinates": [
+          0.08412365960924051,
+          -0.05626319996787332,
+          0.006111929209773992,
+          0.042093314705129004
+        ],
+        "source_pressure": [
+          0.08412365960924051,
+          -0.05626319996787332,
+          0.006111929209773992,
+          0.042093314705129004,
+          -0.07606570355627018
+        ],
+        "successor_pressure": [
+          0.0014432015334160941,
+          0.0003800299042283281,
+          0.00024129754833507582,
+          -0.0006387180616192617,
+          -0.0014258109243602407
+        ],
+        "first_rate": 0.1001183172964838,
+        "offset_interval": [
+          1.5419119600980937,
+          1.54318950453432
+        ]
+      },
+      "evaluation": 2809
+    }
+  },
+  {
+    "pair": [
+      "stable",
+      "transition"
+    ],
+    "start": 0,
+    "evaluations": 2596,
+    "iterations": 166,
+    "elapsed_seconds": 0.7757527999929152,
+    "termination": {
+      "success": true,
+      "status": 0,
+      "message": "Optimization terminated successfully",
+      "scipy_iterations": 166,
+      "scipy_evaluations": 2596
+    },
+    "best": {
+      "loss": 0.0011651852376124072,
+      "unit": [
+        0.11506628026141416,
+        0.4311822075682302,
+        0.4291914088035864,
+        1.0,
+        0.4114853613841571,
+        0.7898900011699013,
+        0.8311346869859225,
+        0.8393974979767004,
+        0.7017996713819142,
+        0.5353040121315679,
+        0.5413357317790652,
+        0.40960929287070647,
+        0.4459862349499078
+      ],
+      "rows": [
+        [
+          "source.fifth_pressure_bound",
+          0.8644705434624949,
+          false
+        ],
+        [
+          "common_form_offset",
+          -0.0006323005363002565,
+          false
+        ],
+        [
+          "source_lift_width",
+          0.3212050040465992,
+          false
+        ],
+        [
+          "first_common_arc",
+          0.4880107910969825,
+          true
+        ],
+        [
+          "mutation_common_arc",
+          0.40467745776364916,
+          true
+        ],
+        [
+          "negative_outward_gap",
+          0.3789159577150376,
+          true
+        ],
+        [
+          "complete_renewal",
+          -0.01652781575112705,
+          true
+        ],
+        [
+          "target_not_capacity_maximum",
+          0.8827330701166313,
+          true
+        ],
+        [
+          "terminal_target_minimum_1",
+          0.4177654334284713,
+          false
+        ],
+        [
+          "terminal_target_minimum_2",
+          0.5426589443484882,
+          false
+        ],
+        [
+          "terminal_target_minimum_3",
+          0.5331117777603983,
+          false
+        ],
+        [
+          "terminal_target_minimum_4",
+          0.3011635712222663,
+          false
+        ],
+        [
+          "source.target.oz_tiny",
+          0.0706080235767811,
+          true
+        ],
+        [
+          "source.target.oz_ratio",
+          0.046564096166743625,
+          true
+        ],
+        [
+          "source.target.acquired_rate",
+          -0.0007401335991075175,
+          true
+        ],
+        [
+          "source.target.si_low",
+          0.028360513012463145,
+          false
+        ],
+        [
+          "source.il.b1",
+          -0.0005501949797341865,
+          false
+        ],
+        [
+          "source.il.b2",
+          0.004023564853893435,
+          false
+        ],
+        [
+          "source.il.b3",
+          0.4396517558508888,
+          false
+        ],
+        [
+          "source.il.b4",
+          -0.00024109265137145508,
+          false
+        ],
+        [
+          "successor.target.strict_negative",
+          -0.01625784477203008,
+          true
+        ],
+        [
+          "successor.peak.positive",
+          0.1892206844947034,
+          true
+        ],
+        [
+          "successor.target.zhir_ratio",
+          0.04142419580982563,
+          false
+        ],
+        [
+          "successor.target.si_low",
+          -0.009124490530915907,
+          false
+        ],
+        [
+          "successor.il.b1",
+          0.0034694109069353107,
+          false
+        ],
+        [
+          "successor.il.b2",
+          0.0002540882343159412,
+          false
+        ],
+        [
+          "successor.il.b3",
+          0.4494450720457832,
+          false
+        ],
+        [
+          "successor.il.b4",
+          0.004220023992631772,
+          false
+        ],
+        [
+          "controller.1.stable",
+          -0.01448500295503452,
+          false
+        ],
+        [
+          "controller.2.transition.lower",
+          0.18836299412225505,
+          true
+        ],
+        [
+          "controller.2.transition.upper",
+          -0.018254188110189307,
+          true
+        ]
+      ],
+      "state": {
+        "capacities": [
+          0.7368098508612413,
+          2.7180854893167092,
+          2.7056080379998453,
+          6.283185307179586,
+          2.594634317996791
+        ],
+        "phases": [
+          0.0,
+          1.7393400070194076,
+          1.9868081219155354,
+          2.0363849878602025,
+          1.2107980282914852
+        ],
+        "pressure_coordinates": [
+          0.10287397297861389,
+          0.12045007627584736,
+          -0.2633936088646982,
+          -0.15739317632025784
+        ],
+        "source_pressure": [
+          0.10287397297861389,
+          0.12045007627584736,
+          -0.2633936088646982,
+          -0.15739317632025784,
+          0.1974627359304948
+        ],
+        "successor_pressure": [
+          0.023687238118083626,
+          0.17164893521080166,
+          -0.2756893963093942,
+          -0.13508695771562132,
+          0.21544018069613022
+        ],
+        "first_rate": 0.09992598664008925,
+        "offset_interval": [
+          2.5967897027030915,
+          2.595525101630491
+        ]
+      },
+      "evaluation": 2316
+    }
+  },
+  {
+    "pair": [
+      "stable",
+      "transition"
+    ],
+    "start": 1,
+    "evaluations": 3343,
+    "iterations": 200,
+    "elapsed_seconds": 1.0441620999918086,
+    "termination": {
+      "success": true,
+      "status": 0,
+      "message": "Optimization terminated successfully",
+      "scipy_iterations": 201,
+      "scipy_evaluations": 3343
+    },
+    "best": {
+      "loss": 0.0012582495476546186,
+      "unit": [
+        0.11512183533905235,
+        0.40984785560832304,
+        0.4637858250006909,
+        0.9999999382523946,
+        0.44229010380165684,
+        0.687183328494031,
+        0.83143423122638,
+        0.8240613617412229,
+        0.802078277439224,
+        0.5352837898884191,
+        0.5952449318553459,
+        0.42847675098248456,
+        0.38087367950109047
+      ],
+      "rows": [
+        [
+          "source.fifth_pressure_bound",
+          0.8797583044546801,
+          false
+        ],
+        [
+          "common_form_offset",
+          -0.0006903740937713732,
+          false
+        ],
+        [
+          "source_lift_width",
+          0.3371315375472399,
+          false
+        ],
+        [
+          "first_common_arc",
+          0.4986110791126583,
+          true
+        ],
+        [
+          "mutation_common_arc",
+          0.4152777457793249,
+          true
+        ],
+        [
+          "negative_outward_gap",
+          0.37622309413968164,
+          true
+        ],
+        [
+          "complete_renewal",
+          -0.01400652840667127,
+          true
+        ],
+        [
+          "target_not_capacity_maximum",
+          0.8826775915990853,
+          true
+        ],
+        [
+          "terminal_target_minimum_1",
+          0.2803363264891231,
+          false
+        ],
+        [
+          "terminal_target_minimum_2",
+          0.518282859248654,
+          false
+        ],
+        [
+          "terminal_target_minimum_3",
+          0.5345799436772681,
+          false
+        ],
+        [
+          "terminal_target_minimum_4",
+          0.4331480454669245,
+          false
+        ],
+        [
+          "source.target.oz_tiny",
+          0.07056757909048347,
+          true
+        ],
+        [
+          "source.target.oz_ratio",
+          0.03887997852412814,
+          true
+        ],
+        [
+          "source.target.acquired_rate",
+          -0.0008405621064205837,
+          true
+        ],
+        [
+          "source.target.si_low",
+          0.022391305323221616,
+          false
+        ],
+        [
+          "source.il.b1",
+          -0.0006658814967089866,
+          false
+        ],
+        [
+          "source.il.b2",
+          0.03274610727539262,
+          false
+        ],
+        [
+          "source.il.b3",
+          0.43914513835919533,
+          false
+        ],
+        [
+          "source.il.b4",
+          -0.00040808755277638165,
+          false
+        ],
+        [
+          "successor.target.strict_negative",
+          -0.017176163436657656,
+          true
+        ],
+        [
+          "successor.peak.positive",
+          0.23931306589784232,
+          true
+        ],
+        [
+          "successor.target.zhir_ratio",
+          0.049004801201070695,
+          false
+        ],
+        [
+          "successor.target.si_low",
+          -0.010462288460322655,
+          false
+        ],
+        [
+          "successor.il.b1",
+          0.002627760144746638,
+          false
+        ],
+        [
+          "successor.il.b2",
+          0.03982223768383941,
+          false
+        ],
+        [
+          "successor.il.b3",
+          0.4343258535380382,
+          false
+        ],
+        [
+          "successor.il.b4",
+          0.00649143216308945,
+          false
+        ],
+        [
+          "controller.1.stable",
+          -0.015479947250001014,
+          false
+        ],
+        [
+          "controller.2.transition.lower",
+          0.19050635322466763,
+          true
+        ],
+        [
+          "controller.2.transition.upper",
+          -0.020397547212601896,
+          true
+        ]
+      ],
+      "state": {
+        "capacities": [
+          0.7371580456607086,
+          2.584371151793396,
+          2.922430627806868,
+          6.283184920172745,
+          2.7877048988456035
+        ],
+        "phases": [
+          0.0,
+          1.1230999709641853,
+          1.9886053873582803,
+          1.944368170447337,
+          1.8124696646353442
+        ],
+        "pressure_coordinates": [
+          0.10281504646092787,
+          0.2775385559443393,
+          -0.2084148611594019,
+          -0.3471276247689832
+        ],
+        "source_pressure": [
+          0.10281504646092787,
+          0.2775385559443393,
+          -0.2084148611594019,
+          -0.3471276247689832,
+          0.1751888835231179
+        ],
+        "successor_pressure": [
+          0.02502520346234234,
+          0.2921232510036618,
+          -0.19210897772272456,
+          -0.34867263503728213,
+          0.2236331582940025
+        ],
+        "first_rate": 0.09991594378935795,
+        "offset_interval": [
+          2.890998963272824,
+          2.889618215085281
+        ]
+      },
+      "evaluation": 3329
+    }
+  },
+  {
+    "pair": [
+      "stable",
+      "transition"
+    ],
+    "start": 2,
+    "evaluations": 2281,
+    "iterations": 148,
+    "elapsed_seconds": 0.6910447000118438,
+    "termination": {
+      "success": true,
+      "status": 0,
+      "message": "Optimization terminated successfully",
+      "scipy_iterations": 148,
+      "scipy_evaluations": 2281
+    },
+    "best": {
+      "loss": 0.0012193756313030554,
+      "unit": [
+        0.11454709276503149,
+        0.4112092618163253,
+        0.3618490185974718,
+        1.0,
+        0.408169259012926,
+        0.7924367709241712,
+        0.8314863123533923,
+        0.8396643322304758,
+        0.705485403177648,
+        0.5354583515803037,
+        0.5330322095227668,
+        0.4871857862466995,
+        0.3188310215277908
+      ],
+      "rows": [
+        [
+          "source.fifth_pressure_bound",
+          0.7490147377551216,
+          false
+        ],
+        [
+          "common_form_offset",
+          -0.000641064460706442,
+          false
+        ],
+        [
+          "source_lift_width",
+          0.32067133553904864,
+          false
+        ],
+        [
+          "first_common_arc",
+          0.48791581060354594,
+          true
+        ],
+        [
+          "mutation_common_arc",
+          0.4045824772702126,
+          true
+        ],
+        [
+          "negative_outward_gap",
+          0.38316668659365294,
+          true
+        ],
+        [
+          "complete_renewal",
+          -0.016883033807568133,
+          true
+        ],
+        [
+          "target_not_capacity_maximum",
+          0.8832509664996321,
+          true
+        ],
+        [
+          "terminal_target_minimum_1",
+          0.41992730295206165,
+          false
+        ],
+        [
+          "terminal_target_minimum_2",
+          0.5423987067854836,
+          false
+        ],
+        [
+          "terminal_target_minimum_3",
+          0.5329998761324356,
+          false
+        ],
+        [
+          "terminal_target_minimum_4",
+          0.30483776624451525,
+          false
+        ],
+        [
+          "source.target.oz_tiny",
+          0.07091670247425291,
+          true
+        ],
+        [
+          "source.target.oz_ratio",
+          0.02272575488699986,
+          true
+        ],
+        [
+          "source.target.acquired_rate",
+          -0.0008040570632436572,
+          true
+        ],
+        [
+          "source.target.si_low",
+          0.018483663280328855,
+          false
+        ],
+        [
+          "source.il.b1",
+          -0.0004615169399132535,
+          false
+        ],
+        [
+          "source.il.b2",
+          0.00761331130489562,
+          false
+        ],
+        [
+          "source.il.b3",
+          0.41680240526112333,
+          false
+        ],
+        [
+          "source.il.b4",
+          -0.0006695324803571712,
+          false
+        ],
+        [
+          "successor.target.strict_negative",
+          -0.01662736030396133,
+          true
+        ],
+        [
+          "successor.peak.positive",
+          0.33050177913416195,
+          true
+        ],
+        [
+          "successor.target.zhir_ratio",
+          0.06058409692880487,
+          false
+        ],
+        [
+          "successor.target.si_low",
+          -0.01006427571500601,
+          false
+        ],
+        [
+          "successor.il.b1",
+          0.005689157896632602,
+          false
+        ],
+        [
+          "successor.il.b2",
+          -9.138914335449222e-05,
+          false
+        ],
+        [
+          "successor.il.b3",
+          0.4201504718523069,
+          false
+        ],
+        [
+          "successor.il.b4",
+          0.0014259526886755136,
+          false
+        ],
+        [
+          "controller.1.stable",
+          -0.014475079229495647,
+          false
+        ],
+        [
+          "controller.2.transition.lower",
+          0.1886888823748682,
+          true
+        ],
+        [
+          "controller.2.transition.upper",
+          -0.018580076362802456,
+          true
+        ]
+      ],
+      "state": {
+        "capacities": [
+          0.7335558119169293,
+          2.5929038473046186,
+          2.283535546153402,
+          6.283185307179586,
+          2.5738504464003187
+        ],
+        "phases": [
+          0.0,
+          1.7546206255450274,
+          1.9889178741203537,
+          2.037985993382854,
+          1.2329124190658876
+        ],
+        "pressure_coordinates": [
+          0.10332370974563121,
+          0.09625406362328115,
+          -0.037339922569890494,
+          -0.5279165587881707
+        ],
+        "source_pressure": [
+          0.10332370974563121,
+          0.09625406362328115,
+          -0.037339922569890494,
+          -0.5279165587881707,
+          0.3656787079891488
+        ],
+        "successor_pressure": [
+          0.0242256122086177,
+          0.15191052299854543,
+          -0.06587392116331037,
+          -0.48153211268627627,
+          0.3712698986424235
+        ],
+        "first_rate": 0.09991959429367564,
+        "offset_interval": [
+          2.913232571347583,
+          2.91195044242617
+        ]
+      },
+      "evaluation": 2024
+    }
+  },
+  {
+    "pair": [
+      "stable",
+      "transition"
+    ],
+    "start": 3,
+    "evaluations": 1969,
+    "iterations": 118,
+    "elapsed_seconds": 0.6084154999989551,
+    "termination": {
+      "success": true,
+      "status": 0,
+      "message": "Optimization terminated successfully",
+      "scipy_iterations": 119,
+      "scipy_evaluations": 1969
+    },
+    "best": {
+      "loss": 0.00118994033306105,
+      "unit": [
+        0.11519187425520773,
+        0.4258858812191937,
+        1.0,
+        0.4724426332211647,
+        0.42170719637255527,
+        0.7870671182252689,
+        0.8321448911048559,
+        0.8400209083434378,
+        0.7033209452124146,
+        0.5352649252327485,
+        0.5431262369107221,
+        0.4352525680681103,
+        0.3945189538829712
+      ],
+      "rows": [
+        [
+          "source.fifth_pressure_bound",
+          0.8163253681891044,
+          false
+        ],
+        [
+          "common_form_offset",
+          -0.0007282654067752858,
+          false
+        ],
+        [
+          "source_lift_width",
+          0.3199581833131244,
+          false
+        ],
+        [
+          "first_common_arc",
+          0.4864895278095636,
+          true
+        ],
+        [
+          "mutation_common_arc",
+          0.4031561944762303,
+          true
+        ],
+        [
+          "negative_outward_gap",
+          0.3781517591131763,
+          true
+        ],
+        [
+          "complete_renewal",
+          -0.016884032025061835,
+          true
+        ],
+        [
+          "target_not_capacity_maximum",
+          0.8826077884494773,
+          true
+        ],
+        [
+          "terminal_target_minimum_1",
+          0.41446760937004923,
+          false
+        ],
+        [
+          "terminal_target_minimum_2",
+          0.5438239913619722,
+          false
+        ],
+        [
+          "terminal_target_minimum_3",
+          0.534771004044576,
+          false
+        ],
+        [
+          "terminal_target_minimum_4",
+          0.30362037762598587,
+          false
+        ],
+        [
+          "source.target.oz_tiny",
+          0.0705298497791424,
+          true
+        ],
+        [
+          "source.target.oz_ratio",
+          0.042471892198367334,
+          true
+        ],
+        [
+          "source.target.acquired_rate",
+          -0.0007800924741076243,
+          true
+        ],
+        [
+          "source.target.si_low",
+          0.024758685438196287,
+          false
+        ],
+        [
+          "source.il.b1",
+          -0.0005691153883290445,
+          false
+        ],
+        [
+          "source.il.b2",
+          0.4577074462827613,
+          false
+        ],
+        [
+          "source.il.b3",
+          0.017232404117121125,
+          false
+        ],
+        [
+          "source.il.b4",
+          1.8033988570254067e-05,
+          false
+        ],
+        [
+          "successor.target.strict_negative",
+          -0.0170701480852377,
+          true
+        ],
+        [
+          "successor.peak.positive",
+          0.19725792195595357,
+          true
+        ],
+        [
+          "successor.target.zhir_ratio",
+          0.04330545170537953,
+          false
+        ],
+        [
+          "successor.target.si_low",
+          -0.009317198535856275,
+          false
+        ],
+        [
+          "successor.il.b1",
+          0.0014354438930668234,
+          false
+        ],
+        [
+          "successor.il.b2",
+          0.4502943945412613,
+          false
+        ],
+        [
+          "successor.il.b3",
+          0.020632022202224487,
+          false
+        ],
+        [
+          "successor.il.b4",
+          -0.0005435581267665968,
+          false
+        ],
+        [
+          "controller.1.stable",
+          -0.0139892316260396,
+          false
+        ],
+        [
+          "controller.2.transition.lower",
+          0.18825011335881198,
+          true
+        ],
+        [
+          "controller.2.transition.upper",
+          -0.018141307346746238,
+          true
+        ]
+      ],
+      "state": {
+        "capacities": [
+          0.737597018791562,
+          2.6848904445176185,
+          6.283185307179586,
+          2.9766876953963757,
+          2.6587002852366144
+        ],
+        "phases": [
+          0.0,
+          1.7224027093516128,
+          1.992869346629135,
+          2.0401254500606267,
+          1.2199256712744875
+        ],
+        "pressure_coordinates": [
+          0.10276007587938407,
+          0.12566751093584294,
+          -0.18867049836072147,
+          -0.3073660366861324
+        ],
+        "source_pressure": [
+          0.10276007587938407,
+          0.12566751093584294,
+          -0.18867049836072147,
+          -0.3073660366861324,
+          0.26760894823162684
+        ],
+        "successor_pressure": [
+          0.024870741975689628,
+          0.17355556076052187,
+          -0.19552818801367905,
+          -0.28739943292407166,
+          0.2845013182015393
+        ],
+        "first_rate": 0.09992199075258924,
+        "offset_interval": [
+          2.761021747355597,
+          2.7595652165420463
+        ]
+      },
+      "evaluation": 1957
+    }
+  },
+  {
+    "pair": [
+      "transition",
+      "stable"
+    ],
+    "start": 0,
+    "evaluations": 4508,
+    "iterations": 303,
+    "elapsed_seconds": 1.3738727000018116,
+    "termination": {
+      "success": true,
+      "status": 0,
+      "message": "Optimization terminated successfully",
+      "scipy_iterations": 303,
+      "scipy_evaluations": 4508
+    },
+    "best": {
+      "loss": 0.00019775545400998584,
+      "unit": [
+        0.10119367499647364,
+        0.43209962003017,
+        0.3408982622721863,
+        0.8092152173185977,
+        0.43255129369697626,
+        0.7358720042421576,
+        0.7356121220045001,
+        0.502538117895276,
+        0.7577608789422043,
+        0.5401450994983344,
+        0.4829495449606587,
+        0.4826857659453849,
+        0.5408656580269373
+      ],
+      "rows": [
+        [
+          "source.fifth_pressure_bound",
+          0.9067078631373693,
+          false
+        ],
+        [
+          "common_form_offset",
+          0.0013679568985451862,
+          false
+        ],
+        [
+          "source_lift_width",
+          0.4844782421155915,
+          false
+        ],
+        [
+          "first_common_arc",
+          0.7098847864230816,
+          true
+        ],
+        [
+          "mutation_common_arc",
+          0.6265514530897484,
+          true
+        ],
+        [
+          "negative_outward_gap",
+          0.33731046745933035,
+          true
+        ],
+        [
+          "complete_renewal",
+          -0.014048759213554788,
+          true
+        ],
+        [
+          "target_not_capacity_maximum",
+          0.7062608371928099,
+          true
+        ],
+        [
+          "terminal_target_minimum_1",
+          0.3174887294190901,
+          false
+        ],
+        [
+          "terminal_target_minimum_2",
+          0.32326400555996126,
+          false
+        ],
+        [
+          "terminal_target_minimum_3",
+          0.07169367776640549,
+          false
+        ],
+        [
+          "terminal_target_minimum_4",
+          0.2954659177517675,
+          false
+        ],
+        [
+          "source.target.oz_tiny",
+          0.08029019831031423,
+          true
+        ],
+        [
+          "source.target.oz_ratio",
+          0.06788234479393894,
+          true
+        ],
+        [
+          "source.target.acquired_rate",
+          0.0021966509907639375,
+          true
+        ],
+        [
+          "source.target.si_low",
+          0.048161269677941515,
+          false
+        ],
+        [
+          "source.il.b1",
+          0.08497355629905368,
+          false
+        ],
+        [
+          "source.il.b2",
+          -4.155132225514002e-06,
+          false
+        ],
+        [
+          "source.il.b3",
+          0.36352251146176795,
+          false
+        ],
+        [
+          "source.il.b4",
+          -1.4774588710242398e-05,
+          false
+        ],
+        [
+          "successor.target.strict_negative",
+          -0.0002767636266469689,
+          true
+        ],
+        [
+          "successor.peak.positive",
+          0.0005507311768399941,
+          true
+        ],
+        [
+          "successor.target.zhir_ratio",
+          0.00035001087316668803,
+          false
+        ],
+        [
+          "successor.target.si_low",
+          -5.6003162663520456e-05,
+          false
+        ],
+        [
+          "successor.il.b1",
+          0.08372055127873634,
+          false
+        ],
+        [
+          "successor.il.b2",
+          0.00012268315552810272,
+          false
+        ],
+        [
+          "successor.il.b3",
+          0.40325758326967376,
+          false
+        ],
+        [
+          "successor.il.b4",
+          0.031060170549668698,
+          false
+        ],
+        [
+          "controller.1.transition.lower",
+          0.1706361955568208,
+          true
+        ],
+        [
+          "controller.1.transition.upper",
+          -0.0005273895447550636,
+          true
+        ],
+        [
+          "controller.2.stable",
+          0.1445197973987168,
+          false
+        ]
+      ],
+      "state": {
+        "capacities": [
+          0.6498624607455296,
+          2.7238354272484746,
+          2.152225417403651,
+          5.087430176031746,
+          2.726666319194348
+        ],
+        "phases": [
+          0.0,
+          1.415232025452946,
+          1.4136727320270008,
+          0.015228707371655936,
+          1.5465652736532256
+        ],
+        "pressure_coordinates": [
+          0.11698063850716256,
+          -0.049684099485730826,
+          -0.05045273720284005,
+          0.11908030690532523
+        ],
+        "source_pressure": [
+          0.11698063850716256,
+          -0.049684099485730826,
+          -0.05045273720284005,
+          0.11908030690532523,
+          -0.13592410872391691
+        ],
+        "successor_pressure": [
+          0.0004032370845420824,
+          0.0004729837142962434,
+          0.00045534884144719096,
+          -0.0005291692786272006,
+          -0.0008024003616582953
+        ],
+        "first_rate": 0.1002196650990764,
+        "offset_interval": [
+          1.5589239963938324,
+          1.5616599101909228
+        ]
+      },
+      "evaluation": 4494
+    }
+  },
+  {
+    "pair": [
+      "transition",
+      "stable"
+    ],
+    "start": 1,
+    "evaluations": 2806,
+    "iterations": 188,
+    "elapsed_seconds": 0.8742079000076046,
+    "termination": {
+      "success": true,
+      "status": 0,
+      "message": "Optimization terminated successfully",
+      "scipy_iterations": 188,
+      "scipy_evaluations": 2806
+    },
+    "best": {
+      "loss": 0.00026638833190865854,
+      "unit": [
+        0.09644531623245178,
+        0.4608557906951238,
+        1.0,
+        0.7781703143956782,
+        0.4434240229552016,
+        0.7569641186928548,
+        0.5012769918488523,
+        0.735020389873256,
+        0.7351527280308092,
+        0.5419719030757572,
+        0.49592320905894305,
+        0.5197268680922558,
+        0.3936844545691402
+      ],
+      "rows": [
+        [
+          "source.fifth_pressure_bound",
+          0.9026128695921923,
+          false
+        ],
+        [
+          "common_form_offset",
+          0.0013114156665179344,
+          false
+        ],
+        [
+          "source_lift_width",
+          0.48607176261429014,
+          false
+        ],
+        [
+          "first_common_arc",
+          0.7108974044388218,
+          true
+        ],
+        [
+          "mutation_common_arc",
+          0.6275640711054885,
+          true
+        ],
+        [
+          "negative_outward_gap",
+          0.3361906092861582,
+          true
+        ],
+        [
+          "complete_renewal",
+          -0.013917487209289056,
+          true
+        ],
+        [
+          "target_not_capacity_maximum",
+          0.9013077276069944,
+          true
+        ],
+        [
+          "terminal_target_minimum_1",
+          0.29447131999072595,
+          false
+        ],
+        [
+          "terminal_target_minimum_2",
+          0.0700591805277172,
+          false
+        ],
+        [
+          "terminal_target_minimum_3",
+          0.3223826595484868,
+          false
+        ],
+        [
+          "terminal_target_minimum_4",
+          0.3167423814771972,
+          false
+        ],
+        [
+          "source.target.oz_tiny",
+          0.08394380546515977,
+          true
+        ],
+        [
+          "source.target.oz_ratio",
+          0.055663871066905665,
+          true
+        ],
+        [
+          "source.target.acquired_rate",
+          -0.00018272525075885282,
+          true
+        ],
+        [
+          "source.target.si_low",
+          0.04277070117511164,
+          false
+        ],
+        [
+          "source.il.b1",
+          0.00015321599953832532,
+          false
+        ],
+        [
+          "source.il.b2",
+          0.4035817626148519,
+          false
+        ],
+        [
+          "source.il.b3",
+          0.23299239100827684,
+          false
+        ],
+        [
+          "source.il.b4",
+          0.011008051290953058,
+          false
+        ],
+        [
+          "successor.target.strict_negative",
+          -0.006715754100331002,
+          true
+        ],
+        [
+          "successor.peak.positive",
+          0.16829337939210565,
+          true
+        ],
+        [
+          "successor.target.zhir_ratio",
+          0.029098773559481053,
+          false
+        ],
+        [
+          "successor.target.si_low",
+          -0.005189999042582494,
+          false
+        ],
+        [
+          "successor.il.b1",
+          0.005107665401720474,
+          false
+        ],
+        [
+          "successor.il.b2",
+          0.4261355054184367,
+          false
+        ],
+        [
+          "successor.il.b3",
+          0.2446176762344454,
+          false
+        ],
+        [
+          "successor.il.b4",
+          0.006400081180997663,
+          false
+        ],
+        [
+          "controller.1.transition.lower",
+          0.17086899918034076,
+          true
+        ],
+        [
+          "controller.1.transition.upper",
+          -0.0007601931682750251,
+          true
+        ],
+        [
+          "controller.2.stable",
+          0.1448355578483752,
+          false
+        ]
+      ],
+      "state": {
+        "capacities": [
+          0.6201018358318978,
+          2.904066461094621,
+          6.283185307179586,
+          4.892854374731812,
+          2.7948118055239113
+        ],
+        "phases": [
+          0.0,
+          1.5417847121571295,
+          0.007661951093114183,
+          1.4101223392395363,
+          1.4109163681848553
+        ],
+        "pressure_coordinates": [
+          0.12230384486571078,
+          -0.011879547274875835,
+          0.057483021689219926,
+          -0.30979772234105996
+        ],
+        "source_pressure": [
+          0.12230384486571078,
+          -0.011879547274875835,
+          0.057483021689219926,
+          -0.30979772234105996,
+          0.1418904030610051
+        ],
+        "successor_pressure": [
+          0.009784671261636929,
+          0.11919047672143743,
+          -0.0648444480822748,
+          -0.24519888135578632,
+          0.1810681814549868
+        ],
+        "first_rate": 0.09998172747492412,
+        "offset_interval": [
+          2.2733927657270927,
+          2.2760155970601286
+        ]
+      },
+      "evaluation": 2788
+    }
+  },
+  {
+    "pair": [
+      "transition",
+      "stable"
+    ],
+    "start": 2,
+    "evaluations": 3467,
+    "iterations": 233,
+    "elapsed_seconds": 1.0516667000047164,
+    "termination": {
+      "success": true,
+      "status": 0,
+      "message": "Optimization terminated successfully",
+      "scipy_iterations": 233,
+      "scipy_evaluations": 3467
+    },
+    "best": {
+      "loss": 0.001083956547441567,
+      "unit": [
+        0.10631021903397171,
+        0.43120525211647076,
+        0.48225704273906633,
+        1.0,
+        0.5265418635096977,
+        0.6185217381460684,
+        0.8018783697705519,
+        0.6271596328396574,
+        0.8121867692688066,
+        0.538149531622683,
+        0.5440386323323805,
+        0.46541030460111094,
+        0.494016902201635
+      ],
+      "rows": [
+        [
+          "source.fifth_pressure_bound",
+          0.9167692584843814,
+          false
+        ],
+        [
+          "common_form_offset",
+          -0.00035206107180130175,
+          false
+        ],
+        [
+          "source_lift_width",
+          0.3756264614623867,
+          false
+        ],
+        [
+          "first_common_arc",
+          0.5937673652463201,
+          true
+        ],
+        [
+          "mutation_common_arc",
+          0.5104340319129869,
+          true
+        ],
+        [
+          "negative_outward_gap",
+          0.31086817304892045,
+          true
+        ],
+        [
+          "complete_renewal",
+          -0.02749586352277844,
+          true
+        ],
+        [
+          "target_not_capacity_maximum",
+          0.8914673568061617,
+          true
+        ],
+        [
+          "terminal_target_minimum_1",
+          0.191004652140803,
+          false
+        ],
+        [
+          "terminal_target_minimum_2",
+          0.4259343224274991,
+          false
+        ],
+        [
+          "terminal_target_minimum_3",
+          0.2760417555072808,
+          false
+        ],
+        [
+          "terminal_target_minimum_4",
+          0.4081442137329618,
+          false
+        ],
+        [
+          "source.target.oz_tiny",
+          0.07629906255901128,
+          true
+        ],
+        [
+          "source.target.oz_ratio",
+          0.06458478704495267,
+          true
+        ],
+        [
+          "source.target.acquired_rate",
+          -0.0006251489171937852,
+          true
+        ],
+        [
+          "source.target.si_low",
+          0.052053626130201924,
+          false
+        ],
+        [
+          "source.il.b1",
+          -2.3689573004359588e-05,
+          false
+        ],
+        [
+          "source.il.b2",
+          -0.00017341319520713938,
+          false
+        ],
+        [
+          "source.il.b3",
+          0.4291603377716551,
+          false
+        ],
+        [
+          "source.il.b4",
+          -0.00030075910645588344,
+          false
+        ],
+        [
+          "successor.target.strict_negative",
+          -0.015774478719744377,
+          true
+        ],
+        [
+          "successor.peak.positive",
+          0.08163318940645446,
+          true
+        ],
+        [
+          "successor.target.zhir_ratio",
+          0.026631692910802827,
+          false
+        ],
+        [
+          "successor.target.si_low",
+          -0.008144110812318861,
+          false
+        ],
+        [
+          "successor.il.b1",
+          0.0013290432664178065,
+          false
+        ],
+        [
+          "successor.il.b2",
+          0.053406899540296426,
+          false
+        ],
+        [
+          "successor.il.b3",
+          0.40279901654391315,
+          false
+        ],
+        [
+          "successor.il.b4",
+          0.08197807806584367,
+          false
+        ],
+        [
+          "controller.1.transition.lower",
+          0.17357907022756253,
+          true
+        ],
+        [
+          "controller.1.transition.upper",
+          -0.0034702642154967878,
+          true
+        ],
+        [
+          "controller.2.stable",
+          0.11376911581472271,
+          false
+        ]
+      ],
+      "state": {
+        "capacities": [
+          0.6819307090648888,
+          2.7182299224125583,
+          3.0382000989291815,
+          6.283185307179586,
+          3.3157578838017523
+        ],
+        "phases": [
+          0.0,
+          0.7111304288764102,
+          1.8112702186233118,
+          0.7629577970379442,
+          1.87312061561284
+        ],
+        "pressure_coordinates": [
+          0.11116566215400203,
+          0.1283261816162089,
+          -0.10079249283460334,
+          -0.017434421870907935
+        ],
+        "source_pressure": [
+          0.11116566215400203,
+          0.1283261816162089,
+          -0.10079249283460334,
+          -0.017434421870907935,
+          -0.12126492906469966
+        ],
+        "successor_pressure": [
+          0.022982986912635575,
+          0.11893733904606942,
+          -0.0213966244956683,
+          -0.11884764729284084,
+          -0.0016760541701958398
+        ],
+        "first_rate": 0.09993748510828063,
+        "offset_interval": [
+          1.954309683079186,
+          1.9536055609355834
+        ]
+      },
+      "evaluation": 3452
+    }
+  },
+  {
+    "pair": [
+      "transition",
+      "stable"
+    ],
+    "start": 3,
+    "evaluations": 3651,
+    "iterations": 240,
+    "elapsed_seconds": 1.2989967000030447,
+    "termination": {
+      "success": true,
+      "status": 0,
+      "message": "Optimization terminated successfully",
+      "scipy_iterations": 240,
+      "scipy_evaluations": 3651
+    },
+    "best": {
+      "loss": 0.00019488693351197753,
+      "unit": [
+        0.12699913292500817,
+        0.3797955469710581,
+        0.39761589152191557,
+        0.8562379329306107,
+        0.5374274773769742,
+        0.7654665592884563,
+        0.7654424874316061,
+        0.5002227819015389,
+        0.6092776028234884,
+        0.5320698574402879,
+        0.481771199519178,
+        0.4804483128184016,
+        0.5290019572284325
+      ],
+      "rows": [
+        [
+          "source.fifth_pressure_bound",
+          0.9534173459873999,
+          false
+        ],
+        [
+          "common_form_offset",
+          -0.0006789438055542218,
+          false
+        ],
+        [
+          "source_lift_width",
+          0.46906688142308745,
+          false
+        ],
+        [
+          "first_common_arc",
+          0.6404661499508246,
+          true
+        ],
+        [
+          "mutation_common_arc",
+          0.5571328166174913,
+          true
+        ],
+        [
+          "negative_outward_gap",
+          0.2624219457999338,
+          true
+        ],
+        [
+          "complete_renewal",
+          -0.012241356343540177,
+          true
+        ],
+        [
+          "target_not_capacity_maximum",
+          0.7274253318850511,
+          true
+        ],
+        [
+          "terminal_target_minimum_1",
+          0.3889608020989883,
+          false
+        ],
+        [
+          "terminal_target_minimum_2",
+          0.3944900449022329,
+          false
+        ],
+        [
+          "terminal_target_minimum_3",
+          0.0686932192090266,
+          false
+        ],
+        [
+          "terminal_target_minimum_4",
+          0.1251901633952424,
+          false
+        ],
+        [
+          "source.target.oz_tiny",
+          0.06413971419422125,
+          true
+        ],
+        [
+          "source.target.oz_ratio",
+          0.05560913280145926,
+          true
+        ],
+        [
+          "source.target.acquired_rate",
+          -0.0001430306343211396,
+          true
+        ],
+        [
+          "source.target.si_low",
+          0.01800388531597419,
+          false
+        ],
+        [
+          "source.il.b1",
+          -0.0004301411479300521,
+          false
+        ],
+        [
+          "source.il.b2",
+          0.012957919801908968,
+          false
+        ],
+        [
+          "source.il.b3",
+          0.3818174437542944,
+          false
+        ],
+        [
+          "source.il.b4",
+          0.13785642151781485,
+          false
+        ],
+        [
+          "successor.target.strict_negative",
+          -0.006447600996931084,
+          true
+        ],
+        [
+          "successor.peak.positive",
+          0.006447892905404124,
+          true
+        ],
+        [
+          "successor.target.zhir_ratio",
+          0.007305170753349833,
+          false
+        ],
+        [
+          "successor.target.si_low",
+          -0.0016437595619118173,
+          false
+        ],
+        [
+          "successor.il.b1",
+          -0.0002418954999499623,
+          false
+        ],
+        [
+          "successor.il.b2",
+          0.0010461875028686674,
+          false
+        ],
+        [
+          "successor.il.b3",
+          0.43968437291328544,
+          false
+        ],
+        [
+          "successor.il.b4",
+          0.139458807980406,
+          false
+        ],
+        [
+          "controller.1.transition.lower",
+          0.16954497810871255,
+          true
+        ],
+        [
+          "controller.1.transition.upper",
+          0.0005638279033531868,
+          true
+        ],
+        [
+          "controller.2.stable",
+          0.09784890933271706,
+          false
+        ]
+      ],
+      "state": {
+        "capacities": [
+          0.8115997245670052,
+          2.396016495039364,
+          2.507706579206582,
+          5.382147881937392,
+          3.3839841251955782
+        ],
+        "phases": [
+          0.0,
+          1.5927993557307376,
+          1.5926549245896364,
+          0.0013366914092332038,
+          0.6556656169409303
+        ],
+        "pressure_coordinates": [
+          0.09344982194786211,
+          -0.053117734072491096,
+          -0.056972554034660616,
+          0.08451012743610731
+        ],
+        "source_pressure": [
+          0.09344982194786211,
+          -0.053117734072491096,
+          -0.056972554034660616,
+          0.08451012743610731,
+          -0.0678696612768177
+        ],
+        "successor_pressure": [
+          0.009393979475523645,
+          -0.007060391906355608,
+          -0.009394404778237907,
+          -0.0023333064951971544,
+          0.009394123704267038
+        ],
+        "first_rate": 0.09998569693656789,
+        "offset_interval": [
+          1.6010130374332228,
+          1.5996551498221143
+        ]
+      },
+      "evaluation": 3637
+    }
+  },
+  {
+    "pair": [
+      "transition",
+      "transition"
+    ],
+    "start": 0,
+    "evaluations": 2245,
+    "iterations": 145,
+    "elapsed_seconds": 0.8194011000014143,
+    "termination": {
+      "success": true,
+      "status": 0,
+      "message": "Optimization terminated successfully",
+      "scipy_iterations": 145,
+      "scipy_evaluations": 2245
+    },
+    "best": {
+      "loss": 0.0004855915812611951,
+      "unit": [
+        0.10963874376088618,
+        0.4288954265465159,
+        0.4448390003838335,
+        1.0,
+        0.4291361061185474,
+        0.8466879319934515,
+        0.813553205788248,
+        0.8197322961810445,
+        0.6450167876947877,
+        0.5370127209635359,
+        0.5023466350203946,
+        0.44068941911088677,
+        0.43082197997444965
+      ],
+      "rows": [
+        [
+          "source.fifth_pressure_bound",
+          0.8217415101385338,
+          false
+        ],
+        [
+          "common_form_offset",
+          -0.00017410890837621373,
+          false
+        ],
+        [
+          "source_lift_width",
+          0.306624136013097,
+          false
+        ],
+        [
+          "first_common_arc",
+          0.5213228443263795,
+          true
+        ],
+        [
+          "mutation_common_arc",
+          0.4379895109930462,
+          true
+        ],
+        [
+          "negative_outward_gap",
+          0.36562971489048884,
+          true
+        ],
+        [
+          "complete_renewal",
+          -0.015921210502047645,
+          true
+        ],
+        [
+          "target_not_capacity_maximum",
+          0.8881471094411769,
+          true
+        ],
+        [
+          "terminal_target_minimum_1",
+          0.46830634461843995,
+          false
+        ],
+        [
+          "terminal_target_minimum_2",
+          0.5099534963681706,
+          false
+        ],
+        [
+          "terminal_target_minimum_3",
+          0.47170254256359523,
+          false
+        ],
+        [
+          "terminal_target_minimum_4",
+          0.20967673122948582,
+          false
+        ],
+        [
+          "source.target.oz_tiny",
+          0.07402544124071722,
+          true
+        ],
+        [
+          "source.target.oz_ratio",
+          0.050317062775496815,
+          true
+        ],
+        [
+          "source.target.acquired_rate",
+          -0.0007433408944461373,
+          true
+        ],
+        [
+          "source.target.si_low",
+          0.03390988638799641,
+          false
+        ],
+        [
+          "source.il.b1",
+          -9.77652409231422e-05,
+          false
+        ],
+        [
+          "source.il.b2",
+          0.034260460164824535,
+          false
+        ],
+        [
+          "source.il.b3",
+          0.4231123438407809,
+          false
+        ],
+        [
+          "source.il.b4",
+          0.0045559387422385855,
+          false
+        ],
+        [
+          "successor.target.strict_negative",
+          -0.012708756245050825,
+          true
+        ],
+        [
+          "successor.peak.positive",
+          0.17925313377659122,
+          true
+        ],
+        [
+          "successor.target.zhir_ratio",
+          0.03654942303733746,
+          false
+        ],
+        [
+          "successor.target.si_low",
+          -0.008217188428870592,
+          false
+        ],
+        [
+          "successor.il.b1",
+          0.001831653924789567,
+          false
+        ],
+        [
+          "successor.il.b2",
+          0.031146692922421337,
+          false
+        ],
+        [
+          "successor.il.b3",
+          0.4401356979152975,
+          false
+        ],
+        [
+          "successor.il.b4",
+          0.0015433343132505994,
+          false
+        ],
+        [
+          "controller.1.transition.lower",
+          0.10354712532482463,
+          true
+        ],
+        [
+          "controller.1.transition.upper",
+          0.06656168068724111,
+          true
+        ],
+        [
+          "controller.2.transition.lower",
+          0.1716636945633611,
+          true
+        ],
+        [
+          "controller.2.transition.upper",
+          -0.0015548885512953747,
+          true
+        ]
+      ],
+      "state": {
+        "capacities": [
+          0.7027924385247638,
+          2.703752951353801,
+          2.80368026189116,
+          6.283185307179586,
+          2.7052614250862144
+        ],
+        "phases": [
+          0.0,
+          2.080127591960709,
+          1.8813192347294878,
+          1.9183937770862673,
+          0.8701007261687259
+        ],
+        "pressure_coordinates": [
+          0.1078530576660175,
+          0.006837966936423134,
+          -0.17282780985328072,
+          -0.20158099131342078
+        ],
+        "source_pressure": [
+          0.1078530576660175,
+          0.006837966936423134,
+          -0.17282780985328072,
+          -0.20158099131342078,
+          0.25971777656426087
+        ],
+        "successor_pressure": [
+          0.018516312560635406,
+          0.08981256372688357,
+          -0.2102155648896621,
+          -0.15928025712264532,
+          0.26116694572478844
+        ],
+        "first_rate": 0.09992566591055539,
+        "offset_interval": [
+          2.505783297076319,
+          2.5054350792595668
+        ]
+      },
+      "evaluation": 2229
+    }
+  },
+  {
+    "pair": [
+      "transition",
+      "transition"
+    ],
+    "start": 1,
+    "evaluations": 3844,
+    "iterations": 258,
+    "elapsed_seconds": 1.1930775999935577,
+    "termination": {
+      "success": true,
+      "status": 0,
+      "message": "Optimization terminated successfully",
+      "scipy_iterations": 258,
+      "scipy_evaluations": 3844
+    },
+    "best": {
+      "loss": 0.0015461129067550403,
+      "unit": [
+        0.10409918538520896,
+        0.42618868387219344,
+        0.40330910829398525,
+        0.5722359685640571,
+        0.9769620630622887,
+        0.5219207364977031,
+        0.6174072392854123,
+        0.8094109791427857,
+        0.8215782215035548,
+        0.5389207591341316,
+        0.5598148705599713,
+        0.5561325371038902,
+        0.4325328556903121
+      ],
+      "rows": [
+        [
+          "source.fifth_pressure_bound",
+          0.8251979550233897,
+          false
+        ],
+        [
+          "common_form_offset",
+          -0.0016890801698548064,
+          false
+        ],
+        [
+          "source_lift_width",
+          0.3568435569928905,
+          false
+        ],
+        [
+          "first_common_arc",
+          0.5397816349984919,
+          true
+        ],
+        [
+          "mutation_common_arc",
+          0.45644830166515854,
+          true
+        ],
+        [
+          "negative_outward_gap",
+          0.25425811612535937,
+          true
+        ],
+        [
+          "complete_renewal",
+          -0.02042002865803035,
+          true
+        ],
+        [
+          "target_not_capacity_maximum",
+          0.870692245776709,
+          true
+        ],
+        [
+          "terminal_target_minimum_1",
+          0.03894181909556688,
+          false
+        ],
+        [
+          "terminal_target_minimum_2",
+          0.21551820400671115,
+          false
+        ],
+        [
+          "terminal_target_minimum_3",
+          0.4869958875400755,
+          false
+        ],
+        [
+          "terminal_target_minimum_4",
+          0.46796755367366316,
+          false
+        ],
+        [
+          "source.target.oz_tiny",
+          0.07784151758190867,
+          true
+        ],
+        [
+          "source.target.oz_ratio",
+          0.05459284628637409,
+          true
+        ],
+        [
+          "source.target.acquired_rate",
+          -0.0011411314285153518,
+          true
+        ],
+        [
+          "source.target.si_low",
+          0.012034828721786989,
+          false
+        ],
+        [
+          "source.il.b1",
+          0.020683869342728256,
+          false
+        ],
+        [
+          "source.il.b2",
+          0.0014066589235117721,
+          false
+        ],
+        [
+          "source.il.b3",
+          0.11010044077107806,
+          false
+        ],
+        [
+          "source.il.b4",
+          0.38332880973709926,
+          false
+        ],
+        [
+          "successor.target.strict_negative",
+          -0.02942575988145394,
+          true
+        ],
+        [
+          "successor.peak.positive",
+          0.12741128929781212,
+          true
+        ],
+        [
+          "successor.target.zhir_ratio",
+          0.04637146135806295,
+          false
+        ],
+        [
+          "successor.target.si_low",
+          -0.01607045164303722,
+          false
+        ],
+        [
+          "successor.il.b1",
+          -0.0008622216367032975,
+          false
+        ],
+        [
+          "successor.il.b2",
+          2.9954089636796688e-05,
+          false
+        ],
+        [
+          "successor.il.b3",
+          0.10128398074255307,
+          false
+        ],
+        [
+          "successor.il.b4",
+          0.39732775431714185,
+          false
+        ],
+        [
+          "controller.1.transition.lower",
+          0.06071434200927023,
+          true
+        ],
+        [
+          "controller.1.transition.upper",
+          0.10939446400279551,
+          true
+        ],
+        [
+          "controller.2.transition.lower",
+          0.1428592168171084,
+          true
+        ],
+        [
+          "controller.2.transition.upper",
+          0.027249589194957347,
+          true
+        ]
+      ],
+      "state": {
+        "capacities": [
+          0.668072922330065,
+          2.6867882784064685,
+          2.543389158667375,
+          3.60214844291255,
+          6.1387936480694805
+        ],
+        "phases": [
+          0.0,
+          0.1315244189862188,
+          0.7044434357124736,
+          1.8564658748567142,
+          1.9294693290213285
+        ],
+        "pressure_coordinates": [
+          0.11341297721489263,
+          0.17429728255173527,
+          0.16356716295378737,
+          -0.19659559244409452
+        ],
+        "source_pressure": [
+          0.11341297721489263,
+          0.17429728255173527,
+          0.16356716295378737,
+          -0.19659559244409452,
+          -0.25468183027632074
+        ],
+        "successor_pressure": [
+          0.04287253266907143,
+          0.18563478682743395,
+          0.13895243873404362,
+          -0.1818265408006661,
+          -0.1856332174298829
+        ],
+        "first_rate": 0.09988588685714847,
+        "offset_interval": [
+          1.7755112289383934,
+          1.7721330685986838
+        ]
+      },
+      "evaluation": 3832
+    }
+  },
+  {
+    "pair": [
+      "transition",
+      "transition"
+    ],
+    "start": 2,
+    "evaluations": 2056,
+    "iterations": 137,
+    "elapsed_seconds": 0.6239440000063041,
+    "termination": {
+      "success": true,
+      "status": 0,
+      "message": "Optimization terminated successfully",
+      "scipy_iterations": 137,
+      "scipy_evaluations": 2056
+    },
+    "best": {
+      "loss": 0.0004919721275177428,
+      "unit": [
+        0.10971044436478229,
+        0.42641399744981007,
+        0.4884245038535151,
+        1.0,
+        0.4493623308461709,
+        0.6445668535002906,
+        0.829398247704525,
+        0.8088414327971722,
+        0.8429778651183698,
+        0.536992446888743,
+        0.6099777568075858,
+        0.422320440866903,
+        0.39683920565366443
+      ],
+      "rows": [
+        [
+          "source.fifth_pressure_bound",
+          0.9322597004337925,
+          false
+        ],
+        [
+          "common_form_offset",
+          -0.0007919909249876067,
+          false
+        ],
+        [
+          "source_lift_width",
+          0.31404426976326033,
+          false
+        ],
+        [
+          "first_common_arc",
+          0.5273183594623226,
+          true
+        ],
+        [
+          "mutation_common_arc",
+          0.4439850261289893,
+          true
+        ],
+        [
+          "negative_outward_gap",
+          0.3633079813977282,
+          true
+        ],
+        [
+          "complete_renewal",
+          -0.013750971200135945,
+          true
+        ],
+        [
+          "target_not_capacity_maximum",
+          0.8880755871420547,
+          true
+        ],
+        [
+          "terminal_target_minimum_1",
+          0.21217097712961738,
+          false
+        ],
+        [
+          "terminal_target_minimum_2",
+          0.4839415876546835,
+          false
+        ],
+        [
+          "terminal_target_minimum_3",
+          0.5061282205341391,
+          false
+        ],
+        [
+          "terminal_target_minimum_4",
+          0.46340046678107455,
+          false
+        ],
+        [
+          "source.target.oz_tiny",
+          0.07398489309113142,
+          true
+        ],
+        [
+          "source.target.oz_ratio",
+          0.0447308104666682,
+          true
+        ],
+        [
+          "source.target.acquired_rate",
+          -0.0006520868394047086,
+          true
+        ],
+        [
+          "source.target.si_low",
+          0.02852779837508107,
+          false
+        ],
+        [
+          "source.il.b1",
+          0.0006482784666670405,
+          false
+        ],
+        [
+          "source.il.b2",
+          0.035810655166619965,
+          false
+        ],
+        [
+          "source.il.b3",
+          0.4357483627797153,
+          false
+        ],
+        [
+          "source.il.b4",
+          -0.0005573114901360476,
+          false
+        ],
+        [
+          "successor.target.strict_negative",
+          -0.014833313473637436,
+          true
+        ],
+        [
+          "successor.peak.positive",
+          0.2235010768045949,
+          true
+        ],
+        [
+          "successor.target.zhir_ratio",
+          0.04455895668864856,
+          false
+        ],
+        [
+          "successor.target.si_low",
+          -0.008941630059624173,
+          false
+        ],
+        [
+          "successor.il.b1",
+          -0.0005883495594925514,
+          false
+        ],
+        [
+          "successor.il.b2",
+          0.0516191709268885,
+          false
+        ],
+        [
+          "successor.il.b3",
+          0.44169980500019623,
+          false
+        ],
+        [
+          "successor.il.b4",
+          0.006825696764660494,
+          false
+        ],
+        [
+          "controller.1.transition.lower",
+          0.10215443383165429,
+          true
+        ],
+        [
+          "controller.1.transition.upper",
+          0.06795437218041145,
+          true
+        ],
+        [
+          "controller.2.transition.lower",
+          0.17117330492093402,
+          true
+        ],
+        [
+          "controller.2.transition.upper",
+          -0.0010644989088682832,
+          true
+        ]
+      ],
+      "state": {
+        "capacities": [
+          0.7032418263837438,
+          2.6882004448422068,
+          3.076855033406174,
+          6.283185307179586,
+          2.832030508353162
+        ],
+        "phases": [
+          0.0,
+          0.8674011210017438,
+          1.9763894862271503,
+          1.853048596783033,
+          2.057867190710219
+        ],
+        "pressure_coordinates": [
+          0.10779398011373709,
+          0.3204692072931741,
+          -0.22635401431055335,
+          -0.30060494910570856
+        ],
+        "source_pressure": [
+          0.10779398011373709,
+          0.3204692072931741,
+          -0.22635401431055335,
+          -0.30060494910570856,
+          0.09869577600935076
+        ],
+        "successor_pressure": [
+          0.021611734719887754,
+          0.3199063521111154,
+          -0.18940020135887153,
+          -0.3256349965295844,
+          0.17351711105745282
+        ],
+        "first_rate": 0.09993479131605953,
+        "offset_interval": [
+          2.8399305245927775,
+          2.8383465427428023
+        ]
+      },
+      "evaluation": 2016
+    }
+  },
+  {
+    "pair": [
+      "transition",
+      "transition"
+    ],
+    "start": 3,
+    "evaluations": 3185,
+    "iterations": 203,
+    "elapsed_seconds": 0.9555640000035055,
+    "termination": {
+      "success": true,
+      "status": 0,
+      "message": "Optimization terminated successfully",
+      "scipy_iterations": 204,
+      "scipy_evaluations": 3185
+    },
+    "best": {
+      "loss": 0.0004992943434881048,
+      "unit": [
+        0.1098007973312161,
+        0.5646073929227978,
+        0.9972682152963661,
+        0.42059237688514123,
+        0.4332860622155651,
+        0.8346229768757695,
+        0.8017184129473434,
+        0.817533798974567,
+        0.6200937021941033,
+        0.5369623757447898,
+        0.4721370888147722,
+        0.4474434161968705,
+        0.47817132880067614
+      ],
+      "rows": [
+        [
+          "source.fifth_pressure_bound",
+          0.8694284191142173,
+          false
+        ],
+        [
+          "common_form_offset",
+          -0.0007636842658771403,
+          false
+        ],
+        [
+          "source_lift_width",
+          0.3307540462484611,
+          false
+        ],
+        [
+          "first_common_arc",
+          0.536783749813894,
+          true
+        ],
+        [
+          "mutation_common_arc",
+          0.45345041648056067,
+          true
+        ],
+        [
+          "negative_outward_gap",
+          0.3406401509470774,
+          true
+        ],
+        [
+          "complete_renewal",
+          -0.010665245891145517,
+          true
+        ],
+        [
+          "target_not_capacity_maximum",
+          0.8852604675526163,
+          true
+        ],
+        [
+          "terminal_target_minimum_1",
+          0.45834470176931225,
+          false
+        ],
+        [
+          "terminal_target_minimum_2",
+          0.49974855549155817,
+          false
+        ],
+        [
+          "terminal_target_minimum_3",
+          0.4689193188238401,
+          false
+        ],
+        [
+          "terminal_target_minimum_4",
+          0.18528051798226755,
+          false
+        ],
+        [
+          "source.target.oz_tiny",
+          0.07392475080322497,
+          true
+        ],
+        [
+          "source.target.oz_ratio",
+          0.056558731231770465,
+          true
+        ],
+        [
+          "source.target.acquired_rate",
+          -0.0006603753733956663,
+          true
+        ],
+        [
+          "source.target.si_low",
+          0.03588289866955191,
+          false
+        ],
+        [
+          "source.il.b1",
+          0.08256667103337367,
+          false
+        ],
+        [
+          "source.il.b2",
+          0.44454644483293104,
+          false
+        ],
+        [
+          "source.il.b3",
+          0.005668914050698359,
+          false
+        ],
+        [
+          "source.il.b4",
+          0.0002635179651249153,
+          false
+        ],
+        [
+          "successor.target.strict_negative",
+          -0.01711288491788811,
+          true
+        ],
+        [
+          "successor.peak.positive",
+          0.128536895318366,
+          true
+        ],
+        [
+          "successor.target.zhir_ratio",
+          0.034208291995230795,
+          false
+        ],
+        [
+          "successor.target.si_low",
+          -0.0093141955906888,
+          false
+        ],
+        [
+          "successor.il.b1",
+          0.12680793468220752,
+          false
+        ],
+        [
+          "successor.il.b2",
+          0.4414585562109764,
+          false
+        ],
+        [
+          "successor.il.b3",
+          0.026342446950747278,
+          false
+        ],
+        [
+          "successor.il.b4",
+          -0.00014877666110169052,
+          false
+        ],
+        [
+          "controller.1.transition.lower",
+          0.102940931122452,
+          true
+        ],
+        [
+          "controller.1.transition.upper",
+          0.06716787488961373,
+          true
+        ],
+        [
+          "controller.2.transition.lower",
+          0.17230859679176974,
+          true
+        ],
+        [
+          "controller.2.transition.upper",
+          -0.002199790779704003,
+          true
+        ]
+      ],
+      "state": {
+        "capacities": [
+          0.7038081190498002,
+          3.554335885023076,
+          6.26606368180333,
+          2.651713086867628,
+          2.7312715251964206
+        ],
+        "phases": [
+          0.0,
+          2.0077378612546166,
+          1.8103104776840606,
+          1.905202793847402,
+          0.7205622131646199
+        ],
+        "pressure_coordinates": [
+          0.10770635443428311,
+          -0.08119100916044664,
+          -0.1531470293478876,
+          -0.06360756173404813
+        ],
+        "source_pressure": [
+          0.10770635443428311,
+          -0.08119100916044664,
+          -0.1531470293478876,
+          -0.06360756173404813,
+          0.19023924580809926
+        ],
+        "successor_pressure": [
+          0.02493300837973013,
+          -0.0009166415993117488,
+          -0.18544773298416461,
+          -0.025843398013672296,
+          0.18727476421741857
+        ],
+        "first_rate": 0.09993396246266044,
+        "offset_interval": [
+          2.1620503602324184,
+          2.160522991700664
+        ]
+      },
+      "evaluation": 3169
+    }
+  },
+  {
+    "pair": [
+      "dissonant",
+      "stable"
+    ],
+    "start": 0,
+    "evaluations": 3222,
+    "iterations": 199,
+    "elapsed_seconds": 1.0389931999961846,
+    "termination": {
+      "success": true,
+      "status": 0,
+      "message": "Optimization terminated successfully",
+      "scipy_iterations": 200,
+      "scipy_evaluations": 3222
+    },
+    "best": {
+      "loss": 0.0014462105594795726,
+      "unit": [
+        0.09603348735882244,
+        0.4121030878401627,
+        0.48774075220418284,
+        0.9913223940610477,
+        0.41895821631345204,
+        0.8280362610387351,
+        0.8280408653641403,
+        0.4999995647065937,
+        0.6820584243315891,
+        0.5421243711362216,
+        0.5003964985233654,
+        0.3873525720770431,
+        0.5710388998777004
+      ],
+      "rows": [
+        [
+          "source.fifth_pressure_bound",
+          0.9981753167713389,
+          false
+        ],
+        [
+          "common_form_offset",
+          0.003529470092151321,
+          false
+        ],
+        [
+          "source_lift_width",
+          0.34391739868490667,
+          false
+        ],
+        [
+          "first_common_arc",
+          0.5554505631268725,
+          true
+        ],
+        [
+          "mutation_common_arc",
+          0.47211722979353915,
+          true
+        ],
+        [
+          "negative_outward_gap",
+          0.35171805762239755,
+          true
+        ],
+        [
+          "complete_renewal",
+          -0.03649620648723606,
+          true
+        ],
+        [
+          "target_not_capacity_maximum",
+          0.8930625058428973,
+          true
+        ],
+        [
+          "terminal_target_minimum_1",
+          0.44973879505732633,
+          false
+        ],
+        [
+          "terminal_target_minimum_2",
+          0.45525078158248916,
+          false
+        ],
+        [
+          "terminal_target_minimum_3",
+          0.06799683277758768,
+          false
+        ],
+        [
+          "terminal_target_minimum_4",
+          0.18873719611470663,
+          false
+        ],
+        [
+          "source.target.oz_tiny",
+          0.08424874158608862,
+          true
+        ],
+        [
+          "source.target.oz_ratio",
+          0.05428452644493669,
+          true
+        ],
+        [
+          "source.target.acquired_rate",
+          -0.0007276056532214137,
+          true
+        ],
+        [
+          "source.target.si_low",
+          0.04436085787254221,
+          false
+        ],
+        [
+          "source.il.b1",
+          0.00032322291928088553,
+          false
+        ],
+        [
+          "source.il.b2",
+          -4.184844035010071e-05,
+          false
+        ],
+        [
+          "source.il.b3",
+          0.3740186883400616,
+          false
+        ],
+        [
+          "source.il.b4",
+          -0.0010227777149328654,
+          false
+        ],
+        [
+          "successor.target.strict_negative",
+          -0.004712002457370902,
+          true
+        ],
+        [
+          "successor.peak.positive",
+          0.17458114953083984,
+          true
+        ],
+        [
+          "successor.target.zhir_ratio",
+          0.0279312953449726,
+          false
+        ],
+        [
+          "successor.target.si_low",
+          -0.003566527415630738,
+          false
+        ],
+        [
+          "successor.il.b1",
+          0.001871319905349278,
+          false
+        ],
+        [
+          "successor.il.b2",
+          0.014329425398106554,
+          false
+        ],
+        [
+          "successor.il.b3",
+          0.42091038504978795,
+          false
+        ],
+        [
+          "successor.il.b4",
+          -1.6668530408381343e-05,
+          false
+        ],
+        [
+          "controller.1.dissonant",
+          -0.006972516070046009,
+          false
+        ],
+        [
+          "controller.2.stable",
+          -0.005388600765227625,
+          false
+        ]
+      ],
+      "state": {
+        "capacities": [
+          0.6175206735301881,
+          2.5985059558131463,
+          3.0725695787088507,
+          6.228797888635263,
+          2.641470886932951
+        ],
+        "phases": [
+          0.0,
+          1.9682175662324104,
+          1.9682451921848418,
+          -2.6117604381425963e-06,
+          1.092350545989535
+        ],
+        "pressure_coordinates": [
+          0.12274812850899375,
+          0.0011553751518877942,
+          -0.32824848385700967,
+          0.20700349408486507
+        ],
+        "source_pressure": [
+          0.12274812850899375,
+          0.0011553751518877942,
+          -0.32824848385700967,
+          0.20700349408486507,
+          -0.0026585138887369464
+        ],
+        "successor_pressure": [
+          0.006865259558435477,
+          0.05683921137481289,
+          -0.25435999161341455,
+          0.07667518297319084,
+          0.11398033770697535
+        ],
+        "first_rate": 0.09992723943467786,
+        "offset_interval": [
+          1.9839421635925758,
+          1.9910011037768784
+        ]
+      },
+      "evaluation": 3208
+    }
+  },
+  {
+    "pair": [
+      "dissonant",
+      "stable"
+    ],
+    "start": 1,
+    "evaluations": 5000,
+    "iterations": 269,
+    "elapsed_seconds": 1.5019181999959983,
+    "termination": {
+      "success": false,
+      "status": "budget_exhausted",
+      "message": "Fixed objective evaluation budget exhausted"
+    },
+    "best": {
+      "loss": 0.0045882703082784195,
+      "unit": [
+        0.07167722079834496,
+        0.259491122614847,
+        0.2355329812722668,
+        0.4716084396988558,
+        0.2598064871069606,
+        0.8160906446774578,
+        0.5273212227597466,
+        0.5273447896810639,
+        0.8160884574056368,
+        0.5565133034744425,
+        0.4503028541066057,
+        0.5212661016941091,
+        0.5217580547822828
+      ],
+      "rows": [
+        [
+          "source.fifth_pressure_bound",
+          0.9003193718851199,
+          false
+        ],
+        [
+          "common_form_offset",
+          0.0028627791798393476,
+          false
+        ],
+        [
+          "source_lift_width",
+          0.3678187106450845,
+          false
+        ],
+        [
+          "first_common_arc",
+          0.6376313765532684,
+          true
+        ],
+        [
+          "mutation_common_arc",
+          0.554298043219935,
+          true
+        ],
+        [
+          "negative_outward_gap",
+          0.40956614141731573,
+          true
+        ],
+        [
+          "complete_renewal",
+          -0.0670179277717881,
+          true
+        ],
+        [
+          "target_not_capacity_maximum",
+          0.3989366715507485,
+          true
+        ],
+        [
+          "terminal_target_minimum_1",
+          0.3425459833635862,
+          false
+        ],
+        [
+          "terminal_target_minimum_2",
+          0.04094354739793613,
+          false
+        ],
+        [
+          "terminal_target_minimum_3",
+          0.04096862070391203,
+          false
+        ],
+        [
+          "terminal_target_minimum_4",
+          0.34254824687154123,
+          false
+        ],
+        [
+          "source.target.oz_tiny",
+          0.11302660626253037,
+          true
+        ],
+        [
+          "source.target.oz_ratio",
+          0.09799406822468326,
+          true
+        ],
+        [
+          "source.target.acquired_rate",
+          0.009201110603885149,
+          true
+        ],
+        [
+          "source.target.si_low",
+          0.05874387576295548,
+          false
+        ],
+        [
+          "source.il.b1",
+          0.003561967654076237,
+          false
+        ],
+        [
+          "source.il.b2",
+          0.049839106297437485,
+          false
+        ],
+        [
+          "source.il.b3",
+          0.4270574650175156,
+          false
+        ],
+        [
+          "source.il.b4",
+          0.003923734217547881,
+          false
+        ],
+        [
+          "successor.target.strict_negative",
+          -0.0001378156837896338,
+          true
+        ],
+        [
+          "successor.peak.positive",
+          0.00020858182569197673,
+          true
+        ],
+        [
+          "successor.target.zhir_ratio",
+          0.00016555706660666673,
+          false
+        ],
+        [
+          "successor.target.si_low",
+          2.971275537413942e-05,
+          false
+        ],
+        [
+          "successor.il.b1",
+          0.03075591935078137,
+          false
+        ],
+        [
+          "successor.il.b2",
+          0.0662722007693406,
+          false
+        ],
+        [
+          "successor.il.b3",
+          0.40637603516078014,
+          false
+        ],
+        [
+          "successor.il.b4",
+          0.031195610143591734,
+          false
+        ],
+        [
+          "controller.1.dissonant",
+          -0.009834345875766426,
+          false
+        ],
+        [
+          "controller.2.stable",
+          0.06171888148454585,
+          false
+        ]
+      ],
+      "state": {
+        "capacities": [
+          0.46486630400465395,
+          1.6420012601662863,
+          1.4918421644537323,
+          2.971459337187446,
+          1.6439778261393512
+        ],
+        "phases": [
+          0.0,
+          1.8965438680647466,
+          0.16392733655847946,
+          0.16406873808638345,
+          1.8965307444338215
+        ],
+        "pressure_coordinates": [
+          0.16467669546724162,
+          -0.14481478265694858,
+          0.06196826476512651,
+          0.06340178933199203
+        ],
+        "source_pressure": [
+          0.16467669546724162,
+          -0.14481478265694858,
+          0.06196826476512651,
+          0.06340178933199203,
+          -0.14523196690741158
+        ],
+        "successor_pressure": [
+          0.0002007937069215815,
+          -0.0003035446627107641,
+          0.0001052787278429182,
+          0.00030137028095083424,
+          -0.00030389805300456985
+        ],
+        "first_rate": 0.10092011106038852,
+        "offset_interval": [
+          1.5814242966760998,
+          1.5871498550357785
+        ]
+      },
+      "evaluation": 3300
+    }
+  },
+  {
+    "pair": [
+      "dissonant",
+      "stable"
+    ],
+    "start": 2,
+    "evaluations": 5000,
+    "iterations": 307,
+    "elapsed_seconds": 1.6456248000031337,
+    "termination": {
+      "success": false,
+      "status": "budget_exhausted",
+      "message": "Fixed objective evaluation budget exhausted"
+    },
+    "best": {
+      "loss": 0.00423114544524135,
+      "unit": [
+        0.10519187037954134,
+        0.46012117982946427,
+        0.4635859152024427,
+        0.42460561904017396,
+        0.9782652112163639,
+        0.5129808402391512,
+        0.8103574717408251,
+        0.7641617473823047,
+        0.8116286499077694,
+        0.5385190540780128,
+        0.6124505560444843,
+        0.4085023969594823,
+        0.5682861690817995
+      ],
+      "rows": [
+        [
+          "source.fifth_pressure_bound",
+          0.7444836476724421,
+          false
+        ],
+        [
+          "common_form_offset",
+          -0.0028349693662990116,
+          false
+        ],
+        [
+          "source_lift_width",
+          0.37674270018446104,
+          false
+        ],
+        [
+          "first_common_arc",
+          0.5632164734316831,
+          true
+        ],
+        [
+          "mutation_common_arc",
+          0.4798831400983498,
+          true
+        ],
+        [
+          "negative_outward_gap",
+          0.251192577001132,
+          true
+        ],
+        [
+          "complete_renewal",
+          -0.007895076274265186,
+          true
+        ],
+        [
+          "target_not_capacity_maximum",
+          0.870902185557511,
+          true
+        ],
+        [
+          "terminal_target_minimum_1",
+          0.07628548314008546,
+          false
+        ],
+        [
+          "terminal_target_minimum_2",
+          0.4614242714267612,
+          false
+        ],
+        [
+          "terminal_target_minimum_3",
+          0.4760860014906494,
+          false
+        ],
+        [
+          "terminal_target_minimum_4",
+          0.45475681423173514,
+          false
+        ],
+        [
+          "source.target.oz_tiny",
+          0.07703810746967105,
+          true
+        ],
+        [
+          "source.target.oz_ratio",
+          0.04305443329646044,
+          true
+        ],
+        [
+          "source.target.acquired_rate",
+          -0.0013167532610872112,
+          true
+        ],
+        [
+          "source.target.si_low",
+          -0.00038855673722465456,
+          false
+        ],
+        [
+          "source.il.b1",
+          -0.001802413541546588,
+          false
+        ],
+        [
+          "source.il.b2",
+          8.881801896010177e-05,
+          false
+        ],
+        [
+          "source.il.b3",
+          0.024241211072496438,
+          false
+        ],
+        [
+          "source.il.b4",
+          0.37889511311980384,
+          false
+        ],
+        [
+          "successor.target.strict_negative",
+          -0.03576500311007315,
+          true
+        ],
+        [
+          "successor.peak.positive",
+          0.18706095287244356,
+          true
+        ],
+        [
+          "successor.target.zhir_ratio",
+          0.06064410984210814,
+          false
+        ],
+        [
+          "successor.target.si_low",
+          -0.019659828752609687,
+          false
+        ],
+        [
+          "successor.il.b1",
+          0.0018537580097903739,
+          false
+        ],
+        [
+          "successor.il.b2",
+          0.020643562691780803,
+          false
+        ],
+        [
+          "successor.il.b3",
+          0.04047416559565464,
+          false
+        ],
+        [
+          "successor.il.b4",
+          0.3975007665368633,
+          false
+        ],
+        [
+          "controller.1.dissonant",
+          -0.031119919380111438,
+          false
+        ],
+        [
+          "controller.2.stable",
+          -0.03900588419146844,
+          false
+        ]
+      ],
+      "state": {
+        "capacities": [
+          0.6749213914287933,
+          2.899462243191791,
+          2.9211776810903514,
+          2.6768663241016113,
+          6.1469612077143365
+        ],
+        "phases": [
+          0.0,
+          0.07788504143490727,
+          1.8621448304449508,
+          1.5849704842938284,
+          1.8697718994466168
+        ],
+        "pressure_coordinates": [
+          0.11224243050947758,
+          0.3276748099008948,
+          -0.2666190434027629,
+          0.1989821861253176
+        ],
+        "source_pressure": [
+          0.11224243050947758,
+          0.3276748099008948,
+          -0.2666190434027629,
+          0.1989821861253176,
+          -0.3722803831329271
+        ],
+        "successor_pressure": [
+          0.05210863782017273,
+          0.27254272601422475,
+          -0.18092576753472023,
+          0.12877789596677486,
+          -0.27250349226645204
+        ],
+        "first_rate": 0.09986832467389128,
+        "offset_interval": [
+          1.85004668724256,
+          1.844376748509962
+        ]
+      },
+      "evaluation": 3955
+    }
+  },
+  {
+    "pair": [
+      "dissonant",
+      "stable"
+    ],
+    "start": 3,
+    "evaluations": 3706,
+    "iterations": 229,
+    "elapsed_seconds": 1.482349099998828,
+    "termination": {
+      "success": true,
+      "status": 0,
+      "message": "Optimization terminated successfully",
+      "scipy_iterations": 230,
+      "scipy_evaluations": 3706
+    },
+    "best": {
+      "loss": 0.001681003119965988,
+      "unit": [
+        0.07741599519693841,
+        0.43121590241809615,
+        0.21151761854224324,
+        0.24765039367613303,
+        0.2441655767554756,
+        0.7538530584444144,
+        0.8022777474676157,
+        0.49542701578721526,
+        0.82629056094981,
+        0.5519530880594912,
+        0.4842459771089675,
+        0.46830859497426597,
+        0.548824044737061
+      ],
+      "rows": [
+        [
+          "source.fifth_pressure_bound",
+          0.8933365902404286,
+          false
+        ],
+        [
+          "common_form_offset",
+          -0.0012894669182272889,
+          false
+        ],
+        [
+          "source_lift_width",
+          0.33827290967481033,
+          false
+        ],
+        [
+          "first_common_arc",
+          0.6184798986054217,
+          true
+        ],
+        [
+          "mutation_common_arc",
+          0.5351465652720884,
+          true
+        ],
+        [
+          "negative_outward_gap",
+          0.39437703271131785,
+          true
+        ],
+        [
+          "complete_renewal",
+          -0.03923719960611116,
+          true
+        ],
+        [
+          "target_not_capacity_maximum",
+          0.35292007903209993,
+          true
+        ],
+        [
+          "terminal_target_minimum_1",
+          0.3324704411674297,
+          false
+        ],
+        [
+          "terminal_target_minimum_2",
+          0.38948045298506484,
+          false
+        ],
+        [
+          "terminal_target_minimum_3",
+          0.07254510694185237,
+          false
+        ],
+        [
+          "terminal_target_minimum_4",
+          0.36018032968214947,
+          false
+        ],
+        [
+          "source.target.oz_tiny",
+          0.10390617543262778,
+          true
+        ],
+        [
+          "source.target.oz_ratio",
+          0.08971994262095938,
+          true
+        ],
+        [
+          "source.target.acquired_rate",
+          -0.00045007313077355393,
+          true
+        ],
+        [
+          "source.target.si_low",
+          0.027046849998875383,
+          false
+        ],
+        [
+          "source.il.b1",
+          0.4468493421489964,
+          false
+        ],
+        [
+          "source.il.b2",
+          0.01897204440728195,
+          false
+        ],
+        [
+          "source.il.b3",
+          0.014040721783923349,
+          false
+        ],
+        [
+          "source.il.b4",
+          -0.000381692675943901,
+          false
+        ],
+        [
+          "successor.target.strict_negative",
+          -0.009676052634132189,
+          true
+        ],
+        [
+          "successor.peak.positive",
+          0.009676052634132189,
+          true
+        ],
+        [
+          "successor.target.zhir_ratio",
+          0.01096296763447177,
+          false
+        ],
+        [
+          "successor.target.si_low",
+          -0.003936442772758009,
+          false
+        ],
+        [
+          "successor.il.b1",
+          0.46828715999228177,
+          false
+        ],
+        [
+          "successor.il.b2",
+          0.015845030041233832,
+          false
+        ],
+        [
+          "successor.il.b3",
+          0.05167872027028986,
+          false
+        ],
+        [
+          "successor.il.b4",
+          0.04123679219706311,
+          false
+        ],
+        [
+          "controller.1.dissonant",
+          -0.005496726393829754,
+          false
+        ],
+        [
+          "controller.2.stable",
+          0.045982987982724155,
+          false
+        ]
+      ],
+      "state": {
+        "capacities": [
+          0.5008344186371367,
+          2.7182966738202854,
+          1.3413244302445166,
+          1.56778877746193,
+          1.5459474772522295
+        ],
+        "phases": [
+          0.0,
+          1.5231183506664863,
+          1.8136664848056938,
+          -0.02743790527670864,
+          1.9577433656988603
+        ],
+        "pressure_coordinates": [
+          0.15138847554407664,
+          -0.04590636665194703,
+          -0.0923470321764499,
+          0.14227061333054203
+        ],
+        "source_pressure": [
+          0.15138847554407664,
+          -0.04590636665194703,
+          -0.0923470321764499,
+          0.14227061333054203,
+          -0.15540569004622173
+        ],
+        "successor_pressure": [
+          0.014097745796054856,
+          -0.0015074848641335112,
+          -0.013641192180967363,
+          -0.012644386551615344,
+          0.013695317800661355
+        ],
+        "first_rate": 0.09995499268692265,
+        "offset_interval": [
+          1.7075329064941585,
+          1.7049539726577039
+        ]
+      },
+      "evaluation": 3693
+    }
+  },
+  {
+    "pair": [
+      "dissonant",
+      "transition"
+    ],
+    "start": 0,
+    "evaluations": 2544,
+    "iterations": 164,
+    "elapsed_seconds": 0.7973464999959106,
+    "termination": {
+      "success": true,
+      "status": 0,
+      "message": "Optimization terminated successfully",
+      "scipy_iterations": 164,
+      "scipy_evaluations": 2544
+    },
+    "best": {
+      "loss": 0.0016193219040720385,
+      "unit": [
+        0.11025782370183093,
+        0.5054784762811511,
+        0.4790290343856173,
+        0.9999706186178886,
+        0.5065635096020037,
+        0.8104843635502753,
+        0.8104900285127431,
+        0.5000024125937034,
+        0.53243795973446,
+        0.5368137521473881,
+        0.45810245446678444,
+        0.4567931521799062,
+        0.5478676293621105
+      ],
+      "rows": [
+        [
+          "source.fifth_pressure_bound",
+          0.9991539763123787,
+          false
+        ],
+        [
+          "common_form_offset",
+          -0.000891026867735567,
+          false
+        ],
+        [
+          "source_lift_width",
+          0.37901994297451375,
+          false
+        ],
+        [
+          "first_common_arc",
+          0.5608256900263816,
+          true
+        ],
+        [
+          "mutation_common_arc",
+          0.4774923566930483,
+          true
+        ],
+        [
+          "negative_outward_gap",
+          0.2431817032470235,
+          true
+        ],
+        [
+          "complete_renewal",
+          -0.03236282275606639,
+          true
+        ],
+        [
+          "target_not_capacity_maximum",
+          0.8875002607091359,
+          true
+        ],
+        [
+          "terminal_target_minimum_1",
+          0.44809967835378073,
+          false
+        ],
+        [
+          "terminal_target_minimum_2",
+          0.4540090384141497,
+          false
+        ],
+        [
+          "terminal_target_minimum_3",
+          0.06641420750375701,
+          false
+        ],
+        [
+          "terminal_target_minimum_4",
+          0.026056049859639063,
+          false
+        ],
+        [
+          "source.target.oz_tiny",
+          0.07362750360842173,
+          true
+        ],
+        [
+          "source.target.oz_ratio",
+          0.060894714884454915,
+          true
+        ],
+        [
+          "source.target.acquired_rate",
+          -0.0006277879863228475,
+          true
+        ],
+        [
+          "source.target.si_low",
+          0.028043716670947516,
+          false
+        ],
+        [
+          "source.il.b1",
+          0.020495588672171938,
+          false
+        ],
+        [
+          "source.il.b2",
+          -0.001115442157833768,
+          false
+        ],
+        [
+          "source.il.b3",
+          0.38172364241127676,
+          false
+        ],
+        [
+          "source.il.b4",
+          0.11478582843810547,
+          false
+        ],
+        [
+          "successor.target.strict_negative",
+          -0.022108026481214425,
+          true
+        ],
+        [
+          "successor.peak.positive",
+          0.04923390135735136,
+          true
+        ],
+        [
+          "successor.target.zhir_ratio",
+          0.028656135361742156,
+          false
+        ],
+        [
+          "successor.target.si_low",
+          -0.008058585824255726,
+          false
+        ],
+        [
+          "successor.il.b1",
+          0.02555852540468051,
+          false
+        ],
+        [
+          "successor.il.b2",
+          0.0049796716082763925,
+          false
+        ],
+        [
+          "successor.il.b3",
+          0.410335378343317,
+          false
+        ],
+        [
+          "successor.il.b4",
+          0.08392241984330517,
+          false
+        ],
+        [
+          "controller.1.dissonant",
+          -0.003965035792244276,
+          false
+        ],
+        [
+          "controller.2.transition.lower",
+          0.12335228213065769,
+          true
+        ],
+        [
+          "controller.2.transition.upper",
+          0.04675652388140805,
+          true
+        ]
+      ],
+      "state": {
+        "capacities": [
+          0.7066725593896002,
+          3.1837418340733605,
+          3.01796836190186,
+          6.283001157595295,
+          3.1905423458471036
+        ],
+        "phases": [
+          0.0,
+          1.8629061813016516,
+          1.8629401710764588,
+          1.4475562220006566e-05,
+          0.19462775840675972
+        ],
+        "pressure_coordinates": [
+          0.10727327334746217,
+          -0.12208717102723377,
+          -0.12590240674546305,
+          0.13948367089826785
+        ],
+        "source_pressure": [
+          0.10727327334746217,
+          -0.12208717102723377,
+          -0.12590240674546305,
+          0.13948367089826785,
+          0.0012326335269667865
+        ],
+        "successor_pressure": [
+          0.03221079392284258,
+          -0.07103948888193093,
+          -0.07173245662550386,
+          0.05799243240416928,
+          0.05256871918042292
+        ],
+        "first_rate": 0.09993722120136772,
+        "offset_interval": [
+          1.657954526720772,
+          1.656172472985301
+        ]
+      },
+      "evaluation": 2397
+    }
+  },
+  {
+    "pair": [
+      "dissonant",
+      "transition"
+    ],
+    "start": 1,
+    "evaluations": 1847,
+    "iterations": 122,
+    "elapsed_seconds": 0.6097697999939555,
+    "termination": {
+      "success": true,
+      "status": 0,
+      "message": "Optimization terminated successfully",
+      "scipy_iterations": 122,
+      "scipy_evaluations": 1847
+    },
+    "best": {
+      "loss": 0.011673566643294808,
+      "unit": [
+        0.08940130353752038,
+        0.4250431160382995,
+        0.8093857453959433,
+        0.9999990833035242,
+        0.6001141578271155,
+        0.540063896706777,
+        0.5400927402297175,
+        0.49999727637834857,
+        0.9234590123126835,
+        0.5451787584649698,
+        0.6186354119687967,
+        0.4106710443614387,
+        0.526266511025462
+      ],
+      "rows": [
+        [
+          "source.fifth_pressure_bound",
+          0.7984965483586659,
+          false
+        ],
+        [
+          "common_form_offset",
+          -0.00040868413992067865,
+          false
+        ],
+        [
+          "source_lift_width",
+          0.15307652813133021,
+          false
+        ],
+        [
+          "first_common_arc",
+          0.4466127998741045,
+          true
+        ],
+        [
+          "mutation_common_arc",
+          0.36327946654077126,
+          true
+        ],
+        [
+          "negative_outward_gap",
+          0.3003004558655557,
+          true
+        ],
+        [
+          "complete_renewal",
+          -0.1040038003950378,
+          true
+        ],
+        [
+          "target_not_capacity_maximum",
+          0.9083333088625933,
+          true
+        ],
+        [
+          "terminal_target_minimum_1",
+          0.017980666384115936,
+          false
+        ],
+        [
+          "terminal_target_minimum_2",
+          0.023913245863723412,
+          false
+        ],
+        [
+          "terminal_target_minimum_3",
+          0.06641279349927819,
+          false
+        ],
+        [
+          "terminal_target_minimum_4",
+          0.4965809509274554,
+          false
+        ],
+        [
+          "source.target.oz_tiny",
+          0.09035751624358496,
+          true
+        ],
+        [
+          "source.target.oz_ratio",
+          0.058800497346239634,
+          true
+        ],
+        [
+          "source.target.acquired_rate",
+          -0.00041359454807335383,
+          true
+        ],
+        [
+          "source.target.si_low",
+          0.04228531417771067,
+          false
+        ],
+        [
+          "source.il.b1",
+          -0.0003485806669114577,
+          false
+        ],
+        [
+          "source.il.b2",
+          0.3048547299124159,
+          false
+        ],
+        [
+          "source.il.b3",
+          0.406016633793278,
+          false
+        ],
+        [
+          "source.il.b4",
+          -0.00021396073432516927,
+          false
+        ],
+        [
+          "successor.target.strict_negative",
+          -0.007879495121127058,
+          true
+        ],
+        [
+          "successor.peak.positive",
+          0.24810614453408927,
+          true
+        ],
+        [
+          "successor.target.zhir_ratio",
+          0.040877612344160937,
+          false
+        ],
+        [
+          "successor.target.si_low",
+          -0.006612211222382869,
+          false
+        ],
+        [
+          "successor.il.b1",
+          0.006651332382553221,
+          false
+        ],
+        [
+          "successor.il.b2",
+          0.32130294169863693,
+          false
+        ],
+        [
+          "successor.il.b3",
+          0.4383712416874318,
+          false
+        ],
+        [
+          "successor.il.b4",
+          0.07579178661261066,
+          false
+        ],
+        [
+          "controller.1.dissonant",
+          -0.026890319870190027,
+          false
+        ],
+        [
+          "controller.2.transition.lower",
+          0.17531828542530697,
+          true
+        ],
+        [
+          "controller.2.transition.upper",
+          -0.005209479413241236,
+          true
+        ]
+      ],
+      "state": {
+        "capacities": [
+          0.5759530614618766,
+          2.679608362921573,
+          5.088498971040577,
+          6.28317956172914,
+          3.776876675373735
+        ],
+        "phases": [
+          0.0,
+          0.24038338024066208,
+          0.24055644137830523,
+          -1.634172990883087e-05,
+          2.5407540738761005
+        ],
+        "pressure_coordinates": [
+          0.13164844721364588,
+          0.3456971439875469,
+          -0.2602997227148598,
+          0.07653918584113728
+        ],
+        "source_pressure": [
+          0.13164844721364588,
+          0.3456971439875469,
+          -0.2602997227148598,
+          0.07653918584113728,
+          -0.2935850543274703
+        ],
+        "successor_pressure": [
+          0.011480210310871916,
+          0.3614839117082309,
+          -0.21366000564317394,
+          -0.05644297376882304,
+          -0.10286114260710588
+        ],
+        "first_rate": 0.09995864054519267,
+        "offset_interval": [
+          2.1538442546287544,
+          2.153026886348913
+        ]
+      },
+      "evaluation": 1812
+    }
+  },
+  {
+    "pair": [
+      "dissonant",
+      "transition"
+    ],
+    "start": 2,
+    "evaluations": 2414,
+    "iterations": 160,
+    "elapsed_seconds": 0.7826808999961941,
+    "termination": {
+      "success": true,
+      "status": 0,
+      "message": "Optimization terminated successfully",
+      "scipy_iterations": 160,
+      "scipy_evaluations": 2414
+    },
+    "best": {
+      "loss": 0.0007403818674928679,
+      "unit": [
+        0.1103118570432638,
+        0.4360741620957611,
+        0.41197919603127786,
+        1.0,
+        0.4358484442893286,
+        0.8708220466902596,
+        0.8332479095134411,
+        0.8597914993645852,
+        0.6167583991871476,
+        0.5367896742574763,
+        0.49203312697024043,
+        0.5041019105457211,
+        0.3023489496538443
+      ],
+      "rows": [
+        [
+          "source.fifth_pressure_bound",
+          0.6705473228545641,
+          false
+        ],
+        [
+          "common_form_offset",
+          -0.0007281184372405214,
+          false
+        ],
+        [
+          "source_lift_width",
+          0.2583559066194807,
+          false
+        ],
+        [
+          "first_common_arc",
+          0.48359489172288317,
+          true
+        ],
+        [
+          "mutation_common_arc",
+          0.40026155838954985,
+          true
+        ],
+        [
+          "negative_outward_gap",
+          0.36458972847772086,
+          true
+        ],
+        [
+          "complete_renewal",
+          -0.019854901366219035,
+          true
+        ],
+        [
+          "target_not_capacity_maximum",
+          0.8874756700542079,
+          true
+        ],
+        [
+          "terminal_target_minimum_1",
+          0.4979062690676028,
+          false
+        ],
+        [
+          "terminal_target_minimum_2",
+          0.5437477581074955,
+          false
+        ],
+        [
+          "terminal_target_minimum_3",
+          0.5155569454722552,
+          false
+        ],
+        [
+          "terminal_target_minimum_4",
+          0.18074738470727603,
+          false
+        ],
+        [
+          "source.target.oz_tiny",
+          0.07357934782859796,
+          true
+        ],
+        [
+          "source.target.oz_ratio",
+          0.02100416912287514,
+          true
+        ],
+        [
+          "source.target.acquired_rate",
+          -0.0008028096204476531,
+          true
+        ],
+        [
+          "source.target.si_low",
+          0.01932072626099804,
+          false
+        ],
+        [
+          "source.il.b1",
+          -0.00047835807087320825,
+          false
+        ],
+        [
+          "source.il.b2",
+          0.042643788692058426,
+          false
+        ],
+        [
+          "source.il.b3",
+          0.39455184253708886,
+          false
+        ],
+        [
+          "source.il.b4",
+          0.002455430705011641,
+          false
+        ],
+        [
+          "successor.target.strict_negative",
+          -0.015386838044222325,
+          true
+        ],
+        [
+          "successor.peak.positive",
+          0.3346256071652356,
+          true
+        ],
+        [
+          "successor.target.zhir_ratio",
+          0.05989204379719867,
+          false
+        ],
+        [
+          "successor.target.si_low",
+          -0.010360998142095568,
+          false
+        ],
+        [
+          "successor.il.b1",
+          0.015674658632865324,
+          false
+        ],
+        [
+          "successor.il.b2",
+          0.04899635538870273,
+          false
+        ],
+        [
+          "successor.il.b3",
+          0.4068952884958623,
+          false
+        ],
+        [
+          "successor.il.b4",
+          -0.0005411737654575366,
+          false
+        ],
+        [
+          "controller.1.dissonant",
+          -0.0005396706395222606,
+          false
+        ],
+        [
+          "controller.2.transition.lower",
+          0.09494831150089916,
+          true
+        ],
+        [
+          "controller.2.transition.upper",
+          0.07516049451116658,
+          true
+        ]
+      ],
+      "state": {
+        "capacities": [
+          0.707011216615629,
+          2.748746109337989,
+          2.597729456429395,
+          6.283185307179586,
+          2.747331409373769
+        ],
+        "phases": [
+          0.0,
+          2.224932280141558,
+          1.9994874570806465,
+          2.1587489961875113,
+          0.7005503951228853
+        ],
+        "pressure_coordinates": [
+          0.10720311168461927,
+          -0.023215035099500403,
+          0.011952744437901286,
+          -0.5759444206151217
+        ],
+        "source_pressure": [
+          0.10720311168461927,
+          -0.023215035099500403,
+          0.011952744437901286,
+          -0.5759444206151217,
+          0.4800035995921016
+        ],
+        "successor_pressure": [
+          0.022418204980337725,
+          0.0697619464618885,
+          -0.05075734539809797,
+          -0.48754041808590226,
+          0.446117612041774
+        ],
+        "first_rate": 0.09991971903795524,
+        "offset_interval": [
+          2.9192599616528545,
+          2.9178037247783735
+        ]
+      },
+      "evaluation": 2401
+    }
+  },
+  {
+    "pair": [
+      "dissonant",
+      "transition"
+    ],
+    "start": 3,
+    "evaluations": 2602,
+    "iterations": 163,
+    "elapsed_seconds": 0.8128961000038544,
+    "termination": {
+      "success": true,
+      "status": 0,
+      "message": "Optimization terminated successfully",
+      "scipy_iterations": 163,
+      "scipy_evaluations": 2602
+    },
+    "best": {
+      "loss": 0.0046456415677136,
+      "unit": [
+        0.10460184294939895,
+        0.76893799988471,
+        1.0,
+        0.7988533508489177,
+        0.5455373542011682,
+        0.5253398166767758,
+        0.8272247865548201,
+        0.4942131673241636,
+        0.8296186403271073,
+        0.538709023071236,
+        0.6004720641208112,
+        0.36561549113899183,
+        0.5539362153659765
+      ],
+      "rows": [
+        [
+          "source.fifth_pressure_bound",
+          0.882534412605969,
+          false
+        ],
+        [
+          "common_form_offset",
+          0.00634808775397766,
+          false
+        ],
+        [
+          "source_lift_width",
+          0.3291890539941125,
+          false
+        ],
+        [
+          "first_common_arc",
+          0.5796909341560647,
+          true
+        ],
+        [
+          "mutation_common_arc",
+          0.49635760082273134,
+          true
+        ],
+        [
+          "negative_outward_gap",
+          0.2517206329134987,
+          true
+        ],
+        [
+          "complete_renewal",
+          -0.059095510632530525,
+          true
+        ],
+        [
+          "target_not_capacity_maximum",
+          0.8931714845079453,
+          true
+        ],
+        [
+          "terminal_target_minimum_1",
+          0.08660253337991779,
+          false
+        ],
+        [
+          "terminal_target_minimum_2",
+          0.4084111064080025,
+          false
+        ],
+        [
+          "terminal_target_minimum_3",
+          0.12568758897202023,
+          false
+        ],
+        [
+          "terminal_target_minimum_4",
+          0.3999585281262881,
+          false
+        ],
+        [
+          "source.target.oz_tiny",
+          0.0774180454561174,
+          true
+        ],
+        [
+          "source.target.oz_ratio",
+          0.04167176678544381,
+          true
+        ],
+        [
+          "source.target.acquired_rate",
+          -0.0018904053604951176,
+          true
+        ],
+        [
+          "source.target.si_low",
+          0.006387301741156204,
+          false
+        ],
+        [
+          "source.il.b1",
+          0.23320966199170634,
+          false
+        ],
+        [
+          "source.il.b2",
+          0.3306578803373411,
+          false
+        ],
+        [
+          "source.il.b3",
+          0.2074960342559945,
+          false
+        ],
+        [
+          "source.il.b4",
+          0.014334334681920913,
+          false
+        ],
+        [
+          "successor.target.strict_negative",
+          -0.027773810418629415,
+          true
+        ],
+        [
+          "successor.peak.positive",
+          0.14642557367308448,
+          true
+        ],
+        [
+          "successor.target.zhir_ratio",
+          0.04724841171714965,
+          false
+        ],
+        [
+          "successor.target.si_low",
+          -0.01740367094413492,
+          false
+        ],
+        [
+          "successor.il.b1",
+          0.232267569548799,
+          false
+        ],
+        [
+          "successor.il.b2",
+          0.3662272981748107,
+          false
+        ],
+        [
+          "successor.il.b3",
+          0.2628937089745327,
+          false
+        ],
+        [
+          "successor.il.b4",
+          0.07589379949771857,
+          false
+        ],
+        [
+          "controller.1.dissonant",
+          0.056492318026320765,
+          false
+        ],
+        [
+          "controller.2.transition.lower",
+          0.17878759451251697,
+          true
+        ],
+        [
+          "controller.2.transition.upper",
+          -0.008678788500451229,
+          true
+        ]
+      ],
+      "state": {
+        "capacities": [
+          0.6712233589274857,
+          4.83499028675947,
+          6.283185307179586,
+          5.0224865530380844,
+          3.4348132672750125
+        ],
+        "phases": [
+          0.0,
+          0.15203890006065457,
+          1.9633487193289207,
+          -0.03472099605501855,
+          1.9777118419626438
+        ],
+        "pressure_coordinates": [
+          0.11279598983306904,
+          0.292770135330533,
+          -0.39158915654660187,
+          0.1571672007546907
+        ],
+        "source_pressure": [
+          0.11279598983306904,
+          0.292770135330533,
+          -0.39158915654660187,
+          0.1571672007546907,
+          -0.17114416937169086
+        ],
+        "successor_pressure": [
+          0.04046568718409767,
+          0.21333808255682193,
+          -0.2133380671435158,
+          -0.03454845935183723,
+          -0.0059172432455665835
+        ],
+        "first_rate": 0.0998109594639505,
+        "offset_interval": [
+          2.1976775776705515,
+          2.210373753178507
+        ]
+      },
+      "evaluation": 2587
+    }
+  }
+]

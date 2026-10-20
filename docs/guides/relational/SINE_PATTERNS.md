@@ -624,12 +624,10 @@ equilibrium search or old frozen producer runs when constructing the report.
 The [theorem](../../../theory/nodal/SINE_TWO_PORT_INFERENCE.md) supplies the
 finite response and remote-current error proof. The separately frozen
 [three-case assessment](../../../theory/nodal/SINE_TWO_PORT_INFERENCE.md#sine-two-port-inference-result)
-tests this inverse using complete-flow responses and a held sensor calibrated
-from separate known references. Its first evaluation passes all forty-three
-conditions. The inverse worker receives only its recorded JSON public packet;
-hidden geometry, source coordinates and realized reading errors remain in
-the posterior audit. This is a software information boundary, not physical
-calibration or cryptographic blindness.
+uses complete-flow responses and separate software calibration references.
+The inverse worker receives only its JSON public packet; hidden geometry,
+source coordinates and realized reading errors remain in the posterior audit.
+This boundary supplies neither physical calibration nor cryptographic blindness.
 
 Inspect the [saved record](../../assets/sine_formed_classes/two-port-inference-v1.json)
 without rerunning the producer. Each `cases` entry retains `response`,
@@ -686,14 +684,10 @@ original preparation or replace it by an equilibrium.
 
 Read the [API contract](../../contracts/relational/SINE_PATTERNS.md#sine-two-port-dipole)
 before interpreting response, heat-control, work and recovery flags.
-The [retained result](../../../theory/nodal/SINE_TWO_PORT_DIPOLE.md#sine-two-port-dipole-result)
-passes all thirteen conditions in its first frozen assessment. Its recorded
-contrast is enclosed between approximately `8.3951e-12` and `9.6232e-12`,
-above threshold `2^-38`; the phase-blind recorded bound is about
-`7.1054e-15`. These are certified structural-model bounds, not measured
-laboratory responses. The
-[execution plan](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#sine-two-port-dipole-admission)
-owns its closed status. Inspect the saved record from the repository root:
+The [result owner](../../../theory/nodal/SINE_TWO_PORT_DIPOLE.md#sine-two-port-dipole-result)
+retains the frozen response bounds and verdict. Inspect those structural-model
+certificates from the repository root without treating them as laboratory
+measurements or rerunning their producer:
 
 ```python
 from fractions import Fraction as Q
@@ -797,11 +791,8 @@ before interpreting the flags. The original frozen attempt executed its
 primary assessment but failed during control-report export and saved no
 complete response. The
 [retained result](../../../theory/nodal/SINE_TWO_PORT_PROBE.md#sine-two-port-probe-result)
-passes all ten fixed conditions after a separately archived deterministic
-export recovery. Scientific inputs and runtime were unchanged; this is not
-a successful first attempt. The
-[execution plan](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#sine-two-port-probe-admission)
-owns that status. Inspect the saved response from the repository root:
+is a separately archived export recovery with unchanged scientific inputs
+and runtime, not a successful first attempt. Inspect it from the repository root:
 
 ```python
 from fractions import Fraction as Q
@@ -929,31 +920,19 @@ retain its producing implementation and content hashes; the
 [evidence audit](../../../TESTING.md#current-checks-and-retained-evidence)
 checks those associations without rerunning the producer.
 
-The nominal gradient reference is validated through slow time `1024` using
-an eight-coordinate reconstruction, the shared retained-metric Taylor
-kernel, step `1/4`, order eight and at most 4,096 steps. This smaller
-reference does not impose symmetry on the actual eighteen-node form-phase
-family. The strict reference margin `1/2048` radians and endpoint-distance
-allowance `1/2048` radians in the full degree metric are checked separately
-from the actual full-flow error.
+Interpret the reference's numerical and acute-domain margins separately
+from the actual full-flow error. Its eight-coordinate folding does not
+impose symmetry on the eighteen-node preparation errors. The subsequent
+analytic continuation retains both actual form and phase coordinates;
+capture requires their joint storage and local chart. A small reference
+endpoint or partial validated prefix alone is insufficient.
 
-One additional slow unit is handled analytically, continuing the same
-reference and full trajectories to `1025`. Capture then requires the
-original form coordinate, the actual phase error and the complete excess
-storage to pass their common local barrier. Inspect the entire chain:
-a small reference endpoint alone is insufficient, and a partial validated
-prefix does not represent the requested horizon.
-
-The protocol, producing source and proof were preserved before the first
-evaluation. Inspect its saved result without rerunning the frozen producer.
-The successful chain admits the full original preparation family; it does
-not impose the reference's reflection symmetry on actual errors. A separate
-current-source assessment with an unavailable result must preserve its
-failed premise and budget rather than replace the retained first response.
-The
-[contract](../../contracts/relational/SINE_PATTERNS.md#sine-two-port-capture)
-separates this conditional capture from contact occurrence, event work and
-physical identification.
+The [contract](../../contracts/relational/SINE_PATTERNS.md#sine-two-port-capture)
+owns the numerical policy, handoff bounds and availability rules. A separate
+current-source assessment must preserve any failed premise and budget;
+it cannot replace the retained first response. Capture remains conditional
+on the supplied source and support, with contact occurrence, event work and
+physical identification separate.
 
 <a id="sine-two-port-transit"></a>
 ### Certify a finite deformation from the undeformed pair
@@ -1100,12 +1079,9 @@ assert matched_current == (Q(0), Q(0))
 assert saved["frozen_stopping_rule_passed"]
 ```
 
-Both [saved certificates](../../assets/sine_formed_classes/two-port-compatibility-v1.json)
-have status `certified_compatible`. The unequal-class first contact current
-is approximately `0.11461`; the matched current is exactly zero. The unequal
-twists deform to satisfy the joint balance; independently rotating their
-undeformed copies cannot make both contacts compatible. These are static
-geometric distinctions, not an evaluated formation trajectory.
+The unequal twists deform to satisfy the joint balance; independently
+rotating undeformed copies cannot make both contacts compatible. The checked
+current difference is a static geometric distinction, not a formation trajectory.
 
 Inspect `bridge_turn_bounds`, `edge_current_bounds` and the correlated affine
 turn coefficients together. The intervals enclose one implicit geometry;
@@ -1163,12 +1139,10 @@ print("form", record["form_resolution_certified"])
 print("joint", record["joint_resolution_certified"])
 ```
 
-The [retained new assessment](../../assets/sine_formed_classes/port-form-tracking-v1.json)
-has status `full`. Its form upper bound is approximately `5.66e-8`, below the
-unchanged allowance of approximately `1.56e-7`; its original phase bound remains
-approximately `2.65e-4`, below `5e-4`. These are uniform error guarantees, not
-measured errors. The nested baseline remains `phase_only` and equals the
-earlier frozen report body, whose joint stopping criterion remains false.
+These are uniform error guarantees, not measured errors. The sharper form
+bound leaves the phase bound unchanged. Its nested `phase_only` baseline
+equals the earlier frozen report body and retains that report's false joint
+stopping criterion; the new method does not rewrite the earlier verdict.
 
 Inspect `odd_heat_bounds`, `even_heat_bounds` and the explicit bridge-variation
 fields for the new method's contributions and strict feedback margins.
@@ -1348,7 +1322,7 @@ assert protocol["numerical_policy"]["time_step"] == {
 record; it is not a query about a later outcome. This inspection creates
 neither an attempt nor a response. The
 [first retained outcome](../../../theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-reserved-result)
-now has a separate
+has a separate
 [attempt ledger](../../assets/sine_formed_classes/class-nonlinear-readout-v1.attempt.json)
 and [response ZIP](../../assets/sine_formed_classes/class-nonlinear-readout-v1.response.zip).
 The ZIP preserves the complete original JSON as one member; do not rerun
@@ -1371,13 +1345,9 @@ verifies bytes and reconstructs consumed arithmetic without executing
 the archived worker. The result owner records exact response bounds and
 the separate four-error sign and eight-error record-set conclusions.
 
-This evaluation used the
-[frozen-source restoration workflow](../RESEARCH_EVIDENCE.md#restore-the-declared-source-before-a-later-execution)
-with the complete `fa8e98a9b1bdd755709da481de7fc092b57bfe65` source tree
-and its archived helpers. Its first outcome is now retained; restoration
-refuses an existing attempt. A current reader's successful audit does not
-make refactored runtime code interchangeable with the frozen implementation
-or authorize a replay.
+The [frozen-source restoration workflow](../RESEARCH_EVIDENCE.md#restore-the-declared-source-before-a-later-execution)
+refuses an existing attempt. A successful current-reader audit does not
+make refactored runtime interchangeable with the archived source or authorize replay.
 
 <a id="sine-class-nonlinear-protocol"></a>
 ### Check a finite nonlinear separation margin
@@ -2561,7 +2531,7 @@ own the exact admission and scope.
 
 ### Certify recovery of the prepared donor
 
-The same preparation reader can now select the donor-only relative limit
+The same preparation reader can select the donor-only relative limit
 for a proved interval of form storage. This example is nonsilent and has
 enough total storage to pass the bare phase barrier, but the full coupled
 dynamics still returns to the original donor pattern:

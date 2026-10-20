@@ -317,7 +317,8 @@ nonleading terms have combined absolute bound
 E=2hX+4gah^2+2ghY+4g^2h^2Q_{\max}. \tag{20}
 \]
 This includes the pre-existing form background, phase error, nonlinear
-phase motion and both actual supports' finite propagation. No linearized
+phase motion and both actual supports' propagated response over the finite
+window. This is not a finite signal-speed bound. No linearized
 law, identical heat kernel, hidden equilibrium reset or favorable source
 symmetry is substituted for the complete flow.
 

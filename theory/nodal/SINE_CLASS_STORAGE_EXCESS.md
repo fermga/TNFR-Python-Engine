@@ -348,4 +348,4 @@ This is a prepared instrument. No storage source/protocol freeze, reserved
 attempt or selected storage response exists. Observation and numerical
 resolution policies still need admission before such a comparison. Its
 status and reopening conditions belong solely to the
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#storage-comparison-producer-admission).
+[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).

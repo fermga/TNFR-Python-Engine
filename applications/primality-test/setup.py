@@ -25,7 +25,7 @@ setup(
     name="tnfr-primality",
     version=version,
     author="F. F. Martinez Gamo",
-    description="Standalone arithmetic-pressure primality tests with optional TNFR adapters",
+    description="Standalone arithmetic-pressure primality diagnostics and bounded caching",
     long_description=long_description,
     long_description_content_type="text/markdown",
     license="MIT",
@@ -38,7 +38,7 @@ setup(
         "Source": "https://github.com/fermga/TNFR-Python-Engine/tree/main/applications/primality-test",
     },
     classifiers=[
-        "Development Status :: 5 - Production/Stable",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Science/Research",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
@@ -50,38 +50,22 @@ setup(
         "Topic :: Scientific/Engineering :: Mathematics",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    packages=find_packages(),
+    packages=find_packages(include=["tnfr_primality", "tnfr_primality.*"]),
     python_requires=">=3.8",
     install_requires=[
         # Minimal core - no heavy dependencies by default
     ],
     extras_require={
-        "full": [
-            # Engine dependencies have their owner in the engine distribution.
-            "tnfr>=0.0.3.7",
-            "sympy>=1.10",
-        ],
         "dev": [
             "pytest>=7.0",
-            "black>=22.0",
-            "flake8>=5.0",
-            "mypy>=1.0",
-            "pytest-benchmark>=4.0",
+            "build>=1.0",
+            "setuptools>=61",
+            "wheel",
         ],
-        "benchmark": [
-            "matplotlib>=3.5",
-            "numpy>=1.20",
-            "pandas>=1.5",  # For advanced analytics
-            "jupyter>=1.0",  # For interactive benchmarking
-        ],
-        # Compatibility alias: build documentation with the repository root docs extra.
-        "docs": [],
     },
     entry_points={
         "console_scripts": [
             "tnfr-primality=tnfr_primality.cli:main",
-            "tnfr-primality-advanced=tnfr_primality.advanced_cli:main",
-            "tnfr-primality-legacy=tnfr_primality.__main__:main",
         ],
     },
     keywords=[
@@ -91,14 +75,7 @@ setup(
         "mathematics",
         "algorithms",
         "arithmetic pressure",
-        "structural coherence",
         "deterministic algorithms",
-        "hierarchical caching",
-        "structural field tetrad",
-        "canonical operators",
-        "prime certificates",
-        "structural fields",
-        "resonant fractal dynamics",
     ],
     include_package_data=True,
     zip_safe=False,

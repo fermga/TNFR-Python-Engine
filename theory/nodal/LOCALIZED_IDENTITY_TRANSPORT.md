@@ -5,7 +5,7 @@ The law, localization observation and preparation are specified here before any
 trajectory evaluation. No trajectory, fitted response, formation source or
 physical measurement is used. The [ontology contract](../EMERGENT_ONTOLOGY.md#localized-identity-transport)
 separates prepared transport from formation, permanent motion and particle
-identification; the [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#localized-identity-transport-admission)
+identification; the [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 alone owns subsequent work.
 
 <a id="localized-transport-law"></a>

@@ -153,6 +153,54 @@ def test_consumption_checks_still_reject_callback_configuration_changes():
     assert "stable_count" not in graph.nodes[0]
 
 
+@pytest.mark.parametrize("entry", ["step", "run"])
+@pytest.mark.parametrize("writer", ["callback", "pressure"])
+@pytest.mark.parametrize("invalid", [True, "0.125", Fraction(1, 2**2000)])
+def test_runtime_does_not_coerce_changed_clock_before_integrator_admission(
+    entry, writer, invalid
+):
+    graph = _pair()
+    graph.graph.update(DT=0.125, _t=0.0)
+    initial_form = tuple(graph.nodes[node]["EPI"] for node in graph)
+    calls = []
+
+    def replace_clock(live_graph, *_args, **_kwargs):
+        calls.append(writer)
+        live_graph.graph["DT"] = invalid
+
+    if writer == "callback":
+        callback_manager.register_callback(
+            graph, CallbackEvent.BEFORE_STEP, replace_clock
+        )
+    else:
+        graph.graph["compute_delta_nfr"] = replace_clock
+
+    with pytest.raises(NetworkConfigError, match="dt"):
+        _advance(graph, entry, dt=None)
+
+    assert calls == [writer]
+    assert graph.graph["DT"] is invalid
+    assert graph.graph["_t"] == 0.0
+    assert tuple(graph.nodes[node]["EPI"] for node in graph) == initial_form
+
+
+def test_callback_exact_timestep_remains_a_valid_shared_clock():
+    graph = _pair()
+    graph.graph["DT"] = 0.125
+    callback_manager.register_callback(
+        graph,
+        CallbackEvent.BEFORE_STEP,
+        lambda live_graph, _context: live_graph.graph.update(DT=Fraction(1, 16)),
+    )
+    reference = _pair()
+    _advance(reference, "step", dt=0.0625)
+    _advance(graph, "step", dt=None)
+    assert graph.graph["_t"] == reference.graph["_t"] == 0.0625
+    for node in graph:
+        for key in ("EPI", "νf", "theta", "ΔNFR"):
+            assert graph.nodes[node][key] == reference.nodes[node][key]
+
+
 def test_custom_integrator_factory_retains_its_own_method_contract():
     graph = _pair()
     calls = []
@@ -170,3 +218,66 @@ def test_custom_integrator_factory_retains_its_own_method_contract():
     graph.graph["INTEGRATOR_METHOD"] = "custom-method"
     _advance(graph, "step")
     assert calls == [("factory", True), ("integrate", "custom-method")]
+
+
+@pytest.mark.parametrize("entry", ["step", "run"])
+@pytest.mark.parametrize(
+    "kind",
+    ["window", "limit", "grammar_flag", "lag", "trace", "debt", "operator_index"],
+)
+def test_active_batch_admission_precedes_runtime_callbacks_and_observations(
+    entry, kind
+):
+    graph = _pair()
+    if kind == "window":
+        graph.graph["GLYPH_HYSTERESIS_WINDOW"] = 1.5
+    elif kind == "limit":
+        graph.graph["AL_MAX_LAG"] = True
+    elif kind == "grammar_flag":
+        graph.graph["GRAMMAR_CANON"] = {"enabled": "unknown"}
+    elif kind == "lag":
+        graph.graph["history"] = {"since_AL": {0: 2, 1: -1}}
+    elif kind == "trace":
+        graph.nodes[1]["glyph_history"] = None
+    elif kind == "debt":
+        graph.nodes[1]["_grammar_u2_debt"] = True
+    else:
+        graph.nodes[1]["_operator_step"] = -1
+    calls = []
+    callback_manager.register_callback(
+        graph, CallbackEvent.BEFORE_STEP, lambda *_: calls.append("before")
+    )
+    before_graph = deepcopy(graph.graph)
+    before_nodes = deepcopy(dict(graph.nodes(data=True)))
+    with pytest.raises((TypeError, ValueError)):
+        _advance(graph, entry, apply_glyphs=True)
+    assert calls == []
+    assert graph.graph == before_graph
+    assert dict(graph.nodes(data=True)) == before_nodes
+    assert "_runtime_step_next" not in graph.graph
+
+
+def test_disabled_batch_does_not_consume_unused_lag_or_grammar_policy():
+    graph = _pair()
+    graph.graph.update(AL_MAX_LAG=True, GRAMMAR_CANON={"enabled": "unknown"})
+    graph.graph["history"] = {"since_AL": {0: -1}}
+    _advance(graph, "step", apply_glyphs=False)
+    assert graph.graph["_t"] == 0.125
+    assert graph.graph["history"]["since_AL"] == {0: -1}
+
+
+def test_active_batch_rechecks_policy_changed_after_initial_admission():
+    graph = _pair()
+    forms = tuple(graph.nodes[node]["EPI"] for node in graph)
+    callback_manager.register_callback(
+        graph,
+        CallbackEvent.BEFORE_STEP,
+        lambda live, _: live.graph.update(AL_MAX_LAG=True),
+    )
+    with pytest.raises(TypeError, match="AL_MAX_LAG"):
+        _advance(graph, "step", apply_glyphs=True)
+    assert tuple(graph.nodes[node]["EPI"] for node in graph) == forms
+    assert graph.graph["_runtime_step_next"] == 1
+    assert graph.graph["AL_MAX_LAG"] is True
+    assert all("epi_time_history" in graph.nodes[node] for node in graph)
+    assert all("glyph_history" not in graph.nodes[node] for node in graph)

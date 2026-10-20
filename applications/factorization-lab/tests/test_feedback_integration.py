@@ -53,11 +53,9 @@ class TestOptimizationFeedbackLearner(unittest.TestCase):
 
         # Check that tables are created
         with sqlite3.connect(self.db_path) as conn:
-            tables = conn.execute(
-                """
+            tables = conn.execute("""
                 SELECT name FROM sqlite_master WHERE type='table'
-            """
-            ).fetchall()
+            """).fetchall()
 
             table_names = [table[0] for table in tables]
             self.assertIn("verification_feedback", table_names)

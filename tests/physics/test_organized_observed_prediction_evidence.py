@@ -6,12 +6,12 @@ It evaluates no coefficient design, weight proposal, nonlinear history or source
 Receipts associate contents and declared source, not execution authentication.
 """
 
-from dataclasses import asdict
-from fractions import Fraction as Q
 import hashlib
-from pathlib import Path
 import subprocess
 import zipfile
+from dataclasses import asdict
+from fractions import Fraction as Q
+from pathlib import Path
 
 import pytest
 
@@ -25,7 +25,6 @@ from tnfr.research.artifact_io import (
     verify_archive_members,
 )
 from tnfr.utils.io import json_loads
-
 
 ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE = ROOT / "docs/assets/organized_observed_prediction"
@@ -324,7 +323,7 @@ def test_frozen_primitives_rebuild_source_and_difference_remainder(retained):
 
 
 def test_saved_duals_rebuild_residuals_and_independent_decision(retained):
-    from tnfr.physics._organized_observed_prediction import _StaticDesign, _certify_dual
+    from tnfr.physics._organized_observed_prediction import _certify_dual, _StaticDesign
 
     result = retained[1]
     report, budget = result["report"], _rebuilt_budget()

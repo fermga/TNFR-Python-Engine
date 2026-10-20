@@ -11,5 +11,12 @@ class StructuralHomeostasis:
     vf_range: Tuple[float, float]
     dnfr_range: Tuple[float, float]
 
-    def __init__(self, graph: TNFRGraph, node: NodeId) -> None: ...
+    def __init__(
+        self,
+        graph: TNFRGraph,
+        node: NodeId,
+        epi_range: tuple[float, float] = ...,
+        vf_range: tuple[float, float] = ...,
+        dnfr_range: tuple[float, float] = ...,
+    ) -> None: ...
     def maintain_equilibrium(self) -> None: ...

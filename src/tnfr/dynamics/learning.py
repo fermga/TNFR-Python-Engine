@@ -233,20 +233,14 @@ class AdaptiveLearningSystem:
     def deep_learning_cycle(self) -> None:
         """Execute deep learning with crisis and reorganization.
 
-        Implements canonical deep learning sequence:
-        AL -> EN -> IL -> OZ -> THOL -> IL -> (SHA or NUL)
-
-        The final operator (SHA/SILENCE or NUL/CONTRACTION) is selected by
-        the TNFR grammar based on structural conditions:
-        - SHA (SILENCE) if Si >= si_high (high sense index)
-        - NUL (CONTRACTION) if Si < si_high (low sense index)
-
-        This is canonical THOL closure behavior per TNFR sec.4.
+        Supplies the ordered word AL -> EN -> IL -> OZ -> THOL -> IL -> SHA.
+        Its explicit SHA closure is subject to shared word and live admission;
+        the grammar does not select a different closure from the sense index.
 
         Notes
         -----
         Reuses run_sequence with predefined deep learning pattern.
-        Grammar may adaptively select the appropriate THOL closure.
+        This supplied recipe does not derive autonomous action selection.
         """
         sequence = [
             Emission(),
@@ -255,7 +249,7 @@ class AdaptiveLearningSystem:
             Dissonance(),
             SelfOrganization(),
             Coherence(),
-            Silence(),  # Grammar may replace with Contraction if Si < si_high
+            Silence(),
         ]
         run_sequence(self.G, self.node, sequence)
 

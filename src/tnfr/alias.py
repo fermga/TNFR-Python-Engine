@@ -14,6 +14,11 @@ precedence and must not decide future reads or writes.
 
 Graph-level set_vf/set_dnfr/set_theta retain their maximum/phase cache hooks.
 Use those setters when updating the corresponding runtime scalar channels.
+Cold maximum caches and missing/dead witnesses require a full admitted read
+of the stored scalar channel. Missing coordinates keep the zero convention;
+invalid authoritative coordinates reject the reduction. Maximum witnesses
+are rebuildable tie choices, not physical identities. A generic setter is
+not a transaction: enclosing operator stages own rollback after a failed read.
 """
 
 from __future__ import annotations
@@ -24,9 +29,10 @@ from dataclasses import dataclass
 from functools import lru_cache, partial
 from typing import TYPE_CHECKING, Any, Callable, Generic, Hashable, TypeVar, cast
 
-from .constants.aliases import ALIAS_DNFR, ALIAS_THETA, ALIAS_VF
+from ._exact_time import finite_represented_real
+from .constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from .mathematics.unified_numerical import np
-from .types import FloatArray, NodeId, scalarize_epi
+from .types import FloatArray, NodeId, require_finite_real_scalar_epi, scalarize_epi
 from .utils import convert_value
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -383,11 +389,21 @@ def _compute_abs_max_result(
         node, value = candidate
         max_val = abs(float(value))
     else:
+
+        def magnitude(n: Hashable) -> float:
+            raw = get_attr(
+                G.nodes[n], aliases, 0.0, strict=True, conv=lambda item: item
+            )
+            label = f"node {n!r} {aliases[0]}"
+            value = (
+                require_finite_real_scalar_epi(raw, label)
+                if aliases == ALIAS_EPI
+                else finite_represented_real(raw, label)[0]
+            )
+            return abs(value)
+
         node, max_val = max(
-            (
-                (n, abs(cast(float, get_attr(G.nodes[n], aliases, 0.0))))
-                for n in G.nodes()
-            ),
+            ((n, magnitude(n)) for n in G.nodes()),
             key=lambda item: item[1],
             default=(None, 0.0),
         )
@@ -433,6 +449,8 @@ def _update_cached_abs_max(
 ) -> AbsMaxResult:
     """Update cached absolute maxima for ``aliases``.
 
+    Missing magnitudes or missing/dead witnesses are rebuilt first. A warm
+    cache is maintained under its existing no-untracked-mutation premise.
     The current cached value is updated when ``value`` becomes the new
     maximum or when the stored node matches ``n`` but its magnitude
     decreases. The returned :class:`AbsMaxResult` always reflects the
@@ -440,6 +458,12 @@ def _update_cached_abs_max(
     """
 
     node_key = f"{key}_node"
+    # A target-local write cannot establish a global maximum on a cold cache.
+    # Read-outs may also leave only the magnitude, without a usable witness.
+    # Rebuild before taking the incremental path; a genuine cached zero is
+    # valid, and tied witnesses retain the existing update-order semantics.
+    if key not in G.graph or node_key not in G.graph or G.graph[node_key] not in G:
+        return _compute_abs_max_result(G, aliases, key=key)
     val = abs(float(value))
     cur = _coerce_abs_value(G.graph.get(key))
     cur_node = cast(Hashable | None, G.graph.get(node_key))

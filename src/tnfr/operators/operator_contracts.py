@@ -414,7 +414,7 @@ OPERATOR_CONTRACTS: dict[str, OperatorContract] = {
         postcondition="|ΔNFR| not increased and C(t) not decreased",
         context=ContractContext.NETWORK,
         nodal_expression=(
-            "I'L: ΔNFR' = factor·ΔNFR, 0 ≤ factor ≤ 1; "
+            "I'L: ΔNFR' = factor·ΔNFR, 0 ≤ factor < 1; "
             "no future-flow convergence assertion"
         ),
         pdf_reference="TNFR.pdf §2.2.1 (3) I'L — Coherencia estructural",

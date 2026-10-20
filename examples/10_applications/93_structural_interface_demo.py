@@ -34,6 +34,7 @@ Run:
 Documentation:
     docs/STRUCTURAL_INTERFACE_THEORY.md
 """
+
 from __future__ import annotations
 
 import sys

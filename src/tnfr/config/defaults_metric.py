@@ -51,12 +51,6 @@ class MetricDefaults:
     GRAMMAR_CANON: dict[str, Any] = field(
         default_factory=lambda: {
             "enabled": True,
-            "zhir_requires_oz_window": 3,
-            "zhir_dnfr_min": 0.05,
-            "thol_min_len": 2,
-            "thol_max_len": 6,
-            "thol_close_dnfr": 0.15,
-            "si_high": 0.66,
         }
     )
     COHERENCE: dict[str, Any] = field(

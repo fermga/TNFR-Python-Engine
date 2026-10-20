@@ -13,12 +13,12 @@ from fractions import Fraction as Q
 
 from ..mathematics._rational_interval import I
 from ._organized_external_interaction import (
-    _OrganizedExternalInteractionGeometry,
     _derive_organized_external_interaction,
+    _OrganizedExternalInteractionGeometry,
 )
 from ._organized_joint_resources import (
-    _OrganizedJointResources,
     _assess_organized_joint_resources,
+    _OrganizedJointResources,
 )
 from ._organized_slot_registration import (
     _bounded_slot_registration_moments,

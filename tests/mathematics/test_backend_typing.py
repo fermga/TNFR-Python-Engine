@@ -10,7 +10,9 @@ import pytest
 
 
 def test_backend_stub_supports_typed_consumers(tmp_path: Path) -> None:
-    pytest.importorskip("mypy", reason="Backend typing checks require the dev extra")
+    pytest.importorskip(
+        "mypy", reason="Backend typing checks require the typecheck extra"
+    )
     root = Path(__file__).resolve().parents[2]
     config = tmp_path / "mypy.ini"
     config.write_text(

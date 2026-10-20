@@ -1,0 +1,8 @@
+{
+  "started_utc":"2026-10-14T09:47:41.246291+00:00",
+  "freeze_sha256":"390387fe4bd3f67aaf74fc095f60b30a7bdd562567eabca33238c22ab7221cad",
+  "maximum_evaluations":1,
+  "python":"3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+  "platform":"Windows-11-10.0.26300-SP0",
+  "numeric_threads":1
+}

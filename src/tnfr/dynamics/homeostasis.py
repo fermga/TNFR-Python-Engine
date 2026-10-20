@@ -24,15 +24,11 @@ __all__ = ["StructuralHomeostasis"]
 class StructuralHomeostasis:
     """Request parameter corrections under a supplied range policy.
 
-    This class monitors EPI, νf, and ΔNFR values and applies corrective operators
-    when they drift outside target ranges. These ranges specify an engineering
-    objective, not an emergent equilibrium or a stability certificate.
-
-    **Homeostatic Principles:**
-
-    - **EPI range**: Maintain adequate activation without saturation
-    - **νf range**: Keep reorganization rate within functional bounds
-    - **ΔNFR range**: Prevent excessive reorganization pressure
+    This class samples EPI, νf and ΔNFR and selects operator requests from
+    supplied ranges. The ranges are a controller policy, not an emergent
+    equilibrium or a stability certificate. The sampled values are held for
+    selection during the call; execution still uses each operator's live
+    admission and transformation.
 
     Parameters
     ----------
@@ -70,13 +66,13 @@ class StructuralHomeostasis:
 
     Notes
     -----
-    Corrective operators follow TNFR canonical principles:
-
-    - **Low EPI**: Apply AL (Emission) to source structural form
-    - **High EPI**: Apply NUL (Contraction) to reduce
-    - **Low νf**: Apply VAL (Expansion) to increase frequency
-    - **High νf**: Apply SHA (Silence) to slow down
-    - **High ΔNFR**: Apply IL (Coherence) to stabilize
+    The configured selection map requests Emission (AL) for low signed EPI,
+    Contraction (NUL) for high signed EPI, Expansion (VAL) for low capacity,
+    Silence (SHA) for high capacity and Coherence (IL) for high signed pressure.
+    Contraction changes capacity, not EPI; Coherence changes phase and does not
+    guarantee lower pressure. No request guarantees a return to its triggering
+    range. The lower pressure endpoint is retained configuration but is not
+    consumed by this policy.
     """
 
     def __init__(
@@ -96,39 +92,39 @@ class StructuralHomeostasis:
         self.dnfr_range = dnfr_range
 
     def maintain_equilibrium(self) -> None:
-        """Apply corrective operators if parameters exceed target ranges.
+        """Request operators selected by the initial parameter-range snapshot.
 
-        Checks each parameter (EPI, νf, ΔNFR) and applies appropriate
-        operators when out of bounds. Multiple corrections can occur
-        in a single call if multiple parameters are out of range.
+        Multiple requests can occur in one call. Each public operator checks
+        its live preconditions, and a rejection propagates without rolling back
+        earlier completed requests.
 
         Notes
         -----
-        Corrections are applied sequentially:
+        Requests are applied sequentially:
 
-        1. Check and correct EPI
-        2. Check and correct νf
-        3. Check and correct ΔNFR
+        1. Select from the sampled EPI range
+        2. Select from the sampled capacity range
+        3. Select from the sampled upper pressure bound
 
-        Each correction is minimal: one operator application per parameter.
+        At most one operator is requested for each sampled parameter.
         """
         epi = get_attr(self.G.nodes[self.node], ALIAS_EPI, 0.0)
         vf = get_attr(self.G.nodes[self.node], ALIAS_VF, 1.0)
         dnfr = get_attr(self.G.nodes[self.node], ALIAS_DNFR, 0.0)
 
-        # Correct EPI if out of range
+        # Select from the sampled signed EPI.
         if epi < self.epi_range[0]:
             # EPI too low → activate with Emission
             operator_class = get_operator_class(EMISSION)
             operator = operator_class()
             operator(self.G, self.node)
         elif epi > self.epi_range[1]:
-            # EPI too high → contract with Contraction
+            # High EPI selects a capacity-contraction request.
             operator_class = get_operator_class(CONTRACTION)
             operator = operator_class()
             operator(self.G, self.node)
 
-        # Correct νf if out of range
+        # Select from the sampled capacity.
         if vf < self.vf_range[0]:
             # Frequency too low → expand with Expansion
             operator_class = get_operator_class(EXPANSION)
@@ -140,7 +136,7 @@ class StructuralHomeostasis:
             operator = operator_class()
             operator(self.G, self.node)
 
-        # Correct ΔNFR if too high
+        # Select from the sampled signed upper pressure bound.
         if dnfr > self.dnfr_range[1]:
             # ΔNFR too high → stabilize with Coherence
             operator_class = get_operator_class(COHERENCE)

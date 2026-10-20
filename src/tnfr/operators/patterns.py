@@ -92,11 +92,6 @@ _CANONICAL_ORDER = (
 from .grammar_types import DESTABILIZERS as _DESTABILIZERS
 from .grammar_types import STABILIZERS as _STABILIZERS
 
-# Heuristic-only set (NOT a grammar set): operators that read as "intermediate"
-# development steps for pattern detection (coupling/resonance are U3, dissonance
-# is a destabilizer).  Local to the detector's heuristics.
-_INTERMEDIATE = {COUPLING, RESONANCE, DISSONANCE}
-
 _PATTERN_SCORING_WEIGHTS = {
     StructuralPattern.THERAPEUTIC: PATTERN_THERAPEUTIC_WEIGHT_CANONICAL,  # = 2.8 (therapeutic boost)
     StructuralPattern.EDUCATIONAL: PATTERN_EDUCATIONAL_WEIGHT_CANONICAL,  # = 0.74 (educational boost)

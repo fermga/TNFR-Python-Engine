@@ -23,7 +23,7 @@ from .._argument_validation import (
     reject_operator_argument,
     strict_bool,
 )
-from .._thol_config import resolve_thol_bifurcation_threshold
+from .._thol_config import resolve_thol_bifurcation_threshold, resolve_thol_min_epi
 
 __all__ = ["validate_self_organization_strict"]
 
@@ -127,12 +127,7 @@ def validate_self_organization_strict(
         label="nu_f",
         lower=0.0,
     )
-    min_epi = finite_real(
-        G.graph.get("THOL_MIN_EPI", 0.2),
-        operator=_OPERATOR,
-        label="THOL_MIN_EPI",
-        lower=0.0,
-    )
+    min_epi = resolve_thol_min_epi(G.graph)
     min_vf = finite_real(
         G.graph.get("THOL_MIN_VF", 0.1),
         operator=_OPERATOR,

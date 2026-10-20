@@ -49,8 +49,9 @@ jobs:
 
       - name: Install project dependencies
         run: |
-          # Retained explicit installer revision; dependency findings remain audit output.
-          python -m pip install --upgrade "pip @ git+https://github.com/pypa/pip.git@f2b92314da012b9fffa36b3f3e67748a37ef464a"
+          # Published releases include the current installer security fixes and
+          # can be resolved by the vulnerability service.
+          python -m pip install --upgrade "pip>=26.2"
           python -m pip install --upgrade "setuptools>=78.1.1"
           python -m pip install pipx
           python -m pip install '.[test-all,serialization]'

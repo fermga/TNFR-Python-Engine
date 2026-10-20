@@ -23,7 +23,6 @@ from ._organized_finite_observation import (
 )
 from ._sine_preparation import _prepared_coordinate_vector as _vector
 
-
 _FROZEN_FORM_ERROR = Q(1, 10**14)
 
 

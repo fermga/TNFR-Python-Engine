@@ -948,9 +948,11 @@ def _sine_rate_evaluator(
             -e * q / degree + w * source
             for q, degree, source in zip(gradient, degrees, sources)
         )
-        form_rates = tuple(nu * value for nu, value in zip(capacity, pressure))
+        # Put evolving values first so an interval capacity dispatches through
+        # Jet multiplication. Keep the existing coefficient association.
+        form_rates = tuple(value * nu for nu, value in zip(capacity, pressure))
         phase_rates = tuple(
-            exchange_ratio * nu * q * mobility
+            q * (exchange_ratio * nu) * mobility
             for nu, q, mobility in zip(capacity, gradient, inverse_metric)
         )
         return dict(

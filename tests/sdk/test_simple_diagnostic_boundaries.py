@@ -14,6 +14,7 @@ from tnfr.mathematics import BEPIElement
 from tnfr.metrics.sense_index import compute_Si
 from tnfr.sdk import simple
 from tnfr.sdk.simple import ConservationReport, Network, Results, TetradSnapshot
+from tnfr.sdk.utils import export_to_json, import_from_json
 from tnfr.types import ensure_bepi, serialize_bepi, serialize_bepi_json
 
 
@@ -93,6 +94,51 @@ def test_empty_phase_and_results_serialize_as_unavailable():
     assert Network(nx.Graph()).avg_phase() is None
     report = Results(0.0, 0.0, 0, 0, 0.0, None)
     assert report.to_dict()["avg_phase"] is None
+
+
+@pytest.mark.parametrize("field", ["phi_s", "grad_phi", "k_phi"])
+@pytest.mark.parametrize("label", [1, (1, 2), None])
+def test_results_reject_colliding_node_labels_before_export(tmp_path, field, label):
+    report = Results(
+        1.0,
+        0.0,
+        2,
+        0,
+        0.0,
+        None,
+        tetrad=TetradSnapshot(**{field: {label: 0.25, str(label): 0.75}}),
+    )
+    destination = tmp_path / "report.json"
+    previous = '{"previous": true}'
+    destination.write_text(previous, encoding="utf-8")
+
+    with pytest.raises(ValueError, match="keys collide after serialization"):
+        report.to_dict()
+    with pytest.raises(ValueError, match="keys collide after serialization"):
+        export_to_json(report, destination)
+
+    assert destination.read_text(encoding="utf-8") == previous
+    assert list(tmp_path.iterdir()) == [destination]
+    assert len(getattr(report.tetrad, field)) == 2
+
+
+def test_results_keep_distinct_node_labels_and_unavailable_length(tmp_path):
+    values = {1: 0.25, "2": 0.75, (3, 4): -0.5}
+    report = Results(
+        1.0,
+        0.0,
+        3,
+        0,
+        0.0,
+        None,
+        tetrad=TetradSnapshot(phi_s=values, grad_phi=values, k_phi=values),
+    )
+    destination = tmp_path / "report.json"
+    export_to_json(report, destination)
+    restored = import_from_json(destination)
+    for field in ("phi_s", "grad_phi", "k_phi"):
+        assert restored["tetrad"][field] == {"1": 0.25, "2": 0.75, "(3, 4)": -0.5}
+    assert restored["tetrad"]["xi_c"] is None
 
 
 @pytest.mark.parametrize("value", [float("nan"), float("inf")])

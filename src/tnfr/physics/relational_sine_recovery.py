@@ -17,9 +17,9 @@ from typing import TYPE_CHECKING, Any
 from .._exact_time import exact_or_represented_real
 from ..dynamics.relational import RelationalExchangeModel
 from ..mathematics._rational_interval import INTERVAL_METHOD, I, cos, pi_interval, sqrt
-from ._sine_admission import _sine_model_coefficients
 from ._sine_admission import _admit_sine_source as _admit_sine_source
 from ._sine_admission import _sector_source_admission as _sector_source_admission
+from ._sine_admission import _sine_model_coefficients
 from .phase_cycle_geometry import PhaseCycleGeometry, PhaseCycleState
 from .phase_cycle_geometry import _derive as _derive_phase_geometry
 from .phase_cycle_geometry import reconstruct_phase_cycle_state

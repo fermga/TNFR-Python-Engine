@@ -408,7 +408,7 @@ donor endpoint explicit. From the repository root, reproduce the source,
 scalar comparison, kernel and complete-prefix checks with:
 
 ```sh
-python -m pytest tests/physics/test_constitutive_receiver_source.py tests/physics/test_constitutive_receiver_comparison.py tests/research/test_constitutive_receiver_comparison.py tests/test_comparison_flow.py -q
+python -m pytest tests/physics/test_constitutive_receiver_source.py tests/physics/test_constitutive_receiver_comparison.py tests/research/test_constitutive_receiver_evidence.py tests/test_comparison_flow.py -q
 ```
 
 These checks rebuild bounds from the retained evidence; they neither regenerate

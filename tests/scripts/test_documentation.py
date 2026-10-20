@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import shutil
 import subprocess
 import sys
 import zipfile
@@ -293,7 +294,9 @@ def test_changed_real_quickstart_is_not_replaced_by_the_old_hardcoded_example(
 ):
     path, checker = quickstart_workspace
     original = path.read_text(encoding="utf-8")
-    changed = original.replace("TNFR.create(20,", "TNFR.create(4,", 1)
+    changed = original.replace(
+        "```python\n", '```python\nprint("Unexpected quick-start output")\n', 1
+    )
     assert changed != original
     path.write_text(changed, encoding="utf-8")
     with pytest.raises(RuntimeError, match="Quick start output has drifted"):
@@ -305,7 +308,7 @@ def test_quickstart_compares_its_own_output_block_not_matching_text_elsewhere(
 ):
     path, checker = quickstart_workspace
     original = path.read_text(encoding="utf-8")
-    changed = original.replace("C=1.000, Si=1.000", "C=0.000, Si=1.000", 1)
+    changed = original.replace("```text\n", "```text\nUnexpected expected output\n", 1)
     assert changed != original
     # The old expected output remains elsewhere, outside the selected section.
     unrelated = original.replace("## Quick start", "## Earlier example")
@@ -329,7 +332,11 @@ def test_quickstart_compares_its_own_output_block_not_matching_text_elsewhere(
         ("```python", "```python\npass\n```\n\n```python", "one python block"),
         ("```text", "```illustration", "one text block"),
         ("```text", "```text\nold\n```\n\n```text", "one text block"),
-        ("import TNFR", "import NONEXISTENT_AUDIT_API", "cannot import name"),
+        (
+            "```python\n",
+            "```python\nfrom tnfr.sdk import NONEXISTENT_AUDIT_API\n",
+            "cannot import name",
+        ),
     ),
 )
 def test_quickstart_missing_ambiguous_or_broken_code_fails_under_optimization(
@@ -339,7 +346,9 @@ def test_quickstart_missing_ambiguous_or_broken_code_fails_under_optimization(
     expected,
 ):
     path, _ = quickstart_workspace
-    corrupted = path.read_text(encoding="utf-8").replace(old, new, 1)
+    original = path.read_text(encoding="utf-8")
+    corrupted = original.replace(old, new, 1)
+    assert corrupted != original
     path.write_text(corrupted, encoding="utf-8")
     result = _run_check(path.parent, "_check_readme_quickstart")
     assert result.returncode != 0
@@ -542,6 +551,34 @@ def reference_workspace(tmp_path, monkeypatch):
     return tmp_path, examples, checker
 
 
+def test_missing_search_root_does_not_hide_valid_selected_references(
+    reference_workspace,
+):
+    _, examples, checker = reference_workspace
+    (examples / "guide.md").write_text(
+        "# Guide\n[This guide](#guide)\n", encoding="utf-8"
+    )
+
+    references, failures = checker.verify(iter(("examples", "missing-owner.md")))
+
+    assert references == 1
+    assert failures == ["missing search root: missing-owner.md"]
+
+
+def test_reference_cli_rejects_missing_search_directory(
+    reference_workspace, monkeypatch, capsys
+):
+    _, _, checker = reference_workspace
+    monkeypatch.setattr(
+        sys, "argv", ["verify_internal_references.py", "--ci", "--dirs", "missing"]
+    )
+
+    assert checker.main() == 1
+    output = capsys.readouterr().out
+    assert "missing search root: missing" in output
+    assert "All internal Markdown targets and fragments are valid" not in output
+
+
 def test_documentation_links_include_own_repository_urls_and_reference_style(
     reference_workspace,
 ):
@@ -709,6 +746,165 @@ def test_directory_fragments_follow_the_index_used_by_site_staging(
     assert bool(failures) == (fragment == "absent")
     if failures:
         assert failures[0].startswith("missing fragment:")
+
+
+@pytest.fixture
+def staging_workspace(tmp_path, monkeypatch):
+    from scripts import prepare_docs as staging
+
+    monkeypatch.setattr(staging, "REPO_ROOT", tmp_path)
+    monkeypatch.setattr(staging, "STAGE_DIR", tmp_path / "build" / "docs-source")
+    for relative in staging.ROOT_FILES:
+        (tmp_path / relative).write_text("placeholder\n", encoding="utf-8")
+    (tmp_path / "README.md").write_text("# Home\n", encoding="utf-8")
+    return staging, tmp_path
+
+
+@pytest.mark.parametrize("container", ("output", "results"))
+def test_staging_exclusions_are_relative_to_checkout(tmp_path, monkeypatch, container):
+    from scripts import prepare_docs as staging
+
+    workspace = tmp_path / container / "checkout"
+    workspace.mkdir(parents=True)
+    monkeypatch.setattr(staging, "REPO_ROOT", workspace)
+    monkeypatch.setattr(staging, "STAGE_DIR", workspace / "build" / "docs-source")
+    for relative in staging.ROOT_FILES:
+        (workspace / relative).write_text("placeholder\n", encoding="utf-8")
+    (workspace / "README.md").write_text("# Home\n", encoding="utf-8")
+    sources = {
+        "docs/owner.md": b"# Maintained owner\n",
+        "docs/assets/evidence.json": b'{"retained":"source bytes"}\r\n',
+        "docs/output/generated.json": b'{"generated":true}\n',
+        "examples/results/generated.md": b"# Local output\n",
+    }
+    for relative, payload in sources.items():
+        path = workspace / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(payload)
+
+    output = staging.prepare()
+
+    for relative in ("docs/owner.md", "docs/assets/evidence.json"):
+        assert (output / relative).read_bytes() == sources[relative]
+    assert not (output / "docs/output").exists()
+    assert not (output / "examples/results").exists()
+    assert all(
+        (workspace / relative).read_bytes() == payload
+        for relative, payload in sources.items()
+    )
+
+
+def test_git_staging_keeps_tracked_evidence_and_untracked_sources_but_not_ignored_files(
+    staging_workspace, monkeypatch
+):
+    staging, workspace = staging_workspace
+    git = shutil.which("git")
+    if git is None:
+        pytest.skip("Git is required for checkout-inventory coverage")
+    subprocess.run([git, "init", "--quiet", str(workspace)], check=True)
+    (workspace / ".gitignore").write_text(
+        "build/\ndocs/assets/*.json\ndocs/assets/generated.steps/\n",
+        encoding="utf-8",
+    )
+    sources = {
+        "docs/assets/retained \u00e9.json": b'{"frozen":"exact source bytes"}\r\n',
+        "docs/assets/generated.json": b'{"unretained":true}\n',
+        "docs/assets/generated.steps/step-1.json": b'{"temporary":1}\n',
+        "docs/new_owner.md": b"# New owner\n[Home](../README.md#home)\n",
+        "docs/assets/source.zip": b"retained untracked archive bytes",
+        "docs/unsupported.bin": b"outside positive extension rules",
+    }
+    for relative, payload in sources.items():
+        path = workspace / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(payload)
+    subprocess.run(
+        [
+            git,
+            "-C",
+            str(workspace),
+            "add",
+            "-f",
+            "--",
+            "docs/assets/retained \u00e9.json",
+        ],
+        check=True,
+    )
+    original_run = subprocess.run
+    inventory_calls = []
+
+    def run_inventory(*args, **kwargs):
+        inventory_calls.append(args[0])
+        return original_run(*args, **kwargs)
+
+    monkeypatch.setattr(staging.subprocess, "run", run_inventory)
+    output = staging.prepare()
+
+    assert len(inventory_calls) == 1
+    assert inventory_calls[0][-5:] == [
+        "ls-files",
+        "--cached",
+        "--others",
+        "--exclude-standard",
+        "-z",
+    ]
+    assert (output / "docs/assets/retained \u00e9.json").read_bytes() == sources[
+        "docs/assets/retained \u00e9.json"
+    ]
+    assert (output / "docs/assets/source.zip").read_bytes() == sources[
+        "docs/assets/source.zip"
+    ]
+    assert "[Home](../index.md#home)" in (output / "docs/new_owner.md").read_text()
+    assert not (output / "docs/assets/generated.json").exists()
+    assert not (output / "docs/assets/generated.steps").exists()
+    assert not (output / "docs/unsupported.bin").exists()
+    assert all(
+        (workspace / name).read_bytes() == data for name, data in sources.items()
+    )
+
+
+def test_source_archive_staging_uses_positive_rules_without_git(
+    staging_workspace, monkeypatch
+):
+    staging, workspace = staging_workspace
+    (workspace / ".gitignore").write_text("docs/assets/*.json\n", encoding="utf-8")
+    evidence = workspace / "docs/assets/retained.json"
+    evidence.parent.mkdir(parents=True)
+    evidence.write_bytes(b'{"archived":true}\r\n')
+    (evidence.parent / "excluded.bin").write_bytes(b"not a declared site input")
+
+    def unexpected_git_query(*args, **kwargs):
+        raise AssertionError("An extracted source tree does not need Git")
+
+    monkeypatch.setattr(staging.subprocess, "run", unexpected_git_query)
+    output = staging.prepare()
+
+    assert (output / "docs/assets/retained.json").read_bytes() == evidence.read_bytes()
+    assert not (output / "docs/assets/excluded.bin").exists()
+
+
+@pytest.mark.parametrize(
+    "error",
+    (FileNotFoundError("git unavailable"), subprocess.CalledProcessError(128, "git")),
+)
+def test_failed_checkout_inventory_preserves_existing_stage(
+    staging_workspace, monkeypatch, error
+):
+    staging, workspace = staging_workspace
+    (workspace / ".git").mkdir()
+    prior = staging.STAGE_DIR / "prior.json"
+    prior.parent.mkdir(parents=True)
+    prior.write_bytes(b'{"existing":"stage"}\n')
+
+    def failed_inventory(*args, **kwargs):
+        raise error
+
+    monkeypatch.setattr(staging.subprocess, "run", failed_inventory)
+    with pytest.raises(
+        RuntimeError, match="Cannot inventory Git documentation sources"
+    ):
+        staging.prepare()
+    assert prior.read_bytes() == b'{"existing":"stage"}\n'
 
 
 def test_staging_preserves_inline_and_reference_link_destinations(

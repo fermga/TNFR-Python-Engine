@@ -304,6 +304,11 @@ _NUMPY_ARRAY_CAPTURE_HOOKS = frozenset(
         "__reduce__",
         "__reduce_ex__",
         "__setstate__",
+        "base",
+        "dtype",
+        "flags",
+        "shape",
+        "strides",
     }
 )
 
@@ -476,6 +481,7 @@ class _RuntimeNDArrayState:
     """Logical ndarray state needed for identity-preserving restoration."""
 
     values: Any
+    strides: tuple[int, ...]
     writeable: bool
 
 
@@ -1848,6 +1854,7 @@ def _capture_runtime_value(
         container_kind = "ndarray"
         container_state = _RuntimeNDArrayState(
             values=np.array(value, copy=True, subok=True),
+            strides=tuple(value.strides),
             writeable=bool(value.flags.writeable),
         )
     elif list in owners:
@@ -2008,13 +2015,11 @@ def _restore_runtime_ndarray(
     value: Any,
     state: _RuntimeNDArrayState,
 ) -> Any:
-    """Restore ndarray shape, dtype, values and mutability when feasible."""
+    """Restore ndarray layout, values and mutability when feasible."""
 
     expected = state.values
+    unlocked_bases: list[Any] = []
     try:
-        if not value.flags.writeable:
-            value.flags.writeable = True
-
         if value.dtype != expected.dtype:
             try:
                 value.dtype = expected.dtype
@@ -2033,10 +2038,40 @@ def _restore_runtime_ndarray(
 
         if value.shape != expected.shape or value.dtype != expected.dtype:
             return _runtime_ndarray_replacement(state)
-        np.copyto(value, expected, casting="no")
+        if value.strides != state.strides:
+            # Repair the existing object before writing values: another
+            # graph-owned view may still index the same buffer in its original
+            # layout. The detached copy's strides can differ for sliced views.
+            value.strides = state.strides
+        # Readonly backing bytes need no write when their captured values are
+        # intact. Byte comparison also preserves signed zero and NaN payloads.
+        needs_copy = bool(value.flags.writeable) or (
+            np.ndarray.tobytes(value) != np.ndarray.tobytes(expected)
+        )
+        if needs_copy or state.writeable:
+            # A view may precede its backing array in the graph traversal.
+            # Unlock bases from the storage owner outward, then restore their
+            # current flags even if this view requires a detached fallback.
+            bases: list[Any] = []
+            base = np.ndarray.base.__get__(value)
+            while isinstance(base, np.ndarray):
+                bases.append(base)
+                base = np.ndarray.base.__get__(base)
+            for base in reversed(bases):
+                flags = np.ndarray.flags.__get__(base)
+                if not flags.writeable:
+                    flags.writeable = True
+                    unlocked_bases.append(base)
+            if not value.flags.writeable:
+                value.flags.writeable = True
+        if needs_copy:
+            np.copyto(value, expected, casting="no")
         value.flags.writeable = state.writeable
     except Exception:
         return _runtime_ndarray_replacement(state)
+    finally:
+        for base in reversed(unlocked_bases):
+            np.ndarray.flags.__get__(base).writeable = False
     return value
 
 
@@ -2492,6 +2527,13 @@ def _discover_runtime_manual_state_items(
             return
         if np is not None and np.ndarray in owners:
             _validate_runtime_ndarray_references(value)
+            # Deepcopy preserves repeated object references but not distinct
+            # views of one buffer. Capture nested arrays as identity roots,
+            # just as arrays owned by configured callbacks already are.
+            discovered.setdefault(
+                identity,
+                (("graph-callback-registry", "graph-owned-array", path), value),
+            )
             return
         if np is not None and np.void in owners:
             raise TNFRValueError(
@@ -2719,7 +2761,7 @@ class GraphTransactionSnapshot:
     """Capture and restore graph-owned state and runtime references.
 
     Mutable runtime containers retain identity when they permit in-place
-    restoration. If an ndarray refuses the required shape or dtype repair,
+    restoration. If an ndarray refuses the required shape, dtype or stride repair,
     graph-visible aliases are rebound to a detached captured value; references
     held only by external code remain outside the graph transaction.
     """
@@ -4835,13 +4877,16 @@ def _propose_pointwise(
         )
     elif glyph in (Glyph.VAL, Glyph.NUL):
         from ..constants import DEFAULTS
+        from ._argument_validation import strict_bool
         from ._scale_operator_kernel import propose_scale_operator
 
-        edge_aware = bool(
+        edge_aware = strict_bool(
             snapshot.graph.get(
                 "EDGE_AWARE_ENABLED",
                 DEFAULTS.get("EDGE_AWARE_ENABLED", True),
-            )
+            ),
+            operator=glyph.value,
+            label="EDGE_AWARE_ENABLED",
         )
         epi_before = None
         if edge_aware:
@@ -4871,7 +4916,8 @@ def _propose_pointwise(
                 "EDGE_AWARE_EPSILON",
                 DEFAULTS.get("EDGE_AWARE_EPSILON", 1e-12),
             ),
-            clip_mode=str(snapshot.graph.get("CLIP_MODE", "hard")),
+            clip_mode=snapshot.graph.get("CLIP_MODE", "hard"),
+            clip_soft_k=snapshot.graph.get("CLIP_SOFT_K", DEFAULTS["CLIP_SOFT_K"]),
         )
     elif glyph is Glyph.ZHIR:
         from ._mutation_stage_kernel import propose_mutation_network_stage
@@ -5760,7 +5806,7 @@ def _preflight_two_phase_stage(
 
     from . import _validated_execution_window
     from .grammar_application import enforce_canonical_grammar
-    from .grammar_debt import require_replayable_history
+    from .grammar_debt import require_grammar_state
     from .grammar_types import glyph_function_name
 
     window = _validated_execution_window(graph, execution_kwargs.get("window"))
@@ -5772,7 +5818,7 @@ def _preflight_two_phase_stage(
     for node in targets:
         if node not in snapshot:
             raise KeyError(node)
-        require_replayable_history(snapshot.nodes[node].get("glyph_history"))
+        require_grammar_state(snapshot.nodes[node])
 
     selections: list[Any] = []
     states_before: dict[Any, dict[str, Any]] = {}

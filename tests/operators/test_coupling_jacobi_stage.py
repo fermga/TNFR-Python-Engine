@@ -147,6 +147,26 @@ def test_coupling_invalid_flag_strings_leave_graph_unchanged(route, key, invalid
     assert graph.graph == before.graph
 
 
+@pytest.mark.parametrize("route", ["glyph", "public", "stage"])
+def test_coupling_exact_compatibility_threshold_cannot_round_inside_domain(route):
+    graph = _graph()
+    graph.graph["UM_FUNCTIONAL_LINKS"] = True
+    graph.graph["UM_COMPAT_THRESHOLD"] = Fraction(1) + Fraction(1, 10**100)
+    before = deepcopy(graph)
+    with pytest.raises(TNFRValueError, match="UM_COMPAT_THRESHOLD"):
+        _apply_flag_probe(graph, route)
+    assert dict(graph.nodes(data=True)) == dict(before.nodes(data=True))
+    assert _edge_state(graph) == _edge_state(before)
+    if route == "stage":
+        assert graph.graph == before.graph
+    else:
+        # Standalone operators may cache their NodeNX adapter; their contract
+        # does not promise the stage's complete graph transaction.
+        assert {
+            key: value for key, value in graph.graph.items() if key != "_node_cache"
+        } == before.graph
+
+
 @pytest.mark.parametrize("disabled", [False, "false", "off"])
 def test_graphless_coupling_string_flag_preserves_neighbor_phase(disabled):
     neighbor = SimpleNamespace(theta=0.4)

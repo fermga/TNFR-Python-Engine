@@ -18,6 +18,7 @@ from typing import Any, Iterable
 
 __all__ = (
     "atanh_log_bounds",
+    "bounded_represented_real",
     "exact_log_bounds",
     "exact_or_represented_real",
     "exp_unit_bounds",
@@ -56,6 +57,44 @@ def finite_represented_real(value: Any, label: str) -> tuple[float, Fraction]:
     if represented == 0.0:
         represented = 0.0
     return represented, Fraction.from_float(represented)
+
+
+def bounded_represented_real(
+    value: Any,
+    label: str,
+    *,
+    minimum: Any | None = None,
+    maximum: Any | None = None,
+) -> tuple[float, Fraction]:
+    """Admit a finite scalar without rounding it into supplied closed bounds.
+
+    Original values are compared after scalar/finite admission. In particular,
+    an exact rational just outside a boundary cannot become admissible merely
+    because its binary64 materialization equals that boundary. Bounds undergo
+    the same finite-scalar admission; the result retains the ordinary runtime
+    representation, rather than installing exact arithmetic as the model.
+    """
+    result = finite_represented_real(value, label)
+
+    def ordered_source(raw: Any) -> Any:
+        if isinstance(raw, Rational):
+            return Fraction(int(raw.numerator), int(raw.denominator))
+        return raw
+
+    source = ordered_source(value)
+    if minimum is not None:
+        finite_represented_real(minimum, f"{label} lower bound")
+        minimum = ordered_source(minimum)
+    if maximum is not None:
+        finite_represented_real(maximum, f"{label} upper bound")
+        maximum = ordered_source(maximum)
+    if minimum is not None and maximum is not None and minimum > maximum:
+        raise ValueError(f"{label} lower bound must not exceed its upper bound")
+    if minimum is not None and source < minimum:
+        raise ValueError(f"{label} must be >= {minimum}")
+    if maximum is not None and source > maximum:
+        raise ValueError(f"{label} must be <= {maximum}")
+    return result
 
 
 def exact_or_represented_real(value: Any, label: str) -> Fraction:

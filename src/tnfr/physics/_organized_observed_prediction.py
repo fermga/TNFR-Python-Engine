@@ -16,9 +16,8 @@ from typing import Any
 from ..mathematics._interval_taylor import Jet, cos, sin
 from ..mathematics._rational_interval import I
 from ..mathematics._validated_linear_forcing import validated_linear_forcing_step
-from ._organized_computable_prediction import _ForecastStage, _forecast_stages
+from ._organized_computable_prediction import _forecast_stages, _ForecastStage
 from ._organized_electrical_source import _transport_hidden_deviations
-
 
 _SIZE = 5
 _ORDER = 16

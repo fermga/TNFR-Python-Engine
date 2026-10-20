@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from fractions import Fraction as Q
 
 from .._exact_time import exact_or_represented_real as _exact
-from ..mathematics._rational_interval import INTERVAL_METHOD, I, pi_interval, sqrt
+from ..mathematics._rational_interval import INTERVAL_METHOD, I, atan, pi_interval, sqrt
 from ._localized_identity_transport import (
     _IDENTITY_TOLERANCE,
     _TAIL_TOLERANCE,
@@ -261,4 +261,312 @@ def _bound_localized_mobile_interaction(
         cubic_remainder_certified=cubic,
         unavailable_reasons=tuple(reasons),
         status="certified" if not reasons else "not_certified",
+    )
+
+
+@dataclass(frozen=True)
+class _LocalizedMobileGeometryBound:
+    """Conditional band geometry for the joint, tangent and separate families.
+
+    The nested budget is rebuilt from primitives by this calculator, never
+    consumed from an incoming report. Moment centers and proximity masses
+    discard state information; they define neither a state quotient nor an
+    autonomous law. Each optional conclusion retains its own hypotheses.
+    """
+
+    budget: _LocalizedMobileInteractionBound
+    proximity_distance: Q
+    common_relative_error_majorant: Q
+    common_family_bootstrap_certified: bool
+    band_norm_lower_bound: Q | None
+    common_tail_fraction_upper_bound: Q | None
+    mass_tail_bound_certified: bool
+    reference_first_moment_ratio: Q
+    first_moment_error_majorant: Q
+    moment_nonvanishing_margin: Q
+    moment_nonvanishing_certified: bool
+    center_angle_error_upper_bound: Q | None
+    center_position_error_upper_bound: Q | None
+    relative_branch_margin: Q | None
+    relative_branch_certified: bool
+    relative_lifetime_additive_error_upper_bound: Q | None
+    initial_endpoint_distance_lower_bound: Q | None
+    coincident_reference_mass_lower_bound: Q | None
+    initial_endpoint_mass_upper_bound: Q | None
+    unavailable_reasons: tuple[str, ...]
+    interval_method: str = INTERVAL_METHOD
+    conditional_on_supplied_preparation: bool = True
+    scope: tuple[str, ...] = (
+        "inherits_the_freshly_admitted_complete_law_clock_and_shared_preparation",
+        "form_and_phase_are_two_real_channels_with_one_shared_phase_lift_background",
+        "band_projectors_are_observations_not_invariant_dynamical_subsystems",
+        "common_error_covers_joint_nonlinear_tangent_and_sum_of_separate_flows",
+        "moment_centers_require_nonvanishing_first_circular_moments",
+        "relative_lifetime_bound_is_interval_width_over_two_plus_reported_correction",
+        "lifetime_refers_to_one_contiguous_residence_on_the_certified_relative_branch",
+        "proximity_mass_uses_normalized_band_intensities_and_cyclic_vertex_distance",
+        "equal_band_intensities_do_not_identify_the_complete_state_or_its_evolution",
+        "no_state_response_or_trajectory_is_observed_or_evaluated",
+        "no_formation_detection_source_authentication_or_physical_identification",
+    )
+
+
+def _bound_localized_mobile_geometry(
+    *,
+    reference_model,
+    node_count,
+    fejer_order,
+    amplitude,
+    initial_state_error_bound,
+    localization_radius,
+    proximity_distance,
+    horizon,
+) -> _LocalizedMobileGeometryBound:
+    """Bound circular centers and proximity masses from fresh preparations.
+
+    Existing packet admission applies, with an additional exact distance
+    0<=d<=N/2. The common error covers the actual joint flow, its actual
+    damped tangent and the sum of the two separately evolved preparations.
+    Real linearity suffices; complex linearity or closed carrier bands are
+    not assumed. The original interaction report and its verdict are intact.
+
+    A band moment is sum_j exp(2*pi*i*j/N)*abs(y_j)**2. Its center is
+    unavailable if the perturbation disk can contain zero. A positive
+    relative branch margin gives residence time <=W/2+2*delta in any fixed
+    lifted interval of width W. It does not give an instantaneous velocity.
+    Proximity bounds refer to the two nominal centers coinciding at T/2
+    or having cyclic distance T at the initial and final endpoints.
+    """
+    distance = _exact(proximity_distance, "proximity_distance")
+    budget = _bound_localized_mobile_interaction(
+        reference_model=reference_model,
+        node_count=node_count,
+        fejer_order=fejer_order,
+        amplitude=amplitude,
+        initial_state_error_bound=initial_state_error_bound,
+        localization_radius=localization_radius,
+        horizon=horizon,
+    )
+    if not 0 <= distance <= Q(budget.node_count, 2):
+        raise ValueError("proximity_distance requires 0 <= d <= N/2")
+
+    a, radius, order = budget.amplitude, budget.localization_radius, budget.fejer_order
+    common_error = budget.joint_identity_error_upper_bound / a
+    common_error += _cycle_cubic_error_upper_bound(2 * a, budget.horizon) / a
+    family_bootstrap = (
+        budget.identity_bootstrap_certified
+        and budget.single_template_bootstrap_certified
+    )
+    norm_available = family_bootstrap and common_error < 1
+    tail = (
+        (
+            (sqrt(I(budget.reference_tail_fraction_upper_bound)).hi + common_error)
+            / (1 - common_error)
+        )
+        ** 2
+        if norm_available
+        else None
+    )
+    mass_tail = tail is not None and tail < 1
+    kappa = Q(2 * order**2 - 2, 2 * order**2 + 1)
+    moment_error = common_error * (2 + common_error)
+    moment_margin = kappa - moment_error
+    moment = norm_available and moment_margin > 0
+    angle = center_error = branch_margin = None
+    if moment:
+        pi = pi_interval()
+        ratio = moment_error / kappa
+        denominator = sqrt(I(1 - ratio**2))
+        # The exact denominator is positive. A zero lower enclosure means
+        # insufficient grid resolution, not an admissible division by zero.
+        angle = (
+            min(pi.hi / 2, atan(I(ratio / denominator.lo)).hi)
+            if denominator.lo > 0
+            else pi.hi / 2
+        )
+        center_error = budget.node_count * angle / (2 * pi.lo)
+        branch_margin = Q(budget.node_count, 2) - budget.horizon - 2 * center_error
+    branch = branch_margin is not None and branch_margin > 0
+    middle_mass = (1 - tail) ** 2 if mass_tail and distance >= 2 * radius else None
+    endpoint_mass = (
+        1 - (1 - tail) ** 2
+        if mass_tail and budget.horizon > 2 * radius + distance
+        else None
+    )
+    reasons = []
+    if not budget.identity_bootstrap_certified:
+        reasons.append("joint_template_bootstrap_not_closed")
+    if not budget.single_template_bootstrap_certified:
+        reasons.append("single_template_bootstrap_not_closed")
+    if not norm_available:
+        reasons.append("common_nonzero_band_norm_not_certified")
+    if not mass_tail:
+        reasons.append("common_mass_tail_below_one_not_certified")
+    if not moment:
+        reasons.append("first_moment_nonvanishing_not_certified")
+    if not branch:
+        reasons.append("relative_lift_branch_not_certified")
+    if distance < 2 * radius:
+        reasons.append("proximity_distance_does_not_cover_coincident_windows")
+    if budget.horizon <= 2 * radius + distance:
+        reasons.append("endpoint_reference_windows_not_strictly_farther_than_proximity")
+    return _LocalizedMobileGeometryBound(
+        budget=budget,
+        proximity_distance=distance,
+        common_relative_error_majorant=common_error,
+        common_family_bootstrap_certified=family_bootstrap,
+        band_norm_lower_bound=a * (1 - common_error) if norm_available else None,
+        common_tail_fraction_upper_bound=tail,
+        mass_tail_bound_certified=mass_tail,
+        reference_first_moment_ratio=kappa,
+        first_moment_error_majorant=moment_error,
+        moment_nonvanishing_margin=moment_margin,
+        moment_nonvanishing_certified=moment,
+        center_angle_error_upper_bound=angle,
+        center_position_error_upper_bound=center_error,
+        relative_branch_margin=branch_margin,
+        relative_branch_certified=branch,
+        relative_lifetime_additive_error_upper_bound=(
+            2 * center_error if branch else None
+        ),
+        initial_endpoint_distance_lower_bound=(
+            max(Q(0), budget.horizon - 2 * center_error) if moment else None
+        ),
+        coincident_reference_mass_lower_bound=middle_mass,
+        initial_endpoint_mass_upper_bound=endpoint_mass,
+        unavailable_reasons=tuple(reasons),
+    )
+
+
+@dataclass(frozen=True)
+class _LocalizedMobileRelativeRateBound:
+    """Conditional instantaneous rates of the actual joint-flow band centers.
+
+    The decomposition compares the nonlinear field with its damped tangent
+    at the same complete state. It does not compare histories, identify a
+    closed relative-coordinate law or evaluate any prepared response.
+    """
+
+    geometry: _LocalizedMobileGeometryBound
+    sigma_bounds: I
+    conservative_error_upper_bound: Q | None
+    damping_error_upper_bound: Q | None
+    same_state_nonlinear_correction_upper_bound: Q | None
+    per_center_rate_error_upper_bound: Q | None
+    positive_band_center_rate_bounds: I | None
+    negative_band_center_rate_bounds: I | None
+    relative_center_rate_bounds: I | None
+    band_rate_bounds_available: bool
+    relative_rate_bounds_available: bool
+    negative_relative_rate_margin: Q | None
+    strictly_decreasing_relative_center_certified: bool
+    unavailable_reasons: tuple[str, ...]
+    interval_method: str = INTERVAL_METHOD
+    conditional_on_supplied_preparation: bool = True
+    scope: tuple[str, ...] = (
+        "inherits_fresh_primitive_complete_law_clock_and_correlated_preparation",
+        "actual_joint_nonlinear_flow_only_not_the_sum_of_separate_flow_derivatives",
+        "both_real_rows_use_tau_equals_exchange_times_original_time_over_pi",
+        "positive_and_negative_carrier_band_center_velocities_are_near_minus_and_plus_one",
+        "relative_center_is_positive_band_center_minus_negative_band_center",
+        "same_state_damped_tangent_and_nonlinear_remainder_have_separate_bounds",
+        "nonlinear_correction_is_unsigned_and_need_not_point_toward_capture",
+        "adjacent_frequency_differences_control_the_conservative_moment_rate",
+        "opposite_band_conjugation_in_the_damping_term_is_retained",
+        "relative_principal_rate_requires_the_certified_lift_branch",
+        "failed_negative_rate_certificate_does_not_assert_reversal_or_formation",
+        "no_state_response_or_trajectory_is_evaluated_no_closed_observation_law",
+    )
+
+
+def _bound_localized_mobile_relative_rate(
+    *,
+    reference_model,
+    node_count,
+    fejer_order,
+    amplitude,
+    initial_state_error_bound,
+    localization_radius,
+    proximity_distance,
+    horizon,
+) -> _LocalizedMobileRelativeRateBound:
+    """Bound actual joint-flow center rates without evaluating a full state.
+
+    Fresh primitive admission and the existing geometry bootstrap provide
+    ||Pz||<=a(1+h), |M(Pz)|>=a^2*m and ||z||<2a. For the normalized complete
+    sine law, R(z) obeys ||R||<=32*a^3/3. The bound retains the actual
+    positive-loss tangent; it is not the lossless packet reference velocity.
+
+    The conservative, dissipative and same-state nonlinear error estimates
+    are per center. Each requires certified nonzero moments. The relative
+    principal rate additionally requires a certified relative branch; a
+    negative upper endpoint is sufficient for strict decrease. Failure of
+    either condition leaves that conclusion unavailable, never reversed.
+    """
+    geometry = _bound_localized_mobile_geometry(
+        reference_model=reference_model,
+        node_count=node_count,
+        fejer_order=fejer_order,
+        amplitude=amplitude,
+        initial_state_error_bound=initial_state_error_bound,
+        localization_radius=localization_radius,
+        proximity_distance=proximity_distance,
+        horizon=horizon,
+    )
+    budget, pi = geometry.budget, pi_interval()
+    loss_ratio = budget.form_loss_coefficient / budget.exchange_coefficient
+    sigma = I(pi.lo * loss_ratio, pi.hi * loss_ratio)
+    available = (
+        geometry.common_family_bootstrap_certified
+        and geometry.moment_nonvanishing_certified
+    )
+    conservative = damping = nonlinear = per_center = None
+    positive = negative = relative = margin = None
+    if available:
+        norm_ratio = 1 + geometry.common_relative_error_majorant
+        moment_margin = geometry.moment_nonvanishing_margin
+        norm_squared_over_moment = norm_ratio**2 / moment_margin
+        frequency_error = (Q(1, 6) + Q((2 * budget.fejer_order - 3) ** 2, 2)) * (
+            pi.hi / budget.node_count
+        ) ** 2
+        conservative = frequency_error * norm_squared_over_moment
+        damping = 2 * budget.node_count * loss_ratio * norm_squared_over_moment
+        nonlinear = (
+            Q(budget.node_count, 1)
+            / pi.lo
+            * Q(32, 3)
+            * budget.amplitude**2
+            * norm_ratio
+            / moment_margin
+        )
+        per_center = conservative + damping + nonlinear
+        positive = I(-1 - per_center, -1 + per_center)
+        negative = I(1 - per_center, 1 + per_center)
+        if geometry.relative_branch_certified:
+            relative = I(-2 - 2 * per_center, -2 + 2 * per_center)
+            margin = 2 - 2 * per_center
+    relative_available = relative is not None
+    decreasing = relative_available and relative.hi < 0
+    reasons = []
+    if not available:
+        reasons.append("joint_family_nonzero_moments_not_certified")
+    if not geometry.relative_branch_certified:
+        reasons.append("relative_lift_branch_not_certified")
+    if relative_available and not decreasing:
+        reasons.append("strictly_negative_relative_rate_not_certified")
+    return _LocalizedMobileRelativeRateBound(
+        geometry=geometry,
+        sigma_bounds=sigma,
+        conservative_error_upper_bound=conservative,
+        damping_error_upper_bound=damping,
+        same_state_nonlinear_correction_upper_bound=nonlinear,
+        per_center_rate_error_upper_bound=per_center,
+        positive_band_center_rate_bounds=positive,
+        negative_band_center_rate_bounds=negative,
+        relative_center_rate_bounds=relative,
+        band_rate_bounds_available=available,
+        relative_rate_bounds_available=relative_available,
+        negative_relative_rate_margin=margin,
+        strictly_decreasing_relative_center_certified=decreasing,
+        unavailable_reasons=tuple(reasons),
     )

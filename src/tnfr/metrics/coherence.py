@@ -118,8 +118,10 @@ from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 from itertools import islice
 from numbers import Integral, Real
+from sys import float_info
 from typing import Any, MutableMapping, TypeAlias, cast
 
+from .._exact_time import bounded_represented_real
 from ..alias import collect_attr, collect_theta_attr, get_attr, set_attr
 from ..config.selector_thresholds import resolve_selector_thresholds
 from ..constants import get_param
@@ -175,7 +177,7 @@ from .common import (
     is_structural_equilibrium,
     min_max_range,
 )
-from .trig_cache import compute_theta_trig, get_trig_cache
+from .trig_cache import TrigCache, compute_theta_trig, get_trig_cache
 
 logger = get_logger(__name__)
 
@@ -229,12 +231,36 @@ def _is_sparse_affinity_payload(value: Any) -> bool:
 def _validated_affinity_weight(value: Any) -> float:
     """Return a finite nonnegative affinity weight."""
 
-    if isinstance(value, bool) or not isinstance(value, Real):
-        raise TNFRValueError("affinity weights must be real non-Boolean scalars")
-    weight = float(value)
-    if not math.isfinite(weight) or weight < 0.0:
-        raise TNFRValueError("affinity weights must be finite and nonnegative")
-    return weight
+    try:
+        return bounded_represented_real(value, "affinity weight", minimum=0)[0]
+    except (TypeError, ValueError) as exc:
+        raise TNFRValueError(
+            f"affinity weights must be finite and nonnegative: {exc}"
+        ) from exc
+
+
+def _partition_sparse_phase_sync_weights(
+    weights: PhaseSyncWeights, size: int
+) -> list[CoherenceMatrixSparse] | None:
+    """Admit and group one sparse payload for an all-node observation.
+
+    Every entry is checked before any row is returned, including entries in
+    otherwise unused rows. Row order, duplicate entries and diagonal entries
+    are preserved. Dense payloads keep the existing public reader's admission.
+    The partition belongs only to this call; it caches no graph or phase state.
+    """
+    if not _is_sparse_affinity_payload(weights):
+        return None
+    rows: list[CoherenceMatrixSparse] = [[] for _ in range(size)]
+    for entry in cast(CoherenceMatrixSparse, weights):
+        i, j, value = entry
+        if not 0 <= i < size or not 0 <= j < size:
+            raise TNFRValueError("sparse affinity index is out of range")
+        _validated_affinity_weight(value)
+        # Reuse immutable entries instead of duplicating the sparse payload.
+        # The public reducer still admits each consumed row's source weights.
+        rows[i].append(entry)
+    return rows
 
 
 SimilarityComponents = tuple[float, float, float, float]
@@ -1263,13 +1289,44 @@ def local_phase_sync_weighted(
         i = node_to_index.get(n)
         if i is None:
             i = nodes_order.index(n)
-    size = len(nodes_order)
-
-    num = 0 + 0j
-    den = 0.0
-
     trig = get_trig_cache(G)
+    return _local_phase_sync_from_trig(G, n, i, nodes_order, W_row, trig)
+
+
+def _all_local_phase_sync_weighted(
+    G: TNFRGraph,
+    nodes_order: Sequence[NodeId],
+    weights: PhaseSyncWeights,
+) -> dict[NodeId, float]:
+    """Observe all rows from one live phase capture owned by this call.
+
+    No caller-supplied snapshot is accepted. The ordinary public one-node
+    reader independently revalidates live state on every invocation.
+    """
+    rows = _partition_sparse_phase_sync_weights(weights, len(nodes_order))
+    if not nodes_order:
+        return {}
+    trig = get_trig_cache(G)
+    return {
+        node: _local_phase_sync_from_trig(
+            G, node, index, nodes_order, weights if rows is None else rows[index], trig
+        )
+        for index, node in enumerate(nodes_order)
+    }
+
+
+def _local_phase_sync_from_trig(
+    G: TNFRGraph,
+    n: NodeId,
+    i: int,
+    nodes_order: Sequence[NodeId],
+    W_row: PhaseSyncWeights,
+    trig: TrigCache,
+) -> float:
+    """Reduce one admitted row using this observation's captured phases."""
+    size = len(nodes_order)
     cos_map, sin_map = trig.cos, trig.sin
+    terms: list[tuple[float, float, float]] = []
 
     if _is_sparse_affinity_payload(W_row):
         sparse_entries = cast(CoherenceMatrixSparse, W_row)
@@ -1282,15 +1339,14 @@ def local_phase_sync_weighted(
             nj = nodes_order[jj]
             if nj == n:
                 continue
-            den += weight
             cos_j = cos_map.get(nj)
             sin_j = sin_map.get(nj)
             if cos_j is None or sin_j is None:
                 trig_j = compute_theta_trig(((nj, G.nodes[nj]),))
                 cos_j = trig_j.cos[nj]
                 sin_j = trig_j.sin[nj]
-            num += weight * complex(cos_j, sin_j)
-        return abs(num / den) if den else 0.0
+            terms.append((weight, cos_j, sin_j))
+        return _weighted_phase_magnitude(terms)
 
     if np is not None and isinstance(W_row, np.ndarray):
         if W_row.ndim == 1:
@@ -1328,16 +1384,46 @@ def local_phase_sync_weighted(
         weight = _validated_affinity_weight(w)
         if nj == n:
             continue
-        den += weight
         cos_j = cos_map.get(nj)
         sin_j = sin_map.get(nj)
         if cos_j is None or sin_j is None:
             trig_j = compute_theta_trig(((nj, G.nodes[nj]),))
             cos_j = trig_j.cos[nj]
             sin_j = trig_j.sin[nj]
-        num += weight * complex(cos_j, sin_j)
+        terms.append((weight, cos_j, sin_j))
 
-    return abs(num / den) if den else 0.0
+    return _weighted_phase_magnitude(terms)
+
+
+def _weighted_phase_magnitude(terms: Sequence[tuple[float, float, float]]) -> float:
+    """Preserve ordinary row order; rescale extreme finite weight reductions."""
+    num = 0 + 0j
+    den = 0.0
+    largest = 0.0
+    for weight, cosine, sine in terms:
+        den += weight
+        num += weight * complex(cosine, sine)
+        largest = max(largest, weight)
+    if largest == 0.0:
+        return 0.0
+    if (
+        largest < float_info.min
+        or not math.isfinite(den)
+        or not math.isfinite(num.real)
+        or not math.isfinite(num.imag)
+    ):
+        # Common positive scaling preserves the weighted mean and prevents
+        # overflow or subnormal multiplication from changing its direction.
+        scaled = [(weight / largest, cosine, sine) for weight, cosine, sine in terms]
+        den = math.fsum(weight for weight, _, _ in scaled)
+        num = complex(
+            math.fsum(weight * cosine for weight, cosine, _ in scaled),
+            math.fsum(weight * sine for weight, _, sine in scaled),
+        )
+    result = abs(num / den)
+    if not math.isfinite(result):
+        raise TNFRValueError("weighted phase synchrony must be finite")
+    return result
 
 
 def local_phase_sync(G: TNFRGraph, n: NodeId) -> float:

@@ -4,7 +4,7 @@ Purpose: contract stored pressure and apply a configured circular phase step.
 The public phase proposal is distinct from the pressure-only low-level glyph.
 Grammar: stabilizer (U2); safe closure component.
 Effects: pressure magnitude contracts; EPI and capacity preserved.
-Preconditions: active structure; prior destabilizer if recent IL already.
+Preconditions: selected target-state policy; independent live grammar.
 Typical: AL->UM->IL; OZ->IL; VAL->IL. Avoid redundant IL chains.
 """
 
@@ -13,9 +13,9 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any, ClassVar
 
-from ..alias import get_attr, set_attr
+from ..alias import set_attr
 from ..config.operator_names import COHERENCE
-from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
+from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA
 from ..types import Glyph, TNFRGraph
 from ._argument_validation import (
     finite_node_real,
@@ -24,6 +24,7 @@ from ._argument_validation import (
     reject_operator_argument,
     require_list_sink,
     strict_bool,
+    validate_common_execution_arguments,
 )
 from ._coherence_stage_kernel import (
     DEFAULT_PHASE_LOCKING_COEFFICIENT,
@@ -35,7 +36,6 @@ from ._coherence_stage_kernel import (
     propose_coherence_phase,
     propose_coherence_stage,
 )
-from ._epi_domain import require_real_scalar_epi
 from .definitions_base import Operator
 from .factor_contracts import resolve_runtime_operator_factors
 
@@ -46,6 +46,10 @@ class Coherence(Operator):
     Phase locking defaults to coefficient 0.3; zero disables displacement.
     EPI and capacity are preserved. A stored-pressure contraction is not a
     theorem of equilibrium, monotonicity after refresh or future convergence.
+    When strict validation is enabled, IL_PRECONDITIONS.activity_policy defaults
+    to signed_threshold. Explicit event_domain permits finite signed form and
+    nonnegative capacity, including zero, while retaining independent grammar
+    and neighbor-phase proposal admission.
     """
 
     __slots__ = ()
@@ -57,6 +61,14 @@ class Coherence(Operator):
     ) -> None:
         """Validate every active public IL input before grammar selection."""
 
+        # Admit original flags before the IL-specific warning/defer branch.
+        # Replacing a truthy invalid flag below must not hide its invalid type.
+        validate_common_execution_arguments(G.graph, kw, operator=self.name)
+        defer_warnings = strict_bool(
+            kw.get("_defer_il_precondition_warnings", False),
+            operator=self.name,
+            label="_defer_il_precondition_warnings",
+        )
         nonnegative_integer(
             kw.get("coherence_radius", 1),
             operator=self.name,
@@ -72,19 +84,16 @@ class Coherence(Operator):
         self._validate_state(G, node)
         self._validate_sinks_and_monitor(G, kw)
 
-        validation_enabled = bool(kw.get("validate_preconditions", True)) and bool(
-            G.graph.get("VALIDATE_OPERATOR_PRECONDITIONS", False)
+        validation_enabled = kw.get("validate_preconditions", True) and G.graph.get(
+            "VALIDATE_OPERATOR_PRECONDITIONS", False
         )
         if validation_enabled:
-            self._validate_precondition_config(G)
             from .preconditions.coherence import validate_coherence_strict
 
             validate_coherence_strict(
                 G,
                 node,
-                emit_warnings=not bool(
-                    kw.get("_defer_il_precondition_warnings", False)
-                ),
+                emit_warnings=not defer_warnings,
             )
 
         base_kwargs = dict(kw)
@@ -96,69 +105,9 @@ class Coherence(Operator):
 
     def _validate_state(self, G: TNFRGraph, node: Any) -> None:
         """Require a finite scalar IL state with nonnegative capacity."""
+        from .preconditions.coherence import _coherence_state
 
-        require_real_scalar_epi(
-            get_attr(
-                G.nodes[node], ALIAS_EPI, 0.0, strict=True, conv=lambda value: value
-            ),
-            operator=self.name,
-            label="EPI state",
-        )
-        finite_node_real(
-            G.nodes[node],
-            ALIAS_VF,
-            0.0,
-            operator=self.name,
-            label="nu_f state",
-            lower=0.0,
-        )
-        finite_node_real(
-            G.nodes[node],
-            ALIAS_DNFR,
-            0.0,
-            operator=self.name,
-            label="DeltaNFR state",
-        )
-        finite_node_real(
-            G.nodes[node],
-            ALIAS_THETA,
-            0.0,
-            operator=self.name,
-            label="theta state",
-        )
-
-    def _validate_precondition_config(self, G: TNFRGraph) -> None:
-        """Validate the optional strict IL thresholds before their consumer."""
-
-        from ..config.thresholds import DNFR_IL_CRITICAL, EPI_IL_MIN, VF_IL_MIN
-
-        raw = G.graph.get("IL_PRECONDITIONS", {})
-        if not isinstance(raw, Mapping):
-            reject_operator_argument(self.name, "IL_PRECONDITIONS must be a mapping")
-        finite_real(
-            raw.get("min_epi", EPI_IL_MIN),
-            operator=self.name,
-            label="IL_PRECONDITIONS.min_epi",
-        )
-        finite_real(
-            raw.get("min_vf", VF_IL_MIN),
-            operator=self.name,
-            label="IL_PRECONDITIONS.min_vf",
-            lower=0.0,
-        )
-        finite_real(
-            raw.get("dnfr_critical_threshold", DNFR_IL_CRITICAL),
-            operator=self.name,
-            label="IL_PRECONDITIONS.dnfr_critical_threshold",
-            lower=0.0,
-        )
-        for key in ("warn_isolated", "warn_zero_dnfr"):
-            if key in raw:
-                strict_bool(
-                    raw[key],
-                    operator=self.name,
-                    label=f"IL_PRECONDITIONS.{key}",
-                )
+        _coherence_state(G, node)
 
     def _validate_sinks_and_monitor(self, G: TNFRGraph, kw: Mapping[str, Any]) -> None:
         """Reject malformed active telemetry targets before IL dispatch."""

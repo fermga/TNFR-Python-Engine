@@ -276,7 +276,7 @@ epsilon_upper)` in the
 [pair owner](../../../src/tnfr/physics/relational_sine_pair.py) returns
 `SinePairReceiverConfounding`. It retains the doubled-C5 nominal preparations
 and the sole observation `Y=(x_2+x_3)/2` at `t=pi*horizon_tau`. Orientation A
-now evolves under the supplied family
+evolves under the supplied family
 `j_epsilon(delta)=sin(delta)+epsilon*sin(delta)^3`, with constant
 `0<=epsilon<=epsilon_upper`; orientation B evolves under `epsilon=0`.
 Both complete models retain the same phase row, support, held unit capacities,
@@ -405,7 +405,7 @@ remain outside its scope.
 `assess_sine_pair_receiver_two_law(*, phase_rotation, horizons_tau,
 epsilon_upper, form_error_bound, phase_error_bound, readout_error_bound)`
 in the [pair owner](../../../src/tnfr/physics/relational_sine_pair.py) returns
-`SinePairReceiverTwoLaw`. Both nominal orientations now evolve under the
+`SinePairReceiverTwoLaw`. Both nominal orientations evolve under the
 complete cubic-sine family. A and B may use different coefficients, each
 in `[0,epsilon_upper]`; each branch retains one coefficient and one initial
 state throughout both readings. The complete support, phase row, capacities,
@@ -1427,7 +1427,7 @@ the contributions of asymmetric neighbors and internal edges.
 
 On the fixed nineteen-edge control, modes are
 `(ordered, unordered, unordered, unordered, ordered)`. Swapping source members
-`0,1` now changes retained signed coordinates. The known receiver rates
+`0,1` changes retained signed coordinates. The known receiver rates
 `+1/(48*pi)` and `-1/(48*pi)` therefore correspond to distinguishable states.
 This repairs the prior information loss without changing the law or repeating
 the frozen finite-window evaluation. A simultaneous graph/state relabeling

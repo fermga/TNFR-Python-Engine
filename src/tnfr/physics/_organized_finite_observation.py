@@ -24,7 +24,6 @@ from ._organized_outer_observation import (
 from ._sine_preparation import _prepared_coordinate_vector as _vector
 from .relational_observations import _ordered
 
-
 _PULSE_DURATION = Q(1)
 _PLATEAU_LEVELS = (0, 1, -1)
 _PULSE_MULTIPLIERS = (1, -2, 1)

@@ -2804,18 +2804,32 @@ does not extend its accepted API domain to heterogeneous capacities.
 
 ### State, law and the measure being used
 
-Fix a finite connected simple unit-support graph with `n>=2`,
-strictly positive held capacities, `w,beta>0` and **declared**
-`e=0`. There are no inputs, support changes, resets, clipping or
-other operator events. Use the complete sine rows in the structural
+Fix a finite simple bare support with `n>=2` and nonnegative
+held conductances `W_ij=W_ji`. Require the subgraph of strictly
+positive conductances to connect all nodes. The bare support may
+also contain zero-conductance edges: they still contribute to
+degree and the phase-sine channel. Let `d_i` count bare neighbors,
+let all held capacities be strictly positive, and put
+`K=diag(nu_i/d_i)`. Fix `w,beta>0` and **declared** `e=0`.
+There are no inputs, support changes, resets, clipping or other
+operator events. Use the complete rows in the original structural
 clock,
 
 \[
 \dot x=aKS(\theta),\qquad
-\dot\theta=bKLx,\qquad a=w/\pi,\quad b=w/(\beta\pi),
+\dot\theta=bKL_Wx,\qquad a=w/\pi,\quad b=w/(\beta\pi),
 \]
 
-on the state manifold
+where
+
+\[
+ S_i(\theta)=\sum_{j\sim i}\sin(\theta_j-\theta_i),\qquad
+ V(\theta)=\sum_{\{i,j\}\in E}[1-\cos(\theta_j-\theta_i)]
+\]
+
+use every bare edge, whereas `L_W` is the conductance-weighted
+Laplacian. This extends the unit-conductance case without replacing
+the bare phase channel by a weighted sine. Work on the state manifold
 
 \[
 \mathcal M=\mathbb R^n\times(\mathbb R/2\pi\mathbb Z)^n.
@@ -2837,13 +2851,19 @@ owns those separate obligations.
 The two conserved quantities needed here are
 
 \[
-E=\frac12x^\mathsf TLx+\beta V(\theta),\qquad
+E=\frac12x^\mathsf TL_Wx+\beta V(\theta),\qquad
 m(x)=\frac{\sum_i\rho_i x_i}{\sum_i\rho_i},\qquad
 \rho_i=\frac{d_i}{\nu_i}>0.
 \]
 
-The storage identity gives `Edot=0`, and pairwise cancellation
-of the sine currents gives
+Since \(\nabla_\theta V=-S\), symmetry of the diagonal
+mobility and \(a=\beta b\) give the complete storage cancellation
+
+\[
+ \dot E=a(L_Wx)^\mathsf TKS-\beta bS^\mathsf TKL_Wx=0.
+\]
+
+Pairwise cancellation of the bare sine currents separately gives
 
 \[
 \dot m
@@ -2865,21 +2885,32 @@ Choose an energy ceiling `E_max>0` and an interval
 \quad m_{\rm lo}\le m(x)\le m_{\rm hi}\}.
 \]
 
-Let `D_G` be the unweighted graph diameter. A shortest path and
-Cauchy--Schwarz give
+Let \(G_+\) be the connected positive-conductance subgraph,
+\(D_+\) its unweighted diameter and
+\(W_{\min}=\min_{\{i,j\}\in E,\;W_{ij}>0}W_{ij}>0\).
+A shortest path in \(G_+\) and Cauchy--Schwarz give
 
 \[
 |x_i-x_j|^2
- \le {\rm dist}_G(i,j)\sum_{\text{path}}(x_u-x_v)^2
- \le 2D_G E_{\max}.
+ \le {\rm dist}_{G_+}(i,j)\sum_{\text{path}}(x_u-x_v)^2
+ \le \frac{2D_+E_{\max}}{W_{\min}}.
 \]
 
 Since `m` is a positive weighted average of the forms,
 
 \[
-|x_i-m|\le\sqrt{2D_G E_{\max}}
- \le R,\qquad R=\sqrt{2(n-1)E_{\max}}.
+|x_i-m|\le\sqrt{\frac{2D_+E_{\max}}{W_{\min}}}
+ \le R,\qquad
+ R=\sqrt{\frac{2(n-1)E_{\max}}{W_{\min}}}.
 \]
+
+For unit conductances this is the preceding unit-support bound.
+Connectivity of the bare support alone would not suffice: if
+the positive-conductance subgraph has distinct components,
+their relative form origins can take arbitrarily large values in
+a fixed energy/global-mean set. Separately proved componentwise
+conserved means or another coercivity argument would then be needed;
+the displayed one-mean compactness certificate is unavailable.
 
 Thus every state in the slab satisfies the explicit coordinate bound
 
@@ -2966,7 +2997,7 @@ continuous-time recurrence along a sequence of future times.
 
 Almost all these recurrent states are nonstationary. Indeed,
 strict positivity of `K` makes `thetadot=0` imply
-`Lx=0`. Connectivity then gives `x=c*1`, a one-dimensional
+`L_Wx=0`. Positive-subgraph connectivity gives `x=c*1`, a one-dimensional
 subspace of `R^n` with zero Lebesgue measure for `n>=2`.
 The equilibrium set is contained in that form subspace times
 the phase torus, and therefore has zero ambient product measure.
@@ -2981,7 +3012,7 @@ slab remains useful for a bounded, inspectable family admission.
 
 ### An exact exceptional preparation prevents a chosen-state claim
 
-Almost everywhere is essential. On the same reversible P2 law,
+Almost everywhere is essential. On the unit-conductance reversible P2 law,
 take `u=x_0-x_1=2*sqrt(beta)` and `delta=theta_1-theta_0=0`
 initially, with `sigma=nu_0+nu_1>0`. Its storage is exactly
 `2*beta`, the separatrix value. Put

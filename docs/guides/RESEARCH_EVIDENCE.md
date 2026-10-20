@@ -13,6 +13,7 @@ or independently establishes acquisition, scientific truth or physical identity.
 | [`utils.io`](../../src/tnfr/utils/io.py) | Strict JSON syntax/value admission and shared file-writing mechanics | Scientific record schemas and exact rational tags |
 | [`research.artifact_io`](../../src/tnfr/research/artifact_io.py) | Tagged exact records, bounded reads and hashes, receipts, exact ZIP inventory checks and exclusive JSON creation | Model laws, preparation, derivative validity and scientific stopping criteria |
 | [`mathematics._validated_taylor`](../../src/tnfr/mathematics/_validated_taylor.py) | Shared source-box Taylor construction and separate reconstruction of retained polynomial/remainder arithmetic | A reconstruction alone does not regenerate derivatives or prove Picard inclusion |
+| [`mathematics._validated_metric`](../../src/tnfr/mathematics/_validated_metric.py) | Carried positive-metric uncertainty and whole-time observation boxes from an admitted step | The supplied field/growth proof and association of saved derivative enclosures with that field |
 | Model-specific research readers | Re-admit consumed source, law, clock, event and observation primitives; rebuild their declared bounds | Authentication of an archived execution or replay of omitted calculations |
 | [`research.frozen_source`](../../src/tnfr/research/frozen_source.py) | Inspect the admitted freeze receipt or prepare its complete pinned source in a new workspace | Executing an archived evaluator, installing dependencies or certifying the restored runtime |
 | Frozen protocol and source archive | Immutable declaration and source association for one experiment | Automatic authority to execute, revise or retry that experiment |
@@ -119,7 +120,7 @@ original evidence unchanged and preserve an incomplete restoration if its
 preparation fails; do not merge a partial workspace into a running experiment.
 
 For the [matched four-history freeze](../../theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-frozen-evaluation),
-the declared base is `fa8e98a9b1bdd755709da481de7fc092b57bfe65`. Its future
+the declared base is `fa8e98a9b1bdd755709da481de7fc092b57bfe65`. Its archived
 evaluator checks the complete `src` tree against that revision, not only the
 snapshots included in its archive. A refactored current checkout can audit the
 freeze but cannot substitute its runtime for the declared one. The immutable
@@ -145,10 +146,12 @@ Inspect this receipt, archive and pinned Git source without creating a workspace
 python scripts/restore_frozen_source.py --receipt docs/assets/sine_formed_classes/class-collective-forward-v1.freeze.json
 ```
 
-When source preparation is explicitly needed, supply a new destination:
+The retained receipt above is an inspection example. For a separately admitted
+freeze with no attempt or outcome, replace `NEW_FREEZE.json` below with its
+actual path and supply a new destination:
 
 ```sh
-python scripts/restore_frozen_source.py --receipt docs/assets/sine_formed_classes/class-collective-forward-v1.freeze.json --destination C:/TNFR-frozen-collective-forward
+python scripts/restore_frozen_source.py --receipt NEW_FREEZE.json --destination C:/TNFR-frozen-new-study
 ```
 
 The destination must not exist and must be outside the active repository, with

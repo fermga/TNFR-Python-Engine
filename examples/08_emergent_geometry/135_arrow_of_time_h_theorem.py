@@ -47,6 +47,7 @@ References
 - examples/08_emergent_geometry/99_structural_diffusion.py
 - examples/08_emergent_geometry/134_spectral_dimension_heat_kernel.py
 """
+
 import os
 import sys
 

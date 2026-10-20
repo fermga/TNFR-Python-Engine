@@ -45,7 +45,7 @@ class TNFRAdaptiveSystem:
     - **Feedback Loop**: Regulates coherence via operator selection
     - **Sequence Selector**: Scores a catalogue of grammar-valid words
     - **Homeostasis**: Maintains parameter equilibrium
-    - **Learning System**: Implements AL + T'HOL learning cycles
+    - **Learning System**: Configures Emission (AL) and SelfOrganization (THOL)
     - **Metabolism**: Digests stimuli into structure
 
     Parameters
@@ -147,7 +147,8 @@ class TNFRAdaptiveSystem:
         - **Homeostasis first**: Ensure safe operating parameters
         - **Feedback loops**: Maintain target coherence
 
-        This creates robust, adaptive, self-regulating dynamics.
+        These are configured feedback policies, not a stability certificate or
+        a derived law selecting when operators occur.
 
         **Advanced Usage:**
 

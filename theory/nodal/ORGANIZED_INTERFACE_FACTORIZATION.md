@@ -381,4 +381,4 @@ It does not exclude an affine response, a nonlinear scalar encoding, real
 observations of complex products, or a richer retained boundary description.
 It does not derive physical charge, spin, a quantum state or a unique law.
 The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-owns the reassessment and next task.
+alone selects further investigation.

@@ -27,7 +27,6 @@ from benchmarks.relational_local_composition import (
     analyze_local_memory,
 )
 
-
 EPSILON = Q(1, 64)
 HORIZON = Q(1, 4)
 STEP_COUNTS = (64, 128, 256)

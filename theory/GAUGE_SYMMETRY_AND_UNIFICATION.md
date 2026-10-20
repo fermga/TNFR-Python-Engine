@@ -5,9 +5,10 @@ nodewise **U(1) field-coordinate action** in the auxiliary model. This document
 derives its algebraic invariants and records diagnostic comparisons with
 conservation, grammar and spectral projections.
 
-**Status**: HISTORICAL RESEARCH MODEL — algebraic U(1) identities retained; dynamical claims scoped below.
+**Status**: Auxiliary field-coordinate model; exact algebraic U(1) identities
+and scoped diagnostic comparisons.
 
-> **Current scope and supersession (2026-09).** The rotation identities,
+> **Scope.** The rotation identities,
 > gauge-invariant norms, Parseval identity and the exact harmonic substrate flow
 > are valid within their stated auxiliary models. They do not derive the full
 > nodal equation from the displayed action, make U1–U6 symmetries of that

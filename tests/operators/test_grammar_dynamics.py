@@ -1,4 +1,4 @@
-"""Tests for grammar-aware dynamics (proactive U1-U6 enforcement).
+"""Tests for grammar-aware dynamics (incremental U1a/U2/U3/U4 admission).
 
 Validates that the incremental grammar checking in ``grammar_dynamics.py``
 correctly detects violations, suggests alternatives, and integrates with the
@@ -13,10 +13,8 @@ import networkx as nx
 import pytest
 
 from tnfr.operators.grammar_dynamics import (
-    _CLOSURE_CODES,
     _COUPLING_CODES,
     _DESTABILIZER_CODES,
-    _FALLBACK_CODE,
     _GENERATOR_CODES,
     _HANDLER_CODES,
     _STABILIZER_CODES,
@@ -534,12 +532,13 @@ class TestValidateSequenceIncremental:
         assert not results[1].allowed
         assert any(v.rule == "U1a" for v in results[1].violations)
 
-    def test_preserves_explicit_none_history(self) -> None:
+    def test_rejects_explicit_none_history_without_replacing_it(self) -> None:
         from tnfr.operators.grammar_dynamics import validate_sequence_incremental
 
         G, node = _make_graph(epi=1.0)
         G.nodes[node]["glyph_history"] = None
-        validate_sequence_incremental(G, node, ["IL"])
+        with pytest.raises(TypeError, match="glyph_history"):
+            validate_sequence_incremental(G, node, ["IL"])
         assert "glyph_history" in G.nodes[node]
         assert G.nodes[node]["glyph_history"] is None
 

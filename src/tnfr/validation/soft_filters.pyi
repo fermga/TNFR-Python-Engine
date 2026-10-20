@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Any, Callable, Mapping
 
+from ..operators.grammar_context import GrammarContext
 from ..types import Glyph
-from .grammar import GrammarContext
 
 __all__ = (
     "acceleration_norm",

@@ -13,7 +13,6 @@ import pytest
 from tests.sine_evidence_helpers import forbid_sine_regeneration
 from tnfr.physics import _organized_external_interaction as owner
 
-
 _ERROR = Q(1, 10**10)
 _ZERO = (Q(0),) * 54
 _INTERNAL = tuple(

@@ -318,13 +318,14 @@ class TestSecondaryValidatorReadsCanonicalSets:
 
     def test_canonical_destabilizers_trigger_u2(self) -> None:
         # Each canonical destabilizer {OZ, ZHIR, VAL} without a stabilizer must
-        # fail with the U2 missing-stabilizer message.
+        # fail through the shared U2 stabilizer-coverage contract.
         from tnfr.operators.grammar import validate_sequence
 
         for destab in ("dissonance", "expansion"):
             r = validate_sequence(["emission", destab, "silence"])
             assert r.passed is False
-            assert "missing stabilizer" in r.message
+            assert "U2 violated" in r.message
+            assert "without declared stabilizer coverage" in r.message
 
     def test_destabilizer_with_stabilizer_clears_u2(self) -> None:
         # VAL + IL clears the U2 requirement (does not fail on missing stabilizer).

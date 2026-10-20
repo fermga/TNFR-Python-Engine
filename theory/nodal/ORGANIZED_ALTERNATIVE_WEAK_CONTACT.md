@@ -941,5 +941,5 @@ and C1 margins, full-state curvature, actual-source budgets, moving-shape
 transport and inward-torque inequalities. Those controls
 support the written proof; they do not sample roots or evaluate a
 trajectory. This analytical result installs no new runtime law or source
-producer. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#alternative-weak-contact-source-admission)
+producer. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 owns its status and any later admission.

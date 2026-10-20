@@ -21,7 +21,6 @@ from ._organized_electrical_identification import (
     _positive_vector,
 )
 
-
 # Ordered input coordinates for this fixed five-child protocol.
 _C5_PAIRS = tuple((a, b) for a in range(5) for b in range(a + 1, 5))
 _C5_RING_PAIRS = tuple((a, b) for a, b in _C5_PAIRS if b - a in (1, 4))

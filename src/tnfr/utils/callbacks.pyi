@@ -41,6 +41,13 @@ class CallbackManager:
         *,
         name: str | None = None,
     ) -> Callback: ...
+    def _order_callback_after(
+        self,
+        G: nx.Graph,
+        event: CallbackEvent | str,
+        name: str,
+        prerequisite: str,
+    ) -> None: ...
     def invoke_callbacks(
         self, G: nx.Graph, event: CallbackEvent | str, ctx: dict[str, Any] | None = None
     ) -> None: ...

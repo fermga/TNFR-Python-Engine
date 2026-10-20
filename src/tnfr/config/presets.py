@@ -1,6 +1,9 @@
-"""Predefined TNFR configuration sequences.
+"""Predefined contextual TNFR programs.
 
 Only the canonical English preset identifiers are recognised.
+Entries are supplied programs, not unconditional word or live-state admission.
+In particular, nested THOL and Mutation require their actual inherited context.
+Execution rejects blocked requests instead of silently substituting a glyph.
 """
 
 from __future__ import annotations
@@ -35,7 +38,7 @@ _PRIMARY_PRESETS: dict[str, PresetTokens] = {
     "contained_mutation": seq(
         Glyph.AL,
         Glyph.EN,
-        block(Glyph.OZ, Glyph.ZHIR, Glyph.IL, repeat=2),
+        block(Glyph.OZ, Glyph.ZHIR, Glyph.IL, repeat=2, close=Glyph.NUL),
         Glyph.RA,
         Glyph.SHA,
     ),
@@ -45,7 +48,7 @@ _PRIMARY_PRESETS: dict[str, PresetTokens] = {
         Glyph.IL,
         Glyph.VAL,
         Glyph.UM,
-        block(Glyph.OZ, Glyph.NAV, Glyph.IL, repeat=1),
+        block(Glyph.OZ, Glyph.NAV, Glyph.IL, repeat=1, close=Glyph.NUL),
         Glyph.RA,
         Glyph.SHA,
     ),

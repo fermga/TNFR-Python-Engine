@@ -1,6 +1,27 @@
 # Regional and relational SDK workflow index
 
-Choose the execution owner and kind of evidence, then follow its scoped SDK workflow. Preparations, models and references are supplied inputs; examples retain explicit prerequisites and do not form one sequential experiment.
+These workflows make organized mathematical objects available for study through
+their state, dynamics, identity and response. A region is a chosen set of
+constituents; treating it as a collective NFR additionally requires the
+[identity and state obligations](../../theory/EMERGENT_ONTOLOGY.md#collective-grammar-readiness).
+Retain its internal and boundary information when selecting an action or
+observation.
+
+Begin with the [native object's recovery report](relational/RELATIONAL_CAPTURE_AND_MEMORY.md#read-an-organized-objects-recovery-report)
+to connect a prepared state, a declared law, a finite step and a conditional
+continuation theorem. For acquired classes and their retained source records,
+use the separate [normalized-sine object workflow](relational/SINE_PATTERNS.md#formed-object-sdk-workflow).
+Each route has its own preparation and complete law; the chapter examples do
+not form one sequential experiment.
+
+Choose the next interface by the information the question consumes: live state
+for an actual step, primitive preparation bounds for a theorem assessment, or
+retained observations for a readout. Check operator targets and grammatical
+context before requesting events. The
+[event contract](../contracts/OPERATOR_EVENTS.md) and
+[collective action criterion](../../theory/STRUCTURAL_OPERATORS.md#collective-grammar-descent)
+distinguish constituent execution from an action well defined on collective
+state. None of these readers supplies an occurrence law by returning a report.
 
 ## Chapters and scope
 
@@ -47,7 +68,11 @@ rebuild the source and observation history. Use the relative-origin assessor
 for its finite response envelope and the [maintenance assessor](../../theory/nodal/ORGANIZED_CONTACT_MAINTENANCE.md#8-detached-implementation-and-verification-boundary)
 for stationary geometry and the separately declared zero-origin outer-zero
 control. A finite envelope or a stationary target does not supply actual
-source capture; other origins and outer-one maintenance remain unavailable.
+source capture. Use the [maintenance proof owner](../../theory/nodal/ORGANIZED_CONTACT_MAINTENANCE.md)
+for its admitted sources and asymptotic conclusions, and the
+[theory-to-execution map](../../theory/README.md#theory-to-execution) for
+assessors under other contact strengths. Do not transfer their verdicts to
+the fixed interface consumed by this reader.
 These readers accept no incoming report as a substitute for primitive premises.
 
 The [prepared C5 matrix comparison](../../theory/nodal/ORGANIZED_EFFECTIVE_LAW.md)
@@ -62,9 +87,13 @@ conditional proofs supply neither physical preparation nor a public SDK method.
 
 ## Section link directory
 
-These aliases route existing citations to their substantive owner.
+Use the chapter table above for normal navigation. These stable section links
+route direct citations to their substantive owner.
 
-- <a id="regional-and-relational-sdk-workflows"></a>[Regional and relational SDK workflows](#regional-and-relational-sdk-workflows)
+<details markdown="1">
+<summary>Direct section links</summary>
+
+- <a id="regional-and-relational-sdk-workflows"></a>[Regional and relational SDK workflows](#regional-and-relational-sdk-workflow-index)
 
 - <a id="sine-two-port-dipole"></a>[Inspect a common interior phase probe and its finite warmup](relational/SINE_PATTERNS.md#sine-two-port-dipole)
 - <a id="sine-two-port-probe"></a>[Inspect a supplied pulse and receiver transmission](relational/SINE_PATTERNS.md#sine-two-port-probe)
@@ -150,6 +179,8 @@ These aliases route existing citations to their substantive owner.
 - <a id="sine-law-assessments-and-forecasts"></a>[Sine-law assessments and forecasts](relational/SINE_COMPARISON_AND_INFERENCE.md#sine-law-assessments-and-forecasts)
 
 - <a id="inspect-the-separate-smooth-pressure-comparison"></a>[Inspect the separate smooth-pressure comparison](relational/SINE_COMPARISON_AND_INFERENCE.md#inspect-the-separate-smooth-pressure-comparison)
+
+- <a id="inspect-conductance-support-sine"></a>[Inspect nonunit conductance with bare phase support](relational/SINE_COMPARISON_AND_INFERENCE.md#inspect-conductance-support-sine)
 
 - <a id="inspect-pressure-from-a-retained-intermediary"></a>[Inspect pressure from a retained intermediary](relational/SINE_COMPARISON_AND_INFERENCE.md#inspect-pressure-from-a-retained-intermediary)
 
@@ -366,3 +397,5 @@ These aliases route existing citations to their substantive owner.
 - <a id="issue-a-prior-only-sine-forecast"></a>[Issue a prior-only sine forecast](relational/SINE_COMPARISON_AND_INFERENCE.md#issue-a-prior-only-sine-forecast)
 
 - <a id="inspect-a-conditional-intermediary-minimum"></a>[Inspect a conditional intermediary minimum](relational/SINE_COMPARISON_AND_INFERENCE.md#inspect-a-conditional-intermediary-minimum)
+
+</details>

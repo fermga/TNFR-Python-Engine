@@ -21,7 +21,7 @@ def _prepared_cycle():
     return graph
 
 
-def test_bare_coupling_recursivity_is_rejected_without_physical_advance():
+def test_explicit_legacy_coupling_recursivity_rejects_without_physical_advance():
     graph = _prepared_cycle()
     # Rollback may replace internal containers; physical values are the claim.
     original_nodes = deepcopy(dict(graph.nodes(data=True)))
@@ -35,7 +35,9 @@ def test_bare_coupling_recursivity_is_rejected_without_physical_advance():
     )
     with pytest.raises(ValueError, match="(?i)(coupling|UM|recursivity|REMESH)"):
         execute_operator_event_schedule(
-            graph, schedule, context={"initial_epi_nonzero": True}
+            graph,
+            schedule,
+            context={"initial_epi_nonzero": True, "compatibility_profile": "legacy"},
         )
     assert dict(graph.nodes(data=True)) == original_nodes
     assert list(graph.edges(data=True)) == original_edges
@@ -43,15 +45,24 @@ def test_bare_coupling_recursivity_is_rejected_without_physical_advance():
     assert graph.graph["_t"] == original_time
 
 
-def test_admitted_bridge_records_advice_without_mixing_or_advancing_history():
+@pytest.mark.parametrize(
+    "names,expected_history",
+    [
+        (("coupling", "recursivity"), ("UM", "REMESH")),
+        (("coupling", "coherence", "recursivity"), ("UM", "IL", "REMESH")),
+    ],
+)
+def test_admitted_core_word_records_advice_without_mixing_or_advancing_history(
+    names, expected_history
+):
     graph = _prepared_cycle()
     original_epi = tuple(graph.nodes[node]["EPI"] for node in graph)
     original_phase = tuple(graph.nodes[node]["theta"] for node in graph)
     original_history = deepcopy(graph.graph["_epi_hist"])
     schedule = build_operator_event_schedule(
-        ("coupling", "coherence", "recursivity"),
+        names,
         start_time=0.0,
-        flow_durations=(0.0,) * 4,
+        flow_durations=(0.0,) * (len(names) + 1),
     )
     result = execute_operator_event_schedule(
         graph, schedule, context={"initial_epi_nonzero": True}
@@ -69,6 +80,6 @@ def test_admitted_bridge_records_advice_without_mixing_or_advancing_history():
         < 1e-14
     )
     assert all(
-        tuple(graph.nodes[node]["glyph_history"])[-3:] == ("UM", "IL", "REMESH")
+        tuple(graph.nodes[node]["glyph_history"])[-len(names) :] == expected_history
         for node in graph
     )

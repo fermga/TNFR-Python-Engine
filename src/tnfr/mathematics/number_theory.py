@@ -1,31 +1,17 @@
-"""
-TNFR Arithmetic Network: Prime Numbers as Zero-Pressure Fixed Points
+"""Static arithmetic assignments and conditional residue-graph diagnostics.
 
-Implementation of the theoretical framework for detecting structural primality
-(ΔNFR = 0) in TNFR arithmetic networks over the natural numbers.
+The arithmetic network consumes divisor/factor statistics (Ω, τ, σ), assigns
+form and capacity, and supplies a phase read-out when requested. Its separate
+arithmetic pressure has the primes as its exact zero set for positive weights.
+Unit weights are a configured convention; invariance of that zero set does
+not select their magnitudes. These assignments do not supply an autonomous
+evolution, restoring response or full-state equilibrium theorem.
 
-Theoretical foundation: theory/TNFR_NUMBER_THEORY.md (Canonical)
-  - Primality as structural equilibrium (ΔNFR = 0)
-  - Arithmetic structural triad (EPI, νf, ΔNFR)
-  - Canonical unit coefficients (per AGENTS.md §3 only π is a genuine
-    structural scale; by the §4.2 coefficient-independence theorem the triad
-    weights are canonically unity — no fitted overlay)
-  - Spectral factorization via Paley-Jacobi decoding
-
-Scope (theory/TNFR_NUMBER_THEORY.md §9.5): distinct domains can reuse the
-numeric predicate ΔNFR = 0 without sharing a state space or dynamics. For
-numbers there are three sectors: this
-module is SECTOR A -- the per-node arithmetic ΔNFR (an exact but *circular*
-re-expression) CONSUMES divisibility (Ω, τ, σ); SECTOR B -- the spectral
-Paley/residue Fiedler gap (input only x^2 mod n) -- is a non-circular spectral
-probe carried by the factorizer
-(applications/factorization-lab); SECTOR C (rep-theoretic irreducibility) is refuted. Only
-the equilibrium criterion (tnfr.metrics.common.is_structural_equilibrium) is
-shared across domains; the ΔNFR realisations are domain-specific.
-
-Author: TNFR Research Team
-Date: 2025-11-13
-Status: CANONICAL (theory/TNFR_NUMBER_THEORY.md)
+The residue-graph and cyclotomy diagnostics retain their own prescribed
+modular inputs and operator hypotheses (theory/TNFR_NUMBER_THEORY.md §9).
+They differ from the optional factorization lab, which uses arithmetic
+telemetry and classical candidate refinements/fallbacks. Reusing a numerical
+zero predicate or a graph operator does not identify these constructions.
 """
 
 from __future__ import annotations
@@ -51,12 +37,10 @@ from .unified_numerical import np
 
 logger = logging.getLogger(__name__)
 
-# The arithmetic triad uses canonical UNIT coefficients. Per AGENTS.md §3 only π
-# is a genuine structural scale; φ, γ and e are not. By the coefficient-
-# independence theorem (theory/TNFR_NUMBER_THEORY.md §4.2) the primality criterion
-# ΔNFR = 0 is invariant to any positive rescaling, so the canonical weights are
-# unity and the structural content lives entirely in the arithmetic invariants
-# (Ω, τ, σ, n). See ArithmeticTNFRParameters.
+# Form, capacity and arithmetic-pressure defaults use unit coefficients.
+# Positive pressure weights share the same exact prime zero set; this does
+# not select a unique weighting or derive it from phase wrapping. Phase is a
+# separate read-out policy. See theory/TNFR_NUMBER_THEORY.md §§2.3, 4.2 and 5.
 
 # Centralized TNFR cache infrastructure (robust, shared across repo)
 from .unified_cache import CacheLevel, cache_tnfr_computation
@@ -106,19 +90,13 @@ def _integer_is_prime(n: int) -> bool:
 
 @dataclass
 class ArithmeticTNFRParameters:
-    """Canonical weights for the arithmetic TNFR triad (EPI, νf, ΔNFR).
+    """Configured weights for arithmetic form, capacity and pressure read-outs.
 
-    All weights are **unity**. Per AGENTS.md §3 the only genuine structural
-    constant is π. The earlier weight overlay was a post-hoc *operational*
-    convention fitted to approximate empirical values (ζ=1.0, η=0.8, θ=0.6),
-    not a derivation. By the
-    Coefficient Independence theorem (theory/TNFR_NUMBER_THEORY.md §4.2) the
-    primality criterion ``ΔNFR = 0`` holds for *any* positive coefficients, so
-    the canonical choice is unity: the structural content lives entirely in the
-    arithmetic invariants (Ω, τ, σ, n), with no fitted/numerological scale.
-
-    The fields remain configurable so callers can explore the (off-equilibrium)
-    pressure landscape; only the canonical *defaults* are fixed at 1.0.
+    Defaults are unity. Positive pressure weights preserve the exact prime
+    zero set (theory/TNFR_NUMBER_THEORY.md §4.2), but the theorem does not select
+    unit weights or a tolerance. Their positivity is a theorem premise, not
+    enforced by this parameter container. The assigned structural triad uses
+    a separate phase policy; pressure is not a replacement for phase.
     """
 
     # EPI weights (structural form): EPI = 1 + α·Ω + β·lnτ + γ·(σ/n − 1)
@@ -181,7 +159,7 @@ class PrimeCertificate:
 
 
 class ArithmeticTNFRFormalism:
-    """Explicit formulas that tie TNFR physics to arithmetic invariants."""
+    """Configured arithmetic read-outs from supplied divisor/factor terms."""
 
     @staticmethod
     def epi_value(
@@ -261,19 +239,25 @@ class ArithmeticTNFRFormalism:
         tolerance: float = 1e-12,
         components: dict[str, float] | None = None,
     ) -> PrimeCertificate:
+        """Report the configured pressure cut on supplied arithmetic terms.
+
+        The caller must establish that ``terms`` belong to ``n`` and that the
+        weights/tolerance support the claimed decision. This method does not
+        authenticate those premises. Acceptance denotes a numerical pressure
+        cut, not a full-state equilibrium proof.
+        """
         from ..metrics.common import is_structural_equilibrium
 
         if components is None:
             components = ArithmeticTNFRFormalism.component_breakdown(n, terms, params)
         delta = ArithmeticTNFRFormalism.delta_nfr_value(n, terms, params)
-        # Primality is the zero-pressure fixed-point predicate read on this
-        # state-independent arithmetic field.  Other domains can reuse the
-        # numeric predicate while retaining different dynamics and pressures.
+        # The shared numerical cut does not rederive the supplied terms or
+        # establish stationarity of any undeclared phase/capacity/support law.
         structural_prime = is_structural_equilibrium(delta, eps_dnfr=tolerance)
         explanation = (
-            "ΔNFR vanishes within tolerance; node is a zero-pressure fixed point"
+            "Supplied arithmetic pressure is within the configured tolerance"
             if structural_prime
-            else "ΔNFR ≠ 0, coherence pressure reveals composite structure"
+            else "Supplied arithmetic pressure exceeds the configured tolerance"
         )
         return PrimeCertificate(
             number=n,
@@ -290,14 +274,14 @@ class ArithmeticTNFRFormalism:
 
 class ArithmeticTNFRNetwork:
     """
-    TNFR network where nodes are natural numbers and dynamics reveal prime structure.
+    Supplied arithmetic graph with static form, capacity and pressure read-outs.
 
-    Each number n becomes a TNFR node with:
-    - EPI_n: Arithmetic structural form
-    - νf_n: Arithmetic frequency
-    - ΔNFR_n: Factorization pressure
-
-    Prime numbers are zero-pressure fixed points in the declared arithmetic field.
+    Shared factors define the final gcd-weighted support; initial divisibility
+    writes are replaced in the single-edge graph. Divisor/factor statistics
+    define scalar assignments. Phase is supplied by a separate read-out policy.
+    Positive pressure weights have the primes as their exact zero set.
+    Construction alone neither evolves the graph nor proves a full-state
+    fixed point, formation or restoring response.
     """
 
     def __init__(
@@ -308,7 +292,7 @@ class ArithmeticTNFRNetwork:
 
         Args:
             max_number: Maximum number to include in network (default 100)
-            parameters: TNFR calibration parameters
+            parameters: Configured arithmetic assignment weights
         """
         if isinstance(max_number, bool) or type(max_number).__name__ == "bool_":
             raise TypeError("max_number must be an integer, not bool")
@@ -331,8 +315,10 @@ class ArithmeticTNFRNetwork:
 
     def _precompute_sieve(self, n: int) -> np.ndarray:
         """
-        Precompute Minimum Prime Factor (LPF) for all numbers up to n.
-        Allows O(log n) factorization.
+        Store a prime divisor for every integer from 2 through n.
+
+        Later sieve passes overwrite earlier divisors, so the stored factor
+        need not be the least one. Repeated division uses O(log n) steps.
         """
         # Use numpy for speed
         lpf = np.arange(n + 1)
@@ -343,13 +329,20 @@ class ArithmeticTNFRNetwork:
         for i in range(2, int(math.sqrt(n)) + 1):
             if lpf[i] == i:  # i is prime
                 # Mark multiples
-                # We use slicing for vectorization (FFT-like speedup for arithmetic)
+                # Vectorized assignment of a prime divisor to these multiples.
                 lpf[i * i : n + 1 : i] = i
 
         return lpf
 
     def _construct_arithmetic_network(self) -> nx.DiGraph:
-        """Construct directed graph representing arithmetic relationships."""
+        """Construct the retained symmetric gcd graph on integer labels.
+
+        The single-edge ``DiGraph`` replaces each initial divisibility edge
+        with its gcd edge. Final support is ``gcd(n1, n2) > 1`` in both
+        directions, with weight ``gcd(n1, n2) / max(n1, n2)``. This legacy
+        construction does not preserve two independent edge channels or
+        derive support from a complete TNFR evolution law.
+        """
         G = nx.DiGraph()
 
         # Add number nodes
@@ -1351,24 +1344,15 @@ class ArithmeticTNFRNetwork:
     # ====================================================================
 
     def nfr(self) -> dict[str, object]:
-        """Characterize the arithmetic network as a Fractal-Resonant Node (NFR).
+        """Summarize the supplied arithmetic graph through structural diagnostics.
 
-        Per TNFR.pdf §1.4.1 an NFR is "a region of structural coherence coupled
-        to a network", defined by the triad (EPI, νf, phase) with a nodal
-        topology and the multiescalar (fractal) + autopoietic properties. This
-        surfaces the arithmetic network as the joint read-out of its three
-        emergent facets, each from canonical quantities:
-
-        - RESONANT: proximity to the arithmetic ΔNFR = 0 fixed-point set
-          (:func:`~tnfr.metrics.common.is_structural_equilibrium`). The
-          **canonical payoff**: by the §4.1 primality theorem the equilibrium
-          set ``{n : ΔNFR(n) = 0}`` is *exactly* the primes. Because this
-          pressure is state-independent, this is a fixed-point identity, not
-          a restoring-attractor or basin statement.
-        - GEOMETRIC: the nodal topology radial / annular / multinodal
-          (:func:`~tnfr.physics.fields.classify_nodal_topology`), read from the
-          structural-potential geometry of the divisibility/GCD coupling.
-        - FRACTAL: the multi-scale coherence range ξ_C (region size).
+        The compatibility method name does not certify an organized NFR.
+        Pressure-cut fractions, potential-based topology and coherence length
+        are read-outs of the assigned state; they do not establish identity
+        closure, autonomous formation, scale invariance or autopoiesis.
+        The exact positive-weight arithmetic zero set is the primes (§4.1);
+        numerical cuts and a separately declared evolution retain their own
+        premises.
 
         Phase synchrony is reported only if a phase field has been computed
         (e.g. via :meth:`compute_phase`); otherwise it is NaN. Most informative
@@ -1533,16 +1517,17 @@ class ArithmeticTNFRNetwork:
         }
 
     # ====================================================================
-    # TNFR OPERATORS: COUPLING (UM) AND RESONANCE (RA)
+    # AUXILIARY ARITHMETIC GRAPH MARKERS AND ACTIVATION UPDATES
     # ====================================================================
 
     def apply_coupling(
         self, delta_phi_max: float = DELTA_PHI_MAX
     ) -> dict[tuple[int, int], bool]:
-        """Apply UM (Coupling): mark edges as coupled if phase compatible.
+        """Mark supplied arithmetic edges using a circular phase cutoff.
 
-        Contract (U3): valid only if |wrap(φ_i - φ_j)| ≤ Δφ_max.
-        Stores edge attribute 'coupled' = True/False on the undirected view.
+        Stores ``coupled`` on the cached undirected view and retains historical
+        ``um_*`` telemetry names. This auxiliary marker does not dispatch the
+        registered Coupling (UM) operator or establish full U3 admission.
 
         Returns a dict mapping undirected edge (min(i,j), max(i,j)) to boolean.
         """
@@ -1584,7 +1569,7 @@ class ArithmeticTNFRNetwork:
                 )
             )
             if d <= delta_phi_max:
-                # Use mean of parallel edges (gcd/divisibility) if exist in DiGraph
+                # Sum both directed gcd weights; there are no parallel channels.
                 w = 0.0
                 if self.graph.has_edge(i, j):
                     w += float(self.graph[i][j].get("weight", 1.0))
@@ -1604,11 +1589,11 @@ class ArithmeticTNFRNetwork:
         delta_phi_max: float = DELTA_PHI_MAX,
         normalize: bool = True,
     ) -> dict[int, float]:
-        """Apply one RA (Resonance) step on an activation field.
+        """Update an auxiliary nonnegative activation field on the supplied graph.
 
-        Physics (RA): Propagates patterns coherently through coupled links, without
-        altering identity (keeps activation as a separate field; does not mutate EPI).
-        Contract: Requires phase verification (U3) via delta_phi_max.
+        The phase cutoff, gain, decay and normalization are configured choices.
+        This does not dispatch Resonance (RA) or a grammatical word. EPI is
+        unchanged; a separate activation field is not an identity certificate.
         """
         G = self._get_undirected_graph()
         # Ensure phases available
@@ -1645,10 +1630,12 @@ class ArithmeticTNFRNetwork:
         seed: int | None = None,
         jitter: bool = True,
     ) -> list[dict[int, float]]:
-        """Seed activation on primes and run RA propagation.
+        """Seed from supplied classical prime labels and update activation.
 
         Returns a list of activation dicts for steps [0..steps].
-        Step 0 is the seed activation (possibly jittered for seed fairness).
+        Step 0 contains the configured prime seeds and optional jitter, so the
+        history is not independent prime discovery. A supplied seed resets the
+        legacy Python and NumPy global generators used by this helper.
         """
         if seed is not None:
             # Controlled determinism for activation jitter

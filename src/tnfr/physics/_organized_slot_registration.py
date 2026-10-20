@@ -14,9 +14,9 @@ from fractions import Fraction as Q
 from .._exact_time import exact_or_represented_real as _exact
 from ..mathematics._rational_interval import I
 from ._organized_external_interaction import (
-    _OrganizedExternalInteractionGeometry,
     _derive_organized_external_interaction,
     _observe_admitted_external_interaction,
+    _OrganizedExternalInteractionGeometry,
 )
 from ._organized_external_registration import (
     _OrganizedExternalRegistrationObservation,

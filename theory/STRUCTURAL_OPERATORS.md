@@ -36,17 +36,18 @@ independently defined admissible-transformation space remains open
 
 Registered structural operators are the canonical semantic interface for named
 node and network transformations. Declared numerical solvers are a separate,
-explicit evolution path: they may advance EPI only through the shared nodal
-integrator from finite `nu_f` and `DeltaNFR`, while recording the associated
-provenance or residual. Ad hoc state assignment outside these two declared
-paths is forbidden. Both paths remain constrained by the nodal equation:
+explicit evolution path: the shared nodal integrator consumes admitted capacity,
+pressure and any declared Gamma source, with their provenance and residuals.
+The unforced continuous row is
 
 $$
 \frac{\partial \text{EPI}}{\partial t} = \nu_f \cdot \Delta\text{NFR}(t) \tag{NE}
 $$
 
-Each registered operator implements a specific transformation tied to (NE). The
-13-operator catalog covers the engine's declared transformation categories:
+Finite operator events instead contribute declared jumps; (NE) alone neither
+derives their maps nor selects their occurrence. Their complete input state,
+admission and continued law belong to the contracts below. The 13-operator
+catalog covers the engine's declared transformation categories:
 creation, integration, stabilization, destabilization, coupling, propagation,
 capacity attenuation/expansion, self-organization, phase transformation, regime
 transition, and multi-scale recursion. Coverage of this declared catalog does
@@ -73,7 +74,14 @@ routes related contract and scope questions to their owners.
 ### 1.2 Conventions
 
 Throughout this document:
-- Glyph codes (AL, EN, IL, ...) reference the structural symbols.
+- Lead explanations with English names, such as Emission (AL), Reception (EN)
+  and Coherence (IL). Registry display names and lowercase executable tokens
+  remain distinct. Simple glyph codes abbreviate compact words and formulas
+  without apostrophes. Write ordered composition with arrows, such as
+  `Emission → Coherence → Silence`, abbreviated `AL → IL → SHA`;
+  slash alternatives and nested expressions are different structures. The
+  [source comparison](UNIFIED_GRAMMAR_RULES.md#source-grammar-and-notation)
+  separates manuscript prescriptions, runtime policies and dynamical necessity.
 - Lowercase English tokens (`emission`, `reception`, ...) are executable API
   identifiers; title-case names are public display/class names.
 - Operator gains and thresholds are configured parameters. $\pi$ is the half-turn
@@ -94,10 +102,18 @@ form representation or specified quotient:
 | Attribute | Symbol | Domain | Units |
 |-----------|--------|--------|-------|
 | Form | $\text{EPI}_i$ | Declared form space; scalar glyphs require a signed real chart or uniform-real BEPI embedding | Declared form unit X |
-| Frequency | $\nu_{f,i}$ | Nonnegative reals; individual operators may require strict positivity | Hz_str |
-| Phase | $\phi_i$ (or $\theta_i$) | $[0, 2\pi)$ | rad |
+| Reorganization capacity | $\nu_{f,i}$ | Nonnegative reals; individual operators may require strict positivity | Hz_str |
+| Phase | $\phi_i$ (or $\theta_i$) | Circle $\mathbb{R}/(2\pi\mathbb{Z})$; admitted finite real representatives | rad |
 
-The derived quantity $\Delta\text{NFR}_i$ (structural pressure) drives evolution.
+A wrapped output chart such as $[0,2\pi)$ is not a universal restriction on
+input representatives. The [shared U3 gate](../src/tnfr/operators/_phase_gate.py)
+admits represented phases before comparing wrapped differences; declared
+continuous lifts remain separate data when a theorem consumes arithmetic
+phase means. The [capacity foundation](NODAL_PARAMETER_FOUNDATIONS.md#34-derived-pulse-scales-and-observation-periods)
+also separates reorganization capacity from a measured oscillation frequency.
+
+The selected model specifies $\Delta\text{NFR}_i$ (structural pressure), which
+drives the form row. The nodal identity alone does not determine this driver.
 Every operator has exactly one registered **primary** channel among
 $(\text{EPI}, \nu_f, \phi, \Delta\text{NFR})$; a concrete implementation may
 also update declared secondary channels.
@@ -203,17 +219,19 @@ $$
 where $b>0$ is the configured `AL_boost`. The direct glyph handler does not
 also write $\nu_f$, phase, or $\Delta\text{NFR}$.
 
-**Activation threshold**: $\text{EPI} < \text{EPI}_{\text{threshold}}$ where the
-default $\text{EPI}_{\text{threshold}}=0.8$ is configurable through
-`AL_MAX_EPI_FOR_EMISSION` (an operational gate; the AL contract fixes the
-channel and sign, not this threshold).
+**Activation policy**: With strict preconditions enabled, public and staged AL
+require signed EPI below `EPI_LATENT_MAX` and capacity at least
+`VF_BASAL_THRESHOLD`; both defaults are `0.5`. These supplied thresholds do
+not follow from the nodal equation. The separately exported legacy
+`validate_emission` checks only `AL_MAX_EPI_FOR_EMISSION` (default `0.8`);
+current public/staged AL does not call that legacy policy.
 
 **Key constants**:
 
 | Constant | Value | Derivation |
 |----------|-------|------------|
 | Emission amplitude $b$ | configured positive gain | Operational parameter; channel and direction are contractual |
-| Activation threshold | $0.8$ by default | Configurable operational gate |
+| Strict activation ceiling / capacity floor | $0.5$ / $0.5$ by default | Separate configured admission policies |
 
 **Properties**:
 - **Irreversible**: Sets an immutable activation flag. Re-emission increments an activation counter but preserves the original timestamp.
@@ -225,8 +243,11 @@ channel and sign, not this threshold).
 **Grammar**: Generator (U1a).
 
 **Contract**:
-- Pre: $\text{EPI} < 0.8$ and $\nu_f$ at or above the configured basal
-  threshold when strict preconditions are enabled.
+- Pre: When strict preconditions are enabled, signed scalar EPI is below
+  `EPI_LATENT_MAX` and nonnegative capacity meets `VF_BASAL_THRESHOLD`.
+  Consumed state and thresholds are admitted before conversion/comparison;
+  invalid authoritative aliases cannot fall through. The nonnegative integer
+  `MIN_NETWORK_DEGREE_COUPLING` controls an isolation warning, not rejection.
 - Post: EPI does not decrease; $\nu_f$, phase and $\Delta\text{NFR}$ remain
   unchanged; the activation flag is set.
 
@@ -238,11 +259,18 @@ prove transitions between them.
 
 **Public/staged transformation** (regime-dependent):
 
-| Regime | $\nu_f$ change | $\theta$ shift | $\Delta\text{NFR}$ reduction |
+| Regime | $\nu_f$ change | $\theta$ shift | Handler-pressure retention |
 |--------|---------------|----------------|--------------------------|
-| Latent → Active | +20% | $+0.1$ | $-30\%$ |
-| Active → Active | configurable | $+0.2$ | $-20\%$ |
-| Resonant → Active | $-5\%$ | $+0.15$ | $-10\%$ |
+| Latent → Active | +20% | $+0.1$ | $0.7$ |
+| Active → Active | configurable | $+0.2$ | $0.8$ |
+| Resonant → Active | $-5\%$ | $+0.15$ | $0.9$ |
+
+These retention factors multiply the low-level handler output, after its
+configured pressure/capacity mixture and jitter, not the incoming stored
+pressure alone. `NAV_RANDOM=False` selects signed deterministic jitter;
+it does not remove a nonzero configured jitter amplitude. The numeric table
+describes the standard policy values; represented arithmetic retains the
+actual configured scalars.
 
 The direct NAV glyph only performs its declared pressure action. Regime and
 latency effects belong to the public/staged path. `NAV_STRICT` and `NAV_RANDOM`
@@ -260,7 +288,10 @@ $$
 $$
 
 **Properties**:
-- **Latency recovery**: When transitioning from latent state, verifies EPI drift against preserved snapshot (tolerance: 1% for established nodes, $0.330$ for initial nodes).
+- **Latency observation**: Compares current EPI with the preserved scalar and
+  warns when absolute drift exceeds `0.01*abs(preserved_epi)`, including a
+  zero preserved value. NAV does not use AL's separate initial-node tolerance
+  or repair the drift. Successful execution clears its consumed latency record.
 - **Regime traceability**: Records origin regime, before/after state, and phase
   shift in telemetry. Pressure telemetry distinguishes the true pre-handler
   value, the low-level handler result, and the final regime-retained value.
@@ -282,6 +313,14 @@ $$
 - Pre: Valid regime state detectable.
 - Post: Configured capacity, phase and pressure proposals; applicable latency
   metadata is cleared. No general future-coherence bound follows.
+
+The [collective Transition contract](nodal/SINE_COLLECTIVE_TRANSITION.md)
+applies this path to the marked contact after EN/IL/SHA. The latent flag
+selects a different phase/capacity reset from an otherwise identical physical
+state without that flag. Immediate sine-pressure refresh removes raw jitter
+from the continuous state while retaining execution context. A valid NAV
+word can leave the old acute sector despite passing finite U6; preservation
+has its own explicit phase-margin condition.
 
 ### 4.3 Recursivity (REMESH)
 
@@ -321,7 +360,9 @@ nonlinear.
   does not prove a parent/child coherence target. For a concrete hierarchy,
   `assess_u5_parent_child_coherence(..., alpha=...)` evaluates
   $C_{\rm parent}\geq\alpha\sum C_{\rm child}$ from canonical per-node $C$;
-  $alpha$ is explicit and has no graph-independent default.
+  $alpha$ is explicit and has no graph-independent default. Every selected
+  node must supply stored pressure and `dEPI`; missing inputs reject rather
+  than certifying the target with assumed zeros.
 - **Constant-history fixed point**: identical current, local-delay and
   global-delay EPI snapshots are preserved before clipping.
 - **Energy scope**: for one positive diagonal metric h, let V_h denote
@@ -356,9 +397,15 @@ nonlinear.
 
 **Contract**:
 - Pre: Declared depth $\geq 1$, configured minimum support and applicable U5
-  context. The network history map has its additional admission above.
+  context. When enabled, the optional application precondition admits
+  `REMESH_MIN_NODES` as a strict nonnegative integer (default 2), without
+  Boolean, textual or fractional coercion. The network history map has its
+  additional admission above.
 - Post: The node-level call records an advisory. Explicit network mixing has
   the stated conditional bounds, not a universal nested-identity guarantee.
+
+The [collective sine specialization](nodal/SINE_COLLECTIVE_RECURSIVITY.md)
+retains associated histories, actual form-reset work and both continued rows.
 
 **Fixed-delay Cesàro surrogate (historical N15 programme)**:
 
@@ -387,10 +434,10 @@ That is a software-reuse observation, not a catalog-completeness theorem. A
 proof that the 13 operators exhaust admissible TNFR transformations remains an
 open inverse problem requiring an independently defined transformation space.
 
-**Full corrected analysis**:
-[REMESH_INFINITY_DERIVATION.md](REMESH_INFINITY_DERIVATION.md) §§1–23. It
-retains the historical N15 milestones and commit anchors (`a1f298fd`,
-`badac156`, `48b0574a`) while separating them from the current result.
+**Model and proof owner**:
+[REMESH fixed-delay models](REMESH_INFINITY_DERIVATION.md) separates the runtime
+map, finite companion recurrence and cyclic filter, with their respective
+stability, numerical and composition hypotheses.
 
 ---
 
@@ -450,6 +497,12 @@ configuration uses the selected $1/(\pi+1)$ policy value).
 - **Source detection**: Detects emission sources within configurable distance (default: 2 hops) via `detect_emission_sources()`.
 - **Runtime/transport separation**: Reception's unweighted neighbour mean can
   differ from the conductance-weighted mean defining pure-EPI diffusion.
+- **Weighted collective action**: The
+  [marked-contact contract](nodal/SINE_COLLECTIVE_RECEPTION.md) retains the
+  actual neighbor multiplicities and complete EN/IL/SHA context. Convex EN
+  mixing need not reduce weighted form storage, including on that contact's
+  twin stratum. In the selected sine law, fresh pressure is unchanged while
+  the subsequent phase row and form acceleration can change.
 - **Affine certificate boundary**: `certify_reception_epi_realization()` keeps
   the ideal real map, represented binary64 coefficient matrix and actual
   two-stage runtime value separate. It promotes the represented map only when
@@ -472,7 +525,10 @@ configuration uses the selected $1/(\pi+1)$ policy value).
 
 **Contract**:
 - Pre: Target EPI and signed pressure lie below their configured Reception
-  admission ceilings. Isolation and an empty detected-source set are admitted
+  admission ceilings. Admit finite signed scalar EPI, finite signed pressure
+  and finite non-Boolean ceilings before conversion or comparison; a ceiling
+  remains an upper bound, not an absolute-value test. Isolation and an empty
+  detected-source set are admitted
   rather than treated as hard failures; graph-backed execution with source
   tracking enabled emits one advisory for the latter.
 - Post: Neighbour EPI is integrated; stored pressure and change rate are
@@ -504,6 +560,8 @@ $$
 where the default retention is
 $1-\rho=\pi/(\pi+1)\approx0.7585$, hence
 $\rho=1/(\pi+1)\approx0.2415$. The gain remains configurable.
+Canonical retention admission is `0 <= IL_dnfr_factor < 1`; the identity
+factor one is excluded by the shared factor contract.
 
 **Public/staged phase locking**:
 
@@ -536,7 +594,12 @@ The ideal phase contribution is
 $$\Delta V=R\bigl[\cos a-\cos((1-\lambda)a)\bigr]\leq0.$$
 
 This single-target argument does not certify simultaneous phase changes,
-subsequent flow or represented transcendental rounding. Contracting stored
+subsequent flow or represented transcendental rounding. The
+[maintained-contact IL foundation](nodal/SINE_COLLECTIVE_PRESSURE_HANDOFF.md)
+separately accounts for the edge shared by its two simultaneous targets and
+proves conditional nonincrease and geometric retention on that model's tube.
+It does not substitute for actual word admission or a represented endpoint
+check. Contracting stored
 pressure with unchanged stored EPI rates cannot decrease the configured
 structural $C$ read-out. An ensuing pressure refresh is a separate operation
 and need not preserve that comparison. Telemetry retains structural $C$,
@@ -546,13 +609,100 @@ and phase-locking observations.
 **Grammar**: Stabilizer (U2); Bifurcation Handler (U4a).
 
 **Contract**:
-- Pre: Active structure exists.
+- Pre: An existing target has admitted state, event parameters, selected
+  admission policy and independent live grammar/context.
 - Post: Stored $|\Delta\text{NFR}|$ is not increased at the contraction;
   EPI and capacity are preserved. No future-flow or autonomous-trigger claim.
+
+The default optional strict runtime policy implements admission as signed
+`EPI > min_epi` and `nu_f > min_vf`, with both default lower bounds zero.
+This is stronger than finite signed-form admission. In particular, a negative
+scalar remains valid form even when this policy rejects it; rejection does
+not establish absence of structure. The
+[reflected organized-source pair](nodal/ORGANIZED_SOURCE_PORT.md#organized-source-coherence-domain)
+has a domain-preserving ideal IL phase map but cannot admit both opposite
+forms under that default gate. Mathematical map compatibility, configured
+readiness and grammar admission remain distinct.
 
 Implementation: [shared IL kernel](../src/tnfr/operators/_coherence_stage_kernel.py),
 [public lifecycle](../src/tnfr/operators/coherence.py);
 [stage and signed-pressure controls](../tests/operators/test_coherence_jacobi_stage.py).
+
+<a id="coherence-activity-admission"></a>
+#### Signed-form event domain and activity policies
+
+**Source audit.** The identified [May manuscript](UNIFIED_GRAMMAR_RULES.md#source-grammar-and-notation),
+section 2.2.1, pages 86–89, describes Coherence as identity-preserving
+reorganization. Page 86 proposes a regularizable oscillation, an input below
+a coherence threshold and capacity to reorganize without dissonance. Page 87
+holds capacity constant while a coherence matrix settles. These qualitative
+conditions do not specify `EPI > 0`, `EPI != 0` or the engine's numerical
+thresholds. They also do not prove that the implemented map preserves every
+identity or selects its own occurrence. The earlier validator's attribution
+of its positive-form inequality to that passage was unsupported.
+
+**Domain derivation.** On the retained graph state the primary event is
+
+$$J_f^\lambda(x,\nu,p,\theta,G)
+  =(x,\nu,fp,T_\lambda(\theta;G),G).$$
+
+Here `T` is the circular proposal above, including its isolated and
+zero-resultant conventions. Neither changed channel consumes the sign or
+magnitude of `x`, nor divides by `nu`. Thus finite signed scalar form,
+nonnegative finite capacity, valid pressure, phase, support and event
+parameters supply the primary map's domain; represented output arithmetic
+still has to be admitted. Form reversal commutes with this primary map
+when the other coordinates are held. This statement concerns the map, not
+all telemetry, a continued law or a simultaneous-event storage theorem.
+
+The [form foundation](FUNDAMENTAL_THEORY.md#24-physical-concepts-mathematical-types-and-implementation)
+already distinguishes zero scalar form from absence of the node. The
+[parameter ledger](NODAL_PARAMETER_FOUNDATIONS.md#2-parameter-and-dependency-ledger)
+likewise makes zero capacity freeze the unforced form row, not every possible
+instantaneous jump. Neither premise justifies replacing the signed threshold
+by a nonzero-magnitude test.
+
+Two controls independent of the organized-source preparation distinguish
+domain from effect. On a two-node edge, a target with `x=0`, `nu=0`, stored
+`p=1`, `theta=0` and neighbor phase `pi/4` has `p'=f` and
+`theta'=lambda*pi/4`; both changed channels are nontrivial when `lambda>0`.
+The same formulas hold at either sign of form. Conversely positive form and
+capacity with zero pressure and aligned phases give no primary change.
+Positive form/capacity are therefore neither necessary for this map nor
+sufficient for nontrivial action. These controls establish no physical
+particle, autonomous trigger or general identity-maintenance theorem.
+
+**Explicit compatibility contract.** Strict IL uses the shared
+[admission owner](../src/tnfr/operators/preconditions/coherence.py).
+`IL_PRECONDITIONS.activity_policy` selects:
+
+- `signed_threshold` (unchanged default): `x > min_epi` and
+  `nu > min_vf`, with both defaults zero. A finite negative `min_epi`
+  retains its signed lower-bound meaning; `min_vf` is nonnegative.
+- `event_domain`: admit valid signed form, including zero, and nonnegative
+  capacity without additional activity thresholds. Supplying `min_epi` or
+  `min_vf` with this policy rejects instead of silently ignoring them.
+
+This additive choice changes admission, not the event map, grammar or
+occurrence law. Existing configurations and the frozen default-policy pair
+rejection retain their meaning. A new use of `event_domain` must record that
+choice; it cannot relabel an earlier rejected experiment as successful.
+Default/explicit threshold controls, direct helpers, readiness, public and
+atomic consumers share normalized primitive admission. Boolean physical
+scalars, nonfinite/unrepresentable values, invalid authoritative aliases and
+nonuniform/complex BEPI reject before comparison or advisory publication.
+Uniform-real BEPI retains its signed scalar meaning.
+
+Readiness reports only the selected policy on admitted target state. It does
+not check a complete neighbor proposal, live grammar, stage atomicity or
+future stability. Its retained `epi_active` and `vf_active` keys mean that
+the respective policy conditions pass, not existence or measured activity.
+Zero form does not satisfy U1's nonzero-initial-form predicate: independent
+initialization/history is still required. Zero stored pressure quiets only
+the contraction channel; phase may still change. The capacity-zero boundary
+concerns an instantaneous event, not a finite-duration reorganization law.
+See the [activity and admission controls](../tests/operators/test_coherence_activity_policy.py)
+and [execution contract](../docs/contracts/OPERATOR_EVENTS.md#coherence-activity-policy).
 
 ### 6.2 Self-Organization (THOL)
 
@@ -586,6 +736,14 @@ EPI. Legacy untimed histories retain the unit-step difference
 represented by zero. Cached curvature does not replace this history in
 graph-backed THOL. The estimate compares prior nodal rates; it does not add
 an independent acceleration equation.
+
+Signed scalar admission is shared with the form foundation: uniform-real
+BEPI retains its sign, while complex/nonuniform form cannot substitute a
+magnitude history. Nonzero primitive samples, times, secants or acceleration
+lost to represented zero reject before telemetry or event writes. Invalid
+authoritative timestamped evidence never falls back to a legacy channel.
+This corrects earlier permissive materialization; ordinary finite signed
+histories and the explicit short-history unavailability contract are retained.
 
 When $|\widehat A|>\tau$, the public operator proposes sub-EPIs subject to
 hierarchy-depth and domain checks. The node-protocol primitive implements
@@ -631,7 +789,11 @@ not supply the explicit U5 coefficient.
   `compute_subepi_collective_coherence` name is only a compatibility alias.
 - **Explicit U5 telemetry**: `assess_u5_parent_child_coherence` evaluates
   $C_{\rm parent}\geq\alpha\sum C_{\rm child}$ only when the hierarchy and
-  $\alpha$ are supplied. THOL does not enforce a hidden collective threshold.
+  $\alpha$ are supplied. Every selected parent/child must also provide finite
+  stored pressure and `dEPI`; missing channels reject instead of becoming
+  zero. Birth initialization supplies no observed child rate. Requesting this
+  assessment through THOL metrics therefore requires additional explicit
+  evidence. THOL does not enforce a hidden collective threshold.
 - **Depth-limited**: Maximum nesting depth prevents unbounded recursion
   (default: 5 levels). At the limit THOL still applies its signed pressure
   reorganization but records that no child was created.
@@ -645,6 +807,10 @@ increment; holding that increment through a physical interval instead gives
 the additional exact reference change `h*nu_f*THOL_accel*A_hat`. See
 [THOL pressure and feedback](THOL_PRESSURE_FEEDBACK.md) for the execution-order
 budget, disconnected zero modes and finite implementation evidence.
+The [collective hierarchy contract](nodal/SINE_COLLECTIVE_HIERARCHY.md)
+specializes these obligations to the selected sine law, including the
+isolated child's unsupported connected-law domain and separately supplied
+continuation alternatives.
 
 **Grammar**: Stabilizer (U2); Bifurcation Handler (U4a); Transformer (U4b).
 
@@ -696,10 +862,14 @@ postcondition is not a theorem for the noise branch.
 paths; a supported false string selects the deterministic branch. Unknown
 Boolean strings reject before branch effects (§15.2).
 
-**Bifurcation read-out**: The implementation compares the magnitude of its
-observed structural acceleration with the configured threshold $\tau$.
-A flag records that comparison, not a bifurcation theorem for an underlying
-continuous law. U4a separately requires handler context for the trigger token.
+**Bifurcation read-out**: The implementation compares an acceleration scalar
+with the configured threshold $\tau$. Its compatibility reader returns zero
+when temporal evidence is unavailable; use the typed
+[`observe_structural_acceleration`](../src/tnfr/operators/nodal_equation.py)
+observation to distinguish that case from a measured finite-difference zero.
+A flag records the scalar comparison, not a bifurcation theorem for an
+underlying continuous law. U4a separately requires handler context for the
+trigger token.
 
 **Key constants**:
 
@@ -713,7 +883,12 @@ continuous law. U4a separately requires handler context for the trigger token.
   increments to neighbors through phase-weighted, uniform or frequency-weighted
   policies. Positive incoming increments can cancel a negative local pressure;
   the local proposal and final accumulated pressure have separate contracts.
-- **Bifurcation detection**: Monitors $\partial^2\text{EPI}/\partial t^2$ against threshold $\tau$.
+  In the current implementation, `uniform` is a compatibility alias for
+  `phase_weighted`: both use conductance and phase affinity. Only the
+  `frequency_weighted` branch adds capacity weighting; these names do not
+  identify three distinct propagation formulas.
+- **Acceleration diagnostic**: Compares the finite-difference scalar with
+  threshold $\tau$; observation availability remains a separate obligation.
 - **Telemetry**: Records propagation events, affected nodes, and bifurcation flags.
 
 **Grammar**: Destabilizer (U2); Bifurcation Trigger (U4a); Closure (U1b).
@@ -723,6 +898,12 @@ continuous law. U4a separately requires handler context for the trigger token.
   Enabled strict preconditions additionally impose configured EPI, capacity,
   pressure and overload policies; these do not prove absence of a dynamical
   bifurcation or future instability.
+  Admit authoritative pressure, strict thresholds, propagation primitives and
+  active `OZ_SIGMA` before float conversion. Reject Boolean/nonfinite values
+  and nonzero inputs lost during materialization. The EPI minimum stays signed;
+  capacity/pressure bounds and the integer degree minimum are nonnegative.
+  Inactive sigma is not consumed; finite nonpositive active sigma retains its
+  no-op. Input admission does not certify all subsequent floating products.
 - Post: The deterministic local branch increases pressure magnitude. Noise and
   incoming propagation require their separately retained observations. An
   acceleration-threshold flag is a configured diagnostic, not a bifurcation
@@ -731,6 +912,10 @@ continuous law. U4a separately requires handler context for the trigger token.
 Changing stored pressure alone leaves $E_D+\beta V$ unchanged. Recomputing
 pressure from unchanged constitutive inputs can erase the event's pressure
 write; persistent forcing or pressure memory must be supplied explicitly.
+The [collective handoff foundation](nodal/SINE_COLLECTIVE_PRESSURE_HANDOFF.md)
+formalizes this continuous-state equivalence while retaining the changed
+execution context. Reciprocal default IL/OZ pressure gains do not make the
+complete actions inverses.
 Implementation: [local glyph](../src/tnfr/operators/__init__.py),
 [public propagation](../src/tnfr/operators/dissonance.py),
 [shared stage](../src/tnfr/operators/_dissonance_stage_kernel.py);
@@ -778,6 +963,12 @@ the actual EPI reset determines the storage change.
 
 Implementation: [shared VAL/NUL kernel](../src/tnfr/operators/_scale_operator_kernel.py);
 [enabled/disabled boundary and signed-form controls](../tests/operators/test_scale_operator_kernel.py).
+The [scale configuration contract](../docs/contracts/OPERATOR_EVENTS.md#scale-stage-configuration)
+requires Boolean flags, admitted active clipping and finite strict policy
+thresholds. Configured soft steepness reaches both direct and atomic proposals.
+The [complete contact action](nodal/SINE_FORM_CAPACITY_ACTION.md) derives
+the refreshed rows, event work, changed means and common-clock boundary;
+a local scale also needs the retained form origin for collective descent.
 
 **Optional VAL telemetry.** `expansion_metrics` reports signed relative form
 and capacity changes only when their denominators are nonzero. Missing stored
@@ -853,6 +1044,50 @@ is in [§15.2](#152-base-operator-workflow); disabling an effect cannot bypass U
   proposals may add admitted links. Neither global phase-spread decrease nor
   the creation of at least one edge follows from a successful invocation.
 
+Link existence and stored conductance are separate. UM assigns its calculated
+compatibility score to a newly created edge; this path does not continuously
+evolve that weight or rewrite existing-edge weights. A present zero-weight
+edge can still enter support-based phase neighborhoods. The
+[collective Coupling result](nodal/SINE_PAIR_COUPLING.md) distinguishes a valid
+AL/UM/SHA word from admission to a subsequent unit-conductance sine law:
+generic outputs leave that law's domain, while a synchronized selected pair
+admits a unit internal edge with rederived degree-five dynamics. A separately
+admitted conservative conductance/support completion accepts the generated
+weights and retains identity on the declared source. Its complete law and
+held-weight premise are explicit; UM is not changed to fit the old restriction.
+
+For [two separately maintained organizations](nodal/SINE_ORGANIZATION_CONTACT.md),
+the same unrestricted candidate policy creates a multi-edge contact, including
+neighbors of the aligned receiver pair. The actual weighted boundary must stay
+associated with its constituent state. Initial geometric retention and later
+departure from the receiver's original identity tube follow from the declared
+continuous law; the event does not by itself certify a new joint organization.
+
+The [three-candidate proximity comparison](nodal/SINE_PROXIMITY_CONTACT.md)
+keeps that source and word, changing only the existing candidate-count policy.
+It creates four cross edges and the internal edge; a separate full-source
+energy proof retains a common identity including relative constituent origins.
+Candidate selection precedes final link checks, and ties within the separated
+three-member group do not change the selected set. Neither policy defines a
+universal coordination number or an autonomous cause of contact. The proof
+retains actual boundary weights rather than imposing pair symmetry.
+
+Its [relative-registration extension](nodal/SINE_PROXIMITY_CONTACT.md#sine-registration-protocol)
+admits independent bounded form and phase origins while retaining the same
+full internal source and actual word. A's old-neighbor reset is unchanged;
+the shifted receiver changes cross scores, attachment work and conserved
+mean values. Recompute those quantities from the actual endpoint. The
+explicit maintenance domain does not select contact or require exact
+initial origin matching.
+
+The [finite exchange theorem](nodal/SINE_PROXIMITY_CONTACT.md#sine-contact-finite-exchange)
+then compares matched opposite phase preparations under their own actual
+weighted laws. Exact cut-current balances and a full-law remainder establish
+a signed form contrast throughout a finite window; a separately admitted
+disconnected model has zero paired contrast. This is continuous response after
+the supplied UM word, not a repeated operator, a closed two-coordinate
+oscillator or evidence of autonomous contact occurrence.
+
 ### 8.2 Resonance (RA)
 
 **Physics**: Propagates coherent patterns through phase-aligned nodes. It may
@@ -900,19 +1135,26 @@ constant. Before EPI, phase, $\nu_f$, history, or RA metadata changes, the
 runtime requires
 
 $$
-0\leq r\leq1,\qquad a\geq0,\qquad0\leq c\leq1,
+0<r\leq1,\qquad a>0,\qquad0<c\leq1,
 $$
 
 finite scalar or uniform-real BEPI operands, a finite nondecreasing proposed
 frequency, and the identity gate below.
 
+The EPI proposal uses the shared operator-assignment boundary adapter. Admit
+raw finite real rails before conversion, including rejection of Boolean rails
+and nonzero underflow. This adapter retains the operator path's existing
+hard-mode fallback and default soft stiffness; it does not consume the
+integrator's configurable `CLIP_SOFT_K`. Detached realization readers use the
+same rails and mode, without promoting soft proposals to affine certificates.
+
 **Key constants and domains**:
 
 | Quantity | Default | Runtime domain / status |
 |----------|---------|-------------------------|
-| EPI mix $r$ | $1/(2\pi)\approx0.1592$ | `[0,1]`; convex propagation |
-| Frequency amplification $a$ | $1/(8\pi)\approx0.0398$ | `[0,+infinity)`; nondecreasing capacity |
-| Phase coupling $c$ | $1/(4\pi)\approx0.0796$ | `[0,1]`; shortest-arc interpolation |
+| EPI mix $r$ | $1/(2\pi)\approx0.1592$ | `(0,1]`; convex propagation |
+| Frequency amplification $a$ | $1/(8\pi)\approx0.0398$ | `(0,+infinity)`; nondecreasing capacity |
+| Phase coupling $c$ | $1/(4\pi)\approx0.0796$ | `(0,1]`; shortest-arc interpolation |
 | U3 phase limit | $\pi/2$ | `[0,pi/2]`; may only be tightened |
 | Capacity trigger | $10^{-9}$ | Operational binary64 threshold on $\lvert\bar x_i\rvert$ |
 
@@ -953,6 +1195,15 @@ frequency, and the identity gate below.
   channel. This does not identify or certify stored multichannel $\Delta NFR$.
 - Two-stage rounding, structural clipping, U3/identity gates, and the phase and
   frequency channels prevent a global binary64 runtime-affinity claim.
+- The [native split-phase chart](NATIVE_COLLECTIVE_CALCULUS.md#native-split-phase-resonance)
+  retains separate U3 subsets and proposals for each target constituent.
+  Independent sign/kind admission permits an increase in internal phase
+  separation; a paired target's common-subset contraction is not universal.
+- The [aggregate inheritance domain](NATIVE_AGGREGATE_OPERATORS.md#native-resonance-inheritance-domain)
+  proves one same-factor coarse RA for complete twin actions with paired
+  phases, common strict sign/kind and duplicated consumed grammar. Unequal
+  forms and capacities are allowed; the separate capacity obstruction rules
+  out a universal mean-capacity claim. Event inheritance does not close flow.
 
 **Global $C(t)$ telemetry**: Optional before/after measurements report the
 realized network coherence response; propagation alone does not fix its sign.
@@ -1001,12 +1252,19 @@ $$
 =\frac{\mathrm{EPI}_{k}-\mathrm{EPI}_{k-1}}{t_k-t_{k-1}}.
 $$
 
-Timestamped `epi_time_history` is physical-time evidence. It requires finite
-samples, a finite strictly positive interval, and a final sample that represents
+Timestamped `epi_time_history` declares evidence on a supplied time basis.
+It requires finite samples, a finite strictly positive interval, and a final sample that represents
 the current EPI endpoint (exactly under the runtime default; the pure
 certificate can declare a finite nonnegative absolute endpoint tolerance).
 When this channel is supplied it is authoritative: invalid or stale physical
 evidence does not fall back to an untimestamped history.
+The pure reader checks endpoint value, not an independently authoritative
+live clock or source provenance. The observation/execution protocol must bind
+that sample to the present structural time and intervening events; the
+`physical_time_resolved` label alone supplies no laboratory calibration.
+Shared represented-real admission rejects nonzero inputs lost to zero.
+A nonzero nodal product lost to zero raises an input error; an underflowed
+observed rate remains invalid evidence, not a zero-growth observation.
 
 For compatibility, `epi_history` and then `_epi_history` can provide legacy
 evidence. Their two samples are separated by one **operator step**, so the
@@ -1051,6 +1309,14 @@ still raises, and direct sequence execution remains strict.
 
 **Phase transformation**:
 
+The shared phase proposal admits raw phase and every active scalar before
+binary64 conversion. Boolean/nonreal inputs and nonzero values lost to zero
+reject; an invalid authoritative phase cannot fall through to another alias.
+Direct graph dispatch checks phase before adapter caching. Signed-zero
+pressure direction is preserved, and the fixed branch does not consume
+dynamic proposal arguments. This strengthens input admission without changing
+the phase map for valid values or waiving temporal/grammar requirements.
+
 $$
 \theta'=\operatorname{wrap}_{[0,2\pi)}\!\left(
 \theta+s\,\operatorname{sign}(\Delta\text{NFR})\right)
@@ -1069,6 +1335,10 @@ Native occurrence additionally depends on selection. The
 [heterogeneous-capacity admission study](nodal/FORCED_WINDING_AND_WRITERS.md#35-heterogeneous-capacity-opens-a-conditional-mutation-admission-gate)
 separates fresh diagnostic compatibility, declared histories, an executed
 default prefix and the direction of the resulting phase action.
+The [selected sine-law compatibility contract](nodal/SINE_COLLECTIVE_MUTATION_ADMISSION.md)
+separates general continuous-rate possibility from a particular contact's
+history, grammar and whole-interval restrictions. Its existence theorem does
+not supply the temporal evidence or occurrence law for an executed event.
 
 The phase calculation and its branch-specific `_zhir_*` telemetry payload use
 one RNG-free immutable kernel. At the all-target boundary, the complete frozen
@@ -1157,8 +1427,10 @@ record a latency snapshot; this metadata does not enforce future preservation.
 
 **Contract**:
 - Pre: Consumed capacity is finite and nonnegative. When strict preconditions
-  are enabled, capacity must meet `SHA_MIN_VF`; no critical-pressure gate or
-  nonzero-EPI requirement is imposed by that precondition.
+  are enabled, capacity must meet the admitted finite `SHA_MIN_VF` policy
+  (default `0.01`); equality is allowed. Boolean, nonfinite or unrepresentable
+  thresholds reject. No critical-pressure gate or nonzero-EPI requirement is
+  imposed by that precondition.
 - Post: Capacity is not increased; EPI, pressure and phase remain fixed at
   the event, with the declared latency metadata. Finite attenuation need not
   produce zero capacity or freeze subsequent nodal evolution.
@@ -1192,8 +1464,9 @@ $$
 The ideal product $\nu_f'p'=\nu_fp$ is preserved for this stored-pressure
 map. It is not a statement about pressure after constitutive refresh. As with
 VAL, `EDGE_AWARE_ENABLED=True` additionally multiplies EPI by $f_{\mathrm{NUL}}$
-and applies the configured projection; the disabled branch does not consume
-or change EPI. Capacity-only contraction leaves $E_D+\beta V$ unchanged;
+and applies the configured projection. The disabled pure numerical branch
+does not consume or change EPI; public execution retains its scalar EPI
+preflight. Capacity-only contraction leaves $E_D+\beta V$ unchanged;
 the enabled form reset has its own storage budget. Local contraction toward
 zero need not reduce differences from neighboring forms.
 
@@ -1204,15 +1477,18 @@ zero need not reduce differences from neighboring forms.
 | Scale factor | $1-1/(4\pi)\approx0.9204$ | Same operational $\nu_f$ step as SHA |
 | Densification factor | $1/f_{\text{NUL}}\approx1.0865$ | Reciprocal configured capacity factor |
 
-The immutable scale proposal binds the requested capacity factor, its exact
-binary64 reciprocal, the pre/post pressure and any EPI-boundary adaptation
-before commit. Each densification audit event carries its target identifier.
+The immutable scale proposal binds the requested capacity factor, its rounded
+binary64 reciprocal coefficient, the pre/post pressure and any EPI-boundary
+adaptation before commit. Each densification audit event carries its target identifier.
 Contraction metrics use their captured pre-operation pressure, or the latest
 matching target event for compatibility, and report signed pressure change
 separately from magnitude increase. Unchanged zero pressure is therefore not
 misreported as densification.
 
-**Grammar**: Simplifier (no active grammar role; supports VAL reversals).
+**Grammar**: Simplifier with no active U1/U2 role; it neither closes a word
+nor supplies U2 stabilization. Default VAL/NUL factors are not reciprocals,
+and even reciprocal factors do not invert the full pressure/history and
+projected-form action.
 
 **Contract**:
 - Pre: Admitted capacity, pressure and any consumed scalar form. Enabled
@@ -1548,7 +1824,7 @@ A seed alone cannot bind an older reported value to the current implementation.
 <a id="operator-mechanism-and-activation-audit"></a>
 ## 18. Mechanism and activation audit
 
-This map addresses connection formation using the existing 13 operators. It
+This map addresses collective action and interaction using the existing 13 operators. It
 does not add a second executable catalog: names, primary channels and contracts
 remain in [operator_contracts.py](../src/tnfr/operators/operator_contracts.py).
 The distinction between primitive glyphs, public classes and snapshot stages
@@ -1562,23 +1838,203 @@ unique autonomous law from an NFR's state. The storage `S=E_D+beta*V` below
 belongs to the [conditional relational model](nodal/RELATIONAL_EXCHANGE_ADMISSION.md),
 not to every operator runtime or a universal physical energy.
 
+<a id="nfr-operator-realization-and-occurrence"></a>
+### NFR realization, source proposals and event occurrence
+
+In the engine, an operator denotes a transformation realized in an NFR's state
+and relations; registering that map introduces no additional acting entity.
+The target identifies where the transformation is evaluated. The source of
+its occurrence is a separate question: a supplied word, an external input or
+a declared state-dependent selector may request the same admitted map.
+Request provenance describes the software/model boundary, not an independently
+established physical cause. An additional intentional actor is not required.
+These distinctions preserve
+the [NFR formation contract](EMERGENT_ONTOLOGY.md#11-nfr-formation-definition-birth-and-collective-dynamics).
+
+The identified [May manuscript](UNIFIED_GRAMMAR_RULES.md#source-grammar-and-notation)
+supports this structural reading, while retaining unproved activation proposals:
+
+| Historical source | Current interpretation and reusable mechanism |
+| --- | --- |
+| Pages 38–40 describe relational NFR state and internal/external topology; pages 78–80 describe nodal transformations and AL from latent conditions without intention | Retain the actual target, admitted state and boundary. Implemented AL changes form on existing support; it does not derive the substrate or create a node from nothing. |
+| Page 79 also describes a glyph as a condensed node and an active form | This is a stronger realization proposal. A constructed NFR would need an admitted interaction whose induced transformation realizes the named map; an operator class or glyph string is not that constructed organization. |
+| Pages 112–114 describe endogenous THOL, active form, capacity and an internal loop; page 124 proposes automatic NAV activation | Live history and state gates supply eligibility. THOL's configured construction and native state-dependent selectors are executable policies; neither the source wording nor their implementation proves a uniquely derived occurrence law. |
+| Pages 129, 133 and 135 retain phase, capacity, history and inherited activation | Shared live U3, causal grammar debt, observed Mutation evidence and retained hierarchy are useful existing state. An inherited label cannot replace missing target-specific evidence. |
+| Pages 143–147 describe stateful operations, conditional activation and a containing node regulating a sequence | Scoped program targets preserve software composition. A collective NFR additionally needs the action and grammar descent criteria below, including sufficient boundary, memory and any claimed selector state. Brackets alone supply none of these proofs. |
+
+The source is not internally uniform: page 41 describes UM as collapse or
+deactivation, whereas pages 93–96 and 131 describe coupling. The latter agrees
+with the registered coupling contract; the isolated earlier label is not an
+additional UM action. Likewise, an endogenous-reorganization claim on page 112
+and a threshold algorithm on pages 114/145 require distinct evidence: supplying
+the algorithm defines a model, not a derivation of its thresholds or selection.
+An operator mechanism may itself have a realization in another NFR or in a
+larger organization. The existing collective-action criteria make that proposal
+testable; no universal identification between glyphs and formed NFRs is assumed.
+The [organized-source Emission test](nodal/ORGANIZED_SOURCE_PORT.md#organized-source-emission-realization)
+provides a concrete realization obstruction: the existing 45-node source's
+all-duration form envelope excludes the default nonclipped increment at all
+nine constituents of its contacted child. The proof allows donor reaction
+and relaxes collateral endpoint conditions. It neither executes a word nor
+excludes smaller gains, and separates the direct event's held pressure from
+the same-law refresh used in a continuous endpoint comparison.
+
+<a id="analytic-fixed-duration-realization"></a>
+### Analytic obstruction to fixed-duration constant increments
+
+**Conditional realization criterion.** Let `M` be a connected finite-dimensional
+real-analytic state manifold carrying a declared autonomous law. Suppose its flow `Phi_T`
+exists and is real analytic in initial state throughout `M` for the fixed
+finite duration `T`, and there is an equilibrium `z_star` in `M`. Let `O`
+be a real-analytic scalar observation. No nonzero constant `b` can satisfy
+
+```text
+O(Phi_T(z))-O(z)=b
+```
+
+on a nonempty relatively open subset of `M`. Indeed, the left-hand side
+minus `b` is real analytic. If it vanishes on that subset, the identity
+theorem extends the equality across connected `M`. At the equilibrium the
+observed difference is zero, contradicting `b!=0`. This is a restriction
+on a specified realization class, not on every canonical operator or NFR.
+
+The result tests a necessary observed component of a proposed map. The
+remaining coordinates may react freely; excluding the component excludes
+the stronger complete transformation. It does not follow merely from
+conservation of a whole-network total. Fixed `T` may be chosen separately
+for each fixed `b`, but both must then be independent of the initial state
+throughout the proposed open domain.
+
+**Countable sampling corollary.** Fix the same nonzero gain and any prescribed
+countable set of finite durations `T_n` with these flow properties. Each
+realization set `Z_n={z: O(Phi_T_n(z))-O(z)=b}` is closed with empty interior,
+hence nowhere dense. Such a countable union cannot cover a nonempty open
+subset of `M`. One direct Baire argument works in a coordinate ball inside
+that subset: choose nested closed balls of shrinking radius, each avoiding
+the next `Z_n`, with each ball inside the previous interior. Completeness
+of the initial compact coordinate ball supplies a limit point outside
+every `Z_n`, a contradiction. Thus even an arbitrary state-dependent choice
+among those prescribed durations cannot realize the exact fixed gain on
+an open full-state domain. The union need not be empty, closed or nondense;
+the conclusion is that it contains no nonempty open domain.
+
+This criterion needs analyticity, an equilibrium in the connected flow
+domain, fixed duration and a genuinely open full-state domain. Smoothness
+alone is insufficient. A positive increment on a constrained actuator
+manifold, an isolated endpoint match, a state-dependent stopping time or an
+approximate map is not excluded. A zero increment also gives no contradiction.
+Changing the observation requires re-admitting its regularity and meaning;
+thresholded labels are not analytic observations automatically.
+
+The [organized-source application](nodal/ORGANIZED_SOURCE_PORT.md#organized-source-open-domain-emission)
+verifies these hypotheses for the existing lifted 45-node law and its
+child-form mean. It does not impose this continuous realization on the
+native hybrid engine. Grammar and event maps retain their own admission;
+neither an operator registry nor this obstruction supplies an occurrence law.
+
+<a id="regular-stopping-realization"></a>
+### Tangent criterion for regular near-identity stopping
+
+**Conditional realization criterion.** Let `F` be a continuously
+differentiable autonomous field with local flow `Phi_t`, and let `O` be a
+differentiable vector observation. At a fixed initial state `z`, suppose
+
+```text
+O(Phi_{T(z,b)}(z)) = O(z) + b*v(z),    v(z) != 0,
+T(z,0) = 0,    T(z,b) > 0 for small b > 0.
+```
+
+Here `T(z,b)` is the elapsed duration, with a finite right derivative
+`a(z)` at zero. The chain rule gives
+
+```text
+a(z) * DO(z) * F(z) = v(z),    a(z) > 0.
+```
+
+Positivity follows because `T(z,b)/b>=0`, and `a=0` contradicts `v!=0`.
+Thus choosing a duration can rescale the observed velocity, but cannot
+change its direction. A nonzero prescribed form increment with unchanged
+target phases requires equal positive target form velocities and zero
+target phase velocities. Collateral coordinates remain free. No derivative
+of `T` with respect to the initial state, analyticity or equilibrium is
+needed for this necessary condition.
+
+Tangent agreement does not suffice for a finite map. For a held linear
+observation `P`, if `P*F(z)=0`, the next necessary condition is
+`P*DF(z)*F(z)=0`: Taylor expansion at `T=a*b+o(b)` otherwise gives a nonzero
+coefficient of `b^2/2` in the held output. This argument needs no second
+gain derivative of `T`. If `T` is C1 in gain with `a>0`, its local inverse
+also shows that the held output must remain constant throughout a short
+time interval, rather than only at isolated selected endpoints.
+
+A regular positive clock rescaling multiplies both observed rows by the
+same factor and rescales `a` inversely; it preserves these collinearity
+conditions. Singular stopping, such as `T=sqrt(b)`, is outside the finite
+derivative premise. A finite-gain hit or a long excursion has its own
+realization question. The zero-gain identity here is a formal extension of
+an ideal primary-channel map, not an admitted zero-gain invocation or an
+identity of the public operator's lifecycle and metadata effects.
+
+The [organized-source application](nodal/ORGANIZED_SOURCE_PORT.md#organized-source-regular-stopping)
+derives the exact tangent locus for the actual two-row law and a constrained
+state that passes it but fails at second order. It supplies no event selector
+or alteration of the registered Emission contract.
+Its [local carrier classification](nodal/ORGANIZED_SOURCE_PORT.md#organized-source-carrier-persistence)
+then identifies all nearby phase-stationary states of that exact invariant
+restriction: an antisymmetric family can move internally while its target
+form stays fixed. A six-derivative rank certificate and the implicit-function
+theorem establish nonlinear persistence, rather than assuming it from tangent
+agreement. The conclusion is local to that carrier and supplies no event.
+
+### Existing execution responsibilities
+
+The existing implementation separates these responsibilities:
+
+- `structural.run_sequence` binds a supplied word to one existing target and
+  observes its signed initial form. The network word runner fixes the supplied
+  population at invocation; each stage admits the actual state and history.
+- `dynamics.selectors` proposes actions from configured state metrics, history,
+  thresholds and possibly random draws. Shared grammar/preconditions can reject
+  them or apply the declared standalone replacement policy. State dependence
+  does not make that policy a consequence of the nodal identity.
+- Scoped programs retain ordered targets and distinguish requested glyphs from
+  subsequent step-function calls. The default step may select further actions;
+  a requested-word trace is not their complete history. The
+  [program contract](../docs/API_CONTRACTS.md#program-compilation-contract)
+  owns these provenance and failure boundaries.
+
+The native selector route also has AL/EN lag policies and configurable
+incremental grammar. It executes primitive glyphs, not the full public-class
+lifecycle or a prevalidated complete word. Its realized glyph history does not
+necessarily retain every proposal or selection reason. Matching operator names
+across these paths cannot substitute for their different execution contracts.
+
+The strongest existing synergies are already conditional results: retained
+histories distinguish admissibility at equal aggregate state; the maintained
+parent supplies genuine pre-birth history; actual support events carry separate
+work; and continuous regional exchange can change a region's form without an
+invoked AL event. These mechanisms help test an occurrence model, but must not
+be renamed as proof that one has been derived. The
+[collective grammar criterion](#collective-grammar-descent) gives the appropriate
+obstruction when the proposed NFR state discards information needed by a gate.
+
 ### All thirteen actions: useful mechanisms and remaining premises
 
 | Operator | Actual mechanism relevant to interaction | Reusable synergy and boundary |
 | --- | --- | --- |
-| **AL — Emission** | Adds/projected form on existing support; basic event holds phase, capacity and stored pressure | A local form contrast changes the following relational phase rates. Emission from uniform form costs storage; amplitude, source and occurrence remain supplied. No node or edge creation. |
-| **EN — Reception** | Blends unweighted existing incoming-neighbor form; source ranking is telemetry | One unclipped target can reduce form storage and alter later phase compatibility. No U3 source filter or reception from an absent edge is implemented. |
-| **IL — Coherence** | Glyph contracts stored pressure; public/staged path also aligns target phase with its neighbor resultant | A single-target phase reset can release phase storage. The pressure-only change may disappear on refresh; no global or simultaneous-stage storage theorem follows from its stabilizer label. |
-| **OZ — Dissonance** | Perturbs stored pressure, with near-zero/jitter branches and optional neighbor propagation | Supplies a declared perturbation and grammar history; pressure-only change is neutral in this particular `S`. Refreshed constitutive pressure can erase it. Signed propagation can cancel another node's pressure. |
-| **UM — Coupling** | Moves phase, optionally aligns capacity/contracts stored pressure and proposes links to compatible nonneighbors | A phase reset can offset a positive new-edge cost. Requires an existing compatible neighbor at the acting target. Candidate inventory, affinity/Si threshold, tie policy and time are supplied; generated conductance is generally nonunit. |
-| **RA — Resonance** | Mixes form over existing U3-compatible neighbors; configured phase interpolation and triggered capacity amplification | RA then UM can reduce total storage while adding a positive-cost edge. RA itself creates no support and does not contract stored pressure. Sign/kind preservation does not imply maintained pattern identity. |
-| **SHA — Silence** | Attenuates capacity and records latency information, preserving form at the event | Capacity-only reset is neutral in `S` but changes future rates. A positive retention factor does not produce zero capacity in a finite ideal event; vanishing capacity alone does not prove `nu*p` vanishes. |
-| **VAL — Expansion** | Raises capacity; default edge-aware policy also scales/projects EPI | Capacity changes local speed, while the auxiliary form reset can change subsequent phase response and storage. Expansion does not derive a new state dimension, source or clock. |
-| **NUL — Contraction** | Lowers capacity and rescales stored pressure; default edge-aware policy also scales/projects EPI | Ideal stored-product preservation is distinct from the freshly evaluated relational rate. Account for the actual form jump; it is not generally a storage-neutral capacity-only event. |
-| **THOL — Self-organization** | Primitive signed acceleration/pressure reset; public/staged path can create an isolated nested child after history/U5 gates | Existing eligibility/dispatch and child-feedback tools can be reused. Parent metadata is not an edge. Child form/capacity and timing follow construction rules; absent edge storage does not mean free substrate creation. |
-| **ZHIR — Mutation** | Configured phase reset following a live signed EPI-growth test and separate grammar context | Can alter phase geometry without adding support. A valid growth trigger is eligibility, not a derived necessity to mutate. Rich-form magnitude is not signed scalar growth; the full reset may raise storage. |
-| **NAV — Transition** | Primitive pressure change; public/staged regimes can also change phase and capacity | A candidate preparation/phase-reset mechanism, with its own budget. Regime factors, optional random draw and invocation remain policies; latency metadata is not a structural event clock. |
-| **REMESH — Recursivity** | Advisory glyph, delayed same-support EPI mixing, and explicitly invoked topological replacement are distinct APIs | Fixed-node rewiring can reuse joint reset accounting. Delayed-history disagreement bounds are not a theorem for `S`; community replacement may change nodes and lies outside the same-node observer. |
+| **AL — Emission** | Adds/projected form on existing support; basic event holds phase, capacity and stored pressure | [Collective descent](nodal/SINE_PAIR_INTERACTION.md#sine-pair-emission-descent) and the [complete AL/SHA word](nodal/SINE_PAIR_WORD.md) retain targets, source, context and work. A local form contrast changes phase rates. No node or edge creation or autonomous input selection. |
+| **EN — Reception** | Blends unweighted existing incoming-neighbor form; source ranking is telemetry | The [weighted contact action](nodal/SINE_COLLECTIVE_RECEPTION.md) admits EN/IL/SHA and exact simultaneous work, which can be positive. Fresh sine pressure is unchanged while phase rates change. No U3 source filter or absent-edge reception. |
+| **IL — Coherence** | Glyph contracts stored pressure; public/staged path also aligns target phase with its neighbor resultant | The [collective handoff](nodal/SINE_COLLECTIVE_PRESSURE_HANDOFF.md) accounts for actual adjacent-target phase work and refresh; its [identity domain](nodal/SINE_COLLECTIVE_IDENTITY_TRANSITION.md) retains context. The stabilizer label supplies no universal storage theorem. |
+| **OZ — Dissonance** | Perturbs stored pressure, with near-zero/jitter branches and optional neighbor propagation | The [handoff](nodal/SINE_COLLECTIVE_PRESSURE_HANDOFF.md) separates changed context from pressure erased on constitutive refresh. A [persistent pressure extension](nodal/SINE_PRESSURE_COMPLETION.md) needs its own mean, storage and law premises. Signed propagation can cancel pressure. |
+| **UM — Coupling** | Moves phase, optionally aligns capacity/contracts stored pressure and proposes links to compatible nonneighbors | The [weighted support completion](nodal/SINE_PAIR_COUPLING.md) and [maintained contact](nodal/SINE_PROXIMITY_CONTACT.md) admit actual conductances, geometry and continuation. Existing-neighbor U3, candidate access, affinity and occurrence remain premises. |
+| **RA — Resonance** | Mixes form over existing U3-compatible neighbors; configured phase interpolation and triggered capacity amplification | The [collective AL/RA/SHA contract](nodal/SINE_PAIR_RESONANCE.md) proves a conditional complete action and retention domain. RA creates no support and does not contract stored pressure; passivity and identity do not follow merely from its name. |
+| **SHA — Silence** | Attenuates capacity and records latency information, preserving form at the event | The [complete word](nodal/SINE_PAIR_WORD.md) and [lifecycle-sensitive NAV action](nodal/SINE_COLLECTIVE_TRANSITION.md) retain latency and successor capacities. Capacity-only work is zero, but future rows change; finite attenuation need not freeze flow. |
+| **VAL — Expansion** | Raises capacity; default edge-aware policy also scales/projects EPI | The [full form-capacity action](nodal/SINE_FORM_CAPACITY_ACTION.md) accounts for actual form work, mean leaves and both rows. Its conditional reset is not a complete VAL-word theorem; the [contextual NUL identity contract](nodal/SINE_COLLECTIVE_IDENTITY_TRANSITION.md) is a separate result. Expansion does not derive a new dimension or common clock. |
+| **NUL — Contraction** | Lowers capacity and rescales stored pressure; default edge-aware policy also scales/projects EPI | The [same full reset owner](nodal/SINE_FORM_CAPACITY_ACTION.md) and [directional continuation](nodal/SINE_DIRECTIONAL_MAINTENANCE.md) distinguish stored-product algebra from refreshed flow and identity. Valid grammar does not imply future maintenance. |
+| **THOL — Self-organization** | Primitive signed acceleration/pressure reset; public/staged path can create an isolated nested child after history/hierarchy gates | The [collective hierarchy contract](nodal/SINE_COLLECTIVE_HIERARCHY.md) separates no-child refresh equivalence from a changed domain. [Maintained-parent birth](nodal/SINE_MAINTAINED_PARENT_THOL.md) supplies one actual event with genuine parent history and a declared frozen-isolate continuation. Parent metadata is not an edge or a new child's temporal baseline. |
+| **ZHIR — Mutation** | Configured phase reset following a live signed EPI-growth test and separate grammar context | [Temporal admission](nodal/SINE_COLLECTIVE_MUTATION_ADMISSION.md) and the [complete phase action](nodal/SINE_COLLECTIVE_MUTATION_ACTION.md) retain separate obligations, work and successor-domain conditions. Eligibility does not select occurrence or certify identity. |
+| **NAV — Transition** | Primitive pressure change; public/staged regimes can also change phase and capacity | The [contextual Transition contract](nodal/SINE_COLLECTIVE_TRANSITION.md) separates lasting phase/capacity changes from jitter erased on refresh. Its admitted word can leave the original acute sector; regimes and invocation remain policies. |
+| **REMESH — Recursivity** | Advisory glyph, delayed same-support EPI mixing, and explicitly invoked topological replacement are distinct APIs | The [collective delayed-state contract](nodal/SINE_COLLECTIVE_RECURSIVITY.md) retains associated histories, actual mixing and reset work. The advisory does not mix form; topology replacement requires its own before/after state and law admission. |
 
 Execution owners are linked in §15. The particularly relevant shared kernels
 are [AL/SHA proposals](../src/tnfr/operators/al_sha_stage_proposals.py),
@@ -1587,6 +2043,89 @@ are [AL/SHA proposals](../src/tnfr/operators/al_sha_stage_proposals.py),
 [atomic stages](../src/tnfr/operators/network_stage.py),
 [Mutation admission](../src/tnfr/operators/_mutation_gate.py), and
 [THOL dispatch](../src/tnfr/operators/self_organization_selection.py).
+
+These links constitute scoped coverage of the registered mechanisms, not
+one universal execution domain. Their source families, complete laws and
+clock/pressure conventions must match before combining results. The
+[partial-action criterion](#collective-grammar-descent) additionally requires
+admission and successor state at every prefix. THOL birth can leave the
+connected-support law domain, and a REMESH advisory cannot stand in for
+delayed mixing. Preserving such explicit boundaries is part of integration.
+A compatibility classification does not establish that all thirteen full
+public actions preserve one identity, that their words realize every TNFR
+transformation, or that the continuous law selects their occurrence.
+
+All thirteen glyphs also have implemented snapshot stages in the shared
+[stage contracts](../src/tnfr/operators/stage_contracts.py). This execution
+coverage includes REMESH's advisory, not its separate delayed mixing API.
+For an organized object, complete-word integration still consumes the actual
+fine state, member-to-history and boundary associations, live eligibility,
+reset work and the successor law at every prefix. A valid word can leave a
+declared identity, as the [directional counterexample](nodal/SINE_DIRECTIONAL_MAINTENANCE.md#directional-maintenance-result)
+shows. Unsupported observations must remain unavailable rather than being
+filled from a parent, a previous support or a diagnostic label.
+
+The [maintained-parent source](nodal/SINE_MAINTAINED_PARENT_THOL.md) now provides
+genuine temporal evidence and an actual birth. The subsequent
+[finite motion certificate](nodal/SINE_SUCCESSOR_NONSTATIONARY.md#successor-nonstationary-result)
+covers a conditional hypothetical UM family. The subsequent
+[runtime attempt](nodal/SINE_MAINTAINED_PARENT_UM.md#maintained-um-transaction-result)
+retains an included raw reset but rolls back after a separately diagnosed
+pressure-guard false rejection. A separately frozen
+[corrected event](nodal/SINE_MAINTAINED_PARENT_UM.md#maintained-um-committed-result)
+now commits an endpoint admitted into that family by a primitive-state review;
+the original failed attempt and first assessment remain immutable. SHA changes
+the continued capacity law even when it completes a grammatical word, so the
+UM motion certificate does not transfer through SHA without new admission.
+These are operator-to-law admission boundaries,
+not grounds to repeat all thirteen actions or assume a universal collective
+executor. The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+alone selects which boundary is investigated next.
+
+The [weighted-star constitutive handoff](nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-constitutive-handoff-result)
+checks the actual no-refresh AL/UM/SHA prefixes. Two complete continuations
+consume the same raw word output but assign different fresh pressure and form
+rates, with their own storage balances and constituent maintenance. This
+specific compatibility does not select either law or cover every operator.
+
+The [maintained-parent SHA composition](nodal/SINE_MAINTAINED_PARENT_CLOSURE.md#maintained-parent-sha-result)
+now executes that selected closure with zero storage jump and a separately
+admitted complete changed-capacity law. Latency leaves both parent rates
+nonzero; future retention has its own proof obligation. SHA is one convenient
+capacity-only control among the canonical closure roles, not a preferred or
+necessary ending for every object. A different closing action requires its
+own full word, live context and successor-law admission.
+
+A reusable complete-law handoff must associate the requested and executed
+action with its source, raw endpoint, refreshed pressure, both continued
+rates, event work and retained or unavailable history. The shared
+[word dispatcher](../src/tnfr/operators/word_execution.py) and atomic stage
+result supply execution mechanisms; the
+[event runtime](../src/tnfr/operators/event_runtime.py) supplies configured
+nodal EPI integration. Neither alone admits the selected complete weighted
+sine form/phase law after every stage. Existing research refresh callbacks
+compose these responsibilities for particular models; their shared field,
+integrator and state-admission owners are the reusable basis for that handoff.
+`StudySpec` remains a construction recipe, not a checkpoint restoring an
+organization's complete law, history and context.
+
+Population scheduling is another explicit composition boundary. The shared
+word runner fixes targets at invocation, across all stages and cycles, so a
+THOL-born child is not a later target in that invocation. A subsequent call
+selects the population again. SDK trajectory recording currently separates
+cycles into calls, while unrecorded evolution batches them; its current named
+words contain no THOL. Extending those words to birth requires a declared
+target-population policy and checks that recording preserves that policy.
+This scheduling question does not invalidate the retained single-target
+birth or hypothetical successor certificates.
+
+The [hierarchy-to-contact composition](nodal/SINE_HIERARCHY_CONTACT.md)
+admits one concrete boundary under an explicit frozen-isolate intermediate
+law. Actual parent-target UM connects the new child, with complete support
+work and nonzero child response on a declared source family. This does not
+supply observed birth from a maintained organization. The birth changes
+node support, so the ordinary U6 before/after reference is unavailable there;
+same-support stage observations do not become a full-word U6 certificate.
 
 ### Quantitative synergies, without inventing an activation law
 
@@ -1597,7 +2136,9 @@ instead of assigning energy signs from operator names.
 
 - **Form changes influence phase evolution.** For held support, phase and
   capacity, an AL/EN jump `d` changes the next phase row by
-  `(w/beta)*diag(nu/H)*B*d`. One unclipped EN target has nonpositive form cost;
+  `(w/beta)*diag(nu/H)*B*d`. One unclipped EN target has nonpositive form cost
+  on this native unit support; the [weighted-contact result](nodal/SINE_COLLECTIVE_RECEPTION.md#3-exact-event-work-and-its-sign)
+  instead requires the full event sign criterion and simultaneous cross terms;
   an AL jump from uniform form supplies positive cost. RA/VAL/NUL may also
   change form, but their auxiliary writes and clipping must be included.
 - **Nodal relaxation can accompany attachment.** Actual UM and RA-then-UM
@@ -1613,8 +2154,10 @@ instead of assigning energy signs from operator names.
 - **Capacity controls response, not stored identity.** Held form/phase/support
   makes a capacity-only reset neutral in `S`. The later dynamics still changes.
   VAL/NUL's default EPI effects and post-event pressure refresh prevent a
-  blanket capacity-only interpretation. Zero capacity and nonzero Gamma must
-  retain their separate contracts.
+  blanket capacity-only interpretation. The [full contact analysis](nodal/SINE_FORM_CAPACITY_ACTION.md)
+  distinguishes both fresh rows, mean leaves, form-origin dependence and
+  an explicit scalar-storage certificate obstruction. Zero capacity and
+  nonzero Gamma retain their separate contracts.
 - **History can gate an event without explaining its origin.** ZHIR uses a
   measured signed secant, THOL uses its configured history and construction,
   REMESH consumes declared delayed state. These are useful causal inputs;
@@ -1627,6 +2170,10 @@ changes from IL/OZ/THOL/NAV affect a held-pressure interval. If every argument
 of a state-based constitutive law is unchanged, its next refresh restores the
 same pressure. A pressure intervention needs an explicit lifetime or retained
 state to have a lasting role. The relational observer does not infer either.
+The [pressure-completion analysis](nodal/SINE_PRESSURE_COMPLETION.md)
+derives the resulting mean/power constraints and a conditional smooth-storage
+obstruction. Its alternative models show which premises can be changed; the
+result does not require every continuous model to retain every pressure write.
 
 **Continuous evolution versus a finite operator action.** Uniform form gives
 `q=0` and zero instantaneous relational phase velocity, even at nonuniform
@@ -1684,6 +2231,30 @@ of an event family with a transformed target does not establish closure after
 discarding that target. These are conditional descent criteria, not claims
 that the named engine operators already satisfy them.
 
+**Marked occurrence corollary.** Fix supplied inputs and configuration `u`,
+including any consumed clock or random draws. Let `S(s,u)` be the *realized*
+admitted action after proposal and live admission, or explicit abstention;
+let `m(S)` be its retained collective mark. A deterministic marked selector
+and event descend through `y=Q(s)` precisely when, for every admitted pair
+with equal `Q(s)`, both `m(S(s,u))` and the corresponding projected successor
+agree. An abstention retains any selector bookkeeping; its successor is the
+unchanged state only under an explicit no-write convention.
+Necessity follows by evaluating the proposed marked action at the same `y,u`;
+sufficiency follows by choosing any lift, since both outputs are then
+independent of it. Before/after maps must be declared if support changes.
+This specializes the partial-transition criterion below; it supplies no selector.
+Interchangeable fine targets may share one collective mark. If marks are
+discarded, this stronger marked criterion is not necessary for an unmarked
+state transition alone.
+
+Existing equal-aggregate/different-history controls obstruct marked descent
+for a policy that attempts the affected action and distinguishes successful
+execution from rejection/abstention in its retained mark. Eligibility alone
+does not establish an occurrence difference. A policy choosing a common
+admitted action or abstaining on both states may still descend. A continuous
+closed quotient alone decides neither case. Retain or derive the required
+memory before attributing such selection to the collective NFR.
+
 The [unordered-pair state](nodal/SINE_PAIR_STATE.md#sine-replica-unordered-state)
 provides an existing exact continuous quotient under its sine-law premises.
 It retains internal coordinates; means alone generally fail. Whether an action
@@ -1728,6 +2299,231 @@ selects the next bounded comparison from these obligations.
 A justified negative result remains useful;
 the map provides mechanisms to test without asserting autonomous connection,
 substrate generation or physical identification.
+
+### Native selector and collective dynamics
+
+Native selector premises, bounded collective predictions and admission
+counterexamples are maintained in [Native operator dynamics](NATIVE_OPERATOR_DYNAMICS.md).
+The original section links remain available below.
+
+<a id="native-selector-memory-and-occurrence"></a>
+<a id="native-selector-memory-and-realized-occurrence"></a>
+[Native selector memory and realized occurrence](NATIVE_OPERATOR_DYNAMICS.md#native-selector-memory-and-occurrence).
+
+<a id="native-selector-clock-admission"></a>
+<a id="decision-schedule-and-structural-time"></a>
+[Decision schedule and structural time](NATIVE_OPERATOR_DYNAMICS.md#native-selector-clock-admission).
+
+<a id="native-selector-environment-inputs"></a>
+<a id="disconnected-context-and-the-native-occurrence-boundary"></a>
+[Disconnected context and the native occurrence boundary](NATIVE_OPERATOR_DYNAMICS.md#native-selector-environment-inputs).
+
+<a id="native-selector-collective-batch"></a>
+<a id="a-restricted-collective-map-of-one-native-selector-batch"></a>
+[A restricted collective map of one native selector batch](NATIVE_OPERATOR_DYNAMICS.md#native-selector-collective-batch).
+
+<a id="native-collective-step"></a>
+<a id="one-complete-native-step-on-the-synchronized-collective-family"></a>
+[One complete native step on the synchronized collective family](NATIVE_OPERATOR_DYNAMICS.md#native-collective-step).
+
+<a id="native-nonuniform-collective-step"></a>
+<a id="nonuniform-collective-phase-and-capacity-closure-and-a-selector-boundary"></a>
+[Nonuniform collective phase and capacity: closure and a selector boundary](NATIVE_OPERATOR_DYNAMICS.md#native-nonuniform-collective-step).
+
+<a id="native-collective-mean-prediction"></a>
+<a id="a-next-call-collective-form-mean-prediction-after-transition"></a>
+[A next-call collective form-mean prediction after Transition](NATIVE_OPERATOR_DYNAMICS.md#native-collective-mean-prediction).
+
+<a id="native-reception-envelope"></a>
+<a id="propagated-admission-through-the-first-lag-forced-reception"></a>
+[Propagated admission through the first lag-forced Reception](NATIVE_OPERATOR_DYNAMICS.md#native-reception-envelope).
+
+<a id="native-capacity-feedback"></a>
+<a id="active-capacity-adaptation-exposes-a-discarded-internal-association"></a>
+[Active capacity adaptation exposes a discarded internal association](NATIVE_OPERATOR_DYNAMICS.md#native-capacity-feedback).
+
+<a id="native-joint-admission"></a>
+<a id="joint-enclosures-distinguish-certified-decisions-from-unresolved-branches"></a>
+[Joint enclosures distinguish certified decisions from unresolved branches](NATIVE_OPERATOR_DYNAMICS.md#native-joint-admission).
+
+<a id="native-collective-resonance"></a>
+<a id="native-resonance-with-primitive-phase-dispersion"></a>
+[Native Resonance with primitive phase dispersion](NATIVE_OPERATOR_DYNAMICS.md#native-collective-resonance).
+
+<a id="native-resonance-u3-boundary"></a>
+<a id="fresh-resonance-selection-does-not-imply-live-u3-admission"></a>
+[Fresh Resonance selection does not imply live U3 admission](NATIVE_OPERATOR_DYNAMICS.md#native-resonance-u3-boundary).
+
+<a id="collective-grammar-descent"></a>
+### From a collective action to an admitted ordered language
+
+The event criterion above concerns a projected state change. Inheriting the
+engine's grammar requires a quotient of the information consumed by its
+admission and execution, as well as that change. Let `s` be a declared complete
+execution state and `y=Q(s)` its collective description. Besides mathematical
+state, `s` can include consumed boundary ports, ordered histories, clocks,
+grammar context, baselines and configuration. Retain only what the selected
+actions consume, but prove that discarding the rest preserves their decisions
+and responses. Configuration fixed across the comparison is an explicit
+premise. A reproducible random action also retains its generator state or
+supplied draws; a seed alone does not determine an arbitrary continuation.
+
+**Partial-transition criterion.** Fix a family of marked actions `a`; the mark
+specifies any externally supplied target, parameters and execution path. On a
+declared execution domain `E`, let `D_a` be the admission domain and let
+`T_a:D_a -> E` include all consumed context updates. Assume `E` contains the
+successors needed by every finite continuation being compared. There exists
+an exact collective partial action with the same admission decisions and
+projected successors if and only if, for every `s1,s2` in `E` with
+`Q(s1)=Q(s2)`,
+
+```text
+s1 in D_a  <=>  s2 in D_a,
+s1,s2 in D_a  =>  Q(T_a(s1)) = Q(T_a(s2)).
+```
+
+The first condition says that admission is constant on each collective class;
+the second is event descent on its admitted part. Necessity follows by
+evaluating the same collective input. For sufficiency, declare its admission
+and successor using any lift. Both choices are independent of that lift.
+Induction over the actual left-to-right order then gives identical admission
+prefixes and collective states for every finite word in the declared family.
+The hypotheses must hold at every reachable prefix, not just the initial
+pattern. Restricting the claim to one source class therefore still requires
+its continuation domain. Conversely, inheritance of all length-one actions
+already requires both conditions. If support or state type changes, use the
+declared before/after observation maps and corresponding typed domains.
+
+**Outputs are separate obligations.** An exact collective monitor, status or
+event cost also requires its consumed output to agree on the same classes.
+This includes availability and the declared distinctions between rejection,
+unsupported evidence and execution failure; equal final form does not suffice.
+For an action with a reference-relative monitor, include its reference and
+geometry in the comparison. A cost can instead have a proved class-wide bound,
+but that bound is not a uniquely determined cost or an occurrence law. U2's
+unit debt cannot substitute for actual reset work. If a failed attempt can
+leave writes or completed prefixes, model its outcome and resulting state as
+an explicit transition; the partial-map theorem supplies no rollback. These
+boundaries follow the selected [event execution contract](../docs/contracts/OPERATOR_EVENTS.md).
+
+For the current grammar this issue is already concrete. Identical nodal
+channels and identical bounded glyph traces can have different persistent U2
+debt. Identical recent context can also conceal whether an earlier IL occurred,
+changing Mutation's lifetime stable-base requirement. The shared
+[context owner](../src/tnfr/operators/grammar_debt.py) and its
+[eviction controls](../tests/operators/test_grammar_debt_and_depth.py) retain
+both facts. Mutation's measured signed EPI history, U3's live phase/neighbor
+gate, Recursivity's actual depth and U6's reference require their own consumed
+information. A validated future handler does not manufacture executed history.
+The [grammar owner](UNIFIED_GRAMMAR_RULES.md#8-composition-and-implementation)
+specifies these existing contracts; no sum or average of constituent histories
+is established here as a collective grammar state.
+
+The [weighted phase-offset family](nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-weighted-capacity-descent)
+supplies another precise primary-map boundary: on its connected positive
+support, the post-reset law preserves the entire family exactly when actual
+capacity ratios are constant inside each block. This
+includes nonuniform initial capacities. A singleton reset can retain current
+family membership while breaking future tangency. This classification
+does not replace the context obligations above or admit a complete SHA
+event from collective form and phase alone.
+
+A pointwise pair quotient, or an AL map that descends on it, is consequently
+not yet a quotient of the full operator runtime. Conversely, a continuous
+collective model need not carry unused runtime history merely to define its
+mathematical dynamics. The claim determines the information obligation.
+The [weighted-star sufficient chart](nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-weighted-star-state-sufficiency)
+is a concrete continuous example: retained internal coordinates and a dynamic
+boundary reconstruct all consumed flow rows, while its detached report
+supplies no measured histories, debt, hierarchy or lifecycle. Such a report
+cannot by itself admit any registered operator or select its occurrence.
+Retaining every constituent and its context is a valid description, but does
+not by itself establish a smaller autonomous state, formed collective identity
+or generative completeness. The criterion inherits specified operations and
+words; it does not select which operation occurs, derive their policies from
+the nodal row, or prove that the 13 registered actions generate every possible
+TNFR transformation.
+
+The [uniform-capacity native sector](NATIVE_AGGREGATE_OPERATORS.md#native-uniform-capacity-transition)
+provides a restricted positive instance with actual default IL/AL/EN selection:
+retained grammar, lag and controller state admit an ideal projected primary
+transition without retaining fine form contrast. Aggregate margins define
+its stopping boundary. Its completed native controls preserve unequal fine
+stability counts; the result does not identify complete histories or outputs.
+The [horizon proof](NATIVE_AGGREGATE_OPERATORS.md#native-uniform-capacity-horizon)
+uses the actual six-call Emission recurrence to bound that affine domain.
+This recurrence belongs to the configured selector, not a derived occurrence law.
+At [hard clipping](NATIVE_AGGREGATE_OPERATORS.md#native-uniform-capacity-clipping),
+the extended pair map retains internal spread and the incoming held-pressure
+association. The zero-spread slice inherits ordinary coarse execution, while
+a specified Emission/Reception clipping branch excludes universal mean-only inheritance.
+The [limit theorem](NATIVE_AGGREGATE_OPERATORS.md#native-uniform-capacity-limit)
+combines these rows with actual lag recurrence to exclude persistent
+nonuniform form/phase in that sector; accepted glyph occurrences and context
+updates continue even when the primary coordinates are stationary at saturation.
+Its [capacity robustness extension](NATIVE_AGGREGATE_OPERATORS.md#native-capacity-robustness)
+retains that conclusion with unequal fine capacities in a derived nonzero
+neighborhood. Hull preservation first keeps selection in AL/EN/IL; a strict
+pressure bound then proves permanent adaptation qualification and consensus.
+The event policy remains supplied, and the proof does not extend the smaller
+uniform-capacity aggregate state to arbitrary capacity heterogeneity.
+
+**Retain associations, not independent inventories.** If a pair swap removes
+member labels, it must simultaneously transport each member's state, ports,
+history and consumed lifecycle data. Two separate unordered lists of physical
+states and histories lose their association. In the
+[live-history control](../tests/operators/test_collective_pair_stage_reuse.py),
+reassigning the same measured histories between unequal current forms leaves
+both independent inventories unchanged but makes their endpoints stale.
+The correct comparison is the orbit of the jointly associated data. This
+retains information without asserting that a smaller minimal state exists.
+Configuration, externally supplied clocks and any consumed node-order policy
+must also transform or be fixed under the declared symmetry. A timestamp
+record is not the structural evolution clock.
+
+The [complete selected-pair AL/SHA word](nodal/SINE_PAIR_WORD.md) verifies
+these obligations on one explicit positive-width physical source domain and
+associated lifecycle stratum. Live admission holds at both prefixes; the
+primary resets have an exact binary64 subdomain, and the postword sine law
+retains the existing geometric identity. This is a supplied two-step action,
+not closure under arbitrary words, histories or repeated interventions.
+
+The [AL/RA/SHA extension](nodal/SINE_PAIR_RESONANCE.md) adds a relational
+action whose neighbor resultant depends on retained internal phase geometry.
+It proves exact-real descent, conditional RA passivity in the sine storage,
+and continued identity on its declared all-neighbor domain. Full represented
+stages have separate finite controls and arithmetic defects; this result
+does not assert general floating-point permutation invariance or transfer
+passivity to arbitrary U3 subsets and adjacent target sets.
+
+The [same-law relative-phase response](nodal/SINE_PAIR_INTERACTION.md#sine-pair-autonomous-relative-phase)
+also distinguishes the internal preparation without executing any operator.
+Its finite-window bound retains the complete constituent dynamics and small
+preparation/readout errors. This connects a state dependency of RA with an
+autonomous observable; it does not derive the event's blend, capacity change,
+grammar history or occurrence from elapsed continuous time.
+
+An existing positive precedent is
+[P5 history composition](DERIVED_EPI_MEMORY.md#95-exact-composition-with-a-declared-temporal-echo):
+uniform delayed mixing, history shifts and specified linear flow maps commute
+with its retained spatial projection. Its exact-real theorem, represented
+rounding defects and clipping counterexample separate three different claims.
+The proof method transfers; its linear coefficients and delay assumptions do
+not establish a nonlinear pair word. Conversely, clipping need not obstruct
+the lossless pair orbit: the existing AL theorem admits any shared point map
+on its declared domain. Generic quotient diagnostics remain
+[sampled or linear observations](../src/tnfr/physics/operator_quotient.py),
+not certificates for graph mutation or complete runtime grammar.
+
+The [marked-contact NUL/IL/SHA transition](nodal/SINE_COLLECTIVE_IDENTITY_TRANSITION.md)
+instantiates the criterion on an exact eleven-cell physical stratum with
+retained ordered constituent context. Its one-word domains distinguish
+organizational class from predictive state: the ideal word preserves an
+explicit acute winding sector and finite U6 bounds while changing form and
+capacity. Represented controls show why a simple eleven-node graph, centered
+form or bounded history without persistent debt is insufficient. The output
+has its own domain; neither repetition nor subsequent sector maintenance
+follows. This does not alter the earlier frozen joint-radius departure.
 
 ---
 

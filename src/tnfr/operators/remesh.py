@@ -1,209 +1,57 @@
-"""Canonical REMESH operator: delayed, multi-scale EPI mixing.
+"""Explicit delayed REMESH and auxiliary structural-memory operations.
 
-REMESH (Recursivity) - Glyph: REMESH
-====================================
+Execution paths
+---------------
+The registered Recursivity glyph is an advisory owned by
+``_recursivity_stage_kernel``. It does not run this module's delayed map,
+create replicas or perform topology replacement. ``apply_network_remesh``
+separately applies one supplied-history EPI mixing operation on fixed ordered
+node support. Explicit topology and identity-propagation helpers have their
+own state changes and admission contracts; they are not implicit glyph effects.
 
-Physical Foundation
--------------------
-From the nodal equation: ∂EPI/∂t = νf · ΔNFR(t)
-
-REMESH implements: **EPI(t) ↔ EPI(t-τ)** (operational fractality)
-
-The runtime delay selects integer positions in retained history. It denotes a
-fixed physical duration only under an explicit uniform sampling convention;
-variable cycle durations and the declared simulation clock remain separate.
-
-REMESH enables patterns to echo across temporal and spatial scales. Identity and
-coherence are contracts to monitor on the executed transition; the operator name
-alone does not certify either quantity.
-
-Canonical Physical Behavior
-----------------------------
-REMESH acts on the nodal equation by creating temporal/spatial coupling:
-
-1. **Memory Activation**: References EPI(t-τ) from structural history
-2. **Pattern Recognition**: Identifies similar EPIs across network
-   (structural_similarity)
-3. **Identity Tracking**: Records whether propagated patterns match a declared
-   ``StructuralIdentity``
-4. **Multi-scale Operation**: Connects delayed form and topology operations
-
-Effect on nodal components:
-- EPI: Mixed with two delayed snapshots
-  (``(1-α)^2 EPI_now + α(1-α) EPI_local + α EPI_global`` before clipping)
-- νf: Not written by ``apply_network_remesh``; explicit identity-propagation
-  helpers can mix it and report that separate operation
-- ΔNFR: Not inferred by dividing ΔEPI by νf; downstream dynamics may recompute
-  pressure from the resulting graph state
-- Phase: Not written by delayed EPI mixing; it remains part of identity checks
-
-Operator Relationships (from Nodal Equation Physics)
------------------------------------------------------
-The following are registered composition motifs. They describe intended operator
-roles and are not, by themselves, complete grammar-valid words:
-
-### REMESH Hierarchical (Central Control → Periphery)
-**Physics**: Controlled replication from center with descending-scale telemetry
-
-1. **IL (Coherence)**: Reduces |ΔNFR| → stabilizes each recursion level
-   - Relationship: Multi-level stabilization (coherence extended)
-   - Dynamics: REMESH propagates pattern, IL consolidates at each level
-   - Sequence: REMESH → IL (recursive propagation → multi-level stabilization)
-
-2. **VAL (Expansion)**: Raises νf → increased reorganization capacity
-   - Relationship: Coherent structural expansion (fractal growth)
-   - Dynamics: VAL raises capacity; REMESH then mixes delayed form
-   - Sequence: VAL → REMESH (raise capacity → mix delayed form)
-
-3. **SHA (Silence)**: Reduced capacity and identity capture
-   - Relationship: Candidate latent-memory support
-   - Dynamics: SHA preserves EPI at its event; later rate depends on νf · ΔNFR
-   - Sequence: SHA → REMESH (reduce capacity → propagate captured form)
-   - **Critical**: NO functional redundancy - uses existing Silence operator
-
-4. **NUL (Contraction)**: Reduces νf and densifies ΔNFR
-   - Relationship: Coherent structural compression (fractal distillation)
-   - Dynamics: Complementary to VAL on capacity; REMESH then mixes delayed form
-   - Sequence: NUL → REMESH (reduce capacity → mix delayed form)
-   - **Note**: Hierarchical simplification preserving core structure
-
-### REMESH Rhizomatic (Decentralized Propagation)
-**Physics**: Propagation without fixed center, by local resonance
-
-1. **OZ (Dissonance)**: Increases |ΔNFR| → exploration
-   - Relationship: Distributed bifurcation
-   - Dynamics: REMESH + OZ creates decentralized local variations
-   - Sequence: OZ → REMESH (destabilize → replicate variations)
-
-2. **UM (Coupling)**: φᵢ → φⱼ → structural connection
-   - Relationship: Multi-scale coupling
-   - Dynamics: REMESH propagates, UM connects replicas without hierarchy
-   - Sequence: REMESH → UM (propagate → connect peers)
-
-3. **THOL (Self-organization)**: Creates sub-EPIs → emergence
-   - Relationship: Recursive self-organization
-   - Dynamics: REMESH + THOL generates emergent structures without center
-   - Sequence: THOL → REMESH (emerge sub-EPIs → replicate emergent forms)
-
-### REMESH Fractal Harmonic (Perfect Self-Similarity)
-**Physics**: Scale-symmetric replication with self-similarity diagnostics
-
-1. **RA (Resonance)**: Amplifies coherently → propagation
-   - Relationship: Multi-scale resonance
-   - Dynamics: REMESH mixes delayed form, then RA propagates over an admissible
-     phase-compatible coupling; symmetry is a measured property of the state
-   - Sequence: REMESH → RA (mix delayed form → propagate resonantly)
-
-2. **NAV (Transition)**: Activates latent EPI → regime shift
-   - Relationship: Transition between fractal attractors
-   - Dynamics: REMESH navigates between self-similar attractor states
-   - Sequence: NAV → REMESH (transition → replicate new regime)
-
-3. **AL (Emission)**: Sources form on an existing node with supplied capacity
-   - Relationship: Emission followed by delayed form mixing
-   - Dynamics: AL writes form on existing support; REMESH mixes retained form
-   - Sequence: AL → REMESH (emit form → mix delayed form)
-
-4. **EN (Reception)**: Updates EPI from network → reception
-   - Relationship: Symmetric multi-scale reception
-   - Dynamics: EN captures patterns from multiple sources; REMESH then
-     replicates them symmetrically
-   - Sequence: EN → REMESH (receive multi-scale → propagate symmetrically)
-   - **Note**: Pre-recursion operator that feeds REMESH
-
-### Operators with Indirect Relationships
-
-**ZHIR (Mutation)**: Present in canonical relationships but NOT in types
-- **Physical Reason**: ZHIR is a TRANSFORMER that emerges POST-recursion
-- **Dynamics**: REMESH propagates → local variations + destabilizers → ZHIR transforms
-- **Grammar**: Requires prior IL + a recent destabilizer (U4b)
-- **Relationship**: Replicative mutation
-- **Conclusion**: Operates AFTER REMESH completes, not during
-
-Grammar Implications from Physical Analysis
---------------------------------------------
-REMESH's physical behavior affects unified grammar rules (UNIFIED_GRAMMAR_RULES.md):
-
-### U1: STRUCTURAL INITIATION & CLOSURE
-**Physical Basis**: REMESH echoes EPI(t-τ), can activate from dormant/null states
-
-**U1a (Initiation)**: REMESH is a GENERATOR
-- Can start sequences when operating on latent structure
-- Activates dormant patterns via temporal coupling
-- **Rule**: Sequences can begin with REMESH
-
-**U1b (Closure)**: REMESH is a CLOSURE operator
-- Marks an operational boundary after distributing structure across scales
-- Does not by itself establish an attractor or self-sustaining coherence
-- **Rule**: Sequences can end with REMESH
-
-### U2: FINITE DEBT AND COVERAGE POLICY
-**Scope**: REMESH mixing can raise or lower a current-state norm depending on
-the delayed snapshots and clipping.
-
-**Requirement**: REMESH + destabilizers → must include stabilizers
-- Example: REMESH + VAL (expansion) → requires IL (coherence)
-- Purpose: Records stabilizer coverage for recursive expansion risk
-- **Rule**: If REMESH precedes/follows VAL, OZ, or ZHIR → require IL or THOL
-
-**Trajectory boundary**: finite-word coverage does not prove convergence of
-``∫νf·ΔNFR dt``. Such a result needs the delayed-state recurrence, gains,
-clipping, pressure law, time horizon, and a norm.
-
-### U3: RESONANT COUPLING
-**Physical Basis**: REMESH propagates patterns - must verify phase compatibility
-
-**Requirement**: REMESH with UM or RA → verify |wrap(φᵢ - φⱼ)| ≤ Δφ_max
-- REMESH creates replicas that must be phase-compatible for resonance
-- Antiphase replicas → destructive interference
-- **Rule**: StructuralIdentity.matches() includes phase verification
-- **Implementation**: Phase pattern captured and validated during propagation
-
-### U4: BIFURCATION DYNAMICS
-**Scope**: REMESH can transport an existing perturbation across scales; OZ and
-ZHIR retain their declared trigger roles.
-
-**U4a (Triggers Need Handlers)**: OZ or ZHIR in a REMESH motif → need handlers
-- REMESH → THOL sequence: Recursion enables self-organization
-- Must handle emergent sub-EPIs from recursive bifurcation
-- **Rule**: REMESH + OZ or ZHIR → require THOL or IL handlers
-
-**U4b (Transformers Need Context)**: REMESH does not supply ZHIR's context
-- REMESH creates variations across scales
-- ZHIR may then transform local variations, but REMESH is not a destabilizer
-- **Rule**: ZHIR after REMESH still requires prior IL + a recent OZ/ZHIR/VAL
-
-Centralized Flow - No Redundancy
----------------------------------
-This implementation maintains a single, centralized flow:
-
-1. **SHA Integration**: Uses existing Silence operator from definitions.py
-   - NO reimplementation of SHA functionality
-   - StructuralIdentity captures a state; it does not prove later freezing
-   - Workflow: Silence() → capture_from_node(is_sha_frozen=True) → validate
-
-2. **Coherence Calculation**: Canonical C(t) for REMESH validation
-   - tnfr.metrics.common.compute_coherence is the single implementation
-   - REMESH fidelity compares its before/after values without redefining C(t)
-
-3. **Pattern Recognition**: Unique to REMESH structural memory
-   - structural_similarity(): Pattern matching (no operator overlap)
-   - structural_memory_match(): Network-wide search (REMESH-specific)
-   - No duplication with network analysis tools
-
-4. **Identity Tracking**: REMESH-specific fractal identity
-   - StructuralIdentity: Persistent identity across reorganizations
-   - Captures EPI signature, νf range, phase pattern
-   - Validates preservation post-recursion
-
-Key Capabilities
+Delayed-state map
 ----------------
-- Structural memory: Pattern recognition across network nodes
-- Identity monitoring: Fractal lineage tracking across reorganizations
-- Coherence conservation: Validating structural fidelity during remeshing
-- Multi-modal recursivity: Hierarchical, rhizomatic, and fractal harmonic modes
-- Grammar integration: Callers can apply the shared U1--U5 sequence policies;
-  canonical U6 remains a separate before/after field observation
+For declared alpha and two retained snapshots, the ideal unclipped row is
+
+    EPI_next = (1-alpha)**2 * EPI_now
+             + alpha*(1-alpha) * EPI_local + alpha * EPI_global.
+
+The shared ``_delayed_remesh_kernel`` separates that exact-real expression,
+its nested binary64 evaluation and the configured clipping policy. Delayed
+mixing does not itself write capacity, phase, stored pressure or topology.
+Pressure refresh is a separately declared operation. Integer delays select
+retained sample positions; they denote fixed elapsed durations only with an
+explicit sampling-clock convention. The map does not advance delayed history.
+
+History, identity and evidence
+------------------------------
+The event/REMESH bridge owns its pre-map history append and post-map temporal
+boundary. Separate finite causal wrappers bind consecutive executions to one
+graph. Caller-supplied equal endpoints or histories alone do not establish
+causal provenance, complete grammar-state continuity or future stability.
+
+``StructuralIdentity`` is a configured snapshot signature. Similarity,
+lineage, latency labels and a successful match are observations or policies,
+not invariant NFR identities or autonomous maintenance theorems. The explicitly
+requested identity-propagation helper changes form, capacity and circular
+phase; its action is distinct from delayed EPI mixing. Pattern grouping,
+origin selection and invocation remain supplied policies.
+
+An environmental memory obtained by eliminating hidden dynamical state keeps
+its hidden initialization and its own causal law. It cannot be replaced by
+this configured finite echo without a separate correspondence proof; the P5
+comparison in ``theory/DERIVED_EPI_MEMORY.md`` includes a counterexample.
+
+Grammar and scientific scope
+----------------------------
+``operator_contracts`` and ``grammar_canon`` own the operator catalog and
+shared grammar policies. U3 belongs to the actual coupling/resonance action;
+Recursivity supplies neither Mutation's measured trigger nor its U4b context.
+The delayed-map and auxiliary APIs do not establish a grammar for all their
+compositions. See ``docs/contracts/OPERATOR_EVENTS.md`` and
+``theory/STRUCTURAL_OPERATORS.md`` for execution, storage and occurrence
+boundaries. No operator name, memory label or finite matching result proves
+physical identification, universal catalog completeness or autonomous action.
 """
 
 from __future__ import annotations
@@ -314,6 +162,33 @@ _VF_FROZEN_THRESHOLD = 0.05
 # ==============================================================================
 
 
+def _identity_real(value: Any, label: str, *, nonnegative: bool = False) -> float:
+    """Admit one consumed signature scalar before materialization."""
+    from .._exact_time import bounded_represented_real
+
+    try:
+        return bounded_represented_real(
+            value, f"StructuralIdentity {label}", minimum=0 if nonnegative else None
+        )[0]
+    except (TypeError, ValueError) as exc:
+        raise TNFRValueError(str(exc)) from exc
+
+
+def _identity_channel(
+    node_data: Mapping[str, Any], aliases: tuple[str, ...], label: str
+) -> float | None:
+    """Read an authoritative channel; absence stays distinct from invalid data."""
+    from ..types import require_finite_real_scalar_epi
+
+    missing = object()
+    value = get_attr(node_data, aliases, missing, strict=True, conv=lambda item: item)
+    if value is missing:
+        return None
+    if aliases == ALIAS_EPI:
+        return require_finite_real_scalar_epi(value, f"StructuralIdentity {label}")
+    return _identity_real(value, label, nonnegative=aliases == ALIAS_VF)
+
+
 @dataclass
 class StructuralIdentity:
     """Configured nodal snapshot signature for matching reorganized states.
@@ -343,11 +218,11 @@ class StructuralIdentity:
     vf_range : tuple[float, float]
         Range of structural frequencies (min, max) in Hz_str
     phase_pattern : float | None
-        Characteristic phase pattern in [0, 2π], if applicable
+        Optional circular phase target in the shared represented-real domain
     frozen_by_sha : bool
         Low-capacity SHA capture flag; not a future invariance certificate
     lineage : list[str]
-        History of transformations preserving this identity
+        Supplied transformation labels, not proof of identity preservation
     tolerance : float
         Maximum deviation for identity match (default: 0.1)
 
@@ -379,6 +254,46 @@ class StructuralIdentity:
     lineage: list[str] = field(default_factory=list)
     tolerance: float = 0.1
 
+    def __post_init__(self) -> None:
+        self._validated_fields()
+
+    def _validated_fields(
+        self, tolerance: float | None = None
+    ) -> tuple[float, float, float, float | None, bool, float]:
+        """Re-admit mutable configuration without replacing its source values."""
+        from .._exact_time import bounded_represented_real
+        from ..config.parsing import parse_bool
+        from ..types import require_finite_real_scalar_epi
+
+        epi = require_finite_real_scalar_epi(
+            self.epi_signature, "StructuralIdentity EPI signature"
+        )
+        if not isinstance(self.vf_range, (tuple, list)) or len(self.vf_range) != 2:
+            raise TNFRValueError("StructuralIdentity capacity range needs two bounds")
+        lower_source, upper_source = self.vf_range
+        upper = _identity_real(upper_source, "upper capacity", nonnegative=True)
+        try:
+            lower = bounded_represented_real(
+                lower_source,
+                "StructuralIdentity lower capacity",
+                minimum=0,
+                maximum=upper_source,
+            )[0]
+            frozen = parse_bool(self.frozen_by_sha)
+        except (TypeError, ValueError) as exc:
+            raise TNFRValueError(str(exc)) from exc
+        phase = (
+            None
+            if self.phase_pattern is None
+            else _identity_real(self.phase_pattern, "phase target")
+        )
+        tol = _identity_real(
+            self.tolerance if tolerance is None else tolerance,
+            "tolerance",
+            nonnegative=True,
+        )
+        return epi, lower, upper, phase, frozen, tol
+
     def matches(
         self, node_data: Mapping[str, Any], *, tolerance: float | None = None
     ) -> bool:
@@ -401,43 +316,43 @@ class StructuralIdentity:
         If frozen_by_sha=True, the vf check admits low capacity in addition
         to the captured range. EPI matching remains a separate snapshot check;
         neither predicate proves continued dynamical freezing.
-        """
-        tol = tolerance if tolerance is not None else self.tolerance
 
-        # Check EPI signature match (primary identity criterion)
-        node_epi = _as_float(get_attr(node_data, ALIAS_EPI, 0.0))
-        if abs(node_epi - self.epi_signature) > tol:
+        Missing required observations return False. Invalid present channels
+        or signature configuration raise TNFRValueError; an invalid earlier
+        alias cannot fall through to a later value. Only a declared phase
+        target consumes phase. The signature and node mapping remain unchanged.
+        """
+        epi, vf_min, vf_max, phase, frozen, tol = self._validated_fields(tolerance)
+        node_epi = _identity_channel(node_data, ALIAS_EPI, "EPI")
+        node_vf = _identity_channel(node_data, ALIAS_VF, "capacity")
+        node_phase = (
+            _identity_channel(node_data, ALIAS_THETA, "phase")
+            if phase is not None
+            else None
+        )
+        if (
+            node_epi is None
+            or node_vf is None
+            or (phase is not None and node_phase is None)
+        ):
             return False
 
-        # Check vf range (relaxed if SHA-frozen)
-        node_vf = _as_float(get_attr(node_data, ALIAS_VF, 0.0))
-        vf_min, vf_max = self.vf_range
-
-        if self.frozen_by_sha:
-            # SHA-frozen: accept low νf (frozen state) OR original range
-            # (pattern may be reactivated after SHA)
-            if node_vf < _VF_FROZEN_THRESHOLD:  # Frozen by SHA (νf → 0)
-                pass  # Accept - this is expected for SHA-frozen patterns
-            elif not (vf_min - tol <= node_vf <= vf_max + tol):
-                return False
-        else:
-            # Normal check: must be within range
-            if not (vf_min - tol <= node_vf <= vf_max + tol):
-                return False
-
-        # Check phase pattern if specified
-        if self.phase_pattern is not None:
-            from ..constants.aliases import ALIAS_THETA
-
-            node_phase = _as_float(get_attr(node_data, ALIAS_THETA, None))
-            if node_phase is None:
-                return False
-            # Phase identity is defined on the circle, independently of the
-            # selected numeric representative.
-            phase_diff = abs(angle_diff(node_phase, self.phase_pattern))
-            if phase_diff > tol:
-                return False
-
+        # Exact represented comparisons avoid overflow in finite differences
+        # or in tolerance-expanded capacity endpoints.
+        exact_tol = Fraction.from_float(tol)
+        if abs(Fraction.from_float(node_epi) - Fraction.from_float(epi)) > exact_tol:
+            return False
+        low_capacity = frozen and node_vf < _VF_FROZEN_THRESHOLD
+        if not low_capacity and not (
+            Fraction.from_float(vf_min) - exact_tol
+            <= Fraction.from_float(node_vf)
+            <= Fraction.from_float(vf_max) + exact_tol
+        ):
+            return False
+        if phase is not None:
+            # Use the shared circular reader directly. Separately reducing
+            # tiny negative representatives can erase their real difference.
+            return abs(angle_diff(node_phase, phase)) <= tol
         return True
 
     def record_transformation(self, operation: str) -> None:
@@ -460,17 +375,17 @@ class StructuralIdentity:
     ) -> "StructuralIdentity":
         """Capture structural identity from a node's current state.
 
-        This creates a "memory snapshot" of the node's structural signature
-        that can be propagated via REMESH across scales.
+        EPI and nonnegative capacity are required. An absent optional phase
+        remains None; an invalid present phase rejects. No node state is
+        written, and the capture does not establish a maintained NFR identity.
 
         Parameters
         ----------
         node_data : Mapping
             Node attributes containing EPI, vf, phase
         is_sha_frozen : bool, default=False
-            If True, mark identity as captured from SHA-frozen state (νf ≈ 0).
-            **NOTE**: This does NOT apply SHA - it only marks that SHA was
-            already applied. Use tnfr.operators.definitions.Silence to apply SHA.
+            Supplied low-capacity capture label. This does not apply SHA,
+            authenticate its occurrence or prove later freezing.
         tolerance : float, default=0.1
             Tolerance for future identity matching
 
@@ -483,32 +398,40 @@ class StructuralIdentity:
         -----
         **REMESH ↔ SHA Integration Pattern**:
 
-        1. Apply SHA operator to freeze node (see tnfr.operators.definitions.Silence)
-        2. Call this method with is_sha_frozen=True to capture frozen state
-        3. Apply REMESH to propagate pattern across scales
-        4. Use identity.matches() to validate preservation
+        1. Apply SHA to reduce capacity, if that intervention is intended.
+        2. Capture the resulting available channels.
+        3. Invoke the selected separate REMESH or propagation operation.
+        4. Use identity.matches() to compare the new snapshot.
 
-        **DO NOT use this to apply SHA** - SHA is a separate operator that must
-        be applied via the grammar system. This only captures state AFTER SHA.
+        SHA remains a separate operator with its own admission and lifecycle.
 
         Example
         -------
         >>> from tnfr.operators.definitions import Silence
         >>> from tnfr.structural import run_sequence
-        >>> # Step 1: Apply SHA operator to freeze node
+        >>> # Step 1: Apply SHA to reduce capacity
         >>> run_sequence(G, node, [Silence()])
-        >>> # Step 2: Capture frozen identity
+        >>> # Step 2: Capture the supplied low-capacity label and snapshot
         >>> identity = StructuralIdentity.capture_from_node(
         ...     G.nodes[node],
         ...     is_sha_frozen=True
         ... )
-        >>> # Step 3: Apply REMESH (propagates frozen pattern)
+        >>> # Step 3: Invoke the intended separate REMESH operation
         >>> # ... REMESH operations ...
-        >>> # Step 4: Validate identity preserved
+        >>> # Step 4: Compare the available snapshot channels
         >>> assert identity.matches(G.nodes[node])
         """
-        epi = _as_float(get_attr(node_data, ALIAS_EPI, 0.0))
-        vf = _as_float(get_attr(node_data, ALIAS_VF, 0.0))
+        from ..config.parsing import parse_bool
+
+        epi = _identity_channel(node_data, ALIAS_EPI, "EPI")
+        vf = _identity_channel(node_data, ALIAS_VF, "capacity")
+        phase = _identity_channel(node_data, ALIAS_THETA, "phase")
+        if epi is None or vf is None:
+            raise TNFRValueError("StructuralIdentity capture requires EPI and capacity")
+        try:
+            frozen = parse_bool(is_sha_frozen)
+        except (TypeError, ValueError) as exc:
+            raise TNFRValueError(str(exc)) from exc
 
         # For vf_range, use small window around current value
         # (unless SHA-frozen, in which case we expect νf ≈ 0)
@@ -516,22 +439,17 @@ class StructuralIdentity:
         vf_min = max(0.0, vf - vf_tolerance)
         vf_max = vf + vf_tolerance
 
-        # Capture phase if present
-        from ..constants.aliases import ALIAS_THETA
-
-        phase = _as_float(get_attr(node_data, ALIAS_THETA, None))
-
         identity = cls(
             epi_signature=epi,
             vf_range=(vf_min, vf_max),
-            phase_pattern=phase if phase is not None else None,
-            frozen_by_sha=is_sha_frozen,
+            phase_pattern=phase,
+            frozen_by_sha=frozen,
             tolerance=tolerance,
         )
 
-        if is_sha_frozen:
+        if frozen:
             identity.record_transformation(
-                "Captured from SHA-frozen state (latent structural memory)"
+                "Captured with supplied low-capacity SHA label"
             )
 
         return identity
@@ -2536,16 +2454,17 @@ def apply_network_remesh_with_memory(
     propagation_strength: float = 0.5,
     min_cluster_size: int = 2,
 ) -> None:
-    """Apply REMESH with structural field memory activation.
+    """Apply delayed REMESH followed by a supplied pattern-propagation policy.
 
-    This extended version of REMESH implements the theoretical capability
-    of "structural memory": nodes can recognize themselves in other nodes
-    through pattern similarity, enabling coherent propagation across scales.
+    Similarity-based grouping, origin selection and interpolation are explicit
+    operations requested by this call. They do not derive autonomous
+    recognition, a maintained collective NFR identity or an environmental
+    memory law from the nodal equation.
 
     The function performs:
     1. Standard REMESH reorganization (temporal EPI mixing)
     2. Pattern detection (find groups of structurally similar nodes)
-    3. Identity propagation (reinforce shared patterns from origin nodes)
+    3. Interpolation of form, capacity and phase from each selected origin
 
     When delayed history is insufficient, phase 1 is a declared no-op. The
     independently requested pattern-detection/propagation phase still runs
@@ -2556,48 +2475,43 @@ def apply_network_remesh_with_memory(
     G : TNFRGraph
         Network to reorganize (modified in-place)
     enable_structural_memory : bool, default=True
-        Whether to activate structural memory after standard REMESH.
+        Whether to apply the additional grouping and interpolation policy.
         If False, performs only standard REMESH.
     similarity_threshold : float, default=0.75
-        Minimum similarity [0-1] to recognize patterns as "same identity".
-        Higher = stricter matching. Typical range: 0.7-0.9.
+        Configured similarity threshold [0-1] for grouping snapshots.
+        Passing this score does not establish identity equivalence.
     similarity_metric : str, default='cosine'
         Metric for comparing structural signatures.
         Options: 'cosine', 'euclidean', 'correlation'
     propagation_strength : float, default=0.5
         Interpolation weight [0-1] for identity propagation.
         - 0.0: No propagation (structural memory detection only)
-        - 0.5: Balanced blending (recommended)
-        - 1.0: Full replacement (aggressive, may reduce diversity)
+        - 0.5: Equal interpolation weights
+        - 1.0: Copy the origin's channels, with form still subject to clipping
     min_cluster_size : int, default=2
-        Minimum nodes required to form a recursive pattern.
-        Single isolated nodes are not considered patterns.
+        Minimum group size used by the configured pattern detector.
 
     Notes
     -----
-    **TNFR Physics**: This implements the principle that "coherence propagates
-    structurally, not imposed" (TNFR.pdf § 4.2). Patterns that resonate across
-    the network mutually reinforce through similarity-based coupling.
+    The grouping step is a snapshot policy. Subsequent unforced evolution,
+    storage balance, identity retention and complete operator-word admission
+    need their own contracts. This wrapper does not acquire those properties
+    merely by composing its existing helpers.
 
     **Workflow**:
     1. `apply_network_remesh(G)` - Standard temporal memory mixing
     2. `detect_recursive_patterns(G, threshold)` - Find similar node groups
     3. For each cluster:
-       - `identify_pattern_origin(G, cluster)` - Find strongest instance
-       - `propagate_structural_identity(G, origin, targets)` - Reinforce pattern
+       - `identify_pattern_origin(G, cluster)` - Apply the origin-selection score
+       - `propagate_structural_identity(G, origin, targets)` - Apply interpolation
 
     **Telemetry**: Logs structural memory events under the graph history key
     structural_memory_events.
     including cluster statistics and propagation metadata.
 
-    **Canonical Relationships**:
-    - Hierarchical REMESH: combine with IL to monitor stability at each level.
-    - Rhizomatic REMESH: Combine with UM (coupling) for decentralized pattern spread
-    - Fractal Harmonic: Combine with RA (resonance) for symmetric amplification
-
     Examples
     --------
-    >>> # Standard REMESH with structural memory (recommended)
+    >>> # Explicitly request delayed mixing and pattern propagation
     >>> apply_network_remesh_with_memory(G)
     >>>
     >>> # Strict pattern matching with gentle propagation

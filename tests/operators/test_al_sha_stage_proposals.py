@@ -20,6 +20,7 @@ from tnfr.operators.al_sha_stage_proposals import (
     commit_silence_structure,
     propose_emission_stage,
     propose_silence_stage,
+    silence_capacity_proposal,
 )
 
 
@@ -329,3 +330,27 @@ def test_proposal_records_have_operator_specific_types_and_glyphs() -> None:
     assert isinstance(silence, SilenceStageProposal)
     assert emission.glyph.value == "AL"
     assert silence.glyph.value == "SHA"
+
+
+def test_positive_sha_product_cannot_underflow_into_a_declared_zero_capacity():
+    minimum_subnormal = float.fromhex("0x0.0000000000001p-1022")
+    with pytest.raises(TNFRValueError, match="underflows to represented zero") as error:
+        silence_capacity_proposal(minimum_subnormal, 0.5)
+    assert error.value.context == {
+        "operator": "Silence",
+        "reason": "capacity_product_underflow",
+        "nu_f_before": minimum_subnormal,
+        "factor": 0.5,
+        "nu_f_after": 0.0,
+    }
+    # The adjacent exactly representable product remains admitted. Zero is
+    # legitimate when supplied by either input, independently of this boundary.
+    assert silence_capacity_proposal(2 * minimum_subnormal, 0.5) == (
+        2 * minimum_subnormal,
+        minimum_subnormal,
+    )
+    assert silence_capacity_proposal(minimum_subnormal, 0.0) == (
+        minimum_subnormal,
+        0.0,
+    )
+    assert silence_capacity_proposal(0.0, 0.5) == (0.0, 0.0)

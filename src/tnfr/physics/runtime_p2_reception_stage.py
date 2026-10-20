@@ -10,8 +10,10 @@ The bridge checks the executor-owned event/stage correspondence, exact
 two-phase Jacobi dispatch, mutual singleton runtime neighbours, binary64
 ``0.5``, the common hard interval, the fixed exact diffusion-metric ray, and
 bit-for-bit replay of both observed output coordinates.  The mathematical
-conclusion remains numeric consensus and exact zero centered EPI energy;
-opposite signed-zero outputs are therefore allowed.
+conclusion remains numeric consensus and exact zero centered EPI energy.
+Raw scalar proposals can have opposite signed zeros; shared EPI admission
+canonicalizes these before the captured endpoint. Retained source EPI is
+re-admitted through that same boundary when binding consumed coordinates.
 
 This is evidence for one completed event inside one finite atomic schedule.
 It does not bind REMESH history/configuration to the executed graph, certify
@@ -28,7 +30,7 @@ from typing import Any, Literal
 
 from ..errors import TNFRValueError
 from ..operators.event_runtime import ExecutedGlyphStage, OperatorEventExecutionResult
-from ..types import Glyph
+from ..types import Glyph, real_scalar_epi
 from ..utils._structural_signature import (
     binary64_vectors_are_identical,
     proof_stamps_are_identical,
@@ -479,7 +481,7 @@ def _model_from_validated_dependencies(
         raise TNFRValueError("captured Reception input is outside the source class")
 
     certified_before = _binary64_pair_from_stage_vector(
-        step.state_before,
+        tuple(real_scalar_epi(value) for value in step.state_before),
         label="certified Reception input",
     )
     if not binary64_vectors_are_identical(certified_before, binary_before):

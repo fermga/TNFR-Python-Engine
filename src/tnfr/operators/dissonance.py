@@ -23,6 +23,7 @@ from ..config.operator_names import DISSONANCE
 from ..constants.aliases import ALIAS_DNFR
 from ..errors import TNFRValueError
 from ..types import Glyph, TNFRGraph
+from ._argument_validation import finite_node_real
 from .definitions_base import Operator
 
 _MISSING = object()
@@ -162,6 +163,13 @@ def _plan_local_dissonance(G: TNFRGraph, node: Any) -> _LocalDissonancePlan:
     from ..utils.cache import GRAPH_RUNTIME_CACHE_KEYS
     from . import GLYPH_OPERATIONS, get_glyph_factors
 
+    dnfr_before = finite_node_real(
+        G.nodes[node],
+        ALIAS_DNFR,
+        0.0,
+        operator="Dissonance",
+        label="DeltaNFR state",
+    )
     probe = nx.Graph()
     probe.graph.update(G.graph)
     for key in GRAPH_RUNTIME_CACHE_KEYS:
@@ -172,7 +180,6 @@ def _plan_local_dissonance(G: TNFRGraph, node: Any) -> _LocalDissonancePlan:
     jitter_progress_before = deepcopy(G.nodes[node].get(_JITTER_PROGRESS_KEY))
 
     probe_node = NodeNX(probe, node)
-    dnfr_before = float(probe_node.dnfr)
     factors = get_glyph_factors(probe_node, Glyph.OZ)
     GLYPH_OPERATIONS[Glyph.OZ](probe_node, factors)
     dnfr_after = float(probe_node.dnfr)
@@ -237,10 +244,17 @@ class Dissonance(Operator):
     def _validate_application_preconditions(
         self, G: TNFRGraph, node: Any, **kw: Any
     ) -> None:
-        """Admit the noise branch before grammar or monitor writes."""
+        """Admit consumed pressure and noise mode before lifecycle writes."""
         from .factor_contracts import _resolve_dissonance_noise_mode
 
         _resolve_dissonance_noise_mode(G.graph)
+        finite_node_real(
+            G.nodes[node],
+            ALIAS_DNFR,
+            0.0,
+            operator="Dissonance",
+            label="DeltaNFR state",
+        )
         super()._validate_application_preconditions(G, node, **kw)
 
     def _execute(self, G: TNFRGraph, node: Any, **kw: Any) -> None:

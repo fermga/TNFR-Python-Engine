@@ -155,13 +155,78 @@ def test_partial_core_metrics_have_a_mirror_without_duplicate_json_on_flush(
     emitter = TelemetryEmitter(
         path, safe=True, include_extended=False, human_mirror=True
     )
-    emitter.record(_star(cancellation=False), step=4)
+    event = emitter.record(_star(cancellation=False), step=4)
+    assert event.metrics["field_errors"] == {
+        field: {"type": "ValueError", "message": "core metric unavailable"}
+        for field in ("coherence_total", "sense_index")
+    }
     assert emitter._buffer == []
     emitter.flush()
     assert len(path.read_text(encoding="utf-8").splitlines()) == 1
     mirror = path.with_suffix(".log").read_text(encoding="utf-8")
     assert "C=unavailable" in mirror and "Si=unavailable" in mirror
     assert len(mirror.splitlines()) == 1
+
+
+def test_core_sense_index_uses_current_state_without_overwriting_stored_scores(
+    tmp_path,
+):
+    graph = nx.path_graph(2)
+    graph.graph["SI_WEIGHTS"] = {"alpha": 1.0, "beta": 0.0, "gamma": 0.0}
+    for node, capacity in enumerate((1.0, 2.0)):
+        graph.nodes[node].update(
+            EPI=0.25,
+            nu_f=capacity,
+            theta=0.0,
+            delta_nfr=0.125,
+            Si=0.01,
+        )
+    nodes_before = deepcopy(dict(graph.nodes(data=True)))
+    path = tmp_path / "sense.jsonl"
+    emitter = TelemetryEmitter(path, include_extended=False, safe=False)
+    event = emitter.record(graph)
+    # The supplied capacity-only policy gives Si=(1/2,1), independent of
+    # deliberately stale stored scores. Coherence reads stored pressure/rate.
+    assert event.metrics["sense_index"] == pytest.approx(0.75)
+    assert event.metrics["coherence_total"] == pytest.approx(8 / 9)
+    assert dict(graph.nodes(data=True)) == nodes_before
+    assert json.loads(path.read_text(encoding="utf-8"))["metrics"][
+        "sense_index"
+    ] == pytest.approx(0.75)
+
+    graph.nodes[0]["nu_f"] = 2.0
+    updated = emitter.record(graph)
+    assert updated.metrics["sense_index"] == pytest.approx(1.0)
+    assert graph.nodes[0]["Si"] == 0.01
+
+
+def test_empty_network_mean_sense_index_is_unavailable(tmp_path):
+    event = TelemetryEmitter(
+        tmp_path / "empty.jsonl", include_extended=False, safe=True
+    ).record(nx.Graph())
+    assert "sense_index" not in event.metrics
+    assert event.metrics["field_errors"]["sense_index"] == {
+        "type": "ValueError",
+        "message": "mean sense index is unavailable for an empty network",
+    }
+
+
+@pytest.mark.parametrize("safe", (False, True))
+def test_sense_index_failure_preserves_collection_policy(tmp_path, safe):
+    graph = _star(cancellation=False)
+    graph.nodes[0]["nu_f"] = math.nan
+    path = tmp_path / "invalid_si.jsonl"
+    emitter = TelemetryEmitter(path, include_extended=False, safe=safe)
+    if safe:
+        event = emitter.record(graph)
+        assert "sense_index" not in event.metrics
+        assert event.metrics["field_errors"]["sense_index"]["type"] == "TNFRValueError"
+        assert "coherence_total" in event.metrics and "phi_s" in event.metrics
+    else:
+        with pytest.raises(ValueError):
+            emitter.record(graph)
+        assert not path.exists()
+        assert emitter._buffer == []
 
 
 def test_successful_unified_collection_reuses_its_extended_suite(tmp_path, monkeypatch):

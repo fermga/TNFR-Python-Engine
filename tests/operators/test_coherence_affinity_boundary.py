@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 from copy import deepcopy
+from fractions import Fraction
 
 import networkx as nx
 import numpy as np
@@ -285,6 +286,258 @@ def test_weighted_phase_sync_rejects_invalid_payloads(weights, message) -> None:
             nodes_order=[0, 1, 2],
             W_row=weights,
         )
+
+
+@pytest.mark.parametrize("kind", ("dense", "sparse"))
+@pytest.mark.parametrize("sign", (-1, 1))
+def test_affinity_admission_rejects_nonzero_underflow_before_zero_projection(
+    kind, sign
+):
+    tiny = Fraction(sign, 10**1000)
+    weights = [tiny, 0.0, 1.0] if kind == "dense" else [(1, 0, tiny), (1, 2, 1.0)]
+    with pytest.raises(ValueError, match="underflows"):
+        local_phase_sync_weighted(
+            _phase_sync_graph(), 1, nodes_order=[0, 1, 2], W_row=weights
+        )
+
+
+@pytest.mark.parametrize("kind", ("dense", "sparse"))
+@pytest.mark.parametrize(
+    "left,right",
+    [(1e308, 1e308), (1e308, 8e307), (math.ulp(0.0), 2 * math.ulp(0.0))],
+)
+def test_extreme_finite_weights_preserve_the_analytic_orthogonal_mean(
+    kind, left, right
+):
+    graph = _phase_sync_graph()
+    graph.nodes[2]["phase"] = math.pi / 2
+    weights = [left, 0.0, right] if kind == "dense" else [(1, 0, left), (1, 2, right)]
+    # Two perpendicular unit vectors: ||a*u+b*v||/(a+b).
+    ratio = right / left
+    expected = math.sqrt(1 + ratio * ratio) / (1 + ratio)
+    actual = local_phase_sync_weighted(graph, 1, nodes_order=[0, 1, 2], W_row=weights)
+    assert actual == pytest.approx(expected, abs=2e-16)
+
+
+def test_subnormal_single_weight_retains_unit_vector_magnitude():
+    graph = _phase_sync_graph()
+    graph.nodes[2]["phase"] = 1.0
+    assert local_phase_sync_weighted(
+        graph, 1, nodes_order=[0, 1, 2], W_row=[0.0, 0.0, math.ulp(0.0)]
+    ) == pytest.approx(1.0, abs=2e-16)
+
+
+@pytest.mark.parametrize(
+    "weights",
+    ([1e308, 0.0, 1e308], [(1, 0, 1e308), (1, 2, 1e308)]),
+)
+def test_overflowing_aligned_weight_sum_still_has_unit_synchrony(weights):
+    assert (
+        local_phase_sync_weighted(
+            _phase_sync_graph(), 1, nodes_order=[0, 1, 2], W_row=weights
+        )
+        == 1.0
+    )
+
+
+def test_all_row_reader_keeps_mixed_order_duplicates_and_live_phase_admission():
+    from tnfr.metrics.coherence import _all_local_phase_sync_weighted
+
+    graph = nx.Graph()
+    order = ["z", 7, "a"]
+    graph.add_nodes_from(order, phase=0.0)
+    graph.add_edges_from([("z", 7), (7, "a")])
+    payload = [(1, 2, 1.0), (1, 1, 7.0), (1, 0, 1.0), (1, 2, 2.0)]
+    initial = _all_local_phase_sync_weighted(graph, order, payload)
+    assert list(initial) == order
+    assert initial == {"z": 0.0, 7: 1.0, "a": 0.0}
+    graph.nodes["a"]["phase"] = math.pi / 2
+    changed = _all_local_phase_sync_weighted(graph, order, payload)
+    assert changed[7] == pytest.approx(math.sqrt(10) / 4)
+    assert changed[7] == local_phase_sync_weighted(
+        graph, 7, nodes_order=order, W_row=payload
+    )
+    graph.nodes["a"]["phase"] = math.nan
+    with pytest.raises(ValueError, match="phase"):
+        _all_local_phase_sync_weighted(graph, order, payload)
+    with pytest.raises(ValueError, match="phase"):
+        local_phase_sync_weighted(graph, 7, nodes_order=order, W_row=payload)
+
+
+def test_all_row_reader_admits_invalid_weights_outside_the_first_row():
+    from tnfr.metrics.coherence import _all_local_phase_sync_weighted
+
+    with pytest.raises(ValueError, match="underflows"):
+        _all_local_phase_sync_weighted(
+            _phase_sync_graph(),
+            [0, 1, 2],
+            [(0, 1, 1.0), (2, 0, Fraction(-1, 10**1000))],
+        )
+
+
+def test_warm_pulse_observation_reads_direct_support_and_node_changes():
+    from tnfr.physics.structural_diffusion import compute_nodal_pulse
+
+    graph = nx.empty_graph(3)
+    attrs = dict(EPI=0.5, nu_f=1.0, phase=0.0, Si=0.8, delta_nfr=0.0)
+    for node in graph:
+        graph.nodes[node].update(attrs)
+    graph.graph["COHERENCE"] = {
+        "enabled": True,
+        "scope": "neighbors",
+        "store_mode": "sparse",
+    }
+    assert compute_nodal_pulse(graph)["mean_local_resonance"] == 0.0
+    graph.add_edge(0, 1)
+    # Two aligned one-neighbor rows and one isolated row.
+    assert compute_nodal_pulse(graph)["mean_local_resonance"] == pytest.approx(2 / 3)
+    graph.add_node("new", **attrs)
+    graph.add_edge(2, "new")
+    observed = compute_nodal_pulse(graph)
+    assert observed["mean_local_resonance"] == 1.0
+    assert observed["n_nodes"] == 4
+
+
+@pytest.mark.parametrize("consumer", ("pulse", "dissonance"))
+def test_all_node_observation_captures_live_phase_and_support_a_bounded_number_of_times(
+    monkeypatch, consumer
+):
+    import tnfr.metrics.trig_cache as trig_module
+    import tnfr.utils.cache as cache_module
+    from tnfr.physics.structural_diffusion import compute_nodal_pulse
+
+    graph = _configured_path()
+    graph.graph["COHERENCE"]["store_mode"] = "sparse"
+    graph.add_nodes_from(range(12))
+    for node in graph:
+        graph.nodes[node].update(EPI=0.5, nu_f=1.0, phase=0.0, Si=0.8, delta_nfr=0.0)
+    observe = compute_nodal_pulse if consumer == "pulse" else dissonance_events
+    observe(graph)
+    counters = {"support": 0, "phase": 0}
+    original_support = cache_module._edge_source_snapshot
+    original_phase = trig_module._graph_theta_checksums
+
+    def support(source):
+        counters["support"] += 1
+        return original_support(source)
+
+    def phase(source):
+        counters["phase"] += 1
+        return original_phase(source)
+
+    monkeypatch.setattr(cache_module, "_edge_source_snapshot", support)
+    monkeypatch.setattr(trig_module, "_graph_theta_checksums", phase)
+    observe(graph)
+    assert 0 < counters["support"] <= 4
+    assert 0 < counters["phase"] <= 4
+    # A later direct source edit still invalidates the next captured state.
+    graph.add_edge(0, 1)
+    graph.nodes[0]["phase"] = math.nan
+    with pytest.raises(ValueError, match="phase"):
+        observe(graph)
+
+
+def test_sparse_row_partition_preserves_order_and_public_reduction() -> None:
+    from tnfr.metrics.coherence import _partition_sparse_phase_sync_weights
+
+    graph = _phase_sync_graph()
+    graph.nodes[2]["phase"] = math.pi / 2
+    payload = [
+        (2, 0, 0.5),
+        (1, 2, 1.0),
+        (1, 1, 7.0),
+        (1, 0, 1.0),
+        (1, 2, 2.0),
+        (0, 2, 0.0),
+    ]
+    prior = list(payload)
+
+    rows = _partition_sparse_phase_sync_weights(payload, 3)
+
+    assert rows is not None
+    assert rows == [
+        [(0, 2, 0.0)],
+        [(1, 2, 1.0), (1, 1, 7.0), (1, 0, 1.0), (1, 2, 2.0)],
+        [(2, 0, 0.5)],
+    ]
+    assert payload == prior
+    for node in graph:
+        assert local_phase_sync_weighted(
+            graph, node, nodes_order=[0, 1, 2], W_row=rows[node]
+        ) == local_phase_sync_weighted(
+            graph, node, nodes_order=[0, 1, 2], W_row=payload
+        )
+    assert local_phase_sync_weighted(
+        graph, 1, nodes_order=[0, 1, 2], W_row=rows[1]
+    ) == pytest.approx(math.sqrt(10.0) / 4.0)
+
+
+@pytest.mark.parametrize(
+    "invalid_entry",
+    (
+        (2, 3, 1.0),
+        (-1, 0, 1.0),
+        (2, 0, math.nan),
+        (2, 0, math.inf),
+        (2, 2, -1.0),
+    ),
+)
+def test_sparse_partition_rejects_invalid_entries_outside_first_row(
+    invalid_entry,
+) -> None:
+    from tnfr.metrics.coherence import _partition_sparse_phase_sync_weights
+
+    with pytest.raises(ValueError):
+        _partition_sparse_phase_sync_weights([(0, 1, 1.0), invalid_entry], 3)
+
+
+def test_sparse_partition_does_not_cache_phase_state() -> None:
+    from tnfr.metrics.coherence import _partition_sparse_phase_sync_weights
+
+    graph = _phase_sync_graph()
+    rows = _partition_sparse_phase_sync_weights([(1, 0, 1.0), (1, 2, 1.0)], 3)
+    assert rows is not None
+    assert local_phase_sync_weighted(
+        graph, 1, nodes_order=[0, 1, 2], W_row=rows[1]
+    ) == pytest.approx(1.0)
+    graph.nodes[2]["phase"] = math.nan
+    with pytest.raises(ValueError, match="phase"):
+        local_phase_sync_weighted(graph, 1, nodes_order=[0, 1, 2], W_row=rows[1])
+
+
+@pytest.mark.parametrize("consumer", ("pulse", "dissonance"))
+def test_all_node_observation_admits_sparse_entries_in_linear_work(
+    monkeypatch: pytest.MonkeyPatch, consumer: str
+) -> None:
+    import tnfr.metrics.coherence as affinity_module
+    from tnfr.physics.structural_diffusion import compute_nodal_pulse
+
+    graph = nx.complete_graph(8)
+    graph.graph["COHERENCE"] = {
+        "enabled": True,
+        "scope": "neighbors",
+        "store_mode": "sparse",
+    }
+    for node in graph:
+        graph.nodes[node].update(EPI=0.5, nu_f=1.0, phase=0.0, Si=0.8, delta_nfr=0.0)
+    original = affinity_module._validated_affinity_weight
+    admissions = 0
+
+    def counted(value):
+        nonlocal admissions
+        admissions += 1
+        return original(value)
+
+    monkeypatch.setattr(affinity_module, "_validated_affinity_weight", counted)
+
+    if consumer == "pulse":
+        assert compute_nodal_pulse(graph)["mean_local_resonance"] == pytest.approx(1.0)
+    else:
+        dissonance_events(graph)
+        assert not graph.graph["history"].get("events")
+
+    entries = 8 * 7
+    assert entries <= admissions <= 2 * entries
 
 
 def test_local_phase_sync_query_does_not_record_affinity_history() -> None:

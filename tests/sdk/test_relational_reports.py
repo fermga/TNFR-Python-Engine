@@ -2730,12 +2730,74 @@ def test_advanced_readout_sdk_nonfinite_projection_preserves_existing_file(
     assert destination.read_bytes() == original
 
 
+def test_frozen_isolate_sdk_export_retains_state_and_unavailable_metric(tmp_path):
+    from tnfr.mathematics._rational_interval import I
+    from tnfr.physics.relational_sine_support import (
+        bound_relational_sine_frozen_isolates,
+    )
+
+    graph = nx.Graph()
+    for node, form, phase in (
+        ("left", 0.5, 0.0),
+        (("child", 0), 0.25, 0.0),
+        ("right", 0.75, 0.125),
+    ):
+        graph.add_node(node, EPI=form, theta=phase, nu_f=1.0)
+    graph.add_edge("left", "right", weight=0.75)
+    model = RelationalExchangeModel(1, epi_weight=0, phase_domain="regular")
+    source = bound_relational_sine_frozen_isolates(graph, reference_model=model)
+    # The public adapter must use the owner's rebuilding path, not stale fields.
+    altered = replace(
+        source,
+        isolate_indices=(),
+        component_indices=((0, 1, 2),),
+        phase_rates=(I(999),) * 3,
+        inverse_phase_metric=(I(999),) * 3,
+    )
+    evidence = relational_report_to_dict(altered)
+    assert evidence["report_type"] == "SineFrozenIsolateComparison"
+    assert evidence["report"] == source.to_dict()["report"]
+    body = evidence["report"]
+    assert body["nodes"] == ["left", ["child", 0], "right"]
+    assert body["component_indices"] == [[0, 2], [1]]
+    assert body["isolate_indices"] == [1]
+    assert body["inverse_phase_metric"][1] is None
+    zero = {"numerator": 0, "denominator": 1}
+    assert body["phase_rates"][1] == {"lo": zero, "hi": zero}
+    assert body["epi"][1] == {"numerator": 1, "denominator": 4}
+    destination = tmp_path / "frozen-isolate.json"
+    export_to_json(evidence, destination)
+    assert json.loads(destination.read_text(encoding="utf-8")) == evidence
+    retained = destination.read_bytes()
+    invalid = replace(source, epi=(source.epi[0], float("nan"), source.epi[2]))
+    with pytest.raises(ValueError, match="finite"):
+        export_to_json(relational_report_to_dict(invalid), destination)
+    assert destination.read_bytes() == retained
+
+
 def test_managed_report_registry_preserves_existing_owner_inventory():
     from tnfr.sdk.relational_reports import _OWNER_MANAGED_REPORTS
 
     additions = {
         "SineClassPortReadout": "tnfr.physics.relational_sine_class_port_readout",
         "SineClassStorageReadout": "tnfr.physics.relational_sine_class_storage_readout",
+        "SineFrozenIsolateComparison": "tnfr.physics.relational_sine_support",
+        "SineSupportExchangeComparison": "tnfr.physics.relational_sine_support",
+        "SineFiniteFormResponse": "tnfr.physics.relational_sine_support",
+        "SineSupportRecurrence": "tnfr.physics.relational_sine_support",
+        "SineInitialStatePerturbation": "tnfr.physics.relational_sine_support",
+        "SineStateConductancePerturbation": "tnfr.physics.relational_sine_support",
+        "SineConsensusObservation": "tnfr.physics.relational_sine_consensus_observation",
+        "SineConsensusNonlinearResponse": "tnfr.physics.relational_sine_consensus_observation",
+        "SineWeightedCapacityReset": "tnfr.physics.relational_sine_weighted_partition",
+        "SineWeightedPhaseOffsetPartition": "tnfr.physics.relational_sine_weighted_partition",
+        "SineWeightedPhaseOffsetState": "tnfr.physics.relational_sine_weighted_partition",
+        "SineWeightedRadianState": "tnfr.physics.relational_sine_weighted_partition",
+        "SineWeightedStarTransverseBand": "tnfr.physics.relational_sine_weighted_transverse",
+        "SineWeightedStarState": "tnfr.physics.relational_sine_weighted_state",
+        "SineWeightedStarRetention": "tnfr.physics.relational_sine_weighted_state",
+        "SineWeightedStarContact": "tnfr.physics.relational_sine_weighted_contact",
+        "SineWeightedStarSupportRetention": "tnfr.physics.relational_sine_star_retention",
     }
     assert {name: _OWNER_MANAGED_REPORTS[name] for name in additions} == additions
     legacy = {
@@ -2865,7 +2927,7 @@ def test_managed_report_owner_failure_is_not_hidden(monkeypatch):
     assert caught.value is failure
 
 
-@pytest.mark.parametrize("kind", ("native", "port", "storage"))
+@pytest.mark.parametrize("kind", ("native", "port", "storage", "frozen"))
 def test_report_export_cold_imports_only_requested_managed_owner(
     kind, source_tree_environment
 ):
@@ -2885,7 +2947,11 @@ if kind == "native":
     report = Network(graph).relational_exchange(RelationalExchangeModel(1))
 else:
     from importlib import import_module
-    name = "SineClassPortReadout" if kind == "port" else "SineClassStorageReadout"
+    name = {
+        "port": "SineClassPortReadout",
+        "storage": "SineClassStorageReadout",
+        "frozen": "SineFrozenIsolateComparison",
+    }[kind]
     owner = import_module(_OWNER_MANAGED_REPORTS[name])
     report_type = getattr(owner, name)
     report = object.__new__(report_type)

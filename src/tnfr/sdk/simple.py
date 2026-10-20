@@ -1,39 +1,13 @@
-"""Simple TNFR SDK — Maximum Power, Minimum Complexity.
+"""Public network construction, declared evolution and scoped TNFR observations.
 
-The simplified TNFR API designed for 90% of use cases, now with full
-Structural Field Tetrad, finite structural-balance monitoring, grammar-aware
-dynamics, and research-grade telemetry.
+``Network`` wraps supplied state. Its native relational methods assess organized
+objects and evolve their joint form/phase law; operator studies execute requested
+words under separate live-state and grammar contracts. Reports retain their
+model, observation and numerical scope.
 
-**DESIGN PRINCIPLE**:
-- **Intuitive**: Natural method names that read like English
-- **Chainable**: Fluent interface for rapid prototyping
-- **Integrated**: Core TNFR dynamics and diagnostics behind one interface
-- **Research-grade**: Structural Field Tetrad + scoped balance diagnostics
-
-**USAGE EXAMPLES**::
-
-    # Instant network creation
-    net = TNFR.create(20)  # 20 nodes
-
-    # Chain operations
-    results = TNFR.create(10).ring().evolve(5).results()
-
-    # Auto-optimization
-    optimized = TNFR.create(15).random(0.3).auto_optimize()
-
-    # Full Structural Field Tetrad
-    tetrad = net.tetrad()
-    # -> {'phi_s': {...}, 'grad_phi': {...}, 'k_phi': {...}, 'xi_c': float, ...}
-
-    # Finite structural-balance monitoring
-    conservation = net.conservation()
-    # -> structural charge, candidate energy, sampled balance and legacy aliases
-
-    # Unified diagnostic fields and invariant read-outs
-    telemetry = net.telemetry()
-
-    # Grammar-aware evolution
-    net.evolve_grammar_aware(steps=10)
+The executable introduction is ``examples/01_foundations/01_hello_world.py``.
+``docs/CLI_AND_SDK.md`` routes construction, execution and observation workflows;
+``docs/API_CONTRACTS.md`` owns admission and mutation boundaries.
 """
 
 from __future__ import annotations
@@ -53,6 +27,7 @@ from ..constants.canonical import ZHIR_THRESHOLD_XI_CANONICAL
 from ..errors import TNFRValueError
 from ..mathematics._neighbor_differences import mean_neighbor_difference
 from ..mathematics.unified_numerical import np
+from ..metrics._history import stored_sequence, stored_value
 from ..metrics.coherence import compute_coherence
 from ..metrics.common import (
     finite_mean,
@@ -75,8 +50,9 @@ from ..physics.mutation_trigger import (
 # TNFR core imports
 from ..structural import create_nfr
 from ..types import BEPIProtocol, require_finite_real_scalar_epi
+from ..utils.io import _reject_duplicate_json_keys
 from ._state import copy_graph_state, observed_mean_phase, stored_phase
-from ._topology import grid_edges, nonnegative_integer
+from ._topology import grid_edges, nonnegative_integer, numpy_seed
 from ._topology import probability as validate_probability
 from ._topology import ring_edges, small_world_edges
 
@@ -258,16 +234,16 @@ except ImportError:
     _HAS_GRAMMAR_DYNAMICS = False
 
 
-# Canonical factorization bridge (optional dependency path)
+# Deprecated external factorization bridge (no archived-source discovery)
 try:
-    from ..factorization import factorize as canonical_factorize
+    from ..factorization import factorize as legacy_factorize
 
     _HAS_FACTORIZATION = True
 except Exception:
     _HAS_FACTORIZATION = False
 
 
-# Canonical primality bridge (optional dependency path)
+# Static arithmetic primality bridge (optional dependency path)
 try:
     from ..primality import analyze as canonical_primality_analyze
 
@@ -532,10 +508,12 @@ class SymplecticReport:
 
 @dataclass
 class FactorizationReport:
-    """SDK report for canonical TNFR factorization.
+    """SDK report from the optional arithmetic factorization lab.
 
     Bridges `tnfr.factorization.factorize()` with SDK-level telemetry and
     an optional, explicitly heuristic comparison to a caller-supplied network.
+    Candidate and compatibility ``tnfr_certified_factors`` fields retain the
+    lab's configured acceptance policy; independently check proper divisibility.
     """
 
     n: int
@@ -582,7 +560,7 @@ class FactorizationReport:
 
 @dataclass
 class PrimalityReport:
-    """SDK report for canonical TNFR primality analysis.
+    """SDK report for the optional arithmetic-pressure primality predicate.
 
     Bridges `tnfr.primality.analyze()` with SDK-level telemetry and
     an optional, explicitly heuristic comparison to a caller-supplied network.
@@ -886,7 +864,7 @@ def _build_factorization_report(
     raw_result: Any,
     network: "Network | None" = None,
 ) -> FactorizationReport:
-    """Convert canonical factorization output into SDK-native report."""
+    """Adapt an external legacy lab result without certifying its arithmetic."""
     candidate_factors = list(getattr(raw_result, "candidate_factors", []) or [])
     certified = list(getattr(raw_result, "tnfr_certified_factors", []) or [])
     coherence_score = float(getattr(raw_result, "coherence_score", 0.0) or 0.0)
@@ -1084,7 +1062,13 @@ class Results:
         return self.sense_index > SENSE_INDEX_EXCELLENT
 
     def to_dict(self) -> dict[str, Any]:
-        """Serialize results to a plain dictionary."""
+        """Serialize results, rejecting node labels with colliding string forms."""
+
+        def field_values(values: dict[Any, float]) -> dict[str, float]:
+            pairs = [(str(key), float(value)) for key, value in values.items()]
+            _reject_duplicate_json_keys(pairs)
+            return dict(pairs)
+
         d: dict[str, Any] = {
             "coherence": float(self.coherence),
             "sense_index": float(self.sense_index),
@@ -1095,9 +1079,9 @@ class Results:
         }
         if self.tetrad is not None:
             d["tetrad"] = {
-                "phi_s": {str(k): float(v) for k, v in self.tetrad.phi_s.items()},
-                "grad_phi": {str(k): float(v) for k, v in self.tetrad.grad_phi.items()},
-                "k_phi": {str(k): float(v) for k, v in self.tetrad.k_phi.items()},
+                "phi_s": field_values(self.tetrad.phi_s),
+                "grad_phi": field_values(self.tetrad.grad_phi),
+                "k_phi": field_values(self.tetrad.k_phi),
                 "xi_c": (
                     float(self.tetrad.xi_c) if np.isfinite(self.tetrad.xi_c) else None
                 ),
@@ -1150,7 +1134,9 @@ class Network:
         """
         self.G = graph
         self.name = name
-        self._seed = seed
+        from ..rng import validate_seed
+
+        self._seed = validate_seed(seed)
         self._tracker: Any = None  # ConservationTracker (lazy)
         self._monitor: Any = None  # StructuralIntegrityMonitor (lazy)
 
@@ -1178,7 +1164,7 @@ class Network:
         (canonical invariant #6).
         """
         probability = validate_probability(probability)
-        s = seed if seed is not None else self._seed
+        s = numpy_seed(seed if seed is not None else self._seed)
         rng = np.random.RandomState(s)
         nodes = list(self.G.nodes())
         for i, u in enumerate(nodes):
@@ -1217,12 +1203,15 @@ class Network:
             Random seed for reproducibility.
         """
         nodes = list(self.G)
+        from ..rng import validate_seed
+
+        seed = validate_seed(seed if seed is not None else self._seed)
         self.G.add_edges_from(
             small_world_edges(
                 nodes,
                 k,
                 p,
-                seed if seed is not None else self._seed,
+                seed,
             )
         )
         return self
@@ -1238,11 +1227,14 @@ class Network:
             Random seed for reproducibility.
         """
         nodes = list(self.G)
+        from ..rng import validate_seed
+
+        seed = validate_seed(seed if seed is not None else self._seed)
         m = nonnegative_integer(m, "m")
         ba = nx.barabasi_albert_graph(
             len(nodes),
             m,
-            seed=seed if seed is not None else self._seed,
+            seed=seed,
         )
         self.G.add_edges_from((nodes[u], nodes[v]) for u, v in ba.edges())
         return self
@@ -1276,16 +1268,19 @@ class Network:
         """Evolve the network by applying a canonical operator sequence.
 
         The named *sequence* is resolved to canonical structural operators.
-        Execution is operator-major: each operator reaches every node before
-        the next operator begins. When grammar retains the requested glyph,
-        EN/IL/OZ/UM/RA/THOL and AL/SHA/VAL/NUL/ZHIR/NAV derive every target
+        Execution is operator-major: each operator reaches the declared target
+        set before the next operator begins. The shared runner retains its
+        invocation-time node set across stages and cycles. All thirteen
+        canonical operators derive every target
         proposal from one immutable stage snapshot and commit atomically
-        (two-phase Jacobi). IL binds pressure contraction and phase locking to
-        that snapshot; OZ reduces local and propagated pressure there; THOL
-        validates and merges child support and hierarchy; NAV binds per-node
+        (two-phase Jacobi). Coherence binds pressure contraction and phase
+        locking to that snapshot; Dissonance reduces local and propagated
+        pressure there; SelfOrganization validates and merges child support
+        and hierarchy; Transition binds per-node
         RNG progress, transactional seed resolution and one shared latency
-        instant. REMESH and grammar replacements retain Gauss-Seidel reads in
-        graph iteration order inside a complete stage rollback boundary.
+        instant. Recursivity deduplicates its snapshot-bound advisory; delayed
+        EPI mixing requires the separate network operation. A blocked word
+        step rejects; the runner does not substitute a different operator.
 
         Every registered SDK word is resolved from NAMED_SEQUENCES and applied
         through the shared runner. In words that open with Emission, AL sources
@@ -1307,8 +1302,10 @@ class Network:
             ``kuramoto_R``, ``C_steps``, ``phase_sync`` and ``Si_mean`` are
             recorded in graph history, readable via :meth:`history`. Samples
             count complete operator-word cycles; recording these diagnostics
-            does not establish periodic motion. Default False (no recording
-            overhead).
+            preserves the invocation's targets and whole-request preflight.
+            Failed partial words add no sample; a diagnostic failure does not
+            undo the completed word. Recording does not establish periodic
+            motion. Default False (no recording overhead).
 
         Returns
         -------
@@ -1344,25 +1341,31 @@ class Network:
         # birth phase (neighbour EPI below the centralized operational source
         # threshold) makes Reception correctly find no sources; that transient
         # warning is silenced on the high-level SDK surface.
+        on_step = None
         if record:
             # Sample diagnostic history after each complete operator-word cycle.
             from ..metrics.core import _metrics_step
 
-            for _ in range(step_count):
-                _run_network_sequence(
-                    self.G,
-                    operator_names,
-                    cycles=1,
-                    suppress_birth_warnings=True,
-                )
-                _metrics_step(self.G)
-        else:
-            _run_network_sequence(
-                self.G,
-                operator_names,
-                cycles=step_count,
-                suppress_birth_warnings=True,
-            )
+            completed_stages = 0
+            word_length = len(operator_names)
+
+            def record_completed_word(_operator_name: str) -> None:
+                nonlocal completed_stages
+                completed_stages += 1
+                if completed_stages % word_length == 0:
+                    _metrics_step(self.G)
+
+            on_step = record_completed_word
+
+        # Recording retains the same invocation-time targets and whole-request
+        # preflight as unrecorded execution, including when support changes.
+        _run_network_sequence(
+            self.G,
+            operator_names,
+            cycles=step_count,
+            suppress_birth_warnings=True,
+            on_step=on_step,
+        )
         return self
 
     def auto_optimize(self) -> Network:
@@ -1392,11 +1395,11 @@ class Network:
     ) -> list[dict[str, Any]]:
         """Record canonical metrics after EACH operator (fine-grained dynamics).
 
-        Applies *sequence* with the shared operator-major mixed schedule for
+        Applies *sequence* with the shared operator-major stage schedule for
         *cycles* repetitions and records C(t) and Si after every stage.
-        When grammar retains the requested glyph, EN/IL/OZ/UM/RA/THOL and
-        AL/SHA/VAL/NUL/ZHIR/NAV use atomic two-phase Jacobi stages; REMESH and
-        grammar replacements use the documented Gauss-Seidel schedule.
+        All thirteen canonical operators use atomic two-phase Jacobi stages.
+        Recursivity deduplicates its advisory without executing delayed EPI
+        mixing. A blocked word step rejects without operator substitution.
         The trace exposes the implemented intra-sequence transient through
         the shared executor callback.
 
@@ -1464,24 +1467,35 @@ class Network:
         )
         return history
 
-    def history(self) -> dict[str, list[float]]:
+    def history(self) -> dict[str, list[float | None]]:
         """Read stored coherence and phase-alignment diagnostic series.
 
         After :meth:`evolve` with ``record=True`` the engine's metrics step
         records one sample after each complete operator-word cycle. This
         reader returns the available ``kuramoto_R``, ``C_steps``,
         ``phase_sync`` and ``Si_mean`` series; missing series are empty.
+        Explicit missing samples remain ``None``. Present samples use shared
+        finite represented-real admission before conversion. Stored sequences
+        retain their order; one-shot iterators and unordered inputs reject.
         These observations do not establish a pulse, a period, autonomous
         resonance formation or a conversion from cycle count to model time.
 
         Returns
         -------
-        dict[str, list[float]]
+        dict[str, list[float | None]]
             ``kuramoto_R``, ``C_steps``, ``phase_sync``, ``Si_mean``.
         """
         hist = self.G.graph.get("history", {})
+        if not isinstance(hist, Mapping):
+            raise TypeError("history must be a mapping")
         keys = ("kuramoto_R", "C_steps", "phase_sync", "Si_mean")
-        return {k: [float(x) for x in hist.get(k, [])] for k in keys}
+        return {
+            key: [
+                stored_value(value, f"{key}[{index}]")
+                for index, value in enumerate(stored_sequence(hist.get(key, ()), key))
+            ]
+            for key in keys
+        }
 
     # === METRICS ===
 
@@ -1869,11 +1883,11 @@ class Network:
         Returns
         -------
         dict[str, Any]
-            Unified diagnostic fields and invariant read-outs. Empty dict if
-            the fields module is unavailable.
+            Unified diagnostic fields and invariant read-outs. Raises
+            ``ImportError`` if the field observation owner is unavailable.
         """
         if not _HAS_FIELDS:
-            return {}
+            raise ImportError("Structural field observations are unavailable")
         return compute_unified_telemetry(self.G)
 
     def tensor_invariants(self) -> dict[str, Any]:
@@ -1887,7 +1901,7 @@ class Network:
             balance scope, ``nodes`` (array order), and ``num_nodes``.
         """
         if not _HAS_FIELDS:
-            return {}
+            raise ImportError("Structural field observations are unavailable")
         return compute_tensor_invariants(self.G)
 
     def emergent_fields(self) -> dict[str, Any]:
@@ -1900,7 +1914,7 @@ class Network:
             order), num_nodes.
         """
         if not _HAS_FIELDS:
-            return {}
+            raise ImportError("Structural field observations are unavailable")
         return compute_emergent_fields(self.G)
 
     # === Structural winding and phase read-outs ===
@@ -2770,20 +2784,20 @@ class Network:
             aligned with the returned nodes tuple.
         """
         if not _HAS_FIELDS:
-            return {}
+            raise ImportError("Structural field observations are unavailable")
         arrays = compute_complex_geometric_field_arrays(self.G)
         return arrays
 
     def j_phi(self) -> dict:
         """Phase current J_phi per node (transport companion to K_phi)."""
         if not _HAS_FIELDS:
-            return {}
+            raise ImportError("Structural field observations are unavailable")
         return compute_phase_current(self.G)
 
     def j_dnfr(self) -> dict:
         """DELTA_NFR flux J_DELTA_NFR per node."""
         if not _HAS_FIELDS:
-            return {}
+            raise ImportError("Structural field observations are unavailable")
         return compute_dnfr_flux(self.G)
 
     def structural_charge(self) -> float:
@@ -2793,7 +2807,7 @@ class Network:
         validity alone does not make it an exact Noether charge.
         """
         if not _HAS_CONSERVATION:
-            return 0.0
+            raise ImportError("Structural balance observations are unavailable")
         return compute_noether_charge(self.G)
 
     def noether_charge(self) -> float:
@@ -2803,7 +2817,7 @@ class Network:
     def candidate_energy(self) -> float:
         """Non-negative structural energy evaluated as a Lyapunov candidate."""
         if not _HAS_CONSERVATION:
-            return 0.0
+            raise ImportError("Structural balance observations are unavailable")
         return compute_energy_functional(self.G)
 
     def energy(self) -> float:
@@ -3050,10 +3064,11 @@ class Network:
         trace_certificates: bool = False,
         certificate_dir: str | None = None,
     ) -> FactorizationReport:
-        """Run canonical TNFR factorization and attach network synergy diagnostics.
+        """Adapt an external legacy lab result with heuristic graph alignment.
 
-        This creates an explicit bridge between applications/factorization-lab dynamics and
-        SDK network telemetry, enabling direct cross-module analysis.
+        The arithmetic input and this network are supplied independently.
+        Comparing their diagnostics does not derive a shared dynamics.
+        The archived repository laboratory is not loaded by this method.
         """
         return TNFR.factorize(
             n,
@@ -3069,7 +3084,7 @@ class Network:
         *,
         tolerance: float = 1e-10,
     ) -> PrimalityReport:
-        """Run canonical TNFR primality analysis with network synergy diagnostics."""
+        """Read arithmetic primality with optional heuristic graph alignment."""
         return TNFR.primality(n, tolerance=tolerance, network=self)
 
     def is_prime(
@@ -3125,6 +3140,9 @@ class TNFR:
         >>> net = TNFR.create(10, seed=7).ring().evolve(5)
         """
         num_nodes = nonnegative_integer(num_nodes, "num_nodes")
+        from ..rng import validate_seed
+
+        seed = validate_seed(seed)
         G = nx.Graph()
         for i in range(num_nodes):
             create_nfr(i, graph=G, epi=0.0, vf=1.0, theta=0.0)
@@ -3181,7 +3199,9 @@ class TNFR:
         return [_to_dict(c) for c in iter_contracts()]
 
     @staticmethod
-    def explain_sequence(operators: list[str]) -> dict[str, Any]:
+    def explain_sequence(
+        operators: list[str], *, context: Mapping[str, Any] | None = None
+    ) -> dict[str, Any]:
         """Validate an operator sequence and explain its canonical grammar.
 
         A teaching/diagnostic aid: reports each operator's grammar role and
@@ -3195,14 +3215,22 @@ class TNFR:
         operators : list[str]
             Operator names (``["emission", "coherence", "silence"]``) or
             glyph codes (``["AL", "IL", "SHA"]``).
+        context : Mapping[str, Any], optional
+            Shared word-validation context, including ``compatibility_profile``
+            (``"core"`` by default, or explicitly ``"legacy"``) and declared
+            prior initialization. This does not supply live state evidence.
 
         Returns
         -------
         dict
-            ``valid`` (bool), ``operators`` (canonical names), ``roles``
+            ``valid`` (bool), ``operators`` (ordered English display names), ``roles``
             (per-operator), U1 flags ``starts_with_generator`` /
             ``ends_with_closure``, U2 flags ``has_destabilizer`` /
-            ``has_stabilizer``, and a human-readable ``message``.
+            ``has_stabilizer``, and a human-readable ``message``. ``notation``
+            preserves order using simple glyph codes and arrows. The actual
+            ``compatibility_profile`` comes from validation metadata, or is
+            ``None`` when context admission fails. Manuscript syntax remains
+            unassessed; notation does not change word admission.
         """
         from ..operators.grammar_canon import (
             GRAMMAR_RULES,
@@ -3224,8 +3252,10 @@ class TNFR:
             {"name": c.english_name, "glyph": c.glyph, **operator_role_metadata(c.name)}
             for c in contracts
         ]
+        compatibility_profile = None
         try:
-            outcome = validate_sequence(names)
+            outcome = validate_sequence(names, context=context)
+            compatibility_profile = outcome.metadata.get("compatibility_profile")
             valid = bool(getattr(outcome, "passed", bool(outcome)))
             summary = getattr(outcome, "summary", {}) or {}
             default_msg = "valid sequence" if valid else "invalid sequence"
@@ -3235,6 +3265,9 @@ class TNFR:
             message = str(exc)
         return {
             "valid": valid,
+            "notation": " → ".join(c.glyph for c in contracts),
+            "compatibility_profile": compatibility_profile,
+            "manuscript_syntax_assessed": False,
             "validation_scope": "word_policy",
             "state_checks_assessed": False,
             "trajectory_checks_assessed": False,
@@ -3417,18 +3450,23 @@ class TNFR:
         certificate_dir: str | None = None,
         network: Network | None = None,
     ) -> FactorizationReport:
-        """Canonical TNFR factorization, optionally fused with network telemetry.
+        """Adapt an externally supplied legacy lab's arithmetic report.
 
-        Factorization is the **spectral** sector (theory
-        TNFR_NUMBER_THEORY.md §9.5): the factor signal of a semiprime
-        ``n = p*q`` appears as a *coset / Fourier mode* of the emergent
-        structural-diffusion spectrum ``L_rw = I - D^{-1} W`` (the canonical
-        ``ΔNFR`` EPI channel) on the residue/Paley graph -- a non-circular
-        spectral diagnostic under that declared graph family, not the symbolic
-        per-node ``ΔNFR`` (which is blind to the cosets). Honest scope: the residue graph is regular, so ``L_rw``
-        shares eigenvectors with the classical Laplacian and the coset signal
-        is the CRT structure *re-expressed*, not added by the emergent framing;
-        TNFR factorization is **not** a speedup over classical factoring.
+        The in-repository laboratory is archived and is not loaded by this
+        method. The deprecated compatibility bridge requires a separately
+        supplied package; it does not provide a maintained factorization service.
+
+        The lab combines supplied Jacobi-residue graphs, spectral candidate
+        heuristics, arithmetic telemetry and classical refinements/fallbacks.
+        Computing that telemetry already factors ``n``; the selected modulus
+        may differ from ``n``. This route is distinct from the independent
+        quadratic-residue/CRT diagnostics in TNFR_NUMBER_THEORY.md §9.5.
+
+        Independently check ``1 < d < n`` and ``n % d == 0`` for every claimed
+        proper factor. The compatibility ``tnfr_certified_factors`` field is
+        configured structural acceptance, not an arithmetic factor proof.
+        Reported operator plans are not executed words. This application
+        establishes neither autonomous factor formation nor a factoring speedup.
 
         Parameters
         ----------
@@ -3449,8 +3487,9 @@ class TNFR:
                 "Factorization bridge is unavailable.",
                 context={"feature": "sdk.factorize", "available": False},
                 suggestion=(
-                    "Ensure the canonical factorization module is present "
-                    "(tnfr.factorization + applications/factorization-lab in this repository)."
+                    "Use the core arithmetic/spectral instruments in "
+                    "theory/TNFR_NUMBER_THEORY.md. The deprecated external "
+                    "factorization bridge does not load the archived repository lab."
                 ),
             )
 
@@ -3463,7 +3502,7 @@ class TNFR:
 
             kwargs["certificate_dir"] = Path(certificate_dir)
 
-        raw_result = canonical_factorize(n, **kwargs)
+        raw_result = legacy_factorize(n, **kwargs)
         return _build_factorization_report(raw_result, network=network)
 
     @staticmethod
@@ -3473,13 +3512,14 @@ class TNFR:
         tolerance: float = 1e-10,
         network: Network | None = None,
     ) -> PrimalityReport:
-        """Canonical primality analysis with optional heuristic graph alignment.
+        """Read the optional arithmetic predicate with heuristic graph alignment.
 
-        Reads the arithmetic equilibrium ``ΔNFR_arith(n) = 0`` (**sector A** --
-        an exact but *circular* re-expression that consumes ``n``'s
-        divisibility). A separate non-circular spectral construction is exposed
-        through :meth:`factorize`; its finite coverage and hypotheses are
-        documented in theory §9.5.
+        Positive arithmetic-pressure coefficients have the exact prime zero
+        set, but this numerical decision uses the supplied tolerance and
+        already computed divisor/factor statistics. It does not evolve this
+        network or derive primality from autonomous nodal dynamics.
+        TNFR_NUMBER_THEORY.md §9.5 describes separate residue-graph diagnostics;
+        :meth:`factorize` is a deprecated bridge to an external arithmetic-assisted lab.
         """
         if not _HAS_PRIMALITY:
             raise TNFRValueError(
@@ -3499,28 +3539,23 @@ class TNFR:
         *,
         tolerance: float = 1e-10,
     ) -> bool:
-        """Convenience boolean primality check from canonical SDK bridge."""
+        """Return the optional arithmetic bridge's configured primality decision."""
         return TNFR.primality(n, tolerance=tolerance).is_prime
 
     @staticmethod
     def primes(max_number: int = 100) -> dict[str, Any]:
-        """Read structural primes off the arithmetic equilibrium field.
+        """Read prime candidates from the core arithmetic-pressure construction.
 
-        A number ``n`` is structurally prime when its arithmetic reorganization
-        pressure vanishes, ``ΔNFR_arith(n) = 0`` -- the exact nodal-equation
-        equilibrium predicate
-        (:func:`tnfr.metrics.common.is_structural_equilibrium`). Other domain
-        models can reuse that numerical predicate without sharing a state
-        space or evolution law.
+        This builds ``ArithmeticTNFRNetwork`` and reads its numerical
+        zero-pressure criterion. The exact positive-weight zero set is the
+        primes, but divisor/factor statistics are construction inputs; no
+        autonomous evolution generates the arithmetic labels.
 
-        Emergence status (theory/TNFR_NUMBER_THEORY.md §9.5). This method is
-        **sector A**: the arithmetic ``ΔNFR`` is an *exact but circular*
-        re-expression that **consumes** ``n``'s divisibility ``(Ω, τ, σ)``.
-        A separate **sector B** studies the spectral Paley/residue Fiedler gap
-        (input only
-        ``x^2 mod n``, primes-OUT, non-circular), carried by the spectral
-        factorizer (:meth:`factorize`), not by this arithmetic read-out. These
-        are distinct constructions with different inputs and dynamics.
+        Unlike :meth:`primality`, this route uses the core arithmetic network,
+        not the optional standalone package. The separate residue-graph
+        diagnostics in TNFR_NUMBER_THEORY.md §9.5 retain their own inputs and
+        hypotheses; they are not the arithmetic-assisted :meth:`factorize`
+        implementation.
 
         Parameters
         ----------

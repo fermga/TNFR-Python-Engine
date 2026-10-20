@@ -14,7 +14,6 @@ from typing import (
     Any,
     Callable,
     ContextManager,
-    Iterable,
     Protocol,
     TypeAlias,
     TypedDict,
@@ -43,6 +42,7 @@ except Exception:
     np = cast(Any, _FallbackNumpy())
 
 from .glyph_history import HistoryDict as _HistoryDict
+from .mathematics.epi import BEPIElement
 from .tokens import Token
 
 class CacheLevel(Enum):
@@ -211,11 +211,11 @@ class _SigmaVectorOptional(TypedDict, total=False):
 class SigmaVector(_SigmaVectorRequired, _SigmaVectorOptional): ...
 
 class SigmaTrace(TypedDict):
-    t: list[float]
-    sigma_x: list[float]
-    sigma_y: list[float]
-    mag: list[float]
-    angle: list[float]
+    t: list[float | None]
+    sigma_x: list[float | None]
+    sigma_y: list[float | None]
+    mag: list[float | None]
+    angle: list[float | None]
 
 FloatArray: TypeAlias = np.ndarray
 FloatMatrix: TypeAlias = np.ndarray

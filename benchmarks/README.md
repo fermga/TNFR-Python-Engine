@@ -13,6 +13,8 @@ research campaign, and a filename containing `emergent` proves no emergence.
 
 | Question | Instruments | Owner and scope |
 | --- | --- | --- |
+| How does an admitted Coherence stage compare with the ideal organized-source phase map? | [Frozen represented handoff](organized_source_coherence_handoff.py) | [Separate handoff protocol](../theory/nodal/ORGANIZED_SOURCE_PORT.md#organized-source-coherence-handoff); one atomic Reception preparation and two atomic Coherence responses, exclusive attempt and retained raw-state evidence. No flow, older producer replay, complete word, exact-reflection or future-maintenance claim; routine verification uses the read-only evidence owner |
+| Can Silence close the retained organized-source handoffs while admitting continued maintenance? | [Frozen Silence suffix](organized_source_silence_handoff.py) | [Weighted continuation and suffix protocol](../theory/nodal/ORGANIZED_SOURCE_PORT.md#organized-source-silence-handoff); two atomic SHA stages from exact consumed IL endpoint state, with independent pressure refresh and positive-capacity continuation. No earlier event or flow replay; routine verification reads retained evidence without executing the instrument |
 | Does the retained alternative law generate the five-child outer identity? | [Single own-law acquisition assessment](organized_alternative_outer_acquisition.py) | [Original-source admission](../theory/nodal/ORGANIZED_ALTERNATIVE_OUTER_ACQUISITION.md); full source uncertainty, own-law transit, product capture and paired control at the unchanged deadline; no trajectory or later contact-response evaluation |
 | Does the formed alternative-law organization retain the finite contact-response contrast? | [Single own-law contact assessment](organized_alternative_contact.py) | [Actual-source contact envelope](../theory/nodal/ORGANIZED_ALTERNATIVE_CONTACT.md); unchanged intervention history, all prepared relative origins, contact work and fifteen finite identities; no sine decoder, trajectory or origin scan |
 | Can the carried collective state predict a later endpoint after observation? | [Single post-observation forecast](organized_computable_prediction.py) | [Frozen complete-history protocol](../theory/nodal/ORGANIZED_COMPUTABLE_PREDICTION.md); validated prescribed-time integration, retained common preparation, omitted-word comparison and separate source/numerical/reading errors. No measured response or physical-law selection |
@@ -88,10 +90,9 @@ Use [derived memory](../theory/DERIVED_EPI_MEMORY.md) and the
 The auxiliary gasket instruments reuse the pure
 [graph preparation](graph_fixtures.py), including its ordered outer corners.
 That supplied construction is not a THOL event or a selected physical dimension.
-The Bell instrument now uses those corners at every level; earlier level-two
-and higher fixtures used the first inserted nodes instead. The CHSH bound is
-unchanged, while those graph fixtures are corrected; historical outputs were
-not recomputed.
+The Bell instrument uses those corners at every level. Its CHSH bound belongs
+to the supplied auxiliary graph model. Retained outputs remain associated with
+the source and graph preparation that produced them.
 
 A rank calculation for rational surrogate coefficients is not a nonlinear
 closure proof for actual irrational coefficients. An observation of winding,

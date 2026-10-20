@@ -7,7 +7,7 @@ identity contract are unchanged. This is a detached calculation of an
 analytic Duhamel integral with a proved transfer to the complete nonlinear
 flow, not numerical integration of a nonlinear trajectory. It installs no
 new native flow or support event. The
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#mobile-pair-response-admission)
+[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 alone owns the next task.
 
 <a id="mobile-response-numerics"></a>
@@ -245,5 +245,6 @@ nominal defect is less than `5.3e-9*a`. No additional NFR identity, formation,
 post-separation lifetime or subsequent response is established. Investigating
 recursive organization requires an independently motivated actual-state
 identity and a complete-law mechanism that can sustain it. The
-[formation-feasibility gate](../research/FIVE_STAGE_EXECUTION_PLAN.md#mobile-organization-feasibility-admission)
-owns that question without authorizing a replay or parameter search.
+[formation-compatibility owner](LOCALIZED_FORMATION_COMPATIBILITY.md)
+retains those premises. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns reopening; this result authorizes no replay or parameter search.

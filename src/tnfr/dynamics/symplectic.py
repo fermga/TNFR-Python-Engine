@@ -13,20 +13,17 @@ Symplecticity alone does not certify bounded trajectories or grammar U2.
 
 from __future__ import annotations
 
-import math
 from typing import Callable
 
+from .._exact_time import finite_represented_real
 from ..constants import DNFR_PRIMARY, EPI_PRIMARY, VF_PRIMARY
 from ..mathematics.unified_numerical import np
 from ..types import TNFRNode
 
 
 def _finite_step(dt: float) -> float:
-    """Allow reversible signed steps, but reject nonfinite time intervals."""
-    value = float(dt)
-    if not math.isfinite(value):
-        raise ValueError("Symplectic timestep must be finite")
-    return value
+    """Admit signed reversible time before conversion to the shared chart."""
+    return finite_represented_real(dt, "Symplectic timestep")[0]
 
 
 class TNFRSymplecticIntegrator:

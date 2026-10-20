@@ -2,17 +2,30 @@
 
 The [execution plan](../FIVE_STAGE_EXECUTION_PLAN.md) is the sole active queue;
 the [portfolio](../../../TNFR_lineas_de_investigacion.txt) classifies branches.
-This archive retains scoped evidence and byte-level recovery records. Historical
-instructions, milestone labels and reported successes are not current authority.
+This archive retains scoped evidence, inactive narratives and byte-level
+recovery records. Use the [theory catalog](../../README.md) for current
+definitions and mathematical capabilities. Historical instructions, milestone
+labels and reported successes are not current authority.
 
-## Historical campaign and measurement records
+## What to retain and where to read it
 
-The following narrative records moved out of live research reading routes.
-Their original entry pages retain scope summaries and section aliases; the
-archived bodies preserve conditional results, source identities, negative
-outcomes and unresolved limitations. Relative links were rebased. Frozen
-protocols, source archives, data, responses and recorded byte hashes were not
-changed or regenerated.
+| Material | Role |
+| --- | --- |
+| [Ontology result survey](ONTOLOGY_RESULT_SURVEY.md) | Inactive accumulated synopsis of conditional objects and case studies; [current ontology](../../EMERGENT_ONTOLOGY.md) owns formation, identity and collective-description criteria |
+| [Campaign and measurement evidence](#retained-campaign-and-measurement-evidence) | Source-bound results and limitations; each maintained mathematical owner supplies its model and present interpretation |
+| [Recovery records](#recovery-records) | Exact identities for retired or consolidated material; these receipts do not validate the former claims |
+
+An inactive investigation can contain reusable mathematics. Archiving its
+narrative changes neither its conditional result nor its frozen evidence.
+Reuse a result through its maintained owner; scheduling belongs only to the
+execution plan.
+
+## Retained campaign and measurement evidence
+
+These records contain conditional results, source identities, negative
+outcomes and unresolved limitations. Current mathematical owners define their
+scope; frozen protocols, sources, responses and hashes retain their original
+evidence associations.
 
 | Archived record | Maintained boundary |
 | --- | --- |
@@ -32,6 +45,45 @@ language does not reopen a campaign; the sole execution plan owns scheduling.
 Do not duplicate a superseded file in another archive when its complete content
 is recoverable from a verified immutable Git revision. Current uncommitted
 proofs and frozen evidence require preservation before any retirement.
+
+<a id="arithmetic-application-retirement"></a>
+The [factorization lab](../../../applications/factorization-lab/README.md)
+is archived in place; its [retirement record](../../../applications/factorization-lab/RETIREMENT.json)
+identifies retained source, known counterexamples and retired integration
+coverage. The [advanced primality archive](../../../applications/primality-test/archive/README.md)
+preserves unique working-tree material and committed-source recovery identities.
+Neither archive is a maintained execution route. The
+[number-theory owner](../../TNFR_NUMBER_THEORY.md) retains independent arithmetic,
+Paley/CRT and cyclotomy results, and the basic primality utility remains active.
+
+The grammar integration retires competing private checks while keeping public
+report adapters. Their prior source is recoverable at revision
+`a5ff1882a488667ea818f79bbbe7a989ca5d23f1`; no historical code copy is added:
+
+| Source and retired responsibility | Recovery blob | Replacement |
+| --- | --- | --- |
+| `src/tnfr/operators/grammar_patterns.py`: duplicate private start/end/U2 checks | `d1f14ec934d3eb65f83db95dae23f3dd7a0d03e0` | Shared `GrammarValidator.validate_checks` and explicit legacy-only preferences |
+| `src/tnfr/validation/rules.py`: unused mutation/THOL closure helpers and supporting label translations | `271e3166bec85240dc9ea8314a193bb88fa96fa2` | Shared word and live operator admission |
+| `src/tnfr/validation/rules.pyi`: matching obsolete declarations | `1ea5ff31012ef805e38b4ed073e27ac5ea599600` | Declarations for retained scalar/fallback helpers |
+| `src/tnfr/validation/sequence_validator.py`: independent semantic rule table | `7fc64855b7d2a1da1f71c1f563cd44510a916ad9` | Public compatibility report adapter to shared admission |
+| `src/tnfr/config/defaults_metric.py`: six unconsumed Mutation/THOL grammar controls | `0176000a66a617df65b0262d0cb2df5119219fda` | Shared live Mutation admission and explicit word closure |
+| `src/tnfr/cli/arguments.py`: corresponding ineffective `--grammar.*` options | `8efd443b87744e4242a9ad36d04a8164ea9a9def` | Supported grammar toggle, window and actual operator contracts |
+| `src/tnfr/schemas/grammar.json`: obsolete advertised threshold properties | `6661091c580956ce75a099908be1e9bd78696b42` | Current enforcement configuration; extension keys grant no admission |
+| `src/tnfr/operators/grammar_context.py`: unused THOL length-order validation | `4a073245257481f9e4f30da2e173267f5bc9c1d7` | Shared grammar validation without obsolete closure-policy thresholds |
+
+The [grammar contract](../../UNIFIED_GRAMMAR_RULES.md#8-composition-and-implementation)
+and [API migration](../../../docs/API_CONTRACTS.md) own current behavior.
+Frozen words, producers and evaluated evidence retain their original source.
+
+<a id="remesh-historical-claims"></a>
+The former REMESH §19 claim ledger is recoverable in
+[`REMESH_INFINITY_DERIVATION.md` at the same revision](https://github.com/fermga/TNFR-Python-Engine/blob/a5ff1882a488667ea818f79bbbe7a989ca5d23f1/theory/REMESH_INFINITY_DERIVATION.md#19-historical-claim-ledger),
+blob `c53b36b5bce032d33d3967c6f1922a97562de5bf`
+(SHA-256 `08628a68ffc888829b60bff318d1c4eecd1aab961754393cfb309e2feb4cd308`).
+Its historical W1/W2/W3 references (`a1f298fd`, `badac156`, `48b0574a`) describe
+earlier claims. The [maintained REMESH owner](../../REMESH_INFINITY_DERIVATION.md)
+retains the distinct runtime, companion and cyclic-filter models, their proofs,
+counterexamples and open boundaries.
 
 | Record | Contents and recovery scope |
 | --- | --- |
@@ -117,15 +169,11 @@ revision `62d3da86f071f6d65c0bf3afbe6d44fa10ee6701`, Git blob
 These identities describe the committed blob, independently of routine checkout
 newline conversion. No duplicate historical plan was created.
 
-The [current plan](../FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) retains the
-latest result, inactive resumption boundary, unresolved dependencies and
-admission rules. Its [retained aliases](../FIVE_STAGE_EXECUTION_PLAN.md#retained-admission-links)
-route all prior explicit and heading anchors to their canonical result owners;
-the [theory-to-execution map](../../README.md#theory-to-execution) owns the full
-proof, implementation and test inventory. Conditional scope, negative results
-and the separately archived two-port probe export recovery remain explicit.
-The plan consolidation removes no proof and changes no frozen protocol,
-source archive, response or verdict. It admits no new campaign.
+The [current plan](../FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) owns the
+active question, unresolved dependencies and admission rules. Published plan
+fragments remain available; the [theory-to-execution map](../../README.md#theory-to-execution)
+owns definitions, proofs, implementations and tests. Frozen source and response
+recovery records retain their own scope independently of the task queue.
 
 <a id="four-foundation-source-audit"></a>
 ### Historical source audit for the foundational stages

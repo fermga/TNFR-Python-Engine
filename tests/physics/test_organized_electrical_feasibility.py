@@ -4,8 +4,8 @@ These controls use synthetic rational scales, matrix identities and polynomial
 extrema. They evaluate no reserved response, instrument or physical source.
 """
 
-from fractions import Fraction as Q
 import hashlib
+from fractions import Fraction as Q
 from pathlib import Path
 
 import pytest

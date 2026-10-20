@@ -275,6 +275,728 @@ condition fails. See the
 [contract](../../contracts/relational/SINE_REGIONAL_DYNAMICS.md#sine-phase-offset-partition)
 and [theory](../../../theory/nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-phase-offset-partition).
 
+<a id="weighted-phase-offset-partition"></a>
+
+### Unequal capacities with an exact collective law
+
+This standalone example uses a four-node star coupled to one external node.
+The star's center and leaves have different degrees and capacities; their
+ratios `nu_i/d_i` agree. Form exchange and phase exchange retain different
+coupling coefficients. The calculation tests the complete family and then
+evaluates one supplied collective state, without evolving the graph.
+
+```python
+from fractions import Fraction
+import networkx as nx
+from tnfr.constants.canonical import SHA_VF_FACTOR
+from tnfr.dynamics.relational import RelationalExchangeModel
+from tnfr.physics.relational_sine_support import bound_relational_sine_support_exchange
+from tnfr.physics.relational_sine_weighted_partition import (
+    assess_sine_weighted_capacity_reset,
+    assess_sine_weighted_phase_offset_partition,
+)
+from tnfr.sdk import relational_report_to_dict
+
+graph = nx.Graph()
+graph.add_nodes_from(range(5))
+graph.add_weighted_edges_from((0, node, 3) for node in (1, 2, 3))
+graph.add_weighted_edges_from((node, 4, 2) for node in range(4))
+graph.graph["GAMMA"] = {"type": "none"}
+capacities = (4, 2, 2, 2, 8)
+for node, capacity in enumerate(capacities):
+    graph.nodes[node].update(EPI=0, theta=0, nu_f=capacity)
+source = bound_relational_sine_support_exchange(
+    graph,
+    reference_model=RelationalExchangeModel(
+        1, epi_weight=0, phase_weight=1, phase_domain="regular",
+    ),
+)
+weighted_partition = assess_sine_weighted_phase_offset_partition(
+    source,
+    blocks=((0, 1, 2, 3), (4,)),
+    phase_offset_turns=(0, 0, 0, 0, 0),
+)
+assert weighted_partition.invariance_certified
+state = weighted_partition.evaluate((Fraction(1, 4), 0), (0, Fraction(1, 8)))
+
+# Supply represented primary-map outputs, without executing a grammatical event.
+whole_block = tuple(float(v) * SHA_VF_FACTOR for v in capacities[:4]) + (8.0,)
+one_member = (4.0 * SHA_VF_FACTOR, 2.0, 2.0, 2.0, 8.0)
+preserved = assess_sine_weighted_capacity_reset(
+    weighted_partition, capacity_after=whole_block,
+)
+broken = assess_sine_weighted_capacity_reset(
+    weighted_partition, capacity_after=one_member,
+)
+assert preserved.preservation_certified
+assert not broken.preservation_certified
+exported = relational_report_to_dict(preserved)
+print(state.block_form_rates)
+```
+
+Every rate here uses the original structural time `t`; phase inputs are
+exact turns and phase rates are radian derivatives. The common-block reset
+preserves the collective family while changing its relative motion. The
+singleton reset leaves the current forms and phases in that family but
+breaks the subsequent all-state closure condition. The chosen powers-of-two
+capacities make the represented products share an exact ratio. Arbitrary
+capacities require a fresh check even with one common configured factor.
+
+The graph is a law/support anchor, not an acquired organization. No operator
+history or occurrence has been supplied. A real SHA stage also needs its
+fine targets, live admission, grammar and lifecycle context. Exact family
+invariance does not certify attraction or resistance to perturbations.
+See the [contract](../../contracts/relational/SINE_REGIONAL_DYNAMICS.md#sine-weighted-phase-offset-partition)
+and [proof](../../../theory/nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-weighted-phase-offset-partition).
+
+<a id="weighted-star-transverse-band"></a>
+
+### Bound infinitesimal internal deviations on a libration band
+
+This standalone calculation studies the preceding weighted-star law as a
+supplied mathematical family. It does not inspect or evolve the example's
+graph. All three internal spatial modes are covered over the declared scale
+and libration-amplitude band, using outward scalar bounds rather than a
+trajectory or parameter scan.
+
+```python
+from fractions import Fraction
+from tnfr.constants.canonical import SHA_VF_FACTOR
+from tnfr.physics.relational_sine_weighted_transverse import (
+    assess_sine_weighted_star_transverse_band,
+)
+from tnfr.sdk import relational_report_to_dict
+
+transverse_band = assess_sine_weighted_star_transverse_band(
+    capacity_scale_bounds=(Fraction(23, 25), 1),
+    amplitude_bound=Fraction(1, 4),
+)
+assert transverse_band.linear_transverse_stability_certified
+assert [(mode.laplacian_eigenvalue, mode.multiplicity)
+        for mode in transverse_band.modes] == [(1, 2), (4, 1)]
+assert all(mode.strict_trace_margin > 0 for mode in transverse_band.modes)
+
+# Inspect a represented factor; this does not execute an operator.
+sha_ratio = Fraction.from_float(float(SHA_VF_FACTOR))
+assert Fraction(23, 25) <= sha_ratio <= 1
+transverse_payload = relational_report_to_dict(transverse_band)
+```
+
+The default SHA factor lies inside this band, and its products with the
+star's powers-of-two capacities preserve an exact common ratio. Each held
+capacity law in the band has its own normalized clock and transverse
+coefficients. The conclusion bounds infinitesimal deviations from the
+collective family; it does not bound arbitrary finite deviations or the
+phase difference between neighboring collective trajectories. At zero
+amplitude, stability follows from constant oscillators; reported period
+bounds include the limit as amplitude tends to zero. No spontaneous
+formation or physical correspondence follows. See the
+[contract](../../contracts/relational/SINE_REGIONAL_DYNAMICS.md#sine-weighted-star-transverse-band)
+and [proof](../../../theory/nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-weighted-star-transverse-band).
+
+<a id="weighted-star-state"></a>
+
+### Retain the internal state of a collective NFR candidate
+
+The four-node group and its fifth boundary node continue to obey the same
+complete weighted law. This standalone example compares two supplied fine
+states with the same collective means, complex phase moment and full
+storage, but different moment derivatives. It evaluates instantaneous rows;
+it runs no trajectory and executes no operator.
+
+```python
+from fractions import Fraction
+from tnfr.physics.relational_sine_weighted_state import (
+    assess_sine_weighted_star_state,
+    reconstruct_sine_weighted_star_state,
+)
+from tnfr.sdk import relational_report_to_dict
+
+internal_size = Fraction(1, 8)
+phase_size = Fraction(1, 32)  # exact turns; the reader retains this lift
+state_plus = assess_sine_weighted_star_state(
+    form=(0, internal_size, -internal_size, 0, 0),
+    phase_turns=(0, phase_size, -phase_size, 0, 0),
+)
+state_minus = assess_sine_weighted_star_state(
+    form=(0, -internal_size, internal_size, 0, 0),
+    phase_turns=state_plus.phase_turns,
+)
+assert state_plus.collective_form == state_minus.collective_form
+assert state_plus.collective_phase_turns == state_minus.collective_phase_turns
+assert state_plus.moment_real_expression == state_minus.moment_real_expression
+assert state_plus.moment_imag_expression == state_minus.moment_imag_expression
+assert state_plus.form_storage == state_minus.form_storage
+assert state_plus.phase_storage_expression == state_minus.phase_storage_expression
+assert state_plus.moment_real_rate_bounds.hi < 0
+assert state_minus.moment_real_rate_bounds.lo > 0
+
+reconstructed = reconstruct_sine_weighted_star_state(
+    capacity_scale=state_plus.capacity_scale,
+    collective_form=state_plus.collective_form,
+    collective_phase_turns=state_plus.collective_phase_turns,
+    internal_form=state_plus.internal_form,
+    internal_phase_turns=state_plus.internal_phase_turns,
+)
+assert reconstructed.form == state_plus.form
+assert reconstructed.phase_turns == state_plus.phase_turns
+assert reconstructed.exact_row_reconstruction_certified
+state_payload = relational_report_to_dict(reconstructed)
+```
+
+The difference is the association between internal form and phase. Retaining
+the internal coordinates reconstructs both full rows exactly. This is a
+sufficient continuous description, with ten independent coordinates including
+the dynamic boundary, rather than a proof that a smaller autonomous NFR
+description is impossible. The marked center and leaves remain associated.
+
+Phase means use the supplied lifts and all phase rates are radians per
+original structural time. Changing individual phase representatives requires
+transporting the internal moment and collective gap together. Full storage
+belongs to the declared fine model; its split relative to the coherent family can
+have a negative remainder. The continuous report supplies neither measured
+histories nor grammar context and cannot select or admit an operator. See
+the [contract](../../contracts/relational/SINE_REGIONAL_DYNAMICS.md#sine-weighted-star-state)
+and [complete state study](../../../theory/nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-weighted-star-state-sufficiency).
+
+<a id="weighted-star-retention"></a>
+
+### Certify a finite-amplitude internal identity
+
+Continue the supplied `state_plus` above. Its members need not have identical
+forms or phases. This certificate uses the full model's conserved storage
+to keep center-leaf form contrasts below `1/2` and circular phase gaps below
+`pi/2`, with the fifth node continuing to evolve.
+
+```python
+from tnfr.physics.relational_sine_weighted_state import (
+    assess_sine_weighted_star_retention,
+)
+
+retained_identity = assess_sine_weighted_star_retention(state_plus)
+assert retained_identity.source_identity_admitted
+assert retained_identity.storage_margin > 0
+assert retained_identity.all_time_identity_retention_certified
+retention_payload = relational_report_to_dict(retained_identity)
+```
+
+The claim holds for this declared identity under the unchanged conservative
+law, without integrating a trajectory. It does not say that the state returns
+to perfect synchrony, follows a particular orbit or formed spontaneously.
+An `unavailable` result for another state means this sufficient storage
+test did not certify maintenance; it does not prove that the group breaks
+apart. The [proof](../../../theory/nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-weighted-star-identity-retention)
+also covers an explicit nonzero preparation neighborhood around the earlier
+coherent band. See the
+[contract](../../contracts/relational/SINE_REGIONAL_DYNAMICS.md#sine-weighted-star-retention)
+for thresholds, uncertainty scope and capacity-reset boundaries.
+
+<a id="weighted-star-contact"></a>
+
+### Connect two maintained organizations with accounted support work
+
+This standalone example supplies two complete stars and one boundary-to-boundary
+edge. It evaluates the actual joined law and its maintenance certificate;
+it does not run a trajectory or execute the Coupling operator.
+
+```python
+from fractions import Fraction
+from tnfr.physics.relational_sine_weighted_state import (
+    assess_sine_weighted_star_state,
+)
+from tnfr.physics.relational_sine_weighted_contact import (
+    assess_sine_weighted_star_contact,
+)
+from tnfr.sdk import relational_report_to_dict
+
+contact_forms = (Fraction(1, 16),) * 4 + (0,)
+contact_left = assess_sine_weighted_star_state(
+    form=contact_forms, phase_turns=(0,) * 5,
+)
+contact_right = assess_sine_weighted_star_state(
+    form=contact_forms, phase_turns=(Fraction(1, 16),) * 5,
+)
+star_contact = assess_sine_weighted_star_contact(contact_left, contact_right)
+assert star_contact.source_individual_retention_certified == (True, True)
+assert star_contact.support_work_bounds.lo > 0
+assert star_contact.component_storage_rate_bounds[0].hi < 0
+assert star_contact.component_storage_rate_bounds[1].lo > 0
+assert star_contact.all_time_joint_identity_retention_certified
+contact_payload = relational_report_to_dict(star_contact)
+```
+
+The two components initially exchange stored structure while both declared
+identities remain certified for all time under the joined law. Initial
+exchange signs are not a prediction of their signs for all later times.
+The bridge adds positive storage; it is not a free or autonomously selected
+connection. Both boundary nodes have five neighbors, so their rates
+must be read from `star_contact`, not from the isolated inputs.
+
+The joint storage budget is an additional obligation. With higher joined
+storage, both isolated certificates can pass while the joint certificate
+is unavailable; that result does not establish breakup. The
+[proof](../../../theory/nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-weighted-star-maintenance-composition)
+also admits finite perturbations in every one of the twenty coordinates.
+See the [contract](../../contracts/relational/SINE_REGIONAL_DYNAMICS.md#sine-weighted-star-contact)
+for complete-law, export and execution boundaries.
+
+<a id="weighted-star-canonical-contact"></a>
+
+### Execute a canonical word and assess its actual successor
+
+This standalone example prepares two weighted stars, then applies a
+validated `emission,coupling,silence` word only to the first boundary.
+The phases below are exact dyadic radians. Source preparation and event
+invocation are supplied; the example does not acquire the stars from an
+earlier trajectory. UTC lifecycle timestamps come from the actual runtime.
+
+```python
+import math
+import networkx as nx
+from tnfr.dynamics.relational import RelationalExchangeModel
+from tnfr.operators.definitions import Emission, Coupling, Silence
+from tnfr.operators.grammar_execution import ValidatedSequence
+from tnfr.operators.grammar_patterns import validate_sequence
+from tnfr.operators.word_execution import execute_network_operator_stage
+from tnfr.physics.relational_sine_support import bound_relational_sine_support_exchange
+from tnfr.physics.relational_sine_star_retention import (
+    assess_sine_weighted_star_support_retention,
+)
+from tnfr.sdk import relational_report_to_dict
+
+word_graph = nx.Graph()
+word_graph.add_nodes_from(range(10))
+star_edges = ((0, 1), (0, 2), (0, 3), (0, 4), (1, 4), (2, 4), (3, 4))
+star_weights = (3, 3, 3, 2, 2, 2, 2)
+for offset in (0, 5):
+    for (i, j), weight in zip(star_edges, star_weights):
+        word_graph.add_edge(offset + i, offset + j, weight=weight, length=1)
+    for local, capacity in enumerate((4, 2, 2, 2, 8)):
+        word_graph.nodes[offset + local].update(
+            EPI=1/4 + (1/16 if local < 4 else 0),
+            theta=0.0 if offset == 0 else 201/512,
+            nu_f=float(capacity), delta_nfr=0.0, Si=0.5, glyph_history=[],
+        )
+word_graph.graph.update(
+    _t=7, RANDOM_SEED=17, GAMMA={"type": "none"},
+    GRAMMAR_REJECTION_MODE="raise", VALIDATE_OPERATOR_PRECONDITIONS=True,
+    EPI_LATENT_MAX=1, VF_BASAL_THRESHOLD=1/8, SHA_MIN_VF=1/8,
+    UM_MIN_EPI=1/8, UM_MIN_VF=1/8, MIN_NETWORK_DEGREE_COUPLING=1,
+    DELTA_PHI_MAX=math.pi/2, UM_MAX_PHASE_DIFF=math.pi/2,
+    UM_BIDIRECTIONAL=True, UM_SYNC_VF=True,
+    UM_STABILIZE_DNFR=True, UM_FUNCTIONAL_LINKS=True,
+    UM_COMPAT_THRESHOLD=3/4, UM_CANDIDATE_COUNT=0,
+    UM_CANDIDATE_MODE="proximity", GLYPH_HYSTERESIS_WINDOW=8,
+    EPI_MIN=-1, EPI_MAX=1, CLIP_MODE="hard",
+    GLYPH_FACTORS={
+        "AL_boost": 1/1024, "UM_theta_push": 1/1024,
+        "UM_vf_sync": 1/8, "UM_dnfr_reduction": 1/8,
+        "SHA_vf_factor": 1/2,
+    },
+)
+word_operators = (Emission(), Coupling(), Silence())
+word_context = {"compatibility_profile": "core"}
+assert validate_sequence(
+    [operator.name for operator in word_operators], context=word_context,
+).passed
+word_sequence = ValidatedSequence(word_operators, context=word_context)
+for index, operator in enumerate(word_operators):
+    execute_network_operator_stage(
+        word_graph, operator, (4,), sequence_context=word_sequence.step(index),
+    )
+
+successor = bound_relational_sine_support_exchange(
+    word_graph,
+    reference_model=RelationalExchangeModel(1, epi_weight=0, phase_domain="regular"),
+)
+word_retention = assess_sine_weighted_star_support_retention(
+    successor, stars=((0, 1, 2, 3, 4), (5, 6, 7, 8, 9)),
+)
+assert word_graph.number_of_edges() == 19
+assert word_graph.nodes[4]["nu_f"] == 117/32
+assert tuple(word_graph.nodes[4]["glyph_history"]) == ("AL", "UM", "SHA")
+assert word_retention.all_time_identity_retention_certified
+word_retention_payload = relational_report_to_dict(word_retention)
+```
+
+UM selects five actual cross edges and their affinity-derived weights.
+The complete word changes the target capacity, leaving the original star
+subgraphs intact. The certificate uses all actual edges and capacities;
+the right star's perfect internal synchrony need not persist even though
+its declared identity does. Positive capacity after SHA still permits
+continuous form evolution.
+
+The detached `successor` recomputes pressure for the declared sine law;
+it does not install that pressure or a flow law in `word_graph`. Stored
+operator pressure, event history and measured temporal samples are
+different inputs. No continuous integration occurs here. See the
+[prospective study and proof](../../../theory/nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md)
+and [successor contract](../../contracts/relational/SINE_REGIONAL_DYNAMICS.md#sine-weighted-star-support-retention).
+
+<a id="weighted-star-finite-response"></a>
+
+### Bound the internal response after a finite duration
+
+Continue the preceding canonical-word example. The complete successor law
+has a nonzero right center-leaf derivative at the initial state. A finite
+response requires control of the subsequent nonlinear evolution as well:
+
+```python
+from fractions import Fraction
+
+finite_response = successor.finite_form_response_bounds(duration=Fraction(1, 128))
+right_center = finite_response.source.nodes.index(5)
+right_leaf = finite_response.source.nodes.index(6)
+finite_contrast = (
+    finite_response.endpoint_form_bounds[right_center]
+    - finite_response.endpoint_form_bounds[right_leaf]
+)
+assert finite_contrast.hi < -Fraction(1, 32768)
+assert word_retention.all_time_identity_retention_certified
+finite_response_payload = relational_report_to_dict(finite_response)
+```
+
+The duration is elapsed original structural time after the word. This
+calculation bounds the full nonlinear law without integrating a trajectory
+or modifying `word_graph`. The reusable reader derives a whole-window form
+radius from the global speed bound, then reuses the complete acceleration
+envelope. Its endpoint intervals include the resulting nonlinear remainder.
+
+The [matched comparison](../../../theory/nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-finite-response-protocol)
+changes only the word's functional-link flag. The disconnected right star
+retains exactly zero center-leaf contrast by its invariant-family theorem;
+zero initial derivatives alone would not prove that. Both alternatives
+retain their original identities. This is a conditional structural response,
+not a measured laboratory signal or a newly formed NFR. See the
+[finite-response contract](../../contracts/relational/SINE_COMPARISON_AND_INFERENCE.md#sine-finite-form-response).
+
+<a id="weighted-star-collective-state"></a>
+
+### Retain the contact's internal motion in an exact collective state
+
+Continue the canonical-contact and finite-response examples. The left four
+members can share one form and phase. On the right, the center must remain
+separate from the three leaves. The following five-block family retains
+both dynamical boundaries and the right center-leaf contrast:
+
+```python
+from tnfr.physics.relational_sine_weighted_partition import (
+    assess_sine_weighted_phase_offset_partition,
+)
+
+contact_partition = assess_sine_weighted_phase_offset_partition(
+    successor,
+    blocks=((0, 1, 2, 3), (4,), (5,), (6, 7, 8), (9,)),
+    phase_offset_turns=(0,) * 10,
+)
+assert contact_partition.invariance_certified
+contact_state = contact_partition.observe_radian_state()
+assert contact_state.source_membership_certified
+assert contact_state.full_row_equality_certified
+assert contact_state.collective_phase_radians == (
+    0, 0, Fraction(201, 512), Fraction(201, 512), Fraction(201, 512),
+)
+assert contact_state.partition.block_mean_weights == (
+    4, Fraction(32, 13), Fraction(5, 4), Fraction(9, 2), Fraction(5, 8),
+)
+assert contact_state.phase_rate_residuals == (0,) * 10
+assert contact_state.full_source == successor
+assert contact_state.full_source == finite_response.source
+contact_state_payload = relational_report_to_dict(contact_state)
+```
+
+The ten collective coordinates describe this invariant family exactly;
+lifting them reconstructs its twenty fine form/phase coordinates and both
+complete rate rows. The preceding finite-response certificate therefore
+keeps the same source and observable. This statement does not discard errors
+outside the family or prove that they decay.
+
+Use `contact_partition.evaluate_radians(forms, phases)` to examine a supplied
+member with five real forms and five real radian lifts. The observer above
+instead verifies actual source membership without averaging. Both require
+exact zero offsets; neither converts the source phases to rational turns.
+
+The reduced law keeps separate cross-edge multiplicities and conductance
+sums. A simple five-node graph with one unweighted phase edge per connection
+would lose that information. This mathematical description also installs
+no collective operator, event selector or new NFR identity. See the
+[proof](../../../theory/nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-collective-state-result)
+and [contract](../../contracts/relational/SINE_REGIONAL_DYNAMICS.md#sine-weighted-radian-state).
+
+<a id="weighted-star-off-family-robustness"></a>
+
+### Bound errors outside the exact contact family
+
+Continue the preceding examples. Allow independent errors in every form and
+declared radian lift, with the same errors supplied to the attached and
+disconnected branches. Keep each branch's actual post-word law fixed:
+
+```python
+epsilon = Fraction(1, 2**20)
+contact_errors = successor.initial_state_perturbation_bounds(
+    duration=Fraction(1, 128),
+    form_error_bounds=(epsilon,) * 10,
+    phase_error_bounds=(epsilon,) * 10,
+)
+assert contact_errors.status == "enclosed"
+assert contact_errors.form_error_supremum_upper_bound < 21 * epsilon / 20
+assert contact_errors.phase_error_supremum_upper_bound < 11 * epsilon / 10
+
+# The matched-word theorem gives the same primary node states without links.
+# These detached component graphs do not execute another word or a trajectory.
+control_sources = tuple(
+    bound_relational_sine_support_exchange(
+        word_graph.subgraph(nodes).copy(), reference_model=successor.reference_model,
+    )
+    for nodes in ((0, 1, 2, 3, 4), (5, 6, 7, 8, 9))
+)
+control_errors = tuple(
+    source.initial_state_perturbation_bounds(
+        duration=Fraction(1, 128),
+        form_error_bounds=(epsilon,) * 5,
+        phase_error_bounds=(epsilon,) * 5,
+    )
+    for source in control_sources
+)
+assert all(report.status == "enclosed" for report in control_errors)
+assert control_sources[1].nodes == (5, 6, 7, 8, 9)
+attached_errors = contact_errors.whole_window_form_error_bounds
+right_control_errors = control_errors[1].whole_window_form_error_bounds
+robust_contrast_upper = (
+    finite_contrast.hi + attached_errors[5] + attached_errors[6]
+    + right_control_errors[0] + right_control_errors[1]
+)
+assert robust_contrast_upper < -Fraction(1, 32768)
+assert contact_errors.initial_storage_upper_bound < Fraction(35, 64)
+assert all(
+    report.initial_storage_upper_bound < Fraction(35, 64)
+    for report in control_errors
+)
+contact_errors_payload = relational_report_to_dict(contact_errors)
+```
+
+The strict inequality holds for the whole declared error box, not just a
+chosen perturbed sample. The unperturbed control is exactly null by its
+family theorem; the perturbed control has its own nonzero error allowance.
+The attached reference is the exact five-block solution, while its perturbed
+neighbors retain all twenty coordinates.
+
+The same protected old edges, positive capacities, initial identity margins
+and complete storage bounds also retain both marked identities. This is
+finite tracking of a prepared neighborhood, without a claim that errors
+decay or that UM produces the entire neighborhood. Changing the input to the
+word could change its support, weights and capacities and needs separate
+admission. See the [proof](../../../theory/nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-off-family-robustness-result)
+and [error-envelope contract](../../contracts/relational/SINE_COMPARISON_AND_INFERENCE.md#sine-initial-state-perturbation).
+
+<a id="weighted-star-preparation-robustness"></a>
+
+### Continue with uncertainty in the produced edge weights
+
+Continue the canonical-contact examples. A preparation error before UM can
+change its output weights even when the same five links remain admitted.
+The preparation theorem supplies the following state and conductance budgets
+under its explicit arithmetic premises. This example evaluates that
+continuation box; it does not execute a perturbed word or verify an actual
+endpoint's membership in the box.
+
+```python
+preparation_epsilon = Fraction(1, 2**24)
+inserted_edges = {frozenset((4, node)) for node in range(5, 10)}
+prepared_contact_bounds = successor.state_and_conductance_perturbation_bounds(
+    duration=Fraction(1, 128),
+    form_error_bounds=(2 * preparation_epsilon,) * 10,
+    phase_error_bounds=(2 * preparation_epsilon,) * 10,
+    conductance_error_bounds=tuple(
+        4 * preparation_epsilon if frozenset(edge) in inserted_edges else 0
+        for edge in successor.edges
+    ),
+)
+assert prepared_contact_bounds.status == "enclosed"
+assert prepared_contact_bounds.max_phase_law_forcing_upper_bound < preparation_epsilon
+assert (
+    prepared_contact_bounds.form_error_supremum_upper_bound
+    < 21 * preparation_epsilon / 10
+)
+prepared_control_bounds = tuple(
+    source.initial_state_perturbation_bounds(
+        duration=Fraction(1, 128),
+        form_error_bounds=(2 * preparation_epsilon,) * 5,
+        phase_error_bounds=(2 * preparation_epsilon,) * 5,
+    )
+    for source in control_sources
+)
+prepared_contrast_upper = finite_contrast.hi + 2 * (
+    prepared_contact_bounds.form_error_supremum_upper_bound
+    + prepared_control_bounds[1].form_error_supremum_upper_bound
+)
+assert prepared_contrast_upper < -Fraction(1, 32768)
+assert prepared_contact_bounds.initial_storage_upper_bound < Fraction(35, 64)
+assert all(
+    report.initial_storage_upper_bound < Fraction(35, 64)
+    for report in prepared_control_bounds
+)
+prepared_contact_payload = relational_report_to_dict(prepared_contact_bounds)
+```
+
+Actual use also requires checking support, capacities, every weight and both
+coordinate budgets against the captured endpoint. Keep raw phases and an
+explicit integer lift chart: an output near a full turn is compared using
+`raw_phase - 2*pi*k`, with outward pi intervals. A subtraction using rounded
+`math.tau` would change the exact continuous state. These checks are separate
+from the box reader and are exercised by the frozen static word controls.
+
+The uniform implementation statement retains a declared numerical allowance;
+finite comparisons do not prove every backend's arithmetic accuracy. See the
+[preparation theorem and controls](../../../theory/nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-preparation-robustness-result)
+and [state/conductance contract](../../contracts/relational/SINE_COMPARISON_AND_INFERENCE.md#sine-state-conductance-perturbation).
+
+<a id="weighted-star-relative-realization"></a>
+
+### Find the internal state required by relative regional motion
+
+Continue the canonical-contact example. The following reader studies the
+held successor law around its separately declared uniform equilibrium family.
+It retains the captured source, without asserting that its finite post-word
+state has reached that equilibrium:
+
+```python
+from tnfr.physics.relational_sine_consensus_observation import (
+    assess_sine_consensus_observation,
+)
+
+contact_linear = assess_sine_consensus_observation(
+    successor, regions=((0, 1, 2, 3, 4), (5, 6, 7, 8, 9)),
+    max_rank_calls=128,
+)
+assert contact_linear.source == successor
+assert not contact_linear.source_in_consensus_family
+assert contact_linear.clock == "t"
+assert not contact_linear.two_coordinate_closure_certified
+assert contact_linear.linear_observation.full_state_dimension == 20
+assert contact_linear.linear_observation.output_rank == 2
+assert contact_linear.linear_observation.dimension == 8
+assert contact_linear.linear_observation.extra_coordinates == 6
+contact_linear_payload = relational_report_to_dict(contact_linear)
+```
+
+The outputs are the left-minus-right form and phase means, weighted with
+each region's actual `d/nu_f`. Six further linear coordinates are required
+to predict those two outputs for arbitrary fine infinitesimal preparations.
+The exact selected-coordinate dynamics uses
+`s_dot=(exchange_coefficient/pi)*linear_observation.reduced_generator*s`.
+The common factor remains in the original clock; the stored rational matrix
+alone is not the original-time generator.
+
+The matched disconnected law instead preserves its own two regional means.
+Its degree weights differ, so it must be rebuilt before comparison. This
+eight-coordinate result concerns the complete equilibrium tangent, not an
+exact nonlinear projection of arbitrary fine states. Eliminating retained
+internal coordinates requires their initial contribution and causal memory;
+setting them to zero would restrict the preparation. See the
+[proof and frozen controls](../../../theory/nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-relative-realization-result)
+and [contract](../../contracts/relational/SINE_COMPARISON_AND_INFERENCE.md#sine-consensus-observation).
+
+<a id="weighted-star-nonlinear-validity"></a>
+
+### Bound the nonlinear error of the collective predictor
+
+Keep the nominal held law, but explicitly prepare a new near-consensus
+source. The earlier finite post-word source is outside this box; this
+replacement is a detached preparation, not its subsequent trajectory or
+an operator reset. Three right leaves carry a zero-mean internal phase
+pattern that the entire eight-state tangent observation cannot see:
+
+```python
+from dataclasses import replace
+
+epsilon = Fraction(1, 16)
+hidden_amplitude = epsilon / 4
+hidden_source = replace(
+    successor,
+    epi=(Fraction(0),) * 10,
+    phase=(Fraction(0),) * 6 + (
+        hidden_amplitude, hidden_amplitude, -2 * hidden_amplitude, Fraction(0),
+    ),
+)
+hidden_linear = assess_sine_consensus_observation(
+    hidden_source, regions=((0, 1, 2, 3, 4), (5, 6, 7, 8, 9)),
+    max_rank_calls=128,
+)
+nonlinear_bounds = hidden_linear.nonlinear_response_bounds(
+    duration=Fraction(1, 16), consensus_form=0, consensus_phase=0,
+    form_amplitude_bounds=(epsilon,) * 10,
+    phase_amplitude_bounds=(epsilon,) * 10,
+)
+assert nonlinear_bounds.status == "enclosed"
+assert nonlinear_bounds.initial_observation_state == (Fraction(0),) * 8
+assert nonlinear_bounds.initial_outputs == (Fraction(0),) * 2
+assert nonlinear_bounds.output_error_upper_bounds[0] < 5 * epsilon**3
+assert nonlinear_bounds.output_error_upper_bounds[1] < 3 * epsilon**3
+nonlinear_payload = relational_report_to_dict(nonlinear_bounds)
+```
+
+These are whole-window bounds for all twenty independently prepared fine
+coordinates in the declared box, against the tangent solution with the
+same complete initial state. The selected linear coordinates alone still
+do not close the nonlinear law: reversing the hidden phase pattern keeps
+them, both means and full storage unchanged, but reverses a nonzero initial
+relative form rate. That derivative statement is not a measured finite-time
+response. The [proof](../../../theory/nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-nonlinear-validity-result)
+also establishes both original identity barriers throughout this box;
+neither result establishes formation of a common identity. See the
+[contract](../../contracts/relational/SINE_COMPARISON_AND_INFERENCE.md#sine-consensus-nonlinear-response).
+Before using these reports in a formation study, apply the
+[source and mechanism admission](../../../theory/nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-formation-admission).
+It identifies which preparation each certificate covers and what separate
+entry and event evidence the proposed common identity would require.
+
+<a id="weighted-star-permanent-registration"></a>
+
+### Admit the recurrence boundary before a permanent formation claim
+
+Return to the actual canonical `successor`, keeping its complete held
+weighted law. The following family admits its captured storage and
+own-law form mean:
+
+```python
+contact_recurrence = successor.recurrence_bounds(
+    energy_ceiling=Fraction(3, 4), form_mean_bounds=(-1, 1),
+)
+assert contact_recurrence.snapshot_family_membership == "inside"
+assert contact_recurrence.divergence == 0
+assert contact_recurrence.positive_conductance_weight_floor > 0
+assert contact_recurrence.almost_everywhere_recurrence_certified
+assert contact_recurrence.individual_recurrence_status == "unavailable_for_chosen_state"
+recurrence_payload = relational_report_to_dict(contact_recurrence)
+```
+
+The family theorem is about almost every state in ambient real-form and
+circular-phase volume. It does not establish recurrence of this particular
+successor or a measure on an exact energy surface. The report itself also
+evaluates no registration target. The
+[separate proof](../../../theory/nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-permanent-registration-result)
+declares such a closed target, excludes the source with a uniform margin,
+and applies recurrence to its positive-width fine-state neighborhoods.
+This obstructs robust permanent capture under the unchanged conservative
+flow. Finite common-registration episodes require their own entry,
+lifetime and subsequent-response evidence. See the
+[contract](../../contracts/relational/SINE_COMPARISON_AND_INFERENCE.md#sine-support-recurrence).
+
+For finite entry, use the
+[separate registration comparison](../../../theory/nodal/SINE_WEIGHTED_STAR_FINITE_IDENTITY.md#weighted-star-finite-registration-result).
+The disconnected control's conserved component means exclude the fixed
+circular target for all time. The joined law's source storage and two means
+permit a target configuration, but a configuration path is not a trajectory.
+No registration observer or formation verdict is supplied by the recurrence
+report. A later episode must carry the actual reached full state into its
+residence and response calculation; a tangent comparison tests the role of
+nonlinear terms, not a universal prerequisite for an NFR.
+The [admitted short-arc formula](../../../theory/nodal/SINE_WEIGHTED_STAR_FINITE_IDENTITY.md#weighted-star-registration-short-arc)
+also replaces global circle minimization by the full arithmetic-centered
+phase variance on the retained common lifts. Rewrapping each node separately
+does not preserve that raw-variance formula.
+
 <a id="moving-pattern-window"></a>
 
 ### Retain compatible motion with errors in every fine node
@@ -462,7 +1184,7 @@ proves the zero derivatives and nonzero cubic drift; interval overlap alone
 would not prove either equality. This flat-phase example tests feedback, not
 formation. The theorem also gives an exactly twisted symbolic counterpart,
 without treating a floating approximation to pi as exact geometry.
-The unchanged SDK report export includes the new fields. Neither this local
+SDK report export includes these fields. Neither this local
 calculation nor exact rigidity classification certifies the extended
 formation-to-retention window; that requires control over the whole interval.
 

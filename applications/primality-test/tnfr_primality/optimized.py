@@ -8,7 +8,6 @@ primality complexity bound or production performance guarantee."""
 from __future__ import annotations
 
 import time
-from functools import lru_cache
 from typing import Any, Dict, List, Tuple
 
 from .core import tnfr_delta_nfr, tnfr_is_prime
@@ -18,8 +17,8 @@ class OptimizedTNFRPrimality:
     """Cache final pressure values and collect workload timing statistics.
 
     ``cache_size`` limits stored pressure results. Batch processing repeats the
-    same predicate; allocated divisor/factor dictionaries are not used by that
-    path. The test uses a fixed strict tolerance of 1e-10.
+    same predicate. The first distinct results are retained until cleared;
+    this is not an LRU cache. The test uses a fixed strict tolerance of 1e-10.
 
     Example:
         optimizer = OptimizedTNFRPrimality()
@@ -31,7 +30,7 @@ class OptimizedTNFRPrimality:
         Initialize optimizer with configurable cache size.
 
         Args:
-            cache_size: Maximum entries in LRU caches
+            cache_size: Maximum retained final pressure values
         """
         self.cache_size = cache_size
         self.stats = {
@@ -44,10 +43,7 @@ class OptimizedTNFRPrimality:
         self._setup_caches()
 
     def _setup_caches(self):
-        """Setup optimized caching infrastructure."""
-        # Create method-specific caches with appropriate sizes
-        self._divisor_cache = {}
-        self._factor_cache = {}
+        """Initialize the single final-pressure cache."""
         self._delta_cache = {}
 
     def is_prime(self, n: int) -> Tuple[bool, float]:
@@ -123,8 +119,9 @@ class OptimizedTNFRPrimality:
         test_numbers = list(range(2, min(100, max_n)))  # Small numbers
         if max_n > 100:
             # Add random sample of larger numbers
-            random.seed(42)  # Reproducible results
-            large_sample = random.sample(range(100, max_n), min(500, max_n - 100))
+            large_sample = random.Random(42).sample(
+                range(100, max_n), min(500, max_n - 100)
+            )
             test_numbers.extend(large_sample)
 
         # Add known large primes
@@ -155,7 +152,9 @@ class OptimizedTNFRPrimality:
             "primes_found": primes_found,
             "composites_found": composites_found,
             "total_time_ms": total_time * 1000,
-            "average_time_us": (total_time / len(test_numbers)) * 1_000_000,
+            "average_time_us": (
+                (total_time / len(test_numbers)) * 1_000_000 if test_numbers else 0.0
+            ),
             "numbers_per_second": (
                 len(test_numbers) / total_time if total_time > 0 else 0
             ),
@@ -198,7 +197,6 @@ class OptimizedTNFRPrimality:
             "cache_hit_rate": (
                 self.stats["cache_hits"] / cache_total if cache_total > 0 else 0
             ),
-            "arithmetic_cache_size": len(self._divisor_cache) + len(self._factor_cache),
             "memory_efficiency": (
                 "Good" if len(self._delta_cache) < self.cache_size * 0.8 else "Full"
             ),
@@ -207,8 +205,6 @@ class OptimizedTNFRPrimality:
     def clear_cache(self):
         """Clear all caches and reset statistics."""
         self._delta_cache.clear()
-        self._divisor_cache.clear()
-        self._factor_cache.clear()
         self.stats = {
             "tests_performed": 0,
             "cache_hits": 0,

@@ -12,7 +12,6 @@ import math
 from dataclasses import dataclass
 from typing import Any
 
-from ..alias import get_attr
 from ..constants.aliases import ALIAS_DNFR, ALIAS_THETA
 from ..mathematics._phase_midpoint import certified_two_neighbor_phase
 from ..metrics.trig import neighbor_phase_mean_list
@@ -268,7 +267,13 @@ def propose_coherence_stage(
         label="coherence_radius",
     )
     dnfr_before, dnfr_after = propose_coherence_pressure(
-        get_attr(graph.nodes[node], ALIAS_DNFR, 0.0, strict=True),
+        finite_node_real(
+            graph.nodes[node],
+            ALIAS_DNFR,
+            0.0,
+            operator="Coherence",
+            label="DeltaNFR state",
+        ),
         factor,
     )
     return CoherenceStageProposal(

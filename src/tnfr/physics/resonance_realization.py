@@ -1,9 +1,10 @@
 r"""Runtime realization bridge for one local Resonance (RA) update.
 
-Resonance uses the same unweighted neighbour-EPI mean and two-stage binary64
-blend as Reception, then conditionally increases the target capacity and moves
-its phase toward the circular mean of all runtime neighbours.  Its stronger
-operator contract also preserves structural identity.  The runtime now checks
+Resonance applies the shared unweighted neighbour-EPI mean and two-stage
+binary64 blend to its U3-compatible runtime neighbours, then conditionally
+increases the target capacity and moves its phase toward their circular mean
+when that mean is defined. Its stronger operator contract also preserves
+structural identity. The runtime now checks
 that contract before mutation: a strict negative-to-positive or
 positive-to-negative EPI crossing is rejected, as is replacement of an
 established nonempty ``epi_kind``.  Exact zero is the neutral sign boundary.

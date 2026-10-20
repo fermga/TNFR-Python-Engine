@@ -16,16 +16,16 @@ from ..mathematics._rational_interval import I, pi_interval
 from ._organized_electrical_actuation import _source_boxes
 from ._organized_electrical_source import _integer_labels, _same_undirected_edges
 from ._organized_finite_observation import (
-    _OrganizedFiniteObservationProtocol,
     _bound_organized_finite_observation,
+    _OrganizedFiniteObservationProtocol,
 )
 from ._organized_outer_winding import (
-    _OrganizedOuterResourceBounds,
     _derive_organized_outer_resource_bounds,
+    _OrganizedOuterResourceBounds,
 )
 from ._sine_recovery_resources import (
-    _SineRecoveryResources,
     _assess_sine_recovery_resources,
+    _SineRecoveryResources,
 )
 
 

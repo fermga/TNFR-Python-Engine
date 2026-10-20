@@ -4,7 +4,9 @@ import gzip
 import json
 from pathlib import Path
 
-from scripts.replay.register_manifest import register_manifest
+import pytest
+
+from scripts.replay.register_manifest import main, register_manifest
 
 
 def _write_sample(tmp_path: Path, *, inline: bool) -> tuple[Path, Path, Path | None]:
@@ -131,3 +133,102 @@ def test_register_manifest_archive(tmp_path: Path) -> None:
         record["structural_fields"]["phi_s"]["max"]
         > record["structural_fields"]["phi_s"]["min"]
     )
+
+
+def test_explicit_false_uses_archive_and_missing_observations_remain_missing(tmp_path):
+    summary, manifest, archive = _write_sample(tmp_path, inline=False)
+    data = json.loads(summary.read_text(encoding="utf-8"))
+    data["file_index"]["inline"] = "false"
+    summary.write_text(json.dumps(data), encoding="utf-8")
+    data = json.loads(manifest.read_text(encoding="utf-8"))
+    data["entries"][0]["telemetry"] = None
+    data["entries"][1]["telemetry"] = {"phi_s": 0.0}
+    manifest.write_text(json.dumps(data), encoding="utf-8")
+
+    result = register_manifest(experiment_id="explicit-archive", summary_path=summary)
+
+    assert result["partition_files"]["source"] == "archive"
+    assert result["partition_files"]["sample"] == ["p000.json", "p001.json"]
+    assert result["structural_fields"] == {
+        "phi_s": {"min": 0.0, "max": 0.0, "avg": 0.0, "count": 1.0}
+    }
+    assert result["archive_path"] == str(archive)
+
+
+@pytest.mark.parametrize("value", (True, "0.5", [], {}))
+def test_present_invalid_telemetry_is_not_dropped_or_coerced(tmp_path, value):
+    summary, manifest, _ = _write_sample(tmp_path, inline=True)
+    data = json.loads(manifest.read_text(encoding="utf-8"))
+    data["entries"][0]["telemetry"]["phi_s"] = value
+    manifest.write_text(json.dumps(data), encoding="utf-8")
+    with pytest.raises((TypeError, ValueError)):
+        register_manifest(experiment_id="invalid", summary_path=summary)
+
+
+def test_representable_telemetry_mean_does_not_overflow_its_sum(tmp_path):
+    summary, manifest, _ = _write_sample(tmp_path, inline=True)
+    data = json.loads(manifest.read_text(encoding="utf-8"))
+    for entry in data["entries"]:
+        entry["telemetry"]["phi_s"] = 1e308
+    manifest.write_text(json.dumps(data), encoding="utf-8")
+    result = register_manifest(experiment_id="large-finite", summary_path=summary)
+    assert result["structural_fields"]["phi_s"]["avg"] == 1e308
+
+
+@pytest.mark.parametrize(
+    "payload",
+    (
+        '{"entries":[],"entries":[{}]}',
+        '{"entries":[{"telemetry":{"phi_s":NaN}}]}',
+        '{"entries":[{"telemetry":{"phi_s":1e-999}}]}',
+        "[]",
+    ),
+)
+def test_invalid_json_never_replaces_registration_output(tmp_path, payload):
+    summary, manifest, _ = _write_sample(tmp_path, inline=True)
+    manifest.write_text(payload, encoding="utf-8")
+    output = tmp_path / "registration.json"
+    original = b'{"retained":"registration"}\n'
+    output.write_bytes(original)
+    with pytest.raises(ValueError):
+        main(
+            [
+                "--experiment-id",
+                "invalid",
+                "--summary",
+                str(summary),
+                "--output",
+                str(output),
+            ]
+        )
+    assert output.read_bytes() == original
+
+
+@pytest.mark.parametrize("source_index", (0, 1, 2))
+def test_registration_cannot_overwrite_its_source_files(tmp_path, source_index):
+    sources = _write_sample(tmp_path, inline=False)
+    summary = sources[0]
+    source = sources[source_index]
+    original = source.read_bytes()
+    with pytest.raises(ValueError, match="cannot replace"):
+        main(
+            [
+                "--experiment-id",
+                "protect-input",
+                "--summary",
+                str(summary),
+                "--output",
+                str(source),
+            ]
+        )
+    assert source.read_bytes() == original
+
+
+@pytest.mark.parametrize("sample_size", (True, 0, -1, 1.5))
+def test_invalid_sample_size_rejects_before_reading_files(tmp_path, sample_size):
+    with pytest.raises(ValueError, match="sample_size"):
+        register_manifest(
+            experiment_id="invalid-size",
+            summary_path=tmp_path / "absent.json",
+            sample_size=sample_size,
+        )

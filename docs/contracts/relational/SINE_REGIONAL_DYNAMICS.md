@@ -351,6 +351,371 @@ same unchanged autonomous law. See the
 [theorem](../../../theory/nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-phase-offset-partition)
 and [standalone usage](../../guides/relational/SINE_REGIONAL_DYNAMICS.md#phase-offset-partition).
 
+<a id="sine-weighted-phase-offset-partition"></a>
+
+### Weighted collective families and capacity resets
+
+`assess_sine_weighted_phase_offset_partition(source, *, blocks,
+phase_offset_turns)` in the
+[weighted partition owner](../../../src/tnfr/physics/relational_sine_weighted_partition.py)
+accepts a `SineSupportExchangeComparison` with zero loss, unit exchange and
+beta, strictly positive conductances and strictly positive held capacities.
+Its support is finite, connected, simple and undirected. This separate
+extension does not broaden the unit-law reader above or install a runtime.
+The partition and exact rational-turn offsets retain the same ordered
+admission rules. Captured source coordinates anchor the complete law;
+membership in the proposed family is a separate assertion.
+
+The criterion compares external weighted sums multiplied by `nu_i/d_i`
+for the phase row, and external bare complex phase moments multiplied by
+the same factor for the form row. Internal sine currents must vanish;
+internal real moments need not agree. Positive unequal capacities can
+compensate unequal bare degrees. The original structural clock `t` is used
+for every returned rate, including the `1/pi` factor in both rows. Offsets
+and the original `evaluate` phase inputs are turns; angular rates are radian
+derivatives. The separate zero-offset radian interface below retains real lifts.
+
+The returned `SineWeightedPhaseOffsetPartition` retains separate form and
+phase coupling data, reciprocal-capacity masses and inherited storage.
+Recognized symbolic identities certify equality, an excluded zero proves
+inequality, and undecided transcendental identities remain unavailable.
+This numerical admission is not a complete decision procedure for the
+mathematical necessary-and-sufficient criterion.
+`partition.evaluate(collective_form, collective_phase_turns)` reconstructs
+both fine and collective rows, storage and means after re-admitting the
+primitive source and rebuilding its criterion. Cached derived fields and
+verdicts cannot stand in for those premises. No time step is taken.
+
+<a id="sine-weighted-radian-state"></a>
+`partition.evaluate_radians(collective_form, collective_phase_radians)`
+returns `SineWeightedRadianState` for a certified family with every phase
+offset exactly zero. It admits each real form and phase before arithmetic;
+phase inputs remain real radian lifts. Nonzero offsets, including integer
+turn offsets, reject instead of silently changing a lift or its mean. The
+existing rational-turn evaluator remains available for its own domain.
+
+`partition.observe_radian_state()` additionally requires the captured
+source to have exactly equal forms and equal radian lifts within each block.
+It does not average or project an off-family state. Both methods re-admit
+the primitive source and rebuild the exact partition criterion. The explicit
+evaluator can construct a different hypothetical member; its
+`source_membership_certified` flag is true only when that member's complete
+form and phase coordinates equal the admitted captured source. This is
+coordinate agreement, not provenance authentication or evidence of acquisition.
+
+The radian state retains the fresh `partition`, collective coordinates and
+`full_source`. The latter uses the general weighted-support owner to rebuild
+every fine row and storage value on the lifted coordinates. Independent
+collective rows use the inherited cross-edge counts `N_ab`, conductance sums
+`C_ab` and block weights `M_a=sum(d_i/nu_i)`:
+`X_dot_a=sum_b N_ab*sin(Theta_b-Theta_a)/(pi*M_a)` and
+`Theta_dot_a=sum_b C_ab*(X_a-X_b)/(pi*M_a)`.
+`quotient_bare_rows` retains the first channel's coefficients. Replacing
+`N_ab` by simple adjacency generally changes the law; changing one scalar
+capacity per block cannot compensate unequal incident multiplicities.
+
+Block rates, exact phase-rate numerators/residuals, form-rate residual
+intervals, quotient storage and weighted form/radian means are retained.
+`full_row_equality_certified` follows from the exact all-state criterion;
+zero-containing numerical residuals are arithmetic checks, not its proof.
+`full_source` retains fine node order, support, capacities and the original
+clock. Its identity and finite-response consumers keep their separate domains.
+Direct schema `tnfr.sine-weighted-radian-state.v1` and generic SDK export
+rebuild from the partition and collective coordinates, discarding cached
+membership, rows, storage and means. See the
+[canonical contact result](../../../theory/nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-collective-state-result)
+and [radian state controls](../../../tests/physics/test_sine_weighted_radian_state.py).
+
+### Primary capacity resets of a weighted collective family
+
+`assess_sine_weighted_capacity_reset(partition, *, capacity_after)` consumes
+positive capacities that are exactly representable as binary64 outputs,
+in source node order. It rebuilds the pre-reset family and post-reset law
+and compares the actual capacity ratios within each block. It does not
+execute SHA or infer its configured factor. A common ideal factor can
+produce unequal represented ratios, so ideal real multiplication cannot
+replace the supplied outputs. Every capacity-only reset leaves the current
+form/phase family membership unchanged; preservation of its subsequent
+complete field is a separate condition.
+
+These report types support direct and generic SDK export through their
+owner's rebuilding path. A primary capacity-map certificate does not admit
+a complete grammatical event: target-associated histories, debt, live
+preconditions, lifecycle records, configuration and execution path must also
+be supplied. Neither exact collective closure nor zero event storage work
+establishes attraction, formation, autonomous occurrence or physical identity.
+See the [proof and action boundary](../../../theory/nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-weighted-phase-offset-partition)
+and [standalone example](../../guides/relational/SINE_REGIONAL_DYNAMICS.md#weighted-phase-offset-partition).
+
+<a id="sine-weighted-star-transverse-band"></a>
+
+### Linear transverse stability of the supplied weighted star
+
+`assess_sine_weighted_star_transverse_band(*, capacity_scale_bounds,
+amplitude_bound)` in the
+[transverse owner](../../../src/tnfr/physics/relational_sine_weighted_transverse.py)
+returns `SineWeightedStarTransverseBand`. This is an analytical family reader,
+not admission of an arbitrary graph or a claim about the captured source in
+the preceding example. The fixed five-node support, internal conductance 3,
+cross conductance 2, zero offsets, conservative law and capacities
+`(4s,2s,2s,2s,8)` are part of its model. It accepts ordered positive scale
+endpoints and `0 <= amplitude_bound < 1`, the upper bound on
+`k=sin(Delta_max/2)` for collective librations about consensus. Rational
+inputs remain exact; other real inputs use shared represented-real admission.
+Booleans, nonfinite values, unordered or nonpositive scales and separatrix
+or rotation amplitudes reject before interval calculation.
+
+The default band is `23/25 <= s <= 1`, `0 <= k <= 1/4`. Two reported modes
+have internal-star eigenvalues 1 and 4, with spatial multiplicities 2 and 1:
+they exhaust the six transverse dimensions. The four collective dimensions,
+including conserved means and possible phase drift between neighboring
+collective orbits, are separate. Every angular rate and clock change follows
+the complete two-row linearization. Period bounds use
+`tau=sqrt(2)*(s+8)*t/pi` and also retain the original structural clock `t`.
+At zero amplitude these are limiting periods, not measured periods of an
+equilibrium; positive constant oscillators separately prove its transverse
+stability.
+
+The reader bounds each full-period half trace by a constant-rotation
+comparison plus a rigorous exponential error. `rotation_error_upper_bound`
+bounds the operator 2-norm difference in coordinates `(r*y,y')`, where
+`r=sqrt(alpha*(lambda+1))` and the derivative uses normalized time; it also
+bounds the half-trace difference. Unit monodromy determinant is
+derived analytically. A positive `strict_trace_margin=1-abs_max(half_trace)`
+certifies bounded infinitesimal transverse motion. A wider valid band can
+return `unavailable`; unresolved trace bounds do not prove instability.
+The fixed outward precision can also leave a positive denominator or
+frequency unresolved, and the exponential calculation has a declared
+unit-argument work domain. These conditions remain explicit abstentions.
+At `amplitude_bound=0`, the separate constant-oscillator result can certify
+stability even when the return-trace enclosure is inconclusive.
+
+Direct schema `tnfr.sine-weighted-star-transverse-band.v1` and generic SDK
+export rebuild every field from the admitted scale endpoints and amplitude
+bound. No supplied cached mode, support, margin or verdict is trusted.
+The interval certificate can be wider than the proof's independent rational
+inequalities. No trajectory, monodromy integration or SHA event is performed;
+no finite error radius, nonlinear stability, attraction, formation or physical
+identification is established. See the
+[proof](../../../theory/nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-weighted-star-transverse-band),
+[controls](../../../tests/physics/test_sine_weighted_star_transverse.py) and
+[usage](../../guides/relational/SINE_REGIONAL_DYNAMICS.md#weighted-star-transverse-band).
+
+<a id="sine-weighted-star-state"></a>
+
+### Sufficient continuous state of a marked organization and its boundary
+
+`assess_sine_weighted_star_state(*, form, phase_turns, capacity_scale=1)`
+in the [state owner](../../../src/tnfr/physics/relational_sine_weighted_state.py)
+returns `SineWeightedStarState`. It admits five signed real forms, five
+exact rational-turn phase lifts and a positive held capacity scale. The
+fixed model is the same weighted star: marked group `A=(0,1,2,3)`, center
+0, and dynamic boundary node `B=4`. Its support, weights and capacities
+are shared with the transverse owner. This mathematical state is neither
+an imported graph snapshot nor a newly formed organization.
+
+The reader computes two form means and two lifted phase means, plus four
+zero-sum internal deviations in each channel. These are ten independent
+coordinates: four collective and six internal. The complete nonlinear
+field is reconstructed from them and checked against independently
+assembled fine-edge rows. `reconstruct_sine_weighted_star_state(*,
+collective_form, collective_phase_turns, internal_form, internal_phase_turns,
+capacity_scale=1)` inverts this chart. Its internal entries must sum exactly
+to zero; invalid entries reject rather than being silently recentered.
+Both functions retain rational form inputs and use shared represented-real
+admission otherwise. Complex, Boolean and nonfinite scalars reject; phase
+lifts require integers or Fractions, not rounded floating turns.
+
+All pressure and rate bounds use original structural time `t`. Phase rates
+are radians per unit `t`; turn rates would require another division by
+`2*pi`. `pressure_numerator_expressions`, `form_rate_numerator_expressions`
+and `phase_rate_numerators` omit the common `1/pi` factor. Pressure is
+computed from bare neighbor sine sums and bare degree independently of the
+form response. Collective form rates average the nodal products; they are
+not generally the product of mean capacity and mean pressure.
+
+The moment is `M=mean(exp(i*eta))` for the internal radian phase deviations.
+Its real/imaginary parts and derivatives remain defined at `M=0`. The latter
+consume mixed internal form/phase information. Neither collective means
+and full storage, nor those quantities augmented by `M`, are sufficient
+state in general; the [matched-state proofs](../../../theory/nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-weighted-star-state-sufficiency)
+exhibit exact derivative disagreements arbitrarily near the coherent family.
+The explicit internal coordinates supply a sufficient extension without
+claiming a minimal reduced state or deriving a nonlinear memory kernel.
+
+Full storage and weighted means use every fine node. Their instantaneous
+balance identities are checked symbolically. `collective_reference_storage_bounds`
+is the coherent-family expression evaluated at the actual means; it need
+not be conserved off that family. `storage_remainder_bounds` is its signed,
+lift-dependent difference from full storage, not a nonnegative reservoir.
+The reference-storage and remainder-rate bounds retain their opposite
+instantaneous exchange under the conserved full storage.
+Individual full-turn changes of phase representatives can change the means
+and moment; their joint transformation preserves the fine field and storage.
+No principal-angle replacement or resultant angle is inferred.
+
+Direct schema `tnfr.sine-weighted-star-state.v1` and generic SDK export
+re-admit primitive scale, forms and phase lifts and rebuild all derived
+fields. Exact row reconstruction establishes the implemented chart identity,
+not finite-error retention. The report does not transfer the transverse
+linear certificate to arbitrary finite states, infer amplitude from full
+storage off the family, or admit an operator. Actual histories, target
+associations, stored/refreshed pressure, grammar, lifecycle, configuration
+and execution path retain their [existing owners](../OPERATOR_EVENTS.md).
+See the [example](../../guides/relational/SINE_REGIONAL_DYNAMICS.md#weighted-star-state)
+and [independent controls](../../../tests/physics/test_sine_weighted_star_state.py).
+
+<a id="sine-weighted-star-retention"></a>
+
+### Finite-amplitude retention of the marked internal identity
+
+`assess_sine_weighted_star_retention(state)` from the same state owner returns
+`SineWeightedStarRetention`. It re-admits the primitive state and rebuilds
+its full storage; cached margins or derived fields are never premises.
+The chosen identity requires each center-leaf form contrast to be strictly
+less than `1/2` and each internal principal circular phase gap to be strictly
+less than `1/4` turn. These margins define this study's identity, not universal
+NFR thresholds. The environment node remains dynamic.
+
+The exact minimum form storage at a center-leaf contrast `d` is
+`35*d^2/16`; the form boundary therefore costs `35/64`. Every phase boundary
+costs at least one in the full nonnegative phase storage. A strict outward
+upper bound `H < 35/64` certifies the identity for all real times of the
+unchanged complete conservative law. Global existence and exact storage
+conservation are theorem premises established for that law, not extrapolated
+from samples. This is finite-amplitude identity retention, distinct from
+linear stability or tracking one reference orbit.
+
+`source_identity_admitted` independently checks the supplied current
+contrasts. `storage_margin` is `35/64-H_upper`. Nonpositive or unresolved
+margins give `unavailable`, even when the current identity is admitted.
+The report also bounds each internal form contrast by `sqrt(16*H_upper/35)`
+and each internal phase cosine below by `1-H_upper`. Full-turn changes of
+phase representatives preserve this circular certificate. A negative
+reference-storage remainder is not a rejection or a usable extra reserve.
+
+The [proof](../../../theory/nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-weighted-star-identity-retention)
+gives a uniform nonzero neighborhood of every coherent reference with
+`H <= 1/2`: errors at every fine node of at most `1/256` in form and
+`1/2048` turn in phase remain inside the certified storage sublevel.
+Those preparation-error bounds are an analytical theorem; this point-state
+reader does not infer that a supplied uncertain preparation satisfies them.
+The same proof separates a capacity-only primary reset's zero storage change
+from actual operator admission and from preservation of the exact family.
+
+Direct schema `tnfr.sine-weighted-star-retention.v1` and generic SDK export
+rebuild the nested state and certificate. The calculation executes no event
+or trajectory, establishes no previous acquisition or attraction, and
+supplies no stability certificate after a changed support, conductance,
+forcing or loss law. Threshold equality is not strict retention. The
+boundary minimizer establishes sharpness of the energy-sublevel implication,
+not a prediction that a particular trajectory escapes at that energy.
+
+<a id="sine-weighted-star-contact"></a>
+
+### Compose two maintained identities under a supplied boundary contact
+
+`assess_sine_weighted_star_contact(left, right)` from
+[the contact owner](../../../src/tnfr/physics/relational_sine_weighted_contact.py)
+returns `SineWeightedStarContact`. Both arguments must be
+`SineWeightedStarState` instances with admitted `capacity_scale=1`. The
+reader rebuilds their primitive forms and declared phase lifts before
+constructing two disjoint copies of the fixed star and a unit-conductance
+edge between their boundary nodes. The report retains all twenty continuous
+coordinates. It installs no support in a live graph and executes no UM.
+
+The joined node order is the five left nodes followed by the five right
+nodes; the bridge is `(4,9)`. Capacities remain unchanged. Both boundary
+degrees become five, so both of their original-time rows change. The
+post-contact pressure is independently rebuilt from bare sine sums and
+the new degrees. Conductance enters the form gradient in the phase row.
+`left` and `right` remain rebuilt isolated-reference reports: their old
+rates are not the joined rates. Read the latter from the contact report's
+`pressure_bounds`, `form_rate_bounds` and `phase_rate_bounds`; phase rates
+are radians per original structural time.
+
+`support_work_bounds` accounts for the added bridge's nonnegative form
+and phase storage at unchanged nodal coordinates. `component_storage_bounds`
+retains both old edge sets inside the joined model. Their derivatives
+generally differ from zero; `component_storage_rate_bounds` and
+`bridge_storage_rate_bounds` sum to the identically zero full storage
+derivative. This instantaneous exchange is distinct from a signed transfer
+through an arbitrarily long window. Post-contact weighted means use the
+new degree/capacity ratios; the old two separately conserved means do not
+transfer as conserved quantities.
+
+`source_individual_retention_certified` records the two isolated-law
+certificates. `all_time_joint_identity_retention_certified` instead needs
+strict joined full storage below `35/64`, including the accounted bridge
+work. This guarantees both marked center-leaf identities under the fixed
+joined conservative law. The barrier is sharp for this storage-sublevel
+inclusion. Equality and unresolved upper bounds give `unavailable`, which
+does not predict identity loss. Two passing isolated certificates alone
+do not imply a passing joint certificate.
+
+Direct schema `tnfr.sine-weighted-star-contact.v1` and generic SDK export
+rebuild both primitive states and every consumed derived field. The
+[proof](../../../theory/nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-weighted-star-maintenance-composition)
+exhibits a full-dimensional preparation neighborhood with nonzero initial
+exchange and all-time identity retention. This point reader does not
+authenticate an uncertain preparation against that neighborhood. Supplied
+support, storage work and held law do not establish event occurrence,
+formation of a larger NFR or physical identification. See the
+[example](../../guides/relational/SINE_REGIONAL_DYNAMICS.md#weighted-star-contact)
+and [independent controls](../../../tests/physics/test_sine_weighted_star_contact.py).
+
+<a id="sine-weighted-star-support-retention"></a>
+
+### Retain marked stars on an actual weighted successor support
+
+`assess_sine_weighted_star_support_retention(source, *, stars)` from
+[the protected-star owner](../../../src/tnfr/physics/relational_sine_star_retention.py)
+returns `SineWeightedStarSupportRetention`. It consumes a general
+`SineSupportExchangeComparison`, rebuilding its primitive state, support,
+conductances and model. `stars` declares two disjoint ordered five-node
+tuples `(center, leaf1, leaf2, leaf3, boundary)` covering the ten source
+nodes. The source must declare the regular conservative weighted-form /
+bare-sine law with unit exchange and phase-storage coefficients and
+strictly positive held capacities.
+
+Every original center-leaf conductance must be at least three and each
+original member-boundary conductance at least two. Missing or weakened
+protected edges are outside this theorem's domain and reject admission.
+Additional nonnegative-conductance edges are retained with their bare
+phase support. Actual capacities need not fit the original star's
+one-parameter family; actual degrees and both complete rates remain those
+of the rebuilt source. No input is replaced by the earlier unit-bridge
+model or its rates.
+
+The full storage dominates each protected star's original Dirichlet and
+nonnegative phase storage. A strict upper enclosure below `35/64` thus
+certifies both marked center-leaf identities for all time under the held
+successor law. Larger storage gives an unavailable sufficient certificate,
+not a loss verdict. This reusable lower barrier need not be sharp when
+other support or stronger protected conductances raise the actual minimum.
+
+The report retains the protected edges and their admitted weights, exact
+form contrasts and cosine enclosures for the internal phase gaps. Its
+current identity status distinguishes admitted, excluded and unavailable
+phase/form observations. Circular identity is read from cosines of actual
+radian differences; no rational-turn conversion or primitive phase angle
+is invented. Full storage, margin and quantitative contrast bounds are
+rebuilt on export, including through the generic SDK.
+
+Direct schema `tnfr.sine-weighted-star-support-retention.v1` exposes a
+detached continuation certificate. It does not execute an operator,
+authenticate an event record or establish that a history and grammar
+context was admitted. The
+[canonical-contact study](../../../theory/nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md)
+uses the actual `AL,UM,SHA` successor, whose five nonunit cross edges and
+changed capacities require this reader rather than the earlier fixed
+unit-bridge report. The
+[usage example](../../guides/relational/SINE_REGIONAL_DYNAMICS.md#weighted-star-canonical-contact)
+keeps the event, stored pressure and detached continuation law separate.
+The [finite-form response contract](SINE_COMPARISON_AND_INFERENCE.md#sine-finite-form-response)
+adds a separately justified finite endpoint enclosure under the same complete
+held law. Retention and a nonzero response are distinct certificates.
+
 <a id="sine-moving-pattern-window"></a>
 
 ### Full-state uncertainty around a compatible moving pattern

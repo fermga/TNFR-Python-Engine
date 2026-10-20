@@ -15,11 +15,10 @@ from typing import Any
 from .._exact_time import exact_or_represented_real, finite_represented_real
 from ..dynamics.relational import RelationalExchangeModel
 from ..mathematics._rational_interval import I
-from ._organized_computable_prediction import _ForecastStage, _forecast_stages
+from ._organized_computable_prediction import _forecast_stages, _ForecastStage
 from ._sine_admission import _sine_model_coefficients
 from .relational_observations import _ordered
 from .relational_sine_comparison import _sine_form_gradient, _sine_rate_evaluator
-
 
 _FORM_BOUND = Q(1, 100)
 _MAX_NFEV = 80

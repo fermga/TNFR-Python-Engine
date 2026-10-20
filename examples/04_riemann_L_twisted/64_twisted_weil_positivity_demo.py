@@ -192,8 +192,7 @@ def block_sweep() -> None:
 
 def block_honest_scope() -> None:
     banner("P37 Honest scope")
-    print(
-        """
+    print("""
 This demo numerically verifies the chi-twisted Weil positivity
 inequality W_chi[sigma] >= 0 on a finite Gaussian grid for three
 primitive real Dirichlet characters (chi_3, chi_4, chi_5), and
@@ -222,8 +221,7 @@ What this DOES NOT establish:
 The canonical TNFR test state used here is one of many possible
 mappings of h_sigma to the P34 graph; the bridge ratio alpha_chi
 reported is specific to this mapping.
-"""
-    )
+""")
 
 
 def main() -> None:

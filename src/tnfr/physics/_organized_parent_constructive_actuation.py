@@ -14,8 +14,8 @@ from .._exact_time import exact_or_represented_real as _exact
 from ..mathematics._rational_interval import I, pi_interval
 from ._organized_parent_acquisition import _OrganizedParentAcquisition
 from ._organized_parent_restoring_response import (
-    _assess_organized_parent_restoring_response,
     _EVENT,
+    _assess_organized_parent_restoring_response,
     _OrganizedParentRestoringResponse,
     _parent_registration_event_work_bounds,
 )

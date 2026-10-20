@@ -7,10 +7,13 @@ Operator execution retains its separate live U3 phase gate.
 from __future__ import annotations
 
 import math
-from numbers import Integral, Real
+from numbers import Integral
 from typing import Any
 
 import networkx as nx
+
+from .._exact_time import bounded_represented_real
+from ..rng import validate_seed
 
 
 def nonnegative_integer(value: Any, name: str) -> int:
@@ -27,14 +30,20 @@ def positive_integer(value: Any, name: str) -> int:
 
 
 def probability(value: Any) -> float:
-    if (
-        isinstance(value, bool)
-        or not isinstance(value, Real)
-        or not math.isfinite(value)
-        or not 0 <= value <= 1
-    ):
-        raise ValueError("connection probability must be finite and between 0 and 1")
-    return float(value)
+    try:
+        return bounded_represented_real(
+            value, "connection probability", minimum=0, maximum=1
+        )[0]
+    except (TypeError, ValueError) as exc:
+        raise ValueError(str(exc)) from exc
+
+
+def numpy_seed(value: Any, *, allow_none: bool = True) -> int | None:
+    """Admit the common seed domain of NumPy-backed SDK construction."""
+    seed = validate_seed(value, allow_none=allow_none)
+    if seed is not None and not 0 <= seed < 2**32:
+        raise ValueError("seed must satisfy 0 <= seed < 2**32")
+    return seed
 
 
 def ring_edges(nodes: list[Any]) -> list[tuple[Any, Any]]:

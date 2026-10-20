@@ -69,6 +69,498 @@ Shared coefficient and source admission imposes no global geometry or solver
 work cap. Positive loss/capacity, exact symmetry, target criticality and each
 finite work budget remain requirements of the individual consumer.
 
+<a id="conservative-conductance-support-sine"></a>
+### Conservative sine comparison with conductance and bare support
+
+`bound_relational_sine_support_exchange(graph, reference_model=...)` in
+[`relational_sine_support.py`](../../../src/tnfr/physics/relational_sine_support.py)
+admits the actual nonnegative conductances of a fixed simple connected
+undirected graph. It returns the distinct `SineSupportExchangeComparison`,
+with law identifier `conservative_sine_support_exchange` and export schema
+`tnfr.relational-sine-support-comparison.v1`. The reference model must be
+regular with **exactly zero form loss**; its admitted authoritative coefficients
+and storage scale follow the shared coefficient contract above. This does
+not enable weighted native `Network.step_relational` execution.
+
+For bare degree `d_i`, weighted form gradient `q=L_W*x` and unweighted
+phase current `S_i=sum_(j in U_i) sin(theta_j-theta_i)`, its original-clock
+rows are `p_i=w*S_i/(pi*d_i)`, `x_dot_i=nu_i*p_i` and
+`theta_dot_i=w*nu_i*q_i/(beta*pi*d_i)`. Conductance enters the form storage
+and its reciprocal phase row. Presence enters the phase current, phase
+storage and normalization. A present zero-conductance edge remains a phase
+neighbor; it is not an absent edge. Conductances and capacities are held
+between events, with no inferred reinforcement or occurrence law.
+
+The [complete-law proof](../../../theory/nodal/SINE_PAIR_COUPLING.md#collective-coupling-weighted-protocol)
+retains `H=x^T*L_W*x/2+beta*V_U`, its conservative balance, weighted support
+symmetries and the actual UM reset budget. Unit conductances recover the
+older conservative sine comparison. The mixed channel interpretation and
+diagonal reciprocal completion are explicit premises, not a uniqueness
+consequence of the nodal identity. The all-source geometric continuation
+theorem has the proof's stronger source and support hypotheses; a generic
+instantaneous report does not certify them.
+
+Capture admits the model, graph structure, live Gamma registry and canonical
+signed form/phase/capacity channels before constructing exact fractions of
+the represented values. Conductances are admitted before conversion; negative,
+Boolean, nonfinite and materialization-underflow values reject. Missing edge
+weight retains the shared unit default. Actual aligned conductances, bare
+degrees, primitive node order, weighted form gradient, independent pressure,
+both rates and both storage channels remain in the report. Computed work
+residuals are not assigned zero.
+
+The report's export and phase-rate calculation re-admit primitive state,
+support, conductance and law, rebuilding the fields they consume. As with
+the unit comparison, explicit detached rational declarations retain their
+exact values; changing them declares a new preparation rather than recovering
+pre-materialization graph values. Derived
+degrees, gradients or rates cannot override those primitives. This is not
+source authentication. The new report has its own law identifier and does
+not inherit unit-comparison methods: existing recovery, replica and forecast
+readers remain outside its contract until separately justified. The observer
+performs no graph mutation, time step or frozen-response reinterpretation.
+
+`SineSupportExchangeComparison.form_acceleration_bounds()` rebuilds primitive
+state and encloses the instantaneous second form derivative using the complete
+phase row. Its cosine sum uses bare neighbors, while the phase velocity uses
+actual conductances; the coefficient retains `w^2/beta`. Held support,
+conductances, capacity, coefficients and clock are premises. The method supplies
+neither sampled history nor a whole-window or operator-admission certificate.
+The [capacity-access theorem](../../../theory/nodal/SINE_CAPACITY_TEMPORAL_ACCESS.md)
+adds its own source neighborhood, jerk and observation-error bounds.
+The [local-capacity admission theorem](../../../theory/nodal/SINE_LOCAL_CAPACITY_ADMISSION.md)
+reuses that same reader with nonuniform capacities. Its signed whole-window
+bound and positive fresh parent pressure require its own fixed target and
+source domain; they do not follow from common-clock scaling. Neither theorem
+supplies recorded history or executes a THOL child.
+
+The [local history acquisition](../../../theory/nodal/SINE_LOCAL_HISTORY_ACQUISITION.md)
+adds one associated numerical record using the explicit coupled-state RK4
+helper, with a separate full-state Picard/Taylor certificate. It retains the
+actual nonuniform capacities, conductances, structural clock and unwrapped
+phase lifts. This research adapter does not install sine flow in the native
+relational dispatcher or execute THOL.
+
+The subsequent [maintained-parent THOL result](../../../theory/nodal/SINE_MAINTAINED_PARENT_THOL.md)
+executes one separately frozen event on that retained endpoint. The connected
+reader still rejects its isolated child. An explicit frozen-isolate handoff
+admits the successor and preserves the old component's full rows and edge
+storage; it supplies no child coupling, new native dispatcher or temporal
+baseline for the newborn.
+
+The [default parent-target UM analysis](../../../theory/nodal/SINE_MAINTAINED_PARENT_UM.md)
+re-admits that retained successor and predicts eight new links, full old/new
+edge work and a strict exit from the original marked identity. It rebuilds
+both complete rows and weighted observations on the proposed connected
+support. Its interval ideal reset and conditional numerical envelope execute
+no event or flow, establish no runtime error bound and supply no enlarged
+maintenance certificate. The retained newborn remains isolated; the native
+dispatcher and the frozen response are unchanged.
+
+The [successor stationary geometry](../../../theory/nodal/SINE_SUCCESSOR_STATIONARY_GEOMETRY.md)
+rebuilds every proposed edge branch and proves a full closed-acute stationary
+obstruction through a certified boundary witness. Conductances and capacities
+remain in the complete law even though its stationary phase equations use
+bare support. A same-storage, same-means path to acute faces is a detached
+configuration comparison, not an integrated trajectory or predicted winding
+change. This supplies no obstruction to every nonacute or nonstationary
+organization and installs no native law or event.
+
+The [principal-sector reduction](../../../theory/nodal/SINE_SUCCESSOR_PRINCIPAL_REDUCTION.md)
+retains this same law and all fine branches while reducing possible stationary
+minima to four coordinates. Its detached evaluator returns `V=51+F`, interval
+derivatives and reconstructed fine observations. It admits positive middle
+resultants and strictly acute return chains for the minimum chart, while a
+separate six-core reader exposes nonacute candidates without promoting them
+to PSD states. Neither enclosing zero in a residual nor a finite candidate
+search certifies a root, a minimum or its absence. The separate
+[complete principal-chamber proof](../../../theory/nodal/SINE_SUCCESSOR_PRINCIPAL_REDUCTION.md#successor-principal-minimum-exclusion)
+excludes stationary storage minima through analytical sector coverage,
+including singular-chain cases. It does not turn candidate observations
+into classification flags. A source-specific invariant-shell corollary
+excludes trapping based only on total storage and the two means. Actual
+all-time nonstationary confinement remains open; this stationary result is
+not a temporal dispatcher, an executed event or a predicted cut crossing.
+
+The [actual UM transaction reader](../../../src/tnfr/research/maintained_parent_um_execution.py)
+separates the durable raw reset, pressure-only refresh, final stage metadata
+and detached endpoint checks. Its [retained first attempt](../../../theory/nodal/SINE_MAINTAINED_PARENT_UM.md#maintained-um-transaction-result)
+rolled back after a diagnosed guard false rejection; raw inclusion does not
+establish a committed successor. The corrected runtime signature protects
+the graph dictionary directly and treats cache back-references to that same
+dictionary as opaque, while still signing cache-owned payload. It changes
+neither UM semantics nor the continuous law or original numerical allowances.
+The separately frozen [committed transaction](../../../theory/nodal/SINE_MAINTAINED_PARENT_UM.md#maintained-um-committed-result)
+has a preserved 25/27 first assessment and a separate 27/27 primitive review.
+Old-edge form work subtracts exact represented energies before interval
+enclosure; canonical edge invalidation requires `_dnfr_prep_dirty is True`
+in both event records. The flag remains protected across refresh. Neither
+correction changes the response, numerical allowance or scientific protocol.
+Full endpoint/parameter inclusion admits the existing motion theorem under
+the matched law and clock; subsequent capacity events require their own admission.
+The [retained-source SHA closure](../../../theory/nodal/SINE_MAINTAINED_PARENT_CLOSURE.md)
+uses that separate admission: exact represented capacity reset, unchanged
+storage arguments, independent refreshed pressure and rebuilt complete rows
+and means. Its shared atomic stage completes one selected word; latency
+metadata supplies no stopping law and the UM maintenance certificate does
+not transfer through its parent-only capacity change. Other grammatical
+closures retain their distinct live and complete-law contracts.
+Its separate [post-closure retention study](../../../theory/nodal/SINE_MAINTAINED_PARENT_CLOSURE.md#maintained-sha-retention)
+re-admits the actual SHA endpoint, all 42 coordinates and 53 original branches
+under the changed held capacities. It uses the shared full-state retention
+loop with freshly rebuilt energy bounds, field, jets, remainders and endpoint
+carry. Its point preparation and retention-only target differ from the older
+conditional UM family and reversal target; neither the old certificate nor
+cached continuation reports replace these new premises.
+The fixed post-SHA attempt accepts all 256 steps and retains every original
+principal branch throughout structural `[0,1/2]`. That finite certificate
+does not create a runtime temporal history, establish all-time confinement
+or select another event.
+
+The [successor motion owner](../../../theory/nodal/SINE_SUCCESSOR_NONSTATIONARY.md)
+retains the actual weighted phase-acceleration law and the initial form
+information. Its static energy bounds and fixed full-state Taylor attempt
+have separate scopes. The shared `_held_sine_neighbor_field` accepts held
+interval capacities/conductance sums and bare neighbor multiplicities in the
+original structural clock. It consumes both complete rows; it derives no
+quotient or event. Unordered sine reuse preserves the exact mathematical
+field; the existing symmetry consumer explicitly retains directed interval
+arithmetic for historical certificate reproducibility. The conditional
+successor family keeps all 42 coordinates because its independent output
+allowance need not preserve ideal twin equalities. Unresolved enclosures
+remain unavailable, rather than evidence of a principal cut.
+The frozen full-state attempt certifies all 53 branches through structural
+time `1/2` and a child-parent velocity reversal for that conditional family.
+Actual UM output inclusion, any IL phase reset and SHA's changed capacity
+law retain separate admission obligations.
+
+`SineSupportExchangeComparison.conditional_form_acceleration_bounds(form_radius=r)`
+rebuilds those same primitives and requires the captured form to satisfy
+`||x-mean(x)||_2<=r`. It returns symmetric outward intervals for the full
+form acceleration throughout that ball, with arbitrary admitted phases and
+the same held support, conductances, capacities, coefficients and clock.
+The bound retains `w^2/beta`, weighted form gradients and bare phase neighbors,
+including zero-conductance edges. Radius admission uses the shared exact or
+represented-real contract; negative, Boolean and nonfinite radii reject.
+Initial membership alone does not certify future confinement or a sampled
+history. The [maintained-contact obstruction](../../../theory/nodal/SINE_ORGANIZED_BIRTH_OBSTRUCTION.md)
+supplies its separate all-time identity proof and whole-window observation
+argument. The method changes neither operator thresholds nor native dispatch.
+
+<a id="sine-finite-form-response"></a>
+### Finite form response under the complete weighted law
+
+`SineSupportExchangeComparison.finite_form_response_bounds(duration=h)`
+returns `SineFiniteFormResponse` from the same shared support owner.
+It first re-admits the complete source and a strictly positive, finite,
+non-Boolean duration in the original structural clock. Exact rational
+durations remain exact. The connected conservative support law keeps its
+actual exchange coefficient `w`, phase-storage coefficient `beta`, held
+nonnegative conductances and capacities, including zero-capacity nodes.
+No forcing, inputs or events are admitted during the window.
+
+The global bound `|x_dot_i|<=w*nu_i/pi` gives
+`||P x(t)||_2<=||P x(0)||_2+h*w*||nu||_2/pi` for `0<=t<=h`, where `P`
+subtracts the instantaneous arithmetic mean. This projection has norm one;
+the arithmetic mean need not be conserved. The resulting outward radius
+supplies the previously conditional acceleration envelope throughout the
+window. Every endpoint is enclosed by its initial form plus `h` times its
+initial-rate interval and the symmetric remainder `A_i*h^2/2`.
+The radius and acceleration calculation share the same freshly admitted
+source within this call. Standalone acceleration calls and exports still
+perform their own complete primitive admission; reuse does not trust a
+previously cached source or certificate.
+
+The report retains the fresh `source`, `duration`, initial and whole-window
+centered-form radius upper bounds, global form-speed upper bound,
+`initial_form_rates`, `acceleration_bounds`, `form_remainder_upper_bounds`
+and `endpoint_form_bounds`, with node order inherited from `source.nodes`.
+The initial-rate interval uncertainty and analytical nonlinear remainder
+remain separate; there is no numerical integration step or discretization
+error. Positive durations have no theorem-imposed upper limit, but a wide
+enclosure may not resolve a requested observation.
+
+`status="enclosed"` certifies the enclosure, not a response sign, identity,
+operator trigger or acquired temporal history. Subtracting two endpoint
+intervals gives a valid contrast enclosure; one containing zero cannot
+establish that the contrast vanishes. Exact null controls need an independent
+invariance argument. Disconnected alternatives require their admitted component
+laws, not relaxed connected-support admission.
+
+Direct schema `tnfr.sine-finite-form-response.v1` and the shared SDK export
+rebuild from primitive source and duration, discarding cached bounds/status.
+The [canonical-contact application](../../../theory/nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-finite-response-protocol)
+uses one fixed horizon and an independently admitted disconnected control.
+See its [example](../../guides/relational/SINE_REGIONAL_DYNAMICS.md#weighted-star-finite-response)
+and the [general kernel controls](../../../tests/physics/test_sine_finite_form_response.py).
+
+<a id="sine-initial-state-perturbation"></a>
+### Full-state errors under one complete held law
+
+`source.initial_state_perturbation_bounds(duration=h, form_error_bounds=ex,
+phase_error_bounds=et)` returns `SineInitialStatePerturbation` from the
+shared support owner. It re-admits the primitive source and complete law,
+a strictly positive finite duration, and two nonnegative error vectors in
+`source.nodes` order. Form errors use the source's form units; phase errors
+are errors in declared real radian lifts. Boolean, nonfinite, negative or
+wrong-length errors reject before arithmetic. Exact rational inputs remain
+exact; represented inputs retain their admitted values.
+
+The report compares every solution starting in this coordinate box with
+the solution starting at `source`, under the **same** held support,
+conductances, capacities, coefficients and original clock. No node, mean,
+within-block error or phase lift is projected away. It neither compares
+different laws nor recomputes an operator's affinity weights.
+
+With weighted strengths `s_i`, outward local constants are
+`a_i >= 2*w*nu_i/pi` and `b_i >= 2*w*nu_i*s_i/(beta*pi*d_i)`.
+Set `A=max(a_i)`, `B=max(b_i)`, `u=max(ex)`, `v=max(et)` and
+`D=1-A*B*h^2`. For `D>0`, whole-window uniform bounds are
+`X=(u+A*h*v)/D` and `Theta=(v+B*h*u)/D`; the retained nodal bounds
+are `ex_i+a_i*h*Theta` and `et_i+b_i*h*X`. These follow from the
+full nonlinear sine Lipschitz inequality and both evolution rows, not a
+constant-Jacobian approximation. Zero capacities retain their frozen rows.
+
+For nonzero errors with `D<=0`, the time-envelope status is `unavailable`
+and its bounds are absent. This is a limitation of this sufficient estimate,
+not evidence of instability or failure of the global solution. An exactly
+zero error box has zero deviation at every duration by uniqueness, even
+when this denominator is nonpositive. Every supported zero-conductance edge
+retains bare sine incidence. When all conductances are zero, the zero phase
+gain admits arbitrarily long windows.
+
+The independent initial-storage upper bound sums
+`W_ij*(abs(x_i-x_j)+ex_i+ex_j)^2/2` and
+`beta*min(2, upper(1-cos(theta_j-theta_i))+et_i+et_j)` over actual edges.
+It remains available when the time envelope is unavailable. Conservation
+under this complete law retains that bound; a named identity still needs
+its own support, initial-membership and boundary-barrier premises.
+
+Direct schema `tnfr.sine-initial-state-perturbation.v1` and generic SDK
+export rebuild from primitive source, duration and error vectors, ignoring
+cached bounds and status. This is a finite tracking certificate, not decay,
+source acquisition, event admission or a measured temporal history. See the
+[proof and fixed contact comparison](../../../theory/nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-off-family-robustness-result),
+[controls](../../../tests/physics/test_sine_state_perturbation.py) and
+[example](../../guides/relational/SINE_REGIONAL_DYNAMICS.md#weighted-star-off-family-robustness).
+
+<a id="sine-state-conductance-perturbation"></a>
+### Joint state and conductance uncertainty on fixed support
+
+`source.state_and_conductance_perturbation_bounds(duration=h,
+form_error_bounds=ex, phase_error_bounds=et, conductance_error_bounds=rho)`
+returns `SineStateConductancePerturbation`. Node budgets follow
+`source.nodes`; conductance budgets follow `source.edges`. All budgets are
+finite, nonnegative admitted real scalars. The candidate law has the same
+bare support, capacities, exchange coefficient, storage coefficient and
+clock as the reference; each candidate conductance is nonnegative and within
+its supplied radius. A radius larger than its nominal conductance is allowed,
+with the candidate domain still intersected with nonnegative conductances.
+
+The shared nonlinear comparison retains the preceding form gain `a_i` and
+uses strengths from `W+rho` in its phase gain `b_i`. Nominal reference form
+speed obeys `v_i=w*nu_i/pi`; consequently each reference edge contrast is at
+most `abs(x_i-x_j)+h*(v_i+v_j)` throughout the window. Multiplying these
+bounds by `rho_ij*w*nu_i/(beta*pi*d_i)` and summing gives an outward
+phase-forcing bound `F_i`. This forcing is an error-comparison term from
+different held conductances, not a physical input added to either law.
+
+With `F=max(F_i)` and the preceding `A,B,u,v,D`, the sufficient comparison is
+`X=(u+A*h*v+A*h^2*F)/D` and `Theta=(v+B*h*u+h*F)/D`, for `D>0`.
+Individual bounds are `ex_i+a_i*h*Theta` and
+`et_i+b_i*h*X+h*F_i`. The initial form-storage upper bound uses `W+rho`;
+the phase-storage contribution retains beta and every bare edge. No
+conductance error is substituted for a change in degree or capacity.
+
+Zero conductance budgets reduce to the preceding same-law comparison.
+Zero initial coordinate errors alone do not certify identical solutions
+when conductances may differ. The unconditional zero-error exception
+requires all state and conductance budgets to vanish. An unavailable
+small-window margin retains its separate initial-storage bound.
+
+This reader bounds a declared family; it does not establish that a runtime
+word produces that family. A consumer must independently re-admit its actual
+candidate source, support, capacities and weight differences. For raw phases
+near a full turn, record integer lift corrections and bound
+`actual_phase-reference_phase-2*pi*k` with outward pi intervals. Subtracting
+represented `math.tau` does not preserve the exact continuous sine law.
+The source's raw phases remain unchanged; lifted means retain the declared
+corrections. A circular observation alone does not select this chart.
+
+Direct schema `tnfr.sine-state-conductance-perturbation.v1` and SDK export
+rebuild from primitive source and budgets. Cached forcing, margins,
+storage and statuses cannot replace their inputs. See the
+[preparation-to-flow result and arithmetic premises](../../../theory/nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-preparation-robustness-result),
+[independent controls](../../../tests/physics/test_sine_conductance_perturbation.py)
+and [usage](../../guides/relational/SINE_REGIONAL_DYNAMICS.md#weighted-star-preparation-robustness).
+
+<a id="sine-consensus-observation"></a>
+### Relative regional observations of the consensus tangent
+
+`assess_sine_consensus_observation(source, regions=(left, right),
+max_rank_calls=...)` in
+[`relational_sine_consensus_observation.py`](../../../src/tnfr/physics/relational_sine_consensus_observation.py)
+rebuilds a `SineSupportExchangeComparison` or `SineFrozenIsolateComparison`.
+The two ordered, nonempty, disjoint regions must cover the source. Every
+node needs strictly positive capacity and nonzero bare degree for its
+inverse mobility `mu_i=d_i/nu_i`; a frozen isolate's missing metric cannot
+be assigned a positive regional weight. Disconnected nontrivial components
+remain admissible through their existing source owner.
+
+The analysis point is the hypothetical uniform-form/uniform-phase equilibrium
+family of the held conservative law. The original finite source coordinates
+remain stored and admitted. They need not belong to that family; this reader
+does not compute their actual finite-amplitude tangent or evolve them to an
+equilibrium. Perturbations retain all fine form and real local phase coordinates.
+
+With `D=diag(nu_i/d_i)`, bare Laplacian `L_N`, conductance Laplacian `L_W`
+and positive exchange/storage coefficients `w,beta`, the original-time tangent is
+
+\[
+ \dot z=(w/\pi)Kz,\qquad
+ K=\begin{pmatrix}0&-DL_N\\DL_W/\beta&0\end{pmatrix}.
+\]
+
+Its two outputs are left-minus-right regional means in form and phase,
+using each law's own normalized `mu` weights. Supported zero-conductance
+edges still enter `L_N` and `d`. Removing their weights does not produce
+the disconnected control.
+
+`SineConsensusObservation` retains `rational_generator`, `output_rows`,
+both Laplacians, mean weights, coefficients and `linear_observation` from
+the existing exact row-space owner. If its selected coordinates are `s=Cz`,
+then `s_dot=(w/pi)*G*s` and `y=O*z=D_out*s`. The interval
+`original_time_multiplier_bounds` encloses `w/pi`; it is not substituted
+into the exact rank calculation and does not change the clock. Minimality
+is among autonomous linear all-initial-state realizations retaining these
+outputs, not among nonlinear descriptions or specially prepared trajectories.
+
+The positive nonboolean rank-call budget passes to the shared owner.
+Exhaustion raises without a partial verdict or approximate rank fallback.
+It does not bound coefficient growth, memory or wall time. No eigenvalue,
+trajectory, source acquisition or future stability calculation is performed.
+Direct schema `tnfr.sine-consensus-observation.v1` and SDK export rebuild
+source primitives, regions and the rank budget, so cached
+dimensions, generators and closure verdicts cannot certify their premises.
+See the [proof](../../../theory/nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-relative-realization-result),
+[independent controls](../../../tests/physics/test_sine_consensus_observation.py)
+and [usage](../../guides/relational/SINE_REGIONAL_DYNAMICS.md#weighted-star-relative-realization).
+
+<a id="sine-consensus-nonlinear-response"></a>
+### Finite-amplitude error of the consensus observation
+
+`SineConsensusObservation.nonlinear_response_bounds(duration=...,
+consensus_form=..., consensus_phase=..., form_amplitude_bounds=...,
+phase_amplitude_bounds=...)` returns `SineConsensusNonlinearResponse`.
+It rebuilds the complete source and exact realization before admitting a
+positive duration, two common real origins and nonnegative per-node radii.
+The **captured source must lie in this box**. Phase is a declared real lift:
+no wrapping, implicit recentering or substitution of a hypothetical state
+is performed. A separately prepared source must be supplied explicitly.
+
+For every complete initial state in the box, the comparison uses the full
+nonlinear and consensus-tangent solutions with that same initial state.
+It first bounds nonlinear amplitudes using the actual original-time row
+coefficients and the shared coupled-supremum comparison. If their maxima
+are `A,B`, its sufficient time margin is `1-A*B*duration**2 > 0`.
+The exact zero box is an equilibrium at any positive duration. Otherwise
+a failed margin gives `status="unavailable"`, explicit reasons and `None`
+for temporal amplitudes, remainders and response errors; it proves no
+instability. Finite coefficients or a small initial residual alone are
+insufficient for an accumulated error bound.
+
+Whole-window phase amplitudes bound each bare-edge gap. The inequality
+`abs(sin(q)-q) <= abs(q)**3/6` then bounds the form-row remainder;
+the reciprocal phase row is already linear. A second application of the
+same comparison, with zero initial error and this form forcing, bounds
+all fine errors. Absolute rows of `O` and the actual selected `C` project
+them to `output_error_upper_bounds` and `selected_state_error_upper_bounds`.
+Bounds for another coordinate chart cannot be copied to `C` without that
+projection. The report retains the full captured displacements, including
+tangent-invisible initialization, and separately records `C*z0` and `O*z0`.
+
+Direct schema `tnfr.sine-consensus-nonlinear-response.v1` and SDK export
+re-admit these primitives and rebuild all consumed fields. This is a
+conditional whole-box error certificate, not an exact nonlinear quotient,
+trajectory calculation, formation certificate or event selector. See the
+[proof](../../../theory/nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-nonlinear-validity-result),
+[controls](../../../tests/physics/test_sine_consensus_nonlinear_response.py)
+and [usage](../../guides/relational/SINE_REGIONAL_DYNAMICS.md#weighted-star-nonlinear-validity).
+
+<a id="sine-support-recurrence"></a>
+### Recurrence families under the actual weighted conservative law
+
+`source.recurrence_bounds(energy_ceiling=..., form_mean_bounds=(lower, upper))`
+returns `SineSupportRecurrence` from the shared support owner. It rebuilds
+the complete connected conservative source, requires strictly positive
+capacities and admits a positive storage ceiling and positive-width mean
+interval. The subgraph of **positive conductances** must also be connected.
+Supported zero-weight edges remain in the bare sine pressure and `d/nu`
+mean weights, even though they cannot supply the form compactness bound.
+
+Let `w_min` be the smallest positive conductance, `n` the node count and
+`E_max` the declared ceiling. Positive-support paths bound
+`abs(x_i-weighted_mean) <= sqrt(2*(n-1)*E_max/w_min)`.
+Together with the supplied mean interval and the circular phase torus,
+this gives a compact invariant family of finite positive product volume.
+The two exact invariants are full nonlinear storage and the `d/nu` form
+mean; the full nonlinear divergence is zero. The existing
+[recurrence proof](../../../theory/nodal/RESONANCE_FOUNDATIONS.md#nonlinear-recurrence)
+therefore applies with the actual weighted form gradient and bare sine row.
+No spectral calculation, trajectory or bound on real phase lifts is used.
+
+The report retains the fresh source, positive-support edge indices and
+weight floor, actual mean weights and rate residual, compact form bounds,
+and `snapshot_family_membership` (`inside`, `outside` or `unresolved`).
+Equal captured phases give exact form-only storage; other membership
+comparisons retain outward storage intervals. An unresolved numerical
+comparison never becomes inside. Family recurrence flags concern the
+declared invariant slab independently of captured membership.
+`individual_recurrence_status="unavailable_for_chosen_state"` always
+withholds an individual trajectory verdict, including at a supplied point
+or on the nominal two-parameter source surface.
+
+Direct schema `tnfr.sine-support-recurrence.v1` and SDK export re-admit
+primitive law, state and slab, rebuilding cached connectivity and verdicts.
+This report certifies no target identity or its absence. The separate
+[common-registration argument](../../../theory/nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-permanent-registration-result)
+uses a closed target and a full-dimensional source exclusion to rule out
+robust permanent capture. Finite entry and finite residence remain open.
+See the [independent controls](../../../tests/physics/test_sine_weighted_recurrence.py)
+and [usage](../../guides/relational/SINE_REGIONAL_DYNAMICS.md#weighted-star-permanent-registration).
+
+<a id="explicit-frozen-isolate-sine-comparison"></a>
+### Explicit frozen-isolate sine comparison
+
+`bound_relational_sine_frozen_isolates(graph, reference_model=...)` in the
+same shared owner admits a separately specified componentwise law. On each
+nontrivial connected component it reuses the conservative conductance/support
+comparison above. On each isolate it explicitly sets pressure, form rate
+and phase rate to zero. Freezing phase is an additional premise; neither
+the nodal form identity nor a zero-degree denominator derives that choice.
+The existing connected reader and its consumers retain their rejection of
+isolated or disconnected successors.
+
+The distinct `SineFrozenIsolateComparison` retains the complete node order,
+primitive form/phase/capacity, support and conductances, component membership
+and freshly assembled fields. An isolate contributes no edge storage and has
+no inverse phase metric: that field is unavailable, not an assigned zero
+metric or a positive-weight collective mean. Every isolate's coordinates are
+still admitted. Graph structure, absent forcing and the live Gamma registry
+are checked before decomposition; decomposition cannot hide an invalid
+state or source law. This interface retains the shared minimum of two total
+nodes, although individual components may be singletons.
+
+The report and SDK export rebuild consumed fields from primitive state and
+the declared law rather than trusting cached rates, components or verdicts.
+This is a detached comparison, with no native integrator dispatch, event
+selection, graph mutation or authentication of temporal evidence. A caller
+may explicitly use its pressure in an operator-stage refresh, while retaining
+both complete rows as the mathematical continuation law. No positive-time
+solver is supplied by that callback. The
+[hierarchy-to-contact owner](../../../theory/nodal/SINE_HIERARCHY_CONTACT.md)
+declares the event composition and its separate work/response obligations.
+
 ### Detached normalized-sine complete-law comparison
 
 `bound_relational_sine_exchange(graph, reference_model=...)` in
@@ -597,6 +1089,33 @@ adaptive retries.
 separates prior derivatives, joint inference, issued prediction and reserved
 source response. Its frozen-mediator control is a counterfactual, and its
 synthetic derivative evidence is not a sampled laboratory measurement.
+
+### Weighted-support involution reduction
+
+`assess_sine_support_involution(source, permutation_indices=...)` in
+[`relational_sine_symmetry.py`](../../../src/tnfr/physics/relational_sine_symmetry.py)
+re-admits the weighted-form/bare-phase comparison before checking a supplied
+involution. Bare support, conductances, capacity and exact initial form/phase
+lifts remain separate premises. Its `SineSupportInvolution` distinguishes
+invariance of a fixed-point family from membership of the supplied source.
+An unchanged graph alone cannot certify a symmetric trajectory.
+
+The report retains cell memberships, multiplicities, per-member bare-neighbor
+counts and conductance sums, including internal and zero-conductance edges in
+the degree. These do not define the degree of an ordinary quotient graph.
+Cell reciprocity restores the original storage and means. Fine observations
+must use the reconstruction map and multiplicities. `to_dict()` rebuilds
+consumed fields rather than accepting cached verdicts, with schema
+`tnfr.sine-support-involution.v1`.
+
+The admitted interval/jet field reuses the shared complete-law rate evaluator.
+It supplies the invariant family's field even when a particular source is
+outside it; a trajectory consumer must require exact membership separately.
+Events need post-event re-admission. The
+[directional contact owner](../../../theory/nodal/SINE_DIRECTIONAL_MAINTENANCE.md)
+uses this boundary for an exact eleven-cell nominal reduction. No projection
+of independent surrounding errors, physical identification or autonomous
+event selection follows.
 
 ### Detached stationary sine mediation
 

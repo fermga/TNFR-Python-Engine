@@ -5,8 +5,8 @@ check the conditional identities. They are not trajectories, acquired hosts,
 reserved responses, measured derivatives or an autonomous covariance closure.
 """
 
-from fractions import Fraction as Q
 import hashlib
+from fractions import Fraction as Q
 from math import factorial
 from pathlib import Path
 
@@ -21,7 +21,6 @@ from tnfr.mathematics._exact_linear_algebra import (
     exact_symmetric_semidefinite,
 )
 from tnfr.mathematics._rational_interval import I, cos, pi_interval, sin
-
 
 _INNER = tuple((9 * c + j, 9 * c + (j + 1) % 9) for c in range(5) for j in range(9))
 _OUTER = tuple((9 * c + j, 9 * ((c + 1) % 5) + j) for c in range(5) for j in range(9))

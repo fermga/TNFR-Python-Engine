@@ -1,567 +1,251 @@
-# Nodal research strategy: information, interaction and complete laws
+# Nodal research strategy: organized objects and their foundations
 
-This document explains the scientific objective and how compatible mechanisms
+<a id="nodal-research-strategy-information-interaction-and-complete-laws"></a>
+
+This document explains why a research question advances TNFR and when results
 can be combined. The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-is the sole task queue; the [portfolio](../TNFR_lineas_de_investigacion.txt)
-classifies contributions. Definitions, results, implementations and tests
-belong to the [theory-to-execution map](README.md#theory-to-execution).
+is the sole queue; the [portfolio](../TNFR_lineas_de_investigacion.txt) classifies
+contributions. Definitions, results, implementations and tests belong to the
+[theory catalog](README.md#theory-to-execution).
 
 ## 1. Scientific objective
 
-Investigate whether justified nodal dynamics can generate interacting
-organizations whose collective properties eventually explain independent
-physical observations. The [ontology](EMERGENT_ONTOLOGY.md#generative-bound-organization)
-keeps this generative hypothesis separate from the conditional mathematics.
-EPI need not be a sensor reading: a collective observation map is allowed,
-but its preparation, clock and physical interpretation need independent support.
-The primary progression derives organization and its interaction properties
-from the nodal dynamics; it requires no prior identification of a primitive
-coordinate with a laboratory sensor. Direct-realization audits are auxiliary.
-Independent physical observation becomes the next obligation when a derived
-collective property has a specific falsifiable comparison and its complete
-preparation, interaction and observation model is admitted. A realization
-audit can expose a missing law or retained state before that point.
-That comparison starts from a property of fundamental physics and its precise
-symmetry, conservation, composition and measurement requirements. Assess what
-TNFR derives and what remains supplied before selecting the experimental
-discriminator. Accessible apparatus and datasets serve that physical question;
-their availability does not define the phenomenon the paradigm must explain.
+Investigate the scope of TNFR: which organized structures justified nodal
+dynamics support, how they evolve and interact, and which properties emerge
+under composition. The [ontology](EMERGENT_ONTOLOGY.md#generative-bound-organization)
+separates hypotheses from conditional constructions. Independent observation
+can constrain a proposed interpretation; its measurement map has its own
+premises, and EPI need not be a sensor reading.
 
-An identity can persist while its constituents move. A larger NFR can retain
-smaller constituents and their causal influence; a supplied graph or partition
-does not establish its own emergence. Formation under declared conditions is
-a meaningful intermediate target before autonomous preparation, substrate
-origin or physical identification has been resolved.
+The engine provides explicit state, continuous laws, registered events,
+grammatical admission and observations. Mathematical owners provide conditional
+balances, formation and maintenance results, reductions, finite predictions
+and counterexamples. These establish useful model-dependent capabilities;
+universal realization and a uniquely selected fundamental law remain open.
 
-The principal objective is to identify and justify TNFR's laws and hypotheses
-one at a time through their dependencies, including revisable foundational
-premises. Constructed organizations test the foundations that produced them.
-Compare complete laws on matched objects to distinguish consequences of
-retained geometry and information from consequences of a selected pressure,
-storage or event rule. A successful conditional construction is useful evidence
-for that model; it is not a reason to stop examining its independent premises.
-The [law-admission audit](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission)
-governs this return to the bases, and the execution plan selects one unresolved
-question at a time. Each justified correction should improve the common
-foundations and their consumers rather than add an isolated fitted mechanism.
+The central instruments are organized mathematical objects whose identity
+and behavior can be examined under explicit laws. Retain the state that
+supports each claim: fine coordinates and boundary associations, or a justified
+collective representation with its closure or memory. This gives foundations
+concrete tests rather than treating an operator list or a graph as a complete
+object.
+
+These organizations expose which state a response consumes and which premises
+control its behavior. A supplied pressure, support, source or schedule remains
+a premise even when its resulting organization is stable. Conversely, a
+conditional object can reveal a necessary coordinate, an invariant, an event
+restriction or a counterexample without requiring a new physical interpretation.
 
 <a id="fundamental-research-dependencies"></a>
 ## 2. Information, interaction and complete laws
 
-The common dependency is **information -> interaction -> complete law**.
-Formation, persistence, composition and physical comparison consume this same
-foundation rather than selecting separate fundamental laws.
+Begin with the object's declared state and complete law. Ask which information
+its identity and interactions require, how that information evolves, and which
+properties survive composition. State sufficiency, constitutive justification
+and observed response constrain one another; information alone does not select
+a unique evolution law. This does not prescribe a separate campaign for every
+parameter, operator or diagnostic.
 
-Use that dependency to unify investigations around a claimed capability of
-an object: which state predicts its interaction, which dynamics maintains
-its identity, and which new information another grouping needs. These are
-coupled obligations, not reasons to open one campaign for every parameter.
-Ultimate importance does not set immediate priority. Prefer a question that
-can distinguish alternatives with an existing complete model and produce a
-new consequence useful to several branches. The plan's
-[priority assessment](research/FIVE_STAGE_EXECUTION_PLAN.md#research-priority-assessment)
-owns the current choice and conditions for alternatives.
+Prefer a missing capability or discriminating obstruction with consequences
+beyond the example used to establish it. A finer numerical bound, another
+repetition or an additional readout is useful only if it can decide a named
+claim. Stop when that claim is resolved or its missing premise is identified.
 
-A resolved finite interaction leaves three distinct obligations: whether the
-organization survives the continuing contact, whether its preparation and
-measurement budgets admit an operational realization, and whether an
-independently measured property distinguishes its complete law from alternatives.
-The [relative-origin result](nodal/ORGANIZED_EXTERNAL_REGISTRATION.md) bounds
-outer-one response at every origin and admits a larger outer-zero response at
-a source-dependent witness origin. It supplies no alignment selector and does
-not close those obligations. Changing support requires its own stationary
-geometry, stability and actual-source inclusion; an isolated capture
-certificate cannot supply them. A new moment or tighter remainder is useful
-when it decides one of these questions.
-Physical confrontation can begin once a concrete signature and independent
-bridge are admitted, without waiting for unique law selection or substrate
-origin. The plan selects the next bounded question from these dependencies.
-
-The [electrical feasibility audit](research/ORGANIZED_ELECTRICAL_FEASIBILITY.md)
-provides such a foundational question: additional ring capacitance changes
-the collective form row by a matrix while leaving the voltage-phase row
-unchanged. Such a change requires its own sufficient state, complete law and
-storage before a physical readout can use it. The
-[loaded-observation comparison](research/ORGANIZED_FINITE_WINDOW_DESIGN.md)
-also distinguishes matrix sensitivity from sensitivity to organized phase
-feedback: a calibrated phase-blind reference can remain unresolved even
-when two response matrices are distinguishable. This uses explicit
-countermodels to test what an observation establishes. The
-[recovery-area identity](research/ORGANIZED_RECOVERY_OBSERVATION.md)
-connects phase recovery, sensor memory and an accumulated observation. Its
-own-law decay bound converts that relation into a finite comparison without
-long trajectory stepping. Another restoring law can share the same signature,
-so mechanism discrimination and unique constitutive identification remain
-different questions. This does not promote the electrical realization to a
-universal TNFR law or replace earlier conditional organizations with prepared
-ideal circuits. Gate status,
-acceptance and the selection of further observation questions
-remain in the [sole queue](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).
-
-| Question | Required distinction | Owner |
+| Research question | Required distinction | Definition or method owner |
 | --- | --- | --- |
-| What does an interaction consume? | Primitive state, derived moments, form/rate associations and retained origins | [Information ledger](NODAL_PARAMETER_FOUNDATIONS.md#derived-information-ledger), [relation foundations](nodal/RELATION_FOUNDATIONS.md) |
-| Which premises determine its response? | Additivity, locality, balance, storage and information restrictions have independent roles | [Pressure scope](nodal/PRESSURE_CONSTITUTIVE_SCOPE.md), [exchange admission](nodal/SINE_CONSTITUTIVE_INFORMATION.md#first-phase-moment-sufficiency) |
-| What predicts subsequent evolution? | An instantaneous message can omit state needed to evolve that message | [Pattern memory](nodal/RELATIONAL_PATTERN_MEMORY.md), [derived memory](DERIVED_EPI_MEMORY.md) |
+| What does a response consume? | Primitive state, derived information, boundary/constituent association and hidden initialization | [Information ledger](NODAL_PARAMETER_FOUNDATIONS.md#derived-information-ledger), [relation foundations](nodal/RELATION_FOUNDATIONS.md) |
+| Which law is justified? | Definitions, supplied constitutive assumptions, derived restrictions and remaining countermodels | [Law admission](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#justified-law-admission), [pressure scope](nodal/PRESSURE_CONSTITUTIVE_SCOPE.md) |
+| What maintains an identity? | Preparation, entry, persistence, recovery, internal activity and event occurrence | [NFR ontology](EMERGENT_ONTOLOGY.md), [pattern dynamics](nodal/SINE_PATTERN_DYNAMICS.md) |
+| What can the object do? | Continuous response, admitted operator action, ordered grammar and the separate law selecting occurrence | [Structural operators](STRUCTURAL_OPERATORS.md#collective-grammar-descent), [grammar](UNIFIED_GRAMMAR_RULES.md) |
+| What survives grouping? | Exact coordinate change, invariant family, approximation and lossy observation | [Scale and inherited geometry](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md), [pattern composition](nodal/RELATIONAL_PATTERN_COMPOSITION.md) |
+| What predicts later behavior? | Instantaneous messages, sufficient evolving state and causal memory | [Pattern memory](nodal/RELATIONAL_PATTERN_MEMORY.md), [derived EPI memory](DERIVED_EPI_MEMORY.md) |
+| What is actually observed? | A declared readout, its information loss and uncertainty, and an independently admitted physical map when needed | [Diagnostic scope](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md), [measurement admission](research/FIVE_STAGE_EXECUTION_PLAN.md#supporting-measurement-bridge) |
 
 ### Closure audit: equations, events and identity
 
-Start with sufficient state and every consumed pressure, phase, capacity,
-support, input and event law. Declare domains, units, held quantities and
-boundary cases. A clock change transforms every row; synchronization need not
-define a monotone clock. Capacity is not automatically frequency or inverse mass.
+A complete continuous law, a registered operator map and a word-selection
+rule are different mathematical objects. The
+[ordered-language criterion](STRUCTURAL_OPERATORS.md#collective-grammar-descent)
+requires admission, updates and consumed context to agree on equivalent fine
+realizations. A continuous quotient does not automatically retain grammar
+debt, target history, diagnostics or event eligibility.
 
-Removing one common origin can preserve relative dynamics; discarding the
-origins of separate components can lose information required at a later contact.
-[Form reconstruction](nodal/SINE_FORM_PHASE_REDUCTION.md#form-reconstruction-scope)
-and [origin accounting](nodal/SINE_CONSTITUTIVE_INFORMATION.md#form-balance-common-origin)
-provide precise examples. A coordinate change, a changed primitive field and
-a lossy observation require different arguments. Event work and independently
-changing capacities retain their [own balances](nodal/FORCED_GEOMETRIC_IDENTITY.md#prescribed-capacity-and-event-mean-balance).
+Use the [available organized objects](EMERGENT_ONTOLOGY.md#collective-grammar-readiness)
+to test these distinctions. State whether a property follows during unforced
+continuation, requires a specified event, or depends on a selected schedule.
+Failure at one layer names a missing coordinate or premise; it does not
+erase a valid result at another layer.
 
-<a id="constitutive-information-justification"></a>
+The [organized-source word domain](nodal/ORGANIZED_SOURCE_PORT.md#organized-source-word-reuse)
+illustrates the distinction. Ideal passive composition can preserve geometric
+identity while an enabled capacity policy eventually prevents another event.
+Its finite count belongs to that configuration. Increasing the count or adding
+an operator to compensate it is not a fundamental objective by itself.
+Sustained activity needs an admitted capacity and occurrence law when the
+claim consumes them.
+
 ### Conditional law selection and independent information premises
 
-The exchange owner derives conditional classifications, including sine current
-under bounded odd additivity and degree/first-resultant sufficiency. Those
-premises, the current scale and companion laws do not follow from the nodal
-identity alone. Native resultant-argument pressure is nonadditive; supplied
-conservative alternatives can retain equilibria or local responses while
-changing nonlinear accessibility. The owner's countermodels must therefore
-accompany any proposed selection principle.
+An independent information or symmetry premise can restrict compatible laws.
+State the admitted class and show which alternatives it excludes. Matching
+equilibria, storage, tangents or organized patterns alone does not identify
+one complete law: nonlinear responses and source transport can still differ.
+The [constitutive comparisons](nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md)
+and [information boundary](nodal/SINE_CONSTITUTIVE_INFORMATION.md#first-phase-moment-sufficiency)
+own the corresponding conditional results.
 
-A structural principle must justify a new restriction independently of the
-response it predicts. A physical discriminator must admit preparation,
-measurement and clock before its reserved response. If neither distinguishes
-alternatives, retain the constitutive freedom; repeated compatibility checks
-cannot promote it to uniqueness. The [comparison atlas](PHYSICAL_REGIME_CORRESPONDENCES.md)
-and [phase-information protocol](research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#primitive-phase-information-boundary)
-retain source-specific obstacles without opening separate campaigns.
+Keep mathematical compatibility and empirical selection separate. Conditional
+formation research can proceed without unique-law selection; a claim of
+physical necessity requires additional independent evidence.
 
-Conditional uniqueness already proved from a chosen information restriction
-is not an unresolved derivation to repeat. Conversely, a family that survives
-organization and recursive inheritance can still retain independent kinetic
-freedom, as the [mobility countermodels](nodal/SINE_PAIR_MOBILITY.md#sine-replica-constitutive-nonselection)
-show. A useful next discriminator must reach beyond the premises those
-countermodels already share.
+### Relational geometry and time as an identification question
 
-The [collective boundary criterion](nodal/COLLECTIVE_BOUNDARY_CONSTRAINTS.md)
-provides a reusable conditional mechanism, rather than a selector: actual
-positive boundary curvature constrains old neutral modes, normal compliance
-sets static restoration, and the full kinetic law controls dynamic recovery.
-Its premises do not follow from bare connectivity or retained identity.
-Further variants of the same contact cannot justify the still-free potential,
-kinetics or event occurrence; a foundational advance must add independent
-content to one of those inputs or a discriminating observation.
+A relational model need not assume a Euclidean embedding. Supplied support,
+conductances, lengths and clocks nevertheless remain premises. The
+[operational geometry boundary](nodal/RELATION_FOUNDATIONS.md#operational-relational-geometry)
+distinguishes those inputs from response-derived comparisons and physical
+spacetime. A metric on state space is not automatically spatial distance.
 
-The [boundary-information audit](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#law-selection-and-boundary-information)
-distinguishes an independently justified restriction from the cost of a
-chosen law's representation. Determining the minimum information needed for
-every relative-phase response can constrain collective interfaces without
-assuming that nature selects the least costly law. Such a result needs a
-lower bound as well as a sufficient representation, and must retain marked
-contacts. It does not supply autonomous evolution of the summary or replace
-the independent preparation, clock and measurement obligations.
-
-The [phase-response stabilizer](nodal/SINE_CONSTITUTIVE_INFORMATION.md#phase-response-faithfulness)
-separates information hidden by a current from information absent from the
-full state. Faithfulness of every primitive phase query is an additional
-channel premise, compatible with both retained laws; native U3 can distinguish
-phase sectors that a continuous-flow quotient discards. Combining faithfulness
-with a two-coordinate boundary minimum conditionally selects sine, but does
-not justify either restriction. Reopening selection requires a concrete new
-operational or resource premise, or independent evidence; another generic
-phase-information audit would repeat the existing obstruction.
-
-Operational access is a separate constructive question. The
-[free two-C9 probe](nodal/ORGANIZED_FREE_PHASE_PROBE.md) replaces separately
-imposed registrations by one freely reacting transient under a declared
-initial form contrast and weak contact. Complete mean balances reconstruct
-the relative phase from form history; a uniform fine-state bound preserves
-child identity. This supplies a conditional way to query the law, rather
-than justify it. Its [finite-record theorem](nodal/ORGANIZED_FREE_PHASE_PROBE.md#free-phase-probe-finite-records)
-subtracts the known decay before interpolation and bounds the joint reading,
-exposure-time, calibration, phase, endpoint and quadrature errors. A supplied
-finite accuracy budget can suffice, while sufficiently uncertain raw records
-can still overlap. Numerical conditioning does not supply measurement accuracy.
-The [primitive reader](nodal/ORGANIZED_FREE_PHASE_PROBE.md#free-phase-probe-reader)
-now encloses the reconstructed turn and harmonic functional, retaining
-necessary consistency checks and numerical abstention. Its inferred current
-cannot independently test the phase row used to reconstruct that current.
-The [independent kinetic channel](nodal/ORGANIZED_FREE_PHASE_PROBE.md#free-phase-probe-independent-kinetics)
-instead reads all marked primitive phases. Their product tests a global
-circular consequence of the kinetic row; arithmetic collar means retain finer
-registration information when independent speed bounds exclude internal slips.
-Neither uses form evolution to define the observed phase. Finite circular
-records still hide full turns, and an unknown clock scale remains confounded
-with kinetic coefficients. This structural readout requires separate physical
-sensing, timing and backreaction admission before a physical comparison.
-Contact work, elapsed time, preparation authority and an independently
-admitted physical observation remain separate resources.
-
-The [preparation bound](nodal/ORGANIZED_FREE_PHASE_PROBE.md#free-phase-probe-preparation-reachability)
-separates their roles. Isolated child means are conserved, and arbitrary
-nonnegative timing or strength changes of the matching contact cannot create
-the probe's large contrast from zero means. The bound retains every fine state
-and the entire supplied constitutive family. Added form inputs or jumps carry
-a separate variation budget, even when their net total form is zero. Uniform
-opposite inputs give a conditional preparation that preserves isolated fine
-state, but their amplitude and occurrence remain supplied. Their zero isolated
-storage work is not a source law or a free physical resource. The
-[reciprocal resource theorem](nodal/RECIPROCAL_FORM_RESOURCE_ENVELOPE.md)
-now bounds nonuniform interfaces and additional reacting nodes directly on
-the full fine graph. A centered cut invariant accounts for every initial form
-and the finite node count, without assuming closure of the marked means.
-Zero child means alone can hide a supplied fine resource. The exclusion is
-conditional on that resource and the unchanged complete law; permitted
-budgets establish neither reachable contrasts nor retained child identities.
-The value `12` belongs to the sufficient full-turn probe construction, not
-to every possible constitutive observation. These preparation bounds do not
-exclude lower-resource observations or all TNFR formation.
-
-The [small-phase information theorem](nodal/ORGANIZED_SMALL_RESOURCE_INFORMATION.md)
-makes that distinction quantitative in the same two-C9 model. With zero nominal
-mean forms, a supplied phase offset gives a cubic endpoint law gap and quadratic
-attachment storage. Independent fine, preparation, timing and reading budgets
-can preserve separation; a larger additive reading allowance gives an actual
-common record. Lower preparation therefore trades against observation accuracy
-within this fixed class. The result justifies neither the phase preparation
-nor a physical sensor, and it does not select a constitutive law without data.
-
-The [foundation decision](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#post-resource-foundation-decision)
-separates those completed access results from independent law justification.
-No reviewed operator, chart, source or physical bridge adds a new selector.
-Further constitutive selection needs a new independent premise with a
-consequence separating retained alternatives. A generative continuation instead
-needs a concrete unclosed capability and a source-valid argument under its
-declared complete law. An autonomous source claim needs an occurrence law;
-a physical comparison needs
-an independently admitted collective observation and preparation. Neither
-requires solving every origin question first. Broader nonlinear equivalence
-remains dependent on its declared input/readout class, and the remaining
-receiver question needs a source-valid invariant-domain argument. These are
-boundaries on the respective claims, not a requirement that every conditional
-generative question first resolve law selection or physical measurement.
+Identify what a complete law and observation determine modulo admitted
+relabeling and clock changes. Transform every consumed row; synchronization
+alone is not a monotone clock. Hidden initialization and continuing input
+remain when state is eliminated. Reuse the
+[clock analysis](nodal/FORCED_SOURCE_AND_CLOCK.md#25-relational-time-and-synchronization-are-separate-claims).
+A clock-independent observed slope can still depend on unobserved phase.
+Coupling is not distance, and an analytical reading budget does not
+authenticate a preparation.
 
 ### Localized organization and transport
 
-The [transport contract](EMERGENT_ONTOLOGY.md#localized-identity-transport)
-distinguishes movement across fixed support from internal pulse and fixed-cycle
-retention. The [prepared finite theorem](nodal/LOCALIZED_IDENTITY_TRANSPORT.md)
-establishes this capability under the actual positive-loss normalized-sine
-law: a full-state tube follows a localized moving reference while retaining
-a signal floor. The conservative dispersion used in its comparison does not
-replace the actual loss. Both localization and direction are supplied in the
-initial class, and the proof evaluates no trajectory or formation source.
+A mobile pattern requires a stated identity whose carrying sites can change.
+Internal oscillation, fixed-cycle winding and graph-layout motion do not
+establish transport. Formation of a common organization additionally requires
+that its defining relation be absent initially and acquired under the same
+admitted complete law.
 
-The [phase-uniform source result](nodal/LOCALIZED_TRANSPORT_SOURCES.md#phase-flat-source-obstruction)
-identifies a missing directional resource: the actual damped tangent preserves
-equal opposite-band norms for arbitrary real-form preparation, and a bounded
-nonlinear remainder excludes entry into the specified directional identity.
-This applies even to spatially asymmetric form. The separate exact
-[reflection argument](nodal/LOCALIZED_TRANSPORT_SOURCES.md#reflection-source-obstruction)
-excludes unilateral majority localization from symmetric preparation while
-leaving bilateral motion open. Neither result excludes all mobile organization.
-
-The [mobile-pair identity proof](nodal/LOCALIZED_MOBILE_INTERACTION.md#mobile-pair-identity)
-retains a joint full-state tube and the localization of two opposite-band
-projections through a prepared encounter. This does not split the nonlinear
-law into two independent subsystems. The
-[frozen discriminator](nodal/LOCALIZED_MOBILE_INTERACTION.md#mobile-pair-protocol)
-compares the joint state with separate histories using shared initial
-primitives. That subtraction cancels linear evolution, including reused errors;
-an intensity cross term would not serve the same purpose. The
-[retained endpoint result](nodal/LOCALIZED_MOBILE_RESPONSE.md#mobile-response-result)
-resolves a nonzero nonlinear defect for the exact nominal preparations within
-the numerical budget. Its original shared-source-family bound remains
-unresolved; more quadrature precision alone cannot resolve that bound.
-
-The [geometric basin result](nodal/LOCALIZED_ORGANIZATION_GEOMETRY.md#mobile-zero-sector-basin)
-now excludes winding generation and nonuniform stationary limits for the
-entire original pair source family, using its zero-lift chart and small
-storage. This narrows the remaining mechanism to finite-lived organization;
-it does not exclude such formation. The
-[geometry audit](nodal/LOCALIZED_ORGANIZATION_GEOMETRY.md#geometry-and-formation)
-separates consumed support, conductance and primitive phase geometry from an
-embedding or carrier label, and compatible charts from actual acquisition.
-
-The next question is whether this complete law can reorganize the incoming
-patterns into a common composite identity defined by their relative position,
-phase and dynamics. Admit shared motion or oscillation and evolving constituent
-profiles. The identity must be absent initially with a margin, then form and
-retain joint organization beyond linear overlap, with constituent and boundary
-state and a later response criterion. This is stronger than small deformation
-or radiation and remains unproved by the endpoint result. Fixed-interface
-results on C9-based organizations do not transfer their verdicts to moving
-patterns, and positive loss still constrains permanent motion. The
-[sole queue](research/FIVE_STAGE_EXECUTION_PLAN.md#mobile-organization-feasibility-admission)
-owns this analytical feasibility gate; the retained response is not retuned or
-replayed.
+Allow constituents to reorganize their geometry and trajectories; a third
+object, unchanged shapes or eventual separation are not required. Distinguish
+nonlinear interaction, entry, finite maintenance and subsequent collective
+response. Overlap, response peaks and nonadditivity alone establish no
+common identity. The [formation criterion](nodal/LOCALIZED_ORGANIZATION_GEOMETRY.md#common-pattern-formation-contract)
+and [compatibility analysis](nodal/LOCALIZED_FORMATION_COMPATIBILITY.md)
+own these boundaries.
 
 ### Present interaction and sufficient future state
 
-Instantaneous current, a sufficient state and a history-based description
-answer different questions. A derived moment need not be a new primitive;
-unweighted phase statistics can omit the phase/rate association consumed by
-future dynamics. The [global pair state](nodal/SINE_PAIR_STATE.md#sine-global-pair-state)
-retains fine information through cancellation, whereas its observed interface
-can remain insensitive to internal orientation. The
-[cancellation classification](nodal/SINE_PAIR_STATE.md#sine-pair-cancellation-observability)
-determines when the evolving environment reveals that information.
+An instantaneous boundary current need not contain enough information to
+evolve itself. Match the observation to the complete interaction and preserve
+internal associations that influence later responses. A minimal tangent
+realization need not close a nonlinear law; a moment sufficient for one
+constitutive family may fail for another.
 
-The [mean-closure obstruction](nodal/SINE_PAIR_MOBILITY.md#collective-mean-closure-obstruction)
-explains why changing the phase kernel alone cannot repair discarded internal
-state. Eliminating constituents can instead induce memory, correlations or
-many-body dependence. Such an effective law retains its hidden initialization,
-forcing and approximation domain; it cannot silently replace the fine law.
+Use exact-state and matched-observation counterexamples before adding
+parameters. New coordinates are justified by information the prediction
+actually consumes, not by a desired resemblance to another theory.
 
 ### Inherited response, storage and predictive state
 
-Primitive capacity, collective mobility and observation geometry have
-different owners. A matrix mapping collective pressure to a form rate does
-not by itself replace nonnegative scalar nodal capacity. The
-[parameter foundation](NODAL_PARAMETER_FOUNDATIONS.md) owns primitive
-admission, the [scale bridge](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#1-pure-epi-coarse-graining)
-gives a conditional inherited response factor, and the
-[ontology](EMERGENT_ONTOLOGY.md#generative-bound-organization) requires retained
-constituents and interaction-relevant boundary information.
+Collective mobility may be a matrix even when primitive capacities are
+scalars. Retain phase rows, clocks, work pairing, source terms and the chosen
+observation. Changing a boundary can change the state needed for prediction.
+Eliminating evolving constituents introduces causal memory with hidden
+initialization and forcing; a static matrix alone is not temporal memory.
+The [scale owner](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) and
+[causal elimination](nodal/SINE_ENVIRONMENTAL_MEMORY.md#causal-sine-environmental-pressure)
+provide the reusable distinctions.
 
-The [matrix-response comparison](nodal/ORGANIZED_EFFECTIVE_LAW.md)
-owns the concrete complete law motivated by the feasibility audit. Its
-static matrix acts on the collective form row; it is not an established
-universal effective law, a memory kernel or a new formation theorem. A
-coordinate change that removes it from that row also changes other consumed rows.
-Admission therefore compares the complete law, its storage and input pairing,
-symmetries, retained state and identity domain. The original acquired-state
-certificates cannot be inherited by labeling the matrix a small correction.
-
-This connects three reusable mechanisms: scale reduction determines what
-response geometry is inherited; storage identifies the corresponding work
-and loss; memory records the influence of eliminated dynamical state.
-Static mobility alone adds no temporal memory. If a boundary or sensor has
-its own evolving state, either retain that state or derive its elimination
-with initialization and forcing intact. Continuous predictive closure also
-does not descend a collective operator: its targets, history, admission and
-occurrence remain subject to the
-[event criterion](STRUCTURAL_OPERATORS.md#collective-operator-descent).
-
-<a id="formation-premise-ledger"></a>
 ## 3. Model and formation premises that survive reuse
 
-Match the complete law, support, capacity, clock, preparation and retained
-coordinates before combining results. The following boundaries prevent
-transferring a correct result to an incompatible model.
+Combine results only after matching the complete law, support, capacities,
+clocks, source, retained coordinates and error class. Method transfer does
+not transfer coefficients or verdicts. A held quantity is an explicit model
+premise, including capacity or boundary state.
 
-| Model family | Reuse boundary |
-| --- | --- |
-| Native resultant-direction exchange | Regular argument-domain admission; continuous claims and executor behavior remain distinct |
-| Positive-loss sine dynamics | Dissipation and full-state preparation bounds remain premises of acquisition, recovery and composition |
-| Conservative sine dynamics | Formation, invariant-family maintenance, geometric identity and recurrence have different preparation/support hypotheses |
-| Alternative mobility or storage | Shared balances, equilibria or full tangents do not transfer nonlinear remainders, source transport, acquisition or invariant measures |
-| Operators and hybrid events | Configured words, jumps and live preconditions neither inherit continuous-storage guarantees nor derive occurrence |
+Separate initialization, admitted attachment, source-to-identity entry,
+maintenance and physical identification. A positive barrier margin does not
+prove that a specified source reaches the barrier's domain. Event eligibility
+and passive work do not determine occurrence. A proof for positive held
+capacities does not automatically extend to capacities approaching zero.
 
-Formation starts without the declared target identity. A two-sided invariant
-family cannot be entered from outside under the same unique flow. Autonomous
-evolution after supplied preparation, autonomous choice of preparation/support,
-and physical identification are separate claims. A failed sufficient bound
-is unavailable evidence, not a nonformation theorem.
+Keep actual continuous loss and support/event work in separate accounts.
+Loss is not a reserve for a later event without a reservoir state and law.
+A supplied energy or resource source must retain its own evolution.
 
-<a id="4-compatible-mechanisms-and-what-their-combination-can-resolve"></a>
 ## 4. Compatible mechanisms and their use
 
-The [connection map](EMERGENT_ONTOLOGY.md#pulse-resonance-scale-connections)
-owns the detailed comparison of pulse, resonance, scale and geometry. These
-are the productive combinations, not an additional theorem inventory.
+The native relational families, normalized-sine organizations and declared
+source-port systems are model-specific instruments. A simpler object is useful
+when it exposes the required mechanism; a richer object is useful when its
+retained internal or boundary state is essential. Their coexistence is not a
+claim that they obey one interchangeable complete law.
 
-<a id="pulse-foundation-synthesis"></a>
-<a id="resonant-persistence-and-pulse-audit"></a>
-### Pulse, resonance and retained internal motion
+Pulse, phase winding, capture, internal response and collective inheritance
+serve a selected question. Their definitions and hypotheses belong
+to the [resonance](nodal/RESONANCE_FOUNDATIONS.md),
+[composition](nodal/RELATIONAL_PATTERN_COMPOSITION.md) and
+[memory](nodal/RELATIONAL_PATTERN_MEMORY.md) owners.
 
-A probe response, periodic internal motion, recurrence and perturbation
-stability are distinct. Use the [resonance owner](nodal/RESONANCE_FOUNDATIONS.md)
-to specify input/readout and the [pulse foundation](FUNDAMENTAL_THEORY.md#derived-pulse-foundation)
-to distinguish active constituents from a universal permanent waveform.
-A time-dependent background may change response without adding a new force;
-a stationary response theorem must not be transferred to it unchanged.
+Reuse them with retained constituents and boundary associations. A repeated
+diagram, configured child creation or exact re-encoding does not establish
+autonomous scale selection. Conversely, organized interactions can expose
+properties absent from isolated constituents; the criterion is a derived
+response or restriction under the same complete model.
 
-Mean-contact feedback and exact bridge memory expose how hidden constituents
-affect visible motion. Their supports and nonlinear/tangent domains differ.
-A lift-dependent collective storage split can have a signed remainder; a
-nondecaying memory kernel does not derive irreversible local damping.
+Operator studies should establish compatible domains and composition before
+exploring a named limiting behavior. A single object need not realize all
+thirteen operators. Existing controls supply reusable tests, not a mandatory
+operator itinerary or an exhaustive word search.
 
-Choose the required notion of persistence before selecting a law: static
-identity, indefinite internal activity and almost-everywhere recurrence
-need different evidence. Geometry protected under an alternative mobility
-does not inherit an invariant measure. Likewise, a slow expansion of an
-exact memory kernel needs an independently admitted preparation and a
-time-domain error bound before becoming a predictive reduced model.
-
-### Collective inheritance retains constituents
-
-[Scale geometry](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) and
-[phase-offset partitions](nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-phase-offset-partition)
-show how collective evolution can retain fine structure. This is the concrete
-route for testing the fractality hypothesis: identify which information and
-dynamics survive composition, then determine what forms that organization.
-An exact re-encoding is not necessarily a reduction, and a repeated graph
-or nested declaration alone does not derive a hierarchy.
-
-Boundary registration, amplitudes, form scaling and clocks must be retained
-together: the [organized pair law](nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md)
-and [network compatibility](nodal/ORGANIZED_NETWORK_COMPATIBILITY.md) explain
-when their charts agree. The
-[predictive repeated composition](nodal/REPEATED_ORGANIZED_COMPOSITION.md)
-adds finite off-family control, but discarded child-to-port association
-still prevents exact mean closure. Equal parent means therefore need not
-predict the same response, as the
-[restoring-response comparison](nodal/ORGANIZED_PARENT_RESTORING_RESPONSE.md)
-also demonstrates. Another grouping needs its own state and identity bounds.
-
-Source transport is the connection between exact-family inheritance and
-actual formation. [Carried-source capture](nodal/ACQUIRED_ORGANIZED_NETWORK_CAPTURE.md),
-[joint acquisition](nodal/ORGANIZED_JOINT_ACQUISITION.md) and
-[parent acquisition](nodal/ORGANIZED_PARENT_ACQUISITION.md) retain fine
-uncertainty for particular sources and supports. They do not make a supplied
-parent registration a formed identity. The
-[outer-winding construction](nodal/ORGANIZED_OUTER_WINDING.md) similarly needs
-both full-state source transport and a separate product barrier to retain
-the children while acquiring a parent winding. Matching child identities
-does not remove the influence of their form preparation and attachment work;
-prepared amplitude differences do not select autonomous hierarchy or clocks.
-
-Realizability connects events to continuous dynamics through an admitted
-input and work law. The [form-actuation obstruction](nodal/ORGANIZED_PARENT_CONTINUOUS_ACTUATION.md)
-separates an endpoint storage difference from the loss along a path. Its
-fixed budget and duration cannot be relaxed retrospectively by a
-[constructive path](nodal/ORGANIZED_PARENT_CONSTRUCTIVE_ACTUATION.md) under
-different premises. The [collective construction](nodal/ORGANIZED_PARENT_COLLECTIVE_ACTUATION.md)
-reduces observation and actuation authority while carrying fine-state error,
-work and release recovery. Neither a necessary budget nor a supplied
-successful input establishes an autonomous occurrence law.
-
-Source dynamics and retained preparation constrain what an available
-budget can accomplish. The [finite-reservoir comparison](nodal/ORGANIZED_PARENT_RESERVOIR_EXCHANGE.md)
-excludes its declared disruption criterion despite a consistent balance and
-retained children. The [fixed-port memory classification](nodal/ORGANIZED_PARENT_RESERVOIR_MEMORY.md)
-shows how conserved preparation information can instead label distinct
-attracting geometries. An [organized-source port](nodal/ORGANIZED_SOURCE_PORT.md)
-retains both reciprocal rows and new contact storage; its exact carrier can
-reconstruct donor means, while general fine means still omit correlations.
-Its [full-state capture](nodal/ORGANIZED_SOURCE_CAPTURE.md) needs a separate
-barrier. Source-inclusive balance, sufficient state and capture are coupled
-obligations, not interchangeable certificates.
-
-Observation connects these state distinctions to accessible records.
-The [finite probe comparison](nodal/ORGANIZED_OUTER_RESPONSE.md) resolves a
-relational response contrast without uniquely identifying a winding sector.
-The [unknown-origin contract](nodal/ORGANIZED_OUTER_OBSERVATION.md) needs
-multiple interfaces, consistent branches and correlated baseline errors for
-identity inference. The [single-history construction](nodal/ORGANIZED_SEQUENTIAL_OBSERVATION.md)
-removes matched preparation while retaining cumulative disturbance and work;
-returning a commanded offset to zero is not a reset. These observations
-infer identity under a supplied complete law. They neither select that law
-nor replace the state needed to predict later interactions.
-
-### Ordered geometry connects transfer to formation
-
-The [sine pattern owner](nodal/SINE_PATTERN_DYNAMICS.md) combines entry,
-boundary work and maintenance under explicit hypotheses. Enough storage and
-compatible geometry do not establish a connecting trajectory; actual allocation
-and evolving contact rates matter. Preserve cycle/mean correlations when
-comparing budgets: overlapping marginal enclosures do not establish entry.
-Existence with flow-defined centers, an executable preparation and a validated
-numerical horizon remain separate evidence. Winding is one identity test,
-not a definition of every pattern.
-
-[Regional balances](nodal/ORGANIZED_REGIONAL_RETENTION.md) already distinguish
-available storage from the direction of motion. Combining their formulas
-with an existing velocity row is not a new accessibility theorem. A new
-formation criterion must derive an actual source-dependent prefix work
-budget, admit a joint state domain, or prove a scoped obstruction. This
-criterion may help several models, but its coefficients and source verdicts
-remain model-specific. An unresolved prepared receiver is therefore a
-possible mechanism test, not a universal prerequisite for the foundations.
-
-<a id="relational-capture-reuse-audit"></a>
-### Composition, memory and effective relations
-
-[Composition](nodal/RELATIONAL_PATTERN_COMPOSITION.md) and
-[retained memory](nodal/RELATIONAL_PATTERN_MEMORY.md) connect identity to causal
-influence. An intermediary can mediate interaction without a primitive direct
-edge. Eliminating it must retain memory, hidden initial source and inventory.
-Constant means or cancelling currents do not establish absent internal motion.
-Supplied contact, effective interaction and primitive relation birth are
-different claims. Event passivity also does not select occurrence; continuous
-loss is not an event reserve without a reservoir law.
-
-Composite identity adds another obligation: define loss of the parent's
-organization while retaining its children, then ask which transitions or
-work can reach that endpoint class. Restoring links and capture are useful
-premises; a signed mixed storage response is not that separation criterion
-or a physical binding energy. The [ontology](EMERGENT_ONTOLOGY.md#generative-bound-organization)
-owns the identity claim rather than an auxiliary interaction score.
-
-If the collective description consumes a named operator, reuse the existing
-[event-descent criterion](STRUCTURAL_OPERATORS.md) for its state, targets,
-history and admission before deriving a new event rule. Exact continuous
-closure alone does not descend that event or select its occurrence. Held
-capacity and support remain complete model premises; justify autonomous
-adaptation or relation birth when the chosen claim requires them, not as an
-unexamined remedy for an unsuccessful formation example.
-
-<a id="organization-dependent-nonlinearity"></a>
-### Organization-dependent nonlinear interaction
-
-A class-dependent response and a nonlinear response answer different
-questions. A linear response may already distinguish two organizations;
-a nonlinear interaction in one organization need not distinguish it from
-another. To connect these claims, compare the same four-history mixed
-observable across actually acquired classes under one complete law.
-For an initial matched-source comparison, pair histories at the same full
-source within each class, while retaining independent preparation uncertainty
-and possibly unequal costs between classes. Repeated interventions instead
-carry distinct branch residuals: the [joined return theorem](nodal/SINE_CLASS_REPEATED_INTERACTION.md)
-requires a new return family and exact mean accounting, including the
-alternative model's own memory. Additive cancellation must not erase hidden
-initialization or nonlinear source sensitivity.
-
-This comparison tests whether internal organization controls an interaction
-property beyond additive response. Interface symmetry can hide that property;
-nonzero local curvature or a different formal coefficient does not guarantee
-a finite observable contrast. A useful result therefore includes either a
-full-error separation or a proved, scoped obstruction. Insufficient bounds
-alone leave the claim unresolved. Physical comparison still requires an
-independent measurement and clock bridge for the particular property.
+Arithmetic applications, graph-wave constructions and auxiliary Hamiltonian,
+gauge or electrical models retain their own added premises. Use them when a
+specific method or comparison transfers with a proof; they are not alternative
+foundations selected by a familiar name. Frozen case studies preserve evidence
+and counterexamples without setting the research agenda.
 
 ## 5. Physical confrontation and comparison
 
-Physical comparison tests a named mechanism under the plan's
-[P1-P5 contract](research/FIVE_STAGE_EXECUTION_PLAN.md#supporting-measurement-bridge).
-It does not require identifying every primitive variable with a sensor, but
-it does require an independently justified map and equally informed alternatives.
-An extracted phase need not be primitive phase or sufficient predictive state.
-A controlled reduction needs evolution-defect bounds beyond preparation and
-readout errors. Fitting pressure to the evaluated derivative is circular.
+Physical comparison is a deferred use of the mathematical results. Develop
+the admitted objects and determine what their dynamics support before assigning
+them a physical identity. The [physical atlas](PHYSICAL_REGIME_CORRESPONDENCES.md)
+is a comparison library, not a source of desired endpoints or a second queue.
 
-The atlas is the sole mechanism/source comparison library. A useful equivalence
-can validate a particular bridge without identifying a fundamental ontology.
-Previously inspected or evaluated responses remain prior information.
-Workstation-accessible terrestrial data and ordinary laboratory protocols
-set the scope; physical source status and reopening conditions belong to the plan.
+Any later comparison starts with a named observable property and its symmetry,
+balance, composition and measurement obligations. Apparatus or data must
+distinguish the admitted prediction; familiarity or availability alone does
+not determine what the model must produce.
+[P1-P5](research/FIVE_STAGE_EXECUTION_PLAN.md#supporting-measurement-bridge)
+owns that admission.
+
+A scoped comparison may use independently calibrated terrestrial laboratory
+geometry and clocks without claiming their emergence. Separate calibration,
+reserved response and equally informed alternatives. Auxiliary electrical,
+arithmetic or geometric representations do not establish a physical realization.
 
 ## 6. Reuse, provenance and stopping
 
-<a id="pressure-clock-archive-reuse"></a>
+Read the owner rather than a filename, milestone label or summary. Preserve
+conditional results, counterexamples and frozen evidence. Corrections require
+separate provenance; old evaluated data cannot become a reserved prediction.
+Use shared kernels and meaningful independent controls, with
+[research-aware test selection](../TESTING.md).
+
+Close a question when its admitted implication is proved, excluded or limited
+by a named missing premise. Further precision, parameter sweeps or additional
+events require a new discriminating purpose. Keep status and reopening
+conditions solely in the execution plan; this strategy is not another queue.
+
+<!-- Stable topic fragments. -->
+<a id="4-compatible-mechanisms-and-what-their-combination-can-resolve"></a>
+<a id="collective-inheritance-retains-constituents"></a>
+<a id="composition-memory-and-effective-relations"></a>
+<a id="constitutive-information-justification"></a>
+<a id="formation-premise-ledger"></a>
 <a id="four-foundation-source-audit"></a>
-
-Reassess old hypotheses against current definitions, complete laws and actual
-source. The [historical audit](research/archive/README.md#four-foundation-source-audit)
-retains provenance and scope corrections. Auxiliary graph waves, arithmetic
-encodings or Hamiltonian comparisons may supply mathematics; their coefficients
-and verdicts do not transfer without a derivation. Inspection is not reproduction.
-
-Use the theory-to-execution map for ownership, [architecture](../ARCHITECTURE.md)
-for shared kernels and [testing](../TESTING.md) for relevant checks. Preserve
-frozen protocols, sources, responses and verdicts; corrections need separate
-provenance. Stop at the admitted proof, exclusion or precisely identified
-missing premise. The execution plan alone records the next task.
+<a id="ordered-geometry-connects-transfer-to-formation"></a>
+<a id="organization-dependent-nonlinear-interaction"></a>
+<a id="organization-dependent-nonlinearity"></a>
+<a id="pressure-clock-archive-reuse"></a>
+<a id="pulse-foundation-synthesis"></a>
+<a id="pulse-resonance-and-retained-internal-motion"></a>
+<a id="relational-capture-reuse-audit"></a>
+<a id="resonant-persistence-and-pulse-audit"></a>

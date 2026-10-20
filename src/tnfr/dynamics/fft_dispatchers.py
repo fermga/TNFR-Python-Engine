@@ -8,7 +8,7 @@ import pickle
 import queue
 import threading
 import uuid
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Callable, Mapping
 
 try:  # Optional dependency
@@ -23,17 +23,31 @@ Dispatcher = Callable[[str, dict[str, Any]], Any]
 
 @dataclass
 class HTTPFFTDispatcher:
-    """Simple HTTP dispatcher that exchanges payloads via base64 pickles."""
+    """HTTP dispatcher with an explicit trust boundary for pickle responses.
+
+    Requests retain the existing base64-pickle protocol. Responses containing a
+    pickle payload are refused unless ``allow_unsafe_pickle=True``; that opt-in
+    trusts the server and transport to supply executable Python serialization.
+    An outgoing bearer token does not establish that trust. Direct JSON
+    responses without a payload retain their existing pass-through behavior.
+    """
 
     base_url: str
     auth_token: str | None = None
     timeout: float = 30.0
     session_factory: Callable[[], Any] | None = None
+    allow_unsafe_pickle: bool = field(default=False, kw_only=True)
 
     def __post_init__(self) -> None:
+        self._pickle_response_enabled()
         if not self.base_url:
             raise ValueError("HTTP dispatcher requires a base URL")
         self._session = self._build_session()
+
+    def _pickle_response_enabled(self) -> bool:
+        if not isinstance(self.allow_unsafe_pickle, bool):
+            raise TypeError("allow_unsafe_pickle must be a boolean")
+        return self.allow_unsafe_pickle
 
     def _build_session(self) -> Any:  # type: ignore[override]
         if requests is None:
@@ -43,6 +57,7 @@ class HTTPFFTDispatcher:
         return requests.Session()
 
     def dispatch(self, action: str, payload: dict[str, Any]) -> Any:
+        self._pickle_response_enabled()
         if requests is None:
             raise RuntimeError("requests is required for HTTPFFTDispatcher")
         encoded_payload = _encode_payload(payload)
@@ -61,6 +76,11 @@ class HTTPFFTDispatcher:
         encoded_result = data.get("payload")
         if encoded_result is None:
             return data
+        if not self._pickle_response_enabled():
+            raise PermissionError(
+                "Refusing remote pickle payload. Set allow_unsafe_pickle=True "
+                "only for a trusted server and transport."
+            )
         return _decode_payload(encoded_result)
 
 

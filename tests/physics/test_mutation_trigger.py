@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from copy import deepcopy
 from dataclasses import FrozenInstanceError
 from fractions import Fraction
@@ -209,6 +210,219 @@ def test_invalid_history_is_reported_without_mutation(kwargs, reason):
 def test_invalid_scalar_inputs_raise_a_field_specific_error(field, value):
     with pytest.raises(MutationTriggerInputError, match=field):
         _certify(**{field: value})
+
+
+@pytest.mark.parametrize(
+    "field", ["current_epi", "nu_f", "delta_nfr", "xi", "endpoint_tolerance"]
+)
+@pytest.mark.parametrize("sign", [-1, 1])
+def test_nonzero_scalar_inputs_cannot_underflow_to_zero(field, sign):
+    value = Fraction(sign, 10**400)
+
+    with pytest.raises(MutationTriggerInputError, match="underflows") as caught:
+        _certify(**{field: value})
+
+    assert caught.value.field == field
+    assert caught.value.value == value
+
+
+@pytest.mark.parametrize("sample_index", [0, 1])
+@pytest.mark.parametrize("coordinate_index", [0, 1], ids=["time", "epi"])
+def test_underflowed_physical_samples_do_not_fall_back_to_legacy_history(
+    sample_index, coordinate_index
+):
+    history = [[-1.0, -0.2], [1.0, 0.2]]
+    history[sample_index][coordinate_index] = Fraction(1, 10**400)
+    before = deepcopy(history)
+
+    certificate = _certify(
+        epi_time_history=history,
+        epi_history=[0.0, 0.2],
+        legacy_epi_history=[0.0, 0.3],
+    )
+
+    assert certificate.source == "epi_time_history"
+    assert certificate.evidence_available is True
+    assert certificate.evidence_valid is False
+    assert certificate.observed_depi_dt is None
+    assert certificate.observed_crossed is None
+    assert certificate.threshold_gate_satisfied is False
+    assert certificate.reason == "invalid_time_history_sample"
+    assert history == before
+
+
+@pytest.mark.parametrize("sample_index", [0, 1])
+@pytest.mark.parametrize("canonical", [False, True])
+def test_underflowed_legacy_samples_are_invalid_in_the_selected_source(
+    sample_index, canonical
+):
+    history = [0.0, 0.2]
+    history[sample_index] = Fraction(-1, 10**400)
+    before = deepcopy(history)
+    kwargs = {"legacy_epi_history": history}
+    if canonical:
+        kwargs = {"epi_history": history, "legacy_epi_history": [0.0, 0.3]}
+
+    certificate = _certify(**kwargs)
+
+    assert certificate.source == ("epi_history" if canonical else "_epi_history")
+    assert certificate.evidence_available is True
+    assert certificate.evidence_valid is False
+    assert certificate.observed_crossed is None
+    assert certificate.threshold_gate_satisfied is False
+    assert certificate.reason == "invalid_legacy_history_sample"
+    assert history == before
+
+
+@pytest.mark.parametrize(
+    ("value", "reason"),
+    [
+        (True, "must be a finite real scalar"),
+        (float("inf"), "must be finite"),
+        (10**400, "must be representable as a finite real scalar"),
+    ],
+)
+def test_shared_admission_preserves_scalar_error_reasons(value, reason):
+    with pytest.raises(MutationTriggerInputError) as caught:
+        _certify(current_epi=value)
+
+    assert caught.value.field == "current_epi"
+    assert caught.value.reason == reason
+
+
+def test_signed_samples_and_exact_zero_inputs_remain_valid():
+    certificate = _certify(
+        current_epi=Fraction(-1, 4),
+        delta_nfr=Fraction(-1, 2),
+        xi=Fraction(0),
+        endpoint_tolerance=Fraction(0),
+        epi_time_history=[
+            (Fraction(-1), Fraction(-1, 2)),
+            (Fraction(0), Fraction(-1, 4)),
+        ],
+    )
+
+    assert certificate.evidence_valid is True
+    assert certificate.predicted_depi_dt == -0.5
+    assert certificate.observed_depi_dt == 0.25
+    assert certificate.predicted_crossed is False
+    assert certificate.observed_crossed is True
+
+
+def test_representable_subnormal_inputs_are_not_rejected_as_underflow():
+    smallest = float.fromhex("0x0.0000000000001p-1022")
+    certificate = _certify(
+        current_epi=smallest,
+        delta_nfr=smallest,
+        xi=0,
+        epi_time_history=[(0, 0), (1, smallest)],
+    )
+
+    assert certificate.evidence_valid is True
+    assert certificate.predicted_depi_dt == smallest
+    assert certificate.observed_depi_dt == smallest
+    assert certificate.predicted_crossed is True
+    assert certificate.observed_crossed is True
+
+
+@pytest.mark.parametrize("sign", [-1, 1])
+def test_nonzero_predicted_product_cannot_underflow_to_zero(sign):
+    smallest = float.fromhex("0x0.0000000000001p-1022")
+
+    with pytest.raises(MutationTriggerInputError, match="underflows") as caught:
+        _certify(nu_f=0.5, delta_nfr=sign * smallest, xi=0)
+
+    assert caught.value.field == "predicted_depi_dt"
+
+
+def test_nonfinite_predicted_product_preserves_its_error_reason():
+    with pytest.raises(MutationTriggerInputError) as caught:
+        _certify(nu_f=1e308, delta_nfr=2.0)
+
+    assert caught.value.field == "predicted_depi_dt"
+    assert caught.value.reason == (
+        "must be finite for the represented nu_f * delta_nfr product"
+    )
+
+
+@pytest.mark.parametrize("sign", [-1, 1])
+def test_nonzero_physical_secant_cannot_underflow_to_a_false_zero(sign):
+    smallest = float.fromhex("0x0.0000000000001p-1022")
+    certificate = _certify(
+        current_epi=sign * smallest,
+        epi_time_history=[(0, 0), (2, sign * smallest)],
+        epi_history=[0.0, 0.2],
+        xi=0,
+    )
+
+    assert certificate.source == "epi_time_history"
+    assert certificate.evidence_available is True
+    assert certificate.evidence_valid is False
+    assert certificate.physical_time_resolved is True
+    assert certificate.observed_depi_dt is None
+    assert certificate.observed_crossed is None
+    assert certificate.threshold_gate_satisfied is False
+    assert certificate.reason == "underflowed_observed_rate"
+    assert certificate.evidence is not None
+    assert certificate.evidence.previous_epi == 0
+    assert certificate.evidence.current_epi == sign * smallest
+    assert certificate.evidence.sample_interval == 2
+
+
+@pytest.mark.parametrize(
+    "history",
+    [
+        [(0, -1e308), (1, 1e308)],
+        [(0, 0), (float.fromhex("0x0.0000000000001p-1022"), 1)],
+    ],
+    ids=["difference_overflow", "quotient_overflow"],
+)
+def test_nonfinite_physical_secant_preserves_its_invalid_evidence_reason(history):
+    certificate = _certify(current_epi=history[-1][1], epi_time_history=history)
+
+    assert certificate.evidence_valid is False
+    assert certificate.observed_depi_dt is None
+    assert certificate.observed_crossed is None
+    assert certificate.reason == "non_finite_observed_rate"
+
+
+@pytest.mark.parametrize(("capacity", "pressure"), [(0, -1), (1, 0), (0, 0)])
+def test_exact_zero_products_and_secants_remain_available(capacity, pressure):
+    certificate = _certify(
+        current_epi=0,
+        nu_f=capacity,
+        delta_nfr=pressure,
+        xi=0,
+        epi_time_history=[(0, 0), (1, 0)],
+    )
+
+    assert certificate.evidence_valid is True
+    assert certificate.predicted_depi_dt == 0
+    assert certificate.observed_depi_dt == 0
+    assert certificate.observed_crossed is False
+    assert certificate.predicted_crossed is False
+
+
+@pytest.mark.parametrize("field", ["current_epi", "nu_f", "delta_nfr", "xi"])
+def test_admitted_negative_zero_scalar_channels_preserve_their_sign(field):
+    certificate = _certify(**{field: -0.0})
+
+    assert math.copysign(1.0, getattr(certificate, field)) == -1.0
+    if field == "delta_nfr":
+        assert math.copysign(1.0, certificate.predicted_depi_dt) == -1.0
+
+
+def test_admitted_negative_zero_history_coordinates_preserve_their_sign():
+    certificate = _certify(
+        current_epi=-0.0,
+        epi_time_history=[(-0.0, -0.0), (1.0, -0.0)],
+    )
+
+    assert certificate.evidence_valid is True
+    assert certificate.evidence is not None
+    assert math.copysign(1.0, certificate.evidence.previous_time) == -1.0
+    assert math.copysign(1.0, certificate.evidence.previous_epi) == -1.0
+    assert math.copysign(1.0, certificate.evidence.current_epi) == -1.0
 
 
 def test_fraction_inputs_are_supported_without_accepting_boolean_subclasses():

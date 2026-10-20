@@ -388,7 +388,8 @@ def _relational_model_coefficients(model):
     return loss, exchange, beta
 
 
-def _admit_graph(graph, model, *, require_connected=True):
+def _admit_relational_graph_structure(graph, model, *, require_connected=True):
+    """Share structural and absent-input admission without selecting edge weights."""
     _relational_model_coefficients(model)
     if not isinstance(graph, nx.Graph):
         raise TypeError("graph must be a NetworkX graph")
@@ -415,15 +416,19 @@ def _admit_graph(graph, model, *, require_connected=True):
         raise ValueError("relational exchange admits only declared absent Gamma")
     if not _uses_builtin_gamma(gamma):
         raise ValueError("the live Gamma 'none' entry is not the built-in zero source")
+
+
+def _admit_graph(graph, model, *, require_connected=True):
+    _admit_relational_graph_structure(graph, model, require_connected=require_connected)
     for _, _, data in graph.edges(data=True):
         if _finite(data.get("weight", 1.0), "conductance") != 1.0:
             raise ValueError("relational exchange requires unit conductances")
 
 
-def _stage(graph, model):
-    _admit_graph(graph, model)
+def _relational_node_coordinates(graph):
+    """Capture consumed signed form, phase and capacity through their shared owners."""
     nodes = tuple(graph)
-    staged = nx.Graph()
+    forms, phases, capacities = [], [], []
     for node in nodes:
         data = graph.nodes[node]
         epi = _epi(_raw(data, ALIAS_EPI, "EPI"))
@@ -431,6 +436,17 @@ def _stage(graph, model):
         phase = _finite(_raw(data, ALIAS_THETA, "phase"), "phase")
         if capacity < 0:
             raise ValueError("capacity must be nonnegative")
+        forms.append(epi)
+        phases.append(phase)
+        capacities.append(capacity)
+    return nodes, tuple(forms), tuple(phases), tuple(capacities)
+
+
+def _stage(graph, model):
+    _admit_graph(graph, model)
+    nodes, forms, phases, capacities = _relational_node_coordinates(graph)
+    staged = nx.Graph()
+    for node, epi, phase, capacity in zip(nodes, forms, phases, capacities):
         staged.add_node(
             node, **{ALIAS_EPI[0]: epi, ALIAS_VF[0]: capacity, ALIAS_THETA[0]: phase}
         )

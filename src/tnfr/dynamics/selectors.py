@@ -18,10 +18,16 @@ from typing import Any, cast
 
 from .._exact_time import finite_represented_real
 from ..alias import get_attr
-from ..constants import get_graph_param, get_param
-from ..mathematics.unified_numerical import np
+from ..config.parsing import parse_bool
+from ..constants import get_param
+from ..mathematics.unified_numerical import np, safe_divide
 from ..metrics.common import merge_and_normalize_weights
 from ..operators import apply_glyph
+from ..operators.grammar_debt import (
+    canonical_operator_code,
+    read_grammar_state,
+    require_grammar_state,
+)
 from ..selector import (
     _apply_selector_hysteresis,
     _calc_selector_score,
@@ -39,7 +45,8 @@ from ..validation import (
     record_grammar_violation,
     soft_grammar_filters,
 )
-from .aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_DSI, ALIAS_EPI, ALIAS_SI, ALIAS_VF
+from ..validation.window import validate_window
+from .aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_DSI, ALIAS_SI
 
 # ---------------------------------------------------------------------------
 # Score override thresholds for glyph selector
@@ -109,9 +116,9 @@ def _soft_grammar_prefilter(
 ) -> GlyphCode:
     """Soft heuristic prefilter: repetition avoidance and force thresholds.
 
-    Full grammar enforcement (U1-U6) is performed once at the apply stage via
-    :func:`enforce_canonical_grammar`, keeping a single source of truth and
-    avoiding double-checking.
+    Configured incremental U1a/U2/U3/U4 admission remains separate at the apply
+    stage via :func:`enforce_canonical_grammar`. This soft policy neither
+    validates a complete word nor certifies all U1-U6 conditions.
     """
     ctx = GrammarContext.from_graph(G)
     return cast(GlyphCode, soft_grammar_filters(ctx, n, cand))
@@ -122,7 +129,11 @@ def _selector_normalized_metrics(
 ) -> tuple[float, float, float]:
     dnfr_max, acc_max = _selector_divisors(norms)
     si, pressure, acceleration = _selector_metric_inputs(nd)
-    return clamp01(si), abs(pressure) / dnfr_max, abs(acceleration) / acc_max
+    return (
+        clamp01(si),
+        float(safe_divide(abs(pressure), dnfr_max)),
+        float(safe_divide(abs(acceleration), acc_max)),
+    )
 
 
 def _metric_value(nd: Mapping[str, Any], aliases, default: float) -> float:
@@ -194,10 +205,11 @@ def _compute_selector_score(
     *,
     weights: Mapping[str, float] | None = None,
 ) -> float:
+    grammar_state = read_grammar_state(nd)
     W = _configure_selector_weights(G) if weights is None else weights
     score = _calc_selector_score(Si, dnfr, accel, cast(Mapping[str, float], W))
-    hist_prev = nd.get("glyph_history")
-    if hist_prev and hist_prev[-1] == cand:
+    hist_prev = grammar_state.history
+    if hist_prev and hist_prev[-1] == canonical_operator_code(cand):
         delta_si = _metric_value(nd, ALIAS_DSI, 0.0)
         h = G.graph.get("history", {})
         if not isinstance(h, Mapping):
@@ -308,31 +320,32 @@ class DefaultGlyphSelector(AbstractSelector):
 
     Without prepare, each call reads current metrics and normalizers. A manual
     prepare remains frozen until the next prepare or clear; engine batches
-    clear it on exit. Selection alone does not certify live operator admission.
+    clear it on exit. Its graph reference survives process serialization and
+    is released with the snapshot. Selection does not certify live admission.
     """
 
-    __slots__ = ("_preselection", "_prepared_graph_id")
+    __slots__ = ("_preselection", "_prepared_graph")
 
     def __init__(self) -> None:
         self._preselection: _SelectorPreselection | None = None
-        self._prepared_graph_id: int | None = None
+        self._prepared_graph: TNFRGraph | None = None
 
     def prepare(self, graph: TNFRGraph, nodes: Sequence[NodeId]) -> None:
         """Precompute default selector metrics for ``nodes``."""
 
         self.clear()
         self._preselection = _build_default_preselection(graph, nodes)
-        self._prepared_graph_id = id(graph)
+        self._prepared_graph = graph
 
     def clear(self) -> None:
         """End the prepared batch so later calls read the current graph."""
         self._preselection = None
-        self._prepared_graph_id = None
+        self._prepared_graph = None
 
     def select(self, graph: TNFRGraph, node: NodeId) -> GlyphCode:
         """Return the configured glyph, using an explicitly prepared snapshot."""
 
-        if self._prepared_graph_id == id(graph):
+        if self._prepared_graph is graph:
             preselection = self._preselection
         else:
             preselection = None
@@ -344,28 +357,28 @@ class DefaultGlyphSelector(AbstractSelector):
 class ParametricGlyphSelector(AbstractSelector):
     """Configured score policy with the same explicit batch lifecycle as default."""
 
-    __slots__ = ("_preselection", "_prepared_graph_id")
+    __slots__ = ("_preselection", "_prepared_graph")
 
     def __init__(self) -> None:
         self._preselection: _SelectorPreselection | None = None
-        self._prepared_graph_id: int | None = None
+        self._prepared_graph: TNFRGraph | None = None
 
     def prepare(self, graph: TNFRGraph, nodes: Sequence[NodeId]) -> None:
         """Precompute parametric selector metrics and hysteresis thresholds."""
 
         self.clear()
         self._preselection = _build_param_preselection(graph, nodes)
-        self._prepared_graph_id = id(graph)
+        self._prepared_graph = graph
 
     def clear(self) -> None:
         """End the prepared batch so later calls read the current graph."""
         self._preselection = None
-        self._prepared_graph_id = None
+        self._prepared_graph = None
 
     def select(self, graph: TNFRGraph, node: NodeId) -> GlyphCode:
         """Return the parametric glyph decision for ``node``."""
 
-        if self._prepared_graph_id == id(graph):
+        if self._prepared_graph is graph:
             preselection = self._preselection
         else:
             preselection = None
@@ -388,19 +401,32 @@ def _choose_glyph(
     al_max: int,
     en_max: int,
 ) -> GlyphCode:
-    """Return glyph for ``n`` considering forced lags and canonical grammar."""
+    """Choose from supplied lag counters, then apply configured live grammar.
 
-    if h_al[n] > al_max:
-        return Glyph.AL
-    if h_en[n] > en_max:
-        return Glyph.EN
-    g = selector(G, n)
+    This helper neither increments counters nor executes the resulting glyph.
+    Forced AL/EN requests use the same grammar path as ordinary proposals.
+    """
+
+    use_canon = parse_bool(use_canon)
+    al_max = _lag_count(al_max, "AL_MAX_LAG")
+    en_max = _lag_count(en_max, "EN_MAX_LAG")
+    al_lag = _lag_count(h_al[n], "since_AL")
+    en_lag = _lag_count(h_en[n], "since_EN")
+    require_grammar_state(G.nodes[n])
+    if al_lag > al_max:
+        g = Glyph.AL
+    elif en_lag > en_max:
+        g = Glyph.EN
+    else:
+        g = selector(G, n)
     if use_canon:
         try:
-            g = enforce_canonical_grammar(G, n, g)
+            admitted = enforce_canonical_grammar(G, n, g)
+            if admitted != g:
+                g = admitted
         except StructuralGrammarError as err:
             nd = G.nodes[n]
-            history = tuple(str(item) for item in nd.get("glyph_history", ()))
+            history = read_grammar_state(nd).history
             selector_name = getattr(selector, "__name__", selector.__class__.__name__)
             err.attach_context(
                 node=n, selector=selector_name, history=history, stage="selector"
@@ -417,8 +443,8 @@ def _selector_metrics_chunk(
 
     si_values, dnfr_values, accel_values, dnfr_max, accel_max = args
     si_seq = [clamp01(float(v)) for v in si_values]
-    dnfr_seq = [abs(float(v)) / dnfr_max for v in dnfr_values]
-    accel_seq = [abs(float(v)) / accel_max for v in accel_values]
+    dnfr_seq = list(safe_divide([abs(v) for v in dnfr_values], dnfr_max))
+    accel_seq = list(safe_divide([abs(v) for v in accel_values], accel_max))
     return si_seq, dnfr_seq, accel_seq
 
 
@@ -441,8 +467,12 @@ def _collect_selector_metrics(
     if np is not None:
         si_seq_np = np.asarray(si_values, dtype=float)
         si_seq_np = np.clip(si_seq_np, 0.0, 1.0)
-        dnfr_seq_np = np.abs(np.asarray(dnfr_values, dtype=float)) / dnfr_max
-        accel_seq_np = np.abs(np.asarray(accel_values, dtype=float)) / accel_max
+        dnfr_seq_np = safe_divide(
+            np.abs(np.asarray(dnfr_values, dtype=float)), dnfr_max
+        )
+        accel_seq_np = safe_divide(
+            np.abs(np.asarray(accel_values, dtype=float)), accel_max
+        )
 
         si_seq = si_seq_np.tolist()
         dnfr_seq = dnfr_seq_np.tolist()
@@ -638,33 +668,83 @@ def _apply_glyphs(G: TNFRGraph, selector: GlyphSelector, hist: HistoryState) -> 
             selector.clear()
 
 
+@dataclass(frozen=True, slots=True)
+class _GlyphBatchAdmission:
+    """Fresh admitted inputs, valid only until the execution boundary changes."""
+
+    window: int
+    use_canon: bool
+    al_max: int
+    en_max: int
+    nodes: tuple[NodeId, ...]
+    h_al: MutableMapping[Any, int]
+    h_en: MutableMapping[Any, int]
+    next_al: dict[NodeId, int]
+    next_en: dict[NodeId, int]
+
+
+def _preflight_glyph_batch(G: TNFRGraph, hist: HistoryState) -> _GlyphBatchAdmission:
+    """Read batch policy/context without preparing a selector or writing state.
+
+    The runtime uses this before callbacks; the batch re-admits after callbacks
+    and pressure refresh. No earlier snapshot authorizes a changed live state.
+    """
+
+    if not isinstance(hist, MutableMapping):
+        raise TypeError("selector history must be a mutable mapping")
+    window = validate_window(get_param(G, "GLYPH_HYSTERESIS_WINDOW"))
+    canon = get_param(G, "GRAMMAR_CANON")
+    if not isinstance(canon, Mapping):
+        raise TypeError("GRAMMAR_CANON must be a mapping")
+    use_canon = parse_bool(canon.get("enabled", False))
+    al_max = _lag_count(get_param(G, "AL_MAX_LAG"), "AL_MAX_LAG")
+    en_max = _lag_count(get_param(G, "EN_MAX_LAG"), "EN_MAX_LAG")
+    finite_represented_real(G.graph.get("_t", 0.0), "selector event clock")
+
+    nodes = tuple(G)
+    for n in nodes:
+        require_grammar_state(G.nodes[n])
+    # Validate the complete consumed counter snapshot before updating any node.
+    # Subsequent live operation failures remain sequential, not transactional.
+    # HistoryDict.get can materialize bounded telemetry; admission is read-only.
+    if isinstance(hist, dict):
+        h_al = dict.get(hist, "since_AL", {})
+        h_en = dict.get(hist, "since_EN", {})
+    else:
+        h_al = hist.get("since_AL", {})
+        h_en = hist.get("since_EN", {})
+    if not isinstance(h_al, MutableMapping) or not isinstance(h_en, MutableMapping):
+        raise TypeError("since_AL and since_EN must be mutable mappings")
+    next_al = {n: _lag_count(h_al.get(n, 0), "since_AL") + 1 for n in nodes}
+    next_en = {n: _lag_count(h_en.get(n, 0), "since_EN") + 1 for n in nodes}
+    return _GlyphBatchAdmission(
+        window, use_canon, al_max, en_max, nodes, h_al, h_en, next_al, next_en
+    )
+
+
 def _apply_glyph_batch(
     G: TNFRGraph, selector: GlyphSelector, hist: HistoryState
 ) -> None:
     """Apply glyph decisions across the graph updating hysteresis trackers."""
 
-    window = int(get_param(G, "GLYPH_HYSTERESIS_WINDOW"))
-    use_canon = bool(get_graph_param(G, "GRAMMAR_CANON", dict).get("enabled", False))
-    al_max = get_graph_param(G, "AL_MAX_LAG", int)
-    en_max = get_graph_param(G, "EN_MAX_LAG", int)
-
-    nodes_data = list(G.nodes(data=True))
-    nodes = [n for n, _ in nodes_data]
+    admission = _preflight_glyph_batch(G, hist)
+    window, use_canon = admission.window, admission.use_canon
+    al_max, en_max, nodes = admission.al_max, admission.en_max, admission.nodes
+    h_al, h_en = admission.h_al, admission.h_en
     if isinstance(selector, AbstractSelector):
         selector.prepare(G, nodes)
         preselection: _SelectorPreselection | None = None
     else:
         preselection = _prepare_selector_preselection(G, selector, nodes)
 
-    h_al = hist.setdefault("since_AL", {})
-    h_en = hist.setdefault("since_EN", {})
+    hist.setdefault("since_AL", h_al)
+    hist.setdefault("since_EN", h_en)
+    h_al.update(admission.next_al)
+    h_en.update(admission.next_en)
     forced: dict[Any, str | Glyph] = {}
     to_select: list[Any] = []
 
-    for n, _ in nodes_data:
-        h_al[n] = int(h_al.get(n, 0)) + 1
-        h_en[n] = int(h_en.get(n, 0)) + 1
-
+    for n in nodes:
         if h_al[n] > al_max:
             forced[n] = Glyph.AL
         elif h_en[n] > en_max:
@@ -673,8 +753,6 @@ def _apply_glyph_batch(
             to_select.append(n)
 
     decisions: dict[Any, str | Glyph] = dict(forced)
-    forced_al_nodes = {n for n, choice in forced.items() if choice == Glyph.AL}
-    forced_en_nodes = {n for n, choice in forced.items() if choice == Glyph.EN}
     if to_select:
         n_jobs = _selector_parallel_jobs(G)
         if n_jobs is None:
@@ -703,32 +781,28 @@ def _apply_glyph_batch(
                     for node, glyph in results:
                         decisions[node] = glyph
 
-    for n, _ in nodes_data:
+    for n in nodes:
         g = decisions.get(n)
         if g is None:
             continue
 
-        mutation_abstention: dict[str, Any] | None = None
         try:
-            glyph_enum = g if isinstance(g, Glyph) else Glyph(str(g))
+            g = canonical_operator_code(g)
         except ValueError:
-            glyph_enum = None
-        if glyph_enum is Glyph.ZHIR:
-            from ..constants.canonical import ZHIR_THRESHOLD_XI_CANONICAL
-            from ..operators._mutation_gate import validate_mutation_runtime_gate
+            # Preserve the configured grammar/dispatcher rejection path for
+            # unknown proposals, including grammar's explicit fallback mode.
+            pass
+
+        mutation_abstention: dict[str, Any] | None = None
+        if g == "ZHIR":
+            from ..operators._mutation_gate import (
+                mutation_trigger_certificate,
+                validate_mutation_runtime_gate,
+            )
             from ..operators.preconditions import OperatorPreconditionError
-            from ..physics.mutation_trigger import certify_mutation_trigger
 
             node_data = G.nodes[n]
-            certificate = certify_mutation_trigger(
-                current_epi=get_attr(node_data, ALIAS_EPI, 0.0),
-                nu_f=get_attr(node_data, ALIAS_VF, 0.0),
-                delta_nfr=get_attr(node_data, ALIAS_DNFR, 0.0),
-                xi=G.graph.get("ZHIR_THRESHOLD_XI", ZHIR_THRESHOLD_XI_CANONICAL),
-                epi_time_history=node_data.get("epi_time_history"),
-                epi_history=node_data.get("epi_history"),
-                legacy_epi_history=node_data.get("_epi_history"),
-            )
+            certificate = mutation_trigger_certificate(node_data, G.graph)
             reason: str | None = None
             if not certificate.capacity_active:
                 reason = "inactive_structural_capacity"
@@ -749,13 +823,15 @@ def _apply_glyph_batch(
                     reason = "below_configured_capacity_floor"
 
             if reason is not None:
-                requested = glyph_enum.value
-                g = Glyph.IL
+                requested = g
+                g = "IL"
                 mutation_abstention = {
                     "node": n,
-                    "time": G.graph.get("_t", 0.0),
+                    "time": finite_represented_real(
+                        G.graph.get("_t", 0.0), "selector event clock"
+                    )[0],
                     "requested_glyph": requested,
-                    "applied_glyph": (g.value if isinstance(g, Glyph) else str(g)),
+                    "applied_glyph": g,
                     "reason": reason,
                     "observed_depi_dt": certificate.observed_depi_dt,
                     "xi": certificate.xi,
@@ -767,9 +843,7 @@ def _apply_glyph_batch(
         if use_canon:
             g = enforce_canonical_grammar(G, n, g)
         if mutation_abstention is not None:
-            mutation_abstention["applied_glyph"] = (
-                g.value if isinstance(g, Glyph) else str(g)
-            )
+            mutation_abstention["applied_glyph"] = g
 
         abstentions: list[dict[str, Any]] | None = None
         if mutation_abstention is not None:
@@ -789,24 +863,21 @@ def _apply_glyph_batch(
             abstentions.append(mutation_abstention)
             del abstentions[: -max(1, window)]
 
-        if n in forced_al_nodes:
+        if g == "AL":
             h_al[n] = 0
             h_en[n] = min(h_en[n], en_max)
-            continue
-        if n in forced_en_nodes:
+        elif g == "EN":
             h_en[n] = 0
-            continue
 
-        try:
-            glyph_enum = g if isinstance(g, Glyph) else Glyph(str(g))
-        except ValueError:
-            glyph_enum = None
 
-        if glyph_enum is Glyph.AL:
-            h_al[n] = 0
-            h_en[n] = min(h_en[n], en_max)
-        elif glyph_enum is Glyph.EN:
-            h_en[n] = 0
+def _lag_count(value: Any, label: str) -> int:
+    """Admit a nonnegative operator count using the shared integer boundary."""
+    try:
+        return validate_window(value)
+    except TypeError as exc:
+        raise TypeError(f"{label} must be a nonnegative integer") from exc
+    except ValueError as exc:
+        raise ValueError(f"{label} must be a nonnegative integer") from exc
 
 
 def _apply_selector(G: TNFRGraph) -> GlyphSelector:

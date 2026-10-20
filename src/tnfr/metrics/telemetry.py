@@ -1,53 +1,20 @@
-"""Unified telemetry emitter for TNFR Phase 3.
+"""Structural observations exported as JSON Lines and optional summaries.
 
-This module provides a lightweight, unified interface for exporting
-structural metrics and canonical field measurements during simulations.
+``TelemetryEmitter.record`` reads canonical coherence, the arithmetic mean
+of freshly computed configured Si, and independent structural fields. It
+does not evolve EPI, pressure, capacity, phase or support. Observation owners
+may maintain rebuildable caches and bookkeeping. Operator names and caller
+metadata are context, not grammar admission or complete replay provenance.
 
-Design Goals (Phase 3):
------------------------
-1. Physics fidelity: All metrics trace directly to TNFR invariants or
-   canonical structural fields (Φ_s, |∇φ|, K_φ, ξ_C plus extended suite).
-2. Zero mutation: Telemetry collection MUST NOT mutate EPI or ΔNFR.
-3. Low overhead: Target <5% added wall time per sampling interval.
-4. Fractality aware: Works for nested EPIs (operational fractality).
-5. Reproducibility: Includes seed + run id for trajectory replay.
-6. Grammar alignment: Does not interfere with operator sequencing
-   (U1-U4); U6 confinement data is read-only.
+Safe collection retains available observations and reports individual failures
+in ``field_errors``; strict collection propagates them. Missing observations
+are not replaced by zero. Export encoding and file failures always propagate.
+JSON Lines are observations, not complete resumable checkpoints.
 
-Core Concepts:
---------------
-TelemetryEvent: Immutable snapshot of structural metrics.
-TelemetryEmitter: Context-managed collector writing JSON Lines and/or
-human-readable summaries. Batching is optional; immediate flush by
-default for reliability on long runs.
-
-Minimal Public API:
--------------------
-TelemetryEmitter(path).record(G, step=..., operator=..., extra=...)
-TelemetryEmitter(path).flush()
-
-Extension Points:
------------------
- - Add selective sampling policies
- - Integrate performance guardrails (duration stats)
- - Attach operator introspection metadata (to be added in Phase 3 task)
-
-Invariants Preserved:
----------------------
-1. EPI changes only via operators (no mutation here)
-2. νf units preserved (Hz_str not altered)
-3. ΔNFR semantics retained (never reframed as loss)
-4. Operator closure untouched
-5. Phase verification external (we only read phase values)
-6. Lifecycle unaffected
-7. Fractality supported through recursive traversal utilities (future)
-8. Determinism: seed included if provided
-9. Structural metrics exported (C(t), Si, phase, νf + fields)
-10. Domain neutrality: No domain-specific assumptions
-
-NOTE: This initial implementation focuses on correctness & clarity.
-Performance guardrails and operator introspection will hook into this
-emitter in subsequent Phase 3 steps.
+``TelemetryEvent`` freezes its field bindings, while its nested mappings remain
+caller-accessible. Batching defaults to one record; ``flush`` serializes the
+batch before appending it. Optional optimization analysis produces configured
+advisories and timing measurements, not a stability or overhead guarantee.
 """
 
 from __future__ import annotations
@@ -60,10 +27,12 @@ from typing import Any, Iterable, Mapping, MutableMapping
 
 from ..mathematics.unified_numerical import np
 from ..utils.io import json_dumps
+from .common import compute_coherence, finite_mean
+from .sense_index import compute_Si
 
 try:  # Physics field computations (canonical tetrad + extended suite)
     from ..physics.fields import compute_extended_canonical_suite  # returns dict
-    from ..physics.fields import (  # Unified field framework + auto-optimization (NEW Nov 28, 2025)
+    from ..physics.fields import (
         analyze_optimization_potential,
         compute_phase_curvature,
         compute_phase_gradient,
@@ -85,17 +54,15 @@ except Exception:  # pragma: no cover - graceful degradation
     recommend_field_optimization_strategy = None  # type: ignore
     _UNIFIED_FIELDS_AVAILABLE = False
 
-try:  # Existing metrics
-    from .sense_index import sense_index  # type: ignore
-except Exception:  # pragma: no cover
-    sense_index = None  # type: ignore
-
-try:
-    from .coherence import compute_coherence  # type: ignore
-except Exception:  # pragma: no cover
-    compute_coherence = None  # type: ignore
-
 __all__ = ["TelemetryEmitter", "TelemetryEvent"]
+
+
+def sense_index(G: Any) -> float:
+    """Observe the mean of configured Si without storing derived node values."""
+    values = compute_Si(G, inplace=False)
+    if not values:
+        raise ValueError("mean sense index is unavailable for an empty network")
+    return finite_mean(values.values(), name="sense index")
 
 
 def _numpy_json_default(value: Any) -> Any:
@@ -114,7 +81,7 @@ def _numpy_json_default(value: Any) -> Any:
 
 @dataclass(frozen=True, slots=True)
 class TelemetryEvent:
-    """Immutable telemetry snapshot.
+    """Telemetry record with frozen field bindings and mutable nested mappings.
 
     Fields
     ------
@@ -158,6 +125,8 @@ class TelemetryEmitter:
         fabricated. Serialization and file errors still propagate.
     human_mirror : bool, default=False
         If True, writes a sibling *.log file with concise summaries.
+    enable_optimization_analysis : bool, default=False
+        Enable explicitly requested optimization advisories and timing reports.
 
     Notes
     -----
@@ -237,22 +206,20 @@ class TelemetryEmitter:
             }
 
         def _compute() -> None:
-            # Core structural metrics
-            if compute_coherence is not None:
+            # Core reductions share the same explicit availability boundary.
+            for field, compute in (
+                ("coherence_total", compute_coherence),
+                ("sense_index", sense_index),
+            ):
                 try:
-                    metrics["coherence_total"] = float(compute_coherence(G))
-                except Exception:
+                    metrics[field] = float(compute(G))
+                except Exception as error:
                     if not self.safe:
                         raise
-            if sense_index is not None:
-                try:
-                    metrics["sense_index"] = float(sense_index(G))
-                except Exception:
-                    if not self.safe:
-                        raise
+                    _unavailable(field, error)
 
             if self.include_extended:
-                # Unified field telemetry (Nov 28, 2025 - comprehensive audit integration)
+                # Unified field telemetry.
                 try:
                     from ..physics.fields import compute_unified_telemetry
 
@@ -409,7 +376,7 @@ class TelemetryEmitter:
         self._buffer.clear()
 
     # ------------------------------------------------------------------
-    # Auto-optimization analysis (NEW - Nov 28, 2025)
+    # Optional optimization analysis
     # ------------------------------------------------------------------
 
     def analyze_performance_potential(self, G: Any) -> dict[str, Any]:

@@ -14,13 +14,13 @@ from .._exact_time import exact_or_represented_real as _exact
 from ..mathematics._rational_interval import I, pi_interval, sin
 from ._organized_parent_acquisition import _OrganizedParentAcquisition
 from ._organized_parent_constructive_actuation import (
-    _assess_organized_parent_constructive_actuation,
     _CLOCK_FACTOR,
+    _SLOW_DURATION,
+    _WORK_BUDGET,
+    _assess_organized_parent_constructive_actuation,
     _evaluate_parent_actuation_path,
     _OrganizedParentConstructiveActuation,
     _ParentActuationPath,
-    _SLOW_DURATION,
-    _WORK_BUDGET,
 )
 from ._organized_parent_restoring_response import (
     _EVENT,

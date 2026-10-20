@@ -187,6 +187,112 @@ check the quotient identities and storage distinction. A supplied
 collective action is now specified where the criterion holds; a
 collective action selected by the dynamics remains a different question.
 
+<a id="sine-pair-reset-retention"></a>
+### 22.5. A bounded AL/SHA reset can reuse the existing identity barrier
+
+The continuous quotient, reset-work identity and
+[positive-capacity barrier](SINE_PAIR_STATE.md#sine-replica-capacity-asymmetry)
+already supply a conditional continuation argument. Keep the conservative
+normalized-sine law on the ten-node doubled C5, positive equal capacities
+within each pair, and the original structural clock. Use the winding-one
+target and fine centered norm `Z_f` of that barrier; write its target storage
+as `H_*` and its admitted radius and coercivity constant as `r,kappa_f`.
+In particular, `2*pi/5+sqrt(2)*r<pi/2`. These are fine-network quantities,
+not the norm or storage of one isolated pair.
+
+Suppose the source satisfies `Z_f<=z` and `H-H_*<=epsilon`. Apply an
+admitted unprojected whole-pair AL boost `b>0` on pair `k`. Both actual
+represented increments must equal `b`; boundary projection or rounding
+requires the general actual-increment identity of Section 22.4 instead.
+Keep a declared absolute form interval inside the AL rails: the centered
+norm alone does not bound a common form offset. No capacity, phase or
+support change accompanies this primary form reset.
+
+Let `h=b*1_pair`, let `L_f` be the fine unweighted Laplacian and
+`P_f=I-11^T/10`. Each selected node has four neighbors outside its pair;
+each of the four neighboring nodes sees both selected nodes. Therefore
+
+\[
+\begin{aligned}
+\|P_fh\|^2&=\frac85 b^2, &
+\|L_fh\|^2&=48b^2, &
+\tfrac12 h^TL_fh&=4b^2,\\
+\Delta H&=4b\sum_{j\sim k}(X_k-X_j)+4b^2 .
+\end{aligned}
+\]
+
+The phase potential is unchanged, `L_f` removes the common form, and
+`||P_fx||<=Z_f`. The triangle and Cauchy--Schwarz inequalities then give
+
+\[
+Z_f^+\le z+\sqrt{8/5}\,b,\qquad
+H^+-H_*\le\epsilon+4\sqrt3\,bz+4b^2.
+\]
+
+Next apply a capacity-only SHA reset to both members of the same pair,
+with one factor `0<alpha<1`. Require the **actual new capacities** to remain
+strictly positive and equal within the pair. Positive real factors alone
+do not exclude materialization underflow. Form, phase, support, `Z_f` and
+`H` are unchanged by this second primary reset. Hold the new capacities
+thereafter and evolve both original sine rows, with pressure evaluated
+from the post-event state. The strict conditions
+
+\[
+z+\sqrt{8/5}\,b<r,\qquad
+\epsilon+4\sqrt3\,bz+4b^2<\kappa_f r^2
+\]
+
+therefore imply the existing all-time geometric trapping and nonantipodal
+chart retention. This is a direct application of the capacity-independent
+barrier, not a new trajectory calculation. At the exact target the two
+post-AL quantities are `Z_f^2=8*b^2/5` and `H-H_*=4*b^2`. For sufficiently
+small nonzero `b`, strict margins persist on an open source neighborhood,
+with an independently bounded common form offset. Thus the criterion does
+not depend on an isolated equilibrium preparation or an infinitesimal event.
+The open neighborhood concerns the exact-real reset; each represented
+execution still needs the actual-increment and capacity checks above.
+It does not assert internal waveform stability or a return deadline.
+
+Capacity changes also reweight the conserved form coordinate. For fine
+degrees `d_i` and post-AL form `x`, put `rho_i=d_i/nu_i`, `W=sum rho_i`
+and `M=rho^T*x/W`. Across SHA, the existing
+[moving-weight identity](FORCED_GEOMETRIC_IDENTITY.md#prescribed-capacity-and-event-mean-balance)
+gives
+
+\[
+M_{\rm after}-M_{\rm before}
+=\frac{(\rho_{\rm after}-\rho_{\rm before})^T
+       (x-M_{\rm before}\mathbf1)}{W_{\rm after}}.
+\]
+
+Any claimed invariant-family mean slab must be admitted using this new
+mean; the old value need not survive. On subsequent held-capacity flow,
+the new weighted mean is conserved. At the same post-AL form/phase state,
+the changed capacity multiplies **both** fine rates at each selected node
+by its actual capacity ratio; other nodes' instantaneous rates are unchanged.
+This is generally not a common clock change. Singleton SHA instead breaks
+within-pair equality and requires the existing capacity-correlation state.
+
+The [independent reuse controls](../../tests/physics/test_collective_pair_retention_reuse.py)
+construct the fine graph constants and exercise the actual primary proposals
+with `assess_sine_replica_capacity`. This reader retains heterogeneous
+capacities and conservative enclosures; its spectral lower bound may be
+weaker than the exact doubled-C5 gap. The selected-pair runtime has
+[separate finite controls](../../tests/operators/test_collective_pair_stage_reuse.py).
+The pointwise stage's pure-EPI jump certificate measures another quadratic
+storage and currently requires all graph nodes to be targets; its abstention
+on a selected pair is not a failure of this structural barrier.
+
+This result supplies conditional work and continuation for admitted primary
+resets. It does not derive whole-word admission, lifecycle/history descent,
+event occurrence or a reservoir that pays the AL work. The
+[ordered-language criterion](../STRUCTURAL_OPERATORS.md#collective-grammar-descent)
+remains an independent obligation. The positive-loss acquired C9 objects
+and unit-capacity global pair polynomial retain their separate models.
+The [complete AL/SHA word](SINE_PAIR_WORD.md) supplies that additional
+admission and lifecycle proof on a specified source domain and execution
+stratum, reusing this reset criterion without another trajectory.
+
 <a id="sine-autonomous-regional-transfer"></a>
 ## 23. Autonomous regional transfer and supplied form injection
 
@@ -3027,3 +3133,257 @@ concerns the invariant family, not the smaller initial boxes. A formation
 claim would need a separately specified source set, target criterion and
 admitted law or event mechanism. The present prepared persistence and
 interaction certificate supplies no such formation claim.
+
+<a id="sine-pair-autonomous-relative-phase"></a>
+### 36.8. Autonomous relative phase: a corollary of the retained response
+
+#### Frozen comparison and reuse boundary
+
+Sections 36.2--36.4 already establish autonomous influence of internal
+geometry on a finite collective form response. The following consequence
+uses their complete-law bounds for a relative **phase** observation and
+connects that observation to the supplied
+[RA discriminator](SINE_PAIR_RESONANCE.md#a-discriminating-internal-geometry-comparison).
+It is not a second discovery that internal coordinates affect the flow.
+
+Before evaluating the reserved bound, freeze this protocol:
+
+- Retain the ten-node doubled C5, node order, four unit cross edges per
+  base edge and no internal pair edges from Section 36.1. Hold
+  `nu=w=beta=1`, `e=0`; no inputs, operators, clipping, support events or
+  capacity changes occur. The clock is the original structural `t`.
+- Write `alpha=2*pi/5`, `m=5/16` and let the common phase origin `gamma`
+  be arbitrary. Both nominal sources have `x_(j,+)=x_(j,-)=m` and
+  midpoint phases `Theta_j=j*alpha+gamma`. Source E changes only pair 1
+  to `theta_(1,+/-)=alpha+gamma+/-epsilon`, with
+  `epsilon in [1/1024,1/768]`. Source 0 has `epsilon=0`. Associated
+  constituent coordinates and the target-compatible continuous phase
+  lifts are retained. Pair-member interchange is an allowed symmetry.
+- Each source admits independent componentwise initial errors
+  `rho_x=rho_theta=rho=2^-40` on every fine form and lifted phase.
+  They are complete twenty-coordinate boxes; arbitrary error members
+  need not preserve the nominal tips, means or symmetries.
+- Observe `D(t)=Theta_0(t)-Theta_2(t)+2*alpha` at the fixed original
+  endpoint `t=pi/2`. Each branch has an additional additive readout error
+  of magnitude at most `eta=2^-40`. The prospective recorded contrast is
+  `y_E-y_0 < -2^-26`, uniformly over the source interval and both boxes.
+  The additive constant is common to both records and cancels in the
+  contrast; an arbitrary common phase origin also cancels.
+- Geometric identity is the same acute winding-one fine chart, now
+  with radius `r=1/16`. Require every source to have `Z_f<1/512` and
+  sufficient conserved-storage clearance for all-time retention. This
+  is an independent admission alongside the finite response inequality.
+- Use the exact analytical corollary and rational inequality certificate
+  below, with independent finite-precision static controls. There is no
+  trajectory, parameter search, fitted coefficient, new public API or
+  regeneration of an older frozen producer. A failed sufficient margin
+  closes as that failure without changing the protocol.
+
+For reuse only, set `tau=t/pi`. Both complete rows transform together:
+
+\[
+\frac{dx_i}{d\tau}=\frac14\sum_{j\sim i}\sin(\theta_j-\theta_i),
+\qquad
+\frac{d\theta_i}{d\tau}=\frac14\sum_{j\sim i}(x_i-x_j).
+\]
+
+The fixed endpoint is therefore `h=1/2` in these calculation coordinates.
+This substitution neither selects another clock nor rescales only one
+row. The comparison is entirely within the original declared law.
+
+#### Exact mean response and a uniform nonlinear remainder
+
+First consider the nominal sources, and more generally any
+`0<abs(epsilon)<=1`. The nominal synchronized tips outside pair 1 remain
+invariant. Rotating the selected pair in Section 36.2 from 0 to 1 and
+adding the common form `m` preserves that complete law. Thus its retained
+internal variable `d` obeys `d''=-F_1(Theta)*sin(d)`, with
+`abs(F_1)<=1`, `d(0)=epsilon` and `d'(0)=0`. Neither the environment nor
+its pressure is frozen. Primes in this paragraph denote `tau` derivatives.
+
+Set `s=sin(alpha)`, `k=s*(1-cos(epsilon))/2`, and
+`z=Theta-Theta_*`. The target-phase mean current at preparation is
+`I(0)=-k*e_0+k*e_2`. Consequently the exact initial relative acceleration
+in the original clock is
+
+\[
+D(0)=\dot D(0)=0,\qquad
+\ddot D(0)=-\frac{s(1-\cos\epsilon)}{\pi^2}.
+\]
+
+This derivative is already implied by the
+[instantaneous pair-state obstruction](SINE_PAIR_STATE.md#74-a-nearby-exact-obstruction-to-autonomous-block-means).
+The finite conclusion requires the remainder. Apply Section 36.3 with
+`q=abs(epsilon)` and `h=1/2`, separately for each admitted amplitude.
+Its constants become
+
+\[
+D_A=\frac{16}{49}\epsilon^2,\qquad
+K_A=\frac{96}{245}\epsilon^2,\qquad
+C:=2K_A+D_A=\frac{272}{245}\epsilon^2.
+\]
+
+The receiver-current argument there applies to every mean-current
+component: midpoint changes contribute at most `2*K_A*tau^2`; the
+target-phase current changes only at the two neighbors of pair 1, with
+magnitude at most `D_A*tau^2`. Hence
+
+\[
+\|X'(\tau)-I(0)\|_\infty\le C\tau^2,\qquad
+\|X(\tau)-m\mathbf1-\tau I(0)\|_\infty
+ \le\frac C3\tau^3 .
+\]
+
+The exact phase row gives
+
+\[
+D'(\tau)=X_0-X_2+\frac{X_3-X_4}{2}.
+\]
+
+This linear observation has maximum-norm operator bound three. Its
+leading form contribution is `-2*k*tau`; integrate the error from zero
+to obtain the same-law finite enclosure
+
+\[
+\boxed{\left|D(t)+\frac{s(1-\cos\epsilon)}2(t/\pi)^2\right|
+ \le\frac{68}{245}\epsilon^2(t/\pi)^4,
+ \qquad 0\le t\le\pi/2.}
+\]
+
+No first-order system on the pair means has been assumed. The estimate
+retains the internal preparation, evolving neighbor phases and their
+nonlinear correlations through the exact source-A majorants. It also
+keeps the quadratic amplitude factor in the remainder, instead of
+bounding it by an error linear in the hidden phase displacement.
+
+For `abs(epsilon)<=1`, the elementary cosine remainder gives
+`1-cos(epsilon)>=epsilon^2/2-epsilon^4/24>=epsilon^2/3`.
+Also `sin(alpha)>9/10`. Since `(t/pi)^2<=1/4`, the last enclosure gives
+
+\[
+\boxed{D(t)\le-\frac{79}{980}\epsilon^2(t/\pi)^2<0,
+ \qquad 0<|\epsilon|\le1,\quad 0<t\le\pi/2.}
+\]
+
+This is a finite-interval sign result for an exact-real family, not just
+a nonzero initial derivative. Pair-member interchange reverses epsilon
+and leaves the readout unchanged; a common form or phase origin also
+does not change it. The `epsilon=0` nominal reference remains exactly
+stationary and has `D=0`. A fixed positive observation tolerance cannot
+resolve every nonzero epsilon; that is why the recorded protocol above
+declares a positive lower amplitude separately.
+
+#### Complete preparation errors and exact recorded contrast
+
+The same two-channel comparison used in Section 36.4 bounds the fine
+phase difference from each nominal trajectory. Interchanging its phase
+and form labels gives
+
+\[
+u_\theta(h)\le
+\rho_\theta\cosh(2h)+\rho_x\sinh(2h)
+\le P_\theta(h):=
+\frac{\rho_\theta}{1-2h^2}
+ +\frac{2h\rho_x}{1-2h^2/3}.
+\]
+
+The denominators are positive at the frozen `h=1/2`, where
+`P_theta=16*rho/5`. A relative midpoint readout consumes at most
+`2*P_theta` from its own complete source error. Thus two independent
+branches and their two readout errors contribute at most
+`4*P_theta+2*eta=74*rho/5`. No nominal symmetry or synchronized-tip
+restriction has been imposed on these error boxes.
+
+Using the lower endpoint `epsilon=1/1024` in the uniform nominal bound
+proves the frozen inequality by exact rational arithmetic:
+
+\[
+\begin{aligned}
+y_E-y_0
+&\le-\frac{79}{3920\,1024^2}+\frac{74}{5\,2^{40}}\\
+&=-\frac{2586859}{134690174402560}
+ <-\frac1{2^{26}},\\
+-\frac1{2^{26}}-\left(
+ -\frac{2586859}{134690174402560}\right)
+&=\frac{579819}{134690174402560}>0.
+\end{aligned}
+\]
+
+The upper bound is about `-1.9206e-8`; its strict margin below the
+declared threshold is about `4.3048e-9`. These decimal displays do not
+replace the rational certificate. It certifies a response of the
+continuous equations, with declared preparation and readout errors;
+it does not report a sampled or numerically integrated trajectory.
+
+#### The same complete trajectories retain their identity
+
+For either full preparation box, Euclidean centering is contractive.
+The combined centered form/phase norm therefore satisfies
+
+\[
+Z_f\le\frac{\sqrt2}{768}+\sqrt{20}\rho
+ <\frac{17}{9216}+5\rho<\frac1{512}.
+\]
+
+The rational bounds `sqrt(2)<17/12`, `sqrt(20)<5` and
+`5*9216<2^40` establish the strict final inequality. For the stationary
+branch the nominal internal-displacement term is zero. These boxes
+remain full dimensional; centering discards only the common origins
+that do not enter the storage or the relative response.
+
+The fine Laplacian has largest eigenvalue `5+sqrt(5)<8`; the phase
+potential Hessian has operator norm at most that eigenvalue, and its
+gradient vanishes at the winding target. Taylor's integral remainder
+therefore yields the shared bound `H-H_*<=4*Z_f^2`. With `r=1/16`,
+the existing [full-fine barrier](SINE_PAIR_WORD.md#collective-word-work-and-retention)
+has `kappa_f>1/8` and a strictly acute radius. Thus
+
+\[
+H-H_*<\frac1{65536}<\frac1{2048}<\kappa_f r^2,
+\qquad Z_f<\frac1{512}<r.
+\]
+
+Conserved storage excludes a first exit from this radius for the actual
+complete trajectories in both boxes. The acute winding chart and the
+unordered pair chart are retained for all time. This geometric
+certificate is applied to the same trajectories as the finite readout
+comparison; it makes no promise of continual activity or repetition of
+that response. It follows from the continuous-law barrier, without
+executing the operator word used by that barrier's other application.
+
+#### Relation to RA, retained memory and scope
+
+The source changes the neighboring resultant from one to
+`R_1=cos(epsilon)`. In the supplied RA comparison this makes the target
+pair's relative phase response negative. Here the same internal
+geometry produces a negative relative phase response through the
+object's own continuous law, with no operator at all. Only the sign and
+information dependence have been matched. No event blending parameter
+has been interpreted as elapsed time, and the smooth flow has not been
+identified with RA's capacity amplification, software history or
+admission predicates.
+
+The [exact form/phase memory identity](SINE_FORM_PHASE_REDUCTION.md#sine-form-phase-memory-equivalence)
+explains the integration used above: the initial form determines phase
+velocity, and the later phase consumes the complete earlier sine
+current. Nominal uniform form makes the initial relative velocity zero;
+it does not remove the internal phase preparation or justify replacing
+its subsequent current by a frozen value. This is a bounded consequence
+of the existing sufficient-state and memory owners, not a new local
+memoryless law on the observed pair means.
+
+Unlike Sections 36.1--36.7's form/phase allocation comparison, these
+nominal sources do not have equal storage. Source E has positive excess
+`8*cos(alpha)*(1-cos(epsilon))` and the stationary reference has zero
+excess. The result establishes geometry-dependent response inside a
+prepared persistent organization, not discrimination at equal total
+storage. Support, law and the preparation remain supplied. No occurrence
+law for a named operator, acquisition of the organization, universal
+hierarchy, physical constituent or laboratory observation model follows.
+
+The [independent static controls](../../tests/physics/test_sine_pair_autonomous_phase.py)
+check the complete-law coefficient, quotient and symmetry bookkeeping,
+the rational error budget and the geometric admission. They evaluate no
+trajectory and add no public runtime API. The exact-real theorem,
+represented static controls and declared observation errors retain their
+different roles.

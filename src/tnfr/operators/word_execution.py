@@ -1,11 +1,11 @@
 """Shared execution of canonical operator words across a network.
 
 The executor owns the network-stage schedule used by SDK and physics probes.
-When grammar retains the requested glyph, all thirteen canonical operators use
-immutable all-target proposals. Recursivity commits only its deduplicated
-node-level advisory; explicit delayed EPI mixing remains a separate network
-operation. Grammar replacements retain the explicit operator-major
-Gauss--Seidel schedule inside a failure-atomic transaction.
+Validated words reject blocked requests and use immutable all-target proposals.
+Recursivity commits only its deduplicated node-level advisory; explicit delayed
+EPI mixing remains a separate network operation. The standalone stage dispatcher
+can instead receive a context allowing grammar replacement; that route retains
+its operator-major Gauss--Seidel schedule inside a failure-atomic transaction.
 """
 
 from __future__ import annotations
@@ -223,7 +223,11 @@ def run_network_sequence(
     context: dict[str, Any] | None = None,
     on_step: Callable[[str], None] | None = None,
 ) -> None:
-    """Evolve all nodes with the declared operator-major stage schedule.
+    """Evolve the invocation-time targets with the operator-major stage schedule.
+
+    The graph's node set is captured once and retained across every stage and
+    cycle in this call. Children created by THOL are not added to that target
+    set; a later invocation captures its own current node set.
 
     When every target retains the requested glyph, all thirteen operators read one
     immutable stage snapshot, propose every target, validate every proposal,
@@ -239,7 +243,6 @@ def run_network_sequence(
     declared word without applying a stage.
     """
 
-    from ..validation import validate_sequence
     from .grammar_execution import ValidatedSequence
     from .registry import get_operator_class
 
@@ -249,14 +252,6 @@ def run_network_sequence(
         return
     ops = [get_operator_class(name)() for name in names]
     execution_word = ValidatedSequence(ops, context=context) if validate else None
-    if validate:
-        outcome = validate_sequence(names, context=context)
-        if not outcome.passed:
-            raise TNFRValueError(
-                "Invalid sequence: "
-                + outcome.summary.get("message", "validation failed"),
-                context={"sequence": names, "outcome": outcome.summary},
-            )
     preflight_network_mutation_sequence(graph, names, cycles=cycles)
     compute = graph.graph.get("compute_delta_nfr")
     nodes = list(graph.nodes())

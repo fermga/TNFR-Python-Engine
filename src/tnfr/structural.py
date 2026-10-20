@@ -2,8 +2,9 @@
 
 This module exposes the canonical entry points used by the engine to
 instantiate coherent TNFR nodes and to orchestrate structural operator
-pipelines while keeping the nodal equation
-``∂EPI/∂t = νf · ΔNFR(t)`` balanced.  Consumers are expected to provide
+pipelines with explicit event and configured pressure-hook behavior.
+Grammar admission does not derive the hook, a complete continuous law, or
+future coherence. Consumers are expected to provide
 graph instances honouring :class:`tnfr.types.GraphLike`: the structural
 helpers reach into ``nodes``, ``neighbors``, ``number_of_nodes`` and the
 ``.graph`` metadata mapping to propagate ΔNFR hooks and coherence metrics.
@@ -37,18 +38,17 @@ This contextual admission policy is an implemented engine convention, not a
 derivation of U1a or a guarantee of the admitted trajectory's stability. See
 ``theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md`` for the mathematical boundary.
 
-See: run_sequence() context detection, grammar_patterns._check_start_rule()
+See: run_sequence() context admission and grammar_execution.ValidatedSequence.
 """
 
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Any, Iterable, Mapping, Sequence, cast
+from typing import Any, Iterable, Mapping, Sequence
 
 import networkx as nx
 
-from tnfr.config.operator_names import VALID_START_OPERATORS
-from tnfr.validation import InvariantSeverity, NFRValidator, SequenceSemanticValidator
+from tnfr.validation import InvariantSeverity, NFRValidator
 from tnfr.validation import TNFRValidator as InvariantValidator
 from tnfr.validation import validate_sequence, validation_config
 
@@ -663,13 +663,13 @@ def run_sequence(
     ops: Iterable[Operator],
     context: dict[str, Any] | None = None,
 ) -> None:
-    """Drive structural sequences that rebalance EPI, νf, phase and ΔNFR.
+    """Admit and execute a supplied operator word on one existing NFR target.
 
-    The function enforces the canonical operator grammar, then executes each
-    operator so that the configured ΔNFR hook can update the nodal equation in
-    place. Each step is expected to express the structural effect of the
-    operator, while the hook keeps EPI, νf and phase consistent with the
-    resulting ΔNFR variations.
+    The shared word validator admits the actual operator instances. Each
+    operator then checks its live conditions and applies its registered event;
+    the configured pressure hook runs after a successful event. A supplied
+    hook retains its own law and mutation scope. Neither this caller-chosen
+    word nor its acceptance establishes autonomous selection or stability.
 
     Canonical validation retains actual operator metadata and supplies the
     remaining word as U4a context. Live U2 debt, U3 phase compatibility and
@@ -680,9 +680,9 @@ def run_sequence(
     Parameters
     ----------
     G : TNFRGraph
-        Graph that stores the node and its ΔNFR orchestration hook. The hook is
-        read from ``G.graph['compute_delta_nfr']`` and is responsible for
-        keeping the nodal equation up to date after each operator.
+        Graph that stores the node and its ΔNFR orchestration hook, read from
+        ``G.graph['compute_delta_nfr']``. Declared continuous evolution uses the
+        shared integrator rather than being inferred from this callback.
     node : NodeId
         Identifier of the node that will receive the operators. The node must
         already contain the canonical attributes ``EPI``, ``νf`` and ``θ``.
@@ -690,7 +690,9 @@ def run_sequence(
         Iterable of canonical structural operators to apply. Their
         concatenation must respect the validated TNFR grammar.
     context : dict, optional
-        Additional context for sequence validation (e.g. 'initial_epi_nonzero').
+        Additional admitted grammar context, including an explicit legacy
+        profile when requested. Initialization is read from the live target's
+        signed form and overrides a caller-supplied initialization flag.
 
     Returns
     -------
@@ -741,78 +743,32 @@ def run_sequence(
     ops_list = list(ops)
     names = [op.name for op in ops_list]
     execution_word = None
+    from .operators.grammar_context import _normalize_sequence_context
+
+    validation_context = _normalize_sequence_context(context)
 
     # Initialize validators (reuse global instances for performance)
     if not hasattr(run_sequence, "_invariant_validator"):
         run_sequence._invariant_validator = InvariantValidator()  # type: ignore[attr-defined]
-    if not hasattr(run_sequence, "_semantic_validator"):
-        run_sequence._semantic_validator = SequenceSemanticValidator()  # type: ignore[attr-defined]
 
     # Skip validation for empty sequences (TNFR: empty sequence is structural identity)
     if names:
-        # Birth context detection: if node already has non-zero EPI and
-        # sequence begins with a non-generator we allow context override.
-        epi_val = G.nodes[node].get(EPI_PRIMARY, 0.0)
-
-        validation_context = context.copy() if context else {}
-
-        if names[0] not in VALID_START_OPERATORS and epi_val:
-            logger.info(
-                "U1a override (EPI≠0) node=%s; start=%s",
-                node,
-                names[0],
-            )
-            validation_context["initial_epi_nonzero"] = True
-
+        from .alias import get_attr
+        from .constants.aliases import ALIAS_EPI
         from .operators.grammar_execution import ValidatedSequence
+        from .types import require_finite_real_scalar_epi
+
+        epi_val = require_finite_real_scalar_epi(
+            get_attr(G.nodes[node], ALIAS_EPI, strict=True, conv=lambda value: value),
+            "sequence initial EPI",
+        )
+        # The executor observes actual signed form; a caller flag cannot replace
+        # it or promote a zero/richer/malformed value to initialization permission.
+        validation_context["initial_epi_nonzero"] = epi_val != 0.0
 
         # Keep operator instances so U5 depth and other declared metadata are
         # validated before giving any step access to a future U4a handler.
         execution_word = ValidatedSequence(ops_list, context=validation_context)
-        outcome = validate_sequence(names, context=validation_context)
-        if not outcome.passed:
-            summary_message = outcome.summary.get("message", "validation failed")
-            raise TNFRValueError(
-                f"Invalid sequence: {summary_message}",
-                context={"sequence": names, "outcome": outcome.summary},
-            )
-
-        # Semantic validation of sequence (if enabled)
-        if validation_config.enable_semantic_validation:
-            semantic_violations = run_sequence._semantic_validator.validate_semantic_sequence(names)  # type: ignore[attr-defined]
-            if semantic_violations:
-                # Filter by configured settings
-                error_violations = [
-                    v
-                    for v in semantic_violations
-                    if v.severity == InvariantSeverity.ERROR
-                    or v.severity == InvariantSeverity.CRITICAL
-                ]
-                warning_violations = [
-                    v
-                    for v in semantic_violations
-                    if v.severity == InvariantSeverity.WARNING
-                ]
-
-                # Always raise on errors
-                if error_violations:
-                    report = run_sequence._invariant_validator.generate_report(error_violations)  # type: ignore[attr-defined]
-                    raise TNFRValueError(
-                        f"Semantic sequence violations:\n{report}",
-                        context={"violations": [v.to_dict() for v in error_violations]},
-                    )
-
-                # Show warnings if allowed
-                if warning_violations and validation_config.allow_semantic_warnings:
-                    invariant_validator = cast(
-                        InvariantValidator,
-                        run_sequence._invariant_validator,
-                    )
-                    report = invariant_validator.generate_report(warning_violations)
-                    logger.warning(
-                        "⚠️  Semantic sequence warnings:\n%s",
-                        report,
-                    )
 
     # Pre-execution invariant validation (if enabled)
     if validation_config.validate_invariants:
@@ -826,12 +782,10 @@ def run_sequence(
                 raise
 
     for index, op in enumerate(ops_list):
-        # Mark last operator for tracking (for Invariant 1)
-        if not hasattr(G, "_last_operator_applied"):
-            G._last_operator_applied = None  # type: ignore[attr-defined]
-        G._last_operator_applied = op.name  # type: ignore[attr-defined]
-
         op(G, node, sequence_context=execution_word.step(index))
+        # Record only an operation that actually returned successfully. A live
+        # rejected candidate must not replace the last completed operator.
+        G._last_operator_applied = op.name  # type: ignore[attr-defined]
         if callable(compute):
             compute(G)
 

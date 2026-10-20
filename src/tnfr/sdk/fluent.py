@@ -34,6 +34,7 @@ from typing import Any
 import networkx as nx
 
 from ..alias import get_attr
+from ..config.parsing import parse_bool
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
 from ..constants.canonical import FRAGMENTATION_THRESHOLD as COHERENCE_FRAGMENTATION
 from ..constants.canonical import HIGH_COHERENCE_THRESHOLD as COHERENCE_STRONG
@@ -47,7 +48,13 @@ from ..metrics.common import finite_mean
 from ..metrics.sense_index import compute_Si
 from ..structural import create_nfr, run_sequence
 from ._state import copy_graph_state, observed_mean_phase
-from ._topology import nonnegative_integer, probability, ring_edges, small_world_edges
+from ._topology import (
+    nonnegative_integer,
+    numpy_seed,
+    probability,
+    ring_edges,
+    small_world_edges,
+)
 
 # ---------------------------------------------------------------------------
 # Canonical coherence marks for adaptive sequence selection.
@@ -122,7 +129,7 @@ NAMED_SEQUENCES = {
         "coherence",  # IL: Stabilize
         "expansion",  # VAL: Controlled growth
         "resonance",  # RA: Amplify through network
-        "recursivity",  # REMESH: Enable fractal recursion
+        "recursivity",  # REMESH: Record the recursive advisory
     ],
     # Creative mutation - explicit word with a hard observed-rate gate.
     # Automatic experiments route through apply_evidence_gated_mutation so a
@@ -157,7 +164,7 @@ NAMED_SEQUENCES = {
     ],
     # Recursive consolidation with guarded expansion.
     "consolidation": [
-        "recursivity",  # REMESH: Start from fractal structure
+        "recursivity",  # REMESH: Record the recursive advisory
         "reception",  # EN: Gather current state
         "coherence",  # IL: Consolidate structure
         "expansion",  # VAL: Controlled growth
@@ -200,7 +207,7 @@ NAMED_SEQUENCES = {
     ],
     # Network harmonization - for multi-node synchronization
     "harmonization": [
-        "recursivity",  # REMESH: Multi-scale start
+        "recursivity",  # REMESH: Record the recursive advisory
         "reception",  # EN: Sense all nodes
         "coherence",  # IL: Local stabilization
         "coupling",  # UM: Phase synchronization
@@ -216,7 +223,7 @@ NAMED_SEQUENCES = {
         "expansion",  # VAL: Broaden perspective
         "coupling",  # UM: Connect concepts
         "resonance",  # RA: Reinforce learning
-        "recursivity",  # REMESH: Multi-level integration
+        "recursivity",  # REMESH: Record the recursive advisory
     ],
     # Recovery pattern - for system restoration after disruption
     "recovery": [
@@ -236,11 +243,11 @@ NAMED_SEQUENCES = {
         "mutation",  # ZHIR: Breakthrough transformation
         "coherence",  # IL: Stabilize new insights (required after ZHIR)
         "resonance",  # RA: Amplify stabilized innovation
-        "recursivity",  # REMESH: Scale innovation
+        "recursivity",  # REMESH: Record the recursive advisory
     ],
     # Optimization cycle - for continuous improvement
     "optimization": [
-        "recursivity",  # REMESH: Analyze current patterns
+        "recursivity",  # REMESH: Record the recursive advisory
         "reception",  # EN: Gather performance data
         "coherence",  # IL: Stabilize baseline
         "expansion",  # VAL: Explore improvements
@@ -254,7 +261,7 @@ NAMED_SEQUENCES = {
         "coherence",  # IL: Stabilize core
         "expansion",  # VAL: First scale growth
         "coherence",  # IL: Stabilize expansion (required after VAL)
-        "recursivity",  # REMESH: Self-similar replication
+        "recursivity",  # REMESH: Record the recursive advisory
         "coupling",  # UM: Connect scales
         "resonance",  # RA: Harmonize across levels
         "silence",  # SHA: Sustained fractal state
@@ -338,6 +345,21 @@ def _permitted_mutation_abstention(
     return None
 
 
+def _checked_node_range(values, name, validator):
+    """Materialize the two consumed endpoints through their scalar owner."""
+    from ..validation.input_validation import ValidationError
+
+    if len(values) != 2:
+        raise ValueError(f"{name} must contain two finite endpoints")
+    try:
+        low, high = (validator(value) for value in values)
+    except ValidationError as exc:
+        raise ValueError(f"Invalid {name}: {exc}") from exc
+    if low > high:
+        raise ValueError(f"{name} lower endpoint must not exceed upper endpoint")
+    return low, high
+
+
 @dataclass
 class NetworkConfig:
     """Configuration for TNFR network creation.
@@ -361,6 +383,19 @@ class NetworkConfig:
     auto_stabilization: bool = True
     default_vf_range: tuple[float, float] = (0.1, 1.0)
     default_epi_range: tuple[float, float] = (0.1, 0.9)
+
+    def __post_init__(self) -> None:
+        from ..validation.input_validation import validate_epi_value, validate_vf_value
+
+        self.random_seed = numpy_seed(self.random_seed)
+        self.validate_invariants = parse_bool(self.validate_invariants)
+        self.auto_stabilization = parse_bool(self.auto_stabilization)
+        self.default_vf_range = _checked_node_range(
+            self.default_vf_range, "default_vf_range", validate_vf_value
+        )
+        self.default_epi_range = _checked_node_range(
+            self.default_epi_range, "default_epi_range", validate_epi_value
+        )
 
 
 @dataclass
@@ -547,7 +582,22 @@ class TNFRNetwork:
     def __init__(self, name: str = "tnfr_network", config: NetworkConfig | None = None):
         """Initialize TNFR network with given name and configuration."""
         self.name = name
-        self._config = config if config is not None else NetworkConfig()
+        if config is not None and not isinstance(config, NetworkConfig):
+            raise TypeError("config must be a NetworkConfig")
+        # Consume original declared fields before any subclass copy hook can
+        # coerce them or return aliased storage. Only this recipe is consumed;
+        # subclass extras are not part of engine configuration.
+        self._config = (
+            NetworkConfig(
+                random_seed=config.random_seed,
+                validate_invariants=config.validate_invariants,
+                auto_stabilization=config.auto_stabilization,
+                default_vf_range=config.default_vf_range,
+                default_epi_range=config.default_epi_range,
+            )
+            if config is not None
+            else NetworkConfig()
+        )
         self._graph: nx.Graph | None = None
         self._results: NetworkResults | None = None
         self._node_counter = 0
@@ -604,11 +654,7 @@ class TNFRNetwork:
 
         >>> network = TNFRNetwork().add_nodes(10, vf_range=(0.5, 2.0))
         """
-        from ..validation.input_validation import (
-            ValidationError,
-            validate_epi_value,
-            validate_vf_value,
-        )
+        from ..validation.input_validation import validate_epi_value, validate_vf_value
 
         count = nonnegative_integer(count, "count")
         if vf_range is None:
@@ -616,25 +662,15 @@ class TNFRNetwork:
         if epi_range is None:
             epi_range = self._config.default_epi_range
 
-        def checked_range(values, name, validator):
-            if len(values) != 2:
-                raise ValueError(f"{name} must contain two finite endpoints")
-            try:
-                low, high = (validator(value) for value in values)
-            except ValidationError as exc:
-                raise ValueError(f"Invalid {name}: {exc}") from exc
-            if low > high:
-                raise ValueError(
-                    f"{name} lower endpoint must not exceed upper endpoint"
-                )
-            return low, high
-
-        vf_range = checked_range(vf_range, "vf_range", validate_vf_value)
-        epi_range = checked_range(epi_range, "epi_range", validate_epi_value)
+        vf_range = _checked_node_range(vf_range, "vf_range", validate_vf_value)
+        epi_range = _checked_node_range(epi_range, "epi_range", validate_epi_value)
         # Phase endpoints are finite real values; create_nfr performs wrapping.
-        phase_range = checked_range(phase_range, "phase_range", validate_epi_value)
+        phase_range = _checked_node_range(
+            phase_range, "phase_range", validate_epi_value
+        )
         rng = self._rng
         if random_seed is not None:
+            random_seed = numpy_seed(random_seed)
             if _HAS_NUMPY:
                 rng = np.random.RandomState(random_seed)
             else:
@@ -802,10 +838,11 @@ class TNFRNetwork:
         else:
             operator_list = sequence
 
-        # The neutral executor uses operator-major stages. EN/IL/OZ/UM/RA/THOL
-        # and AL/SHA/VAL/NUL/ZHIR/NAV commit atomic two-phase Jacobi proposals;
-        # REMESH and grammar replacements retain Gauss-Seidel graph-order reads
-        # inside complete stage rollback boundaries.
+        # The neutral executor uses atomic two-phase Jacobi stages for all
+        # thirteen canonical operators. REMESH commits only its deduplicated
+        # advisory; delayed EPI mixing requires the separate network operation.
+        # Grammar replacements retain Gauss-Seidel graph-order reads inside
+        # complete stage rollback boundaries.
         from ..operators.word_execution import run_network_sequence
 
         run_network_sequence(
@@ -1479,7 +1516,7 @@ class TNFRNetwork:
         if self._graph is None:
             raise ValueError("No network created. Use add_nodes() first.")
 
-        new_network = TNFRNetwork(f"{self.name}_copy", config=deepcopy(self._config))
+        new_network = TNFRNetwork(f"{self.name}_copy", config=self._config)
         new_network._graph = copy_graph_state(self._graph)
         new_network._rng = deepcopy(self._rng)
         new_network._node_counter = self._node_counter

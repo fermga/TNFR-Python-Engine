@@ -1,4 +1,4 @@
-"""One validated threshold convention for public THOL and metabolic callers."""
+"""Shared configured THOL policies for execution and detached admission."""
 
 from __future__ import annotations
 
@@ -7,6 +7,21 @@ from typing import Any
 
 from ..config.defaults_core import CORE_DEFAULTS
 from ._argument_validation import finite_real
+
+
+def resolve_thol_min_epi(graph_data: Mapping[str, Any]) -> float:
+    """Admit the configured nonnegative minimum form for the strict THOL gate.
+
+    A present invalid value rejects instead of falling back to the core default.
+    This is an execution policy, not a threshold derived from the nodal law or
+    a complete birth-admission certificate.
+    """
+    return finite_real(
+        graph_data.get("THOL_MIN_EPI", CORE_DEFAULTS["THOL_MIN_EPI"]),
+        operator="Self-organization",
+        label="THOL_MIN_EPI",
+        lower=0.0,
+    )
 
 
 def resolve_thol_bifurcation_threshold(

@@ -21,10 +21,7 @@ def test_runtime_facades_are_cold_import_order_safe(
 ) -> None:
     root = Path(__file__).resolve().parents[2]
     # Check actual facade resolution after both import orders, not just import.
-    code = (
-        imports
-        + "\n"
-        + """
+    code = imports + "\n" + """
 import importlib
 import tnfr.physics as physics
 for name in (
@@ -42,7 +39,6 @@ for name in (
         assert exported in physics.__all__
         assert getattr(physics, exported) is getattr(module, exported)
 """
-    )
     completed = subprocess.run(
         [sys.executable, "-c", code],
         cwd=root,

@@ -70,6 +70,7 @@ _OWNER_MANAGED_REPORTS = {
     "SineFormedClassMaintenance": "tnfr.physics.relational_sine_formed_class_maintenance",
     "SineFormedClassPair": "tnfr.physics.relational_sine_formed_classes",
     "SineFormedClassResponse": "tnfr.physics.relational_sine_formed_classes",
+    "SineFrozenIsolateComparison": "tnfr.physics.relational_sine_support",
     "SineGlobalPairState": "tnfr.physics.relational_sine_pair",
     "SineInvolutionReduction": "tnfr.physics.relational_sine_symmetry",
     "SineInvolutionState": "tnfr.physics.relational_sine_symmetry",
@@ -133,6 +134,22 @@ _OWNER_MANAGED_REPORTS = {
     "SineSaddleRetentionBand": "tnfr.physics.relational_sine_corridor",
     "SineSaddleSensitivity": "tnfr.physics.relational_sine_sensitivity",
     "SineSlowCapture": "tnfr.physics.relational_sine_reduction",
+    "SineSupportExchangeComparison": "tnfr.physics.relational_sine_support",
+    "SineFiniteFormResponse": "tnfr.physics.relational_sine_support",
+    "SineSupportRecurrence": "tnfr.physics.relational_sine_support",
+    "SineInitialStatePerturbation": "tnfr.physics.relational_sine_support",
+    "SineStateConductancePerturbation": "tnfr.physics.relational_sine_support",
+    "SineConsensusObservation": "tnfr.physics.relational_sine_consensus_observation",
+    "SineConsensusNonlinearResponse": "tnfr.physics.relational_sine_consensus_observation",
+    "SineWeightedCapacityReset": "tnfr.physics.relational_sine_weighted_partition",
+    "SineWeightedPhaseOffsetPartition": "tnfr.physics.relational_sine_weighted_partition",
+    "SineWeightedPhaseOffsetState": "tnfr.physics.relational_sine_weighted_partition",
+    "SineWeightedRadianState": "tnfr.physics.relational_sine_weighted_partition",
+    "SineWeightedStarTransverseBand": "tnfr.physics.relational_sine_weighted_transverse",
+    "SineWeightedStarState": "tnfr.physics.relational_sine_weighted_state",
+    "SineWeightedStarRetention": "tnfr.physics.relational_sine_weighted_state",
+    "SineWeightedStarContact": "tnfr.physics.relational_sine_weighted_contact",
+    "SineWeightedStarSupportRetention": "tnfr.physics.relational_sine_star_retention",
     "SineSlowPhaseBound": "tnfr.physics.relational_sine_reduction",
     "SineStarMomentClosure": "tnfr.physics.phase_response",
     "SineStatePairingAssessment": "tnfr.physics.relational_sine_scale",
@@ -252,7 +269,7 @@ def _reset_states(report):
 
 
 def relational_report_to_dict(report: Any) -> dict[str, Any]:
-    """Project a supported relational report without changing its verdicts.
+    """Project a supported relational report through its admission contract.
 
     The envelope has schema ``tnfr.relational-report.v1``, its concrete
     ``report_type`` and an exact projected ``report`` body. Owner-managed
@@ -264,7 +281,8 @@ def relational_report_to_dict(report: Any) -> dict[str, Any]:
     numbers reject. Save with ``export_to_json(relational_report_to_dict(report),
     path)`` to use the shared atomic writer. Projection is detached, not a
     typed round trip, resumable checkpoint or provenance authentication.
-    No theorem eligibility is recomputed and no producer or trajectory runs.
+    Owner-managed reports rebuild the admission declared by their contract;
+    no producer or trajectory runs.
     """
     if _is_owner_managed_report(report):
         return {

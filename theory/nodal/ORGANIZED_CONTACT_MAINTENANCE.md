@@ -1095,7 +1095,7 @@ does not require acute edges or reflection symmetry. A stable stationary
 candidate in the original class must have genuinely different internal
 profiles among the hosts themselves, not merely a changed donor.
 
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#contact-maintenance-certificate-admission)
+The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#deferred-work-and-reopening-conditions)
 retains the unresolved feasibility and curvature question in that sector,
 including nonacute states, broken reflection and degenerate host minima.
 No actual-source fate or global exclusion has been established.
@@ -1297,7 +1297,7 @@ The remaining regular question is whether the admitted local potentials
 U have an acceptable critical minimum in the original complete marked
 class. The singular PSD host sector requires separate higher-order or
 instability arguments. Neither sector has been decided here. The
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#contact-maintenance-certificate-admission)
+[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#deferred-work-and-reopening-conditions)
 owns that unresolved dependency; no further numerical campaign follows
 from this compatibility geometry.
 
@@ -1571,7 +1571,7 @@ defect (17an), and this global uncomputed gap have different conclusions.
 Only the uniform-rim result has the conditional complete-flow exit
 consequence established above. None supplies actual-source capture,
 general common-profile-tube exit or physical identification. The
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#contact-maintenance-certificate-admission)
+[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#deferred-work-and-reopening-conditions)
 retains the stationary feasibility and full stability decision beyond
 these exclusions.
 

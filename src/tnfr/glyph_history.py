@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from collections import Counter, deque
 from collections.abc import Iterable, Mapping, MutableMapping
-from itertools import islice
 from typing import Any, cast
 
 from ._runtime_steps import (
@@ -20,13 +19,11 @@ from ._runtime_steps import (
 from .constants import get_param, normalise_state_token
 from .glyph_runtime import last_glyph
 from .types import TNFRGraph
-from .utils import ensure_collection, get_logger
-
-logger = get_logger(__name__)
 
 __all__ = (
     "HistoryDict",
     "push_glyph",
+    "record_glyph_occurrence",
     "recent_glyph",
     "ensure_history",
     "current_step_idx",
@@ -36,57 +33,13 @@ __all__ = (
     "count_glyphs",
 )
 
-_NU_F_HISTORY_KEYS = (
-    "nu_f_rate_hz_str",
-    "nu_f_rate_hz",
-    "nu_f_ci_lower_hz_str",
-    "nu_f_ci_upper_hz_str",
-    "nu_f_ci_lower_hz",
-    "nu_f_ci_upper_hz",
-)
-
-
-def _ensure_history(
-    nd: MutableMapping[str, Any], window: int, *, create_zero: bool = False
-) -> tuple[int, deque[str] | None]:
-    """Validate ``window`` and ensure ``nd['glyph_history']`` deque."""
-
-    from tnfr.validation.window import validate_window
-
-    v_window = validate_window(window)
-    if v_window == 0 and not create_zero:
-        return v_window, None
-    hist = nd.setdefault("glyph_history", deque(maxlen=v_window))
-    if not isinstance(hist, deque) or hist.maxlen != v_window:
-        # Rebuild deque from any iterable, ignoring raw strings/bytes and scalars
-        if isinstance(hist, (str, bytes, bytearray)):
-            items: Iterable[Any] = ()
-        else:
-            try:
-                items = ensure_collection(hist, max_materialize=None)
-            except TypeError:
-                logger.debug("Discarding non-iterable glyph history value %r", hist)
-                items = ()
-        hist = deque((str(item) for item in items), maxlen=v_window)
-        nd["glyph_history"] = hist
-    return v_window, hist
-
-
-_OPERATOR_STEP_KEY = "_operator_step"
-
 
 def current_operator_step(nd: Mapping[str, Any]) -> int:
     """Return a monotonic operator index independent of bounded trace length."""
 
-    history = nd.get("glyph_history", ())
-    try:
-        retained = len(history)
-    except TypeError:
-        retained = 0
-    raw = nd.get(_OPERATOR_STEP_KEY)
-    if isinstance(raw, int) and not isinstance(raw, bool) and raw >= 0:
-        return max(raw, retained)
-    return retained
+    from .operators.grammar_debt import read_grammar_state
+
+    return read_grammar_state(nd).operator_step
 
 
 def next_operator_step(nd: Mapping[str, Any]) -> int:
@@ -98,32 +51,80 @@ def next_operator_step(nd: Mapping[str, Any]) -> int:
 def push_glyph(nd: MutableMapping[str, Any], glyph: str, window: int) -> None:
     """Add ``glyph`` to node history with maximum size ``window``.
 
-    ``window`` validation and deque creation are handled by
-    :func:`_ensure_history`.
+    The shared window validator rejects invalid retention before recording.
     """
 
+    from tnfr.validation.window import validate_window
+
+    _record_glyph(nd, glyph, validate_window(window))
+
+
+def record_glyph_occurrence(nd: MutableMapping[str, Any], glyph: Any) -> None:
+    """Record one supplied occurrence, preserving the existing trace retention.
+
+    A deque retains its declared maximum length; lists and tuples are retained
+    as unbounded lists. Missing history starts an unbounded list. This only
+    records supplied occurrence metadata: it neither executes nor authenticates
+    an operator. Callers must not record an action already recorded by runtime.
+    """
+
+    _record_glyph(nd, glyph, None)
+
+
+def _record_glyph(nd: MutableMapping[str, Any], glyph: Any, window: int | None) -> None:
+    """Admit and record once; ``None`` preserves the current retention policy."""
+
     from .operators.grammar_debt import (
+        OPERATOR_STEP_KEY,
         PRIOR_COHERENCE_KEY,
         U2_DEBT_KEY,
         advance_debt,
         advance_prior_coherence,
-        node_debt,
-        node_has_prior_coherence,
+        canonical_operator_code,
+        read_grammar_state,
     )
 
     # Capture debt before resizing/evicting the bounded trace. Neutral glyphs
     # and a zero-length trace cannot erase uncompensated destabilization.
-    debt = node_debt(nd)
-    prior_coherence = node_has_prior_coherence(nd)
+    state = read_grammar_state(nd)
     # Freeze the monotonic index before a smaller window can evict retained
     # entries. Trace length is a fallback only; resizing must never move the
     # lifetime operator clock backwards.
-    step = current_operator_step(nd) + 1
-    _, hist = _ensure_history(nd, window, create_zero=True)
-    hist.append(str(glyph))
-    nd[_OPERATOR_STEP_KEY] = step
-    nd[U2_DEBT_KEY] = advance_debt(debt, glyph)
-    nd[PRIOR_COHERENCE_KEY] = advance_prior_coherence(prior_coherence, glyph)
+    step = state.operator_step + 1
+    next_debt = advance_debt(state.u2_debt, glyph)
+    next_coherence = advance_prior_coherence(state.prior_coherence, glyph)
+    recorded_glyph = canonical_operator_code(glyph)
+    previous = nd.get("glyph_history", ())
+    if window is None and isinstance(previous, deque):
+        window = previous.maxlen
+    if window is not None:
+        if (
+            isinstance(previous, deque)
+            and previous.maxlen == window
+            and all(
+                type(item) is str and item == code
+                for item, code in zip(previous, state.history)
+            )
+        ):
+            hist = previous
+        else:
+            hist = deque(state.history, maxlen=window)
+            nd["glyph_history"] = hist
+    else:
+        if isinstance(previous, list):
+            hist = previous
+            hist[:] = state.history
+        elif isinstance(previous, deque):
+            hist = previous
+            hist.clear()
+            hist.extend(state.history)
+        else:
+            hist = list(state.history)
+        nd["glyph_history"] = hist
+    hist.append(recorded_glyph)
+    nd[OPERATOR_STEP_KEY] = step
+    nd[U2_DEBT_KEY] = next_debt
+    nd[PRIOR_COHERENCE_KEY] = next_coherence
 
 
 def recent_glyph(nd: MutableMapping[str, Any], glyph: str, window: int) -> bool:
@@ -135,35 +136,20 @@ def recent_glyph(nd: MutableMapping[str, Any], glyph: str, window: int) -> bool:
 
     Notes
     -----
-    This function intentionally does NOT call ``_ensure_history`` to avoid
-    accidentally truncating the glyph_history deque when checking with a
-    smaller window than the deque's maxlen. This preserves the canonical
-    principle that reading history should not modify it.
+    Reading a smaller window never truncates the retained deque.
 
-    Reuses ``validate_window`` and ``ensure_collection`` utilities.
+    Reuses shared window, grammar-state and operator-identifier admission.
     """
     from tnfr.validation.window import validate_window
 
+    from .operators.grammar_debt import canonical_operator_code, read_grammar_state
+
     v_window = validate_window(window)
+    state = read_grammar_state(nd)
+    code = canonical_operator_code(glyph)
     if v_window == 0:
         return False
-
-    # Read existing history without modifying it
-    hist = nd.get("glyph_history")
-    if hist is None:
-        return False
-
-    gl = str(glyph)
-
-    # Use canonical ensure_collection to materialize history
-    try:
-        items = list(ensure_collection(hist, max_materialize=None))
-    except (TypeError, ValueError):
-        return False
-
-    # Check only the last v_window items
-    recent_items = items[-v_window:] if len(items) > v_window else items
-    return gl in recent_items
+    return code in state.history[-v_window:]
 
 
 class HistoryDict(dict[str, Any]):
@@ -297,7 +283,9 @@ def ensure_history(G: TNFRGraph) -> HistoryDict | dict[str, Any]:
     unrelated diagnostics; callers needing key eviction must request it
     explicitly through :meth:`HistoryDict.pop_least_used`.
     """
-    maxlen, _ = _ensure_history({}, get_param(G, "HISTORY_MAXLEN"))
+    from .validation.window import validate_window
+
+    maxlen = validate_window(get_param(G, "HISTORY_MAXLEN"))
     hist = G.graph.get("history")
     sentinel_key = "_metrics_history_id"
     replaced = False
@@ -373,12 +361,14 @@ def append_metric(hist: MutableMapping[str, list[Any]], key: str, value: Any) ->
 def count_glyphs(
     G: TNFRGraph, window: int | None = None, *, last_only: bool = False
 ) -> Counter[str]:
-    """Count recent glyphs in the network.
+    """Count admitted recent glyphs by canonical code without rewriting traces.
 
     If ``window`` is ``None``, the full history for each node is used. A
     ``window`` of zero yields an empty :class:`Counter`. Negative values raise
     :class:`ValueError`.
     """
+
+    from .operators.grammar_debt import read_grammar_state
 
     if window is not None:
         from tnfr.validation.window import validate_window
@@ -394,14 +384,13 @@ def count_glyphs(
             if g:
                 counts[g] += 1
             continue
-        hist = nd.get("glyph_history")
+        hist = read_grammar_state(nd).history
         if not hist:
             continue
         if window is None:
             seq = hist
         else:
-            start = max(len(hist) - window, 0)
-            seq = islice(hist, start, None)
+            seq = hist[-window:]
         counts.update(seq)
 
     return counts

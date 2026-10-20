@@ -20,18 +20,17 @@ from ._organized_law_contrast_kernels import (
     _three_ramp_contrast,
 )
 from ._organized_law_joint_bounds import (
-    _OrganizedLawJointBounds,
     _bound_organized_law_joint_phases,
+    _OrganizedLawJointBounds,
 )
 from ._organized_law_observation import (
-    _OrganizedPhaseCircleCertificate,
     _bound_organized_observation_law,
     _certify_organized_phase_circle,
+    _OrganizedPhaseCircleCertificate,
 )
 from ._organized_law_phase_transport import _historical_cells
 from ._organized_outer_winding import _derive_organized_outer_winding
 from .relational_observations import _ordered
-
 
 _HARMONICS = (1, 2, 9, 18, 36)
 _LATE_PHASE_CAP = Q(1, 10**6)

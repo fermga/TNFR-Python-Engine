@@ -4,18 +4,17 @@ Source receipts retain provenance associations, not execution authentication
 or physical evidence. No observation/source assessor or producer is imported.
 """
 
-from fractions import Fraction as Q
 import hashlib
+import subprocess
+from fractions import Fraction as Q
 from math import prod
 from pathlib import Path
-import subprocess
 
 import pytest
 
 from tnfr.mathematics._rational_interval import I, cos, pi_interval, sin
 from tnfr.research.artifact_io import decode_exact_tree
 from tnfr.utils.io import json_loads
-
 
 ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE = ROOT / "docs/assets/organized_finite_observation"

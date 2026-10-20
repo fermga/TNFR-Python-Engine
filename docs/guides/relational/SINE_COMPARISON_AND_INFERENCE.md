@@ -6,7 +6,7 @@ Part of [Regional and relational SDK workflow index](../REGIONAL_AND_RELATIONAL.
 
 ## Sine-law assessments and forecasts
 
-The following module-level APIs concern `normalized_sine_reciprocal_exchange`.
+The module-level APIs below identify their complete sine law explicitly.
 A regular `RelationalExchangeModel` supplies coefficients and storage scale;
 it does not switch `Network.step_relational` to this law. Each example states
 whether it consumes a graph, observation bounds or an exact symbolic family.
@@ -48,6 +48,106 @@ explain the extra superposition premise and why smoothness alone does not
 select a unique law. The optional kinematics report bounds how each complex
 neighbor resultant is changing at this captured state. It neither evolves
 the graph nor bounds a future observation window.
+
+<a id="inspect-conductance-support-sine"></a>
+### Inspect a conservative state with nonunit conductance
+
+Use the separate conductance/support reader when evaluating the declared
+conservative completion on actual weighted support, including links created
+by UM. It preserves those weights and keeps the bare phase neighborhood:
+
+```python
+from fractions import Fraction
+import networkx as nx
+from tnfr.dynamics.relational import RelationalExchangeModel
+from tnfr.physics.relational_sine_support import bound_relational_sine_support_exchange
+from tnfr.sdk import relational_report_to_dict
+
+graph = nx.path_graph(3)
+graph.edges[0, 1]["weight"] = Fraction(3, 4)
+graph.edges[1, 2]["weight"] = 0
+for node in graph:
+    graph.nodes[node].update(EPI=node / 4, theta=node / 8, nu_f=1)
+report = bound_relational_sine_support_exchange(
+    graph, reference_model=RelationalExchangeModel(1, epi_weight=0, phase_domain="regular")
+)
+assert report.degrees == (1, 2, 1)
+assert report.conductances == (Fraction(3, 4), Fraction(0))
+assert report.balance_residual.contains(0)
+evidence = relational_report_to_dict(report)
+```
+
+The zero-weight edge still contributes to phase pressure and bare degree.
+The [contract](../../contracts/relational/SINE_COMPARISON_AND_INFERENCE.md#conservative-conductance-support-sine)
+and [proof](../../../theory/nodal/SINE_PAIR_COUPLING.md#collective-coupling-weighted-protocol)
+state the supplied conservative law and its limits. This observation does
+not advance the graph, select a unique TNFR law or install a native weighted
+runner. A later event requires fresh capture of its actual support and state.
+
+For disconnected preparations, admit each connected component separately
+before contact. The [two-organization UM study](../../../theory/nodal/SINE_ORGANIZATION_CONTACT.md)
+uses this boundary, then captures the actual connected output with the weighted
+reader. Its separate analytical proof distinguishes initial identity retention
+from later departure of the receiver's original identity tube. Neither a
+balance residual nor graph connectivity supplies that future conclusion.
+
+The unrestricted contact's [stationary geometry proof](../../../theory/nodal/SINE_CONTACT_STATIONARY_GEOMETRY.md)
+also distinguishes positive local phase curvature from equilibrium existence:
+the actual contact has no stationary point in its original complete acute
+chamber, and every stationary point in the enlarged original principal class
+is unstable. Its explicit nonacute saddle is an existence control, not an
+acquired state. The phase equation uses bare support, while constant stationary
+form follows from the positive weighted Laplacian. A stationary phase reduction
+does not remove the boundary data required by the full evolving state.
+
+The [three-candidate comparison](../../../theory/nodal/SINE_PROXIMITY_CONTACT.md)
+uses the same word executor and weighted reader with a different declared UM
+candidate limit. Its separate analytical barrier covers the full source family
+and preserves the relative origins of both organizations. Recapture actual
+support, weights and capacities after the word; neither the unrestricted
+contact's means nor a unit-support recovery verdict applies to this output.
+The reader reports the captured field and storage, not the maintenance theorem
+or an automatic collective phase for the joined organization.
+
+The [registration extension](../../../theory/nodal/SINE_PROXIMITY_CONTACT.md#sine-registration-protocol)
+also admits independent initial form and phase offsets in a declared open
+domain. Capture the shifted primitives before the word and retain its actual
+cross weights afterward. The offsets change weighted mean values and event
+work even though bare support and mean weights stay the same. Re-admit the
+translated receiver's absolute mean interval; neither an unshifted report
+nor a strictly positive form-reserve assumption can replace that admission.
+
+For the [finite exchange comparison](../../../theory/nodal/SINE_PROXIMITY_CONTACT.md#sine-contact-finite-exchange),
+capture each paired preparation's own weights and primitive state. The shared
+reader supplies static fields for the cut-current identities; the separate
+analytical remainder establishes the finite-window contrast. Reused reports
+are not trajectories. The disconnected control removes only the cross edges
+in a detached model and admits each component with its own degrees. Keep the
+same declared form readout, without transferring the joined mean-conservation
+claim to those changed degrees or treating the comparison as a deletion event.
+
+For an [IL/OZ handoff study](../../../theory/nodal/SINE_COLLECTIVE_PRESSURE_HANDOFF.md),
+retain the full operator-runtime graph as well as detached reports. A detached
+field capture omits configuration and context required to execute the word.
+Use the shared SDK graph-copy boundary with an explicit adapter for required
+instance context and neighbor order; generic deep copying can encounter
+runtime-cache locks. The bounded study preserves `_last_operator_applied`,
+rejects unrecognized instance state and records omitted rebuildable caches.
+Its lossless capture retains uniform-real BEPI containers for shared signed
+admission; complex container storage does not authorize complex form.
+An initial constitutive refresh and each stage's subsequent refresh must be
+declared separately from the operator's stored-pressure write. The weighted
+reader can enclose the selected pressure law; it is not itself a writer.
+Any represented midpoint materialization needs its own recorded residual and
+pressure-only write check. Native argument pressure and the default mixed
+pressure are different laws and cannot fill that role implicitly.
+
+The [energy-path theorem](../../../theory/nodal/SINE_CONTACT_STATIONARY_GEOMETRY.md#contact-energy-path)
+separately shows that storage and both conserved means do not isolate the
+actual source from every principal cut. A constant-storage configuration path
+is not a solution of the captured field. A change in mixed contact branches
+also need not change either original constituent winding; keep those readouts
+separate when defining a maintained identity.
 
 ### Inspect pressure from a retained intermediary
 

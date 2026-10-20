@@ -10,7 +10,8 @@ import json
 from pathlib import Path
 from typing import Any
 
-from .._exact_time import finite_represented_real
+from .._coherence_validation import validate_structural_coherence
+from .._exact_time import bounded_represented_real, finite_represented_real
 from ..metrics.common import finite_mean, finite_population_std
 from ..utils.io import _reject_duplicate_json_keys as _reject_duplicate_keys
 from ..utils.io import json_dumps, json_loads, safe_write
@@ -28,6 +29,9 @@ def compare_networks(
     metrics: list[str] | None = None,
 ) -> dict[str, dict[str, float]]:
     """Compare metrics across multiple networks.
+
+    Selected scalar observations are re-admitted before use. An invalid
+    coherence sample cannot enter the comparison as a measured value.
 
     Parameters
     ----------
@@ -52,12 +56,14 @@ def compare_networks(
     if metrics is None:
         metrics = ["coherence", "avg_si", "avg_delta_nfr", "node_count"]
 
-    comparison = {}
+    comparison: dict[str, dict[str, float]] = {}
     for name, results in networks.items():
         comparison[name] = {}
 
         if "coherence" in metrics:
-            comparison[name]["coherence"] = results.coherence
+            comparison[name]["coherence"] = validate_structural_coherence(
+                results.coherence
+            )
 
         if "avg_si" in metrics:
             si_values = list(results.sense_indices.values())
@@ -78,6 +84,11 @@ def compare_networks(
 def compute_network_statistics(results: Any) -> dict[str, float]:
     """Compute extended statistics for a network.
 
+    Present scalar observations use shared represented-real admission.
+    Coherence is in [0, 1] and average capacity is nonnegative; missing optional
+    averages remain omitted. Statistics consume the admitted representation,
+    including extrema, without changing the supplied result.
+
     Parameters
     ----------
     results : NetworkResults
@@ -96,11 +107,17 @@ def compute_network_statistics(results: Any) -> dict[str, float]:
     >>> from tnfr.sdk.utils import compute_network_statistics
     >>> stats = compute_network_statistics(results)
     """
-    si_values = list(results.sense_indices.values())
-    dnfr_values = list(results.delta_nfr.values())
+    si_values = [
+        finite_represented_real(value, "Si")[0]
+        for value in results.sense_indices.values()
+    ]
+    dnfr_values = [
+        finite_represented_real(value, "DeltaNFR")[0]
+        for value in results.delta_nfr.values()
+    ]
 
     stats = {
-        "coherence": results.coherence,
+        "coherence": validate_structural_coherence(results.coherence),
         "node_count": len(si_values),
     }
 
@@ -119,10 +136,12 @@ def compute_network_statistics(results: Any) -> dict[str, float]:
         stats["std_delta_nfr"] = finite_population_std(dnfr_values, name="DeltaNFR")
 
     if results.avg_vf is not None:
-        stats["avg_vf"] = results.avg_vf
+        stats["avg_vf"] = bounded_represented_real(results.avg_vf, "avg_vf", minimum=0)[
+            0
+        ]
 
     if results.avg_phase is not None:
-        stats["avg_phase"] = results.avg_phase
+        stats["avg_phase"] = finite_represented_real(results.avg_phase, "avg_phase")[0]
 
     return stats
 

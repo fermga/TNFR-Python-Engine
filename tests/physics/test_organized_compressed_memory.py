@@ -4,8 +4,8 @@ These checks use supplied states and exact comparison inequalities. They do not
 evaluate trajectories, restore formed sources or observe reserved responses.
 """
 
-from fractions import Fraction as Q
 import hashlib
+from fractions import Fraction as Q
 from pathlib import Path
 
 import mpmath
@@ -15,7 +15,6 @@ from tests.sine_evidence_helpers import forbid_organized_response_evaluation
 from tnfr.mathematics._exact_linear_algebra import exact_matrix_inverse
 from tnfr.mathematics._rational_interval import I, pi_interval, sin
 from tnfr.physics._organized_electrical_source import _transport_hidden_deviations
-
 
 _CYCLE = tuple((c, (c + 1) % 5) for c in range(5))
 _EDGES = tuple(

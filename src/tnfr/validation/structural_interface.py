@@ -632,9 +632,7 @@ th {{ background: #f3f5f7; }}
 {body}
 </body>
 </html>
-""".format(
-        body="\n".join(body)
-    )
+""".format(body="\n".join(body))
 
 
 def export_structural_interface_report(

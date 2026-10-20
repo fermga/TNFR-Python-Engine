@@ -8,7 +8,6 @@ from tnfr.mathematics._rational_interval import I, cos, pi_interval, sin
 from tnfr.physics import _organized_law_observation as owner
 from tnfr.physics._sine_class_constitutive_comparison import _edge_law
 
-
 EPSILON = Q(1, 10)
 
 

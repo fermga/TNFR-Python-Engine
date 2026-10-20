@@ -1,34 +1,34 @@
-"""Command-line runner for TNFR self-optimization over partition manifests."""
+"""Collect or apply configured recommendations to explicit graph partitions.
+
+Partition payloads use ``tnfr.engines.manifest``; modulus-only arithmetic
+manifests no longer trigger implicit graph reconstruction.
+"""
 
 from __future__ import annotations
 
 import argparse
-import json
-import math
 import sys
-import threading
 import time
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
+from fractions import Fraction
 from pathlib import Path
-from statistics import fmean
-from typing import Any, Dict, Iterable, List, Optional, Sequence
+from typing import Any, Dict, Iterable, List, Optional, Sequence, cast
 
 import networkx as nx
 
+from tnfr._exact_time import finite_represented_real
+from tnfr.engines.manifest import decode_graph
+from tnfr.engines.self_optimization import TNFRSelfOptimizingEngine
+from tnfr.metrics.common import finite_mean
+from tnfr.utils.io import json_dumps
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
-FACTOR_LAB_ROOT = REPO_ROOT / "applications/factorization-lab"
-if (
-    FACTOR_LAB_ROOT.exists()
-):  # Ensure tnfr_factorization is importable without installation
-    sys.path.insert(0, str(FACTOR_LAB_ROOT))
-
-from tnfr.engines.manifest import decode_graph  # noqa: E402
-from tnfr.engines.self_optimization import TNFRSelfOptimizingEngine  # noqa: E402
-
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "results" / "self_optimization"
+# Compatibility label only: it neither selects nor reconstructs a Paley graph.
 DEFAULT_OPERATION = "paley_partition"
 DEFAULT_MAX_WORKERS = 1
+STRUCTURAL_FIELDS = ("phi_s", "phase_gradient", "phase_curvature", "coherence_length")
 
 
 @dataclass
@@ -37,29 +37,6 @@ class PartitionWorkItem:
     path: Path
     manifest_entry: Dict[str, Any]
     source_index: int = 0
-
-
-class PaleyGraphCache:
-    """Caches annotated Paley graphs keyed by modulus."""
-
-    def __init__(self) -> None:
-        self._cache: Dict[int, nx.Graph] = {}
-        self._lock = threading.Lock()
-
-    def get(self, modulus: int) -> nx.Graph:
-        from tnfr_factorization.spectral_paley import (
-            _annotate_graph_for_fft,
-            _build_paley_graph,
-        )
-
-        with self._lock:
-            cached = self._cache.get(modulus)
-            if cached is not None:
-                return cached
-            graph = _build_paley_graph(modulus)
-            _annotate_graph_for_fft(graph)
-            self._cache[modulus] = graph
-            return graph
 
 
 def parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
@@ -138,6 +115,13 @@ def run(args: argparse.Namespace) -> Dict[str, Any]:
         _load_json(args.manifest_summary) if args.manifest_summary else None
     )
     items = _collect_partition_entries(manifest, args.manifest, args.partition_dir)
+    sources = [args.manifest, *(item.path for item in items)]
+    if args.manifest_summary is not None:
+        sources.append(args.manifest_summary)
+    if args.summary is not None and any(
+        source.resolve() == args.summary.resolve() for source in sources
+    ):
+        raise ValueError("self-optimization summary cannot replace an input artifact")
 
     if args.partitions:
         allowed = {pid.strip() for pid in args.partitions if pid}
@@ -156,11 +140,9 @@ def run(args: argparse.Namespace) -> Dict[str, Any]:
     output_dir = args.output_dir or DEFAULT_OUTPUT_DIR
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    graph_cache = PaleyGraphCache()
     engine = TNFRSelfOptimizingEngine()
     processor = PartitionProcessor(
         engine=engine,
-        graph_cache=graph_cache,
         args=args,
     )
 
@@ -187,11 +169,9 @@ class PartitionProcessor:
     def __init__(
         self,
         engine: TNFRSelfOptimizingEngine,
-        graph_cache: PaleyGraphCache,
         args: argparse.Namespace,
     ) -> None:
         self._engine = engine
-        self._graph_cache = graph_cache
         self._args = args
 
     def process(self, items: Sequence[PartitionWorkItem]) -> List[Dict[str, Any]]:
@@ -228,25 +208,20 @@ class PartitionProcessor:
     def _process_single(self, index: int, item: PartitionWorkItem) -> Dict[str, Any]:
         try:
             partition_payload = _load_json(item.path)
-            partition_data = partition_payload.get("partition") or {}
+            partition_data = _optional_object(
+                partition_payload.get("partition"), "partition"
+            )
+            operator_sequence = _extract_operator_sequence(partition_data)
+            telemetry = _extract_telemetry(item.manifest_entry, partition_payload)
             if "graph" in partition_payload:
                 subgraph = decode_graph(partition_payload["graph"])
             else:
-                modulus_value = partition_payload.get("modulus")
-                if modulus_value is None:
-                    raise ValueError(
-                        "Partition file requires a graph payload or Paley modulus"
-                    )
-                node_indices = partition_data.get("node_indices") or []
-                if not node_indices:
-                    raise ValueError("Partition file is missing node indices")
-                base_graph = self._graph_cache.get(int(modulus_value))
-                if any(node not in base_graph for node in node_indices):
-                    raise ValueError(
-                        "Partition node indices are outside the Paley graph"
-                    )
-                subgraph = base_graph.subgraph(node_indices).copy()
-            operator_sequence = _extract_operator_sequence(partition_data)
+                raise ValueError(
+                    "Partition file requires an explicit 'graph' payload. "
+                    "Implicit Paley reconstruction has been retired; serialize "
+                    "the supplied graph with tnfr.engines.manifest.encode_graph "
+                    "or write_manifest_bundle."
+                )
             seed_value = (
                 None if self._args.seed is None else self._args.seed + item.source_index
             )
@@ -261,7 +236,6 @@ class PartitionProcessor:
                 operator_sequence=operator_sequence,
             )
             success = "error" not in result
-            telemetry = _extract_telemetry(item.manifest_entry, partition_payload)
             telemetry_deltas = _compute_telemetry_deltas(
                 telemetry,
                 result.get("telemetry_snapshots"),
@@ -287,11 +261,17 @@ class PartitionProcessor:
             }
             if not self._args.quiet:
                 status = "ok" if success else "error"
-                print(f"[self-opt] partition={item.partition_id} status={status}")
+                print(
+                    f"[self-opt] partition={item.partition_id} status={status}",
+                    file=sys.stderr,
+                )
             return summary
         except Exception as exc:
             if not self._args.quiet:
-                print(f"[self-opt] partition={item.partition_id} error={exc}")
+                print(
+                    f"[self-opt] partition={item.partition_id} error={exc}",
+                    file=sys.stderr,
+                )
             return {
                 "partition_id": item.partition_id,
                 "path": str(item.path),
@@ -411,14 +391,34 @@ def _select_existing(candidates: Iterable[Path]) -> Optional[Path]:
     return None
 
 
+def _optional_object(value: Any, label: str) -> Dict[str, Any]:
+    """Retain optional absence without accepting a malformed present object."""
+    if value is None:
+        return {}
+    if not isinstance(value, dict):
+        raise ValueError(f"{label} must be an object or null")
+    return value
+
+
+def _optional_observation(value: Any, label: str) -> Optional[float]:
+    """Admit a consumed observation; only missing/null means unavailable."""
+    if value is None:
+        return None
+    return finite_represented_real(value, label)[0]
+
+
 def _extract_operator_sequence(partition_data: Dict[str, Any]) -> Optional[List[str]]:
-    metadata = partition_data.get("metadata") or {}
-    nodal_state = metadata.get("nodal_state") or {}
-    sequence = nodal_state.get("sequence") or metadata.get("sequence")
-    if not sequence:
+    metadata = _optional_object(partition_data.get("metadata"), "partition metadata")
+    nodal_state = _optional_object(metadata.get("nodal_state"), "nodal state")
+    sequence = nodal_state.get("sequence", metadata.get("sequence"))
+    if sequence is None:
         return None
     if isinstance(sequence, str):
-        return [sequence]
+        sequence = [sequence]
+    if not isinstance(sequence, (list, tuple)) or any(
+        not isinstance(token, str) or not token.strip() for token in sequence
+    ):
+        raise ValueError("operator sequence must contain nonempty string tokens")
     return list(sequence)
 
 
@@ -427,52 +427,58 @@ def _extract_telemetry(
     partition_payload: Dict[str, Any],
 ) -> Dict[str, Any]:
     telemetry: Dict[str, Any] = {}
-    manifest_tel = manifest_entry.get("telemetry") or {}
-    partition_tel = (partition_payload.get("partition") or {}).get("telemetry") or {}
+    manifest_tel = _optional_object(
+        manifest_entry.get("telemetry"), "manifest telemetry"
+    )
+    partition = _optional_object(partition_payload.get("partition"), "partition")
+    partition_tel = _optional_object(partition.get("telemetry"), "partition telemetry")
     telemetry.update(manifest_tel)
     for key, value in partition_tel.items():
         telemetry.setdefault(key, value)
+    for key in (*STRUCTURAL_FIELDS, "coherence", "sense_index"):
+        if key in telemetry:
+            telemetry[key] = _optional_observation(telemetry[key], f"telemetry.{key}")
     return telemetry
 
 
-def _mean_numeric(values: Iterable[float]) -> Optional[float]:
-    data = [float(v) for v in values if isinstance(v, (int, float))]
-    if not data:
+def _mean_numeric(values: Iterable[Any]) -> Optional[float]:
+    data = [_optional_observation(value, "snapshot field") for value in values]
+    if not data or any(value is None for value in data):
         return None
-    try:
-        return fmean(data)
-    except Exception:
-        return float(sum(data) / len(data))
+    return finite_mean(
+        (value for value in data if value is not None), name="snapshot field"
+    )
 
 
 def _snapshot_field(snapshot: Optional[Dict[str, Any]], key: str) -> Optional[float]:
-    if not snapshot:
-        return None
-    value = snapshot.get(key)
-    if isinstance(value, (int, float)) and math.isfinite(value):
-        return float(value)
-    return None
+    source = _optional_object(snapshot, "snapshot")
+    return _optional_observation(source.get(key), f"snapshot.{key}")
 
 
 def _snapshot_phi_mean(snapshot: Optional[Dict[str, Any]]) -> Optional[float]:
-    if not snapshot:
-        return None
-    telemetry = snapshot.get("telemetry") or {}
-    canonical = telemetry.get("canonical") or {}
-    phi_map = canonical.get("phi_s")
-    if isinstance(phi_map, dict) and phi_map:
-        return _mean_numeric(phi_map.values())
-    return None
+    source = _optional_object(snapshot, "snapshot")
+    telemetry = _optional_object(source.get("telemetry"), "snapshot telemetry")
+    canonical = _optional_object(telemetry.get("canonical"), "canonical telemetry")
+    phi_map = _optional_object(canonical.get("phi_s"), "structural potential")
+    return _mean_numeric(phi_map.values())
+
+
+def _observation_difference(after: float, before: float) -> float:
+    """Subtract represented observations without hiding overflow or underflow."""
+    return finite_represented_real(
+        Fraction(after) - Fraction(before), "observation difference"
+    )[0]
 
 
 def _compute_telemetry_deltas(
     telemetry: Dict[str, Any],
     snapshots: Optional[Dict[str, Any]],
 ) -> Dict[str, float]:
+    snapshots = _optional_object(snapshots, "telemetry snapshots")
     if not snapshots:
         return {}
-    before = snapshots.get("before") or {}
-    after = snapshots.get("after") or {}
+    before = _optional_object(snapshots.get("before"), "before snapshot")
+    after = _optional_object(snapshots.get("after"), "after snapshot")
     deltas: Dict[str, float] = {}
 
     snapshot_phi = _snapshot_phi_mean(before)
@@ -486,28 +492,23 @@ def _compute_telemetry_deltas(
         ("coherence", snapshot_coherence),
         ("sense_index", snapshot_si),
     ):
-        baseline = telemetry.get(field)
-        if (
-            value is not None
-            and isinstance(baseline, (int, float))
-            and math.isfinite(baseline)
-            and math.isfinite(value)
-        ):
-            deltas[f"manifest_{field}_drift"] = value - float(baseline)
+        baseline = _optional_observation(telemetry.get(field), f"telemetry.{field}")
+        if value is not None and baseline is not None:
+            deltas[f"manifest_{field}_drift"] = _observation_difference(value, baseline)
 
     phi_after = _snapshot_phi_mean(after)
     if snapshot_phi is not None and phi_after is not None:
-        deltas["delta_phi_s"] = float(phi_after) - float(snapshot_phi)
+        deltas["delta_phi_s"] = _observation_difference(phi_after, snapshot_phi)
         deltas["delta_phi_s_snapshot"] = deltas["delta_phi_s"]
 
     coherence_after = _snapshot_field(after, "coherence")
     if snapshot_coherence is not None and coherence_after is not None:
-        deltas["delta_c"] = float(coherence_after) - float(snapshot_coherence)
+        deltas["delta_c"] = _observation_difference(coherence_after, snapshot_coherence)
         deltas["delta_c_snapshot"] = deltas["delta_c"]
 
     sense_after = _snapshot_field(after, "sense_index")
     if snapshot_si is not None and sense_after is not None:
-        deltas["delta_si"] = float(sense_after) - float(snapshot_si)
+        deltas["delta_si"] = _observation_difference(sense_after, snapshot_si)
         deltas["delta_sense_index"] = deltas["delta_si"]
         deltas["delta_sense_snapshot"] = deltas["delta_si"]
 
@@ -525,9 +526,9 @@ def _load_json(path: Path) -> Dict[str, Any]:
 
 
 def _write_json(path: Path, payload: Dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8") as handle:
-        json.dump(payload, handle, indent=2)
+    from tnfr.sdk.utils import export_to_json
+
+    export_to_json(payload, path)
 
 
 def _json_safe(value: Any) -> Any:
@@ -547,16 +548,18 @@ def _json_safe(value: Any) -> Any:
 
 
 def _aggregate_telemetry(results: Sequence[Dict[str, Any]]) -> Dict[str, float]:
-    fields = ["phi_s", "phase_gradient", "phase_curvature", "coherence_length"]
     aggregates: Dict[str, float] = {}
-    for field in fields:
-        values = [
-            res.get("telemetry", {}).get(field)
-            for res in results
-            if res.get("telemetry", {}).get(field) is not None
-        ]
+    telemetry = [
+        _optional_object(res.get("telemetry"), "result telemetry") for res in results
+    ]
+    for field in STRUCTURAL_FIELDS:
+        values = []
+        for source in telemetry:
+            value = _optional_observation(source.get(field), field)
+            if value is not None:
+                values.append(value)
         if values:
-            aggregates[f"{field}_mean"] = sum(values) / len(values)
+            aggregates[f"{field}_mean"] = finite_mean(values, name=field)
             aggregates[f"{field}_min"] = min(values)
             aggregates[f"{field}_max"] = max(values)
     return aggregates
@@ -595,8 +598,7 @@ def _build_summary(
 def main(argv: Optional[Sequence[str]] = None) -> None:
     args = parse_args(argv)
     summary = run(args)
-    json.dump(summary, sys.stdout, indent=2)
-    sys.stdout.write("\n")
+    sys.stdout.write(cast(str, json_dumps(summary, indent=2, allow_nan=False)) + "\n")
 
 
 if __name__ == "__main__":

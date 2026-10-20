@@ -10,7 +10,6 @@ from tests.sine_evidence_helpers import forbid_sine_regeneration
 from tnfr.physics import _organized_parent_collective_actuation as owner
 from tnfr.physics import _organized_parent_constructive_actuation as complete
 
-
 _ERROR = Q(1, 10**10)
 _MEANS = (Q(1, 70000), -Q(1, 30000), Q(1, 60000), Q(1, 90000))
 _PHASES = (Q(1, 17), -Q(1, 19), Q(1, 23), -Q(1, 29))

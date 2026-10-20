@@ -5,7 +5,6 @@ from __future__ import annotations
 import argparse
 import gzip
 import hashlib
-import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -19,6 +18,11 @@ from typing import (
     MutableMapping,
     Sequence,
 )
+
+from tnfr._exact_time import finite_represented_real
+from tnfr.config.parsing import parse_bool
+from tnfr.metrics.common import finite_mean
+from tnfr.utils.io import json_dumps, json_loads, safe_write
 
 STRUCTURAL_KEYS = ("phi_s", "phase_gradient", "phase_curvature", "coherence_length")
 
@@ -34,8 +38,10 @@ class PartitionFileDigest:
 def _load_json(path: Path) -> MutableMapping[str, Any]:
     if not path.is_file():
         raise FileNotFoundError(f"Missing JSON file: {path}")
-    with path.open("r", encoding="utf-8") as handle:
-        return json.load(handle)
+    payload = json_loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError(f"Manifest JSON must be an object: {path}")
+    return payload
 
 
 def _resolve_path(base: Path, candidate: str | None) -> Path | None:
@@ -59,9 +65,13 @@ def _partition_paths(
     manifest: Mapping[str, Any], *, inline: bool, archive_path: Path | None
 ) -> Iterator[str]:
     if inline:
-        for entry in manifest.get("partition_files", []) or []:
-            if isinstance(entry, str) and entry:
-                yield entry
+        entries = manifest.get("partition_files", [])
+        if not isinstance(entries, list):
+            raise ValueError("partition_files must be a list")
+        for entry in entries:
+            if not isinstance(entry, str) or not entry.strip():
+                raise ValueError("partition_files must contain nonempty strings")
+            yield entry
         return
     if archive_path is None:
         raise FileNotFoundError("Archive path required for non-inline partition lists")
@@ -94,16 +104,18 @@ def _structural_ranges(
         values: List[float] = []
         for entry in entries:
             telemetry = entry.get("telemetry", {})
-            if not isinstance(telemetry, Mapping):
+            if telemetry is None:
                 continue
+            if not isinstance(telemetry, Mapping):
+                raise ValueError("entry telemetry must be an object or null")
             value = telemetry.get(key)
-            if isinstance(value, (int, float)):
-                values.append(float(value))
+            if value is not None:
+                values.append(finite_represented_real(value, key)[0])
         if values:
             ranges[key] = {
                 "min": min(values),
                 "max": max(values),
-                "avg": sum(values) / len(values),
+                "avg": finite_mean(values, name=key),
                 "count": float(len(values)),
             }
     return ranges
@@ -117,11 +129,15 @@ def register_manifest(
     archive_path: Path | None = None,
     sample_size: int = 5,
 ) -> Dict[str, Any]:
+    if type(sample_size) is not int or sample_size < 1:
+        raise ValueError("sample_size must be a positive integer")
     summary_path = summary_path.resolve()
     summary = _load_json(summary_path)
 
     base_dir = summary_path.parent
     file_index = summary.get("file_index", {})
+    if not isinstance(file_index, dict):
+        raise ValueError("file_index must be an object")
     default_manifest = file_index.get("manifest")
     manifest_path = (
         manifest_path
@@ -130,7 +146,12 @@ def register_manifest(
     ).resolve()
     manifest = _load_json(manifest_path)
 
-    inline = bool(file_index.get("inline", bool(manifest.get("partition_files"))))
+    raw_inline = file_index.get("inline", bool(manifest.get("partition_files")))
+    if not isinstance(raw_inline, (bool, str)):
+        raise ValueError(
+            "file_index.inline must be Boolean or an explicit Boolean string"
+        )
+    inline = parse_bool(raw_inline)
     archive_candidate = archive_path or _resolve_path(
         base_dir, file_index.get("archive")
     )
@@ -146,7 +167,12 @@ def register_manifest(
         source=digest_source,
     )
 
-    structural_ranges = _structural_ranges(manifest.get("entries", []))
+    entries = manifest.get("entries", [])
+    if not isinstance(entries, list) or any(
+        not isinstance(entry, dict) for entry in entries
+    ):
+        raise ValueError("manifest entries must be a list of objects")
+    structural_ranges = _structural_ranges(entries)
 
     record = {
         "experiment_id": experiment_id,
@@ -174,7 +200,7 @@ def register_manifest(
             "source": digest.source,
         },
         "structural_fields": structural_ranges,
-        "manifest_entries": len(manifest.get("entries", [])),
+        "manifest_entries": len(entries),
     }
     return record
 
@@ -214,14 +240,24 @@ def main(argv: Sequence[str] | None = None) -> int:
         summary_path=args.summary,
         manifest_path=args.manifest,
         archive_path=args.archive,
-        sample_size=max(1, args.sample_size),
+        sample_size=args.sample_size,
     )
 
-    payload = json.dumps(record, indent=2 if args.pretty else None)
+    payload = json_dumps(record, indent=2 if args.pretty else None, allow_nan=False)
     if args.output:
-        args.output.parent.mkdir(parents=True, exist_ok=True)
-        args.output.write_text(
-            payload + ("\n" if args.pretty else ""), encoding="utf-8"
+        sources = (
+            record["summary_path"],
+            record["manifest_path"],
+            record["archive_path"],
+        )
+        if any(
+            source and Path(source).resolve() == args.output.resolve()
+            for source in sources
+        ):
+            raise ValueError("registration output cannot replace a source artifact")
+        safe_write(
+            args.output,
+            lambda stream: stream.write(payload + ("\n" if args.pretty else "")),
         )
     else:
         print(payload)

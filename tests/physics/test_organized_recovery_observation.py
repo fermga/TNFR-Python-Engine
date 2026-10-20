@@ -5,13 +5,14 @@ reserved responses. Local Hessian and decay controls retain the complete
 nonlinear phase law; no previous model's relaxation coefficient is imported.
 """
 
+import hashlib
 from dataclasses import fields
 from fractions import Fraction as Q
-import hashlib
 from pathlib import Path
 
 import pytest
 
+import tnfr.physics._organized_recovery_observation as recovery_owner
 from tests.sine_evidence_helpers import forbid_organized_response_evaluation
 from tnfr.mathematics._exact_linear_algebra import (
     exact_matrix_inverse,
@@ -19,7 +20,6 @@ from tnfr.mathematics._exact_linear_algebra import (
     exact_symmetric_semidefinite,
 )
 from tnfr.mathematics._rational_interval import I, cos, pi_interval, sin
-import tnfr.physics._organized_recovery_observation as recovery_owner
 from tnfr.physics._organized_recovery_observation import bound_recovery_area_observation
 from tnfr.physics._organized_window_observation import bound_loaded_window_observation
 from tnfr.utils.io import json_loads

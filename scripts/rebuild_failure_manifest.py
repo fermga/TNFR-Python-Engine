@@ -12,12 +12,12 @@ possible. Source artifacts cannot also be the destination manifest.
 from __future__ import annotations
 
 import argparse
-import json
 import math
 import sys
-import tempfile
 from pathlib import Path
 from typing import Any, Sequence
+
+from tnfr.utils.io import json_dumps, json_loads, safe_write
 
 
 def _coerce_bottlenecks(raw: Any) -> list[str]:
@@ -66,7 +66,7 @@ def _parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
 
 def _read_record(artifact_path: Path, working_directory: Path) -> dict[str, Any]:
     """Validate only fields copied into the producer-compatible manifest."""
-    payload = json.loads(artifact_path.read_text(encoding="utf-8"))
+    payload = json_loads(artifact_path.read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
         raise ValueError("artifact must contain a JSON object")
     n_value, modulus = payload.get("n"), payload.get("modulus")
@@ -132,26 +132,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             "records": [records_by_n[n] for n in sorted(records_by_n)],
         }
         serialized = (
-            json.dumps(manifest_data, ensure_ascii=False, allow_nan=False, indent=2)
+            json_dumps(manifest_data, ensure_ascii=False, allow_nan=False, indent=2)
             + "\n"
         )
-        manifest_path.parent.mkdir(parents=True, exist_ok=True)
-        temporary_path = None
-        try:
-            with tempfile.NamedTemporaryFile(
-                mode="w",
-                encoding="utf-8",
-                dir=manifest_path.parent,
-                prefix=".failure-manifest-",
-                suffix=".tmp",
-                delete=False,
-            ) as temporary:
-                temporary_path = Path(temporary.name)
-                temporary.write(serialized)
-            temporary_path.replace(manifest_path)
-        finally:
-            if temporary_path is not None:
-                temporary_path.unlink(missing_ok=True)
+        safe_write(manifest_path, lambda stream: stream.write(serialized))
     except (OSError, UnicodeError, ValueError) as exc:
         print(f"Cannot rebuild failure manifest: {exc}", file=sys.stderr)
         return 1

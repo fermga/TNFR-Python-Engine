@@ -32,7 +32,7 @@ from __future__ import annotations
 import math
 import sys
 from abc import ABC, abstractmethod
-from collections.abc import Iterable, Iterator, Mapping
+from collections.abc import Callable, Iterable, Iterator, Mapping
 from concurrent.futures import ProcessPoolExecutor
 from contextlib import contextmanager
 from fractions import Fraction
@@ -68,6 +68,7 @@ from ..gamma import (
     eval_gamma_vectorized,
 )
 from ..mathematics._exact_weighted import exact_weighted_sum_ratio
+from ..mathematics._neighbor_differences import mean_neighbor_difference
 from ..mathematics.unified_numerical import np
 from ..types import NodeId, TNFRGraph, require_finite_real_scalar_epi
 from ..utils import resolve_chunk_size
@@ -78,6 +79,7 @@ __all__ = (
     "AbstractIntegrator",
     "DefaultIntegrator",
     "prepare_integration_params",
+    "rk4_coupled_step",
     "update_epi_via_nodal_equation",
 )
 
@@ -274,6 +276,99 @@ def _rk4_update(epi: Any, dt_step: float, stages: tuple[Any, ...]) -> Any:
     if factor_underflow or not math.isfinite(weighted) or not math.isfinite(result):
         return _exact_rk4_update(epi, dt_step, stages)
     return result
+
+
+def rk4_coupled_step(
+    state: tuple[float, ...],
+    rhs: Callable[[float, tuple[float, ...]], tuple[float, ...]],
+    *,
+    t: float,
+    dt: float,
+) -> tuple[float, ...]:
+    """Advance one explicitly supplied complete vector field by classical RK4.
+
+    Every stage receives an immutable, independently admitted full state and
+    reevaluates ``rhs(time, state)``. This opt-in kernel does not change the
+    graph integrator's held-pressure semantics. The caller owns the complete
+    law, pressure refresh, phase lifts, Gamma admission, boundary conditions,
+    numerical error certificate and association with graph state or history.
+
+    Only nonempty tuples are accepted for state and rates. Scalars use the
+    shared represented-real admission; dt is positive and all three distinct
+    stage clocks must remain finite and strictly ordered after rounding.
+    No clipping, wrapping, hidden substeps or graph writes occur. Callback
+    effects outside its immutable arguments are not rolled back on failure.
+    """
+    if not callable(rhs):
+        raise TypeError("rhs must be callable")
+
+    def vector(values, label, *, size=None):
+        if type(values) is not tuple or not values:
+            raise TypeError(f"{label} must be a nonempty tuple")
+        if size is not None and len(values) != size:
+            raise ValueError(f"{label} dimension differs from the complete state")
+        return tuple(
+            finite_represented_real(value, f"{label}[{index}]")[0]
+            for index, value in enumerate(values)
+        )
+
+    initial = vector(state, "state")
+    start, _ = finite_represented_real(t, "t")
+    step, exact_step = finite_represented_real(dt, "dt")
+    if step <= 0:
+        raise ValueError("dt must be positive")
+    half, _ = finite_represented_real(exact_step / 2, "RK4 half-step")
+    midpoint, _ = finite_represented_real(start + half, "RK4 midpoint time")
+    endpoint, _ = finite_represented_real(start + step, "RK4 endpoint time")
+    if not start < midpoint < endpoint:
+        raise ValueError("RK4 stage clocks must remain strictly ordered")
+
+    def evaluate(time, values):
+        return vector(rhs(time, values), "rhs", size=len(initial))
+
+    def stage(rates, duration):
+        result = []
+        for index, (value, rate) in enumerate(zip(initial, rates, strict=True)):
+            updated = finite_represented_real(
+                euler_update(value, duration, rate), f"RK4 stage[{index}]"
+            )[0]
+            if (
+                updated == 0.0
+                and (Fraction(value) + Fraction(duration) * Fraction(rate)) != 0
+            ):
+                raise ValueError("RK4 stage loses a nonzero represented-input result")
+            result.append(updated)
+        return tuple(result)
+
+    first = evaluate(start, initial)
+    second = evaluate(midpoint, stage(first, half))
+    third = evaluate(midpoint, stage(second, half))
+    fourth = evaluate(endpoint, stage(third, step))
+    result = []
+    for index, (value, *rates) in enumerate(
+        zip(initial, first, second, third, fourth, strict=True)
+    ):
+        updated = finite_represented_real(
+            _rk4_update(value, step, tuple(rates)), f"RK4 endpoint[{index}]"
+        )[0]
+        if (
+            updated == 0.0
+            and (
+                Fraction(value)
+                + exact_step
+                * (
+                    Fraction(rates[0])
+                    + 2 * Fraction(rates[1])
+                    + 2 * Fraction(rates[2])
+                    + Fraction(rates[3])
+                )
+                / 6
+            )
+            != 0
+        ):
+            raise ValueError("RK4 endpoint loses a nonzero represented-input result")
+        result.append(updated)
+    return tuple(result)
 
 
 def _apply_increment_chunk(
@@ -1206,28 +1301,25 @@ def _compute_flux_divergence_centralized(
     """
     Compute flux divergence using centralized finite difference method.
 
-    This scalar neighbor contrast is the fallback for the shared reader below.
+    This scalar neighbor contrast owns the arithmetic for the reader below.
     It is not an incidence divergence of oriented edge fluxes and carries no
     general conservation guarantee.
     """
-    if G.degree(node) == 0:
-        return 0.0
-
-    central_flux = flux_dict.get(node, 0.0)
     neighbors = list(G.neighbors(node))
-
     if not neighbors:
         return 0.0
 
-    # Vectorized neighbor flux collection
-    neighbor_fluxes = [flux_dict.get(neighbor, 0.0) for neighbor in neighbors]
-    mean_neighbor_flux = sum(neighbor_fluxes) / len(neighbor_fluxes)
-
-    # Finite difference with topology-dependent spacing
-    spacing = 1.0 / math.sqrt(len(neighbors))
-    divergence = (central_flux - mean_neighbor_flux) / spacing
-
-    return divergence
+    central_flux = _finite_output(flux_dict.get(node, 0.0), "flux")
+    neighbor_fluxes = [
+        _finite_output(flux_dict.get(neighbor, 0.0), "flux") for neighbor in neighbors
+    ]
+    # Retain differences before reduction. Averaging the absolute field first
+    # can overflow on a constant field or erase a finite common-offset contrast.
+    return mean_neighbor_difference(
+        central_flux,
+        neighbor_fluxes,
+        coefficient=-math.sqrt(len(neighbors)),
+    )
 
 
 def compute_flux_divergence_vectorized(
@@ -1242,26 +1334,13 @@ def compute_flux_divergence_vectorized(
     Applied to the shared pressure contrast J=-L_U*p, it gives
     -diag(sqrt(k))*L_U**2*p. The optional pressure response negates this again,
     producing a positive squared-Laplacian generator, not pressure diffusion.
+    Active readings use represented-real admission before shared neighbor-
+    difference arithmetic. Unrepresentable final outputs reject; a large
+    common offset alone neither creates a divergence nor makes it unavailable.
     """
-    if np is None:
-        return {
-            node: _compute_flux_divergence_centralized(G, flux_dict, node) for node in G
-        }
-    nodes = list(G)
-    if not nodes:
-        return {}
-    index = {node: i for i, node in enumerate(nodes)}
-    values = np.asarray([flux_dict.get(node, 0.0) for node in nodes], dtype=float)
-    counts = np.zeros(len(nodes), dtype=float)
-    sums = np.zeros(len(nodes), dtype=float)
-    # Linear adjacency traversal avoids dense matrices and repeated nodes.index.
-    for i, node in enumerate(nodes):
-        neighbors = list(G.neighbors(node))
-        counts[i] = len(neighbors)
-        sums[i] = math.fsum(float(values[index[neighbor]]) for neighbor in neighbors)
-    means = np.divide(sums, counts, out=np.zeros_like(sums), where=counts > 0)
-    divergence = np.where(counts > 0, (values - means) * np.sqrt(counts), 0.0)
-    return {node: float(divergence[i]) for i, node in enumerate(nodes)}
+    return {
+        node: _compute_flux_divergence_centralized(G, flux_dict, node) for node in G
+    }
 
 
 def _estimate_local_coupling_strength(G: TNFRGraph, node: NodeId) -> float:

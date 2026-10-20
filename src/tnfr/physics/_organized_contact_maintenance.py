@@ -11,14 +11,14 @@ from dataclasses import dataclass, replace
 from fractions import Fraction as Q
 
 from ..mathematics._rational_interval import I, cos, pi_interval
+from ._organized_external_interaction import _Q as _RECOVERED_RADIUS
 from ._organized_external_interaction import (
-    _OrganizedExternalInteraction,
-    _OrganizedExternalInteractionGeometry,
     _SOURCE_FAILURE_NAMES,
     _assess_organized_external_interaction,
     _derive_organized_external_interaction,
+    _OrganizedExternalInteraction,
+    _OrganizedExternalInteractionGeometry,
 )
-from ._organized_external_interaction import _Q as _RECOVERED_RADIUS
 
 _CAPTURE_THRESHOLD = Q(1, 100)
 

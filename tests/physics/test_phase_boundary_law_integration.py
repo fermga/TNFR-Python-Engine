@@ -19,7 +19,6 @@ from tnfr.physics._phase_boundary_information import (
 )
 from tnfr.physics._sine_class_constitutive_comparison import _edge_law
 
-
 PHASORS = (
     (Q(3, 5), Q(4, 5)),
     (Q(-3, 5), Q(4, 5)),

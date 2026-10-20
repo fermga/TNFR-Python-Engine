@@ -1,14 +1,11 @@
 """Core constants.
 
 The exact phase-wrap bound is π; graph-dependent scales need their own
-derivation and domain. The earlier φ/γ/e "tetrahedral correspondence" overlay
-was an anti-magic-number
-naming convention, NOT a derivation from the nodal equation; it has been
-removed and the thresholds below are configured parameters, not automatically
-empirically calibrated or derived from the nodal equation.
+derivation and domain. The thresholds below are configured parameters, not
+automatically calibrated measurements or consequences of the nodal equation.
 The ξ_C estimator has a state-dependent fit and a spectral fallback (1/√λ₂).
-See AGENTS.md §3 and CHANGELOG (tetrad
-correspondence audit).
+See ``theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md`` for diagnostic and control
+premises and ``docs/STRUCTURAL_FIELDS_TETRAD.md`` for field availability.
 """
 
 from __future__ import annotations

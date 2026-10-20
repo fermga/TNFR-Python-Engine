@@ -2,61 +2,44 @@
 
 from __future__ import annotations
 
-import importlib.util
 import json
-import sys
-from pathlib import Path
 
 import pytest
 
 from scripts import rebuild_failure_manifest as recovery
 
 
-@pytest.fixture(scope="module")
-def producer():
-    path = (
-        Path(__file__).resolve().parents[2]
-        / "applications/factorization-lab"
-        / "tnfr_factorization"
-        / "failure_telemetry.py"
-    )
-    spec = importlib.util.spec_from_file_location("manifest_test_producer", path)
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
-    return module
-
-
-def _payload(producer, *, n=97, timestamp=20.0, run_id="failure_97_latest"):
-    return producer.FailureTelemetryRecord(
-        run_id=run_id,
-        artifact_path="previous-machine\\failure.json",
-        timestamp=timestamp,
-        n=n,
-        modulus=13,
-        failure_reason="No candidate; retained observación",
-        failure_stage="spectral",
-        metrics={"candidate_count": 0},
-        bottlenecks=[
-            producer.BottleneckSignal(
-                "no_candidate_clusters",
-                "high",
-                "candidate_count",
-                0.0,
-                1.0,
-                "No candidates",
-            )
+def _payload(*, n=97, timestamp=20.0, run_id="failure_97_latest"):
+    """Supply the historical record format independently of its retired producer."""
+    return {
+        "run_id": run_id,
+        "artifact_path": "previous-machine\\failure.json",
+        "timestamp": timestamp,
+        "n": n,
+        "modulus": 13,
+        "failure_reason": "No candidate; retained observación",
+        "failure_stage": "spectral",
+        "metrics": {"candidate_count": 0},
+        "bottlenecks": [
+            {
+                "code": "no_candidate_clusters",
+                "severity": "high",
+                "metric": "candidate_count",
+                "value": 0.0,
+                "threshold": 1.0,
+                "description": "No candidates",
+            }
         ],
-        recommendations=[],
-        convergence_profile=None,
-        partition_summary=None,
-        partition_aggregation=None,
-        nodal_decoding_snapshot=None,
-        verification_report=None,
-        replay_metadata=None,
-        seed_state_path=None,
-        extra_context={},
-    ).to_mapping()
+        "recommendations": [],
+        "convergence_profile": None,
+        "partition_summary": None,
+        "partition_aggregation": None,
+        "nodal_decoding_snapshot": None,
+        "verification_report": None,
+        "replay_metadata": None,
+        "seed_state_path": None,
+        "extra_context": {},
+    }
 
 
 def _write(path, payload):
@@ -74,7 +57,7 @@ def _args(folder, manifest, *, count=None):
 
 @pytest.mark.parametrize("expected_count", (None, 2))
 def test_latest_per_n_compaction_accepts_arbitrary_numbers_and_portable_paths(
-    tmp_path, monkeypatch, producer, expected_count
+    tmp_path, monkeypatch, expected_count
 ):
     monkeypatch.chdir(tmp_path)
     folder = tmp_path / "señales β"
@@ -89,7 +72,7 @@ def test_latest_per_n_compaction_accepts_arbitrary_numbers_and_portable_paths(
         paths.append(
             _write(
                 folder / (name + ".json"),
-                _payload(producer, n=n, timestamp=timestamp, run_id=name),
+                _payload(n=n, timestamp=timestamp, run_id=name),
             )
         )
     original = {path: path.read_bytes() for path in paths}
@@ -110,9 +93,9 @@ def test_latest_per_n_compaction_accepts_arbitrary_numbers_and_portable_paths(
     assert not list(manifest.parent.glob(".failure-manifest-*.tmp"))
 
 
-def test_historical_bottleneck_codes_remain_compatible(tmp_path, producer):
+def test_historical_bottleneck_codes_remain_compatible(tmp_path):
     folder = tmp_path / "artifacts"
-    payload = _payload(producer)
+    payload = _payload()
     payload["bottlenecks"] = ["low_global_coherence", "no_candidate_clusters"]
     _write(folder / "failure_97_old.json", payload)
     manifest = tmp_path / "manifest.json"
@@ -131,15 +114,19 @@ def test_historical_bottleneck_codes_remain_compatible(tmp_path, producer):
         "boolean-n",
         "timestamp",
         "nonfinite",
+        "duplicate-n",
+        "duplicate-nested",
+        "underflow",
+        "nested-nonfinite",
         "bottleneck",
     ),
 )
 def test_any_malformed_artifact_preserves_the_existing_manifest(
-    tmp_path, producer, capsys, defect
+    tmp_path, capsys, defect
 ):
     folder = tmp_path / "artifacts"
-    _write(folder / "failure_97_valid.json", _payload(producer))
-    bad = _payload(producer, timestamp=1.0, run_id="failure_97_stale")
+    _write(folder / "failure_97_valid.json", _payload())
+    bad = _payload(timestamp=1.0, run_id="failure_97_stale")
     if defect == "non-object":
         bad = []
     elif defect == "missing-n":
@@ -155,6 +142,26 @@ def test_any_malformed_artifact_preserves_the_existing_manifest(
     bad_path = _write(folder / "failure_97_stale.json", bad)
     if defect == "invalid-json":
         bad_path.write_text("{incomplete", encoding="utf-8")
+    elif defect == "duplicate-n":
+        raw = bad_path.read_text(encoding="utf-8")
+        bad_path.write_text(
+            raw.replace('"n": 97', '"n": 13, "n": 97'), encoding="utf-8"
+        )
+    elif defect == "duplicate-nested":
+        raw = bad_path.read_text(encoding="utf-8")
+        bad_path.write_text(
+            raw.replace(
+                '"candidate_count": 0', '"candidate_count": 1, "candidate_count": 0'
+            ),
+            encoding="utf-8",
+        )
+    elif defect in ("underflow", "nested-nonfinite"):
+        raw = bad_path.read_text(encoding="utf-8")
+        token = "1e-999" if defect == "underflow" else "NaN"
+        bad_path.write_text(
+            raw.replace('"candidate_count": 0', '"candidate_count": ' + token),
+            encoding="utf-8",
+        )
     manifest = tmp_path / "manifest.json"
     original = b'{"version":"1.0","records":["original history"]}\n'
     manifest.write_bytes(original)
@@ -166,12 +173,12 @@ def test_any_malformed_artifact_preserves_the_existing_manifest(
 
 
 @pytest.mark.parametrize("condition", ("missing-folder", "empty-folder", "wrong-count"))
-def test_no_empty_or_wrong_count_replacement(tmp_path, producer, condition):
+def test_no_empty_or_wrong_count_replacement(tmp_path, condition):
     folder = tmp_path / "artifacts"
     if condition != "missing-folder":
         folder.mkdir()
     if condition == "wrong-count":
-        _write(folder / "failure_97_valid.json", _payload(producer))
+        _write(folder / "failure_97_valid.json", _payload())
     manifest = tmp_path / "manifest.json"
     original = b"retained manifest\n"
     manifest.write_bytes(original)
@@ -180,8 +187,8 @@ def test_no_empty_or_wrong_count_replacement(tmp_path, producer, condition):
     assert manifest.read_bytes() == original
 
 
-def test_manifest_destination_cannot_replace_a_source_artifact(tmp_path, producer):
-    source = _write(tmp_path / "failure_97_valid.json", _payload(producer))
+def test_manifest_destination_cannot_replace_a_source_artifact(tmp_path):
+    source = _write(tmp_path / "failure_97_valid.json", _payload())
     original = source.read_bytes()
     assert recovery.main(_args(tmp_path, source)) == 1
     assert source.read_bytes() == original

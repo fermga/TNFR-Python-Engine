@@ -13,6 +13,7 @@ from tnfr.errors import TNFRValueError
 from tnfr.operators import apply_glyph
 from tnfr.operators._scale_operator_kernel import propose_scale_operator
 from tnfr.operators.metrics_structural import contraction_metrics
+from tnfr.operators.preconditions import OperatorPreconditionError
 from tnfr.types import Glyph, real_scalar_epi
 
 
@@ -140,11 +141,24 @@ def test_disabled_edge_branch_does_not_consume_boundary_inputs() -> None:
         epi_max=None,
         epsilon="invalid",
         clip_mode=object(),
+        clip_soft_k=object(),
     )
 
     assert proposal.vf_after == pytest.approx(2.2)
     assert proposal.write_epi is False
     assert proposal.epi_after is None
+
+
+@pytest.mark.parametrize("value", ["false", 0, 1, None])
+def test_pure_scale_kernel_requires_a_boolean_edge_branch(value) -> None:
+    with pytest.raises(OperatorPreconditionError, match="EDGE_AWARE_ENABLED"):
+        propose_scale_operator(
+            glyph=Glyph.VAL,
+            factor=1.1,
+            vf_before=2.0,
+            edge_aware_enabled=value,
+            epi_before=0.4,
+        )
 
 
 def test_pure_kernel_rejects_boolean_epi_like_public_scalar_boundary() -> None:

@@ -1,6 +1,8 @@
 """Tests for TNFR self-optimization dry-run support."""
 
+import hashlib
 import json
+import math
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -16,6 +18,7 @@ from tnfr.dynamics.self_optimizing_engine import (
     SelfOptimizationResult,
 )
 from tnfr.engines.self_optimization import TNFRSelfOptimizingEngine
+from tnfr.utils.io import json_loads
 
 
 @pytest.mark.parametrize(
@@ -113,6 +116,92 @@ def test_optimize_automatically_dry_run_creates_snapshot(tmp_path: Path) -> None
     signature_path = snapshot_path.with_suffix(snapshot_path.suffix + ".sha256")
     assert signature_path.exists()
     assert result["signature"] == _read_signature(signature_path)
+    assert result["signature"] == hashlib.sha256(snapshot_path.read_bytes()).hexdigest()
+
+
+@pytest.mark.parametrize("node_count", (1, 2))
+def test_snapshot_coherence_length_preserves_estimator_availability(node_count):
+    from tnfr.physics.fields import (
+        compute_unified_telemetry,
+        estimate_coherence_length_with_provenance,
+    )
+
+    graph = nx.path_graph(node_count)
+    for node in graph:
+        graph.nodes[node].update(EPI=1.0, theta=0.0, nu_f=1.0, delta_nfr=0.0)
+    expected = estimate_coherence_length_with_provenance(graph)
+    raw = compute_unified_telemetry(graph)
+    engine = object.__new__(TNFRSelfOptimizingEngine)
+    snapshot = engine._capture_structural_snapshot(graph)
+    canonical = snapshot["telemetry"]["canonical"]
+
+    assert canonical["xi_c_provenance"]["method"] == expected.method
+    assert canonical["xi_c_provenance"]["fit_quality"] == expected.fit_quality
+    assert canonical["xi_c_available"] is (node_count == 2)
+    if node_count == 1:
+        assert math.isnan(raw["canonical"]["xi_c"])
+        assert canonical["xi_c"] is None
+    else:
+        assert canonical["xi_c"] == expected.value == raw["canonical"]["xi_c"]
+    assert canonical["phi_s"] == {str(node): 0.0 for node in graph}
+    assert json_loads(json.dumps(snapshot, allow_nan=False)) == snapshot
+
+
+def test_invalid_primitive_is_a_failed_snapshot_not_an_unavailable_estimator():
+    graph = nx.path_graph(2)
+    graph.nodes[0]["theta"] = True
+    engine = object.__new__(TNFRSelfOptimizingEngine)
+    snapshot = engine._capture_structural_snapshot(graph)
+    assert snapshot["telemetry"] is None
+    assert snapshot["telemetry_error"]
+    assert graph.nodes[0]["theta"] is True
+
+
+@pytest.mark.parametrize("field", ("xi_c", "phi_s"))
+def test_unexpected_nonfinite_diagnostic_is_not_silently_projected(monkeypatch, field):
+    import tnfr.dynamics.self_optimizing_engine as implementation
+    from tnfr.physics.fields import compute_unified_telemetry
+
+    graph = nx.path_graph(2)
+    actual = compute_unified_telemetry(graph)
+    if field == "xi_c":
+        actual["canonical"][field] = math.nan
+    else:
+        actual["canonical"][field][0] = math.nan
+    monkeypatch.setattr(implementation, "compute_unified_telemetry", lambda _: actual)
+    engine = object.__new__(TNFRSelfOptimizingEngine)
+    snapshot = engine._capture_structural_snapshot(graph)
+    assert snapshot["telemetry"] is None
+    assert snapshot["telemetry_error"]
+    assert json_loads(json.dumps(snapshot, allow_nan=False)) == snapshot
+
+
+@pytest.mark.parametrize("invalid", (math.nan, math.inf, object()))
+def test_dry_run_serialization_failure_preserves_payload_and_signature(
+    tmp_path, invalid
+):
+    directory = tmp_path / "seed"
+    directory.mkdir()
+    payload_path = directory / "node.json"
+    signature_path = directory / "node.json.sha256"
+    payload_path.write_bytes(b'{"retained":true}\n')
+    signature_path.write_bytes(b"retained signature\n")
+    before = {path: path.read_bytes() for path in directory.iterdir()}
+    engine = object.__new__(TNFRSelfOptimizingEngine)
+    with pytest.raises((TypeError, ValueError)):
+        engine._persist_dry_run_payload(
+            {"nested": {"value": invalid}}, tmp_path, "seed", "node"
+        )
+    assert {path: path.read_bytes() for path in directory.iterdir()} == before
+
+
+def test_dry_run_serialization_failure_creates_no_output_directory(tmp_path):
+    engine = object.__new__(TNFRSelfOptimizingEngine)
+    with pytest.raises(ValueError):
+        engine._persist_dry_run_payload(
+            {"value": math.nan}, tmp_path / "not-created", "seed", "node"
+        )
+    assert list(tmp_path.iterdir()) == []
 
 
 def test_optimize_automatically_dry_run_requires_valid_sequence(tmp_path: Path) -> None:

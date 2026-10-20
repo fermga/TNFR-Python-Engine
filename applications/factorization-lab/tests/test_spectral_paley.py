@@ -6,7 +6,9 @@ import json
 import math
 import pathlib
 import sys
+from copy import deepcopy
 from dataclasses import dataclass
+from hashlib import sha256
 from typing import Any, Optional
 
 import numpy as np
@@ -22,11 +24,110 @@ import tnfr_factorization.spectral_paley as sp  # type: ignore[import]  # noqa: 
 from tnfr_factorization import (  # type: ignore[import]  # noqa: E402
     SpectralPaleyFactorizer,
 )
+from tnfr_factorization.partitioning import (  # noqa: E402
+    PaleyPartition,
+    PaleyPartitionTelemetry,
+    PartitionedPaleyGraph,
+)
 
 from tnfr.dynamics.fft_backend import (  # type: ignore[import]  # noqa: E402
     FFTBackendCapabilities,
 )
 from tnfr.sdk.utils import import_from_json  # noqa: E402
+from tnfr.utils.cache import invalidate_function_cache  # noqa: E402
+
+
+def test_partition_hash_matches_declared_bytes_without_reordering_inputs() -> None:
+    partition = PaleyPartition(
+        "left",
+        node_indices=[2, 0, 1],
+        boundary_nodes=[2, 0],
+        candidate_factors=[7, 3],
+    )
+    partitioning = PartitionedPaleyGraph(7, [partition])
+    before = deepcopy(partitioning)
+
+    # Independent wire-format expectation: sorted members, null unavailable
+    # telemetry, and compact JSON keys in lexical order.
+    state_bytes = (
+        b'{"boundary_nodes":[0,2],"candidate_factors":[3,7],"metadata":null,'
+        b'"node_indices":[0,1,2],"partition_id":"left","telemetry":'
+        b'{"coherence_length":null,"notes":"","phase_curvature":null,'
+        b'"phase_gradient":null,"phi_s":null}}'
+    )
+    partition_hash = sha256(state_bytes).hexdigest()
+    chain_bytes = (
+        b'{"algorithm":"sha256","partition_hashes":["'
+        + partition_hash.encode("ascii")
+        + b'"],"version":"1.0"}'
+    )
+    result = sp._generate_partition_hash_chain(partitioning)
+    assert result == {
+        "algorithm": "sha256",
+        "version": "1.0",
+        "partition_count": 1,
+        "total_nodes": 3,
+        "partitions": [
+            {
+                "partition_id": "left",
+                "hash": partition_hash,
+                "node_count": 3,
+                "boundary_count": 2,
+                "factor_count": 2,
+            }
+        ],
+        "chain_hash": sha256(chain_bytes).hexdigest(),
+    }
+    assert partitioning == before
+
+
+def test_partition_hash_preserves_partition_order_and_consumed_state() -> None:
+    left = PaleyPartition(
+        "left", [2, 0, 1], boundary_nodes=[2, 0], candidate_factors=[7, 3]
+    )
+    right = PaleyPartition(
+        "right", [3, 4], telemetry=PaleyPartitionTelemetry(phi_s=0.25)
+    )
+    partitioning = PartitionedPaleyGraph(7, [left, right])
+    baseline = sp._generate_partition_hash_chain(partitioning)
+    left.node_indices.reverse()
+    left.boundary_nodes.reverse()
+    left.candidate_factors.reverse()
+    assert sp._generate_partition_hash_chain(partitioning) == baseline
+
+    reversed_result = sp._generate_partition_hash_chain(
+        PartitionedPaleyGraph(7, [right, left])
+    )
+    assert reversed_result["chain_hash"] != baseline["chain_hash"]
+    assert reversed_result["partitions"] == list(reversed(baseline["partitions"]))
+
+    left.boundary_nodes.pop()
+    changed_boundary = sp._generate_partition_hash_chain(partitioning)
+    assert (
+        changed_boundary["partitions"][0]["hash"] != baseline["partitions"][0]["hash"]
+    )
+    assert changed_boundary["partitions"][1] == baseline["partitions"][1]
+    right.telemetry.phi_s = 0.5
+    changed_telemetry = sp._generate_partition_hash_chain(partitioning)
+    assert (
+        changed_telemetry["partitions"][1]["hash"] != baseline["partitions"][1]["hash"]
+    )
+
+
+def test_partition_hash_does_not_claim_a_complete_checkpoint() -> None:
+    partition = PaleyPartition(
+        "left", [0, 1], telemetry=PaleyPartitionTelemetry(phi_s=0.25)
+    )
+    partitioning = PartitionedPaleyGraph(7, [partition])
+    baseline = sp._generate_partition_hash_chain(partitioning)
+    # These fields are outside the declared hash record, despite belonging
+    # to the partition object. Equality of digests cannot authenticate them.
+    partition.phase_reference = 1.0
+    partition.telemetry.coherence = 0.75
+    partitioning.overlap_policy = "different-policy"
+    assert sp._generate_partition_hash_chain(partitioning) == baseline
+    assert sp._generate_partition_hash_chain(None) is None
+    assert sp._generate_partition_hash_chain(PartitionedPaleyGraph(7, [])) is None
 
 
 def test_certificate_json_preserves_nonfinite_availability_without_mutation(
@@ -178,10 +279,12 @@ def test_nodal_decoder_derives_partition_factors(monkeypatch: MonkeyPatch) -> No
 
 def test_arithmetic_cache_invoked_once(monkeypatch: MonkeyPatch) -> None:
     call_count = {"count": 0}
+    monkeypatch.setenv("TNFR_DISABLE_OPTIMIZER", "1")
 
-    cache_clear = getattr(sp._compute_arithmetic_telemetry, "cache_clear", None)
-    if callable(cache_clear):
-        cache_clear()
+    target = 7 * 11
+    # A previous analysis may have populated the shared hierarchical cache.
+    sp._compute_arithmetic_telemetry(target)
+    invalidate_function_cache(sp._compute_arithmetic_telemetry)
 
     def _fake_prime_factorization(n: int) -> dict[int, int]:
         call_count["count"] += 1
@@ -189,18 +292,22 @@ def test_arithmetic_cache_invoked_once(monkeypatch: MonkeyPatch) -> None:
 
     monkeypatch.setattr(sp, "_prime_factorization", _fake_prime_factorization)
 
-    factorizer = SpectralPaleyFactorizer()
+    factorizer = SpectralPaleyFactorizer(failure_telemetry=False)
 
-    target = 899
-    first = factorizer.analyze(target)
-    second = factorizer.analyze(target)
+    # Exercise two full calls on the represented arithmetic input; optimizer
+    # recommendations and large graph costs are outside this cache contract.
+    try:
+        first = factorizer.analyze(target)
+        second = factorizer.analyze(target)
 
-    assert call_count["count"] == 1
-    # Verify the mocked factorization influenced arithmetic telemetry (τ = 4 for 7·11)
-    assert first.arithmetic_terms.tau == 4
-    assert first.arithmetic_terms == second.arithmetic_terms
-    assert first.candidate_factors == second.candidate_factors
-    assert pytest.approx(first.arithmetic_delta_nfr) == second.arithmetic_delta_nfr
+        assert call_count["count"] == 1
+        # Independent divisor count: 1, 7, 11 and 77.
+        assert first.arithmetic_terms.tau == 4
+        assert first.arithmetic_terms == second.arithmetic_terms
+        assert first.candidate_factors == second.candidate_factors
+        assert pytest.approx(first.arithmetic_delta_nfr) == second.arithmetic_delta_nfr
+    finally:
+        invalidate_function_cache(sp._compute_arithmetic_telemetry)
 
 
 def test_certificate_emission_obeys_grammar(
@@ -303,18 +410,34 @@ def test_env_preference_selects_distributed_backend(monkeypatch: MonkeyPatch) ->
     assert factorizer._fft_backend is fake_backend
 
 
-def test_http_dispatcher_loader(monkeypatch: MonkeyPatch) -> None:
+@pytest.mark.parametrize(
+    ("configured", "expected"), [(None, False), ("false", False), ("true", True)]
+)
+def test_http_dispatcher_loader(
+    monkeypatch: MonkeyPatch, configured: str | None, expected: bool
+) -> None:
     monkeypatch.setenv("TNFR_FFT_DISPATCHER", "http://unit.test/fft")
     monkeypatch.setenv("TNFR_FFT_AUTH_TOKEN", "token123")
+    if configured is None:
+        monkeypatch.delenv("TNFR_FFT_ALLOW_UNSAFE_PICKLE", raising=False)
+    else:
+        monkeypatch.setenv("TNFR_FFT_ALLOW_UNSAFE_PICKLE", configured)
 
     captured: dict[str, Any] = {}
 
     import tnfr.dynamics.fft_dispatchers as dispatchers
 
     class _FakeHTTPDispatcher:
-        def __init__(self, base_url: str, auth_token: str | None = None) -> None:
+        def __init__(
+            self,
+            base_url: str,
+            auth_token: str | None = None,
+            *,
+            allow_unsafe_pickle: bool = False,
+        ) -> None:
             captured["base_url"] = base_url
             captured["auth_token"] = auth_token
+            captured["allow_unsafe_pickle"] = allow_unsafe_pickle
             self.dispatch = lambda action, payload: {
                 "action": action,
                 "payload": payload,
@@ -328,6 +451,15 @@ def test_http_dispatcher_loader(monkeypatch: MonkeyPatch) -> None:
     response = dispatcher("fft", {"value": 7})
     assert response["action"] == "fft"
     assert captured["base_url"].startswith("http://unit.test/fft")
+    assert captured["allow_unsafe_pickle"] is expected
+
+
+def test_http_dispatcher_rejects_unknown_environment_trust_value(
+    monkeypatch: MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("TNFR_FFT_ALLOW_UNSAFE_PICKLE", "not-a-boolean")
+    with pytest.raises(ValueError, match="explicit true/false"):
+        sp._build_http_dispatcher("https://example.invalid")
 
 
 def test_trial_division_fallback_engages(monkeypatch: MonkeyPatch) -> None:
@@ -403,8 +535,12 @@ def test_failure_telemetry_records_when_no_certification(
         (1331, {11}),
     ),
 )
-def test_factorizer_surfaces_true_factors(n: int, expected_factors: set[int]) -> None:
-    factorizer = SpectralPaleyFactorizer(max_nodes=2049)
+def test_factorizer_surfaces_true_factors(
+    n: int, expected_factors: set[int], monkeypatch: MonkeyPatch
+) -> None:
+    # Candidate recovery does not consume the optimizer's word recommendation.
+    monkeypatch.setenv("TNFR_DISABLE_OPTIMIZER", "1")
+    factorizer = SpectralPaleyFactorizer(max_nodes=2049, failure_telemetry=False)
     result = factorizer.analyze(n)
     found = set(result.candidate_factors)
     missing = expected_factors - found

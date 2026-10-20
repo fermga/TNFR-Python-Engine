@@ -152,6 +152,38 @@ class CallbackManager:
             dirty.add(event)
         return func
 
+    def _order_callback_after(
+        self,
+        G: "nx.Graph",
+        event: CallbackEvent | str,
+        name: str,
+        prerequisite: str,
+    ) -> None:
+        """Keep one registered consumer after its existing producer.
+
+        Missing names and already satisfied order are no-ops. Other callbacks
+        retain their relative order; no callback is inserted or executed.
+        """
+        event = _normalize_event(event)
+        _ensure_known_event(event)
+        with self._lock:
+            registry = self._ensure_callbacks_nolock(G)
+            entries = registry.get(event, {})
+            names = tuple(entries)
+            if (
+                name not in entries
+                or prerequisite not in entries
+                or names.index(name) >= names.index(prerequisite)
+            ):
+                return
+            ordered = {}
+            for key, spec in entries.items():
+                if key != name:
+                    ordered[key] = spec
+                if key == prerequisite:
+                    ordered[name] = entries[name]
+            registry[event] = ordered
+
     def invoke_callbacks(
         self,
         G: "nx.Graph",

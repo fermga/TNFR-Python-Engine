@@ -110,8 +110,7 @@ class OptimizationFeedbackLearner:
         """Initialize the SQLite database for feedback storage."""
 
         with sqlite3.connect(self.db_path) as conn:
-            conn.execute(
-                """
+            conn.execute("""
                 CREATE TABLE IF NOT EXISTS verification_feedback (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     n INTEGER NOT NULL,
@@ -135,11 +134,9 @@ class OptimizationFeedbackLearner:
                     factor_pattern TEXT,
                     timestamp REAL
                 )
-            """
-            )
+            """)
 
-            conn.execute(
-                """
+            conn.execute("""
                 CREATE TABLE IF NOT EXISTS optimization_strategies (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     context_pattern TEXT NOT NULL UNIQUE,
@@ -150,8 +147,7 @@ class OptimizationFeedbackLearner:
                     sample_count INTEGER,
                     last_updated REAL
                 )
-            """
-            )
+            """)
 
             conn.execute(
                 "CREATE INDEX IF NOT EXISTS idx_feedback_n ON verification_feedback(n)"
@@ -216,12 +212,10 @@ class OptimizationFeedbackLearner:
             conn.row_factory = sqlite3.Row
 
             # Get all feedback data
-            rows = conn.execute(
-                """
+            rows = conn.execute("""
                 SELECT * FROM verification_feedback 
                 ORDER BY timestamp DESC LIMIT 1000
-            """
-            ).fetchall()
+            """).fetchall()
 
         if len(rows) < min_samples:
             return FeedbackAnalysis(

@@ -2,6 +2,6 @@
 # avoids carrying retired development paths or stale egg-info file inventories.
 # Setuptools adds its generated distribution metadata after this template.
 global-exclude *
-include MANIFEST.in pyproject.toml README.md LICENSE.md CITATION.cff CHANGELOG.md
+include MANIFEST.in pyproject.toml README.md LICENSE.md CITATION.cff
 recursive-include src/tnfr *.py *.pyi *.typed *.json
 include scripts/tnfr_is_prime.py

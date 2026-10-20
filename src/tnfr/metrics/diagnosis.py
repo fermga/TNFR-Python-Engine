@@ -7,7 +7,6 @@ from collections import deque
 from collections.abc import Mapping, MutableMapping, Sequence
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
-from functools import partial
 from operator import ge, le
 from statistics import StatisticsError, fmean
 from typing import Any, Callable, Iterable, cast
@@ -44,8 +43,8 @@ from ..utils import (
 )
 from .coherence import (
     CoherenceMatrixPayload,
+    _all_local_phase_sync_weighted,
     coherence_matrix,
-    local_phase_sync_weighted,
 )
 from .common import _coerce_jobs, compute_dnfr_accel_max, min_max_range, normalize_dnfr
 from .trig_cache import compute_theta_trig, get_trig_cache
@@ -798,24 +797,18 @@ def dissonance_events(G: TNFRGraph, ctx: DiagnosisSharedState | None = None) -> 
     dnfr_max = float(norms.get("dnfr_max", 1.0)) or 1.0
     nodes: list[NodeId] = list(G.nodes())
     coherence_nodes, weights = coherence_matrix(G, _record_history=False)
-    weight_index = (
-        {node: index for index, node in enumerate(coherence_nodes)}
-        if coherence_nodes is not None
-        else {}
+    local_sync = (
+        _all_local_phase_sync_weighted(G, coherence_nodes, weights)
+        if coherence_nodes is not None and weights is not None
+        else None
     )
     for n in nodes:
         nd = G.nodes[n]
         dn = normalize_dnfr(nd, dnfr_max)
-        if coherence_nodes is None or weights is None:
+        if local_sync is None:
             Rloc = 0.0
         else:
-            Rloc = local_phase_sync_weighted(
-                G,
-                n,
-                nodes_order=coherence_nodes,
-                W_row=weights,
-                node_to_index=weight_index,
-            )
+            Rloc = local_sync[n]
         st = bool(nd.get("_disr_state", False))
         if (
             (not st)
@@ -838,15 +831,16 @@ def dissonance_events(G: TNFRGraph, ctx: DiagnosisSharedState | None = None) -> 
 
 
 def register_diagnosis_callbacks(G: TNFRGraph) -> None:
-    """Attach diagnosis observers (Si/dissonance tracking) to ``G``."""
+    """Attach stable callbacks; each observation resolves live worker settings.
 
-    raw_jobs = G.graph.get("DIAGNOSIS_N_JOBS")
-    n_jobs = _coerce_jobs(raw_jobs)
+    Registering again is idempotent under the callback manager's strict policy.
+    The optional explicit ``_diagnosis_step(n_jobs=...)`` override is unchanged.
+    """
 
     callback_manager.register_callback(
         G,
         event=CallbackEvent.AFTER_STEP.value,
-        func=partial(_diagnosis_step, n_jobs=n_jobs),
+        func=_diagnosis_step,
         name="diagnosis_step",
     )
     callback_manager.register_callback(

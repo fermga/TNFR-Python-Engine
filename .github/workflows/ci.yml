@@ -117,6 +117,10 @@ jobs:
         continue-on-error: true
         run: python -m pydocstyle src/tnfr
 
+      - name: Collect the complete retained test inventory
+        if: matrix.python-version == '3.11'
+        run: python -m pytest tests --collect-only -q
+
       - name: Run routine engine and API tests
         if: matrix.python-version != '3.11'
         run: python -m pytest -n 2 --dist loadfile --junitxml=test-results/pytest.xml

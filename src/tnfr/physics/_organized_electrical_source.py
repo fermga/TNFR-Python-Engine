@@ -13,11 +13,10 @@ from fractions import Fraction as Q
 from .._exact_time import exact_or_represented_real as _exact
 from ..mathematics._rational_interval import pi_interval
 from ._organized_joint_resources import (
-    _OrganizedJointResources,
     _assess_organized_joint_resources,
+    _OrganizedJointResources,
 )
 from ._organized_slot_registration import _derive_organized_slot_registration
-
 
 _HISTORY_MARGINS = frozenset(
     (

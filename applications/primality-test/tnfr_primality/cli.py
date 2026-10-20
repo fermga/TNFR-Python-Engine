@@ -6,13 +6,16 @@ Examples::
     python -m tnfr_primality.cli --batch --optimized 17 97
     python -m tnfr_primality.cli --validate 1000
 
-This parser does not accept --advanced, --cached or --infrastructure-status;
-those belong to the separate advanced interface where supported. Validation
-and timings concern finite arithmetic inputs, not the complete TNFR theory."""
+The module and installed command share this dependency-free parser. Retired
+advanced adapter options are not accepted. Validation and timings concern
+finite arithmetic inputs, not the complete TNFR theory."""
 
 from __future__ import annotations
 
 import argparse
+import json
+import math
+import sys
 import time
 from typing import List
 
@@ -20,20 +23,45 @@ from typing import List
 from .core import tnfr_is_prime, validate_tnfr_theory
 from .optimized import OptimizedTNFRPrimality, performance_comparison
 
-# Try to import advanced implementations
-try:
-    from .advanced_core import (
-        HAS_TNFR_INFRASTRUCTURE,
-        cached_tnfr_is_prime_advanced,
-        get_infrastructure_status,
-        get_system_info,
-        tnfr_is_prime_advanced,
-        validate_tnfr_theory_advanced,
-    )
 
-    HAS_ADVANCED = True
-except ImportError:
-    HAS_ADVANCED = False
+def _json_output(args) -> None:
+    """Emit basic arithmetic results, without importing optional engine adapters."""
+    optimizer = OptimizedTNFRPrimality()
+    if args.validate is not None:
+        payload = validate_tnfr_theory(args.validate)
+    elif args.benchmark is not None:
+        payload = optimizer.benchmark(args.benchmark)
+    elif args.sieve is not None:
+        payload = {"primes": optimizer.sieve_primes(args.sieve)}
+    elif args.compare:
+        payload = performance_comparison(args.numbers)
+    else:
+        cached = args.optimized or args.batch
+        evaluate = optimizer.is_prime if cached else tnfr_is_prime
+        payload = []
+        for number in args.numbers:
+            start = time.perf_counter()
+            prime, pressure = evaluate(number)
+            available = math.isfinite(pressure)
+            if not available and not (
+                number < 2 and pressure == math.inf and prime is False
+            ):
+                raise ValueError("unexpected non-finite arithmetic pressure")
+            payload.append(
+                {
+                    "number": number,
+                    "is_prime": prime,
+                    "delta_nfr": pressure if available else None,
+                    "delta_nfr_available": available,
+                    "method": "Cached" if cached else "Standard",
+                    "time_ms": (time.perf_counter() - start) * 1000,
+                }
+            )
+        if args.stats and cached:
+            print(
+                json.dumps(optimizer.get_statistics(), allow_nan=False), file=sys.stderr
+            )
+    print(json.dumps(payload, allow_nan=False, indent=2))
 
 
 def main(argv: List[str] | None = None) -> int:
@@ -45,7 +73,7 @@ def main(argv: List[str] | None = None) -> int:
 Examples:
   python -m tnfr_primality.cli 17 97 997 9973          # Test specific numbers
   python -m tnfr_primality.cli --timing 982451653      # With timing info
-  python -m tnfr_primality.cli --benchmark 10000       # Performance benchmark  
+  python -m tnfr_primality.cli --benchmark 10000       # Performance benchmark
   python -m tnfr_primality.cli --batch --optimized 2 3 5 7  # Batch mode
   python -m tnfr_primality.cli --validate 1000         # Compare finite arithmetic results
 
@@ -76,7 +104,10 @@ Arithmetic criterion (exact arithmetic, n >= 2, positive coefficients):
         help="Batch processing mode for multiple numbers",
     )
     parser.add_argument(
-        "--benchmark", type=int, metavar="N", help="Run performance benchmark up to N"
+        "--benchmark",
+        type=int,
+        metavar="N",
+        help="Time a declared sample bounded by N; not every integer in the range",
     )
     parser.add_argument(
         "--validate",
@@ -89,6 +120,11 @@ Arithmetic criterion (exact arithmetic, n >= 2, positive coefficients):
     )
     parser.add_argument("--stats", action="store_true", help="Show detailed statistics")
     parser.add_argument(
+        "--json-output",
+        action="store_true",
+        help="Emit one strict JSON result document",
+    )
+    parser.add_argument(
         "--sieve",
         type=int,
         metavar="N",
@@ -96,9 +132,21 @@ Arithmetic criterion (exact arithmetic, n >= 2, positive coefficients):
     )
 
     args = parser.parse_args(argv)
+    for name, minimum in (("validate", 2), ("benchmark", 3), ("sieve", 0)):
+        value = getattr(args, name)
+        if value is not None and value < minimum:
+            parser.error(f"--{name} must be at least {minimum}")
+    if not args.numbers and all(
+        value is None for value in (args.validate, args.benchmark, args.sieve)
+    ):
+        print("Error: No numbers provided for testing", file=sys.stderr)
+        return 1
+    if args.json_output:
+        _json_output(args)
+        return 0
 
     # Validation mode
-    if args.validate:
+    if args.validate is not None:
         print(
             f"Comparing the arithmetic predicate with trial division up to {args.validate}..."
         )
@@ -124,8 +172,8 @@ Arithmetic criterion (exact arithmetic, n >= 2, positive coefficients):
         return 0
 
     # Benchmark mode
-    if args.benchmark:
-        print(f"Running TNFR primality benchmark up to {args.benchmark:,}...")
+    if args.benchmark is not None:
+        print(f"Timing an arithmetic sample bounded by {args.benchmark:,}...")
         print("=" * 60)
 
         optimizer = OptimizedTNFRPrimality()
@@ -145,7 +193,7 @@ Arithmetic criterion (exact arithmetic, n >= 2, positive coefficients):
         return 0
 
     # Sieve mode
-    if args.sieve:
+    if args.sieve is not None:
         print(
             f"Generating primes up to {args.sieve:,} using a classical sieve and arithmetic-pressure checks..."
         )
@@ -184,12 +232,6 @@ Arithmetic criterion (exact arithmetic, n >= 2, positive coefficients):
 
         return 0
 
-    # Regular testing mode
-    if not args.numbers:
-        print("Error: No numbers provided for testing")
-        print("Use --help for usage information")
-        return 1
-
     # Choose implementation
     if args.optimized or args.batch:
         optimizer = OptimizedTNFRPrimality()
@@ -223,7 +265,7 @@ Arithmetic criterion (exact arithmetic, n >= 2, positive coefficients):
                 else:
                     print(f"{n:12d}  {str(is_prime):>8}  {delta_nfr:14.6f}")
 
-            print(f"\nBatch Summary:")
+            print("\nBatch Summary:")
             print(f"Total numbers: {len(args.numbers)}")
             print(f"Batch time: {batch_time*1000:.2f} ms")
             print(

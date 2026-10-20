@@ -1633,7 +1633,7 @@ Its finite common-host exclusions, complete-flow convergence and remaining
 nonseparable stationary feasibility question are unchanged. No
 unit-contact stable target or unit-contact winding loss has been
 established. The
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#contact-maintenance-certificate-admission)
+[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#deferred-work-and-reopening-conditions)
 owns that unresolved dependency.
 
 The result gives no autonomous contact selector, event reservoir,

@@ -48,6 +48,8 @@ from tnfr.sdk.fluent import NAMED_SEQUENCES
         {"probability": math.nan},
         {"probability": -0.1},
         {"probability": 1.1},
+        {"probability": Fraction(1, 10**400)},
+        {"probability": Fraction(10**400 + 1, 10**400)},
         {"name": " "},
         {"name": 3},
     ],
@@ -131,6 +133,23 @@ def test_repeated_seeded_topology_and_word_match_in_current_runtime():
         run_study(spec).to_dict()
         == run_study(StudySpec.from_dict(spec.to_dict())).to_dict()
     )
+
+
+def test_report_retains_declared_word_if_registry_changes_during_execution(monkeypatch):
+    original_evolve = Network.evolve
+    spec = StudySpec(nodes=2, seed=37)
+    declared_word = list(NAMED_SEQUENCES[spec.sequence])
+
+    def evolve_then_replace_registry(self, **kwargs):
+        result = original_evolve(self, **kwargs)
+        monkeypatch.setitem(NAMED_SEQUENCES, spec.sequence, ["emission", "silence"])
+        return result
+
+    monkeypatch.setattr(Network, "evolve", evolve_then_replace_registry)
+    result = run_study(spec).to_dict()
+    assert result["execution"]["sequence"]["operators"] == declared_word
+    assert list_sequences(spec.sequence)["operators"] == ["emission", "silence"]
+    assert result["execution"]["cycles_completed"] == 1
 
 
 def test_isolated_random_node_keeps_the_actual_resonance_u3_rejection():

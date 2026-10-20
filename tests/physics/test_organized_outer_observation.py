@@ -14,7 +14,6 @@ from tests.sine_evidence_helpers import forbid_sine_regeneration
 from tnfr.physics import _organized_outer_observation as owner
 from tnfr.physics._sine_preparation import _prepared_degree_four_probe_remainder
 
-
 _EPSILON = Q(1, 10)
 _DELAY = Q(1, 100000)
 _FORM = Q(1, 100)

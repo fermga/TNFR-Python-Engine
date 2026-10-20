@@ -8,6 +8,7 @@ correctly exposed through the simplified Network API.
 from __future__ import annotations
 
 import math
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
@@ -565,18 +566,40 @@ class TestNodalDynamicsBridge:
 
 
 class TestSDKFactorizationBridge:
-    """SDK bridge between canonical factorization and network telemetry."""
+    """Report adaptation remains usable with explicitly supplied legacy results."""
 
-    def test_tnfr_factorize_returns_report(self):
+    @pytest.fixture
+    def legacy_result(self, monkeypatch):
+        from tnfr.sdk import simple
+
+        def external(n, **options):
+            assert n == 91
+            assert options == {"modulus": None, "trace_certificates": False}
+            return SimpleNamespace(
+                n=n,
+                modulus=97,
+                candidate_factors=[7, 13],
+                tnfr_certified_factors=[],
+                coherence_score=0.5,
+                arithmetic_delta_nfr=2.0,
+                arithmetic_epi=1.0,
+                arithmetic_nu_f=0.75,
+            )
+
+        monkeypatch.setattr(simple, "legacy_factorize", external)
+
+    def test_tnfr_factorize_returns_report(self, legacy_result):
         report = TNFR.factorize(91)
         assert isinstance(report, FactorizationReport)
         assert report.n == 91
-        assert report.modulus > 0
-        assert isinstance(report.candidate_factors, list)
-        assert isinstance(report.telemetry, dict)
-        assert "delta_nfr" in report.telemetry
+        assert report.modulus == 97
+        assert report.candidate_factors == [7, 13]
+        assert report.tnfr_certified_factors == []
+        assert report.telemetry["delta_nfr"] == 2.0
 
-    def test_network_factorize_includes_synergy(self, small_ring: Network):
+    def test_network_factorize_includes_synergy(
+        self, small_ring: Network, legacy_result
+    ):
         report = small_ring.factorize(91)
         assert isinstance(report, FactorizationReport)
         assert report.network_synergy is not None
@@ -585,7 +608,7 @@ class TestSDKFactorizationBridge:
 
 
 class TestSDKPrimalityBridge:
-    """SDK bridge between canonical primality module and network telemetry."""
+    """SDK bridge between static arithmetic descriptors and network telemetry."""
 
     def test_tnfr_primality_returns_report(self):
         report = TNFR.primality(97)
@@ -1027,11 +1050,7 @@ class TestFractalResonantNode:
         assert refresh.calls == 0
 
     def test_evolve_record_populates_rhythm_history(self):
-        """evolve(record=True) records the canonical pulse-in-motion series.
-
-        The engine's own metrics step samples kuramoto_R / C_steps after each
-        cycle, surfaced by history() -- the resonance forming, not a snapshot.
-        """
+        """Record diagnostic samples after each complete operator-word cycle."""
         import random
 
         from tnfr.alias import set_attr
@@ -1047,7 +1066,7 @@ class TestFractalResonantNode:
         assert len(hist["kuramoto_R"]) == 5
         assert len(hist["C_steps"]) == 5
         assert all(0.0 <= r <= 1.0 for r in hist["kuramoto_R"])
-        # the per-NFR pulses synchronize over the run (the rhythm forms)
+        # This prepared case increases alignment over the recorded cycles.
         assert hist["kuramoto_R"][-1] > hist["kuramoto_R"][0]
 
     def test_evolve_without_record_keeps_fast_path(self):

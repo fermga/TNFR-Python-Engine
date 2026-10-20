@@ -7,7 +7,6 @@
 pressure, diffusion, phase-response and constitutive owners linked below supply
 the separate dynamical calculations.
 **Tests**: `tests/physics/test_diffusion_energy_balance.py`, `tests/physics/test_variational.py`, `tests/physics/test_symplectic_substrate.py`, `tests/physics/test_metriplectic_product.py`, `tests/physics/test_symplectic_graph_realizability.py`, `tests/physics/test_constitutive_variational_scope.py`
-**Updated**: 2026-10-07
 
 ---
 

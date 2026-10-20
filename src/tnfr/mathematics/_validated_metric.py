@@ -236,6 +236,84 @@ def _metric_error_upper(metric, coordinate_errors):
     return scale * sqrt(I(square)).hi
 
 
+def metric_taylor_observation_boxes(step, flow, *, bin_count):
+    """Enclose every time in equal bins of one already admitted metric step.
+
+    Return ``(elapsed_lower, elapsed_upper, coordinate_box)`` triples, with
+    exact rational elapsed endpoints. Center jets are rebuilt at the original
+    step time. The retained whole-tube Taylor remainder is scaled by
+    ``(elapsed/duration)**(order+1)``; it is not an endpoint-only error.
+    The incoming metric ball receives its whole-step growth bound, including
+    time zero when the supplied rate is negative. No observation box replaces
+    that ball, resets the source, or starts another flow step.
+
+    This arithmetic requires an already admitted ``ValidatedMetricTaylorStep``
+    for the same supplied field. It does not authenticate a serialized step,
+    reestablish its Picard/domain or Jacobian premises, or validate the origin
+    of its retained derivative remainder. Evidence readers must establish
+    those associations first. Cached projection/growth factors are unused:
+    they are rebuilt from the exact metric, rate, radius and duration.
+    Prescribed-time fields retain the original absolute Taylor start time.
+    The bin-count limit is a work policy, not a mathematical restriction.
+    """
+    if type(step) is not ValidatedMetricTaylorStep:
+        raise TypeError("an admitted ValidatedMetricTaylorStep is required")
+    if not callable(flow):
+        raise TypeError("flow must be callable")
+    if type(bin_count) is not int or not 1 <= bin_count <= 4096:
+        raise ValueError("bin_count must be an integer between 1 and 4096")
+    center = tuple(_exact(value) for value in _ordered(step.initial_center, "center"))
+    size = len(center)
+    if not 1 <= size <= MAX_COMPARISON_DIMENSION:
+        raise ValueError("observation dimension outside the shared metric domain")
+    duration, time, radius, rate = map(
+        _exact,
+        (step.duration, step.time, step.initial_radius, step.growth_rate_upper_bound),
+    )
+    if duration <= 0 or min(time, radius) < 0:
+        raise ValueError("require positive duration and nonnegative time/radius")
+    order = step.order
+    if type(order) is not int or not 1 <= order <= MAX_ORDER:
+        raise ValueError("observation order outside the shared Taylor domain")
+    remainder = tuple(
+        I.coerce(value)
+        for value in _ordered(step.local_remainder_bounds, "Taylor remainder")
+    )
+    if len(remainder) != size:
+        raise ValueError("Taylor remainder must retain every coordinate")
+    clock = step.prescribed_time_interval
+    if clock is not None and (
+        type(clock) is not I or clock != I(time, time + duration)
+    ):
+        raise ValueError("prescribed time interval differs from the admitted step")
+    metric = _admit_metric(step.metric, size)
+    inverse = exact_matrix_inverse(metric)
+    projections = tuple(sqrt(I(inverse[i][i])).hi for i in range(size))
+    growth = max(Q(1), _growth_upper(rate * duration))
+    errors = tuple(growth * radius * factor for factor in projections)
+    series = flow_jets(
+        tuple(I(value) for value in center),
+        order,
+        flow,
+        prescribed_time=I(time) if clock is not None else None,
+    )
+    result = []
+    for index in range(bin_count):
+        lower, upper = duration * index / bin_count, duration * (index + 1) / bin_count
+        elapsed = I(lower, upper)
+        # Normalize before interval division: duration**(order+1) may be
+        # smaller than the absolute interval grid without being zero.
+        scale = I(Q(index, bin_count), Q(index + 1, bin_count)) ** (order + 1)
+        box = []
+        for row, residual, error in zip(series, remainder, errors, strict=True):
+            value = row[-1]
+            for coefficient in reversed(row[:-1]):
+                value = value * elapsed + coefficient
+            box.append(value + residual * scale + I(-error, error))
+        result.append((lower, upper, tuple(box)))
+    return tuple(result)
+
+
 def validated_metric_taylor_step(
     center,
     radius,

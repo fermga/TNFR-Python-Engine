@@ -17,7 +17,6 @@ from .._exact_time import exact_or_represented_real as _exact
 from ..mathematics._rational_interval import INTERVAL_METHOD, I, pi_interval
 from .relational_observations import _ordered
 
-
 # These orders specify the input coordinates, not a second topology catalog.
 _MUTUAL_PAIRS = tuple((a, b) for a in range(6) for b in range(a + 1, 6))
 _WHEEL_PAIRS = tuple((a, b) for a, b in _MUTUAL_PAIRS if b == 5 or (b - a) in (1, 4))

@@ -240,16 +240,13 @@ class TNFRInteractiveValidator:
 
     def _generate_by_pattern(self) -> None:
         """Generate sequence by selecting structural pattern."""
-        print("\nCommon structural patterns:")
+        from ..operators.grammar_types import StructuralPattern
+
+        print("\nRegistered pattern labels (heuristic, not dynamical guarantees):")
         patterns = [
-            "BOOTSTRAP",
-            "THERAPEUTIC",
-            "STABILIZE",
-            "REGENERATIVE",
-            "EXPLORATION",
-            "TRANSFORMATIVE",
-            "COUPLING",
-            "SIMPLE",
+            pattern.name
+            for pattern in StructuralPattern
+            if pattern != StructuralPattern.UNKNOWN
         ]
         for i, pattern in enumerate(patterns, 1):
             print(f"  {i}. {pattern}")
@@ -579,17 +576,17 @@ class TNFRInteractiveValidator:
 
     def _explain_patterns(self) -> None:
         """Explain structural patterns."""
+        from ..operators.grammar_types import StructuralPattern
+
         print()
-        print("Structural Patterns:")
+        print("Registered pattern labels:")
         print()
-        print("  BOOTSTRAP       - Initialize new nodes/systems")
-        print("  THERAPEUTIC     - Healing and stabilization")
-        print("  STABILIZE       - Maintain coherent structure")
-        print("  REGENERATIVE    - Self-renewal and growth")
-        print("  EXPLORATION     - Discovery with dissonance")
-        print("  TRANSFORMATIVE  - Phase transitions")
-        print("  COUPLING        - Network formation")
-        print("  SIMPLE          - Minimal effective sequences")
+        for pattern in StructuralPattern:
+            if pattern != StructuralPattern.UNKNOWN:
+                print(f"  {pattern.name}: {pattern.value}")
+        print(
+            "Labels describe detected word patterns, not formation or therapeutic effects."
+        )
         print()
 
     def _ask_yes_no(self, prompt: str) -> bool:

@@ -1,22 +1,54 @@
 # TNFR examples
 
-Examples demonstrate declared constructions, APIs and conditional results. Their
-numbers and historical filenames are discovery aids, not a ranking of scientific
-validity. The [theory index](../theory/README.md) owns claim status; the
+Examples exercise organized mathematical objects, their evolution, interaction
+and observation under explicit laws. Choose a capability and its assumptions
+before running an instrument. The [theory index](../theory/README.md) owns
+definitions and mathematical scope; the
 [execution plan](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-owns the active research queue. Running an example does not reopen a parked branch.
+owns research priorities. File numbers are stable identifiers, not a required
+learning order or a sequence of research milestones.
 
-The [curvature safety illustration](08_emergent_geometry/k_phi_safety_demo.py)
-compares supplied WS-graph field observations before and after operator events.
-Its fit and safety labels are configured advisories, not a stability theorem.
-It moved from `benchmarks/`; the single-use topology helper was removed while
-preserving the declared preparation.
+## Begin with an organized mathematical object
+
+Install the repository and run the introductory example:
+
+```bash
+python -m pip install -e .
+python examples/01_foundations/01_hello_world.py
+```
+
+[Example 01](01_foundations/01_hello_world.py) prepares a five-node cyclic
+organization with nonuniform signed form, circular phase and held capacity.
+Under its explicitly selected native relational law, the SDK certifies a
+winding-one recovery class, executes one shared finite step and assesses the
+resulting state again. The report retains the full state and law: winding
+identifies a geometric class, not everything needed to predict the object's
+response.
+
+The initial organization is supplied. Each capture certificate supports ideal
+continuous recovery from its own snapshot; the computed finite-step response
+and numerical defect are separate evidence. This provides a small working
+object whose geometry, dynamics and recovery conditions can be inspected.
+Continue with the [recovery-report guide](../docs/guides/relational/RELATIONAL_CAPTURE_AND_MEMORY.md#read-an-organized-objects-recovery-report)
+and [native execution guide](../docs/guides/relational/RELATIONAL_EXECUTION.md#execute-the-conditional-relational-model).
+
+Choose the continuation that answers your question:
+
+| Capability | Entry point | Evidence and scope |
+| --- | --- | --- |
+| Evolve a prepared organization and account for regional exchange | [Example 180](08_emergent_geometry/180_relational_exchange.py) | Four joint native-law steps, unequal and zero capacities, storage increments and Euler defects; detached two-ring snapshots compare capture hypotheses |
+| Inspect conditional formation and response | [Formed-class workflow](../docs/guides/relational/SINE_PATTERNS.md#sine-formed-class-pair) and [response comparison](../docs/guides/relational/SINE_PATTERNS.md#sine-formed-class-response) | The separate normalized-sine law, with its own preparation, uncertainty and certificate |
+| Apply a supplied operator word | [Reproducible study](01_foundations/reproducible_study.py) and [CLI/SDK guide](../docs/CLI_AND_SDK.md) | A retained study declaration and finite execution report; grammar, target state and event admission are separate from continuous recovery |
+
+The first route extends the native introductory object. The other routes
+select different execution contracts; a theorem or certificate transfers only
+when its complete premises match. A study export is not a resumable checkpoint.
 
 ## Start with the intended task
 
 | Directory | Use and authority | Interpretation |
 | --- | --- | --- |
-| `01_foundations` | SDK and [grammar scope](../theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md) | Supplied preparations, words and state ensembles |
+| `01_foundations` | Organized-object introduction, SDK and [grammar scope](../theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md) | Prepared objects with conditional recovery, supplied words and state ensembles |
 | `02_physics_regimes` | [Diffusion certificates](../theory/TNFR_DIFFUSION_STABILITY_THEOREM.md), diagnostics and auxiliary models | Read each model's hypotheses; a diagnostic decrease is not general stability |
 | `03_riemann_zeta` | Finite instruments in the [Riemann notebook](../theory/TNFR_RIEMANN_RESEARCH_NOTES.md) | Parked comparisons; disclose supplied zeros/primes |
 | `04_riemann_L_twisted` | Character/L-function instruments in the same [notebook](../theory/TNFR_RIEMANN_RESEARCH_NOTES.md) | Supplied arithmetic data and finite comparisons, not generalized RH |
@@ -30,36 +62,27 @@ automaton examples reuse `_flat_grammar_model.py`; arithmetic and physical
 examples reuse their package owners. A finite fixture may recur as a controlled
 comparison without constituting a second implementation of its governing law.
 
-Install the repository before running a selected entry point:
-
-```bash
-python -m pip install -e .
-python examples/01_foundations/01_hello_world.py
-python examples/01_foundations/04_operator_sequences.py
-python examples/01_foundations/10_simplified_sdk_showcase.py
-```
-
-Example 01 is the minimal SDK entry point. Example 04 separates flat grammar
-admission from a deliberately illustrative pressure proxy. Example 10 surveys
-the topology builders and configured SDK operations. Example 07 is a larger
-prepared-state ensemble, not part of this introductory command list.
-
-For a retained declaration and finite execution report, use
-[reproducible_study.py](01_foundations/reproducible_study.py) and the
-[shared CLI/SDK guide](../docs/CLI_AND_SDK.md). The same declaration can be run
-through either interface; its export is not a complete resumable checkpoint.
-
 Optional dependencies vary by script. Plotting examples require `viz-basic`;
 examples 91 and 92 additionally require `scikit-learn`, and 92 downloads and
 caches UCI data. The Torch demonstration uses `compute-torch`. Read module
 docstrings and available `--help` before an explicit run; the directory is not an
 instruction to execute every file. Importing a demonstration does not start its
-command-line workflow. Some older examples still configure imports or plotting
+command-line workflow. Some demonstrations configure imports or plotting
 defaults at module scope, so this is not a promise of side-effect-free imports.
 Package ownership belongs to [Architecture](../ARCHITECTURE.md), and verification
 requirements to [Testing](../TESTING.md).
 
 ## Retained controls and shared owners
+
+[Example 04](01_foundations/04_operator_sequences.py) is a supplementary
+grammar control: it compares flat word admission with an independent,
+illustrative pressure proxy. It executes no operators on an evolving object.
+When adding operator events, use the [event contracts](../docs/contracts/OPERATOR_EVENTS.md)
+and their live-state prerequisites as well as grammar admission.
+
+[Example 10](01_foundations/10_simplified_sdk_showcase.py) surveys supplied
+topology builders, templates and configured SDK operations. Use it as a
+construction reference. Example 07 is a larger prepared-state ensemble.
 
 The type-hygiene directory retains these scoped entry points:
 
@@ -70,26 +93,21 @@ The type-hygiene directory retains these scoped entry points:
 | [82](05_type_hygiene/82_remesh_window_type_signature_demo.py) | Selected finite REMESH event/window comparisons |
 
 Entropy thresholds and scalar-only fixtures do not prove that a richer state
-type is necessary or impossible. The retired type-necessity and synthetic
-closure campaigns are replaced by the actual domain and execution contracts:
+type is necessary or impossible. Use the domain and execution contracts for
 [signed-form admission](../tests/test_nodal_solver_epi_scope.py),
 [circular U3 admission](../tests/operators/test_u3_hard_invariant.py),
 [field availability](../tests/sdk/test_nfr_observation_scope.py) and
 [grammar observations](../tests/operators/test_grammar_observations.py).
 
-For supplied topology construction use [10](01_foundations/10_simplified_sdk_showcase.py);
-for declared diffusion use [99](08_emergent_geometry/99_structural_diffusion.py).
+For declared diffusion use [99](08_emergent_geometry/99_structural_diffusion.py).
 Prescribed phase/form response belongs to [179](08_emergent_geometry/179_phase_form_driven_response.py).
-Removed chemistry and Millennium demonstrations supplied target laws or
-encodings without deriving them from nodal dynamics. Their removal does not
-affect the scoped diffusion, graph-wave, winding and arithmetic owners.
-Retirement reasons and source recovery belong to the
+Source recovery for retired examples belongs to the
 [recovery index](../theory/research/archive/README.md#recovery-records);
 interface changes belong to the [API migrations](../docs/API_CONTRACTS.md#removed-unsupported-helpers).
 
 ## Diffusion and runtime evidence
 
-These examples reuse the
+These supplementary controls reuse the
 [diffusion stability owner](../theory/TNFR_DIFFUSION_STABILITY_THEOREM.md).
 The table distinguishes an exact declared model from finite engine evidence.
 Detailed bounds and assumptions remain in that owner instead of being duplicated
@@ -107,38 +125,33 @@ as a second theorem ledger here.
 
 ## Geometry and phase/form response
 
-[Example 180](08_emergent_geometry/180_relational_exchange.py) runs four small
-joint steps of the explicitly selected capacity-separable relational model,
-including a zero-capacity node. It calls the shared SDK/engine owner and
-prints actual storage increments and Euler defects. It also reports regional
-work/cut accounting and unweighted phase-response covariance with their exact
-arithmetic evidence, including at zero capacity. The supplied preparation,
-storage scale and capacity premise remain explicit; this is no formation
-or physical-validation claim. A separate read-only block applies all three
-capture certificates to supplied asymmetric two-ring snapshots. It shows why
-an unavailable exact-reflection certificate can coexist with admitted
-full-state local and sector certificates, and why positive heterogeneous
-capacity and a nonunit storage scale require the broader sector theorem.
-This comparison runs no additional trajectory and revises no frozen result.
-See the
-[execution guide](../docs/guides/relational/RELATIONAL_EXECUTION.md#execute-the-conditional-relational-model).
+Run the native evolution continuation with:
 
 ```bash
 python examples/08_emergent_geometry/180_relational_exchange.py
 ```
 
+Its detached certificate comparison distinguishes exact-reflection, full-state
+local and sector hypotheses. An unavailable narrower certificate can coexist
+with an admitted broader one. Read the [execution guide](../docs/guides/relational/RELATIONAL_EXECUTION.md#execute-the-conditional-relational-model)
+for law and storage premises.
+
 The [scale bridge](../theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) owns effective
 geometry and observation closure. The tetrad is a required diagnostic interface,
 not a proven complete state; reflection equivalence and loss of hidden state are
-separate questions. Auxiliary symplectic/U(2) demonstrations do not establish
-that engine operators are Hamiltonian or generate particles.
+separate questions. Auxiliary symplectic/U(2) demonstrations retain their own
+equations and premises; a Hamiltonian interpretation of engine operators
+requires a separate argument.
+
+The [curvature safety illustration](08_emergent_geometry/k_phi_safety_demo.py)
+compares supplied WS-graph field observations before and after operator events.
+Its fit and safety labels are configured advisories, not a stability theorem.
 
 [The unified-field showcase](08_emergent_geometry/unified_fields_showcase.py)
 compares seeded supplied states on a path, cycle and barbell using the shared
 snapshot readout. It executes no operators or evolution. Its optional plot
 reports descriptive field statistics and explicitly leaves temporal conservation
-unavailable; the former handwritten operator substitutes and physical-domain
-validation claims have been removed.
+unavailable.
 
 [Example 179](08_emergent_geometry/179_phase_form_driven_response.py) checks a
 prescribed rotating phase contrast and its derived EPI response on the six-node

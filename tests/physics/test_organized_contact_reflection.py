@@ -10,7 +10,6 @@ from tests.sine_evidence_helpers import forbid_sine_regeneration
 from tnfr.mathematics._rational_interval import I
 from tnfr.physics import _organized_contact_reflection as owner
 
-
 _EDGES = (
     tuple((9 * c + j, 9 * c + (j + 1) % 9) for c in range(6) for j in range(9))
     + tuple((9 * c + j, 9 * ((c + 1) % 5) + j) for c in range(5) for j in range(9))

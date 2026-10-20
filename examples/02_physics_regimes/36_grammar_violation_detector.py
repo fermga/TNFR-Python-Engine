@@ -331,8 +331,7 @@ def demo_severity_comparison() -> None:
             f"{violations['severity']:10.4f}"
         )
 
-    print(
-        f"""
+    print(f"""
   These are overlapping response patterns, not rule identifiers:
     global pressure amplification can raise RMS residuals;
     an antiphase state can change maximum residuals;
@@ -340,8 +339,7 @@ def demo_severity_comparison() -> None:
 
   The same residual can arise from dynamics, topology or discretization.
   Grammar and U6 decisions require their dedicated validators.
-"""
-    )
+""")
 
 
 # ---------------------------------------------------------------------------
@@ -365,8 +363,7 @@ def main() -> None:
     print("=" * 65)
     print("  SUMMARY")
     print("=" * 65)
-    print(
-        f"""
+    print(f"""
   Structural-balance residuals provide useful anomaly telemetry.
   The finite scenarios show that different perturbations alter RMS, maximum
   residual and charge drift in different amounts, but they do not establish
@@ -374,8 +371,7 @@ def main() -> None:
 
   Use validate_grammar for U1-U5 symbol/history rules, explicit phase checks
   for U3, and before/after structural-potential fields for the U6 policy.
-"""
-    )
+""")
 
 
 if __name__ == "__main__":

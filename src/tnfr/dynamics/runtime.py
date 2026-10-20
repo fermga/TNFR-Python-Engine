@@ -11,7 +11,7 @@ from itertools import islice
 from numbers import Integral
 from typing import Any, cast
 
-from .._exact_time import finite_represented_real
+from .._exact_time import bounded_represented_real, finite_represented_real
 from .._runtime_steps import prepare_runtime_step, runtime_step_scope
 from .._spectral_expectation import (
     finite_spectral_real,
@@ -589,8 +589,8 @@ def _update_nodes(
     step_idx: int,
     hist: HistoryState,
     job_overrides: Mapping[str, Any] | None = None,
-) -> None:
-    """Apply glyphs, integrate ΔNFR and refresh derived nodal state."""
+) -> float:
+    """Advance nodal state and return the duration supplied to its integrator."""
 
     # The left boundary makes the previous completed flow interval available
     # to autonomous ZHIR selection. Any same-time EPI jump below restarts that
@@ -603,7 +603,7 @@ def _update_nodes(
         selector = selectors._apply_selector(G)
         selectors._apply_glyphs(G, selector, hist)
         _record_mutation_flow_boundary(G)
-    _dt = get_graph_param(G, "DT") if dt is None else float(dt)
+    _dt = integrators._finite_output(get_param(G, "DT") if dt is None else dt, "dt")
     method = get_graph_param(G, "INTEGRATOR_METHOD", str)
     n_jobs = _resolve_jobs_override(
         overrides,
@@ -638,6 +638,7 @@ def _update_nodes(
     # Default integrators advance ``_t``. If a custom integrator does not,
     # same-time EPI changes reset the history and cannot masquerade as flow.
     _record_mutation_flow_boundary(G)
+    return _dt
 
 
 def _update_epi_hist(G: TNFRGraph) -> None:
@@ -743,13 +744,13 @@ def _initialise_math_state(
 
     vectors: list[np.ndarray] = []
     for _, nd in G.nodes(data=True):
-        epi = float(get_attr(nd, ALIAS_EPI, 0.0) or 0.0)
-        nu_f = float(get_attr(nd, ALIAS_VF, 0.0) or 0.0)
-        theta_val = float(get_attr(nd, ALIAS_THETA, 0.0) or 0.0)
-        try:
-            vector = projector(epi=epi, nu_f=nu_f, theta=theta_val, dim=int(dimension))
-        except ValueError:
-            continue
+        # The projector admits primitive types and the signed form chart.
+        # Preconversion or silently omitting a failed node would replace the
+        # supplied state/support with a different auxiliary preparation.
+        epi = get_attr(nd, ALIAS_EPI, 0.0, strict=True, conv=lambda raw: raw)
+        nu_f = get_attr(nd, ALIAS_VF, 0.0, strict=True, conv=lambda raw: raw)
+        theta_val = get_attr(nd, ALIAS_THETA, 0.0, strict=True, conv=lambda raw: raw)
+        vector = projector(epi=epi, nu_f=nu_f, theta=theta_val, dim=int(dimension))
         vectors.append(np.asarray(vector, dtype=np.complex128))
 
     if not vectors:
@@ -792,6 +793,17 @@ def _advance_math_engine(
             "Mathematical dynamics require NumPy and tnfr.mathematics "
             "extras to be installed."
         )
+
+    from ..mathematics._complex_arrays import (
+        backend_complex_array,
+        nonnegative_tolerance,
+    )
+
+    # Validation consumes the supplied tolerance, not a float coercion that
+    # could turn booleans/text into a permissive certification threshold.
+    atol = nonnegative_tolerance(
+        cfg.get("atol", getattr(cfg.get("dynamics_engine"), "atol", 1e-9))
+    )
 
     hilbert_space = cfg.get("hilbert_space")
     spectral_operator = resolve_compatibility_value(
@@ -848,10 +860,7 @@ def _advance_math_engine(
                 "MATH_ENGINE requires either a 'dynamics_engine' instance or a "
                 "'generator_matrix'."
             )
-        generator_matrix = np.asarray(generator, dtype=np.complex128)
-        engine = MathematicalDynamicsEngine(
-            generator_matrix, hilbert_space=hilbert_space
-        )
+        engine = MathematicalDynamicsEngine(generator, hilbert_space=hilbert_space)
         cfg["dynamics_engine"] = engine
 
     state_vector = cfg.get("_state_vector")
@@ -865,7 +874,9 @@ def _advance_math_engine(
         if state_vector is None:
             return
     else:
-        state_vector = np.asarray(state_vector, dtype=np.complex128)
+        state_vector = backend_complex_array(
+            state_vector, backend=engine.backend, label="MATH_ENGINE state vector"
+        )
         dimension = getattr(hilbert_space, "dimension", state_vector.shape[0])
         if state_vector.shape != (int(dimension),):
             state_vector = _initialise_math_state(
@@ -879,18 +890,20 @@ def _advance_math_engine(
 
     advanced = engine.step(state_vector, dt=float(dt), normalize=True)
     cfg["_state_vector"] = advanced
+    # Observation adapters may use a different backend than the engine. Export
+    # explicitly; NumPy cannot implicitly coerce a retained CUDA tensor.
+    observed_state = engine.backend.to_numpy(advanced)
 
-    atol = float(cfg.get("atol", getattr(engine, "atol", 1e-9)))
     label = f"step[{step_idx}]"
 
     normalized_passed, norm_value = runtime_normalized(
-        advanced,
+        observed_state,
         hilbert_space,
         atol=atol,
         label=label,
     )
     expectation_passed, expectation_value = runtime_spectral_threshold(
-        advanced,
+        observed_state,
         spectral_operator,
         spectral_threshold,
         normalise=False,
@@ -906,7 +919,7 @@ def _advance_math_engine(
                 "Frequency positivity checks require tnfr.mathematics extras."
             )
         freq_raw = runtime_frequency_positive(
-            advanced,
+            observed_state,
             frequency_operator,
             normalise=False,
             enforce=True,
@@ -1023,9 +1036,15 @@ def step(
 
     Supplied built-in selector, phase and capacity policies are validated before
     history creation, callbacks or nodal writes. The default integrator's clock
-    and method are also prevalidated. Consumption-time checks remain active for
-    changes made by callbacks; this does not promise full-step rollback or
+    and method are also prevalidated. Consumption-time checks retain the raw
+    timestep until represented-real admission, including changes made by
+    callbacks or pressure hooks; this does not promise full-step rollback or
     impose the default integration scheme on custom integrators.
+
+    When glyphs are enabled, shared batch grammar/history and lag admission
+    also runs before callbacks and is repeated after pressure refresh. One
+    selector batch occurs at this invocation's left boundary; integrator
+    substeps do not add decisions, and a zero duration can still execute events.
 
     The zero-based callback/sampling ordinal is owned by the runtime, not by
     metric history or physical time. The first tracked invocation starts a new
@@ -1057,12 +1076,15 @@ def step(
     job_overrides = _normalize_job_overrides(n_jobs)
     step_idx = prepare_runtime_step(G.graph)
     _preflight_runtime_parameters(G, dt=dt, job_overrides=job_overrides)
+    if apply_glyphs:
+        history = G.graph.get("history")
+        selectors._preflight_glyph_batch(G, {} if history is None else history)
     hist = ensure_history(G)
     with runtime_step_scope(G.graph, step_idx):
         _run_before_callbacks(
             G, step_idx=step_idx, dt=dt, use_Si=use_Si, apply_glyphs=apply_glyphs
         )
-        _update_nodes(
+        resolved_dt = _update_nodes(
             G,
             dt=dt,
             use_Si=use_Si,
@@ -1071,7 +1093,6 @@ def step(
             hist=hist,
             job_overrides=job_overrides,
         )
-        resolved_dt = get_graph_param(G, "DT") if dt is None else float(dt)
         _advance_math_engine(
             G,
             dt=resolved_dt,
@@ -1100,11 +1121,12 @@ def _resolve_early_stop(G: TNFRGraph) -> tuple[int, float] | None:
     if not enabled:
         return None
     window = validate_window(config.get("window", defaults["window"]), positive=True)
-    fraction, _ = finite_represented_real(
-        config.get("fraction", defaults["fraction"]), "STOP_EARLY.fraction"
+    fraction, _ = bounded_represented_real(
+        config.get("fraction", defaults["fraction"]),
+        "STOP_EARLY.fraction",
+        minimum=0.0,
+        maximum=1.0,
     )
-    if not 0.0 <= fraction <= 1.0:
-        raise ValueError("STOP_EARLY.fraction must be in [0, 1]")
     return window, fraction
 
 
@@ -1126,7 +1148,9 @@ def _stable_tail(series: list | tuple | deque, window: int, fraction: float) -> 
     tail = islice(reversed(series), window)
     for raw in tail:
         try:
-            value, _ = finite_represented_real(raw, "stable_frac observation")
+            value, _ = bounded_represented_real(
+                raw, "stable_frac observation", minimum=0.0, maximum=1.0
+            )
         except (TypeError, ValueError, OverflowError):
             return False
         if not fraction <= value <= 1.0:

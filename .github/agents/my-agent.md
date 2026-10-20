@@ -1,18 +1,24 @@
 # TNFR: contributor and agent instructions
 
-**TNFR Python Engine 0.0.3.8.** Rules for changing the repository and evaluating
+**TNFR Python Engine 0.0.3.9.** Rules for changing the repository and evaluating
 its claims. Keep `.github/agents/my-agent.md` byte-identical to this file.
 The [README] introduces TNFR; the [owner map](#6-documentation-and-implementation-owners)
 routes definitions, contracts and implementation work.
 
 ## 1. Scientific and editorial responsibility
 
-TNFR investigates whether justified nodal dynamics can produce coherent,
-interacting patterns and eventually explain measurable physical properties.
-The repository provides an engine, conditional mathematics and finite evidence.
-Physical identification and a uniquely selected fundamental law remain open.
+TNFR investigates organized mathematical objects: their identity, dynamics,
+interactions and emergent properties under explicit premises. Develop these
+foundations using the [NFR ontology], without prescribing the investigation's
+outcome. Networks represent constituents and relations; graph construction
+alone does not establish an object's identity or collective behavior.
+The engine, conditional mathematics and finite computational evidence support
+this work. Proofs and numerical experiments do not constitute empirical
+validation; a uniquely selected fundamental law remains open.
 
-Evaluate claims against definitions, hypotheses, derivations and counterexamples,
+Justify canonical TNFR structure and dynamics against definitions, hypotheses,
+derivations and counterexamples; neither a manuscript nor a runtime registry
+establishes their necessity. Evaluate implemented claims against these premises,
 then implementation and relevant tests. Code establishes implemented behavior,
 not mathematical truth; labels, summaries and filenames prove nothing.
 Foundational and constitutive premises remain revisable: identify the affected
@@ -20,13 +26,17 @@ model and scope, preserving valid conditional results and counterexamples.
 
 - Use English for code, documentation, comments, commits, issues and PRs;
   preserve verbatim quotations and raw data in their original language.
+- Lead reader-facing explanations with registered English operator names,
+  such as Emission (AL) and Coherence (IL). Use simple glyph codes without
+  apostrophes for compact words and formulas; derive names from the registry.
 - Distinguish definitions, supplied laws, derived identities, conditional
   theorems, finite observations, policies and open hypotheses.
 - Explain the present model directly. Definitions belong with their owners,
   usage in guides and task status in the execution plan; overviews are neither
   delivery logs nor copies of derivations.
 - Arithmetic encodings, graph analogies, auxiliary Hamiltonians and diagnostic
-  scores are not evidence of particles, quantum physics or consciousness.
+  scores retain their own premises. External identifications require an
+  independent model and measurement bridge.
 - Accept changes against the relevant contract. Corrections and negative
   results need not increase coherence or support a preferred interpretation.
 
@@ -79,6 +89,14 @@ The 13 operators use `operators/operator_contracts.py`. Read executable `token`
 values from `TNFR.operators()` and words from `list_sequences()`, not display
 names or parallel catalogs. Preserve word order and live preconditions;
 direct glyphs, public classes and atomic stages have different secondary effects.
+
+Bind operator requests to actual NFR targets, consumed state/history and their
+selection origin. Supplied words and configured state-dependent selectors are
+not derived occurrence laws; collective selection needs its own descent proof.
+
+Record the selected operator admission policy in prospective studies. Activity
+thresholds do not establish NFR existence or absence; retain legacy-policy
+controls when admitting a new event domain.
 
 Grammar bases belong to `operators/grammar_canon.py`; role sets derive through
 shared predicates and `grammar_types.py`. U1-U6 are admission/monitoring
@@ -156,7 +174,8 @@ campaigns. On closing a gate, replace its queue status and link the result
 owner. Preserve unresolved dependencies and frozen evidence without per-turn
 logs or duplicate result inventories. Follow F1-F4:
 
-1. Define sufficient state, domains, units, observations and discarded information.
+1. Define identity, sufficient constituent/boundary state, domains, units,
+   observations and discarded information.
 2. Declare all laws, separating assumptions, derived restrictions and remaining
    freedom. Supplied forcing/controllers are not inferred causes.
 3. Check joint consistency, symmetry, boundaries, balances and events on the
@@ -165,12 +184,13 @@ logs or duplicate result inventories. Follow F1-F4:
    obstruction. Freeze preparation, law, clock, observation, horizon and
    numerical budget before evaluating the reserved response.
 
-Use the [NFR ontology] and applicable operator contracts when admitting a law:
-declare identity, retained constituent/boundary state, symmetries and the
-actual execution path. A collective event needs its own admission, descent
-and occurrence argument even when continuous collective dynamics closes.
-Use formed organizations as conditional test cases, not as a reason to assume
-that every compatible law acquires them or realizes every registered operator.
+Apply the [NFR ontology] and operator contracts to the actual execution path.
+Declare the object's preparation, symmetries and supported actions; state
+whether identity is supplied, acquired or assessed only on a finite interval.
+A collective event needs its own admission, descent and occurrence argument
+even when continuous collective dynamics closes. Established organizations
+test foundations under their premises; they do not imply that every compatible
+law acquires them or realizes every registered operator.
 
 Reuse the [theory-to-execution map]. Combine results only after matching complete
 law, support, capacity, clock, preparation and retained coordinates. Methods can
@@ -191,9 +211,9 @@ is an additional premise. Integrate justified reusable mechanisms in shared
 engine owners and consumers. Auxiliary constructions and arithmetic applications
 retain their own premises; finite comparisons do not select a unique ontology.
 
-Physical evaluation follows P1-P5: independent observation/preparation and clock
-models, separate calibration/reserved evaluation, alternatives, then partial
-observation, memory and maintenance under the same protocol. Collective
+Any later empirical evaluation follows P1-P5: independent observation/preparation
+and clock models, separate calibration/reserved evaluation, alternatives, then
+partial observation, memory and maintenance under the same protocol. Collective
 measurement maps are allowed; EPI need not equal a sensor reading. Use
 workstation-accessible terrestrial data or laboratory-scale protocols, without
 extraterrestrial observations or large facilities.
@@ -219,8 +239,7 @@ frozen producers for unrelated changes.
 
 Catalogs generate website menus; operator contracts and grammar roles generate
 their checked tables. Glossary checks validate declarations/references, not
-scientific truth.
-Do not create duplicate catalogs, rule tables or glossaries.
+scientific truth. Do not create duplicate catalogs, rule tables or glossaries.
 
 Maintained theory/docs owners have a 4,000-physical-line editorial limit checked
 by `scripts/check_documentation.py`. Split by model/responsibility; update
@@ -237,9 +256,11 @@ counterexamples, frozen protocols and evaluated responses.
 
 Inspect instructions, local changes, relevant source and tests before editing;
 preserve unrelated work. Start from the mathematical question and consumer.
-Prefer shared kernels, retain useful adapters and keep APIs stable or document
-and test an explicit migration. Update implementation and its contract/theory
-owner together. Keep this file focused on working rules.
+Use the owner map to locate the definition, selected law, implementation and
+tests before proposing a change. Prefer shared kernels, retain useful adapters
+and keep APIs stable or document and test an explicit migration. Update
+implementation and its contract/theory owner together; keep this file focused
+on working rules.
 
 After catalog/registry edits, refresh generated views with
 `python scripts/check_documentation.py --write-generated`. Edit maintained
@@ -258,6 +279,8 @@ inputs, not `build/docs-source/` or `site/`.
   [Testing] owns selection and dependencies.
 - For docs, verify mirror, generated views, links, executable examples and strict
   site build. Report checks and material limitations.
+- For distribution changes, check fresh wheel and source archives with
+  `scripts/check_distribution.py` and the release checks in [Testing].
 
 Distinguish grammar rejection, live-state rejection, solver defects, unavailable
 observations and unsupported theorem domains. Coherence decrease violates only

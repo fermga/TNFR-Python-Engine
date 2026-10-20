@@ -8,11 +8,9 @@ structural transformations.
 
 from __future__ import annotations
 
-import heapq
 import math
 from collections.abc import Callable, Iterator, Mapping
 from contextlib import contextmanager
-from itertools import islice
 from statistics import StatisticsError
 from typing import TYPE_CHECKING, Any
 
@@ -42,11 +40,12 @@ from ..constants.canonical import (
 from ..constants.canonical import UM_COMPAT_THRESHOLD as _UM_COMPAT_CANONICAL
 from ..constants.canonical import VAL_SCALE_FACTOR
 from ..errors import TNFRValueError
-from ..rng import make_rng, resolve_graph_seed, validate_graph_seed
+from ..rng import validate_graph_seed
 from ..types import EPIValue, Glyph, NodeId, TNFRGraph
 from ..utils import angle_diff, get_nodenx
 from . import definitions as _definitions
 from ._epi_domain import require_real_scalar_epi, validate_affine_epi_graph_input
+from ._mutation_stage_kernel import _finite_scalar as _mutation_scalar
 from ._mutation_stage_kernel import propose_mutation_stage
 from ._neighbor_epi_kernel import (
     dominant_neighbor_epi_kind,
@@ -753,8 +752,8 @@ def _op_IL(node: NodeProtocol, gf: GlyphFactors) -> None:  # IL — Coherence
     """Dampen ΔNFR magnitudes through the Coherence glyph.
 
     Coherence contracts the internal reorganization differential (ΔNFR) while
-    leaving EPI, νf, and phase untouched. The contraction preserves the sign of
-    ΔNFR, increasing structural stability.
+    leaving EPI, νf, and phase untouched. The contraction does not reverse
+    the sign of ΔNFR; it does not establish future structural stability.
 
     Parameters
     ----------
@@ -774,9 +773,19 @@ def _op_IL(node: NodeProtocol, gf: GlyphFactors) -> None:  # IL — Coherence
     0.1
     """
     factor = get_factor(gf, "IL_dnfr_factor", COHERENCE_RETENTION)
+    from .._exact_time import finite_represented_real
     from ._coherence_stage_kernel import propose_coherence_pressure
 
-    dnfr = _finite_operator_scalar(getattr(node, "dnfr", 0.0), "IL DeltaNFR state")
+    raw_dnfr = _raw_runtime_value(node, ALIAS_DNFR, "dnfr")
+    try:
+        dnfr = finite_represented_real(raw_dnfr, "IL DeltaNFR state")[0]
+    except (OverflowError, TypeError, ValueError) as exc:
+        # Preserve the low-level handler's exception contract without the
+        # permissive float conversion previously supplied by the adapter.
+        raise TNFRValueError(
+            f"IL DeltaNFR state must be a finite represented real: {exc}",
+            context={"field": "IL DeltaNFR state", "value": repr(raw_dnfr)},
+        ) from exc
     _before, proposal = propose_coherence_pressure(dnfr, factor)
     node.dnfr = proposal
 
@@ -806,14 +815,20 @@ def _op_OZ(node: NodeProtocol, gf: GlyphFactors) -> None:  # OZ — Dissonance
     >>> node.dnfr
     0.4
     """
-    from .factor_contracts import _resolve_dissonance_noise_mode
+    from ._argument_validation import finite_real
+    from .factor_contracts import (
+        _resolve_dissonance_noise_mode,
+        _resolve_dissonance_noise_sigma,
+    )
 
     noise_mode = _resolve_dissonance_noise_mode(node.graph)
-    dnfr = _finite_operator_scalar(getattr(node, "dnfr", 0.0), "OZ DeltaNFR state")
+    dnfr = finite_real(
+        _raw_runtime_value(node, ALIAS_DNFR, "dnfr"),
+        operator="Dissonance",
+        label="DeltaNFR state",
+    )
     if noise_mode:
-        sigma = _finite_operator_scalar(
-            node.graph.get("OZ_SIGMA", 0.1), "OZ noise sigma"
-        )
+        sigma = _resolve_dissonance_noise_sigma(node.graph)
         if sigma <= 0:
             return
         with _rollback_jitter_progress_on_error(node):
@@ -826,22 +841,6 @@ def _op_OZ(node: NodeProtocol, gf: GlyphFactors) -> None:  # OZ — Dissonance
         factor = get_factor(gf, "OZ_dnfr_factor", DISSONANCE_AMPLIFICATION)
         proposal = factor * dnfr if abs(dnfr) > 1e-9 else 0.1
         node.dnfr = _finite_operator_scalar(proposal, "OZ DeltaNFR proposal")
-
-
-def _um_candidate_iter(node: NodeProtocol) -> Iterator[NodeProtocol]:
-    sample_ids = node.graph.get("_node_sample")
-    if sample_ids is not None and hasattr(node, "G"):
-        NodeNX = get_nodenx()
-        if NodeNX is None:
-            raise ImportError("NodeNX is unavailable")
-        base = (NodeNX.from_graph(node.G, j) for j in sample_ids)
-    else:
-        base = node.all_nodes()
-    for j in base:
-        same = (j is node) or (getattr(node, "n", None) == getattr(j, "n", None))
-        if same or node.has_edge(j):
-            continue
-        yield j
 
 
 def _raw_runtime_phase(node: NodeProtocol, subject: Any) -> Any:
@@ -907,36 +906,6 @@ def _runtime_u3_neighbors(
         for neighbor in selection.neighbors
     )
     return selection, runtime_neighbors
-
-
-def _um_select_candidates(
-    node: NodeProtocol,
-    candidates: Iterator[NodeProtocol],
-    limit: int,
-    mode: str,
-    th: float,
-) -> list[NodeProtocol]:
-    """Select a subset of ``candidates`` for UM coupling."""
-    rng = make_rng(resolve_graph_seed(node), node.offset(), node.G)
-
-    if limit <= 0:
-        return list(candidates)
-
-    if mode == "proximity":
-        return heapq.nsmallest(
-            limit, candidates, key=lambda j: abs(angle_diff(j.theta, th))
-        )
-
-    reservoir = list(islice(candidates, limit))
-    for i, cand in enumerate(candidates, start=limit):
-        j = rng.randint(0, i)
-        if j < limit:
-            reservoir[j] = cand
-
-    if mode == "sample":
-        rng.shuffle(reservoir)
-
-    return reservoir
 
 
 def compute_consensus_phase(phases: list[float]) -> float:
@@ -1200,17 +1169,14 @@ def _op_RA(node: NodeProtocol, gf: GlyphFactors) -> None:  # RA — Resonance
         unclipped_epi = neighbor_epi_blend_value(epi_before, epi_bar, diff)
         from ..dynamics.structural_clip import structural_clip
 
-        epi_min = float(graph_attrs.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)))
-        epi_max = float(graph_attrs.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)))
-        clip_mode = str(graph_attrs.get("CLIP_MODE", "hard"))
-        if clip_mode not in ("hard", "soft"):
-            clip_mode = "hard"
+        epi_min, epi_max, clip_mode, steepness = _operator_epi_clip_policy(graph_attrs)
         proposed_epi = float(
             structural_clip(
                 unclipped_epi,
                 lo=epi_min,
                 hi=epi_max,
                 mode=clip_mode,
+                k=steepness,
                 record_stats=False,
             )
         )
@@ -1389,14 +1355,18 @@ def _operator_epi_clip_policy(
     The stricter configurable integrator clipping policy is a separate
     contract; detached operator observations must use this actual adapter.
     """
+    from .._exact_time import finite_represented_real
     from ..config.defaults_core import CORE_DEFAULTS
 
-    epi_min = _finite_operator_scalar(
-        graph_attrs.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)), "EPI_MIN"
-    )
-    epi_max = _finite_operator_scalar(
-        graph_attrs.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)), "EPI_MAX"
-    )
+    try:
+        epi_min, _ = finite_represented_real(
+            graph_attrs.get("EPI_MIN", DEFAULTS.get("EPI_MIN", -1.0)), "EPI_MIN"
+        )
+        epi_max, _ = finite_represented_real(
+            graph_attrs.get("EPI_MAX", DEFAULTS.get("EPI_MAX", 1.0)), "EPI_MAX"
+        )
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise TNFRValueError(f"Invalid operator EPI boundary policy: {exc}") from exc
     if epi_min > epi_max:
         raise TNFRValueError(
             "EPI_MIN must be less than or equal to EPI_MAX",
@@ -1479,13 +1449,17 @@ def _set_epi_with_boundary_check(
 
 def _make_scale_op(glyph: Glyph) -> GlyphOperation:
     def _op(node: NodeProtocol, gf: GlyphFactors) -> None:
+        from ._argument_validation import strict_bool
+
         key = "VAL_scale" if glyph is Glyph.VAL else "NUL_scale"
         default = _SCALE_FACTORS[glyph]
         factor = get_factor(gf, key, default)
-        edge_aware_enabled = bool(
+        edge_aware_enabled = strict_bool(
             node.graph.get(
                 "EDGE_AWARE_ENABLED", DEFAULTS.get("EDGE_AWARE_ENABLED", True)
-            )
+            ),
+            operator=glyph.value,
+            label="EDGE_AWARE_ENABLED",
         )
         proposal = propose_scale_operator(
             glyph=glyph,
@@ -1509,7 +1483,8 @@ def _make_scale_op(glyph: Glyph) -> GlyphOperation:
                 "EDGE_AWARE_EPSILON",
                 DEFAULTS.get("EDGE_AWARE_EPSILON", 1e-12),
             ),
-            clip_mode=str(node.graph.get("CLIP_MODE", "hard")),
+            clip_mode=node.graph.get("CLIP_MODE", "hard"),
+            clip_soft_k=node.graph.get("CLIP_SOFT_K", DEFAULTS["CLIP_SOFT_K"]),
         )
 
         from ._argument_validation import require_list_sink
@@ -1578,9 +1553,7 @@ def _make_scale_op(glyph: Glyph) -> GlyphOperation:
         1.05
         >>> node.EPI <= 1.0  # EPI kept within bounds
         True
-        """.format(
-        glyph.name
-    )
+        """.format(glyph.name)
     return _op
 
 
@@ -1693,15 +1666,16 @@ def _op_ZHIR(node: NodeProtocol, gf: GlyphFactors) -> None:  # ZHIR — Mutation
     1.57
     """
     # Resolve only the active branch before building the pure phase proposal.
+    raw_phase = _raw_runtime_value(node, ALIAS_THETA, "theta")
     if "ZHIR_theta_shift" in gf:
         proposal = propose_mutation_stage(
-            node.theta,
+            raw_phase,
             fixed_shift=get_factor(gf, "ZHIR_theta_shift", math.pi / 2),
         )
     else:
         proposal = propose_mutation_stage(
-            node.theta,
-            node.dnfr,
+            raw_phase,
+            _raw_runtime_value(node, ALIAS_DNFR, "dnfr"),
             theta_shift_factor=get_factor(gf, "ZHIR_theta_shift_factor", INV_PI),
         )
 
@@ -1890,12 +1864,12 @@ def _apply_glyph_obj_impl(
     Argument and history validation precede the structural operation. This
     low-level primitive does not make arbitrary operator failures transactional.
     """
-    from .grammar_debt import require_replayable_history
+    from .grammar_debt import require_grammar_state
 
     g, op = _resolve_glyph_operation(glyph)
     window = _validated_execution_window(node, window)
     validate_graph_seed(node)
-    require_replayable_history(node._glyph_storage().get("glyph_history"))
+    require_grammar_state(node._glyph_storage())
     # Resolve the current operator's complete factor domain before any channel,
     # history, metric, or cache can be changed.
     gf = get_glyph_factors(node, g)
@@ -1988,9 +1962,9 @@ def _apply_glyph_impl(
     glyph, _ = _resolve_glyph_operation(glyph)
     window = _validated_execution_window(G, window)
     validate_graph_seed(G)
-    from .grammar_debt import require_replayable_history
+    from .grammar_debt import require_grammar_state
 
-    require_replayable_history(G.nodes[n].get("glyph_history"))
+    require_grammar_state(G.nodes[n])
     # Validate the operator's numerical contract before NodeNX construction,
     # because the adapter is cached in graph metadata.
     factors = resolve_runtime_operator_factors(
@@ -1998,6 +1972,16 @@ def _apply_glyph_impl(
     )
     _validate_u3_graph_application(G, n, glyph)
     validate_affine_epi_graph_input(G, n, glyph)
+    if glyph in (Glyph.IL, Glyph.OZ):
+        from ._argument_validation import finite_node_real
+
+        finite_node_real(
+            G.nodes[n],
+            ALIAS_DNFR,
+            0.0,
+            operator="Coherence" if glyph is Glyph.IL else "Dissonance",
+            label="DeltaNFR state",
+        )
     if glyph is Glyph.EN and _prepared_operator_state is None:
         from ._reception_kernel import capture_reception_read_snapshot
 
@@ -2031,6 +2015,12 @@ def _apply_glyph_impl(
         # Validate before NodeNX construction so a rejected mutation leaves no
         # adapter cache or other graph metadata behind.
         validate_mutation_runtime_gate(G.nodes[n], G.graph)
+        _mutation_scalar(
+            get_attr(
+                G.nodes[n], ALIAS_THETA, 0.0, strict=True, conv=lambda value: value
+            ),
+            "ZHIR phase state",
+        )
     NodeNX = get_nodenx()
     if NodeNX is None:
         raise ImportError("NodeNX is unavailable")

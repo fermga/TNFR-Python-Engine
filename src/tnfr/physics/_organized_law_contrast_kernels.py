@@ -14,7 +14,6 @@ from math import comb, factorial
 
 from ..mathematics._rational_interval import INTERVAL_BITS, I, cos, sin, sqrt
 
-
 _TERMS = 20
 _HARMONICS = (1, 2, 9, 18, 36)
 _RADIUS_BUDGET = Q(1, 10**28)

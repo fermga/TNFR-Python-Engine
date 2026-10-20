@@ -1,8 +1,12 @@
-# Unified TNFR Grammar: Canonical Requirements and Mathematical Scope
+# TNFR Grammar: Structural Foundations and Execution Contracts
 
 ## Purpose and authority
 
-This document specifies the six canonical grammar rules U1–U6. The operator
+This document specifies the six registered grammar contracts U1–U6. Canonical
+TNFR structure and dynamics are the scientific target to justify: neither a
+manuscript assertion nor agreement with an implementation proves necessity.
+Here, a canonical runtime rule means the shared declared execution contract,
+not a uniquely derived law of emergent organization. The operator
 classifications come from the contract predicates in
 [physics_derivation.py](../src/tnfr/config/physics_derivation.py), are re-exported
 by [grammar_types.py](../src/tnfr/operators/grammar_types.py), and are materialized
@@ -28,6 +32,153 @@ The [rule-by-rule derivation audit](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#8-grammar-de
 separates exact structural content, additional contracts and selected policies.
 Its strict-U3 and exactly closed U5 counterexamples delimit two implications
 that cannot be promoted from grammar acceptance.
+
+Applying this language to a collective NFR additionally requires
+[admission and ordered-word descent](STRUCTURAL_OPERATORS.md#collective-grammar-descent)
+on its retained execution state. An exact continuous quotient does not by
+itself retain grammar debt, target/history information or monitor baselines.
+The [object-readiness assessment](EMERGENT_ONTOLOGY.md#collective-grammar-readiness)
+separates existing collective constructions from this additional obligation.
+
+<a id="source-grammar-and-notation"></a>
+## Source notation, competing prescriptions and structural necessity
+
+### Ordered writing and execution identifiers
+
+Lead explanations with registered English names, for example Emission (AL),
+Reception (EN) and Coherence (IL). Use the registry's display names in headings
+and teaching text, and its lowercase tokens in executable API examples.
+`TNFR.operators()` supplies both names and codes; do not maintain a parallel
+translation table. Compact words and formulas may use the simple glyph codes
+without apostrophes. Thus `Emission → Coherence → Silence` can be abbreviated
+`AL → IL → SHA`; the arrow denotes composition from left to right.
+Use `AL → SHA`, not `AL/SHA`, when describing those two ordered events.
+The manuscript uses a slash inside brackets for alternatives, so it must not
+silently stand for ordered composition. API arguments remain the executable
+tokens or supported glyph lists; this display convention adds no operator.
+
+Distinguish three records: the intended structural expression, the admitted
+concrete operator word with its explicit context, and its measured execution
+trace. A formatted word proves neither admissibility nor a future dynamical
+property. `TNFR.explain_sequence(..., context={"compatibility_profile": "core"})`
+reports ordered English names in `operators`, the requested runtime policy
+and compact glyph notation in `notation`. Its default
+is `core`; manuscript syntax, live state and trajectories are unassessed.
+It does not parse branch, hierarchy, timing or simultaneous-execution syntax.
+
+### Source identity and verified discrepancies
+
+The [retained May 2025 manuscript][grammar-source] has 378 physical pages,
+2,803,734 bytes and SHA-256
+`5ba0f4a2da2d01e550e7004c3c09c6927e6620826052df84cd28babbcbd34fc3`.
+Its printed and physical page numbers coincide in the sections below.
+The recovery revision is `6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7`, blob
+`7768e02c12e0db5395d5a99d0df67d6a4ac59098`. The
+[retirement record](research/archive/DEEP_CLEANUP_2026-10-06.json) preserves
+that source; retirement from the live theory tree does not discard its useful
+proposals. Current mathematical corrections retain their own owners.
+
+A separately inspected March 2025 edition has 106 physical pages with paired
+printed pages, 2,543,350 bytes and different prescriptions in chapter 18.
+It must not be silently merged with the May edition: its printed page 83
+requires Mutation to follow Self-organization rather than direct Dissonance,
+whereas May page 134 prescribes preceding Dissonance. The maintained comparison
+below uses the identified May source and simple glyph transcription.
+
+| Source claim or construction | Reading against present structure and execution |
+| --- | --- |
+| Pages 132–134: ordered composition, phase, rhythm and noncommutativity | Preserve order and actual context. Noncommutativity is a property of specified event maps, not a theorem that every pair differs on every state. Phase compatibility and structural time need their own admitted evidence. |
+| Page 135: required development lists IL, THOL or UM; page 137 R2 requires IL or THOL | These are different predicates: UM alone satisfies the first list but not the second. `FORMAL_SYNTAX_SCHEMA` retains the source slots as metadata, not an execution validator. |
+| Page 143 gives `NAV → UM → RA → SHA`; page 150 rejects that same sequence for missing IL/THOL | The source cannot be translated into one universal pass/fail predicate without resolving context or revising a prescription. Page 142 also lists `AL → SHA → NUL` without either stabilizer. |
+| Pages 134–137 close with SHA/NUL; pages 138–142 include NAV-ending or open examples | Runtime closure has its own shared role set. NUL does not become an admitted runtime closure by transcription; an allowed endpoint does not prove equilibrium or continued identity. |
+| Page 135 admits inherited dissonance, REMESH starts and active nested structures | Retained history, initialization and target context matter. A label cannot supply missing live mutation evidence or waive another contract. |
+| Pages 134–146 describe `THOL[...]`, alternatives, parallel branches and stateful modules | Grouping is richer than a flat token list. Scope, target, selector, child/boundary state and merge semantics must be retained and admitted before execution or descent. |
+| Pages 163–164 propose rhythm, duration and sound attributes | They motivate explicit timing and observation models. They do not derive a laboratory clock, numerical dwell time, capacity law or physical action from a sound. |
+
+This is a source-to-contract comparison, not a second operator catalog or a
+replacement rule set. The manuscript's expressive examples and operational
+exceptions are useful research proposals; they are not interchangeable with
+proved invariants, executable contracts or observed physical effects.
+
+### What the retained dynamical result does establish
+
+The [relative probe](research/RELATIVE_COUPLING_PROBE.md) executes
+`AL → SHA` under explicitly declared `core` admission. It fails the literal
+required-development slot on page 135 and blanket stabilizer rule on page 137;
+the explicitly selected `legacy` adjacency policy also rejects that pair. Its original
+contact `AL → UM → SHA` supplies UM development but still lacks IL/THOL.
+These distinctions qualify the word's admission; they do not alter its recorded
+event effects or the conditional mathematics of the supplied continuation.
+
+In each probe branch, the actual full-state weighted-sine law conserves storage
+below the protected-star barrier, including the declared post-word uncertainty
+box. Both original identities therefore persist without inserting IL or THOL.
+This is a conditional counterexample to *universal necessity of an explicit
+IL/THOL token for that identity-maintenance property in this model*. It does
+not establish acquisition, attraction, convergence, arbitrary perturbation
+recovery, all grammar requirements or unique fundamental-law selection.
+The restoring or conserving structure can belong to the continued law itself;
+calling an operator a stabilizer does not prove its presence is necessary or
+sufficient for every notion of stability.
+
+Do not repair a recorded sequence by silently adding IL: that changes its
+events, history, work and possibly the continued law. Frozen source and evidence
+remain unchanged. A future comparison first names the property, complete law,
+state domain and observation, then tests a candidate grammatical restriction
+through a derivation or counterexample. Runtime acceptance proves implemented
+admission only; the same scrutiny applies to both source and engine rules.
+
+### Reuse for composite expressions
+
+The [collective descent contract](STRUCTURAL_OPERATORS.md#collective-grammar-descent)
+already requires sufficient constituent, boundary and execution state. It is
+the correct starting point for `THOL[...]` or a composite NFR: preserve internal
+words and inherited context rather than interpreting brackets as evidence of
+an emergent node. A branch requires a declared selector and occurrence argument;
+simultaneous proposals require the actual shared snapshot/commit contract.
+Order, timing, retained memory and scale are distinct inputs, not typography.
+
+Existing [typed program tokens](../src/tnfr/tokens.py),
+[block expansion](../src/tnfr/flatten.py) and
+[program execution](../src/tnfr/execution.py) retain a narrower, explicit
+contract. A THOL block expands sequentially with one opening operation and
+non-operator enter/exit markers for each body repetition. Closure adds a glyph
+only when requested; every explicit registered closure is emitted and remains
+subject to live admission. Each exit restores the enclosing TARGET scope;
+brackets do not infer a child target. Positive non-Boolean integer counts,
+ordered input, acyclic nesting and expansion budgets are admitted before graph
+mutation. Syntax admission does not prove complete-word or live-state admission.
+
+Execution uses the direct glyph path and rejects blocked requested glyphs
+instead of substituting another operator. Its step function runs after each
+glyph; WAIT requests extra calls, not seconds. The default step can itself
+select operators and update phase/capacity. It therefore does not implement an
+event-free dwell or derive a physical clock. Accepted prefixes and callback
+effects are not rolled back on a later failure. This is not the atomic stage
+path used by the retained probe, nor a parser for source alternatives, parallel
+branches or emergent parent formation. The [API migration](../docs/API_CONTRACTS.md)
+records the removal of implicit closure and target leakage.
+
+Stabilizer reconciliation also has reusable mathematics: the
+[single-parent IL admission](nodal/SINE_SUCCESSOR_NONSTATIONARY.md#successor-single-parent-il-admission)
+and [pressure-refresh equivalence](nodal/SINE_COLLECTIVE_PRESSURE_HANDOFF.md#collective-pressure-refresh-equivalence)
+already distinguish a pressure-only direct IL map from the public/staged map,
+which can reset phase and change storage. Inserting a staged IL is not justified
+as a neutral textual repair. Re-admit its actual resultant, phase branch,
+history, work and continuation before comparing structural effects.
+
+For each proposed source restriction, record its intended structural property,
+model hypotheses, proof or discriminating counterexample, and execution path.
+That separates derived restrictions, conditional sufficient recipes and
+implementation policies. The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+alone schedules that work; the source examples activate no campaign.
+
+The [NFR realization and occurrence audit](STRUCTURAL_OPERATORS.md#nfr-operator-realization-and-occurrence)
+owns the related source passages on who or what realizes an operator. Grammar
+admits transformations on retained nodal state; it does not by itself explain
+their occurrence or replace an NFR's relational state with a token string.
+
+[grammar-source]: https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/theory/TNFR.pdf
 
 ## 1. Canonical operator roles
 
@@ -173,6 +324,12 @@ The [exact double-star witness](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#10-u3-exact-geom
 has an extra tangent obstructed at second order, so it supplies no finite
 relative-motion mechanism.
 
+The separate [structural-interface analyzer](../docs/STRUCTURAL_INTERFACE_THEORY.md)
+uses a configured advisory phase threshold, defaulting to pi/4. Its all-edge
+compliance score neither replaces the runtime's admitted neighbor subset nor
+selects Coupling or Resonance. A recommendation must still pass the actual
+word/context and live U3 checks before execution.
+
 ## 5. U4 — Bifurcation dynamics
 
 ### U4a: Triggers need handlers
@@ -307,6 +464,8 @@ every possible dynamical risk is expressible by six word constraints.
 | Causal debt and prior Coherence | [grammar_debt.py](../src/tnfr/operators/grammar_debt.py) |
 | Dynamic selection and application | [grammar_dynamics.py](../src/tnfr/operators/grammar_dynamics.py), [grammar_application.py](../src/tnfr/operators/grammar_application.py) |
 | Validated execution boundary | [grammar_execution.py](../src/tnfr/operators/grammar_execution.py) |
+| Scoped sequential programs | [tokens.py](../src/tnfr/tokens.py), [flatten.py](../src/tnfr/flatten.py), [execution.py](../src/tnfr/execution.py) |
+| Admitted candidate generation | [sequence_generator.py](../src/tnfr/tools/sequence_generator.py) |
 | Finite represented EPI execution evidence | [grammar_evidence.py](../src/tnfr/operators/grammar_evidence.py) |
 | Read-only grammar and evidence reporting | [grammar_observations.py](../src/tnfr/operators/grammar_observations.py) |
 | Live operator preconditions | [preconditions](../src/tnfr/operators/preconditions/__init__.py) |
@@ -325,17 +484,23 @@ Historical proposed spacing rules do not override this registry.
 [validate_sequence_optimized](../src/tnfr/operators/grammar_memoization.py)
 memoizes only static preflight and delegates with the original operator
 instances, retaining their recursion-depth metadata. Public
-`validate_sequence` and `parse_sequence` share these checks. Their default
-`compatibility_profile="legacy"` also retains adjacency and extra THOL-terminal
-preferences. The explicit `"core"` profile omits only those preferences; it
-preserves U1–U5 word requirements, including the calibrated U2/U4 policies.
-For example, AL,VAL,THOL,NAV passes core validation but fails the legacy
-THOL-terminal preference. The same context key carries the profile through
-existing word/event executors. Optional semantic validation and antipattern
-diagnostics remain separate. The exact initialized diagnostic OZ/ZHIR probe
-is labeled as a waiver, not a canonical-word pass. String words carry default
-recursion depth only; actual operator metadata, histories and live
-preconditions still require execution-time checks.
+`validate_sequence`, `parse_sequence` and executable `ValidatedSequence`
+delegate to its shared checks. Their default `compatibility_profile="core"`
+preserves U1–U5 requirements, including the calibrated U2/U4 policies.
+Explicit `"legacy"` additionally applies the same historical adjacency and
+THOL-terminal preferences to name and typed words. For example,
+`AL → VAL → THOL → NAV` passes core validation but fails that extra terminal
+preference. Context is normalized before admission; actual typed instances
+retain their recursion metadata. String words carry only default depth.
+
+`run_sequence` obtains initialization from admitted live signed form, including
+uniform-real BEPI, rather than trusting a caller flag. It and the network word
+runner admit actual typed words once. The public `SequenceSemanticValidator`
+is a compatibility report adapter to the shared facade; its former independent
+blocking rules and unused private checks have been retired. Historical semantic
+configuration flags cannot disable grammar or restore a second rule set.
+Antipattern scores remain advisory. The initialized diagnostic `OZ → ZHIR`
+fragment is labeled as a waiver and cannot authorize an executable word.
 Word validation receives no observed graph and emits no field measurements;
 use the field readers with explicit state for telemetry. The obsolete
 `collect_unified_telemetry` argument to `validate_grammar` is removed; see the
@@ -344,9 +509,46 @@ use the field readers with explicit state for telemetry. The obsolete
 **Rejection policy.** Graph setting `GRAMMAR_REJECTION_MODE="raise"` rejects a
 blocked live request without calculating or executing a replacement. Its
 absent/default `"fallback"` mode retains the existing substitution policy.
-A validated word always rejects a blocked step, regardless of this setting.
+A validated word and an explicit program glyph always reject a blocked step,
+regardless of this setting.
 Both modes reuse the same incremental checks and executor; independent
 selector policies remain unchanged. Neither mode derives a next operator.
+
+**Retained context.** Missing persistent debt or prior-IL state may be
+reconstructed from an admitted retained trace; invalid present state rejects.
+Bounded trace reconstruction cannot recover evicted context. Execution shares
+`require_grammar_state` before its state writes, and recording validates the
+requested identifier before changing history. The
+[API migration](../docs/API_CONTRACTS.md#grammar-history-and-selector-admission)
+specifies admitted containers and authoritative counters. This intentionally
+replaces silent history sanitization and invalid-counter fallback.
+
+The native selector's incremental checks cover U1 initiation, U2, U3 and U4.
+They do not validate a complete word's closure, U5 depth or U6 trajectory.
+Lag memory and scheduling are supplied policy state, separate from grammar
+permission. The [actual occurrence comparison](NATIVE_OPERATOR_DYNAMICS.md#native-selector-memory-and-occurrence)
+shows why identical physical coordinates and proposals do not suffice when
+this memory is discarded. Removed legacy Mutation/THOL threshold declarations
+neither define a second grammar nor override the live contracts.
+The [decision-clock result](NATIVE_OPERATOR_DYNAMICS.md#native-selector-clock-admission)
+also requires the supplied decision schedule: additional outer runtime calls
+can select Emission earlier at the same final time. Internal flow subdivision
+and fixed event times have separate contracts. Grammar permits or rejects an
+event; it does not identify a numerical call count with an endogenous rhythm.
+The [disconnected-context comparison](NATIVE_OPERATOR_DYNAMICS.md#native-selector-environment-inputs)
+additionally identifies graph-wide diagnostic inputs to actual selection.
+Equal local grammar and primitive nodal state can lead to Coherence or Dissonance
+under different graph-normalized Si. Their immediate stored-pressure writes
+are distinct from a subsequent constitutive refresh. Grammar admission does
+not remove a controller's declared environmental input.
+
+**Generation.** Domain templates and pattern signatures propose candidates;
+every offered word passes the shared validator under its recorded context.
+Length and requested-pattern constraints remain mandatory, including registered
+recipe fallbacks. Unsatisfied hard constraints reject; a lower-health fallback
+is explicitly reported. Health scores rank admitted proposals and prove no
+application outcome or future dynamics. Templates remain unvalidated fragments,
+not a second canonical word catalog.
 
 **Basis and execution evidence.** Immutable `GRAMMAR_BASES` records describe
 each rule's identities, conditional theorems, contracts and policies, including
@@ -392,6 +594,9 @@ distinguish registry consistency, live execution and read-only observation:
 | --- | --- |
 | Role registry and consumer consistency | [Grammar canon](../tests/operators/test_grammar_canon.py), [consumer consistency](../tests/operators/test_grammar_canonical_consistency.py) |
 | U1–U4 context and history | [Grammar dynamics](../tests/operators/test_grammar_dynamics.py) |
+| Shared word profiles, metadata and live initialization | [String parity](../tests/operators/test_grammar_string_parity.py), [typed words](../tests/operators/test_validated_sequence_execution.py), [structural admission](../tests/operators/test_structural_word_admission.py), [SDK reporting](../tests/sdk/test_explain_sequence_profiles.py) |
+| Explicit scopes, closures, counts and strict program requests | [Program execution](../tests/test_program_execution.py) |
+| Admitted generation and mandatory constraints | [Generator admission](../tests/test_sequence_generator_admission.py) |
 | U3 rejection before mutation | [Hard U3 invariant](../tests/operators/test_u3_hard_invariant.py) |
 | Operator postconditions on their declared paths | [Operator contracts](../tests/operators/test_operator_contracts.py) |
 | Reference-relative U6 drift and aligned-support admission | [U6 observations](../tests/operators/test_grammar_u6_observations.py) |

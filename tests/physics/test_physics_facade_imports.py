@@ -93,10 +93,7 @@ def test_wildcard_import_retains_public_registry(facade_owners) -> None:
 def test_cold_discovery_does_not_load_unrequested_reports(
     imports: str, source_tree_environment
 ) -> None:
-    code = (
-        imports
-        + "\n"
-        + """
+    code = imports + "\n" + """
 import sys
 import tnfr.physics as physics
 
@@ -128,7 +125,6 @@ assert RegionalFormRegion is owner_type
 assert physics.RegionalFormRegion is owner_type
 assert unrequested.isdisjoint(sys.modules)
 """
-    )
     completed = subprocess.run(
         [sys.executable, "-c", code],
         cwd=Path(__file__).resolve().parents[2],

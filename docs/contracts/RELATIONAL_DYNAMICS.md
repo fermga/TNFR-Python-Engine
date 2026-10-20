@@ -28,9 +28,13 @@ Smooth-sine reports retain their declared loss, capacity, support and preparatio
 
 ## Section link directory
 
-These aliases route existing citations to their substantive owner.
+Use the chapter table above for normal navigation. These stable section links
+route direct citations to their substantive owner.
 
-- <a id="relational-dynamics-api-contracts"></a>[Relational dynamics API contracts](#relational-dynamics-api-contracts)
+<details markdown="1">
+<summary>Direct section links</summary>
+
+- <a id="relational-dynamics-api-contracts"></a>[Relational dynamics API contracts](#relational-dynamics-contract-index)
 
 - <a id="conditional-relational-execution"></a>[Conditional relational execution](relational/RELATIONAL_EXECUTION.md#conditional-relational-execution)
 
@@ -195,6 +199,8 @@ These aliases route existing citations to their substantive owner.
 - <a id="admission-when-chaining-sine-reports"></a>[Admission when chaining sine reports](relational/SINE_COMPARISON_AND_INFERENCE.md#admission-when-chaining-sine-reports)
 
 - <a id="detached-normalized-sine-complete-law-comparison"></a>[Detached normalized-sine complete-law comparison](relational/SINE_COMPARISON_AND_INFERENCE.md#detached-normalized-sine-complete-law-comparison)
+
+- <a id="conservative-conductance-support-sine"></a>[Conservative sine with conductance and bare support](relational/SINE_COMPARISON_AND_INFERENCE.md#conservative-conductance-support-sine)
 
 - <a id="sine-regional-storage-balance"></a>[sine-regional-storage-balance](relational/SINE_REGIONAL_DYNAMICS.md#sine-regional-storage-balance)
 
@@ -483,3 +489,5 @@ These aliases route existing citations to their substantive owner.
 - <a id="shared-circular-geometry"></a>[Shared circular geometry](relational/OBSERVATION_AND_INFORMATION.md#shared-circular-geometry)
 
 - <a id="exact-cycle-resultant-sectors"></a>[Exact cycle resultant sectors](relational/OBSERVATION_AND_INFORMATION.md#exact-cycle-resultant-sectors)
+
+</details>

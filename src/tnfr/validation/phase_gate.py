@@ -1,8 +1,9 @@
 """Phase-gated coupling diagnostics for graph signals.
 
-This module turns the U3 phase-compatibility idea into a reusable validation
-surface.  It answers a practical question: given a graph and a phase value per
-node, which edges are locally compatible enough to couple?
+This module observes edge differences against a supplied advisory threshold
+(pi/4 by default). It is distinct from live U3 execution admission. Suggested
+words are controller policy and require independent grammar and live-state
+checks before use.
 
 The functions are read-only telemetry.  They do not mutate EPI, phases, DNFR,
 or graph topology.
@@ -11,22 +12,29 @@ or graph topology.
 from __future__ import annotations
 
 import html
-import json
 import math
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Iterable, Mapping, Sequence, cast
 
 try:
     import networkx as nx
 except ImportError:  # pragma: no cover - optional dependency guard
     nx = None  # type: ignore[assignment]
 
+from .._exact_time import bounded_represented_real, finite_represented_real
+from ..alias import get_attr
+from ..constants.aliases import ALIAS_THETA
+from ..metrics.common import finite_mean
 from ..physics.fields import (
     compute_phase_curvature,
     compute_phase_gradient,
     compute_structural_potential,
 )
+from ..utils import angle_diff
+from ..utils.cache import GRAPH_RUNTIME_CACHE_KEYS
+from ..utils.io import json_dumps, safe_write
+from .window import validate_window
 
 TAU = 2.0 * math.pi
 DEFAULT_PHASE_GATE = math.pi / 4.0
@@ -34,8 +42,31 @@ DEFAULT_MIN_COMPLIANCE = 0.90
 
 
 def _mean(values: Iterable[float], default: float = 0.0) -> float:
-    data = [float(v) for v in values]
-    return sum(data) / len(data) if data else default
+    data = tuple(values)
+    return finite_mean(data) if data else default
+
+
+def _admit_gate(gate: Any) -> float:
+    return bounded_represented_real(gate, "phase gate", minimum=0.0)[0]
+
+
+def _admit_compliance(value: Any) -> float:
+    return bounded_represented_real(
+        value, "minimum compliance", minimum=0.0, maximum=1.0
+    )[0]
+
+
+def _phase_field_graph(G: Any, phase_keys: Sequence[str]) -> Any:
+    """Give composite field readers the same explicitly selected phase chart."""
+    if tuple(phase_keys) == ALIAS_THETA:
+        return G
+    phases = {node: get_node_phase(G, node, phase_keys=phase_keys) for node in G}
+    snapshot = G.copy()
+    for key in GRAPH_RUNTIME_CACHE_KEYS:
+        snapshot.graph.pop(key, None)
+    for node, phase in phases.items():
+        snapshot.nodes[node][ALIAS_THETA[0]] = phase
+    return snapshot
 
 
 def _json_safe_node(node: Any) -> Any:
@@ -58,29 +89,27 @@ def _require_networkx() -> None:
 
 
 def wrap_angle(angle: float) -> float:
-    """Wrap an angular difference to ``(-pi, pi]``."""
-    return (float(angle) + math.pi) % TAU - math.pi
+    """Return the shared signed atan2 chart for a finite represented angle."""
+    return angle_diff(angle, 0.0)
 
 
 def get_node_phase(
     G: Any,
     node: Any,
     *,
-    phase_keys: Sequence[str] = ("phase", "theta"),
+    phase_keys: Sequence[str] = ALIAS_THETA,
     default: float = 0.0,
 ) -> float:
-    """Read a node phase using TNFR-compatible phase aliases."""
+    """Read the authoritative selected phase; absent phase defaults to zero."""
     data = G.nodes[node]
-    for key in phase_keys:
-        if key in data:
-            return float(data[key])
-    return float(default)
+    raw = get_attr(data, phase_keys, default, strict=True, conv=lambda value: value)
+    return finite_represented_real(raw, "phase")[0]
 
 
 def node_phases(
     G: Any,
     *,
-    phase_keys: Sequence[str] = ("phase", "theta"),
+    phase_keys: Sequence[str] = ALIAS_THETA,
 ) -> list[float]:
     """Return node phases in graph iteration order."""
     return [get_node_phase(G, node, phase_keys=phase_keys) for node in G.nodes()]
@@ -88,20 +117,23 @@ def node_phases(
 
 def circular_order_parameter(phases: Sequence[float]) -> float:
     """Return the Kuramoto global order parameter ``R`` in ``[0, 1]``."""
-    if not phases:
+    values = tuple(finite_represented_real(p, "phase")[0] for p in phases)
+    if not values:
         return 1.0
-    cos_mean = _mean(math.cos(float(p)) for p in phases)
-    sin_mean = _mean(math.sin(float(p)) for p in phases)
+    cos_mean = _mean(math.cos(p) for p in values)
+    sin_mean = _mean(math.sin(p) for p in values)
     return math.hypot(cos_mean, sin_mean)
 
 
 def phase_histogram_entropy(phases: Sequence[float], bins: int = 16) -> float:
     """Return normalized phase-histogram entropy in ``[0, 1]``."""
-    if not phases or bins <= 1:
+    bins = validate_window(bins, positive=True)
+    values = tuple(finite_represented_real(p, "phase")[0] for p in phases)
+    if not values or bins == 1:
         return 0.0
     counts = [0] * bins
-    for phase in phases:
-        wrapped = float(phase) % TAU
+    for phase in values:
+        wrapped = phase % TAU
         index = min(bins - 1, int((wrapped / TAU) * bins))
         counts[index] += 1
     total = sum(counts)
@@ -154,7 +186,7 @@ class PhaseGateCompliance:
 
     def passed(self, min_compliance: float = DEFAULT_MIN_COMPLIANCE) -> bool:
         """Return True if enough edges are inside the gate."""
-        return self.compliance_ratio >= float(min_compliance)
+        return self.compliance_ratio >= _admit_compliance(min_compliance)
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -199,8 +231,8 @@ class PhaseGateOperatorPrescription:
     """TNFR canonical operator sequence suggested by the phase-gate state.
 
     Prescriptions are read-only guidance.  They do not apply operators or mutate
-    the graph; they map U3 phase-gate telemetry to TNFR's canonical operator
-    vocabulary so downstream systems can decide how to act.
+    the graph; they map advisory phase-gate telemetry to TNFR's registered
+    operator vocabulary. This does not establish live U3 admission.
     """
 
     scope: str
@@ -252,18 +284,18 @@ def edge_phase_difference(
     u: Any,
     v: Any,
     *,
-    phase_keys: Sequence[str] = ("phase", "theta"),
+    phase_keys: Sequence[str] = ALIAS_THETA,
 ) -> float:
     """Return absolute wrapped phase difference for one edge or node pair."""
     phase_u = get_node_phase(G, u, phase_keys=phase_keys)
     phase_v = get_node_phase(G, v, phase_keys=phase_keys)
-    return abs(wrap_angle(phase_u - phase_v))
+    return abs(angle_diff(phase_u, phase_v))
 
 
 def edge_phase_differences(
     G: Any,
     *,
-    phase_keys: Sequence[str] = ("phase", "theta"),
+    phase_keys: Sequence[str] = ALIAS_THETA,
 ) -> list[float]:
     """Return absolute wrapped phase differences over graph edges."""
     return [edge_phase_difference(G, u, v, phase_keys=phase_keys) for u, v in G.edges()]
@@ -273,15 +305,27 @@ def detect_phase_gate_violations(
     G: Any,
     gate: float = DEFAULT_PHASE_GATE,
     *,
-    phase_keys: Sequence[str] = ("phase", "theta"),
+    phase_keys: Sequence[str] = ALIAS_THETA,
 ) -> list[PhaseGateViolation]:
     """Return edges whose wrapped phase difference exceeds ``gate``."""
-    violations: list[PhaseGateViolation] = []
-    gate_value = float(gate)
+    return list(compute_edge_gate_compliance(G, gate, phase_keys=phase_keys).violations)
+
+
+def compute_edge_gate_compliance(
+    G: Any,
+    gate: float = DEFAULT_PHASE_GATE,
+    *,
+    phase_keys: Sequence[str] = ALIAS_THETA,
+) -> PhaseGateCompliance:
+    """Compute edge-local phase-gate compliance for a graph state."""
+    gate_value = _admit_gate(gate)
+    differences = []
+    violations = []
     for u, v in G.edges():
         phase_u = get_node_phase(G, u, phase_keys=phase_keys)
         phase_v = get_node_phase(G, v, phase_keys=phase_keys)
-        difference = abs(wrap_angle(phase_u - phase_v))
+        difference = abs(angle_diff(phase_u, phase_v))
+        differences.append(difference)
         if difference > gate_value:
             violations.append(
                 PhaseGateViolation(
@@ -293,21 +337,10 @@ def detect_phase_gate_violations(
                     excess=difference - gate_value,
                 )
             )
-    return violations
-
-
-def compute_edge_gate_compliance(
-    G: Any,
-    gate: float = DEFAULT_PHASE_GATE,
-    *,
-    phase_keys: Sequence[str] = ("phase", "theta"),
-) -> PhaseGateCompliance:
-    """Compute edge-local phase-gate compliance for a graph state."""
-    differences = edge_phase_differences(G, phase_keys=phase_keys)
     edge_count = len(differences)
     if edge_count == 0:
         return PhaseGateCompliance(
-            gate=float(gate),
+            gate=gate_value,
             edge_count=0,
             gated_edges=0,
             violation_count=0,
@@ -317,11 +350,7 @@ def compute_edge_gate_compliance(
             max_difference=0.0,
             violations=(),
         )
-    gate_value = float(gate)
     gated_edges = sum(diff <= gate_value for diff in differences)
-    violations = tuple(
-        detect_phase_gate_violations(G, gate_value, phase_keys=phase_keys)
-    )
     return PhaseGateCompliance(
         gate=gate_value,
         edge_count=edge_count,
@@ -331,7 +360,7 @@ def compute_edge_gate_compliance(
         min_difference=min(differences),
         mean_difference=_mean(differences),
         max_difference=max(differences),
-        violations=violations,
+        violations=tuple(violations),
     )
 
 
@@ -340,17 +369,21 @@ def rank_phase_stress_hotspots(
     gate: float | None = DEFAULT_PHASE_GATE,
     *,
     top_n: int | None = None,
-    phase_keys: Sequence[str] = ("phase", "theta"),
+    phase_keys: Sequence[str] = ALIAS_THETA,
 ) -> list[PhaseStressHotspot]:
     """Rank nodes by local phase stress and incident gate violation excess."""
-    grad = compute_phase_gradient(G)
-    curvature = compute_phase_curvature(G)
+    gate_value = None if gate is None else _admit_gate(gate)
+    if top_n is not None:
+        top_n = validate_window(top_n)
+    field_graph = _phase_field_graph(G, phase_keys)
+    grad = compute_phase_gradient(field_graph)
+    curvature = compute_phase_curvature(field_graph)
     incident_counts = {node: 0 for node in G.nodes()}
     incident_excess = {node: 0.0 for node in G.nodes()}
 
-    if gate is not None:
+    if gate_value is not None:
         for violation in detect_phase_gate_violations(
-            G, float(gate), phase_keys=phase_keys
+            G, gate_value, phase_keys=phase_keys
         ):
             incident_counts[violation.u] = incident_counts.get(violation.u, 0) + 1
             incident_counts[violation.v] = incident_counts.get(violation.v, 0) + 1
@@ -382,7 +415,7 @@ def rank_phase_stress_hotspots(
 
     hotspots.sort(key=lambda item: item.stress_score, reverse=True)
     if top_n is not None:
-        return hotspots[: max(0, int(top_n))]
+        return hotspots[:top_n]
     return hotspots
 
 
@@ -392,17 +425,20 @@ def prescribe_phase_gate_operators(
     *,
     min_compliance: float = DEFAULT_MIN_COMPLIANCE,
     top_n: int = 5,
-    phase_keys: Sequence[str] = ("phase", "theta"),
+    phase_keys: Sequence[str] = ALIAS_THETA,
 ) -> list[PhaseGateOperatorPrescription]:
     """Map phase-gate telemetry to TNFR canonical operator guidance.
 
     This is the TNFR-specific layer of the diagnostic: global baselines can say
-    whether a signal looks ordered, and U3 telemetry says which edges are locally
-    phase-compatible.  This function translates that structural state into a
+    whether a signal looks ordered, and advisory telemetry compares local edge
+    differences with the supplied gate. This function translates that state into a
     conservative canonical-operator prescription for an already-active graph
     state.  It is read-only guidance and must be followed by a fresh U3 check
     before any guarded ``UM``/``RA`` coupling attempt.
     """
+    gate = _admit_gate(gate)
+    min_compliance = _admit_compliance(min_compliance)
+    top_n = validate_window(top_n)
     compliance = compute_edge_gate_compliance(G, gate, phase_keys=phase_keys)
     hotspots = rank_phase_stress_hotspots(
         G,
@@ -434,8 +470,8 @@ def prescribe_phase_gate_operators(
                 sequence=("UM", "RA", "SHA"),
                 priority=0.0,
                 grammar_basis=("U3", "U1b"),
-                rationale="All edges satisfy the U3 phase gate.",
-                expected_effect="Allow guarded coupling and resonance propagation, then close observation.",
+                rationale="All edges satisfy the supplied advisory phase gate.",
+                expected_effect="Request coupling and resonance after independent live admission, then close observation.",
             )
         )
         return prescriptions
@@ -449,7 +485,7 @@ def prescribe_phase_gate_operators(
                 priority=violation_pressure,
                 grammar_basis=("U3", "U1b", "operator postconditions"),
                 rationale=(
-                    "Minimum U3 compliance passes, but some local edges still "
+                    "Minimum advisory compliance passes, but some local edges still "
                     "exceed the phase gate."
                 ),
                 expected_effect="Stabilize local phase stress before guarded coupling.",
@@ -464,7 +500,7 @@ def prescribe_phase_gate_operators(
                 priority=violation_pressure,
                 grammar_basis=("U3", "U2", "U4", "U1b", "U5"),
                 rationale=(
-                    "U3 compliance is below the configured minimum; new coupling "
+                    "Advisory compliance is below the configured minimum; new coupling "
                     "should be held while stress is stabilized through controlled "
                     "dissonance and self-organization."
                 ),
@@ -504,7 +540,7 @@ def prescribe_phase_gate_operators(
         )
 
     prescriptions.sort(key=lambda item: item.priority, reverse=True)
-    return prescriptions[: max(1, int(top_n) + 1)]
+    return prescriptions[: top_n + 1]
 
 
 def _topology_baselines(G: Any) -> dict[str, float]:
@@ -539,17 +575,20 @@ def compare_against_global_baselines(
     *,
     min_compliance: float = DEFAULT_MIN_COMPLIANCE,
     histogram_bins: int = 16,
-    phase_keys: Sequence[str] = ("phase", "theta"),
+    phase_keys: Sequence[str] = ALIAS_THETA,
 ) -> dict[str, Any]:
     """Return TNFR local telemetry and global/topological baselines.
 
     The returned dictionary is intentionally flat so it can be used as a row in
     benchmarks, CSV exports, dashboards, or ML feature pipelines.
     """
+    min_compliance = _admit_compliance(min_compliance)
+    histogram_bins = validate_window(histogram_bins, positive=True)
     compliance = compute_edge_gate_compliance(G, gate, phase_keys=phase_keys)
-    grad = compute_phase_gradient(G)
-    curvature = compute_phase_curvature(G)
-    phi_s = compute_structural_potential(G)
+    field_graph = _phase_field_graph(G, phase_keys)
+    grad = compute_phase_gradient(field_graph)
+    curvature = compute_phase_curvature(field_graph)
+    phi_s = compute_structural_potential(field_graph)
     phases = node_phases(G, phase_keys=phase_keys)
     order_r = circular_order_parameter(phases)
     topology = _topology_baselines(G)
@@ -581,9 +620,13 @@ def analyze_phase_gate(
     min_compliance: float = DEFAULT_MIN_COMPLIANCE,
     top_n: int = 10,
     histogram_bins: int = 16,
-    phase_keys: Sequence[str] = ("phase", "theta"),
+    phase_keys: Sequence[str] = ALIAS_THETA,
 ) -> PhaseGateReport:
     """Build a full phase-gate diagnostic report for a graph state."""
+    gate = _admit_gate(gate)
+    min_compliance = _admit_compliance(min_compliance)
+    top_n = validate_window(top_n)
+    histogram_bins = validate_window(histogram_bins, positive=True)
     compliance = compute_edge_gate_compliance(G, gate, phase_keys=phase_keys)
     hotspots = tuple(
         rank_phase_stress_hotspots(G, gate, top_n=top_n, phase_keys=phase_keys)
@@ -716,7 +759,8 @@ def render_phase_gate_markdown(
                     "gradient and curvature identify where the graph signal is "
                     "locally misaligned with the coupling topology.  The operator "
                     "prescription is TNFR-specific read-only guidance: it maps the "
-                    "observed U3 state to canonical stabilization/coupling sequences."
+                    "advisory observations to proposed stabilization/coupling sequences; "
+                    "live U3 admission remains separate."
                 ),
             ]
         )
@@ -784,9 +828,7 @@ th {{ background: #f3f5f7; }}
 {body}
 </body>
 </html>
-""".format(
-        title=html.escape(title), body="\n".join(body)
-    )
+""".format(title=html.escape(title), body="\n".join(body))
 
 
 def export_phase_gate_report(
@@ -813,17 +855,15 @@ def export_phase_gate_report(
     )
     inferred = path.suffix.lower().lstrip(".")
     format_name = (fmt or inferred or "json").lower()
-    path.parent.mkdir(parents=True, exist_ok=True)
     if format_name == "json":
-        path.write_text(json.dumps(report.as_dict(), indent=2) + "\n", encoding="utf-8")
+        content = cast(str, json_dumps(report.as_dict(), indent=2)) + "\n"
     elif format_name in {"md", "markdown"}:
-        path.write_text(
-            render_phase_gate_markdown(report, title=title), encoding="utf-8"
-        )
+        content = render_phase_gate_markdown(report, title=title)
     elif format_name == "html":
-        path.write_text(render_phase_gate_html(report, title=title), encoding="utf-8")
+        content = render_phase_gate_html(report, title=title)
     else:
         raise ValueError("fmt must be one of: json, md, markdown, html")
+    safe_write(path, lambda stream: stream.write(content))
     return path
 
 

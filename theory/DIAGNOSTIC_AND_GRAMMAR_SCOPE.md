@@ -378,8 +378,10 @@ This is a control-policy reachability result, not a newly prescribed policy
 or a defect warranting an arbitrary threshold change.
 
 Controls: [diagnostic lower bound and selection](../tests/physics/test_uniform_capacity_selector_scope.py).
-The single finite causal check and source-work interpretation belong to the
-[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).
+The [fresh-law occurrence comparison](NATIVE_OPERATOR_DYNAMICS.md#native-selector-environment-inputs)
+holds local state and pressure fixed while disconnected capacities change
+actual Coherence into Dissonance through graph-wide normalization. Its matched
+maxima control accounts separately for remote capacity-pressure contrast.
 
 ## 8. Grammar derivation: premises, language and trajectories
 
@@ -583,7 +585,8 @@ in that simple case. The supplied
 [U5 assessment](../src/tnfr/physics/multiscale_coherence.py) correctly requires
 an explicit hierarchy and coefficient. No new physical coefficient is derived.
 
-## 12. Audit integration and remaining obligations
+<a id="12-audit-integration-and-remaining-obligations"></a>
+## 12. Integrated contracts and remaining obligations
 
 The [grammar owner](UNIFIED_GRAMMAR_RULES.md#8-composition-and-implementation)
 specifies shared word admission, profiles, live rejection and observation.
@@ -606,9 +609,10 @@ neither selects a phase/capacity/support law or establishes NFR maintenance.
 The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 alone assigns current work.
 
-## 13. Structural grammar refactor and the full nodal system
+<a id="13-structural-grammar-refactor-and-the-full-nodal-system"></a>
+## 13. Structural grammar and the full nodal system
 
-Physical conclusions require explicit structural and dynamical premises.
+Dynamical conclusions require explicit structural and constitutive premises.
 Renaming a calibrated constant, differentiating an underdetermined identity
 or removing a contract cannot supply the missing law. The
 [grammar basis registry](../src/tnfr/operators/grammar_canon.py) records which
@@ -693,7 +697,8 @@ These are constitutive admission requirements. The
 current priority; this scope note does not open another trajectory campaign
 or promote a configured selector to emergent physics.
 
-## 14. Constitutive closure audit from the nodal law
+<a id="14-constitutive-closure-audit-from-the-nodal-law"></a>
+## 14. Constitutive closure of the nodal law
 
 The constitutive question starts with structural form and `x'=diag(nu)*p`, not with
 the claim that each implemented formula is a necessary TNFR law. The
@@ -829,10 +834,12 @@ fallback must not certify every fit or backend. Portable controls in
 [test_constitutive_support_scope.py](../tests/physics/test_constitutive_support_scope.py)
 state which estimator they use. No complete tetrad-autonomy theorem follows.
 
-### What is now derived and what must come next
+<a id="what-is-now-derived-and-what-must-come-next"></a>
+### Derived constraints and independent premises
 
-This subsection records mathematical dependencies, not a chronological task
-queue. The execution plan determines the current next step.
+These constraints classify complete-law dependencies. The
+[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+selects which implication to investigate.
 
 The variational calculation supplies useful positive constraints: the EPI
 law fixes the x-dependent part of a compatible potential, requiring reciprocal
@@ -899,6 +906,41 @@ A detached continuous comparison has its own laws and declared interventions;
 matching a named operator's apparent effect does not establish that operator's
 contract. The canonical catalog does not by itself prove generative completeness
 or uniquely determine the continuous pressure/phase law.
+
+<a id="canonical-execution-and-law-selection"></a>
+**Canonical execution, constitutive justification and tangent comparison.**
+Canonical execution means that the claimed operator path meets its registered
+state, admission and grammatical contracts. A continuous completion must
+separately declare how pressure, phase and every other consumed channel evolve.
+Deriving that completion requires an implication from named structural and
+operator premises, with any remaining freedom exposed. Successful operator
+execution establishes neither that implication nor the necessity of held
+support, fixed capacity, a chosen storage function or a particular kernel.
+
+A tangent is derived from a specified nonlinear field at a stated reference.
+It can be evaluated as a separate comparison model, with its own domain and
+conserved quantities, without becoming a second claimed fundamental TNFR law.
+Linear or nonlinear form alone determines neither canonicity nor NFR status.
+In the [weighted-star study](nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md),
+canonical refers to the registered AL/UM/SHA preparation; the weighted sine
+continuation is declared separately. Its full real-lift tangent is a control
+for mechanism and reachability, not a competing ontological proposal.
+
+At that boundary, retain the actual event consumers and refresh ordering.
+An event may consume stored pressure and produce a state whose subsequent
+constitutive pressure differs. Adding a refresh between events, requiring
+every event to commute with flow, or imposing continuous storage conservation
+on a jump would introduce extra premises. A same-word comparison must check
+the consumed state at every prefix, not just matching final coordinates.
+The [actual weighted-star handoff](nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-constitutive-handoff-result)
+admits the same AL/UM/SHA prefixes with two distinct fresh continued fields,
+a shared consensus tangent and independently retained constituent identities.
+Its current/potential comparison consumes already retained primitive phases;
+operator-resultant use does not derive a first-moment pressure restriction.
+This is a source-specific application of existing nonselection, not a new
+default law or universal all-operator realization. The
+[sole execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+owns subsequent tasks.
 
 The existing [parameter ledger](NODAL_PARAMETER_FOUNDATIONS.md#2-parameter-and-dependency-ledger)
 identifies the missing premises. The
@@ -1033,16 +1075,16 @@ aggregation or fewer channels must not be promoted to fundamental selection
 principles without an independent argument.
 
 <a id="post-contact-foundation-decision"></a>
-### What the contact results change in the foundation audit
+<a id="what-the-contact-results-change-in-the-foundation-audit"></a>
+### Complete-law scope of contact and maintenance
 
-The bounded review declared at `6fc83d05` compares existing proofs, not new
-responses. The [own-law source](nodal/ORGANIZED_ALTERNATIVE_OUTER_ACQUISITION.md)
-and [finite contact](nodal/ORGANIZED_ALTERNATIVE_CONTACT.md) certificates now
+The [own-law source](nodal/ORGANIZED_ALTERNATIVE_OUTER_ACQUISITION.md)
+and [finite contact](nodal/ORGANIZED_ALTERNATIVE_CONTACT.md) certificates
 retain both endpoint laws through the actual preparation and intervention
 history. Their common marked identity does not make the complete laws
 equivalent. The [ideal contact theorem](nodal/ORGANIZED_CONTACT_DYNAMIC_CANCELLATION.md)
 separates complete-field reflection protection from law-dependent response
-onset. Its limiting preparation is not the acquired source. The subsequent
+onset. Its limiting preparation is not the acquired source. The
 [preparation theorem](nodal/ORGANIZED_CONTACT_PREPARATION_SENSITIVITY.md)
 shows that all 96 internal directions are invisible at first amplitude
 variation along the carrier, while explicit internal disturbances generate
@@ -1050,22 +1092,22 @@ quadratic response. This is neither finite-amplitude transverse stability
 nor an all-times retention certificate. Its dynamical reflection is also
 not the stationary sector assumed in the older reflection obstruction.
 
-These results support the following dependency assessment. Task activation
-and the prospective protocol belong only to the
-[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-checkpoint).
+The following dependencies retain those distinct complete-law scopes.
+Task activation and prospective protocols belong only to the
+[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).
 
 | Question | What the existing evidence permits | Missing admission |
 | --- | --- | --- |
 | Independent constitutive justification | The two supplied laws form the retained identities and are mathematically distinguishable; the information minimum constrains a description of a law | An independently justified restriction or a complete physical observation. Matching targets, dissipation, symmetry, onset order or operator labels does not select a law |
-| Continued-contact maintenance | The original unit-strength sine law has full-state stationary acceptance and restricted instability theorems. The separately supplied [weak-contact law](nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md#weak-contact-source-basin) now certifies actual-source capture by strict minima on five explicit donor-origin intervals at fixed eta=1e-5, with every original uncertainty retained | Unit-strength nonseparable feasibility remains open. Weak-contact gaps retain saddle-converging origins and otherwise unclassified destinations. Neither selected contact strength nor capture justifies the complete law or its event occurrence |
+| Continued-contact maintenance | The original unit-strength sine law has full-state stationary acceptance and restricted instability theorems. The separately supplied [weak-contact law](nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md#weak-contact-source-basin) certifies actual-source capture by strict minima on five explicit donor-origin intervals at fixed eta=1e-5, with every original uncertainty retained | Unit-strength nonseparable feasibility remains open. Weak-contact gaps retain saddle-converging origins and otherwise unclassified destinations. Neither selected contact strength nor capture justifies the complete law or its event occurrence |
 | Independent physical property | Collective measurement maps remain admissible in principle; existing electrical comparisons expose explicit failures | A joint certificate of independently prepared state, complete loaded law/support, input and clock calibration, and observation errors, obtained without the reserved response |
 | Additional collective coordinates | Constituent memory already derives quadratic feedback and nonclosure; compression already supplies a controlled finite prediction | A named missing predictive capability. Another covariance representation alone closes none of the preceding gaps |
 
-The review's stationary target question concerns a **stable organization
+The stationary target question concerns a **stable organization
 in the original complete marked class under the original unit-strength
 law**. Its unresolved status does not obstruct every supplied contact law:
 the weighted comparison has its own source-to-target obligations. The
-[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#alternative-weak-contact-source-admission)
+[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 selects the next dependency. Identity retention alone need not approach
 a stable point; the separate basin theorem establishes that stronger
 conclusion for its declared source intervals and strength.
@@ -1202,12 +1244,12 @@ preparation information, loading and joint sensor coverage remain independent
 obligations. Likewise, supplying a support event to preserve an identity
 would add an occurrence law; the
 [support-law nonselection result](nodal/RELATIONAL_SUPPORT_EVENTS.md)
-does not derive that law from passivity or desired retention. No source,
-trajectory, stationary search, physical record or frozen producer was
-evaluated in this review.
+does not derive that law from passivity or desired retention. These are analytical scope restrictions; they do not supply an evaluated
+trajectory or a reserved observation.
 
 <a id="post-capture-foundation-decision"></a>
-### What source-to-attractor capture changes
+<a id="what-source-to-attractor-capture-changes"></a>
+### Capture and constitutive dependence
 
 The [actual-source basin theorem](nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md#weak-contact-source-basin)
 closes a specific generative dependency: the acquired and observed host,
@@ -1227,13 +1269,13 @@ shape elimination, the fifth-order restoring coefficient, the uniform
 remainder and source transport. Those premises cannot be removed by
 calling the resulting registration a property of topology alone.
 
-This makes constitutive robustness the most direct new foundation test.
+Constitutive robustness is a separate property from capture under one law.
 The [retained harmonic alternative](nodal/ORGANIZED_ALTERNATIVE_CONTACT.md#organized-alternative-contact)
 already has own-law preparation and finite interaction results. It is a
 declared counterlaw with the same primitive domains, reciprocal support
 and loss structure, rather than a newly fitted explanation. The
 [own-law weak-contact classification](nodal/ORGANIZED_ALTERNATIVE_WEAK_CONTACT.md)
-now changes the attracting registrations themselves: its admitted tube
+changes the attracting registrations themselves: its admitted tube
 contains ten minima and ten index-one saddles, and the five sine-attracting
 relative origins are saddles under the alternative. Own-law normal
 curvature and uniform torque remainders retain all fine directions in
@@ -1241,7 +1283,7 @@ this verdict. Marked identity and support symmetry therefore do not
 determine these attracting geometries for the retained pair.
 
 The separate [own-source theorem](nodal/ORGANIZED_ALTERNATIVE_WEAK_CONTACT.md#alternative-weak-contact-source-capture)
-now carries the actual alternative-law preparation, its observation
+carries the actual alternative-law preparation, its observation
 history and every original error through the changed weak contact.
 It retains marked identity at every donor origin and assigns an
 attracting destination on ten declared intervals. On one common
@@ -1251,7 +1293,7 @@ an acquired-outcome distinction without a finite settling deadline or
 an independent physical readout.
 
 The separate [joint transition theorem](nodal/ORGANIZED_CONSTITUTIVE_TRANSITION.md)
-now quantifies a local loss of stability within the existing constitutive
+quantifies a local loss of stability within the existing constitutive
 family. Its critical deformation scales cubically with contact strength,
 with explicit joint derivative errors for 0<eta<=1e-12. All 52 normal
 phase directions remain positive while the soft registration undergoes
@@ -1270,7 +1312,7 @@ organization: retained slow state and causal memory remain separate
 obligations. Existing closure and event counterexamples must be checked
 before treating either as a new research gap.
 
-The alternative priorities retain their existing boundaries. Narrowing
+The related conditional questions retain their own boundaries. Narrowing
 basin gaps or enlarging eta refines the same conditional construction
 without yet distinguishing an independent premise. The original
 unit-strength stationary problem concerns a different supplied law.
@@ -1283,23 +1325,22 @@ still lacks independent preparation and measurement coverage. Capture
 does not supply those missing observations, a laboratory clock or a
 unique microscopic law.
 
-The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#independent-boundary-premise-admission)
+The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 owns the single next gate and its complete-law scope. Endpoint capture
 and the local transition distinguish retained identity from law-dependent
 registration. They do not select nature's law, globally classify the
 intermediate models, admit their sources or supply autonomous occurrence.
 
 <a id="post-transition-dynamics-decision"></a>
-### Priority after a soft collective mode appears
+<a id="priority-after-a-soft-collective-mode-appears"></a>
+### Slow collective dynamics and sufficient initialization
 
-The stationary transition leaves a specific dynamical question: what
-governs the slow registration, and which part of a complete initial state
-sets its subsequent motion? Its answer would connect constitutive
-sensitivity to collective relaxation and predictive state without
-introducing a new microscopic law. Eliminating stationary host shape
-does not prove that the same graph is invariant under the two-row flow.
+Slow registration depends on both the complete kinetic law and the retained
+initial state. The local reduction and marked-contact results below establish
+scoped inherited dynamics. Eliminating stationary host shape alone does not
+prove that the same graph is invariant under the two-row flow.
 
-This is distinct from two already resolved questions. The
+Two complementary state results have different domains. The
 [constituent-memory result](nodal/ORGANIZED_CONSTITUENT_MEMORY.md#organized-constituent-memory-result)
 excludes general closure by means or instantaneous current corrections
 on the earlier five-child model. The
@@ -1330,7 +1371,7 @@ initialization also consumes form. This rules out resetting that initial
 coordinate to the observed registration alone.
 
 The [marked-contact result](nodal/CRITICAL_PARENT_INTERACTION.md)
-now re-admits relative form and phase means alongside the critical
+re-admits relative form and phase means alongside the critical
 registration. One organized neighbor changes the asymptotic recovery
 coefficient through the joined tangent geometry. At matched means and
 storage, the internal registration still determines the sign of the
@@ -1340,7 +1381,7 @@ exact instantaneous quotient even in those three coordinates.
 These results do not authorize arbitrary contacts, operator descent,
 intermediate-law acquisition or a uniform reduced solver. The
 [boundary-constraint theorem](nodal/COLLECTIVE_BOUNDARY_CONSTRAINTS.md)
-now separates the reusable local mechanism from its constitutive input:
+separates the reusable local mechanism from its constitutive input:
 positive boundary curvature constrains precisely the old neutral
 directions visible at that boundary. Normal compliance changes the
 static coefficient; the complete kinetic pencil, memory and hidden
@@ -1349,7 +1390,8 @@ split contact removes the critical mode retained by a single port.
 
 <a id="boundary-criterion-foundation-decision"></a>
 <a id="post-resource-foundation-decision"></a>
-### Independent premises after structure and observation bounds
+<a id="independent-premises-after-structure-and-observation-bounds"></a>
+### Independent constitutive, event and observation premises
 
 The mathematical methods are established kernel and Schur-complement
 arguments. Their useful consequence here is the separation of inputs:
@@ -1376,7 +1418,7 @@ information even when both continuous rows descend exactly.
 
 The [free probe](nodal/ORGANIZED_FREE_PHASE_PROBE.md) and
 [small-phase comparison](nodal/ORGANIZED_SMALL_RESOURCE_INFORMATION.md)
-now provide conditional access, including full fine-state errors, preparation
+provide conditional access, including full fine-state errors, preparation
 resources and distinguishable or overlapping reading sets. The latter removes
 large initial mean forms as a requirement for every observation in this family.
 Neither result supplies a new restriction on the current, kinetic rows or
@@ -1432,23 +1474,24 @@ extending the finite run does not supply one. It is not evidence that another
 law or engine mechanism is already justified. The same distinction applies to
 deferred unit-strength stationary classification and capacity/support models.
 
-The reviewed owners therefore identify no new independently justified selector
-or ready complete mechanism that resolves the current dependency. This is a
-boundary of the admitted repository evidence, not a proof that none can exist.
+These certificates do not derive an independently justified occurrence
+selector or select a unique complete law. This is a boundary of their stated
+premises, not a proof that such a mechanism cannot exist.
 The [constitutive entry condition](research/FIVE_STAGE_EXECUTION_PLAN.md#new-constitutive-evidence-admission)
 requires a named new premise or observation, its independent basis and the
 retained alternative it can exclude. For an autonomous generative claim, the
 input may instead be a justified source/occurrence mechanism with its own
 capability; it need not select the current. Physical comparison need not await
 unique law selection or substrate origin once its own bridge is admitted.
-The [sole queue](research/FIVE_STAGE_EXECUTION_PLAN.md#post-resource-foundation-review)
-records this selection and physical-admission dependency; another internal
-observation refinement does not fill the missing input. It does not forbid
-investigating a named new conditional capability, such as
+The [sole queue](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+selects a bounded foundational implication to investigate. Further numerical
+precision does not fill a missing constitutive or occurrence premise. A named
+conditional capability, such as
 [localized identity transport](EMERGENT_ONTOLOGY.md#localized-identity-transport),
-under an explicitly supplied complete law.
+can instead be studied under an explicitly supplied complete law.
 
-### Cross-channel foundation audit
+<a id="cross-channel-foundation-audit"></a>
+### Cross-channel foundations
 
 The follow-through is centralized in
 [NODAL_PARAMETER_FOUNDATIONS.md](NODAL_PARAMETER_FOUNDATIONS.md), not another

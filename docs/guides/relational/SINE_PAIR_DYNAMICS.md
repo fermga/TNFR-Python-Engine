@@ -355,7 +355,7 @@ its own sine law and is not evidence for the alternative.
 
 Continue the [local transition preparation](#predict-a-local-change-in-observed-pairs)
 above. Restore its original forms, since that example ends with the reversed
-control. Every fine form and phase now has an independent initial error; the
+control. Every fine form and phase has an independent initial error; the
 capacities, support and law remain fixed:
 
 ```python

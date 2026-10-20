@@ -486,8 +486,7 @@ def main():
     print("\n" + "=" * 72)
     print("  SUMMARY: Grammar Energy Landscape Findings")
     print("=" * 72)
-    print(
-        """
+    print("""
   1. Grammar-Valid Requested Trajectory:
      The first finite run records requested and runtime-applied glyphs for
      one statically valid requested word.
@@ -515,8 +514,7 @@ def main():
 
   Operator exceptions propagate, and every successful row is labelled from
   the actual glyph history written by the runtime.
-"""
-    )
+""")
 
 
 if __name__ == "__main__":

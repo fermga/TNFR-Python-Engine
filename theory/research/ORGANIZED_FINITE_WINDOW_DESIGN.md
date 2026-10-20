@@ -6,9 +6,10 @@
 This design admission follows the [prepared matrix-response theorem](../nodal/ORGANIZED_EFFECTIVE_LAW.md).
 It asks whether a finite observation with an explicit passive sensor can
 preserve a predictive consequence and support an independent physical test.
-The [execution plan](FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) selects this
-gate. No apparatus, measured response, source acquisition or fine-node
-extension is supplied by the mathematical declaration below.
+The analytical declaration and result below remain reusable under their stated
+premises; the [execution plan](FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+alone selects further work. No apparatus, measured response, source acquisition
+or fine-node extension is supplied by this mathematical design.
 
 Keep the complete C5 law, signed forms U, circular phases Phi, held unit
 capacities, fixed support, normalized structural clock tau and exact

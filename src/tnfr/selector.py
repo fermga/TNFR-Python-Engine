@@ -21,7 +21,6 @@ from .config.selector_thresholds import resolve_selector_thresholds
 from .constants import get_param
 from .metrics.common import compute_dnfr_accel_max
 from .types import SelectorNorms, SelectorThresholds, SelectorWeights
-from .utils import is_non_string_sequence
 
 if TYPE_CHECKING:  # pragma: no cover
     from .types import TNFRGraph
@@ -153,11 +152,13 @@ def _apply_selector_hysteresis(
     d_ac = min(abs(accel - accel_hi), abs(accel - accel_lo))
     certeza = min(d_si, d_dn, d_ac)
     if certeza < margin:
-        hist = nd.get("glyph_history")
-        if not is_non_string_sequence(hist) or not hist:
+        from .operators.grammar_debt import read_grammar_state
+
+        history = read_grammar_state(nd).history
+        if not history:
             return None
-        prev = hist[-1]
-        if isinstance(prev, str) and prev in HYSTERESIS_GLYPHS:
+        prev = history[-1]
+        if prev in HYSTERESIS_GLYPHS:
             return prev
     return None
 

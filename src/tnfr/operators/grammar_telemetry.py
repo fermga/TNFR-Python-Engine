@@ -10,24 +10,35 @@ Terminology (TNFR semantics):
 from __future__ import annotations
 
 import math
+from fractions import Fraction
 from typing import Any
 
+from .._exact_time import bounded_represented_real, finite_represented_real
 from ..config.defaults_core import (
     K_PHI_ASYMPTOTIC_ALPHA,
     K_PHI_CURVATURE_THRESHOLD,
     STATISTICAL_SIGNIFICANCE_THRESHOLD,
 )
+from ..config.parsing import parse_bool
 from ..constants.canonical import (
     GRAD_PHI_CANONICAL_THRESHOLD,  # heuristic ≈ 0.196 (π/16)
 )
 from ..mathematics.unified_numerical import np
 
 
+def _positive_policy_value(value: Any, label: str) -> float:
+    """Admit a positive represented-real policy value before comparisons."""
+    admitted, _ = finite_represented_real(value, label)
+    if admitted <= 0.0:
+        raise ValueError(f"{label} must be positive")
+    return admitted
+
+
 def warn_phase_gradient_telemetry(
     G: Any,
     *,
     threshold: float = GRAD_PHI_CANONICAL_THRESHOLD,  # heuristic early-warning (audit 2026: not derived)
-) -> tuple[bool, dict[str, float], str, list[Any]]:
+) -> tuple[bool, dict[str, float | bool], str, list[Any]]:
     """Emit non-blocking telemetry warning for |∇φ| (phase gradient).
 
     Read-only safety check: computes |∇φ| per node and summarizes:
@@ -35,20 +46,27 @@ def warn_phase_gradient_telemetry(
     - fraction of nodes above threshold
 
     Returns (safe, stats, message, flagged_nodes) where safe indicates
-    mean and max are below threshold (stable regime). Always non-blocking.
+    observed mean and max are below the selected threshold. Missing observations
+    return ``safe=False`` and ``available=False``, not a passing zero.
+    Invalid thresholds raise. Always non-blocking.
 
     Safety criterion (heuristic early-warning, audit 2026: NOT a derived bound;
     the kinematic |∇φ| bound is π (phase wrap), the same as K_φ).
 
     References: AGENTS.md Structural Fields; fields.compute_phase_gradient
     """
+    threshold = _positive_policy_value(threshold, "phase-gradient threshold")
     try:
         from ..physics.fields import compute_phase_gradient
-    except Exception:  # pragma: no cover
-        # If dependencies missing, be conservative but non-blocking
+    except ImportError:
         return (
-            True,
-            {"max": 0.0, "mean": 0.0, "frac_over": 0.0},
+            False,
+            {
+                "max": math.nan,
+                "mean": math.nan,
+                "frac_over": math.nan,
+                "available": False,
+            },
             ("U6 (|∇φ|): telemetry unavailable (skipping)"),
             [],
         )
@@ -56,9 +74,14 @@ def warn_phase_gradient_telemetry(
     grad = compute_phase_gradient(G)
     if not grad:
         return (
-            True,
-            {"max": 0.0, "mean": 0.0, "frac_over": 0.0},
-            ("U6 (|∇φ|): no nodes (trivial)"),
+            False,
+            {
+                "max": math.nan,
+                "mean": math.nan,
+                "frac_over": math.nan,
+                "available": False,
+            },
+            ("U6 (|∇φ|): unavailable; no node observations."),
             [],
         )
 
@@ -72,7 +95,7 @@ def warn_phase_gradient_telemetry(
     if safe:
         msg = (
             f"U6 (|∇φ|): PASS - mean={mean_v:.3f}, max={max_v:.3f} < {threshold:.2f} "
-            f"(stable)."
+            f"(below the selected warning cut)."
         )
     else:
         msg = (
@@ -80,7 +103,7 @@ def warn_phase_gradient_telemetry(
             f"Flagged {len(flagged)}/{len(grad)} loci (frac={frac_over:.2f})."
         )
 
-    stats = {"max": max_v, "mean": mean_v, "frac_over": frac_over}
+    stats = {"max": max_v, "mean": mean_v, "frac_over": frac_over, "available": True}
     return safe, stats, msg, flagged
 
 
@@ -104,13 +127,27 @@ def warn_phase_curvature_telemetry(
     ``alpha_hint=None`` omits comparison to a selected exponent.
     ``tolerance_factor`` is an inert legacy argument retained for compatibility;
     it does not change a threshold or the multiscale verdict.
+    Missing observations never pass; invalid consumed policy values raise.
     """
+    abs_threshold = _positive_policy_value(abs_threshold, "curvature threshold")
+    multiscale_check = parse_bool(multiscale_check)
+    if multiscale_check:
+        if alpha_hint is not None:
+            alpha_hint = _positive_policy_value(alpha_hint, "reference decay exponent")
+        fit_min_r2, _ = bounded_represented_real(
+            fit_min_r2, "minimum fit R-squared", minimum=0.0, maximum=1.0
+        )
     try:
         from ..physics.fields import compute_phase_curvature, k_phi_multiscale_safety
-    except Exception:  # pragma: no cover
+    except ImportError:
         return (
-            True,
-            {"hotspots": 0, "max_abs": 0.0, "multiscale_safe": True},
+            False,
+            {
+                "hotspots": 0,
+                "max_abs": math.nan,
+                "multiscale_safe": False,
+                "available": False,
+            },
             ("U6 (K_φ): telemetry unavailable (skipping)"),
             [],
         )
@@ -118,9 +155,14 @@ def warn_phase_curvature_telemetry(
     kphi = compute_phase_curvature(G)
     if not kphi:
         return (
-            True,
-            {"hotspots": 0, "max_abs": 0.0, "multiscale_safe": True},
-            ("U6 (K_φ): no nodes (trivial)"),
+            False,
+            {
+                "hotspots": 0,
+                "max_abs": math.nan,
+                "multiscale_safe": False,
+                "available": False,
+            },
+            ("U6 (K_φ): unavailable; no node observations."),
             [],
         )
 
@@ -136,7 +178,7 @@ def warn_phase_curvature_telemetry(
             alpha_hint=alpha_hint,
             fit_min_r2=fit_min_r2,
         )
-        multiscale_safe = bool(multiscale_info.get("safe", True))
+        multiscale_safe = bool(multiscale_info["available"] and multiscale_info["safe"])
     safe = bool((len(hotspots) == 0) and multiscale_safe)
     if safe:
         msg = (
@@ -153,6 +195,10 @@ def warn_phase_curvature_telemetry(
         "hotspots": int(len(hotspots)),
         "max_abs": max_abs,
         "multiscale_safe": bool(multiscale_safe),
+        "multiscale_checked": multiscale_check,
+        "available": (
+            bool(multiscale_info["available"]) if multiscale_info is not None else True
+        ),
     }
     # Optionally attach multiscale fit details (non-breaking)
     if multiscale_info is not None:
@@ -163,6 +209,8 @@ def warn_phase_curvature_telemetry(
                 "r_squared": float(fit.get("r_squared", 0.0)),
             }
         )
+        if not stats["available"]:
+            msg = "U6 (K_φ): unavailable; no admissible multiscale observations."
 
     return safe, stats, msg, hotspots
 
@@ -174,12 +222,14 @@ def warn_coherence_length_telemetry(
 ) -> tuple[bool, dict[str, float | str], str]:
     """Compare the fitted static ξ_C to its own structural path geometry.
 
-    These are selected advisory labels, not predictions of a transition:
-    - stable: ξ_C < mean_path_length
-    - watch: mean_path_length ≤ ξ_C ≤ 3×mean_path_length
-    - alert: ξ_C > 3×mean_path_length
+    The ordered positive ``regime_multipliers=(base, alert)`` select advisory
+    labels, not predictions of a transition:
+    - stable: ξ_C < base×mean_path_length
+    - watch: base×mean_path_length ≤ ξ_C ≤ alert×mean_path_length
+    - alert: ξ_C > alert×mean_path_length
     - critical: ξ_C ≥ system_diameter
 
+    The critical label takes precedence; the default multipliers are (1, 3).
     Uses positive reachable outgoing pair distances with ``length``, else
     ``weight``, else unit length, as in the fit. The spectral fallback is a
     dimensionless mode scale and is reported as not comparable to path length.
@@ -187,25 +237,21 @@ def warn_coherence_length_telemetry(
     (safe, stats, message); ``safe=False`` can mean unavailable evidence and
     does not certify physical instability. Always non-blocking.
     """
+    base_source, watch_source = regime_multipliers
+    base, _ = bounded_represented_real(
+        base_source, "base regime multiplier", maximum=watch_source
+    )
+    base = _positive_policy_value(base, "base regime multiplier")
+    watch_mult = _positive_policy_value(watch_source, "watch regime multiplier")
     try:
         from ..physics._coherence_fit import DISTANCE_DESCRIPTION, _graph_distance_rows
         from ..physics.canonical import estimate_coherence_length_with_provenance
-    except Exception:  # pragma: no cover
+    except ImportError:
         return (
             False,
             {"xi_c": math.nan, "severity": "unavailable"},
             ("U6 (ξ_C): telemetry unavailable (skipping)"),
         )
-
-    base, watch_mult = regime_multipliers
-    if (
-        isinstance(base, bool)
-        or isinstance(watch_mult, bool)
-        or not math.isfinite(base)
-        or not math.isfinite(watch_mult)
-        or not 0.0 < base <= watch_mult
-    ):
-        raise ValueError("regime multipliers must be finite and 0 < base <= watch")
 
     estimate = estimate_coherence_length_with_provenance(G)
     xi_c = float(estimate.value)
@@ -249,8 +295,14 @@ def warn_coherence_length_telemetry(
         reference_geometry=DISTANCE_DESCRIPTION,
     )
 
-    watch_thr = float(base * mpl)  # typically 1×
-    alert_thr = float(watch_mult * mpl)  # typically 3×
+    # Retain the represented inputs through multiplication so overflow or a
+    # nonzero threshold lost to underflow cannot silently change the policy.
+    watch_thr = _positive_policy_value(
+        Fraction(base) * Fraction(mpl), "watch path threshold"
+    )
+    alert_thr = _positive_policy_value(
+        Fraction(watch_mult) * Fraction(mpl), "alert path threshold"
+    )
 
     # Classify severity
     if xi_c >= max(diam, 0.0) and diam > 0.0:
@@ -268,17 +320,20 @@ def warn_coherence_length_telemetry(
 
     if severity == "stable":
         msg = (
-            f"U6 (ξ_C): PASS - ξ_C={xi_c:.2f} < mean_path_length≈{mpl:.2f} "
+            f"U6 (ξ_C): PASS - ξ_C={xi_c:.6g} < watch_threshold={watch_thr:.6g} "
+            f"({base:.6g}×mean_path_length) "
             f"(below the selected warning cut)."
         )
     elif severity == "watch":
         msg = (
-            f"U6 (ξ_C): WARN - ξ_C={xi_c:.2f} ≥ mean_path_length≈{mpl:.2f}. "
+            f"U6 (ξ_C): WARN - ξ_C={xi_c:.6g} ≥ watch_threshold={watch_thr:.6g} "
+            f"({base:.6g}×mean_path_length). "
             f"Selected static length warning."
         )
     elif severity == "alert":
         msg = (
-            f"U6 (ξ_C): WARN - ξ_C={xi_c:.2f} > {watch_mult:.1f}×mean_path_length≈{mpl:.2f}. "
+            f"U6 (ξ_C): WARN - ξ_C={xi_c:.6g} > alert_threshold={alert_thr:.6g} "
+            f"({watch_mult:.6g}×mean_path_length). "
             f"Selected static length alert."
         )
     else:  # critical

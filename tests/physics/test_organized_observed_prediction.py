@@ -7,15 +7,15 @@ import pytest
 from tnfr.mathematics._interval_taylor import Jet
 from tnfr.mathematics._rational_interval import I
 from tnfr.physics._organized_computable_prediction import (
-    _ForecastStage,
     _forecast_stages,
+    _ForecastStage,
 )
 from tnfr.physics._organized_observed_prediction import (
-    _StaticDesign,
     _certify_dual,
     _edge_forcing,
     _observation_budget,
     _rational_proposal,
+    _StaticDesign,
 )
 
 

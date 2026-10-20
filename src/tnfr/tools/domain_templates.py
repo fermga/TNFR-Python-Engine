@@ -1,20 +1,16 @@
 """Domain-specific operator sequence templates for TNFR applications.
 
-This module provides curated, validated operator sequences organized by
-application domain (therapeutic, educational, organizational, creative).
-Each template is designed to achieve specific objectives within its domain
-while maintaining structural health and coherence.
-
-All templates follow TNFR canonical principles:
-- Operator closure (only canonical operators)
-- Phase coherence (compatible transitions)
-- Structural health (balanced forces, proper closure)
-- Operational fractality (composable patterns)
+These historical domain labels organize unvalidated word proposals, including
+fragments with missing initiation, closure or transformer context. They are
+inputs to candidate generation, not executable recipes or source-grammar
+sentences. Descriptions, expected scores and domain tags are historical design
+intentions, not evidence of therapeutic, educational or other effects. The
+shared word validator and live operator gates retain their separate roles.
 
 Examples
 --------
->>> from tnfr.tools.domain_templates import DOMAIN_TEMPLATES
->>> crisis_seq = DOMAIN_TEMPLATES["therapeutic"]["crisis_intervention"]
+>>> from tnfr.tools.domain_templates import get_template
+>>> crisis_seq = get_template("therapeutic", "crisis_intervention")
 >>> print(crisis_seq)
 ['emission', 'reception', 'coherence', 'resonance', 'silence']
 """
@@ -376,7 +372,7 @@ DOMAIN_TEMPLATES: dict[str, dict[str, dict[str, object]]] = {
 
 
 def get_template(domain: str, objective: str | None = None) -> list[str]:
-    """Retrieve a template sequence for a specific domain and objective.
+    """Copy an unvalidated proposal for a specific domain and objective.
 
     Parameters
     ----------
@@ -389,7 +385,7 @@ def get_template(domain: str, objective: str | None = None) -> list[str]:
     Returns
     -------
     list[str]
-        Operator sequence as canonical operator names.
+        Detached candidate tokens; no word or live-state admission is implied.
 
     Raises
     ------
@@ -412,7 +408,7 @@ def get_template(domain: str, objective: str | None = None) -> list[str]:
     if objective is None:
         # Return first template in domain
         first_key = next(iter(domain_dict.keys()))
-        return domain_dict[first_key]["sequence"]  # type: ignore[return-value]
+        return list(domain_dict[first_key]["sequence"])  # type: ignore[arg-type]
 
     if objective not in domain_dict:
         raise KeyError(
@@ -420,7 +416,7 @@ def get_template(domain: str, objective: str | None = None) -> list[str]:
             f"Available: {list(domain_dict.keys())}"
         )
 
-    return domain_dict[objective]["sequence"]  # type: ignore[return-value]
+    return list(domain_dict[objective]["sequence"])  # type: ignore[arg-type]
 
 
 def list_domains() -> list[str]:

@@ -12,12 +12,9 @@ from fractions import Fraction
 from numbers import Integral
 
 from .._exact_time import exact_or_represented_real
-from ._exact_linear_algebra import (
-    _ordered,
-    _rational_matrix as _matrix,
-    exact_matrix_inverse,
-    exact_matrix_product,
-)
+from ._exact_linear_algebra import _ordered
+from ._exact_linear_algebra import _rational_matrix as _matrix
+from ._exact_linear_algebra import exact_matrix_inverse, exact_matrix_product
 from .krylov import exact_rank
 
 __all__ = [

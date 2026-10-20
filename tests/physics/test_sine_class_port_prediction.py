@@ -266,7 +266,7 @@ def test_independent_initialization_is_not_dropped_or_replaced(
     assert all(hidden[i] == I(0) for i in result.kernels.port_indices)
 
 
-@pytest.mark.parametrize("i,j", product(range(5), repeat=2))
+@pytest.mark.parametrize("i,j", tuple(product(range(5), repeat=2)))
 def test_beta_weight_matches_exact_monomial_integral(i, j):
     # Expand (1-s)^i and integrate against s^j independently.
     from math import comb

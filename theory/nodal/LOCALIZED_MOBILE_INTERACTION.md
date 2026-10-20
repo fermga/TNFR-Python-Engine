@@ -10,7 +10,7 @@ now certifies the nominal nonlinear defect; the original source-family
 test remains unresolved. No paired nonlinear trajectory was evaluated.
 Interaction, a new organization and physical identification remain separate
 claims. The
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#localized-mobile-interaction-admission)
+[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 owns the next task.
 
 ## 1. Common support, complete law and shared preparation

@@ -13,7 +13,7 @@ from concurrent.futures import ProcessPoolExecutor
 from numbers import Integral
 from typing import Any
 
-from .._exact_time import finite_represented_real
+from .._exact_time import bounded_represented_real
 from ..alias import set_vf
 from ..config.selector_thresholds import resolve_selector_thresholds
 from ..constants import get_param
@@ -40,13 +40,11 @@ def _finite_real(
     """Return one finite real scalar within optional closed bounds."""
 
     try:
-        normalized, _ = finite_represented_real(value, label)
+        normalized, _ = bounded_represented_real(
+            value, label, minimum=minimum, maximum=maximum
+        )
     except (TypeError, ValueError) as exc:
         raise ValueError(str(exc)) from exc
-    if minimum is not None and normalized < minimum:
-        raise ValueError(f"{label} must be >= {minimum}")
-    if maximum is not None and normalized > maximum:
-        raise ValueError(f"{label} must be <= {maximum}")
     return normalized
 
 
@@ -154,10 +152,12 @@ def _validated_parameters(
 
     si_hi = resolve_selector_thresholds(G)["si_hi"]
 
-    vf_min = _finite_real(get_param(G, "VF_MIN"), "VF_MIN", minimum=0.0)
-    vf_max = _finite_real(get_param(G, "VF_MAX"), "VF_MAX", minimum=0.0)
-    if vf_max < vf_min:
-        raise ValueError("VF_MAX must be >= VF_MIN")
+    raw_min, raw_max = get_param(G, "VF_MIN"), get_param(G, "VF_MAX")
+    vf_min = _finite_real(raw_min, "VF_MIN", minimum=0.0)
+    try:
+        vf_max = _finite_real(raw_max, "VF_MAX", minimum=raw_min)
+    except ValueError as exc:
+        raise ValueError("VF_MAX must be finite and >= VF_MIN") from exc
 
     if n_jobs is None:
         jobs = None

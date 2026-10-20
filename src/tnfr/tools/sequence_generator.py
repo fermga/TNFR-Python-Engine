@@ -1,9 +1,9 @@
 """Context-guided sequence generator for TNFR operator sequences.
 
-This module provides intelligent sequence generation capabilities that help
-users construct optimal TNFR operator sequences based on context, objectives,
-and structural constraints. The generator uses domain templates, pattern
-detection, and health analysis to produce high-quality sequences.
+Domain templates and pattern heuristics propose candidates. The shared word
+validator admits every offered result before heuristic health ranks it. Names,
+scores and accepted words establish no application effect, live phase gate or
+future stability. Length and requested pattern constraints are never waived.
 
 Examples
 --------
@@ -16,8 +16,8 @@ Examples
 ...     objective="crisis_intervention",
 ...     min_health=0.75
 ... )
->>> print(seq)
-['emission', 'reception', 'coherence', 'resonance', 'silence']
+>>> print(seq.metadata["grammar_passed"])
+True
 >>>
 >>> # Generate to match a specific pattern
 >>> seq = generator.generate_for_pattern(
@@ -33,15 +33,15 @@ Examples
 from __future__ import annotations
 
 import random
+from copy import deepcopy
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from numbers import Integral
+from typing import Any, Mapping
 
-if TYPE_CHECKING:
-    pass
-
+from .._exact_time import bounded_represented_real
 from ..config.operator_names import (
+    CANONICAL_OPERATOR_NAMES,
     COHERENCE,
-    CONTRACTION,
     COUPLING,
     DISSONANCE,
     EMISSION,
@@ -54,6 +54,9 @@ from ..config.operator_names import (
     SILENCE,
     TRANSITION,
 )
+from ..operators.grammar_context import _normalize_sequence_context
+from ..operators.grammar_patterns import validate_sequence
+from ..operators.grammar_types import StructuralPattern
 from ..operators.health_analyzer import SequenceHealthAnalyzer
 from ..sequencing.patterns import AdvancedPatternDetector
 from ..validation.compatibility import (
@@ -77,8 +80,6 @@ __all__ = [
 # ZHIR), distinct from the canonical U4b TRANSFORMERS = {ZHIR, THOL}.
 _STABILIZERS = [COHERENCE, SELF_ORGANIZATION, SILENCE, RESONANCE]
 _DESTABILIZERS = [DISSONANCE, MUTATION, EXPANSION]  # == canonical {OZ, ZHIR, VAL}
-_ACTIVATORS = [EMISSION, RECEPTION]
-_CONNECTORS = [COUPLING, RESONANCE]
 _TRANSFORMERS = [TRANSITION, RECURSIVITY, MUTATION]  # generation heuristic, not U4b
 
 # ---------------------------------------------------------------------------
@@ -135,11 +136,9 @@ class ContextualSequenceGenerator:
     - Sequence improvement with targeted recommendations
     - Constraint-based filtering (health, length, pattern)
 
-    All generated sequences respect TNFR canonical principles:
-    - Operator closure (only canonical operators)
-    - Phase coherence (compatible transitions)
-    - Structural health (balanced forces)
-    - Operational fractality (composable patterns)
+    Offered sequences pass the shared word contracts under the recorded
+    context. Live phase/history admission, actual collective composition and
+    outcome measurements remain separate obligations.
 
     Examples
     --------
@@ -148,10 +147,8 @@ class ContextualSequenceGenerator:
     ...     domain="therapeutic",
     ...     objective="crisis_intervention"
     ... )
-    >>> print(result.sequence)
-    ['emission', 'reception', 'coherence', 'resonance', 'silence']
-    >>> print(f"Health: {result.health_score:.2f}")
-    Health: 0.78
+    >>> print(result.metadata["grammar_passed"])
+    True
     """
 
     def __init__(self, seed: int | None = None) -> None:
@@ -174,142 +171,51 @@ class ContextualSequenceGenerator:
         max_length: int = 10,
         min_health: float = 0.70,
         required_pattern: str | None = None,
+        *,
+        grammar_context: Mapping[str, Any] | None = None,
     ) -> GenerationResult:
-        """Generate optimal sequence for specific domain and objective.
+        """Rank admitted complete words proposed for a domain label.
 
-        This method uses domain templates as a starting point and applies
-        intelligent variations to meet constraints while maintaining structural
-        coherence.
-
-        Parameters
-        ----------
-        domain : str
-            Application domain (therapeutic, educational, organizational, creative).
-        objective : str, optional
-            Specific objective within domain. If None, uses first template.
-        max_length : int, default=10
-            Maximum sequence length. Sequences longer than this will be trimmed.
-        min_health : float, default=0.70
-            Minimum required health score (0.0-1.0).
-        required_pattern : str, optional
-            If specified, generator will try to produce this pattern.
-
-        Returns
-        -------
-        GenerationResult
-            Complete generation result with sequence, health metrics, and metadata.
-
-        Raises
-        ------
-        KeyError
-            If domain or objective not found.
-        ValueError
-            If no valid sequence can be generated meeting constraints.
-
-        Examples
-        --------
-        >>> generator = ContextualSequenceGenerator()
-        >>> result = generator.generate_for_context(
-        ...     domain="therapeutic",
-        ...     objective="crisis_intervention",
-        ...     min_health=0.75
-        ... )
-        >>> print(result.sequence)
-        ['emission', 'reception', 'coherence', 'resonance', 'silence']
+        Templates are unvalidated proposals, including fragments. Every offered
+        result passes the shared word validator under ``grammar_context``;
+        omitted context uses core admission and no inherited form. Length and
+        a requested pattern are hard constraints. The health threshold is a
+        ranking preference: an admitted fallback reports ``constraint_met=False``.
+        Registered recipe fallbacks disclose their origin and imply no domain
+        effect. Missing admissible candidates raise ``ValueError``.
         """
-        # Determine objective if not specified
+        context, max_length, min_health = self._admit_request(
+            grammar_context, max_length, min_health
+        )
+        pattern = self._normalize_pattern(required_pattern)
         if objective is None:
             from .domain_templates import list_objectives
 
-            objectives = list_objectives(domain)
-            objective = objectives[0] if objectives else None
-
-        # Get base template
-        base_sequence = get_template(domain, objective)
-
-        # Apply length constraint
-        if len(base_sequence) > max_length:
-            base_sequence = self._trim_sequence(base_sequence, max_length)
-
-        # Analyze base template
-        health = self.health_analyzer.analyze_health(base_sequence)
-
-        # If template already meets requirements, return it
-        if health.overall_health >= min_health:
-            if required_pattern is None or self._matches_pattern(
-                base_sequence, required_pattern
-            ):
-                return GenerationResult(
-                    sequence=base_sequence,
-                    health_score=health.overall_health,
-                    detected_pattern=health.dominant_pattern,
-                    domain=domain,
-                    objective=objective,
-                    method="template",
-                    recommendations=health.recommendations,
-                    metadata={
-                        "template_used": True,
-                        "variations_tried": 0,
-                    },
-                )
-
-        # Generate variations to meet constraints
-        candidates = self._generate_variations(base_sequence, max_length, count=20)
-
-        # Filter candidates by constraints
-        valid_candidates = []
-        for candidate in candidates:
-            candidate_health = self.health_analyzer.analyze_health(candidate)
-            if candidate_health.overall_health >= min_health:
-                if required_pattern is None or self._matches_pattern(
-                    candidate, required_pattern
-                ):
-                    valid_candidates.append((candidate, candidate_health))
-
-        if not valid_candidates:
-            # Fallback: return best candidate even if below threshold
-            all_with_health = [
-                (seq, self.health_analyzer.analyze_health(seq)) for seq in candidates
-            ]
-            best_seq, best_health = max(
-                all_with_health, key=lambda x: x[1].overall_health
+            objective = list_objectives(domain)[0]
+        base = self._trim_sequence(get_template(domain, objective), max_length)
+        candidates = [(base, "template")]
+        direct = self._admitted_candidates(candidates, context, max_length, pattern)
+        if direct and direct[0][1].overall_health >= min_health:
+            return self._result(
+                direct[0],
+                context,
+                min_health,
+                domain,
+                objective,
+                {"variations_tried": 0, "required_pattern": pattern},
             )
-
-            return GenerationResult(
-                sequence=best_seq,
-                health_score=best_health.overall_health,
-                detected_pattern=best_health.dominant_pattern,
-                domain=domain,
-                objective=objective,
-                method="template_variant",
-                recommendations=[
-                    f"Warning: Could not meet min_health={min_health:.2f}",
-                    f"Best achievable health: {best_health.overall_health:.2f}",
-                ]
-                + best_health.recommendations,
-                metadata={
-                    "template_used": True,
-                    "variations_tried": len(candidates),
-                    "constraint_met": False,
-                },
-            )
-
-        # Select best valid candidate
-        best_seq, best_health = max(valid_candidates, key=lambda x: x[1].overall_health)
-
-        return GenerationResult(
-            sequence=best_seq,
-            health_score=best_health.overall_health,
-            detected_pattern=best_health.dominant_pattern,
-            domain=domain,
-            objective=objective,
-            method="template_optimized",
-            recommendations=best_health.recommendations,
-            metadata={
-                "template_used": True,
-                "variations_tried": len(candidates),
-                "valid_candidates": len(valid_candidates),
-            },
+        variations = self._generate_variations(base, max_length, count=20)
+        candidates.extend((word, "template_variant") for word in variations)
+        candidates.extend(self._registered_candidates())
+        admitted = self._admitted_candidates(candidates, context, max_length, pattern)
+        selected = self._select_admitted(admitted)
+        return self._result(
+            selected,
+            context,
+            min_health,
+            domain,
+            objective,
+            {"variations_tried": len(variations), "required_pattern": pattern},
         )
 
     def generate_for_pattern(
@@ -317,115 +223,58 @@ class ContextualSequenceGenerator:
         target_pattern: str,
         max_length: int = 10,
         min_health: float = 0.70,
+        *,
+        grammar_context: Mapping[str, Any] | None = None,
     ) -> GenerationResult:
-        """Generate sequence targeting a specific structural pattern.
+        """Offer a grammar-admitted word matching a recognized pattern label.
 
-        Uses pattern signatures and characteristic operator combinations to
-        construct sequences that maximize the probability of matching the
-        target pattern while maintaining structural health.
-
-        Parameters
-        ----------
-        target_pattern : str
-            Target structural pattern (e.g., "BOOTSTRAP", "THERAPEUTIC",
-            "STABILIZE").
-        max_length : int, default=10
-            Maximum sequence length.
-        min_health : float, default=0.70
-            Minimum required health score (0.0-1.0).
-
-        Returns
-        -------
-        GenerationResult
-            Complete generation result with sequence and metrics.
-
-        Raises
-        ------
-        ValueError
-            If pattern name is not recognized or no valid sequence can be generated.
-
-        Examples
-        --------
-        >>> generator = ContextualSequenceGenerator()
-        >>> result = generator.generate_for_pattern("BOOTSTRAP", min_health=0.70)
-        >>> print(result.sequence)
-        ['emission', 'coupling', 'coherence']
+        Pattern detection remains a heuristic classification, not proof of a
+        collective structure. Unknown labels and unavailable length/pattern
+        combinations raise; no fallback can silently drop either constraint.
         """
-        # Get pattern signature
-        signature = self._get_pattern_signature(target_pattern)
-
-        # Build base sequence from signature
-        base_sequence = self._build_from_signature(signature, max_length)
-
-        # Analyze and optimize
-        health = self.health_analyzer.analyze_health(base_sequence)
-
-        if health.overall_health >= min_health:
-            return GenerationResult(
-                sequence=base_sequence,
-                health_score=health.overall_health,
-                detected_pattern=health.dominant_pattern,
-                domain=None,
-                objective=None,
-                method="pattern_direct",
-                recommendations=health.recommendations,
-                metadata={
-                    "target_pattern": target_pattern,
-                    "pattern_matched": self._matches_pattern(
-                        base_sequence, target_pattern
-                    ),
-                },
+        context, max_length, min_health = self._admit_request(
+            grammar_context, max_length, min_health
+        )
+        pattern = self._normalize_pattern(target_pattern)
+        if pattern is None:
+            raise ValueError("target_pattern is required")
+        signature = self._get_pattern_signature(pattern)
+        base = self._build_from_signature(signature, max_length)
+        core = signature["core"]
+        proposals = [(base, "pattern_direct"), (core, "pattern_signature")]
+        # Optional signature tokens propose alternatives rather than silently
+        # displacing the requested pattern in a single greedy construction.
+        proposals.extend(
+            (core[:index] + [token] + core[index:], "pattern_signature")
+            for token in signature.get("optional", ())
+            for index in range(len(core) + 1)
+        )
+        direct = self._admitted_candidates(proposals, context, max_length, pattern)
+        if direct and direct[0][1].overall_health >= min_health:
+            return self._result(
+                direct[0],
+                context,
+                min_health,
+                None,
+                None,
+                {"target_pattern": pattern, "pattern_matched": True},
             )
-
-        # Generate variations to improve health
-        candidates = self._generate_variations(base_sequence, max_length, count=15)
-
-        # Filter by constraints and pattern match
-        valid_candidates = []
-        for candidate in candidates:
-            if self._matches_pattern(candidate, target_pattern):
-                candidate_health = self.health_analyzer.analyze_health(candidate)
-                if candidate_health.overall_health >= min_health:
-                    valid_candidates.append((candidate, candidate_health))
-
-        if not valid_candidates:
-            # Return base even if below threshold
-            return GenerationResult(
-                sequence=base_sequence,
-                health_score=health.overall_health,
-                detected_pattern=health.dominant_pattern,
-                domain=None,
-                objective=None,
-                method="pattern_suboptimal",
-                recommendations=[
-                    f"Warning: Could not meet min_health={min_health:.2f}",
-                    f"Best achievable health: {health.overall_health:.2f}",
-                ]
-                + health.recommendations,
-                metadata={
-                    "target_pattern": target_pattern,
-                    "pattern_matched": self._matches_pattern(
-                        base_sequence, target_pattern
-                    ),
-                    "constraint_met": False,
-                },
-            )
-
-        # Select best valid candidate
-        best_seq, best_health = max(valid_candidates, key=lambda x: x[1].overall_health)
-
-        return GenerationResult(
-            sequence=best_seq,
-            health_score=best_health.overall_health,
-            detected_pattern=best_health.dominant_pattern,
-            domain=None,
-            objective=None,
-            method="pattern_optimized",
-            recommendations=best_health.recommendations,
-            metadata={
-                "target_pattern": target_pattern,
+        variations = self._generate_variations(base, max_length, count=15)
+        candidates = proposals + [(word, "pattern_variant") for word in variations]
+        candidates.extend(self._registered_candidates())
+        selected = self._select_admitted(
+            self._admitted_candidates(candidates, context, max_length, pattern)
+        )
+        return self._result(
+            selected,
+            context,
+            min_health,
+            None,
+            None,
+            {
+                "target_pattern": pattern,
                 "pattern_matched": True,
-                "variations_tried": len(candidates),
+                "variations_tried": len(variations),
             },
         )
 
@@ -434,73 +283,163 @@ class ContextualSequenceGenerator:
         current: list[str],
         target_health: float | None = None,
         max_length: int | None = None,
+        *,
+        grammar_context: Mapping[str, Any] | None = None,
     ) -> tuple[list[str], list[str]]:
-        """Improve existing sequence with targeted recommendations.
+        """Rank local proposals without returning an inadmissible word.
 
-        Analyzes the current sequence, identifies weaknesses, and generates
-        an improved version along with specific recommendations explaining
-        the improvements made.
-
-        Parameters
-        ----------
-        current : list[str]
-            Current operator sequence to improve.
-        target_health : float, optional
-            Target health score. If None, aims for current + 0.15.
-        max_length : int, optional
-            Maximum allowed length for improved sequence. If None, allows
-            length to increase by up to 3 operators.
-
-        Returns
-        -------
-        tuple[list[str], list[str]]
-            A tuple containing:
-            - Improved operator sequence
-            - list of recommendations explaining improvements
-
-        Examples
-        --------
-        >>> generator = ContextualSequenceGenerator()
-        >>> current = ["emission", "coherence", "silence"]
-        >>> improved, recommendations = generator.improve_sequence(current)
-        >>> print(improved)
-        ['emission', 'reception', 'coherence', 'resonance', 'silence']
-        >>> print(recommendations[0])
-        'Added reception after emission: improves completeness (+0.25)'
+        The return shape is retained. Recommendations record the actual word
+        context and heuristic threshold status. No operator is executed, and a
+        higher health score establishes no state, stability or physical result.
         """
-        # Analyze current sequence
-        current_health = self.health_analyzer.analyze_health(current)
-
-        # set target health
-        if target_health is None:
-            target_health = min(1.0, current_health.overall_health + 0.15)
-
-        # set max length
+        if not isinstance(current, (list, tuple)) or not current:
+            raise ValueError("current must be a nonempty operator sequence")
+        if any(not isinstance(token, str) for token in current):
+            raise TypeError("current operator tokens must be strings")
+        current = list(current)
         if max_length is None:
             max_length = len(current) + 3
-
-        # Generate improvement candidates
-        improvements = self._generate_improvements(
+        requested_health = target_health
+        context, max_length, target_health = self._admit_request(
+            grammar_context, max_length, 0.0 if target_health is None else target_health
+        )
+        current_health = self.health_analyzer.analyze_health(current)
+        if requested_health is None:
+            target_health = min(1.0, current_health.overall_health + 0.15)
+        proposals = self._generate_improvements(
             current, current_health, target_health, max_length
         )
+        best, health, _, _ = self._select_admitted(
+            self._admitted_candidates(
+                [(word, "improvement") for word in proposals],
+                context,
+                max_length,
+                None,
+            )
+        )
+        recommendations = self._explain_improvements(current, best)
+        recommendations.append(
+            f"Word admission context: {context!r}; live gates remain required"
+        )
+        if health.overall_health < target_health:
+            recommendations.append(
+                "Requested heuristic health threshold was not reached"
+            )
+        return list(best), recommendations
 
-        # Select best improvement
-        best_improvement = max(
-            improvements,
-            key=lambda seq: self.health_analyzer.analyze_health(seq).overall_health,
+    @staticmethod
+    def _admit_request(context, max_length, min_health):
+        context = _normalize_sequence_context(context)
+        if context.get("diagnostic", False):
+            raise ValueError(
+                "diagnostic waivers cannot admit a generated complete word"
+            )
+        context["initial_epi_nonzero"] = context.get("initial_epi_nonzero", False)
+        context["diagnostic"] = False
+        if (
+            isinstance(max_length, bool)
+            or not isinstance(max_length, Integral)
+            or max_length < 1
+        ):
+            raise ValueError("max_length must be a positive integer")
+        health, _ = bounded_represented_real(
+            min_health, "heuristic health threshold", minimum=0, maximum=1
+        )
+        return context, int(max_length), health
+
+    @staticmethod
+    def _normalize_pattern(pattern):
+        if pattern is None:
+            return None
+        if not isinstance(pattern, str):
+            raise TypeError("pattern must be a recognized string label")
+        try:
+            return StructuralPattern(pattern.strip().lower()).name
+        except ValueError as exc:
+            raise ValueError(f"Unknown structural pattern: {pattern!r}") from exc
+
+    @staticmethod
+    def _registered_candidates():
+        # Reuse the executable SDK catalog; do not copy a second fallback table.
+        from ..sdk.study import list_sequences
+
+        return [
+            (item["operators"], f"registered_recipe:{item['name']}")
+            for item in list_sequences()
+        ]
+
+    def _admitted_candidates(self, candidates, context, max_length, pattern):
+        admitted, seen = [], set()
+        for proposed, origin in candidates:
+            word = tuple(proposed)
+            if word in seen or not 0 < len(word) <= max_length:
+                continue
+            seen.add(word)
+            outcome = validate_sequence(list(word), context=context)
+            if not outcome.passed or not outcome.metadata.get(
+                "canonical_word_checked", False
+            ):
+                continue
+            if pattern is not None and not self._matches_pattern(list(word), pattern):
+                continue
+            admitted.append(
+                (
+                    list(word),
+                    self.health_analyzer.analyze_health(list(word)),
+                    origin,
+                    outcome,
+                )
+            )
+        return admitted
+
+    @staticmethod
+    def _select_admitted(admitted):
+        if not admitted:
+            raise ValueError(
+                "No complete word satisfies grammar, length and pattern constraints"
+            )
+        return max(admitted, key=lambda item: item[1].overall_health)
+
+    @staticmethod
+    def _result(selected, context, minimum, domain, objective, metadata):
+        word, health, origin, outcome = selected
+        recommendations = list(health.recommendations)
+        met = health.overall_health >= minimum
+        if not met:
+            recommendations.append(
+                "Requested heuristic health threshold was not reached"
+            )
+        if origin.startswith("registered_recipe:"):
+            recommendations.append(
+                f"Registered recipe fallback selected: {origin.split(':', 1)[1]}"
+            )
+        return GenerationResult(
+            sequence=list(word),
+            health_score=health.overall_health,
+            detected_pattern=health.dominant_pattern,
+            domain=domain,
+            objective=objective,
+            method=origin,
+            recommendations=recommendations,
+            metadata={
+                **metadata,
+                "constraint_met": met,
+                "candidate_origin": origin,
+                "grammar_context": deepcopy(context),
+                "compatibility_profile": outcome.metadata["compatibility_profile"],
+                "canonical_word_checked": True,
+                "grammar_passed": outcome.passed,
+                "grammar_message": outcome.message,
+                "scope": "word_admission_only; no_live_state_or_domain_effect_certification",
+            },
         )
 
-        # Generate explanatory recommendations
-        recommendations = self._explain_improvements(current, best_improvement)
-
-        return best_improvement, recommendations
-
     # =========================================================================
-    # INTERNAL HELPER METHODS
+    # Candidate proposal heuristics; shared admission owns every offered result.
     # =========================================================================
 
     def _trim_sequence(self, sequence: list[str], max_length: int) -> list[str]:
-        """Trim sequence to max_length while preserving structure."""
+        """Propose a length-limited fragment; later word admission is mandatory."""
         if len(sequence) <= max_length:
             return sequence
 
@@ -563,21 +502,7 @@ class ContextualSequenceGenerator:
         self, prev: str | None, next_op: str | None
     ) -> str | None:
         """Select an operator compatible with neighbors."""
-        all_operators = [
-            EMISSION,
-            RECEPTION,
-            COHERENCE,
-            DISSONANCE,
-            COUPLING,
-            RESONANCE,
-            SILENCE,
-            EXPANSION,
-            CONTRACTION,
-            SELF_ORGANIZATION,
-            MUTATION,
-            TRANSITION,
-            RECURSIVITY,
-        ]
+        all_operators = sorted(CANONICAL_OPERATOR_NAMES)
 
         if prev is None and next_op is None:
             return self._rng.choice(all_operators)
@@ -629,7 +554,7 @@ class ContextualSequenceGenerator:
     def _matches_pattern(self, sequence: list[str], pattern_name: str) -> bool:
         """Check if sequence matches the specified pattern."""
         detected = self.pattern_detector.detect_pattern(sequence)
-        return detected.value == pattern_name
+        return detected.value == pattern_name.lower()
 
     def _get_pattern_signature(self, pattern_name: str) -> dict[str, list[str]]:
         """Get characteristic signature for a structural pattern."""

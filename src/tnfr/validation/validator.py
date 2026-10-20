@@ -1003,8 +1003,7 @@ class TNFRValidator:
             InvariantSeverity.CRITICAL: "#6f42c1",
         }
 
-        html_parts = [
-            """
+        html_parts = ["""
         <!DOCTYPE html>
         <html>
         <head>
@@ -1026,10 +1025,7 @@ class TNFRValidator:
             <div class="summary">
                 <h2>Summary</h2>
                 <p><strong>Total Violations:</strong> {}</p>
-        """.format(
-                len(violations)
-            )
-        ]
+        """.format(len(violations))]
 
         for severity in [
             InvariantSeverity.CRITICAL,
@@ -1053,24 +1049,20 @@ class TNFRValidator:
         ]:
             if severity in by_severity:
                 color = severity_colors[severity]
-                html_parts.append(
-                    f"""
+                html_parts.append(f"""
                 <div class="severity-section">
                     <div class="severity-header" style="color: {color};">
                         {severity.value.upper()} ({len(by_severity[severity])})
                     </div>
-                """
-                )
+                """)
 
                 for violation in by_severity[severity]:
-                    html_parts.append(
-                        f"""
+                    html_parts.append(f"""
                     <div class="violation" style="border-left-color: {color};">
                         <div class="violation-title">
                             Invariant #{violation.invariant_id}: {escape(str(violation.description))}
                         </div>
-                    """
-                    )
+                    """)
 
                     if violation.node_id is not None:
                         html_parts.append(
@@ -1095,12 +1087,10 @@ class TNFRValidator:
 
                 html_parts.append("</div>")
 
-        html_parts.append(
-            """
+        html_parts.append("""
         </body>
         </html>
-        """
-        )
+        """)
 
         return "".join(html_parts)
 

@@ -5,20 +5,20 @@ are neither replacements for the model's fixed gamma nor physical bounds.
 No trajectory, formation certificate or reserved response is evaluated.
 """
 
-from fractions import Fraction as Q
 import hashlib
+from fractions import Fraction as Q
 from pathlib import Path
 
 import pytest
 
 from tests.sine_evidence_helpers import forbid_organized_response_evaluation
+from tnfr.mathematics._comparison_flow import scalar_affine_upper
 from tnfr.mathematics._exact_linear_algebra import (
     exact_matrix_inverse,
     exact_square_matrix_power,
     exact_square_matrix_product,
     exact_symmetric_semidefinite,
 )
-from tnfr.mathematics._comparison_flow import scalar_affine_upper
 from tnfr.mathematics._rational_interval import I, cos, pi_interval, sin
 from tnfr.physics._organized_c5_preparation import prepared_c5_initial_energy_upper
 from tnfr.physics._organized_effective_law import bound_prepared_matrix_response

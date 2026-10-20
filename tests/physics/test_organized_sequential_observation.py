@@ -15,7 +15,6 @@ from tests.sine_evidence_helpers import forbid_sine_regeneration
 from tnfr.physics import _organized_outer_observation as previous
 from tnfr.physics import _organized_sequential_observation as owner
 
-
 _EPSILON = Q(1, 10)
 _DELAY = Q(1, 100000)
 _DURATION = 20 * _DELAY

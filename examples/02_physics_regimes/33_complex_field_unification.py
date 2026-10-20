@@ -407,8 +407,7 @@ def main() -> None:
     print("\n" + "=" * 65)
     print("  SUMMARY")
     print("=" * 65)
-    print(
-        """
+    print("""
   Complex Geometric Field Psi = K_phi + i * J_phi packages:
     Real part (K_phi):  Wrapped neighbor-resultant mismatch
     Imaginary part (J_phi):  Mean neighbor sine displacement
@@ -431,8 +430,7 @@ def main() -> None:
   Omega = |grad phi| + i*J_DNFR (see example 108). This construction
   does not establish invertibility, independence or complete graph-state
   reconstruction.
-"""
-    )
+""")
 
 
 if __name__ == "__main__":

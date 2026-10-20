@@ -9,6 +9,7 @@ import networkx as nx
 import pytest
 
 from tnfr.alias import set_dnfr, set_theta
+from tnfr.constants.aliases import ALIAS_DNFR
 from tnfr.metrics.coherence import compute_coherence
 from tnfr.sdk import fluent
 from tnfr.sdk.fluent import NetworkResults, TNFRNetwork
@@ -113,7 +114,9 @@ def test_failed_save_preserves_existing_file(tmp_path):
     previous = '{"previous": true}'
     destination.write_text(previous, encoding="utf-8")
     for node in network.graph:
-        set_dnfr(network.graph, node, math.nan)
+        # Inject malformed stored state directly: cache-aware setters may
+        # reject it before the export boundary this test exercises.
+        network.graph.nodes[node][ALIAS_DNFR[0]] = math.nan
     with pytest.raises(ValueError):
         network.save(destination)
     assert destination.read_text(encoding="utf-8") == previous

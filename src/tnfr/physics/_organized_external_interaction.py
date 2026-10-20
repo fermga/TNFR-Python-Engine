@@ -17,18 +17,18 @@ from ._organized_outer_observation import (
     _OUTER_ANGLE_BOUND,
 )
 from ._organized_outer_winding import (
-    _OrganizedOuterWinding,
     _assess_organized_outer_winding,
     _derive_organized_outer_winding,
+    _OrganizedOuterWinding,
 )
 from ._organized_sequential_observation import (
-    _OrganizedSequentialObservationProtocol,
     _assess_organized_sequential_observation_protocol,
+    _OrganizedSequentialObservationProtocol,
 )
 from ._repeated_organized_composition import _bounded_sine_edge_fields
 from ._sine_constitutive_recovery import (
-    _ConstitutiveRecovery,
     _assess_constitutive_recovery,
+    _ConstitutiveRecovery,
 )
 from ._sine_preparation import _prepared_coordinate_vector as _vector
 from ._sine_preparation import _prepared_form_costs

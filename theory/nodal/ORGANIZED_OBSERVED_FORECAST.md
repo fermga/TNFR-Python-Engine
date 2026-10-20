@@ -344,6 +344,8 @@ The [read-only evidence audit](../../tests/physics/test_organized_observed_forec
 rebuilds source/gain inputs, candidate/sample associations, compact radius
 propagation and the forecast bounds without fitting or integrating another
 trajectory. Retained Picard/Taylor witnesses keep their source proof premises.
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#organized-law-state-identifiability)
-now asks whether unknown initialization can also mask a changed constitutive
-law; further precision is not the next gate.
+This forecast does not resolve whether unknown initialization can mask a
+changed constitutive law. That separate question needs joint law/state
+admission; tighter forecast arithmetic alone cannot supply it. The
+[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+alone selects further investigation.

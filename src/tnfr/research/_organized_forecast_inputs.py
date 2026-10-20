@@ -9,6 +9,7 @@ The record interface deliberately exposes only the thirty five-form readings.
 
 from __future__ import annotations
 
+import zipfile
 from collections.abc import Mapping
 from dataclasses import dataclass
 from fractions import Fraction as Q
@@ -17,7 +18,6 @@ from io import BytesIO
 from math import factorial
 from pathlib import Path
 from typing import Any
-import zipfile
 
 from ..mathematics._rational_interval import I
 from ..utils.io import json_loads
@@ -28,7 +28,6 @@ from .artifact_io import (
     sha256_bytes,
     verify_archive_members,
 )
-
 
 _LIMIT = 128 * 1024**2
 _ETA = Q(1, 10**14)

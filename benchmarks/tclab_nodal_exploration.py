@@ -35,7 +35,6 @@ from tnfr.physics.structural_diffusion import structural_diffusion_operator
 from tnfr.research import current_git_source_provenance
 from tnfr.validation.nodal_prediction import NodalMeasurementRun, _digest
 
-
 PARAMETER_NAMES = {
     "memory": ("leak", "coupling", "backreaction", "sensor_rate", "gain"),
     "markov": ("leak", "coupling", "gain"),

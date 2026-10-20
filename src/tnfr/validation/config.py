@@ -1,6 +1,8 @@
 """Global policy flags consumed by the structural validation runner.
 
-Only flags and severity consumed by ``structural.run_sequence`` belong here.
+Invariant flags and severity are consumed by ``structural.run_sequence``.
+The two semantic flags remain accepted compatibility settings; shared grammar
+admission is unconditional and no longer has an independent heuristic gate.
 Scalar admission, live U3 policy and validation caching retain their separate
 owners. Construction and ``configure_validation`` normalize declared settings;
 an invalid update is rejected before changing the shared configuration.
@@ -23,14 +25,14 @@ __all__ = [
 
 @dataclass
 class ValidationConfig:
-    """Policy for the semantic and invariant checks in structural word execution."""
+    """Invariant checks and retained semantic compatibility settings."""
 
     # Validation levels
     validate_invariants: bool = True
     validate_each_step: bool = False  # Expensive, only for debugging
     min_severity: InvariantSeverity = InvariantSeverity.ERROR
 
-    # Semantic validation
+    # Retained input compatibility only; neither flag disables shared grammar.
     enable_semantic_validation: bool = True
     allow_semantic_warnings: bool = True
 

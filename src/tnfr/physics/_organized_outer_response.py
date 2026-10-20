@@ -13,8 +13,8 @@ from fractions import Fraction as Q
 
 from ..mathematics._rational_interval import I, cos, pi_interval, sin
 from ._organized_outer_winding import (
-    _OrganizedOuterWinding,
     _assess_organized_outer_winding,
+    _OrganizedOuterWinding,
 )
 from ._repeated_organized_composition import _vector
 from ._sine_preparation import _prepared_degree_four_probe_remainder

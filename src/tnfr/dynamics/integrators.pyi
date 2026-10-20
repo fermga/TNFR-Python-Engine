@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import Literal
 
 from tnfr.types import TNFRGraph
@@ -26,6 +27,13 @@ def prepare_integration_params(
     t: float | None = ...,
     method: Literal["euler", "rk4"] | None = ...,
 ) -> tuple[float, int, float, Literal["euler", "rk4"]]: ...
+def rk4_coupled_step(
+    state: tuple[float, ...],
+    rhs: Callable[[float, tuple[float, ...]], tuple[float, ...]],
+    *,
+    t: float,
+    dt: float,
+) -> tuple[float, ...]: ...
 def update_epi_via_nodal_equation(
     G: TNFRGraph,
     *,

@@ -148,8 +148,7 @@ def step_3_triple_agreement_chi_3() -> None:
 
 def step_4_honest_scope() -> None:
     banner("Honest scope — what P34 closes and what it does NOT")
-    print(
-        """
+    print("""
 P34 establishes (operational closure of gap G1_χ at the P14 layer):
 
   • A canonical self-adjoint TNFR ``InternalHamiltonian`` on the
@@ -171,8 +170,7 @@ P34 does NOT establish:
   • Any new analytic continuation beyond P33; P34 is purely a
     canonical operator-theoretic representation of the existing
     χ-twisted ladder data.
-"""
-    )
+""")
 
 
 def main() -> None:

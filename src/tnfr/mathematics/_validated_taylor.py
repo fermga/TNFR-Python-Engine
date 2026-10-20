@@ -382,3 +382,70 @@ def reconstruct_box_taylor_arithmetic(
         I(max(x.lo, b.lo), min(x.hi, b.hi)) for x, b in zip(endpoint, whole)
     )
     return increment, endpoint
+
+
+def reconstruct_box_taylor_partial(
+    initial_box,
+    tube,
+    series,
+    local_remainder_bounds,
+    full_duration,
+    elapsed,
+    *,
+    order,
+):
+    """Reconstruct an interior time from admitted full-step source-box jets.
+
+    The caller must establish the original strict Picard/domain admission
+    over ``[0, full_duration]`` and all source-box derivative enclosures. In
+    particular, each retained remainder must enclose ``H**(order+1) * D``,
+    where ``D`` bounds the normalized next derivative throughout the original
+    whole-time tube. A bound only on the error at the full-step endpoint does
+    not suffice: cancellation there need not persist at an interior time.
+
+    For ``0 <= elapsed <= H``, Taylor's theorem uses the same source jets and
+    whole-tube derivative enclosure, with the retained remainder multiplied
+    by ``(elapsed/H)**(order+1)``. The original Picard tube already covers the
+    shorter interval. All full-duration arithmetic is admitted first, even
+    at elapsed zero; zero returns the original source and a zero increment,
+    and elapsed H returns the original reconstruction unchanged.
+
+    This pure arithmetic invokes neither field, Picard search nor jet
+    producer. It cannot authenticate retained jets, establish their Picard
+    premises or associate a separately acquired state with their solution.
+    Consumers retain the original law, source, clock, events and producer
+    provenance and check cached full-step results through their evidence
+    owner. Exact rational clocks, the shared order/dimension limits and
+    complete ordered arrays are required; extrapolation is unsupported.
+    """
+    full_duration, elapsed = _exact(full_duration), _exact(elapsed)
+    if full_duration <= 0 or not 0 <= elapsed <= full_duration:
+        raise ValueError("partial Taylor time requires H > 0 and 0 <= elapsed <= H")
+    # Materialize once so generators retain the same admitted evidence at both
+    # times. The shared arithmetic owner checks all structural relationships.
+    initial = tuple(I.coerce(value) for value in _ordered(initial_box, "initial box"))
+    whole = tuple(I.coerce(value) for value in _ordered(tube, "whole-time tube"))
+    remainder = tuple(
+        I.coerce(value)
+        for value in _ordered(local_remainder_bounds, "local remainder bounds")
+    )
+    coefficients = tuple(
+        tuple(I.coerce(value) for value in _ordered(row, "Taylor coefficient row"))
+        for row in _ordered(series, "Taylor series")
+    )
+    complete = reconstruct_box_taylor_arithmetic(
+        initial, whole, coefficients, remainder, full_duration, order=order
+    )
+    if elapsed == full_duration:
+        return complete
+    if elapsed == 0:
+        return tuple(I(0) for _ in initial), initial
+    scale = (elapsed / full_duration) ** (order + 1)
+    # Scale exact endpoints before outward materialization; a positive elapsed
+    # below the interval grid must not be silently replaced by elapsed zero.
+    partial_remainder = tuple(
+        I(value.lo * scale, value.hi * scale) for value in remainder
+    )
+    return reconstruct_box_taylor_arithmetic(
+        initial, whole, coefficients, partial_remainder, elapsed, order=order
+    )

@@ -10,7 +10,6 @@ import pytest
 from tests.sine_evidence_helpers import forbid_sine_regeneration
 from tnfr.physics import _organized_source_capture as owner
 
-
 _ERROR = Q(1, 10**10)
 _CYCLES = tuple(
     (9 * child + j, 9 * child + (j + 1) % 9, Q(1))
