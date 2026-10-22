@@ -1,0 +1,65 @@
+{
+  "schema":"tnfr.maintained-parent-um-guard-diagnosis.v1",
+  "inputs":[
+    {
+      "path":"freeze.json",
+      "bytes":130637,
+      "sha256":"bad36c563afb1ab5dd2b94fb96e9525093209fd221c166e3c576f90944356ee8"
+    },
+    {
+      "path":"attempt.json",
+      "bytes":646,
+      "sha256":"da1f435f983d398ad0461375cd5d7c6add4da30d0e32562bf322ff22986fa0d7"
+    },
+    {
+      "path":"raw-after.json",
+      "bytes":100567,
+      "sha256":"765cdd04ad0e6211746a8bd271755b51ee66c8591262401c013d8b02728d9005"
+    },
+    {
+      "path":"failure.json",
+      "bytes":1843,
+      "sha256":"84586acc658f86e48cbc6cc255ebf0e14c07ffde8017d6df97a238f5e49bc89e"
+    },
+    {
+      "path":"failure-endpoint.json",
+      "bytes":94248,
+      "sha256":"658c6c36bc0152bcb0d32a6251ef54039e5383a5e78c83b228632d058533eb1a"
+    },
+    {
+      "path":"diagnose.py",
+      "bytes":5229,
+      "sha256":"9709c81ddd74766438053932b99d74b46aaabf6fb21d7442b6748153e8ff09c9"
+    }
+  ],
+  "guard_source":{
+    "path":"src/tnfr/research/maintained_parent_um_execution.py",
+    "bytes":23399,
+    "sha256":"47d820cca6ce47b928b827089e213dc05f5c9711abc1243c5d841b0d7375d127"
+  },
+  "detached_refreshed":{
+    "path":"detached-refreshed.json",
+    "bytes":100195,
+    "sha256":"ab6284047082394c5674c883e0927edcf6e00ab4eb8ecc831ab42015cca42a5d"
+  },
+  "operation":"shared pressure refresh on a restored raw copy with a fresh graph-owned cache manager; no operator or continuous step",
+  "allowed_maxima_before":{
+    "_dnfrmax_node":3,
+    "_dnfrmax":0.00012070977483199833
+  },
+  "allowed_maxima_after":{
+    "_dnfrmax_node":11,
+    "_dnfrmax":0.07039393946820433
+  },
+  "runtime_guard_unchanged":false,
+  "persistent_pressure_only_guard_unchanged":true,
+  "cache_owned_payload_unchanged_with_opaque_owner":true,
+  "restoring_only_allowed_maxima_restores_frozen_guard":true,
+  "rollback_matches_frozen_before":true,
+  "recursive_path":"graph.graph['_tnfr_cache_manager']._graph_owner -> graph.graph['_dnfrmax'/'_dnfrmax_node']",
+  "interpretation":"frozen guard falsely re-traverses separately protected owner state through a cache back-reference",
+  "original_attempt_status":"failed_and_rolled_back",
+  "runtime_successor_committed":false,
+  "motion_certificate_transferred_to_runtime":false,
+  "scope":"Separate post-failure diagnosis. This disposable refreshed copy is not an executed or committed UM endpoint."
+}

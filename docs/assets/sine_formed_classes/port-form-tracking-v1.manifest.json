@@ -1,0 +1,47 @@
+{
+  "schema": "tnfr.sine-port-form-tracking-evidence.v1",
+  "artifacts": [
+    {
+      "file": "port-form-tracking-v1.protocol.json",
+      "bytes": 9806,
+      "sha256": "75a1a7929163f48e6346e245e192137ffec40518bbb52766fa449e2a06ca5e52"
+    },
+    {
+      "file": "port-form-tracking-v1.source.zip",
+      "bytes": 19457,
+      "sha256": "82ba552d0d8008bd22a3a7cdeed02db2f7053eb3b678b0bb316a463ccf68f092"
+    },
+    {
+      "file": "port-form-tracking-v1.json",
+      "bytes": 151361,
+      "sha256": "8c0097433eb2d572fdc4327fdebd921e8399707cac81baf102f254084ff4df3e"
+    }
+  ],
+  "source_base_commit": "36fc3f36b0fc1e1450feda56819cac82842ff3a6",
+  "runtime_overlays": [
+    "src/tnfr/physics/relational_sine_port_form_tracking.py",
+    "src/tnfr/sdk/relational_reports.py"
+  ],
+  "source_reconstruction": "Checkout the base Git revision and overlay archived src/ files. The pre-evaluation proof, exact protocol and evaluator are included. Unchanged dependencies remain at the base revision.",
+  "evaluation": "One reserved assessment after preserving the complete new proof, protocol and producing source. All primitive inputs and both channel thresholds equal the previous relaxation protocol. No tuning followed evaluation; regression tests are separate.",
+  "result_owner": "../../../theory/nodal/SINE_PORT_FORM_TRACKING.md#sine-port-form-tracking",
+  "status": "full",
+  "frozen_stopping_rule_passed": true,
+  "frozen_stopping_rule": {
+    "envelopes_admitted": true,
+    "phase_resolution_passed": true,
+    "form_resolution_passed": true,
+    "joint_resolution_passed": true
+  },
+  "phase_resolution_fraction": {
+    "numerator": 1,
+    "denominator": 2
+  },
+  "form_resolution_fraction": {
+    "numerator": 1,
+    "denominator": 2
+  },
+  "prior_result_preserved": "port-relaxation-v1.json remains phase_only with its false joint stopping rule. Its report body equals this assessment's freshly rebuilt baseline_certificate.",
+  "scope": "A separate analytic uniform-error comparison of the unchanged full and degree-aware reduced C9 trajectories. The report retains both channel criteria, original preparation, nonlinear bridge variation, possible conserved mean offsets and supplied work policy. No measured trajectory error, autonomous support or physical identification is asserted.",
+  "provenance_limitations": "Hashes establish content consistency and source recoverability, not independent authentication of chronology or physical acquisition."
+}

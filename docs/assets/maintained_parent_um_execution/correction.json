@@ -1,0 +1,41 @@
+{
+  "schema":"tnfr.maintained-parent-um-guard-correction.v1",
+  "failed_attempt":{
+    "path":"attempt.json",
+    "bytes":646,
+    "sha256":"da1f435f983d398ad0461375cd5d7c6add4da30d0e32562bf322ff22986fa0d7"
+  },
+  "failure":{
+    "path":"failure.json",
+    "bytes":1843,
+    "sha256":"84586acc658f86e48cbc6cc255ebf0e14c07ffde8017d6df97a238f5e49bc89e"
+  },
+  "diagnosis":{
+    "path":"diagnosis.json",
+    "bytes":2381,
+    "sha256":"8094cb3536860dac1e3c953d31f87a23cdadd47d8e1167d37a9dd9c9543a781c"
+  },
+  "source_archive":{
+    "path":"correction-source.zip",
+    "bytes":11573,
+    "sha256":"829ffcb6c0eedf960ce810977636392c23c0ed2dc2fcc0a71048dbaecd7aab33"
+  },
+  "members":[
+    {
+      "path":"src/tnfr/research/maintained_parent_um_execution.py",
+      "bytes":23771,
+      "sha256":"c7b14d1451d1a61f420a26728e7f8afddd49175dc1087da87f4f5b3d7a6b0a78"
+    },
+    {
+      "path":"tests/research/test_maintained_parent_um_execution.py",
+      "bytes":17718,
+      "sha256":"b223707511655992e2496af445caecce3f7357d20fe70c8f074d86c28dd90fc0"
+    }
+  ],
+  "change":"Only runtime guard traversal treats the separately protected graph.graph owner as opaque; direct state and cache-owned payload remain signed.",
+  "validation":"31 synthetic executor/guard controls passed;20 retained-failure evidence controls passed. Neither evaluates a retained operator or trajectory.",
+  "original_attempt_status":"failed_and_rolled_back",
+  "corrected_retained_transaction_executed":false,
+  "scientific_protocol_changed":false,
+  "numerical_allowances_changed":false
+}

@@ -1,0 +1,11 @@
+{
+  "schema":"tnfr.maintained-child-history-attempt.v1",
+  "created_utc":"2026-10-15T13:30:06.319207+00:00",
+  "evaluation_status_at_start":"not_evaluated",
+  "attempt_number":1,
+  "freeze":{
+    "path":"freeze.json",
+    "bytes":186417,
+    "sha256":"341926d4080a45443129acd26219361c7782ba3a29eb70d9b35de1c514145c53"
+  }
+}

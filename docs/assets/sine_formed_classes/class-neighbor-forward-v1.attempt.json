@@ -1,0 +1,20 @@
+{
+  "schema":"tnfr.sine-class-neighbor-forward-attempt.v1",
+  "started_utc":"2026-10-09T16:17:05.894600+00:00",
+  "source_base_commit":"8af5b1932308b81e5fbb4e519de0162b8e82ccfc",
+  "freeze_sha256":"c2dec8230791e8b5377283cd088b1414c105f010d3ada82a4e5e075d8ddc0cdf",
+  "runtime_environment":{
+    "python":"3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+    "implementation":"cpython",
+    "platform":"Windows-11-10.0.26300-SP0",
+    "packages":{
+      "numpy":"2.3.3",
+      "scipy":"1.16.3",
+      "networkx":"3.5",
+      "mpmath":"1.3.0"
+    }
+  },
+  "seed":null,
+  "producer":"tnfr.physics.relational_sine_class_readout.bound_sine_class_four_history_readout",
+  "attempt_policy":"one_fixed_attempt_no_retry_or_adaptation"
+}

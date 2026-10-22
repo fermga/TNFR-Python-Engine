@@ -1,0 +1,38 @@
+{
+  "schema": "tnfr.sine-formed-class-contact-evidence.v1",
+  "artifacts": [
+    {
+      "file": "contact-v1.protocol.json",
+      "bytes": 5731,
+      "sha256": "6c50d25296f8d963bf9f0330458f54a38239aa970daf706ed73018c93a99ad60"
+    },
+    {
+      "file": "contact-v1.source.zip",
+      "bytes": 27642,
+      "sha256": "929625201dc9117db61872de31f6aaa2b9f6d45f8e945646e2586e5d0c15aa3d"
+    },
+    {
+      "file": "contact-v1.json",
+      "bytes": 38358,
+      "sha256": "745cc58bf4920878abf6177c0252a0dc2ec41c04b5b31f3012634c41ddf73ba4"
+    }
+  ],
+  "source_base_commit": "0dd9149c90e7200ac5e34048f29343a087bcc281",
+  "runtime_overlays": [
+    "src/tnfr/physics/_sine_lyapunov.py",
+    "src/tnfr/physics/relational_sine_formed_class_maintenance.py",
+    "src/tnfr/physics/relational_sine_formed_class_contact.py",
+    "src/tnfr/sdk/relational_reports.py"
+  ],
+  "source_reconstruction": "Checkout the base Git commit, then overlay the archived src/ files. The archive also retains the exact pre-evaluation proof, protocol and evaluator. Unchanged source remains recoverable from Git.",
+  "evaluation": "One evaluation of the unchanged frozen analytic contact protocol after archiving its proof, inputs, evaluator and exact runtime source overlays. Current-source regression tests are separate evidence and do not replace the saved response.",
+  "result_owner": "../../../theory/nodal/SINE_FORMED_CLASS_CONTACT.md#sine-formed-class-contact",
+  "status": "certified_formed_class_contact",
+  "frozen_stopping_rule_passed": true,
+  "contrast_threshold": {
+    "numerator": 1,
+    "denominator": 10000000000000000000000000
+  },
+  "scope": "Actual unprobed formation-to-contact receiver discrimination with both whole-family winding identities retained under the supplied positive-loss law. Contact work, preparation, relative origin and support remain supplied. No physical observation or trajectory sampling.",
+  "provenance_limitations": "Hashes establish content consistency and source recoverability, not independent authentication of chronology or physical acquisition."
+}

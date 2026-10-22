@@ -1,0 +1,1420 @@
+{
+  "schema": "tnfr.sine-two-pulse-inference-protocol.v1",
+  "evaluation_kind": "reserved_sequential_full_state_software_readout_with_public_only_joint_inverse",
+  "source_base_commit": "d86753763fcdd65eddf52c87dd3c5c74348129ce",
+  "source_overlay_archive": "two-pulse-inference-v1.source.zip",
+  "support": {
+    "nodes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        8
+      ],
+      [
+        0,
+        9
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        1,
+        10
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        9,
+        10
+      ],
+      [
+        9,
+        17
+      ],
+      [
+        10,
+        11
+      ],
+      [
+        11,
+        12
+      ],
+      [
+        12,
+        13
+      ],
+      [
+        13,
+        14
+      ],
+      [
+        14,
+        15
+      ],
+      [
+        15,
+        16
+      ],
+      [
+        16,
+        17
+      ]
+    ],
+    "degrees": [
+      3,
+      3,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    "weights": "unit",
+    "original_periods": [
+      2,
+      1,
+      0
+    ]
+  },
+  "complete_model": {
+    "law": "normalized_sine_reciprocal_exchange",
+    "capacity": [
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      }
+    ],
+    "beta": {
+      "numerator": 1,
+      "denominator": 1
+    },
+    "loss": {
+      "numerator": 1023,
+      "denominator": 1024
+    },
+    "exchange": {
+      "numerator": 1,
+      "denominator": 1024
+    },
+    "gamma": "1/(1023*pi)",
+    "clock": "tau=(1023/1024)*t",
+    "rows": "x'=-M^-1*L*x+gamma*M^-1*S(theta); theta'=gamma*M^-1*L*x",
+    "pressure": "instantaneous complete sine and form terms; both rows evolve",
+    "events": "theta+=(1/4)*(e4-e5) at0; theta+=(1/2)*(e4-e5) at h; unchanged form; no other events or forcing"
+  },
+  "public_inputs_without_observation": {
+    "bulk_angle_bounds": [
+      {
+        "numerator": 11,
+        "denominator": 8
+      },
+      {
+        "numerator": 3,
+        "denominator": 2
+      }
+    ],
+    "receiver_short_angle_bounds": [
+      {
+        "numerator": 2,
+        "denominator": 3
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      }
+    ],
+    "form_radius": {
+      "numerator": 1,
+      "denominator": 1099511627776
+    },
+    "phase_radius": {
+      "numerator": 1,
+      "denominator": 1099511627776
+    },
+    "phase_increments": [
+      {
+        "numerator": 1,
+        "denominator": 4
+      },
+      {
+        "numerator": 3,
+        "denominator": 4
+      }
+    ],
+    "probe_duration": {
+      "numerator": 1,
+      "denominator": 2097152
+    },
+    "readout_error_bound": {
+      "numerator": 1,
+      "denominator": 1152921504606846976
+    },
+    "readout_gain_bounds": [
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 2,
+        "denominator": 1
+      }
+    ]
+  },
+  "hidden_cases": [
+    {
+      "id": "case-1",
+      "bulk_angle": {
+        "numerator": 89,
+        "denominator": 64
+      },
+      "receiver_short_angle": {
+        "numerator": 17,
+        "denominator": 24
+      },
+      "common_form": {
+        "numerator": 2,
+        "denominator": 11
+      },
+      "common_phase": {
+        "numerator": -2,
+        "denominator": 13
+      },
+      "raw_form_residual": [
+        {
+          "numerator": 1,
+          "denominator": 4503599627370496
+        },
+        {
+          "numerator": 3,
+          "denominator": 9007199254740992
+        },
+        {
+          "numerator": 1,
+          "denominator": 2251799813685248
+        },
+        {
+          "numerator": 5,
+          "denominator": 9007199254740992
+        },
+        {
+          "numerator": 3,
+          "denominator": 4503599627370496
+        },
+        {
+          "numerator": 7,
+          "denominator": 9007199254740992
+        },
+        {
+          "numerator": 1,
+          "denominator": 1125899906842624
+        },
+        {
+          "numerator": 9,
+          "denominator": 9007199254740992
+        },
+        {
+          "numerator": 5,
+          "denominator": 4503599627370496
+        },
+        {
+          "numerator": 11,
+          "denominator": 9007199254740992
+        },
+        {
+          "numerator": 3,
+          "denominator": 2251799813685248
+        },
+        {
+          "numerator": 13,
+          "denominator": 9007199254740992
+        },
+        {
+          "numerator": 7,
+          "denominator": 4503599627370496
+        },
+        {
+          "numerator": 15,
+          "denominator": 9007199254740992
+        },
+        {
+          "numerator": 1,
+          "denominator": 562949953421312
+        },
+        {
+          "numerator": 17,
+          "denominator": 9007199254740992
+        },
+        {
+          "numerator": 9,
+          "denominator": 4503599627370496
+        },
+        {
+          "numerator": 19,
+          "denominator": 9007199254740992
+        }
+      ],
+      "raw_phase_residual": [
+        {
+          "numerator": 1,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 3,
+          "denominator": 9007199254740992
+        },
+        {
+          "numerator": 11,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 1,
+          "denominator": 1125899906842624
+        },
+        {
+          "numerator": 21,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 3,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 1,
+          "denominator": 2251799813685248
+        },
+        {
+          "numerator": 13,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 9,
+          "denominator": 9007199254740992
+        },
+        {
+          "numerator": 23,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 5,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 5,
+          "denominator": 9007199254740992
+        },
+        {
+          "numerator": 15,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 5,
+          "denominator": 4503599627370496
+        },
+        {
+          "numerator": 1,
+          "denominator": 9007199254740992
+        },
+        {
+          "numerator": 7,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 3,
+          "denominator": 4503599627370496
+        },
+        {
+          "numerator": 17,
+          "denominator": 18014398509481984
+        }
+      ],
+      "form_residual": [
+        {
+          "numerator": -163,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": -143,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": -123,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": -103,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": -83,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": -63,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": -43,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": -23,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": -3,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": 17,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": 37,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": 57,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": 77,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": 97,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": 117,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": 137,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": 157,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": 177,
+          "denominator": 180143985094819840
+        }
+      ],
+      "phase_residual": [
+        {
+          "numerator": -411,
+          "denominator": 720575940379279360
+        },
+        {
+          "numerator": -211,
+          "denominator": 720575940379279360
+        },
+        {
+          "numerator": -11,
+          "denominator": 720575940379279360
+        },
+        {
+          "numerator": 189,
+          "denominator": 720575940379279360
+        },
+        {
+          "numerator": 389,
+          "denominator": 720575940379279360
+        },
+        {
+          "numerator": -331,
+          "denominator": 720575940379279360
+        },
+        {
+          "numerator": -131,
+          "denominator": 720575940379279360
+        },
+        {
+          "numerator": 69,
+          "denominator": 720575940379279360
+        },
+        {
+          "numerator": 269,
+          "denominator": 720575940379279360
+        },
+        {
+          "numerator": 469,
+          "denominator": 720575940379279360
+        },
+        {
+          "numerator": -251,
+          "denominator": 720575940379279360
+        },
+        {
+          "numerator": -51,
+          "denominator": 720575940379279360
+        },
+        {
+          "numerator": 149,
+          "denominator": 720575940379279360
+        },
+        {
+          "numerator": 349,
+          "denominator": 720575940379279360
+        },
+        {
+          "numerator": -371,
+          "denominator": 720575940379279360
+        },
+        {
+          "numerator": -171,
+          "denominator": 720575940379279360
+        },
+        {
+          "numerator": 29,
+          "denominator": 720575940379279360
+        },
+        {
+          "numerator": 229,
+          "denominator": 720575940379279360
+        }
+      ],
+      "hidden_gain": {
+        "numerator": 9,
+        "denominator": 8
+      },
+      "hidden_offset": {
+        "numerator": 3,
+        "denominator": 11
+      },
+      "reading_errors": [
+        {
+          "numerator": -1,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 1,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 1,
+          "denominator": 2305843009213693952
+        }
+      ]
+    },
+    {
+      "id": "case-2",
+      "bulk_angle": {
+        "numerator": 91,
+        "denominator": 64
+      },
+      "receiver_short_angle": {
+        "numerator": 19,
+        "denominator": 24
+      },
+      "common_form": {
+        "numerator": 3,
+        "denominator": 11
+      },
+      "common_phase": {
+        "numerator": -3,
+        "denominator": 13
+      },
+      "raw_form_residual": [
+        {
+          "numerator": 3,
+          "denominator": 9007199254740992
+        },
+        {
+          "numerator": 9,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 3,
+          "denominator": 4503599627370496
+        },
+        {
+          "numerator": 15,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 9,
+          "denominator": 9007199254740992
+        },
+        {
+          "numerator": 21,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 3,
+          "denominator": 2251799813685248
+        },
+        {
+          "numerator": 27,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 15,
+          "denominator": 9007199254740992
+        },
+        {
+          "numerator": 33,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 9,
+          "denominator": 4503599627370496
+        },
+        {
+          "numerator": 39,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 21,
+          "denominator": 9007199254740992
+        },
+        {
+          "numerator": 45,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 3,
+          "denominator": 1125899906842624
+        },
+        {
+          "numerator": 51,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 27,
+          "denominator": 9007199254740992
+        },
+        {
+          "numerator": 57,
+          "denominator": 18014398509481984
+        }
+      ],
+      "raw_phase_residual": [
+        {
+          "numerator": 1,
+          "denominator": 4503599627370496
+        },
+        {
+          "numerator": 9,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 7,
+          "denominator": 9007199254740992
+        },
+        {
+          "numerator": 19,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 1,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 3,
+          "denominator": 9007199254740992
+        },
+        {
+          "numerator": 11,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 1,
+          "denominator": 1125899906842624
+        },
+        {
+          "numerator": 21,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 3,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 1,
+          "denominator": 2251799813685248
+        },
+        {
+          "numerator": 13,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 9,
+          "denominator": 9007199254740992
+        },
+        {
+          "numerator": 23,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 5,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 5,
+          "denominator": 9007199254740992
+        },
+        {
+          "numerator": 15,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 5,
+          "denominator": 4503599627370496
+        }
+      ],
+      "form_residual": [
+        {
+          "numerator": -489,
+          "denominator": 360287970189639680
+        },
+        {
+          "numerator": -429,
+          "denominator": 360287970189639680
+        },
+        {
+          "numerator": -369,
+          "denominator": 360287970189639680
+        },
+        {
+          "numerator": -309,
+          "denominator": 360287970189639680
+        },
+        {
+          "numerator": -249,
+          "denominator": 360287970189639680
+        },
+        {
+          "numerator": -189,
+          "denominator": 360287970189639680
+        },
+        {
+          "numerator": -129,
+          "denominator": 360287970189639680
+        },
+        {
+          "numerator": -69,
+          "denominator": 360287970189639680
+        },
+        {
+          "numerator": -9,
+          "denominator": 360287970189639680
+        },
+        {
+          "numerator": 51,
+          "denominator": 360287970189639680
+        },
+        {
+          "numerator": 111,
+          "denominator": 360287970189639680
+        },
+        {
+          "numerator": 171,
+          "denominator": 360287970189639680
+        },
+        {
+          "numerator": 231,
+          "denominator": 360287970189639680
+        },
+        {
+          "numerator": 291,
+          "denominator": 360287970189639680
+        },
+        {
+          "numerator": 351,
+          "denominator": 360287970189639680
+        },
+        {
+          "numerator": 411,
+          "denominator": 360287970189639680
+        },
+        {
+          "numerator": 471,
+          "denominator": 360287970189639680
+        },
+        {
+          "numerator": 531,
+          "denominator": 360287970189639680
+        }
+      ],
+      "phase_residual": [
+        {
+          "numerator": -37,
+          "denominator": 90071992547409920
+        },
+        {
+          "numerator": -3,
+          "denominator": 22517998136852480
+        },
+        {
+          "numerator": 13,
+          "denominator": 90071992547409920
+        },
+        {
+          "numerator": 19,
+          "denominator": 45035996273704960
+        },
+        {
+          "numerator": -13,
+          "denominator": 22517998136852480
+        },
+        {
+          "numerator": -27,
+          "denominator": 90071992547409920
+        },
+        {
+          "numerator": -1,
+          "denominator": 45035996273704960
+        },
+        {
+          "numerator": 23,
+          "denominator": 90071992547409920
+        },
+        {
+          "numerator": 3,
+          "denominator": 5629499534213120
+        },
+        {
+          "numerator": -21,
+          "denominator": 45035996273704960
+        },
+        {
+          "numerator": -17,
+          "denominator": 90071992547409920
+        },
+        {
+          "numerator": 1,
+          "denominator": 11258999068426240
+        },
+        {
+          "numerator": 33,
+          "denominator": 90071992547409920
+        },
+        {
+          "numerator": 29,
+          "denominator": 45035996273704960
+        },
+        {
+          "numerator": -1,
+          "denominator": 2814749767106560
+        },
+        {
+          "numerator": -7,
+          "denominator": 90071992547409920
+        },
+        {
+          "numerator": 9,
+          "denominator": 45035996273704960
+        },
+        {
+          "numerator": 43,
+          "denominator": 90071992547409920
+        }
+      ],
+      "hidden_gain": {
+        "numerator": 11,
+        "denominator": 8
+      },
+      "hidden_offset": {
+        "numerator": 5,
+        "denominator": 11
+      },
+      "reading_errors": [
+        {
+          "numerator": 0,
+          "denominator": 1
+        },
+        {
+          "numerator": 0,
+          "denominator": 1
+        },
+        {
+          "numerator": -1,
+          "denominator": 2305843009213693952
+        }
+      ]
+    },
+    {
+      "id": "case-3",
+      "bulk_angle": {
+        "numerator": 95,
+        "denominator": 64
+      },
+      "receiver_short_angle": {
+        "numerator": 23,
+        "denominator": 24
+      },
+      "common_form": {
+        "numerator": 4,
+        "denominator": 11
+      },
+      "common_phase": {
+        "numerator": -4,
+        "denominator": 13
+      },
+      "raw_form_residual": [
+        {
+          "numerator": 1,
+          "denominator": 2251799813685248
+        },
+        {
+          "numerator": 3,
+          "denominator": 4503599627370496
+        },
+        {
+          "numerator": 1,
+          "denominator": 1125899906842624
+        },
+        {
+          "numerator": 5,
+          "denominator": 4503599627370496
+        },
+        {
+          "numerator": 3,
+          "denominator": 2251799813685248
+        },
+        {
+          "numerator": 7,
+          "denominator": 4503599627370496
+        },
+        {
+          "numerator": 1,
+          "denominator": 562949953421312
+        },
+        {
+          "numerator": 9,
+          "denominator": 4503599627370496
+        },
+        {
+          "numerator": 5,
+          "denominator": 2251799813685248
+        },
+        {
+          "numerator": 11,
+          "denominator": 4503599627370496
+        },
+        {
+          "numerator": 3,
+          "denominator": 1125899906842624
+        },
+        {
+          "numerator": 13,
+          "denominator": 4503599627370496
+        },
+        {
+          "numerator": 7,
+          "denominator": 2251799813685248
+        },
+        {
+          "numerator": 15,
+          "denominator": 4503599627370496
+        },
+        {
+          "numerator": 1,
+          "denominator": 281474976710656
+        },
+        {
+          "numerator": 17,
+          "denominator": 4503599627370496
+        },
+        {
+          "numerator": 9,
+          "denominator": 2251799813685248
+        },
+        {
+          "numerator": 19,
+          "denominator": 4503599627370496
+        }
+      ],
+      "raw_phase_residual": [
+        {
+          "numerator": 7,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 3,
+          "denominator": 4503599627370496
+        },
+        {
+          "numerator": 17,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 11,
+          "denominator": 9007199254740992
+        },
+        {
+          "numerator": 1,
+          "denominator": 4503599627370496
+        },
+        {
+          "numerator": 9,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 7,
+          "denominator": 9007199254740992
+        },
+        {
+          "numerator": 19,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 1,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 3,
+          "denominator": 9007199254740992
+        },
+        {
+          "numerator": 11,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 1,
+          "denominator": 1125899906842624
+        },
+        {
+          "numerator": 21,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 3,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 1,
+          "denominator": 2251799813685248
+        },
+        {
+          "numerator": 13,
+          "denominator": 18014398509481984
+        },
+        {
+          "numerator": 9,
+          "denominator": 9007199254740992
+        },
+        {
+          "numerator": 23,
+          "denominator": 18014398509481984
+        }
+      ],
+      "form_residual": [
+        {
+          "numerator": -163,
+          "denominator": 90071992547409920
+        },
+        {
+          "numerator": -143,
+          "denominator": 90071992547409920
+        },
+        {
+          "numerator": -123,
+          "denominator": 90071992547409920
+        },
+        {
+          "numerator": -103,
+          "denominator": 90071992547409920
+        },
+        {
+          "numerator": -83,
+          "denominator": 90071992547409920
+        },
+        {
+          "numerator": -63,
+          "denominator": 90071992547409920
+        },
+        {
+          "numerator": -43,
+          "denominator": 90071992547409920
+        },
+        {
+          "numerator": -23,
+          "denominator": 90071992547409920
+        },
+        {
+          "numerator": -3,
+          "denominator": 90071992547409920
+        },
+        {
+          "numerator": 17,
+          "denominator": 90071992547409920
+        },
+        {
+          "numerator": 37,
+          "denominator": 90071992547409920
+        },
+        {
+          "numerator": 57,
+          "denominator": 90071992547409920
+        },
+        {
+          "numerator": 77,
+          "denominator": 90071992547409920
+        },
+        {
+          "numerator": 97,
+          "denominator": 90071992547409920
+        },
+        {
+          "numerator": 117,
+          "denominator": 90071992547409920
+        },
+        {
+          "numerator": 137,
+          "denominator": 90071992547409920
+        },
+        {
+          "numerator": 157,
+          "denominator": 90071992547409920
+        },
+        {
+          "numerator": 177,
+          "denominator": 90071992547409920
+        }
+      ],
+      "phase_residual": [
+        {
+          "numerator": -51,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": -1,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": 49,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": 99,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": -81,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": -31,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": 19,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": 69,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": -111,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": -61,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": -11,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": 39,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": 89,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": -91,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": -41,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": 9,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": 59,
+          "denominator": 180143985094819840
+        },
+        {
+          "numerator": 109,
+          "denominator": 180143985094819840
+        }
+      ],
+      "hidden_gain": {
+        "numerator": 15,
+        "denominator": 8
+      },
+      "hidden_offset": {
+        "numerator": 7,
+        "denominator": 11
+      },
+      "reading_errors": [
+        {
+          "numerator": 1,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": -1,
+          "denominator": 2305843009213693952
+        },
+        {
+          "numerator": 1,
+          "denominator": 2305843009213693952
+        }
+      ]
+    }
+  ],
+  "source_recipe": "s=4*pi-8*b; d=(2*pi-c)/8; zeta=(s-c)/2; D0=0,Dj=s+(j-1)*b; R0=zeta,Rj=zeta+c+(j-1)*d. Subtract the single full degree mean, add common_phase and centered phase residual; form=common_form+form_residual. Mathematical pi outward enclosed; supplied source, no equilibrium or acquisition premise.",
+  "observation": {
+    "readout": "r_j=G*(x4(j*h)-x5(j*h))+O+eta_j, j=0,1,2",
+    "sensor": "G and O fixed within each trajectory; broad supplied gain prior only, no separate calibration",
+    "middle": "one middle recorded interval and one error reused in both differences; form continuous at second phase event",
+    "numerical_band": "Three full-law reading intervals, never leading-response formula or chosen midpoint",
+    "history": "All36 first endpoint interval pairs initialize second full flow; common means and phase drift retained without reset"
+  },
+  "numerics": {
+    "steps_per_window": 1,
+    "windows": 2,
+    "order": 4,
+    "picard_iteration_cap": 16,
+    "interval_bits": 128,
+    "dimension": 36,
+    "max_recorded_reading_halfwidth": {
+      "numerator": 1,
+      "denominator": 1152921504606846976
+    },
+    "window_starts": [
+      {
+        "numerator": 0,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 2097152
+      }
+    ],
+    "reading_times": [
+      {
+        "numerator": 0,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 2097152
+      },
+      {
+        "numerator": 1,
+        "denominator": 1048576
+      }
+    ],
+    "policy": "Local solver time starts0 in each window; absolute starts retained separately. No retry, split, tuning or reduction; full-box jets and whole-tube order5 remainder."
+  },
+  "public_packet": {
+    "schema": "tnfr.sine-two-pulse-public-inference.v1",
+    "inverse_keys": [
+      "bulk_angle_bounds",
+      "receiver_short_angle_bounds",
+      "form_radius",
+      "phase_radius",
+      "phase_increments",
+      "probe_duration",
+      "recorded_reading_bounds",
+      "readout_error_bound",
+      "readout_gain_bounds"
+    ],
+    "worker": "build/two-pulse-inference-freeze/invert_public_packet.py",
+    "scope": "Fresh process receives only public primitives and fixed controls through stdin; software information exclusion, not cryptographic blindness or independent execution authentication"
+  },
+  "controls": {
+    "false_bulk_angle_bounds": [
+      {
+        "numerator": 11,
+        "denominator": 8
+      },
+      {
+        "numerator": 353,
+        "denominator": 256
+      }
+    ],
+    "false_gain_bounds": [
+      {
+        "numerator": 31,
+        "denominator": 16
+      },
+      {
+        "numerator": 2,
+        "denominator": 1
+      }
+    ],
+    "equal_phase_increments": [
+      {
+        "numerator": 1,
+        "denominator": 4
+      },
+      {
+        "numerator": 1,
+        "denominator": 4
+      }
+    ]
+  },
+  "thresholds": {
+    "primary_actual_angle_width": {
+      "numerator": 1,
+      "denominator": 1024
+    },
+    "primary_gain_width": {
+      "numerator": 1,
+      "denominator": 1024
+    }
+  },
+  "phase_blind_alternative": {
+    "rows": "x'=-A*x; theta'=gamma*A*x",
+    "preparation": "same complete source, support, capacity, clock, both phase events and held observation model",
+    "recorded_increment_bound": "2*gain_upper*h*X+2*readout_error for each window",
+    "scope": "Heat contraction retains original centered form bound through both windows; excludes only this declared alternative"
+  },
+  "prediction": "All three primary marginal intervals cover original nominal angle, actual pre-probe arc mean and held gain; actual-angle and gain widths<1/1024. Both false priors incompatible; equal amplitudes unavailable through rank; both recorded increments exclude declared phase-blind alternative.",
+  "stopping_rule": "All source norms/priors/errors; two strict36D complete horizons; exact full endpoint handoff and phase-only jumps; same middle readout; all reading halfwidths<=delta; public packet hash; primary/rank availability; original nominal/actual angle and gain coverage; strict requested widths; false-angle and false-gain exclusion; equal-amplitude rank abstention; both heat exclusions. Preserve first failure or unavailability without changing protocol or rerunning responses. Whole-window acuteness is optional and is not a stopping criterion.",
+  "runtime": {
+    "python": "3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows",
+    "backend": "exact Fraction and shared outward dyadic128 Picard/Taylor intervals",
+    "seed": null,
+    "seed_scope": "fully specified deterministic source and error realizations"
+  },
+  "scope": "Finite conditional software evidence under supplied law, clock, preparation and held affine sensor. Necessary outer marginals, not joint realizability, physical calibration, full-state reconstruction, source formation, maintenance or unique law selection."
+}

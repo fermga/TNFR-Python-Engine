@@ -1,0 +1,47 @@
+{
+  "schema": "tnfr.sine-two-port-dipole-evidence.v1",
+  "artifacts": [
+    {
+      "file": "two-port-dipole-v1.protocol.json",
+      "bytes": 10899,
+      "sha256": "da48cf6a2c1493555824e4d6fb80a925809eb29fa2de2dd1b457adccf263f638"
+    },
+    {
+      "file": "two-port-dipole-v1.source.zip",
+      "bytes": 26761,
+      "sha256": "68ea24ad6301a53fa492fa6b8f53409cb910e700f7d0b9ec7e12e4b59285fb50"
+    },
+    {
+      "file": "two-port-dipole-v1.json",
+      "bytes": 458889,
+      "sha256": "f1df0092caf67e0c9c68ffac05db3ddd0887c003f6a30ecbf11daf344ef767d2"
+    }
+  ],
+  "source_base_commit": "4183b788ee63a61e1c44afc08b7b3950a0bdd311",
+  "runtime_overlays": [
+    "src/tnfr/physics/relational_sine_two_port_dipole.py",
+    "src/tnfr/sdk/relational_reports.py"
+  ],
+  "source_reconstruction": "Checkout the base revision and overlay the two archived src/ files. The complete prospective proof, protocol and evaluator are included; unchanged Lyapunov and source-handoff dependencies remain at the base revision.",
+  "evaluation": "One analytic assessment of the frozen finite warmup, local dipole response, supplied work and recovery; no trajectory, old capture producer, parameter scan or replacement first response.",
+  "result_owner": "../../../theory/nodal/SINE_TWO_PORT_DIPOLE.md#sine-two-port-dipole-result",
+  "status": "certified_dipole",
+  "frozen_stopping_rule": {
+    "prior_capture_content_association": true,
+    "complete_joined_source_handoff": true,
+    "original_unjoined_trapping_and_full_norm": true,
+    "fresh_implicit_target_admitted": true,
+    "finite_complete_law_warmup": true,
+    "strict_acquired_geometry_cosine_gap": true,
+    "strict_recorded_response_margin": true,
+    "phase_blind_original_source_warmup": true,
+    "phase_blind_response_excluded": true,
+    "positive_supplied_work_both_models": true,
+    "supplied_work_within_both_allowances": true,
+    "both_identities_retained": true,
+    "both_models_recover": true
+  },
+  "frozen_stopping_rule_passed": true,
+  "scope": "Conditional finite sensitivity to acquired local geometry with complete uncertainty and a phase-blind alternative under supplied support and laws. Does not uniquely select sine feedback, an intrinsic topology-independent property or physical identification.",
+  "provenance_limitations": "Hashes establish content association and recovery, not independent chronology or execution authentication. Source acquisition retains the prior archived Picard/local-error/endpoint-center validity premise; no original capture trajectory is replayed."
+}

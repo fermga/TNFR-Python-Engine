@@ -1,0 +1,68 @@
+{
+  "schema":"tnfr.collective-pressure-phase-review-protocol.v1",
+  "status_at_protocol_creation":"not_evaluated",
+  "created_utc":"2026-10-14T18:11:48.220340+00:00",
+  "scope":"Separate retrospective correction of an unresolved phase-accuracy certificate from the retained initial and IL_raw primitive snapshots; no new operator execution or physical evidence",
+  "reason":"The old enclosure used a 12-term, 64-bit relative resultant before 128-bit interval wrapping. Rebuild its trigonometry from original primitive phases with the existing shared 32-term, 128-bit interval owner.",
+  "original_response":{
+    "path":"correction_v2/response.json",
+    "bytes":3454510,
+    "sha256":"39ddab82885e4171ed67bf61eb77a67a1e081039e48d7ca760c0ee494befb3b4"
+  },
+  "original_report_retained":"correction_v2/report.json remains 8/9; this review cannot rewrite its verdict",
+  "targets":[
+    0,
+    1
+  ],
+  "node_order":[
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+  ],
+  "support":"Re-admitted original undirected bare support; unique neighbors, no conductance multiplier in phase resultant",
+  "coefficient":"The exact rational represented by binary64 0.3 from original response.settings.phase_coefficient, not exact 3/10",
+  "interval_bits":128,
+  "trigonometric_owner":"tnfr.mathematics._rational_interval.cos/sin, certified_cosine_bounds terms=32 bits=128, shared Machin pi bounds and 64-term arctangent with its analytic remainder",
+  "absolute_residual_allowance":{
+    "numerator":1,
+    "denominator":70368744177664
+  },
+  "cross_check_decimal_digits":100,
+  "algorithm":[
+    "Re-admit complete initial and IL_raw primitive captures with the existing detached retained-state reader. Require unchanged form, capacity, support and untargeted phases.",
+    "For each target sum cos(theta_j-theta_i) and sin(theta_j-theta_i) directly from admitted exact represented rational primitive phases with shared128-bit outward interval arithmetic. Do not reuse old relative_resultant boxes.",
+    "Enclose the principal ideal resultant argument, then multiply by the retained represented coefficient.",
+    "Enclose the principal actual circular displacement from captured after-before phases using Arg(cos(delta),sin(delta)). Certify it is the nearest ideal continuous lift only if the entire difference interval lies strictly within (-pi,pi). Otherwise return unresolved; do not select another lift after inspecting the result.",
+    "Classify within budget only if the full defect enclosure lies within the original inclusive plus/minus2^-46. Certify excess only if a nearest-lift-admitted enclosure lies entirely outside that range. Otherwise retain unresolved.",
+    "Compute one independent100-decimal-digit point cross-check from the same primitive input; it cannot determine the rigorous verdict.",
+    "Separately reuse existing read-only all-edge IL work/identity and OZ projection/propagation checks, and record the later boxes of the originally short-circuited compound assertion. Their passing does not alter the original8/9 report."
+  ],
+  "limits":{
+    "corrective_evaluations":1,
+    "new_operator_words":0,
+    "trajectory_steps":0,
+    "parameter_search":false,
+    "tolerance_relaxation":false,
+    "precision_beyond_original_declared128_bits":false,
+    "frozen_producers_imported":false
+  },
+  "classification_scope":"Numerical admission only for this retained response and supplied law; no autonomous event selection, pressure memory, new constitutive law or physical identification",
+  "chronology_note":"The old response is already known. This freeze fixes a corrective verification procedure before evaluating its new certificate; hashes associate bytes and do not authenticate chronology."
+}

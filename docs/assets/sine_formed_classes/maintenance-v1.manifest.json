@@ -1,0 +1,31 @@
+{
+  "schema": "tnfr.sine-formed-class-maintenance-evidence.v1",
+  "artifacts": [
+    {
+      "file": "maintenance-v1.protocol.json",
+      "bytes": 3347,
+      "sha256": "08d9aeb063e14af41d893bbabfe3a6d24d23a3b2acfbdd9519120a3afdb17069"
+    },
+    {
+      "file": "maintenance-v1.source.zip",
+      "bytes": 17436,
+      "sha256": "03a1a11118c9067c64fccaaff6248d46014d1a37a88d51039df0e545c5530e29"
+    },
+    {
+      "file": "maintenance-v1.json",
+      "bytes": 59971,
+      "sha256": "12861bf2e00cf8b0cca6dee32e7df2271430307ed2ecd7340e864eee876ebdb4"
+    }
+  ],
+  "source_base_commit": "5694997ebcea0e9540204de0966f64b1f8fb4d4b",
+  "runtime_overlays": [
+    "src/tnfr/physics/relational_sine_formed_class_maintenance.py",
+    "src/tnfr/sdk/relational_reports.py"
+  ],
+  "source_reconstruction": "Use the base Git commit and overlay the archived src/ files. The archive also retains the exact pre-evaluation protocol, mathematical derivation, evaluation script and per-entry hashes. Unchanged repository code is recoverable from Git, not duplicated.",
+  "evaluation": "One evaluation of the unchanged declared analytic certificate after saving the protocol and source overlay archive; subsequent tests are current-source regressions and do not replace these retained bytes.",
+  "result_owner": "../../../theory/nodal/SINE_FORMED_CLASS_MAINTENANCE.md#sine-formed-class-maintenance",
+  "status": "certified_repeated_probe_maintenance",
+  "scope": "Uniform conditional return, identity and response under supplied repeated probes. No sampled trajectory, autonomous event selection, practical-time claim, unique periodic orbit or physical identification.",
+  "provenance_limitations": "Hashes check content consistency and source recoverability, not independent authentication of chronology or physical acquisition."
+}

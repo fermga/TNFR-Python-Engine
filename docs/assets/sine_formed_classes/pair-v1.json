@@ -1,0 +1,753 @@
+{
+  "report": {
+    "acute_radius_certified": true,
+    "acute_radius_margin_bounds": {
+      "hi": {
+        "denominator": 85070591730234615865843651857942052864,
+        "numerator": 4821953841124350183674709107347161287
+      },
+      "lo": {
+        "denominator": 340282366920938463463374607431768211456,
+        "numerator": 19287815364497400734698836429388645131
+      }
+    },
+    "barrier_lower_bound": {
+      "denominator": 170141183460469231731687303715884105728,
+      "numerator": 13387145109773731491067125581880749
+    },
+    "class_order": [
+      "winding_one",
+      "winding_two"
+    ],
+    "clock": "tau=e*t; e=1023/1024",
+    "coercivity_lower_bound": {
+      "denominator": 1701411834604692317316873037158841057280,
+      "numerator": 19277488958074173347136660837908279161
+    },
+    "common_source_storage_budget": {
+      "denominator": 1,
+      "numerator": 1000000000
+    },
+    "conserved_form_mean": {
+      "denominator": 1,
+      "numerator": 0
+    },
+    "conserved_lifted_phase_mean": {
+      "denominator": 1,
+      "numerator": 0
+    },
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        8
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        7,
+        8
+      ]
+    ],
+    "endpoint_excess_storage_upper_bounds": [
+      {
+        "denominator": 342882754299605542703496015699200579379649539745770754382000124278512336359979559197823481221022674600830295333617006984059886491421540493951506482390354393725906168794375391533474387361995876540094533828897487199474622120556760561893297406274466013266278287285969349365133754612883980378790581378220032,
+        "numerator": 15169371088463334559241442878821482801896910417134333223482789967047796277030046149500620118517462699505701109712373132943985796562083725729544914365689222704887326431462377144206584356811216094293202941949720943784689898408989878255922362871133082365037405369291335906434311800864748668422255170873
+      },
+      {
+        "denominator": 21430172143725346418968500981200036211228096234110672148875007767407021022498722449863967576313917162551893458351062936503742905713846280871969155149397149607869135549648461970842149210124742283755908364306092949967163882534797535118331087892154125829142392955373084335320859663305248773674411336138752,
+        "numerator": 962585017151624631075958853018933275523055193067030743633854810588611363834934949632666859373226731590795830390634964861415381678000340192934669829644975941844925556323892500193397952576414991810719293534948457980453855378911175881370201019884254744890959525996208262311230747307228937936903642641
+      }
+    ],
+    "endpoint_form_norm_upper_bounds": [
+      {
+        "denominator": 26187124863169134960105517574620793217733136368344518315866330944769070371237396439066160738607233257207093473020480568073738052367083144426628220715008,
+        "numerator": 123161251163431278936499636100781938577062294621639620840097014263397436109959213084861557815676301964221400355445170175042975699956676440464883938603
+      },
+      {
+        "denominator": 6546781215792283740026379393655198304433284092086129578966582736192267592809349109766540184651808314301773368255120142018434513091770786106657055178752,
+        "numerator": 31024831099765187428449278009370377535351144358097586037893959675177331068147324495652211349145280741304569300440109878814243555882548345863006002665
+      }
+    ],
+    "endpoint_phase_error_norm_upper_bounds": [
+      {
+        "denominator": 76957043352332967211482500195592995713046365762627825523336510555167425334955489475418488779072100860950445293568,
+        "numerator": 2347852901763045283334919319613063956501459062448551082287675031609140082380334373441477921692558528038808131
+      },
+      {
+        "denominator": 38478521676166483605741250097796497856523182881313912761668255277583712667477744737709244389536050430475222646784,
+        "numerator": 1174355336810623389620606035388925443849223241464013173702411967843771817856912021246122706167064228040975695
+      }
+    ],
+    "endpoint_radius_certified_by_class": [
+      true,
+      true
+    ],
+    "endpoint_radius_margin_bounds": [
+      {
+        "hi": {
+          "denominator": 85070591730234615865843651857942052864,
+          "numerator": 588886207108432574273027359820494173
+        },
+        "lo": {
+          "denominator": 340282366920938463463374607431768211456,
+          "numerator": 2355544828433730297092109439281976691
+        }
+      },
+      {
+        "hi": {
+          "denominator": 170141183460469231731687303715884105728,
+          "numerator": 1177714856765878230861696253417944751
+        },
+        "lo": {
+          "denominator": 340282366920938463463374607431768211456,
+          "numerator": 2355429713531756461723392506835889501
+        }
+      }
+    ],
+    "endpoint_relative_norm_squared_upper_bounds": [
+      {
+        "denominator": 685765508599211085406992031398401158759299079491541508764000248557024672719959118395646962442045349201660590667234013968119772982843080987903012964780708787451812337588750783066948774723991753080189067657794974398949244241113521123786594812548932026532556574571938698730267509225767960757581162756440064,
+        "numerator": 15169371088463334559241442878821482801896910417134333223482789967047796277030046149500620118517462699505701109712373132943985796562083725729544914365689222704887326431462377144206584356811216094293202941949720943784689898408989878255922362871133082365037405369291335906434311800864748668422255170873
+      },
+      {
+        "denominator": 42860344287450692837937001962400072422456192468221344297750015534814042044997444899727935152627834325103786916702125873007485811427692561743938310298794299215738271099296923941684298420249484567511816728612185899934327765069595070236662175784308251658284785910746168670641719326610497547348822672277504,
+        "numerator": 962585017151624631075958853018933275523055193067030743633854810588611363834934949632666859373226731590795830390634964861415381678000340192934669829644975941844925556323892500193397952576414991810719293534948457980453855378911175881370201019884254744890959525996208262311230747307228937936903642641
+      }
+    ],
+    "eta_bounds": {
+      "hi": {
+        "denominator": 42535295865117307932921825928971026432,
+        "numerator": 4118114761875419818509029923559
+      },
+      "lo": {
+        "denominator": 340282366920938463463374607431768211456,
+        "numerator": 32944918095003358548072239388471
+      }
+    },
+    "exchange_weight": {
+      "denominator": 1024,
+      "numerator": 1
+    },
+    "exponential_decay_bounds": {
+      "hi": {
+        "denominator": 85070591730234615865843651857942052864,
+        "numerator": 175343558307764699334651292163
+      },
+      "lo": {
+        "denominator": 340282366920938463463374607431768211456,
+        "numerator": 701374233231058797338605168651
+      }
+    },
+    "forcing_norm_bounds": {
+      "hi": {
+        "denominator": 340282366920938463463374607431768211456,
+        "numerator": 1443695815008027069270202634865750341563
+      },
+      "lo": {
+        "denominator": 170141183460469231731687303715884105728,
+        "numerator": 721847907504013534635101317432875170781
+      }
+    },
+    "form_error_bound": {
+      "denominator": 10000000000,
+      "numerator": 1
+    },
+    "form_loss": {
+      "denominator": 1024,
+      "numerator": 1023
+    },
+    "formation_certified_by_class": [
+      true,
+      true
+    ],
+    "full_relative_preparation": true,
+    "gamma_bounds": {
+      "hi": {
+        "denominator": 340282366920938463463374607431768211456,
+        "numerator": 105880001451568737093746067908661729
+      },
+      "lo": {
+        "denominator": 10633823966279326983230456482242756608,
+        "numerator": 3308750045361523034179564622145679
+      }
+    },
+    "held_capacities": [
+      {
+        "denominator": 1,
+        "numerator": 1
+      },
+      {
+        "denominator": 1,
+        "numerator": 1
+      },
+      {
+        "denominator": 1,
+        "numerator": 1
+      },
+      {
+        "denominator": 1,
+        "numerator": 1
+      },
+      {
+        "denominator": 1,
+        "numerator": 1
+      },
+      {
+        "denominator": 1,
+        "numerator": 1
+      },
+      {
+        "denominator": 1,
+        "numerator": 1
+      },
+      {
+        "denominator": 1,
+        "numerator": 1
+      },
+      {
+        "denominator": 1,
+        "numerator": 1
+      }
+    ],
+    "initial_form_storage_by_class": [
+      {
+        "denominator": 163047361,
+        "numerator": 29548956783610000
+      },
+      {
+        "denominator": 163047361,
+        "numerator": 118195827134440000
+      }
+    ],
+    "initial_forms_by_class": [
+      [
+        {
+          "denominator": 38307,
+          "numerator": -343796200
+        },
+        {
+          "denominator": 12769,
+          "numerator": -85949050
+        },
+        {
+          "denominator": 38307,
+          "numerator": -171898100
+        },
+        {
+          "denominator": 38307,
+          "numerator": -85949050
+        },
+        {
+          "denominator": 1,
+          "numerator": 0
+        },
+        {
+          "denominator": 38307,
+          "numerator": 85949050
+        },
+        {
+          "denominator": 38307,
+          "numerator": 171898100
+        },
+        {
+          "denominator": 12769,
+          "numerator": 85949050
+        },
+        {
+          "denominator": 38307,
+          "numerator": 343796200
+        }
+      ],
+      [
+        {
+          "denominator": 38307,
+          "numerator": -687592400
+        },
+        {
+          "denominator": 12769,
+          "numerator": -171898100
+        },
+        {
+          "denominator": 38307,
+          "numerator": -343796200
+        },
+        {
+          "denominator": 38307,
+          "numerator": -171898100
+        },
+        {
+          "denominator": 1,
+          "numerator": 0
+        },
+        {
+          "denominator": 38307,
+          "numerator": 171898100
+        },
+        {
+          "denominator": 38307,
+          "numerator": 343796200
+        },
+        {
+          "denominator": 12769,
+          "numerator": 171898100
+        },
+        {
+          "denominator": 38307,
+          "numerator": 687592400
+        }
+      ]
+    ],
+    "initial_phase_error_norm_upper_bound": {
+      "denominator": 340282366920938463463374607431768211456,
+      "numerator": 144369581500802706927020263491
+    },
+    "initial_phases": [
+      {
+        "denominator": 1,
+        "numerator": 0
+      },
+      {
+        "denominator": 1,
+        "numerator": 0
+      },
+      {
+        "denominator": 1,
+        "numerator": 0
+      },
+      {
+        "denominator": 1,
+        "numerator": 0
+      },
+      {
+        "denominator": 1,
+        "numerator": 0
+      },
+      {
+        "denominator": 1,
+        "numerator": 0
+      },
+      {
+        "denominator": 1,
+        "numerator": 0
+      },
+      {
+        "denominator": 1,
+        "numerator": 0
+      },
+      {
+        "denominator": 1,
+        "numerator": 0
+      }
+    ],
+    "initial_storage_upper_bounds": [
+      {
+        "denominator": 12228552075000000000000000000,
+        "numerator": 2216171758770837798673556004402278747
+      },
+      {
+        "denominator": 12228552075000000000000000000,
+        "numerator": 8864687035083175597347112004402278747
+      }
+    ],
+    "initial_zero_winding_certified": true,
+    "initial_zero_winding_margin_bounds": {
+      "hi": {
+        "denominator": 340282366920938463463374607431768211456,
+        "numerator": 534514291964426900545652493888260470165
+      },
+      "lo": {
+        "denominator": 340282366920938463463374607431768211456,
+        "numerator": 534514291964426900545652493888260470163
+      }
+    },
+    "interval_method": "rational_outward_dyadic128_machin_trigonometry_v1",
+    "inverse_gamma_bounds": {
+      "hi": {
+        "denominator": 340282366920938463463374607431768211456,
+        "numerator": 1093616241498460983060453021744593811316923
+      },
+      "lo": {
+        "denominator": 85070591730234615865843651857942052864,
+        "numerator": 273404060374615245765113255436148452828975
+      }
+    },
+    "lambda_lower_bound": {
+      "denominator": 5,
+      "numerator": 1
+    },
+    "laplacian_upper_bound": {
+      "denominator": 1,
+      "numerator": 4
+    },
+    "law": "normalized_sine_reciprocal_exchange",
+    "metric_weights": [
+      {
+        "denominator": 1,
+        "numerator": 2
+      },
+      {
+        "denominator": 1,
+        "numerator": 2
+      },
+      {
+        "denominator": 1,
+        "numerator": 2
+      },
+      {
+        "denominator": 1,
+        "numerator": 2
+      },
+      {
+        "denominator": 1,
+        "numerator": 2
+      },
+      {
+        "denominator": 1,
+        "numerator": 2
+      },
+      {
+        "denominator": 1,
+        "numerator": 2
+      },
+      {
+        "denominator": 1,
+        "numerator": 2
+      },
+      {
+        "denominator": 1,
+        "numerator": 2
+      }
+    ],
+    "nodes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "nominal_scaled_initial_norm_upper_bounds": [
+      {
+        "denominator": 85070591730234615865843651857942052864,
+        "numerator": 650590188388209490861640382370024915717
+      },
+      {
+        "denominator": 42535295865117307932921825928971026432,
+        "numerator": 650590188388209490861640382370024915717
+      }
+    ],
+    "nominal_source_scale": {
+      "denominator": 38307,
+      "numerator": 85949050
+    },
+    "original_time": {
+      "denominator": 1023,
+      "numerator": 102400
+    },
+    "phase_error_bound": {
+      "denominator": 10000000000,
+      "numerator": 1
+    },
+    "phase_exchange_beta": {
+      "denominator": 1,
+      "numerator": 1
+    },
+    "preparation_dimension": 16,
+    "proxy_target_distance_bounds": [
+      {
+        "hi": {
+          "denominator": 85070591730234615865843651857942052864,
+          "numerator": 78126812849860269653403646386851
+        },
+        "lo": {
+          "denominator": 340282366920938463463374607431768211456,
+          "numerator": 312507251399441078613614585529959
+        }
+      },
+      {
+        "hi": {
+          "denominator": 340282366920938463463374607431768211456,
+          "numerator": 625014502798882157227229171094807
+        },
+        "lo": {
+          "denominator": 170141183460469231731687303715884105728,
+          "numerator": 312507251399441078613614585529959
+        }
+      }
+    ],
+    "radius": {
+      "denominator": 12,
+      "numerator": 1
+    },
+    "radius_angle_bounds": {
+      "hi": {
+        "denominator": 340282366920938463463374607431768211456,
+        "numerator": 515226476667985973195141350151546746519
+      },
+      "lo": {
+        "denominator": 340282366920938463463374607431768211456,
+        "numerator": 515226476667985973195141350151546746503
+      }
+    },
+    "reference_model": {
+      "epi_weight": 0.9990234375,
+      "phase_domain": "regular",
+      "phase_weight": 0.0009765625,
+      "storage_scale": 1.0
+    },
+    "relative_mean_leaf_dimension": 16,
+    "residual_constraints": [
+      "sum_form_residuals_equals_zero",
+      "sum_lifted_phase_residuals_equals_zero"
+    ],
+    "scaled_form_radius_upper_bounds": [
+      {
+        "denominator": 7237005577332262213973186563042994240829374041602535252466099000494570602496,
+        "numerator": 14977339417237913439766341915891277433257831453673325912833790520992109
+      },
+      {
+        "denominator": 1809251394333065553493296640760748560207343510400633813116524750123642650624,
+        "numerator": 3772854053967505267715690465642294495461361068444354757364997434654495
+      }
+    ],
+    "scaled_initial_error_norm_upper_bounds": [
+      {
+        "denominator": 170141183460469231731687303715884105728,
+        "numerator": 22460540105533724772391257
+      },
+      {
+        "denominator": 170141183460469231731687303715884105728,
+        "numerator": 22460540105533724772391257
+      }
+    ],
+    "scaled_initial_norm_upper_bounds": [
+      {
+        "denominator": 170141183460469231731687303715884105728,
+        "numerator": 1301180376776441442263386298464822222691
+      },
+      {
+        "denominator": 170141183460469231731687303715884105728,
+        "numerator": 2602360753552860423986667063204872054125
+      }
+    ],
+    "scaled_time": {
+      "denominator": 1,
+      "numerator": 100
+    },
+    "scope": [
+      "fixed_simple_unit_C9_same_complete_positive_loss_law_for_both_classes",
+      "phase_flat_nominal_sources_with_all_node_mean_zero_form_and_phase_errors",
+      "same_exact_zero_conserved_form_and_lifted_phase_origins",
+      "positive_budgets_have_sixteen_dimensional_relative_interior_not_ambient_box",
+      "unequal_nominal_costs_each_full_source_family_fits_one_common_storage_budget",
+      "one_fresh_shared_preparation_domain_no_cached_certificate_consumption",
+      "full_nonlinear_transit_and_initial_errors_retained_in_weighted_Duhamel_bounds",
+      "strict_initial_zero_winding_endpoint_radius_acute_chart_and_storage_barriers",
+      "conditional_recovery_to_target_and_uniform_form_on_each_fixed_mean_leaf",
+      "D9_global_origins_and_joint_sign_preserve_winding_magnitude",
+      "unavailable_is_not_failed_formation_or_instability",
+      "no_receiver_response_or_spectral_measurement_prediction",
+      "no_trajectory_solver_events_resets_or_parameter_search",
+      "no_autonomous_preparation_support_origin_law_selection_or_physical_identity"
+    ],
+    "source_budget_certified_by_class": [
+      true,
+      true
+    ],
+    "source_budget_margin_bounds": [
+      {
+        "hi": {
+          "denominator": 170141183460469231731687303715884105728,
+          "numerator": 139306618298841960653962055157949244177998468969
+        },
+        "lo": {
+          "denominator": 340282366920938463463374607431768211456,
+          "numerator": 278613236597683921307924110315898488355996937937
+        }
+      },
+      {
+        "hi": {
+          "denominator": 170141183460469231731687303715884105728,
+          "numerator": 46802922813962590583334656953650081973739553575
+        },
+        "lo": {
+          "denominator": 340282366920938463463374607431768211456,
+          "numerator": 93605845627925181166669313907300163947479107149
+        }
+      }
+    ],
+    "status": "certified_two_formed_classes",
+    "storage_barrier_certified_by_class": [
+      true,
+      true
+    ],
+    "storage_barrier_margin_bounds": [
+      {
+        "hi": {
+          "denominator": 340282366920938463463374607431768211456,
+          "numerator": 11719962073973842397261359842045277
+        },
+        "lo": {
+          "denominator": 85070591730234615865843651857942052864,
+          "numerator": 2929990518493460599315339960511319
+        }
+      },
+      {
+        "hi": {
+          "denominator": 170141183460469231731687303715884105728,
+          "numerator": 5744866135013085829913747474935449
+        },
+        "lo": {
+          "denominator": 340282366920938463463374607431768211456,
+          "numerator": 11489732270026171659827494949870897
+        }
+      }
+    ],
+    "symmetry_inequivalent": true,
+    "symmetry_winding_orbits": [
+      [
+        -1,
+        1
+      ],
+      [
+        -2,
+        2
+      ]
+    ],
+    "target_phase_storage_bounds_by_class": [
+      {
+        "hi": {
+          "denominator": 42535295865117307932921825928971026432,
+          "numerator": 89562319481002956471028177272185050809
+        },
+        "lo": {
+          "denominator": 340282366920938463463374607431768211456,
+          "numerator": 716498555848023651768225418177480406391
+        }
+      },
+      {
+        "hi": {
+          "denominator": 85070591730234615865843651857942052864,
+          "numerator": 632684146529087456568995639150903972079
+        },
+        "lo": {
+          "denominator": 340282366920938463463374607431768211456,
+          "numerator": 2530736586116349826275982556603615888181
+        }
+      }
+    ],
+    "target_phase_turns_by_class": [
+      [
+        {
+          "denominator": 9,
+          "numerator": -4
+        },
+        {
+          "denominator": 3,
+          "numerator": -1
+        },
+        {
+          "denominator": 9,
+          "numerator": -2
+        },
+        {
+          "denominator": 9,
+          "numerator": -1
+        },
+        {
+          "denominator": 1,
+          "numerator": 0
+        },
+        {
+          "denominator": 9,
+          "numerator": 1
+        },
+        {
+          "denominator": 9,
+          "numerator": 2
+        },
+        {
+          "denominator": 3,
+          "numerator": 1
+        },
+        {
+          "denominator": 9,
+          "numerator": 4
+        }
+      ],
+      [
+        {
+          "denominator": 9,
+          "numerator": -8
+        },
+        {
+          "denominator": 3,
+          "numerator": -2
+        },
+        {
+          "denominator": 9,
+          "numerator": -4
+        },
+        {
+          "denominator": 9,
+          "numerator": -2
+        },
+        {
+          "denominator": 1,
+          "numerator": 0
+        },
+        {
+          "denominator": 9,
+          "numerator": 2
+        },
+        {
+          "denominator": 9,
+          "numerator": 4
+        },
+        {
+          "denominator": 3,
+          "numerator": 2
+        },
+        {
+          "denominator": 9,
+          "numerator": 8
+        }
+      ]
+    ],
+    "target_windings": [
+      1,
+      2
+    ],
+    "unavailable_reasons": []
+  },
+  "schema": "tnfr.sine-formed-class-pair.v1"
+}

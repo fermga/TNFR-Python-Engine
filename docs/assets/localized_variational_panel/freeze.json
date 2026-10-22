@@ -1,0 +1,28 @@
+{
+  "schema":"tnfr.localized-variational-first-panel-freeze.v1",
+  "created_utc":"2026-10-14T09:12:14.110680+00:00",
+  "evaluation_status_at_freeze":"not_evaluated",
+  "byte_associations_are_not_authentication":true,
+  "artifacts":[
+    {
+      "path":"protocol.json",
+      "bytes":14354,
+      "sha256":"8634826dcd04e59291d0c57c39d711ab92a035cb80084f645ad22f2202c0086c"
+    },
+    {
+      "path":"source-manifest.json",
+      "bytes":159325,
+      "sha256":"2a0aad8b6287580d74e7b7ef54833ff7496ccf6e641bbe18525af4b4500197c9"
+    },
+    {
+      "path":"source.zip",
+      "bytes":4050189,
+      "sha256":"c4aa2f8e741caea02ec930f239fbc6ecf5e228c4204c9e4ac4b869c8c0a20ae6"
+    },
+    {
+      "path":"evaluate.py",
+      "bytes":8331,
+      "sha256":"5dee8d1465a6ee12fa0352a67b8fc8220bb701d7c688ba1848bb80fb9ecdc79e"
+    }
+  ]
+}

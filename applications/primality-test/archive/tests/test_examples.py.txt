@@ -1,0 +1,109 @@
+"""Keep arithmetic examples faithful to their actual APIs and output scope."""
+
+from __future__ import annotations
+
+import importlib.util
+import subprocess
+import sys
+from pathlib import Path
+from types import SimpleNamespace
+
+import pytest
+
+PACKAGE_ROOT = Path(__file__).resolve().parents[1]
+if str(PACKAGE_ROOT) not in sys.path:
+    sys.path.insert(0, str(PACKAGE_ROOT))
+
+
+def _load_example(name):
+    path = PACKAGE_ROOT / "examples" / f"{name}.py"
+    spec = importlib.util.spec_from_file_location(f"primality_example_{name}", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_basic_example_reports_multiplicity_and_actual_default_weights(capsys):
+    example = _load_example("basic_usage")
+    example.theory_example()
+    output = capsys.readouterr().out
+
+    # 25 = 5**2 has three divisors with sum 31 and multiplicity two.
+    assert "Omega=2, tau=3, sigma=31" in output
+    assert "DeltaNFR(25) = 2.200000" in output
+    assert "zeta=1.0, eta=1.0, theta=1.0" in output
+
+
+def test_comparison_reports_each_adapters_own_classification(monkeypatch, capsys):
+    from tnfr_primality import advanced_core, core
+
+    example = _load_example("advanced_examples")
+    consumed = []
+
+    def result(prime, pressure):
+        def evaluate(n):
+            consumed.append(n)
+            return prime, pressure
+
+        return evaluate
+
+    monkeypatch.setattr(core, "tnfr_is_prime", result(True, 0.0))
+    monkeypatch.setattr(advanced_core, "tnfr_is_prime_advanced", result(False, 2.0))
+    monkeypatch.setattr(
+        advanced_core, "cached_tnfr_is_prime_advanced", result(False, 3.0)
+    )
+    example.example_basic_vs_advanced()
+    rows = [
+        [cell.strip() for cell in line.split("|")]
+        for line in capsys.readouterr().out.splitlines()
+        if "|" in line
+    ][1:]
+
+    assert consumed and max(consumed) <= 100
+    assert {row[2] for row in rows if row[1] == "Basic"} == {"PRIME"}
+    assert {row[2] for row in rows if row[1] == "Advanced"} == {"COMPOSITE"}
+    assert {row[2] for row in rows if row[1] == "Advanced+Cache"} == {"COMPOSITE"}
+
+
+def test_certificate_explanation_does_not_require_a_unicode_console(
+    monkeypatch, capsys
+):
+    from tnfr_primality import advanced_core
+
+    example = _load_example("advanced_examples")
+
+    def evaluate(n, *, return_certificate=False):
+        if return_certificate:
+            return SimpleNamespace(
+                explanation="Pressure \u0394NFR", tau=3, sigma=31, omega=2
+            )
+        return False, 2.2
+
+    monkeypatch.setattr(advanced_core, "tnfr_is_prime_advanced", evaluate)
+    example.example_prime_certificates()
+    output = capsys.readouterr().out
+    assert "Certificate explanation: Pressure \\u0394NFR" in output
+    assert "Omega(n) = 2 (prime factor count WITH multiplicity)" in output
+    assert "failed" not in output
+    output.encode("ascii")
+
+
+@pytest.mark.parametrize("name", ["basic_usage", "advanced_examples"])
+def test_examples_work_without_engine_or_unicode_console(name):
+    path = PACKAGE_ROOT / "examples" / f"{name}.py"
+    code = (
+        "import runpy,sys;"
+        "sys.stdout.reconfigure(encoding='cp1252');"
+        f"sys.path.insert(0,{str(PACKAGE_ROOT)!r});"
+        f"runpy.run_path({str(path)!r},run_name='__main__')"
+    )
+    result = subprocess.run(
+        [sys.executable, "-I", "-S", "-c", code],
+        capture_output=True,
+        text=True,
+        encoding="cp1252",
+        timeout=20,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "Examples completed" in result.stdout
+    assert "Traceback" not in result.stderr

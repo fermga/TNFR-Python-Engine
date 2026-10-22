@@ -1,0 +1,272 @@
+{
+  "schema": "tnfr.sine-two-port-capture-protocol.v1",
+  "evaluation_kind": "validated_nominal_gradient_transit_with_full_law_convergence_handoff",
+  "inputs": {
+    "form_error_radius": {
+      "numerator": 1,
+      "denominator": 65536
+    },
+    "phase_error_radius": {
+      "numerator": 1,
+      "denominator": 65536
+    },
+    "reference_duration": {
+      "numerator": 1024,
+      "denominator": 1
+    },
+    "time_step": {
+      "numerator": 1,
+      "denominator": 4
+    },
+    "order": 8,
+    "max_steps": 4096
+  },
+  "complete_model": {
+    "law": "normalized_sine_reciprocal_exchange",
+    "rows_in_tau": "x'=-K L x+gamma K S(theta); theta'=gamma K L x",
+    "gamma": "1/(1023*pi)",
+    "eta": "gamma^2",
+    "beta": 1,
+    "e": "1023/1024",
+    "w": "1/1024",
+    "clocks": "tau=e*t; sigma=eta*tau; every companion row uses these same clocks",
+    "capacity": "held unit at all eighteen nodes",
+    "forcing": "absent",
+    "events": "none during the assessed fixed-support evolution",
+    "pressure": "complete sine forcing refreshed at all reference interval/jet stages, with the separate proved full-law comparison"
+  },
+  "support": {
+    "nodes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        8
+      ],
+      [
+        0,
+        9
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        1,
+        10
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        9,
+        10
+      ],
+      [
+        9,
+        17
+      ],
+      [
+        10,
+        11
+      ],
+      [
+        11,
+        12
+      ],
+      [
+        12,
+        13
+      ],
+      [
+        13,
+        14
+      ],
+      [
+        14,
+        15
+      ],
+      [
+        15,
+        16
+      ],
+      [
+        16,
+        17
+      ]
+    ],
+    "weights": "unit",
+    "ports": [
+      0,
+      1,
+      9,
+      10
+    ],
+    "degree_mass": 40,
+    "cycles": [
+      [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      [
+        0,
+        9,
+        10,
+        1
+      ]
+    ],
+    "periods": [
+      2,
+      1,
+      0
+    ]
+  },
+  "preparation": {
+    "nominal_form": "zero",
+    "nominal_phase_turns_before_one_common_centering": "D_j=2*j/9; R_j=1/18+j/9",
+    "full_weighted_phase_mean_turns_subtracted": "229/360",
+    "contact_gaps": "+pi/9 and -pi/9",
+    "errors": "Independent per-node form and continuous phase-lift errors within the two declared radii. Phase errors are radians. No reflection, zero-sum constraint, reset or new error family is imposed on the actual thirty-six coordinates.",
+    "means": "Each actual member retains its own degree-weighted form and phase means; comparisons use the matching common phase shift and centered form.",
+    "prior_scope": "The same preparation as the closed quarter-window directional theorem. This is not the older receiver-origin 1/1000 contact experiment. The earlier scalar-storage obstruction remains valid."
+  },
+  "reference": {
+    "row": "dpsi/dsigma=K S(psi), initialized at the exact nominal turns",
+    "folding": "Exact affine reflection/phase-negation reduction of the nominal reference only; all actual source perturbations remain full-dimensional.",
+    "representatives": [
+      0,
+      2,
+      3,
+      4,
+      9,
+      11,
+      12,
+      13
+    ],
+    "partners": [
+      1,
+      8,
+      7,
+      6,
+      10,
+      17,
+      16,
+      15
+    ],
+    "fixed_nodes": [
+      5,
+      14
+    ],
+    "folded_metric_diagonal": [
+      6,
+      4,
+      4,
+      4,
+      6,
+      4,
+      4,
+      4
+    ],
+    "coordinates": "Eight radian deviations h with psi=2*pi*nominal_turns+E*h; each representative row evolves as [K*S(psi)]_representative in slow time.",
+    "initial_displacements": "eight exact zero radians",
+    "method": "shared validated_metric_taylor_step with strict Picard inclusion, order-eight Taylor remainder, fixed outward dyadic128 arithmetic and growth_rate=0 proved from every acute tube",
+    "domain": "Every reconstructed full edge retains an acute margin strictly larger than 1/2048 radian on every whole-time tube.",
+    "endpoint_requirement": "Degree-metric distance to the correlated implicit equilibrium, modulo the common phase, at most 1/2048 radian.",
+    "error_retention": "Carry the metric ball between steps; coordinate projections serve domain admission and observations, never a reboxed new radius.",
+    "retention": "Keep compact exact step evidence and full source/configuration. The shared step certifies each tube and local remainder; compact records do not independently authenticate execution."
+  },
+  "target": {
+    "construction": "Fresh complete two-port compatibility assessment from classes (2,1), outer32 and inner64 strict root refinements. No cached equilibrium verdict or rounded midpoint replaces the implicit target.",
+    "acute_margin_requirement": "strictly greater than 1/8 radian",
+    "scope": "Unique acute equilibrium in period cell (2,1,0), on each actual conserved-mean leaf."
+  },
+  "handoff": {
+    "additional_slow_duration": 1,
+    "full_endpoint_slow_time": 1025,
+    "reference_tail": "The certified terminal 1/2048 weighted ball is forward invariant for the gradient reference by acute monotonicity; no further reference integration or reset occurs.",
+    "full_comparison": "Reuse the complete-law storage-loss integral and acute monotonicity through sigma=1025. The prepared energy budget 1/8 gives a full/reference phase error strictly below 1/2048.",
+    "form_tail": "Reference forcing at most 1/1024 over the final slow unit; exact fast decay at most 2^-512. Reconstruct original relative form, not only z=gamma*P_M*x.",
+    "endpoint_phase_radius": "strictly below 1/1024 in degree norm",
+    "endpoint_relative_form_radius": "strictly below 1/8192 in degree norm",
+    "local_capture_radius": "1/12 in combined relative form/phase degree norm",
+    "cosine_lower_bound": "1/25",
+    "normalized_diffusion_gap_lower_bound": "1/90",
+    "capture_barrier": "1/648000",
+    "full_excess_storage_upper_bound": "65/67108864",
+    "conclusion": "Strict storage trapping and the full-law invariance principle yield convergence to the unique implicit equilibrium after the finite handoff; no global capture from arbitrary phases follows."
+  },
+  "prediction": "Expect the fixed-budget assessment to pass every stopping condition and thereby certify that the unchanged complete source family reaches an admitted capture neighborhood and converges to the deformed joint equilibrium. An unavailable sufficient bound will be retained as a failure to certify, not as observed nonconvergence.",
+  "stopping_rule": "Require fresh target admission and strict target acute margin, admitted complete preparation, all 4096 reference steps at the frozen step/order/precision, strictly admitted whole-time margins, terminal reference distance at most 1/2048, proved reference tail, original-form and phase handoff, strict full storage margin and resulting convergence. Retain any failed condition and actual validated prefix. No smaller step, larger order, longer horizon, narrowed source or additional run may replace this first reserved result.",
+  "source_base_commit": "29e4c02339f6246d003a7fbfbdf7f37c8a2c1277",
+  "source_overlay_archive": "two-port-capture-v1.source.zip",
+  "frozen_theory_owner": "theory/nodal/SINE_TWO_PORT_CAPTURE.md",
+  "runtime": {
+    "python": "3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows",
+    "backend": "Python Fraction, shared outward dyadic128 intervals, formal Taylor jets and retained metric-ball Picard/Taylor steps",
+    "seed": null,
+    "seed_scope": "Deterministic exact source, support, interval arithmetic and declared step sequence; no random preparation, solver sweep or fit."
+  },
+  "scope": "Conditional mathematical acquisition of joint geometry on supplied support. The original partial and negative results remain unchanged. This selects neither the law, preparation, support event nor physical identification."
+}

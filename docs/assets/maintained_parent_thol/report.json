@@ -1,0 +1,42 @@
+{
+  "schema":"tnfr.maintained-parent-thol-verdict.v1",
+  "completed_utc":"2026-10-15T06:52:21.849066+00:00",
+  "response":{
+    "path":"response.json",
+    "bytes":789503,
+    "sha256":"23de91d7ec6a5a0dfd93a00469172692acae4ce2290bec710ec8001bf6d98d9e"
+  },
+  "checks":{
+    "one_canonical_atomic_event":true,
+    "one_predicted_child":true,
+    "old_primary_coordinates_unchanged":true,
+    "old_support_and_conductances_unchanged":true,
+    "child_amplitude_predicted":true,
+    "child_capacity_and_phase_predicted":true,
+    "raw_parent_pressure_predicted":true,
+    "raw_other_pressures_unchanged":true,
+    "child_isolated_with_zero_pressure":true,
+    "hierarchy_committed":true,
+    "child_lifecycle_prediction":true,
+    "metabolic_signals_predicted":true,
+    "actual_grammar_prefix":true,
+    "clock_and_parent_record_retained":true,
+    "child_temporal_baseline_unavailable":true,
+    "connected_only_reader_rejects":true,
+    "fresh_old_pressure_restored":true,
+    "old_continuous_rows_preserved":true,
+    "isolate_rows_explicitly_frozen":true,
+    "zero_edge_storage_jump_by_unchanged_arguments":true,
+    "old_component_means_preserved":true
+  },
+  "all_checks_passed":true,
+  "edge_storage_jump":{
+    "numerator":0,
+    "denominator":1
+  },
+  "parent_raw_pressure":{
+    "numerator":362484571715519,
+    "denominator":18014398509481984
+  },
+  "scope":"One supplied THOL occurrence on a certified retained parent; explicit frozen-isolate successor"
+}

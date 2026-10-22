@@ -1,0 +1,104 @@
+r"""Numerical certificates for floating-point research claims.
+
+A floating-point measurement is only admissible with a certificate that ties its
+verdict to numerical error rather than a hand-picked cut: the derived tolerance,
+the backward error and the condition number of the problem, and the working
+precision.  This complements the exact invariant-subspace certificate of
+:mod:`tnfr.physics.spectral_certificates`.
+"""
+
+from __future__ import annotations
+
+import math
+from dataclasses import dataclass
+from numbers import Real
+
+__all__ = ["NumericalCertificate", "certify_within_tolerance"]
+
+
+def _finite_real(value: Real, name: str) -> None:
+    if isinstance(value, bool) or not isinstance(value, Real):
+        raise ValueError(f"{name} must be a finite real number, not a boolean")
+    try:
+        finite = math.isfinite(value)
+    except (OverflowError, ValueError):
+        finite = False
+    if not finite:
+        raise ValueError(f"{name} must be finite")
+
+
+@dataclass(frozen=True)
+class NumericalCertificate:
+    """A pass/fail verdict for ``|value| < tolerance`` with numerical context."""
+
+    quantity: str
+    value: float
+    tolerance: float
+    passed: bool
+    backward_error: float | None = None
+    condition_number: float | None = None
+    precision: str = "float64"
+
+    def to_dict(self) -> dict:
+        return {
+            "quantity": self.quantity,
+            "value": self.value,
+            "tolerance": self.tolerance,
+            "passed": self.passed,
+            "backward_error": self.backward_error,
+            "condition_number": self.condition_number,
+            "precision": self.precision,
+        }
+
+    def validate_for_admission(self) -> None:
+        """Require numerical context before admitting a public result."""
+        if not isinstance(self.quantity, str) or not self.quantity.strip():
+            raise ValueError("quantity and precision are required")
+        if not isinstance(self.precision, str) or self.precision not in {
+            "float32",
+            "float64",
+            "longdouble",
+            "exact",
+        }:
+            raise ValueError("precision must name a supported numerical model")
+        _finite_real(self.value, "value")
+        _finite_real(self.tolerance, "tolerance")
+        if self.tolerance < 0.0:
+            raise ValueError("tolerance must be nonnegative")
+        if type(self.passed) is not bool:
+            raise ValueError("passed must be a boolean")
+        if self.passed != (abs(self.value) < self.tolerance):
+            raise ValueError("passed is inconsistent with abs(value) < tolerance")
+        if self.backward_error is None or self.condition_number is None:
+            raise ValueError(
+                "backward_error and condition_number are required for admission"
+            )
+        _finite_real(self.backward_error, "backward_error")
+        _finite_real(self.condition_number, "condition_number")
+        if self.backward_error < 0.0:
+            raise ValueError("backward_error must be finite and nonnegative")
+        if self.condition_number < 0.0:
+            raise ValueError("condition_number must be finite and nonnegative")
+
+
+def certify_within_tolerance(
+    quantity: str,
+    value: float,
+    tolerance: float,
+    *,
+    backward_error: float | None = None,
+    condition_number: float | None = None,
+    precision: str = "float64",
+) -> NumericalCertificate:
+    """Certify ``|value| < tolerance`` with the supporting numerical context."""
+    _finite_real(value, "value")
+    _finite_real(tolerance, "tolerance")
+    return NumericalCertificate(
+        quantity=quantity,
+        value=float(value),
+        tolerance=float(tolerance),
+        passed=abs(float(value)) < float(tolerance),
+        backward_error=backward_error,
+        condition_number=condition_number,
+        precision=precision,
+    )

@@ -1,0 +1,51 @@
+{
+  "schema":"tnfr.maintained-parent-um-corrected-protocol.v1",
+  "evaluation_status_at_freeze":"not_evaluated",
+  "question":"Does the actual canonical UM endpoint enter the previously certified conditional family?",
+  "source":"retained actual THOL successor, re-admitted from primitive history and birth evidence",
+  "target_order":[
+    2
+  ],
+  "seed":17,
+  "word_context":[
+    "VAL",
+    "THOL",
+    "UM",
+    "SHA"
+  ],
+  "step_index":2,
+  "operation":"one shared atomic Coupling stage with all default branches, all-candidate count zero, strict gates, rejection by raising",
+  "clock":"unchanged structural time, zero-duration hybrid reset; subsequent elapsed structural t",
+  "structural_time":{
+    "numerator":3670017,
+    "denominator":524288
+  },
+  "event_metadata_timestamp":"2030-01-02T03:04:07+00:00",
+  "maximum_events":1,
+  "maximum_trajectories":0,
+  "maximum_attempts":1,
+  "numerics":"binary64 canonical event; independently rebuilt exact rational/dyadic interval checks",
+  "reset_error_allowance":{
+    "numerator":1,
+    "denominator":1099511627776
+  },
+  "pressure_refresh_error_allowance":{
+    "numerator":1,
+    "denominator":70368744177664
+  },
+  "law":"x_dot=M*S(theta); theta_dot=M*L_W*x; M=diag(nu/(pi*d)); held support/weights/positive capacities, no Gamma or loss",
+  "pressure":"raw operator relief recorded separately; independently refreshed bare-neighbor sine pressure",
+  "acceptance":[
+    "exact retained before-state and one canonical parent stage, with live grammar",
+    "all21 nodes/forms and45 old edge payloads unchanged; exactly8 predicted new edges",
+    "only predicted phases/capacity change; maximum distance to both ideal interval endpoints <=2^-40 for each changed phase/capacity/weight",
+    "raw parent pressure within prospective allowance; other raw pressures unchanged",
+    "pressure-only callback, with separate later stage metadata; fresh pressure error <=2^-46",
+    "all primitive coordinates/held parameters in the exact archived conditional family; all53 branch integers match",
+    "complete event work from old-edge phase and new-edge form/phase, with actual means and both continued rows",
+    "preserved hierarchy, temporal samples, structural clock and declared parent-only glyph/lifecycle changes; no child baseline"
+  ],
+  "transfer":"Existing [0,1/2] all-branch retention and relative-velocity reversal apply only after primitive inclusion and identical complete-law admission",
+  "scope":"One supplied UM occurrence; incomplete VAL,THOL,UM prefix. No SHA, IL, autonomous event law, reservoir, universal organization or physical identification.",
+  "stop":"retain the single positive, negative or unavailable result; no retries, tuned defaults, weakened allowance or regenerated motion"
+}

@@ -1,0 +1,236 @@
+{
+  "capacity": [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+  ],
+  "contrast": "joined_right_minus_separately_executed_right",
+  "edges": [
+    [
+      0,
+      1
+    ],
+    [
+      0,
+      4
+    ],
+    [
+      0,
+      5
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      2,
+      3
+    ],
+    [
+      3,
+      4
+    ],
+    [
+      5,
+      6
+    ],
+    [
+      5,
+      9
+    ],
+    [
+      6,
+      7
+    ],
+    [
+      7,
+      8
+    ],
+    [
+      8,
+      9
+    ]
+  ],
+  "gates": {
+    "maximum_actual_balance_residual": 1e-12,
+    "maximum_disconnected_right_drift": 1e-12,
+    "minimum_acute_margin": 0.15707963267948966,
+    "normalized_response_interval": [
+      0.75,
+      1.25
+    ],
+    "numerical_slack": 1e-12,
+    "refinement_contraction": 0.75,
+    "signal_to_last_grid_difference": 32,
+    "winding": 1
+  },
+  "horizon": {
+    "denominator": 16,
+    "numerator": 1
+  },
+  "initial_acceleration_estimates": {
+    "form": 7.071275658213666e-05,
+    "phase": -6.403851842991315e-05
+  },
+  "initial_form": [
+    {
+      "denominator": 1,
+      "numerator": 0
+    },
+    {
+      "denominator": 256,
+      "numerator": 1
+    },
+    {
+      "denominator": 1,
+      "numerator": 0
+    },
+    {
+      "denominator": 1,
+      "numerator": 0
+    },
+    {
+      "denominator": 1,
+      "numerator": 0
+    },
+    {
+      "denominator": 1,
+      "numerator": 0
+    },
+    {
+      "denominator": 1,
+      "numerator": 0
+    },
+    {
+      "denominator": 1,
+      "numerator": 0
+    },
+    {
+      "denominator": 1,
+      "numerator": 0
+    },
+    {
+      "denominator": 1,
+      "numerator": 0
+    }
+  ],
+  "initial_phase": [
+    0.0,
+    1.2566370614359172,
+    2.5132741228718345,
+    3.7699111843077517,
+    5.026548245743669,
+    0.0,
+    1.2566370614359172,
+    2.5132741228718345,
+    3.7699111843077517,
+    5.026548245743669
+  ],
+  "leading_response_estimates": {
+    "form": 1.3811085269948566e-07,
+    "phase": -1.2507523130842412e-07
+  },
+  "model": {
+    "epi_weight": 0.5,
+    "phase_weight": 0.5,
+    "storage_scale": 1.0
+  },
+  "nodes": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "observables": "right_port_minus_other_four_mean_form_and_reference_relative_phase",
+  "protocol": "relational-region-interaction-v1",
+  "regions": {
+    "left": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "right": [
+      5,
+      6,
+      7,
+      8,
+      9
+    ]
+  },
+  "runtime": {
+    "integrator": "production_step_relational_exchange_explicit_Euler",
+    "machine": "AMD64",
+    "networkx": "3.6.1",
+    "numpy": "2.5.3",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "precision": "binary64_states_exact_Fraction_observations_and_defects",
+    "pressure_path": "fused_canonical",
+    "python": "3.13.6",
+    "randomness": "none"
+  },
+  "scenarios": [
+    "joined",
+    "left",
+    "right"
+  ],
+  "scope": "prepared_conditional_interaction_not_formation_closed_regional_law_or_physical_validation",
+  "source_sha256": {
+    "benchmarks/relational_region_interaction.py": "0ee94e6bd867a564ca7ba49fbaed11eceb9cd9a49d115e15f36bdfacc92b216d",
+    "src/tnfr/_exact_time.py": "69ef60f1405b6551f3d0fb64ad253dbe7267a053a6b390513c539a5a7a8878c0",
+    "src/tnfr/alias.py": "378e781b833d228fc24d66315fe81a8edfe2ef7204d4ead8c0822fa9fc096cc6",
+    "src/tnfr/config/defaults_core.py": "bf938cb6108005a519f7e184865366a0f00ccdfd4fd685fbb3a8ea7b73faf551",
+    "src/tnfr/dynamics/_euler_kernel.py": "2d355304c3b82fbdcde42a2c9b70d2d0ab9e53c9462e9746b74d30aab05635c7",
+    "src/tnfr/dynamics/canonical.py": "a3a1407b963f7846b1c005eaba3f76f2e2e72e0436b88b2ef2d7a4ebc1569221",
+    "src/tnfr/dynamics/dnfr.py": "e746586a987b223fda19192a49729e5274216668b4522d79cd46a935f184f7a1",
+    "src/tnfr/dynamics/fused_dnfr.py": "67ebc6c994da1f26ff1e1265dc135efe1fc24d0114d1b021fb9e5978eec77b2a",
+    "src/tnfr/dynamics/relational.py": "7429eb62726cede9fe4e2d357936d0e94ffb2467f62bac332bcba524fd504410",
+    "src/tnfr/gamma.py": "f21003b17e228c855c8c6aa0a1524072b153b1620211678519c89c3e01498027",
+    "src/tnfr/mathematics/_neighbor_differences.py": "253a6e1ca539a27c555ea0b500f56d49e3d370778fb8d2bdbf24d481deaf3ba6",
+    "src/tnfr/mathematics/_phase_midpoint.py": "aea8e1902f83b7d585c31119f96039816dc607b2bad40200d85264446826d446",
+    "src/tnfr/mathematics/_weight_normalization.py": "da19f3db04024494e5fb1936db2c73b05ade9d6ff5a9b41d37dfb66e300c1d7f",
+    "src/tnfr/mathematics/epi.py": "0fc5498d18f4864be2cfa578d5fa3d7279dd84678c13a310cd9532b3d29e5f2e",
+    "src/tnfr/mathematics/unified_numerical.py": "d8b48a6cbb588db76c05194601094063d7c9c15121275bd37f51537c5d90fb0e",
+    "src/tnfr/metrics/common.py": "eb40d413b390a66592d1e36691060248b8002076af5c44d2221b3d4539b1a632",
+    "src/tnfr/physics/_conductance.py": "e4242342dbe17ea4e4b7007f021ade2c4d5ce49238f563b93205b3c85b866856",
+    "src/tnfr/physics/structural_diffusion.py": "6d4ac3fed688869e36246a7afd5e5f3bf41485e7faaa5e76d006400285b28b20",
+    "src/tnfr/physics/support_transport.py": "03dc1a1d5dbde29e3b61cb043f358e68173d91ccf28c12fca5bbc3e4e471fcb9",
+    "src/tnfr/physics/winding_certificates.py": "0374fe2660493dc6e02d660f79a4f7fff3988cf729d96db9f7969b2b961ab22a",
+    "src/tnfr/types.py": "38cb289492b630d4fa9effc67c4b165d73821f4b7e6a2bc8953a41dc2029d5fb",
+    "src/tnfr/utils/graph.py": "c879155866bea82279e08cac35b1304180108f4c5d19869b80eb07228143ee8d",
+    "src/tnfr/utils/numeric.py": "a5b50acffc2869b989d700894126a22511f875a3b347f1cfcdc5bc2d0a959394"
+  },
+  "step_counts": [
+    64,
+    128,
+    256
+  ],
+  "timesteps": [
+    {
+      "denominator": 1024,
+      "numerator": 1
+    },
+    {
+      "denominator": 2048,
+      "numerator": 1
+    },
+    {
+      "denominator": 4096,
+      "numerator": 1
+    }
+  ]
+}

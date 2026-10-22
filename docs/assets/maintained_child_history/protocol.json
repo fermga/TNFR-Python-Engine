@@ -1,0 +1,152 @@
+{
+  "schema":"tnfr.maintained-child-history-protocol.v1",
+  "evidence_kind":"new_numerical_acquisition_against_existing_exact_flow_certificate",
+  "child":"2_sub_0",
+  "parent":2,
+  "node_order":[
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    "2_sub_0"
+  ],
+  "state_dimension":42,
+  "original_edges":53,
+  "law":"x_dot=M*S(theta); theta_dot=M*L_W*x; M=diag(nu/(pi*d))",
+  "held":[
+    "support",
+    "conductances",
+    "positive capacities"
+  ],
+  "forcing":0,
+  "loss":0,
+  "clock":"original structural clock; unchanged real phase lifts",
+  "source_time":{
+    "numerator":3670017,
+    "denominator":524288
+  },
+  "elapsed_sample_times":[
+    {
+      "numerator":3,
+      "denominator":128
+    },
+    {
+      "numerator":25,
+      "denominator":1024
+    },
+    {
+      "numerator":13,
+      "denominator":512
+    }
+  ],
+  "event_time":{
+    "numerator":3682305,
+    "denominator":524288
+  },
+  "sample_times":[
+    {
+      "numerator":3682305,
+      "denominator":524288
+    },
+    {
+      "numerator":3682817,
+      "denominator":524288
+    },
+    {
+      "numerator":3683329,
+      "denominator":524288
+    }
+  ],
+  "integrator":"tnfr.dynamics.integrators.rk4_coupled_step",
+  "field":"tnfr.research.local_capacity_history.numerical_field",
+  "step":{
+    "numerator":1,
+    "denominator":16384
+  },
+  "maximum_steps":416,
+  "segment_steps":[
+    384,
+    16,
+    16
+  ],
+  "field_evaluations":1664,
+  "precision":"binary64; Fraction records and dyadic128 outward bounds",
+  "backend":"Python math.sin/math.fsum; exact represented source coefficients",
+  "maximum_reserved_evaluations":1,
+  "maximum_events":1,
+  "execution_wall_budget_seconds":600,
+  "wall_budget_scope":"cooperative execution checks; source re-admission excluded",
+  "event":"canonical atomic OZ on child only; deterministic, propagation enabled",
+  "propagation_mode":"phase_weighted",
+  "context_word":[
+    "OZ",
+    "THOL",
+    "SHA"
+  ],
+  "executed_prefix":[
+    "OZ"
+  ],
+  "pressure_refresh":"immediate full selected sine map, guarded against non-pressure changes",
+  "history":"shared all-node flow-boundary recorder after each sampled refresh; first child sample after OZ commits",
+  "full_state_error_allowance":{
+    "numerator":1,
+    "denominator":16777216
+  },
+  "child_sample_error_allowance":{
+    "numerator":1,
+    "denominator":16777216
+  },
+  "exact_flow_pressure_error_allowance":{
+    "numerator":1,
+    "denominator":16777216
+  },
+  "represented_point_pressure_error_allowance":{
+    "numerator":1,
+    "denominator":70368744177664
+  },
+  "timestamp_error":0,
+  "reader":"observe_structural_acceleration on own epi_time_history",
+  "reader_roundoff_allowance":0,
+  "minimum_form":{
+    "numerator":3602879701896397,
+    "denominator":18014398509481984
+  },
+  "threshold":{
+    "numerator":3602879701896397,
+    "denominator":36028797018963968
+  },
+  "certificate":"original cell12.initial and endpoint; same series at half duration, uniform order13 remainder scaled by 2^-13",
+  "certificate_provenance":"original retained producer jets, not regenerated; midpoint evaluated only after this freeze",
+  "criterion":"all42 coordinate and all21 pressure bounds pass; original branches retained; actual reader and grammar admit; word remains incomplete",
+  "failure_policy":"stop and preserve raw records; no retry, retuning, extrapolation or second birth",
+  "random_seed":17,
+  "oz_noise":false,
+  "source_result":{
+    "path":"docs/assets/maintained_child_joint_window/result.json",
+    "bytes":64683,
+    "sha256":"bd9344eb1370f284f15f6d7c43be2f27de97d4ac77398789fe2390ab33c0d01a"
+  },
+  "source_state":"actual retained SHA endpoint reconstructed from its immutable source chain",
+  "runtime":{
+    "python":"3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+    "platform":"Windows-11-10.0.26300-SP0",
+    "networkx":"3.6.1",
+    "byteorder":"little"
+  }
+}

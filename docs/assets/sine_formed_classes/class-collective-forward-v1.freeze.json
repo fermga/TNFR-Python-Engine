@@ -1,0 +1,21 @@
+{
+  "schema":"tnfr.sine-class-collective-forward-freeze.v1",
+  "created_utc":"2026-10-09T14:28:06.596457+00:00",
+  "evaluation_status_at_freeze":"not_evaluated",
+  "source_base_commit":"362124d03f34940e23b5d84ca29c6c839d6471a1",
+  "runtime_overlays":[],
+  "future_evaluator":"build/class-collective-forward-freeze/evaluate_forward.py",
+  "artifacts":[
+    {
+      "path":"docs/assets/sine_formed_classes/class-collective-forward-v1.protocol.json",
+      "bytes":122816,
+      "sha256":"e47ac667ecedf44d0863dd21a44da7deacc507a742a026cd0fe7d9bfd066f147"
+    },
+    {
+      "path":"docs/assets/sine_formed_classes/class-collective-forward-v1.source.zip",
+      "bytes":100793,
+      "sha256":"a99b8f05153ebebe4964c7512183d606fb3d1e5317f133e20af57c28833204a3"
+    }
+  ],
+  "claim":"prospective byte and complete Git-base association, not authenticated chronology, execution or scientific validation"
+}

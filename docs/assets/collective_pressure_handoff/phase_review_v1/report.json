@@ -1,0 +1,16 @@
+{
+  "schema":"tnfr.collective-pressure-phase-review-report.v1",
+  "completed_utc":"2026-10-14T18:12:08.944547+00:00",
+  "freeze_sha256":"c7202210b7b73f0e2d2e4e76adacbce4207104c869d0d1372773389078ca97e7",
+  "response":{
+    "path":"response.json",
+    "bytes":11712,
+    "sha256":"7b2ea42e1d78e3fb366f8f720fa79d616570aac9c60e52660c06c13f97ee145c"
+  },
+  "phase_accuracy_certified":true,
+  "independent_later_checks_passed":true,
+  "later_original_boxes_consistent":true,
+  "point_cross_checks_consistent":true,
+  "original_report_pass_count":"8/9 (unchanged)",
+  "scope":"Separate retrospective numerical correction from retained primitives; no new physical evidence, event, trajectory or original-verdict rewrite"
+}

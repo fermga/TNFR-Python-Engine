@@ -1,0 +1,54 @@
+{
+  "schema":"tnfr.maintained-parent-sha-protocol.v1",
+  "evaluation_status_at_freeze":"not_evaluated",
+  "question":"Does one canonical default parent SHA close the retained VAL,THOL,UM prefix and admit its capacity-changed complete law?",
+  "source":"actual committed corrected UM response, with original25/27 and separate27/27 review, rebuilt from primitive THOL and UM evidence",
+  "selection":"SHA is one U1b closure control, selected to isolate capacity effects; OZ, NAV and REMESH are distinct closure mechanisms with independent live admission.",
+  "target_order":[
+    2
+  ],
+  "seed":17,
+  "word_context":[
+    "VAL",
+    "THOL",
+    "UM",
+    "SHA"
+  ],
+  "step_index":3,
+  "operation":"one shared atomic Silence stage; actual resolved defaults; strict live gates and grammar rejection by raising",
+  "factor":{
+    "numerator":518151819521135,
+    "denominator":562949953421312
+  },
+  "structural_time":{
+    "numerator":3670017,
+    "denominator":524288
+  },
+  "event_metadata_timestamp":"2030-01-02T03:04:08+00:00",
+  "clock":"zero-duration hybrid event; unchanged structural time; latency timestamp is wall-clock metadata",
+  "maximum_events":1,
+  "maximum_attempts":1,
+  "maximum_trajectories":0,
+  "numerics":"binary64 canonical event with exact represented scalar product and independently rebuilt rational interval complete rows",
+  "capacity_error_allowance":{
+    "numerator":1,
+    "denominator":1099511627776
+  },
+  "pressure_refresh_error_allowance":{
+    "numerator":1,
+    "denominator":70368744177664
+  },
+  "law":"x_dot=M*S(theta); theta_dot=M*L_W*x; M=diag(nu/(pi*d)); held positive post-SHA capacities, support and conductances; no Gamma or loss",
+  "pressure":"stored raw pressure unchanged by SHA; separate shared bare-neighbor sine refresh with pressure-only boundary",
+  "acceptance":[
+    "freshly re-admitted UM source and exactly one canonical parent SHA stage",
+    "all21 nodes,53 edge payloads,forms,phase lifts,node/neighbor order unchanged",
+    "only parent capacity changes to the represented default product, with absolute exact-ideal error <=2^-40",
+    "raw pressure preserved; shared refresh pressure-only with independent error <=2^-46",
+    "full before/after laws rebuilt, exact zero event storage jump from unchanged primitive arguments",
+    "actual parent history VAL,THOL,UM,SHA, zero debt and exact latency metadata; preserved hierarchy/temporal samples and no child baseline",
+    "unchanged structural clock and declared lifecycle, alias-maxima and final stage metadata"
+  ],
+  "scope":"One supplied SHA closure. No automatic post-SHA motion certificate, frozen dynamics from latency, universal preferred closure, autonomous occurrence, reservoir or physical identification.",
+  "stop":"retain one positive, negative or unavailable response; no retries, changed factors, weakened budget, IL intervention or regenerated motion"
+}

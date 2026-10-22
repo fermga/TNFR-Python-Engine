@@ -1,0 +1,11 @@
+{
+  "schema":"tnfr.localized-mobile-response-attempt.v1",
+  "created_utc":"2026-10-13T09:50:28.082090+00:00",
+  "freeze":{
+    "path":"freeze.json",
+    "bytes":162283,
+    "sha256":"144650c4e7033513f35bcf799f21267862675b8423c2a22b8df0d215ed95ebe9"
+  },
+  "evaluation_count":1,
+  "evaluation_status_at_start":"not_evaluated"
+}

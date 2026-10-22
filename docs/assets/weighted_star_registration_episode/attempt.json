@@ -1,0 +1,22 @@
+{
+  "schema":"tnfr.weighted-star-episode-attempt.v1",
+  "created_utc":"2026-10-15T21:57:29.021535+00:00",
+  "attempt_number":1,
+  "evaluation_status_at_start":"not_evaluated",
+  "freeze":{
+    "path":"freeze.json",
+    "bytes":1295,
+    "sha256":"3bcab212e916421c87d4025b20a5c3dfd81e42dc71552ba28c2c567bc426cb25"
+  },
+  "runtime":{
+    "python":"3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+    "executable":"C:\\TNFR-Python-Engine\\.venv313\\Scripts\\python.exe",
+    "platform":"Windows-11-10.0.26300-SP0",
+    "byteorder":"little",
+    "versions":{
+      "numpy":"2.5.3",
+      "networkx":"3.6.1",
+      "mpmath":"1.3.0"
+    }
+  }
+}

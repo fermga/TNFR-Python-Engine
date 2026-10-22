@@ -1,0 +1,66 @@
+{
+  "schema":"tnfr.weighted-star-registration-episode.v1",
+  "source":"central_canonical_AL_UM_SHA_successor",
+  "horizon":{
+    "numerator":8,
+    "denominator":1
+  },
+  "integration_step":{
+    "numerator":1,
+    "denominator":1024
+  },
+  "certificate_step":{
+    "numerator":1,
+    "denominator":16
+  },
+  "certificate_order":12,
+  "certificate_bins":16,
+  "minimum_residence":{
+    "numerator":1,
+    "denominator":16
+  },
+  "registration_threshold":{
+    "numerator":1,
+    "denominator":4
+  },
+  "form_scale":{
+    "numerator":1,
+    "denominator":1
+  },
+  "phase_scale_radians":{
+    "numerator":1,
+    "denominator":1
+  },
+  "maximum_metric_radius":{
+    "numerator":1,
+    "denominator":4096
+  },
+  "maximum_rk4_metric_error":{
+    "numerator":1,
+    "denominator":4096
+  },
+  "wall_budget_seconds":900,
+  "branches":[
+    {
+      "name":"nonlinear",
+      "gamma":{
+        "numerator":1,
+        "denominator":1
+      }
+    },
+    {
+      "name":"tangent",
+      "gamma":{
+        "numerator":0,
+        "denominator":1
+      }
+    }
+  ],
+  "clock":"original_structural_time; elapsed zero at graph time seven",
+  "numerical_method":"shared_classical_RK4_binary64_refreshed_both_rows",
+  "certificate_method":"shared_metric_Taylor_dyadic128_whole_bins",
+  "stopping":"fixed_horizon_or_first_branch_failure_or_global_wall_budget",
+  "selection":"first_certified_run; unresolved_bins_do_not_establish_absence",
+  "preparation_uncertainty":"exact_represented_nominal_only",
+  "inputs":"none; held_support_conductance_capacity; no_events_or_Gamma"
+}

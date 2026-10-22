@@ -1,0 +1,29 @@
+{
+  "schema": "tnfr.sine-class-mediation-evidence.v1",
+  "artifacts": [
+    {
+      "file": "class-mediation-v1.protocol.json",
+      "bytes": 5645,
+      "sha256": "c6733897b18891158248e0536ad9bf7d98e71011296657efdd931e5f657222b9"
+    },
+    {
+      "file": "class-mediation-v1.source.zip",
+      "bytes": 24156,
+      "sha256": "98eeb475b07e986b9985888b78b3822904c2b458ee126737635868a2dac5ed1b"
+    },
+    {
+      "file": "class-mediation-v1.json",
+      "bytes": 141178,
+      "sha256": "a4ec1f60bc15e6d4ef45ef5ba9c155b22f5ea755af2af671f0f820817fc93c51"
+    }
+  ],
+  "source_base_commit": "ca4350535c9ef4014e96695136e0edecbe38a573",
+  "runtime_overlays": [
+    "src/tnfr/physics/relational_sine_class_mediation.py",
+    "src/tnfr/sdk/relational_reports.py"
+  ],
+  "source_reconstruction": "Base Git revision plus every changed src overlay; exact pre-assessment proof, protocol and producer. No dependency binaries; hashes associate bytes only.",
+  "evaluation": "one analytic certificate assessment; no trajectory or parameter sweep",
+  "result_owner": "../../../theory/nodal/SINE_CLASS_MEDIATED_RESPONSE.md#sine-class-mediated-result",
+  "frozen_stopping_rule_passed": true
+}

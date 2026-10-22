@@ -1,0 +1,1789 @@
+{
+  "version": 2,
+  "chapters": [
+    {
+      "path": "theory/CONCEPTUAL_CORE.md",
+      "title": "Conceptual core, dependencies and worked examples",
+      "group": "State and laws"
+    },
+    {
+      "path": "theory/FUNDAMENTAL_THEORY.md",
+      "title": "Fundamental theory",
+      "group": "State and laws"
+    },
+    {
+      "path": "theory/NODAL_PARAMETER_FOUNDATIONS.md",
+      "title": "Parameter foundations",
+      "group": "State and laws"
+    },
+    {
+      "path": "theory/nodal/RELATION_FOUNDATIONS.md",
+      "title": "Relation foundations",
+      "group": "State and laws"
+    },
+    {
+      "path": "theory/nodal/PRESSURE_CONSTITUTIVE_SCOPE.md",
+      "title": "Pressure premises",
+      "group": "State and laws"
+    },
+    {
+      "path": "theory/nodal/JOINT_PARAMETER_RESPONSE.md",
+      "title": "Joint parameter response",
+      "group": "State and laws"
+    },
+    {
+      "path": "theory/GLOSSARY.md",
+      "title": "Glossary",
+      "group": "State and laws"
+    },
+    {
+      "path": "theory/EMERGENT_ONTOLOGY.md",
+      "title": "Emergence and ontology",
+      "group": "Organized objects and retained identity"
+    },
+    {
+      "path": "theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md",
+      "title": "Scale, geometry and collective-state index",
+      "group": "Organized objects and retained identity"
+    },
+    {
+      "path": "theory/nodal/RESONANCE_FOUNDATIONS.md",
+      "title": "Resonance foundations",
+      "group": "Organized objects and retained identity"
+    },
+    {
+      "path": "theory/STRUCTURAL_OPERATORS.md",
+      "title": "Structural operators",
+      "group": "Operators, grammar and support events"
+    },
+    {
+      "path": "theory/UNIFIED_GRAMMAR_RULES.md",
+      "title": "Unified grammar",
+      "group": "Operators, grammar and support events"
+    },
+    {
+      "path": "theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md",
+      "title": "Diagnostic and grammar scope",
+      "group": "Operators, grammar and support events"
+    },
+    {
+      "path": "theory/nodal/RELATIONAL_SUPPORT_EVENTS.md",
+      "title": "Relational support events",
+      "group": "Operators, grammar and support events"
+    },
+    {
+      "path": "theory/MINIMAL_STRUCTURAL_DEGREES.md",
+      "title": "Minimal structural degrees",
+      "group": "Diagnostics and geometry"
+    },
+    {
+      "path": "theory/STRUCTURAL_CONSERVATION_THEOREM.md",
+      "title": "Structural conservation diagnostics",
+      "group": "Diagnostics and geometry"
+    },
+    {
+      "path": "theory/STRUCTURAL_STABILITY_AND_DYNAMICS.md",
+      "title": "Stability and dynamics diagnostics",
+      "group": "Diagnostics and geometry"
+    },
+    {
+      "path": "theory/EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md",
+      "title": "Extended fields",
+      "group": "Diagnostics and geometry"
+    },
+    {
+      "path": "theory/nodal/INHERITED_FORM_DYNAMICS.md",
+      "title": "Inherited form dynamics",
+      "group": "Form, phase and coherent patterns"
+    },
+    {
+      "path": "theory/nodal/PHASE_FORM_EXCHANGE.md",
+      "title": "Phase-to-form exchange",
+      "group": "Form, phase and coherent patterns"
+    },
+    {
+      "path": "theory/nodal/PRIMITIVE_PHASE_CLOSURE.md",
+      "title": "Primitive phase closure",
+      "group": "Form, phase and coherent patterns"
+    },
+    {
+      "path": "theory/nodal/DERIVED_FORM_PHASE.md",
+      "title": "Derived form phase",
+      "group": "Form, phase and coherent patterns"
+    },
+    {
+      "path": "theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md",
+      "title": "Relational law and chapter index",
+      "group": "Form, phase and coherent patterns"
+    },
+    {
+      "path": "theory/nodal/RELATIONAL_RESPONSE_IDENTIFICATION.md",
+      "title": "Relational coefficient and capacity identification",
+      "group": "Form, phase and coherent patterns"
+    },
+    {
+      "path": "theory/nodal/SINE_CONSTITUTIVE_INFORMATION.md",
+      "title": "Sine law and constitutive information boundaries",
+      "group": "Form, phase and coherent patterns"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_FREE_PHASE_PROBE.md",
+      "title": "Free relative-phase access between organized children",
+      "group": "Form, phase and coherent patterns"
+    },
+    {
+      "path": "theory/nodal/RECIPROCAL_FORM_RESOURCE_ENVELOPE.md",
+      "title": "Reciprocal form-resource envelope",
+      "group": "Form, phase and coherent patterns"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_SMALL_RESOURCE_INFORMATION.md",
+      "title": "Information from a small phase preparation",
+      "group": "Form, phase and coherent patterns"
+    },
+    {
+      "path": "theory/nodal/RELATIONAL_RECOVERY_AND_INTERACTION.md",
+      "title": "Native local recovery and regional interaction",
+      "group": "Native formation and composition"
+    },
+    {
+      "path": "theory/nodal/RELATIONAL_DOMAIN_AND_CAPTURE.md",
+      "title": "Native phase domains and capture",
+      "group": "Native formation and composition"
+    },
+    {
+      "path": "theory/nodal/RELATIONAL_FORMATION_CONTROLS.md",
+      "title": "Native validated transit and preparation controls",
+      "group": "Native formation and composition"
+    },
+    {
+      "path": "theory/nodal/RELATIONAL_PATTERN_COMPOSITION.md",
+      "title": "Relational pattern composition",
+      "group": "Native formation and composition"
+    },
+    {
+      "path": "theory/nodal/RELATIONAL_EFFECTIVE_CONNECTIONS.md",
+      "title": "Effective mediated connections",
+      "group": "Native formation and composition"
+    },
+    {
+      "path": "theory/nodal/RELATIONAL_NATIVE_FORMATION.md",
+      "title": "Native formation and its obstructions",
+      "group": "Native formation and composition"
+    },
+    {
+      "path": "theory/nodal/SINE_PATTERN_DYNAMICS.md",
+      "title": "Smooth-sine pattern dynamics",
+      "group": "Formed sine classes and collective interfaces"
+    },
+    {
+      "path": "theory/nodal/SINE_FORMED_CLASS_MAINTENANCE.md",
+      "title": "Repeated probes of formed sine classes",
+      "group": "Formed sine classes and collective interfaces"
+    },
+    {
+      "path": "theory/nodal/SINE_FORMED_CLASS_CONTACT.md",
+      "title": "Contact of actually formed sine classes",
+      "group": "Formed sine classes and collective interfaces"
+    },
+    {
+      "path": "theory/nodal/SINE_REDUCED_CLASS_PORTS.md",
+      "title": "Reduced ports of formed sine classes",
+      "group": "Formed sine classes and collective interfaces"
+    },
+    {
+      "path": "theory/nodal/SINE_REDUCED_PORT_COMPOSITION.md",
+      "title": "Network composition of reduced sine ports",
+      "group": "Formed sine classes and collective interfaces"
+    },
+    {
+      "path": "theory/nodal/SINE_CLASS_MEDIATED_RESPONSE.md",
+      "title": "Acquired mediator class and a transmitted form response",
+      "group": "Formed sine classes and collective interfaces"
+    },
+    {
+      "path": "theory/nodal/SINE_CLASS_MEDIATED_MEMORY.md",
+      "title": "Effective memory of an acquired sine-class mediator",
+      "group": "Formed sine classes and collective interfaces"
+    },
+    {
+      "path": "theory/nodal/SINE_CLASS_NONLINEAR_SUPERPOSITION.md",
+      "title": "Two-probe superposition on an acquired sine composite",
+      "group": "Formed sine classes and collective interfaces"
+    },
+    {
+      "path": "theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md",
+      "title": "Finite separation of a nonlinear class-mediated response",
+      "group": "Formed sine classes and collective interfaces"
+    },
+    {
+      "path": "theory/nodal/SINE_CLASS_NONLINEAR_ORGANIZATION.md",
+      "title": "Organization dependence of nonlinear interaction",
+      "group": "Formed sine classes and collective interfaces"
+    },
+    {
+      "path": "theory/nodal/SINE_CLASS_CUBIC_RESPONSE.md",
+      "title": "Complete cubic-amplitude mediator response",
+      "group": "Formed sine classes and collective interfaces"
+    },
+    {
+      "path": "theory/nodal/SINE_CLASS_SPATIAL_OBSERVATION.md",
+      "title": "Spatial observation of nonlinear class interaction",
+      "group": "Formed sine classes and collective interfaces"
+    },
+    {
+      "path": "theory/nodal/SINE_CLASS_AMPLITUDE_FEASIBILITY.md",
+      "title": "Feasible amplitudes for class discrimination",
+      "group": "Formed sine classes and collective interfaces"
+    },
+    {
+      "path": "theory/nodal/SINE_CLASS_COMPARISON_PROTOCOL.md",
+      "title": "Independent full-law class comparison protocol",
+      "group": "Formed sine classes and collective interfaces"
+    },
+    {
+      "path": "theory/nodal/SINE_CLASS_REPEATED_INTERACTION.md",
+      "title": "Repeated joined class interaction",
+      "group": "Formed sine classes and collective interfaces"
+    },
+    {
+      "path": "theory/nodal/SINE_CLASS_COLLECTIVE_INTERFACE.md",
+      "title": "Nonlinear collective interface",
+      "group": "Formed sine classes and collective interfaces"
+    },
+    {
+      "path": "theory/nodal/SINE_CLASS_CHANGED_INPUT_PREDICTION.md",
+      "title": "Changed-input collective prediction",
+      "group": "Formed sine classes and collective interfaces"
+    },
+    {
+      "path": "theory/nodal/SINE_CLASS_COLLECTIVE_FORWARD_PROTOCOL.md",
+      "title": "Independent changed-input full-law protocol",
+      "group": "Formed sine classes and collective interfaces"
+    },
+    {
+      "path": "theory/nodal/SINE_CLASS_INTERFACE_COMPOSITION.md",
+      "title": "Causal composition of acquired sine-class interfaces",
+      "group": "Formed sine classes and collective interfaces"
+    },
+    {
+      "path": "theory/nodal/SINE_CLASS_NEIGHBOR_NONADDITIVITY.md",
+      "title": "Causal nonadditivity of distinct neighbor interventions",
+      "group": "Formed sine classes and collective interfaces"
+    },
+    {
+      "path": "theory/nodal/SINE_CLASS_NEIGHBOR_FORWARD_PROTOCOL.md",
+      "title": "Independent distinct-neighbor protocol",
+      "group": "Formed sine classes and collective interfaces"
+    },
+    {
+      "path": "theory/nodal/SINE_CLASS_STORAGE_EXCESS.md",
+      "title": "Nonlinear excess storage and loss",
+      "group": "Formed sine classes and collective interfaces"
+    },
+    {
+      "path": "theory/nodal/SINE_PORT_RELAXATION.md",
+      "title": "Uniform tracking of reduced sine ports",
+      "group": "Formed sine classes and collective interfaces"
+    },
+    {
+      "path": "theory/nodal/SINE_PORT_FORM_TRACKING.md",
+      "title": "Form tracking by ordered heat comparison",
+      "group": "Formed sine classes and collective interfaces"
+    },
+    {
+      "path": "theory/nodal/SINE_FORM_PHASE_REDUCTION.md",
+      "title": "Exact and controlled form-phase reductions",
+      "group": "Conservative organization, pulses and memory"
+    },
+    {
+      "path": "theory/nodal/SINE_REGIONAL_FORMATION.md",
+      "title": "Conservative regional formation and its barriers",
+      "group": "Conservative organization, pulses and memory"
+    },
+    {
+      "path": "theory/nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md",
+      "title": "Collective phase families and live contact feedback",
+      "group": "Conservative organization, pulses and memory"
+    },
+    {
+      "path": "theory/nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md",
+      "title": "Canonical contact between maintained weighted stars",
+      "group": "Conservative organization, pulses and memory"
+    },
+    {
+      "path": "theory/nodal/SINE_WEIGHTED_STAR_FINITE_IDENTITY.md",
+      "title": "Finite registration and collective identity after contact",
+      "group": "Conservative organization, pulses and memory"
+    },
+    {
+      "path": "theory/nodal/SINE_CONSERVATIVE_PREPARATION.md",
+      "title": "Conservative source preparation and finite retention",
+      "group": "Conservative organization, pulses and memory"
+    },
+    {
+      "path": "theory/nodal/RELATIONAL_PATTERN_MEMORY.md",
+      "title": "Native reduction and memory index",
+      "group": "Conservative organization, pulses and memory"
+    },
+    {
+      "path": "theory/nodal/RELATIONAL_MEDIATOR_DYNAMICS.md",
+      "title": "Native mediated pattern dynamics",
+      "group": "Conservative organization, pulses and memory"
+    },
+    {
+      "path": "theory/nodal/SINE_ENVIRONMENTAL_MEMORY.md",
+      "title": "Sine environmental state and causal memory",
+      "group": "Conservative organization, pulses and memory"
+    },
+    {
+      "path": "theory/nodal/RELATIONAL_RETURN_PATH_GEOMETRY.md",
+      "title": "Return-path geometry and collective response",
+      "group": "Conservative organization, pulses and memory"
+    },
+    {
+      "path": "theory/nodal/RELATIONAL_PHASE_MEMORY.md",
+      "title": "Retained phase records and finite contact readout",
+      "group": "Conservative organization, pulses and memory"
+    },
+    {
+      "path": "theory/nodal/SINE_PATTERN_RECOVERY.md",
+      "title": "Sine relative state, recovery and conservative identity",
+      "group": "Conservative organization, pulses and memory"
+    },
+    {
+      "path": "theory/TNFR_DIFFUSION_STABILITY_THEOREM.md",
+      "title": "EPI diffusion stability",
+      "group": "Transport, memory and clocks"
+    },
+    {
+      "path": "theory/TNFR_DIRECTED_NONNORMAL_DYNAMICS.md",
+      "title": "Directed nonnormal dynamics",
+      "group": "Transport, memory and clocks"
+    },
+    {
+      "path": "theory/DERIVED_EPI_MEMORY.md",
+      "title": "Derived EPI memory",
+      "group": "Transport, memory and clocks"
+    },
+    {
+      "path": "theory/CAPACITY_LOCALIZATION_BALANCE.md",
+      "title": "Capacity and localization",
+      "group": "Transport, memory and clocks"
+    },
+    {
+      "path": "theory/CYCLE_SUPPORT_DYNAMICS.md",
+      "title": "Cycle support dynamics",
+      "group": "Transport, memory and clocks"
+    },
+    {
+      "path": "theory/CYCLE_MEMORY_RELAXATION.md",
+      "title": "Cycle memory relaxation",
+      "group": "Transport, memory and clocks"
+    },
+    {
+      "path": "theory/FORCED_SUPPORT_BALANCE.md",
+      "title": "Forced support balance",
+      "group": "Transport, memory and clocks"
+    },
+    {
+      "path": "theory/nodal/FORCED_REGIONAL_RESPONSE.md",
+      "title": "Forced regional response and environmental readouts",
+      "group": "Transport, memory and clocks"
+    },
+    {
+      "path": "theory/nodal/FORCED_SOURCE_AND_CLOCK.md",
+      "title": "Forced-source closure and phase clocks",
+      "group": "Transport, memory and clocks"
+    },
+    {
+      "path": "theory/nodal/FORCED_PHASE_LOCKING.md",
+      "title": "Conditional phase locking and circulation geometry",
+      "group": "Transport, memory and clocks"
+    },
+    {
+      "path": "theory/nodal/FORCED_WINDING_AND_WRITERS.md",
+      "title": "Winding generation and native writer boundaries",
+      "group": "Transport, memory and clocks"
+    },
+    {
+      "path": "theory/nodal/FORCED_GEOMETRIC_IDENTITY.md",
+      "title": "Geometric identity and capacity-feedback bounds",
+      "group": "Transport, memory and clocks"
+    },
+    {
+      "path": "theory/REMESH_INFINITY_DERIVATION.md",
+      "title": "REMESH fixed-delay models",
+      "group": "Transport, memory and clocks"
+    },
+    {
+      "path": "theory/nodal/SINE_PAIR_STATE.md",
+      "title": "Sufficient unordered pair state",
+      "group": "Transport, memory and clocks"
+    },
+    {
+      "path": "theory/nodal/SINE_REPLICA_PULSE.md",
+      "title": "Internal replica pulses and their perturbations",
+      "group": "Transport, memory and clocks"
+    },
+    {
+      "path": "theory/nodal/SINE_PAIR_GROUPING.md",
+      "title": "Phase and joint form-phase grouping",
+      "group": "Transport, memory and clocks"
+    },
+    {
+      "path": "theory/nodal/SINE_PAIR_MOBILITY.md",
+      "title": "Pair geometry under alternative reciprocal mobility",
+      "group": "Transport, memory and clocks"
+    },
+    {
+      "path": "theory/nodal/SINE_PAIR_INTERACTION.md",
+      "title": "Pair actions, regional exchange and cancellation",
+      "group": "Transport, memory and clocks"
+    },
+    {
+      "path": "theory/nodal/SINE_PAIR_WORD.md",
+      "title": "One admitted collective word",
+      "group": "Transport, memory and clocks"
+    },
+    {
+      "path": "theory/nodal/SINE_PAIR_RESONANCE.md",
+      "title": "Collective Resonance and internal geometry",
+      "group": "Transport, memory and clocks"
+    },
+    {
+      "path": "theory/nodal/SINE_PAIR_COUPLING.md",
+      "title": "Collective Coupling and support-law admission",
+      "group": "Transport, memory and clocks"
+    },
+    {
+      "path": "theory/nodal/SINE_ORGANIZATION_CONTACT.md",
+      "title": "Actual contact between maintained organizations",
+      "group": "Transport, memory and clocks"
+    },
+    {
+      "path": "theory/nodal/SINE_CONTACT_STATIONARY_GEOMETRY.md",
+      "title": "Stationary and energy geometry of the actual contact",
+      "group": "Transport, memory and clocks"
+    },
+    {
+      "path": "theory/nodal/SINE_PROXIMITY_CONTACT.md",
+      "title": "Phase-nearest UM contact, maintenance and finite exchange",
+      "group": "Transport, memory and clocks"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md",
+      "title": "Constitutive freedom of organized patterns",
+      "group": "Organized sources and parent dynamics"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md",
+      "title": "Constitutive inheritance through organized interfaces",
+      "group": "Organized sources and parent dynamics"
+    },
+    {
+      "path": "theory/nodal/REPEATED_ORGANIZED_COMPOSITION.md",
+      "title": "Predictive repeated organized composition",
+      "group": "Organized sources and parent dynamics"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_PARENT_ACQUISITION.md",
+      "title": "Parent registration acquired from organized children",
+      "group": "Organized sources and parent dynamics"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_PARENT_RESTORING_RESPONSE.md",
+      "title": "Restoring response of an acquired organized parent",
+      "group": "Organized sources and parent dynamics"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_PARENT_CONTINUOUS_ACTUATION.md",
+      "title": "Continuous form actuation of the acquired-parent phase event",
+      "group": "Organized sources and parent dynamics"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_PARENT_CONSTRUCTIVE_ACTUATION.md",
+      "title": "Constructive continuous realization of the acquired-parent phase event",
+      "group": "Organized sources and parent dynamics"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_PARENT_COLLECTIVE_ACTUATION.md",
+      "title": "Collective actuation with unresolved fine state",
+      "group": "Organized sources and parent dynamics"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_PARENT_RESERVOIR_EXCHANGE.md",
+      "title": "Autonomous exchange with a finite auxiliary reservoir",
+      "group": "Organized sources and parent dynamics"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_PARENT_RESERVOIR_MEMORY.md",
+      "title": "Retained reservoir information and local organized equilibria",
+      "group": "Organized sources and parent dynamics"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_SOURCE_PORT.md",
+      "title": "Complete port inherited from an organized C9 source",
+      "group": "Organized sources and parent dynamics"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_SOURCE_GUARD_SENSITIVITY.md",
+      "title": "State-guard sensitivity of the organized word",
+      "group": "Organized sources and parent dynamics"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_SOURCE_CHILD_QUOTIENT.md",
+      "title": "Sufficient hybrid state on the organized child-swap sector",
+      "group": "Organized sources and parent dynamics"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_SOURCE_CHILD_ORBIT.md",
+      "title": "Exact organized-source state modulo a global child exchange",
+      "group": "Organized sources and parent dynamics"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_SOURCE_CAPTURE.md",
+      "title": "Full-state capture and collective registration of the organized source",
+      "group": "Organized sources and parent dynamics"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_OUTER_WINDING.md",
+      "title": "Acquisition of an outer winding by five acquired C9 organizations",
+      "group": "Collective winding and contact response"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_ALTERNATIVE_OUTER_ACQUISITION.md",
+      "title": "Alternative-law outer acquisition",
+      "group": "Collective winding and contact response"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_ALTERNATIVE_CONTACT.md",
+      "title": "Alternative-law finite interaction",
+      "group": "Collective winding and contact response"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_CONTACT_DYNAMIC_CANCELLATION.md",
+      "title": "Dynamical cancellation on ideal organized contact",
+      "group": "Collective winding and contact response"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_CONTACT_PREPARATION_SENSITIVITY.md",
+      "title": "Fine preparation and hidden contact response",
+      "group": "Collective winding and contact response"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_OUTER_RESPONSE.md",
+      "title": "Finite probe response of the acquired outer organization",
+      "group": "Collective winding and contact response"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_OUTER_OBSERVATION.md",
+      "title": "Observing outer winding with unknown child phase origins",
+      "group": "Collective winding and contact response"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_SEQUENTIAL_OBSERVATION.md",
+      "title": "Observing outer winding on one continuing organization",
+      "group": "Collective winding and contact response"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_EXTERNAL_INTERACTION.md",
+      "title": "External interaction of an acquired collective organization",
+      "group": "Collective winding and contact response"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_EXTERNAL_REGISTRATION.md",
+      "title": "Finite interaction across relative phase origins",
+      "group": "Collective winding and contact response"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_JOINT_RESOURCES.md",
+      "title": "Joint preparation resources for finite interaction",
+      "group": "Collective winding and contact response"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_INTERFACE_FACTORIZATION.md",
+      "title": "Finite coupling across normalized interfaces",
+      "group": "Organized observation and predictive information"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_CHARGE_OBSERVATION.md",
+      "title": "Conserved charge observations",
+      "group": "Organized observation and predictive information"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_ELECTRICAL_REALIZATION.md",
+      "title": "Complete-state electrical realization",
+      "group": "Organized observation and predictive information"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_ELECTRICAL_SOURCE.md",
+      "title": "Actual-source electrical comparison",
+      "group": "Organized observation and predictive information"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_ELECTRICAL_IDENTIFICATION.md",
+      "title": "Operational electrical identification",
+      "group": "Organized observation and predictive information"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_ELECTRICAL_ACTUATION.md",
+      "title": "Finite input on the actual five-child organization",
+      "group": "Organized observation and predictive information"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_FINITE_OBSERVATION.md",
+      "title": "Observing collective winding with finite form inputs",
+      "group": "Organized observation and predictive information"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_ELECTRICAL_PROTOCOL.md",
+      "title": "Five-child electrical observation protocol",
+      "group": "Organized observation and predictive information"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_CONSTITUENT_MEMORY.md",
+      "title": "Collective response inherited from constituents",
+      "group": "Organized observation and predictive information"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_COMPRESSED_MEMORY.md",
+      "title": "Finite collective prediction with frozen variances",
+      "group": "Organized observation and predictive information"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_MEMORY_INITIALIZATION.md",
+      "title": "Preparation-aware collective initialization",
+      "group": "Organized observation and predictive information"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_COMPUTABLE_PREDICTION.md",
+      "title": "Computable post-observation prediction",
+      "group": "Organized observation and predictive information"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_OBSERVED_PREDICTION.md",
+      "title": "Predictive sufficiency of joint observations",
+      "group": "Organized observation and predictive information"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_OBSERVED_FORECAST.md",
+      "title": "Admission of an observation-based forecast",
+      "group": "Organized observation and predictive information"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_LAW_OBSERVATION.md",
+      "title": "Constitutive law and unknown initialization",
+      "group": "Organized observation and predictive information"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_ROBUST_CURRENT.md",
+      "title": "Current discrimination under uncertainty",
+      "group": "Organized observation and predictive information"
+    },
+    {
+      "path": "theory/research/ORGANIZED_ELECTRICAL_FEASIBILITY.md",
+      "title": "Physical feasibility of organized current observation",
+      "group": "Organized observation and predictive information"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_EFFECTIVE_LAW.md",
+      "title": "Collective state and matrix response",
+      "group": "Organized observation and predictive information"
+    },
+    {
+      "path": "theory/research/ORGANIZED_FINITE_WINDOW_DESIGN.md",
+      "title": "Loaded finite-window collective observation",
+      "group": "Organized observation and predictive information"
+    },
+    {
+      "path": "theory/research/ORGANIZED_RECOVERY_OBSERVATION.md",
+      "title": "Integrated sensor response during recovery",
+      "group": "Organized observation and predictive information"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_CONTACT_MAINTENANCE.md",
+      "title": "Organized identity under continued external contact",
+      "group": "Collective maintenance and assembly"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md",
+      "title": "Organized identity under weak external contact",
+      "group": "Collective maintenance and assembly"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_ALTERNATIVE_WEAK_CONTACT.md",
+      "title": "Alternative-law weak-contact registration and capture",
+      "group": "Collective maintenance and assembly"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_CONSTITUTIVE_TRANSITION.md",
+      "title": "Constitutive transition of collective registration",
+      "group": "Collective maintenance and assembly"
+    },
+    {
+      "path": "theory/nodal/CRITICAL_PARENT_INTERACTION.md",
+      "title": "A marked interaction of a critical parent",
+      "group": "Collective maintenance and assembly"
+    },
+    {
+      "path": "theory/nodal/COLLECTIVE_BOUNDARY_CONSTRAINTS.md",
+      "title": "Collective boundary constraints and the scope of restoration",
+      "group": "Collective maintenance and assembly"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_CONTACT_REFLECTION_OBSTRUCTION.md",
+      "title": "Reflection obstruction for full-fine contact identity",
+      "group": "Collective maintenance and assembly"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_CONTACT_STATIONARY_SEARCH.md",
+      "title": "Full-fine stationary contact and marked chambers",
+      "group": "Collective maintenance and assembly"
+    },
+    {
+      "path": "theory/nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md",
+      "title": "Composition-compatible constitutive laws",
+      "group": "Collective maintenance and assembly"
+    },
+    {
+      "path": "theory/nodal/ORIENTED_INTERFACE_PROFILE_INHERITANCE.md",
+      "title": "Oriented-interface profile inheritance",
+      "group": "Collective maintenance and assembly"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_NETWORK_COMPATIBILITY.md",
+      "title": "Network-wide organized compatibility",
+      "group": "Collective maintenance and assembly"
+    },
+    {
+      "path": "theory/nodal/ACQUIRED_ORGANIZED_NETWORK_CAPTURE.md",
+      "title": "Capture of the acquired three-object assembly",
+      "group": "Collective maintenance and assembly"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_ASSEMBLY_WORK.md",
+      "title": "Identity-preserving assembly work",
+      "group": "Collective maintenance and assembly"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_JOINT_ACQUISITION.md",
+      "title": "Joint acquisition on preexisting fine support",
+      "group": "Collective maintenance and assembly"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_RECEIVER_MECHANISM.md",
+      "title": "Locally unprepared receiver mechanism",
+      "group": "Collective maintenance and assembly"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_RECEIVER_SLOW_ADMISSION.md",
+      "title": "Controlled slow receiver admission",
+      "group": "Collective maintenance and assembly"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_RECEIVER_ENCLOSURE.md",
+      "title": "Source-preserving receiver enclosure",
+      "group": "Collective maintenance and assembly"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_REGIONAL_RETENTION.md",
+      "title": "Regional work and winding retention",
+      "group": "Collective maintenance and assembly"
+    },
+    {
+      "path": "theory/nodal/CONSTITUTIVE_IDENTITY_BARRIERS.md",
+      "title": "Constitutive identity barriers and work",
+      "group": "Constitutive barriers and source preparation"
+    },
+    {
+      "path": "theory/nodal/CONSTITUTIVE_RECEIVER_COMPARISON.md",
+      "title": "Constitutive receiver source and comparison",
+      "group": "Constitutive barriers and source preparation"
+    },
+    {
+      "path": "theory/nodal/SINE_PREPARATION_MODE_SELECTION.md",
+      "title": "Preparation information and acquired modes",
+      "group": "Constitutive barriers and source preparation"
+    },
+    {
+      "path": "theory/nodal/SINE_PREPARATION_PATH_SELECTION.md",
+      "title": "Preparation paths, capture and forced phase passage",
+      "group": "Constitutive barriers and source preparation"
+    },
+    {
+      "path": "theory/nodal/SINE_PREPARATION_PATH_LIMITS.md",
+      "title": "Terminal restrictions on the same preparation path",
+      "group": "Constitutive barriers and source preparation"
+    },
+    {
+      "path": "theory/nodal/SINE_PREPARATION_PATH_CAPTURE.md",
+      "title": "Source-specific capture through the actual phase passage",
+      "group": "Constitutive barriers and source preparation"
+    },
+    {
+      "path": "theory/nodal/SINE_PREPARATION_PATH_ROBUSTNESS.md",
+      "title": "Constitutive robustness of source-path capture",
+      "group": "Constitutive barriers and source preparation"
+    },
+    {
+      "path": "theory/nodal/SINE_TWO_PORT_COMPATIBILITY.md",
+      "title": "Two-port compatibility of sine classes",
+      "group": "Sine contact, observation and inference"
+    },
+    {
+      "path": "theory/nodal/SINE_TWO_PORT_TRANSIT.md",
+      "title": "Finite transit of two-port sine classes",
+      "group": "Sine contact, observation and inference"
+    },
+    {
+      "path": "theory/nodal/SINE_TWO_PORT_CAPTURE.md",
+      "title": "Prepared capture of two-port sine classes",
+      "group": "Sine contact, observation and inference"
+    },
+    {
+      "path": "theory/nodal/SINE_TWO_PORT_PROBE.md",
+      "title": "Supplied probe of the acquired two-port composite",
+      "group": "Sine contact, observation and inference"
+    },
+    {
+      "path": "theory/nodal/SINE_TWO_PORT_DIPOLE.md",
+      "title": "Interior phase probe of acquired two-port deformation",
+      "group": "Sine contact, observation and inference"
+    },
+    {
+      "path": "theory/nodal/SINE_TWO_PORT_INFERENCE.md",
+      "title": "Two-port geometry from a calibrated local response",
+      "group": "Sine contact, observation and inference"
+    },
+    {
+      "path": "theory/nodal/SINE_TWO_PULSE_INFERENCE.md",
+      "title": "Geometry and gain from two successive phase inputs",
+      "group": "Sine contact, observation and inference"
+    },
+    {
+      "path": "theory/nodal/SINE_CLOCK_INFERENCE.md",
+      "title": "Geometry, sensor gain and a declared uncertain clock",
+      "group": "Sine contact, observation and inference"
+    },
+    {
+      "path": "theory/nodal/SINE_FINITE_CURVATURE_INFERENCE.md",
+      "title": "Finite curvature from one additional reading",
+      "group": "Sine contact, observation and inference"
+    },
+    {
+      "path": "theory/nodal/SINE_CLOCK_DRIFT_INFERENCE.md",
+      "title": "Clock drift, sampled exposure and robust mean-rate inference",
+      "group": "Sine contact, observation and inference"
+    },
+    {
+      "path": "theory/nodal/SINE_APERTURE_INFERENCE.md",
+      "title": "Finite-aperture observations and mean-clock inference",
+      "group": "Sine contact, observation and inference"
+    },
+    {
+      "path": "theory/nodal/SINE_APERTURE_RESOLUTION.md",
+      "title": "Finite-noise and horizon resolution for the four boxcar observations",
+      "group": "Sine contact, observation and inference"
+    },
+    {
+      "path": "theory/nodal/LOCALIZED_IDENTITY_TRANSPORT.md",
+      "title": "Finite transport of a localized identity",
+      "group": "Localized transport and organization"
+    },
+    {
+      "path": "theory/nodal/LOCALIZED_TRANSPORT_SOURCES.md",
+      "title": "Source resources for localized mobile identities",
+      "group": "Localized transport and organization"
+    },
+    {
+      "path": "theory/nodal/LOCALIZED_MOBILE_INTERACTION.md",
+      "title": "Prepared mobile encounter and interaction observation",
+      "group": "Localized transport and organization"
+    },
+    {
+      "path": "theory/nodal/LOCALIZED_MOBILE_RESPONSE.md",
+      "title": "Certified observation of a mobile encounter",
+      "group": "Localized transport and organization"
+    },
+    {
+      "path": "theory/nodal/LOCALIZED_ORGANIZATION_GEOMETRY.md",
+      "title": "Geometry and formation of localized organization",
+      "group": "Localized transport and organization"
+    },
+    {
+      "path": "theory/nodal/LOCALIZED_FORMATION_COMPATIBILITY.md",
+      "title": "Localized formation compatibility",
+      "group": "Localized transport and organization"
+    },
+    {
+      "path": "theory/nodal/LOCALIZED_SINGLE_BAND_WORK.md",
+      "title": "Same-band source and regional work",
+      "group": "Localized transport and organization"
+    },
+    {
+      "path": "theory/nodal/LOCALIZED_RETENTION_MECHANISMS.md",
+      "title": "Localized retention mechanisms",
+      "group": "Localized transport and organization"
+    },
+    {
+      "path": "theory/NATIVE_OPERATOR_DYNAMICS.md",
+      "title": "Native operator dynamics",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/NATIVE_COLLECTIVE_CALCULUS.md",
+      "title": "Native collective calculus",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/NATIVE_AGGREGATE_OPERATORS.md",
+      "title": "Aggregate operators and native transitions",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/nodal/SINE_COLLECTIVE_PRESSURE_HANDOFF.md",
+      "title": "Collective IL/OZ pressure handoff",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/nodal/SINE_PRESSURE_COMPLETION.md",
+      "title": "Pressure-completion compatibility",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/nodal/SINE_FORM_CAPACITY_ACTION.md",
+      "title": "Complete form-capacity actions",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/nodal/SINE_DIRECTIONAL_MAINTENANCE.md",
+      "title": "Directional maintenance",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/nodal/SINE_COLLECTIVE_IDENTITY_TRANSITION.md",
+      "title": "Collective identity through form-capacity action",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/nodal/SINE_COLLECTIVE_RECEPTION.md",
+      "title": "Collective Reception",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/nodal/SINE_COLLECTIVE_TRANSITION.md",
+      "title": "Collective Transition",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/nodal/SINE_COLLECTIVE_MUTATION_ADMISSION.md",
+      "title": "Collective Mutation admission",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/nodal/SINE_COLLECTIVE_MUTATION_ACTION.md",
+      "title": "Collective Mutation action",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/nodal/SINE_COLLECTIVE_HIERARCHY.md",
+      "title": "Collective hierarchy",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/nodal/SINE_HIERARCHY_CONTACT.md",
+      "title": "Hierarchy-to-contact composition",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/nodal/SINE_ORGANIZED_BIRTH_OBSTRUCTION.md",
+      "title": "Maintained-source birth obstruction",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/nodal/SINE_CAPACITY_TEMPORAL_ACCESS.md",
+      "title": "Capacity and temporal access",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/nodal/SINE_LOCAL_CAPACITY_ADMISSION.md",
+      "title": "Local capacity and joint temporal admission",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/nodal/SINE_LOCAL_HISTORY_ACQUISITION.md",
+      "title": "Acquired local-capacity history",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/nodal/SINE_MAINTAINED_PARENT_THOL.md",
+      "title": "THOL birth on a certified maintained parent",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/nodal/SINE_MAINTAINED_PARENT_UM.md",
+      "title": "Default UM on the retained THOL successor",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/nodal/SINE_MAINTAINED_PARENT_CLOSURE.md",
+      "title": "Maintained-parent SHA closure and changed law",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/nodal/SINE_CHILD_TEMPORAL_READINESS.md",
+      "title": "Connected child's temporal capability",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/nodal/SINE_CHILD_GRAMMAR_TIMING.md",
+      "title": "Child OZ and observation timing",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/nodal/SINE_CHILD_THOL_ADMISSION.md",
+      "title": "Acquired-child THOL and word completion",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/nodal/SINE_SUCCESSOR_STATIONARY_GEOMETRY.md",
+      "title": "Stationary geometry of the proposed UM successor",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/nodal/SINE_SUCCESSOR_PRINCIPAL_REDUCTION.md",
+      "title": "Principal-chamber minimum exclusion",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/nodal/SINE_SUCCESSOR_NONSTATIONARY.md",
+      "title": "Successor motion and sufficient state",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/nodal/SINE_COLLECTIVE_RECURSIVITY.md",
+      "title": "Collective Recursivity",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/COUPLING_WINDING_PERSISTENCE.md",
+      "title": "Coupling and winding",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/COHERENT_PATTERN_CONTACT.md",
+      "title": "Coherent pattern contact",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/THOL_PRESSURE_FEEDBACK.md",
+      "title": "THOL pressure feedback",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/THOL_BIRTH_AND_TRANSPORT.md",
+      "title": "THOL birth and transport",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/CHILD_COUPLING_FEEDBACK.md",
+      "title": "Child coupling feedback",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/TNFR_VARIATIONAL_PRINCIPLE.md",
+      "title": "Variational and exchange models",
+      "group": "Auxiliary models and physical comparisons"
+    },
+    {
+      "path": "theory/DISSIPATIVE_AND_OPEN_SYSTEMS.md",
+      "title": "Dissipative/open-system models",
+      "group": "Auxiliary models and physical comparisons"
+    },
+    {
+      "path": "theory/GAUGE_SYMMETRY_AND_UNIFICATION.md",
+      "title": "Gauge and polarization constructions",
+      "group": "Auxiliary models and physical comparisons"
+    },
+    {
+      "path": "theory/PHYSICAL_REGIME_CORRESPONDENCES.md",
+      "title": "Physical phenomena atlas",
+      "group": "Auxiliary models and physical comparisons"
+    },
+    {
+      "path": "theory/TNFR_NUMBER_THEORY.md",
+      "title": "Number theory",
+      "group": "Arithmetic and applications"
+    },
+    {
+      "path": "theory/TNFR_STRUCTURAL_OBSERVABILITY.md",
+      "title": "Structural observability — R1",
+      "group": "Arithmetic and applications"
+    },
+    {
+      "path": "theory/TNFR_ARITHMETIC_DYNAMICS.md",
+      "title": "Arithmetic dynamics — R2",
+      "group": "Arithmetic and applications"
+    },
+    {
+      "path": "theory/TNFR_CRT_FRACTALITY.md",
+      "title": "CRT composition — R3",
+      "group": "Arithmetic and applications"
+    },
+    {
+      "path": "theory/TNFR_PADIC_DYNAMICS.md",
+      "title": "p-adic dynamics — R4",
+      "group": "Arithmetic and applications"
+    },
+    {
+      "path": "theory/TNFR_ALGEBRAIC_NUMBER_FIELDS.md",
+      "title": "Algebraic number fields — R5",
+      "group": "Arithmetic and applications"
+    },
+    {
+      "path": "theory/TNFR_ADDITIVE_DYNAMICS.md",
+      "title": "Additive dynamics — R6",
+      "group": "Arithmetic and applications"
+    },
+    {
+      "path": "theory/TNFR_ARITHMETIC_PRESSURE.md",
+      "title": "Arithmetic pressure — R7",
+      "group": "Arithmetic and applications"
+    },
+    {
+      "path": "theory/TNFR_ARITHMETIC_OPERATORS.md",
+      "title": "Arithmetic operators — R8",
+      "group": "Arithmetic and applications"
+    },
+    {
+      "path": "theory/TNFR_RIEMANN_RESEARCH_NOTES.md",
+      "title": "Riemann scope",
+      "group": "Arithmetic and applications"
+    },
+    {
+      "path": "theory/research/PASSIVE_TRANSPORT_PROTOCOL.md",
+      "title": "Passive transport protocol",
+      "group": "Research, measurement and parked evidence"
+    },
+    {
+      "path": "theory/research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md",
+      "title": "Regional phase/amplitude protocol",
+      "group": "Research, measurement and parked evidence"
+    },
+    {
+      "path": "theory/research/CHEMICAL_OBSERVATION_ADMISSION.md",
+      "title": "Chemical observation and predictive information",
+      "group": "Research, measurement and parked evidence"
+    },
+    {
+      "path": "theory/research/DPLL_PHYSICAL_ADMISSION.md",
+      "title": "Physical admission of the delayed digital-PLL realization",
+      "group": "Research, measurement and parked evidence"
+    },
+    {
+      "path": "theory/research/TCLAB_EXPLORATORY_PROTOCOL.md",
+      "title": "TCLab comparison boundary",
+      "group": "Research, measurement and parked evidence"
+    },
+    {
+      "path": "theory/C6_RESEARCH_MECHANISM_AUDIT.md",
+      "title": "Parked C6 evidence boundary",
+      "group": "Research, measurement and parked evidence"
+    },
+    {
+      "path": "theory/research/RELATIVE_COUPLING_PROBE.md",
+      "title": "Relative-coupling observation admission",
+      "group": "Research, measurement and parked evidence"
+    },
+    {
+      "path": "theory/THEORY_TO_EXECUTION.md",
+      "title": "Theory-to-execution map",
+      "group": "Research navigation"
+    }
+  ],
+  "aliases": [
+    {
+      "path": "theory/NODAL_RESEARCH_STRATEGY.md",
+      "title": "Retired research guide",
+      "anchors": [
+        "1-scientific-objective",
+        "2-information-interaction-and-complete-laws",
+        "3-model-and-formation-premises-that-survive-reuse",
+        "4-compatible-mechanisms-and-their-use",
+        "4-compatible-mechanisms-and-what-their-combination-can-resolve",
+        "5-physical-confrontation-and-comparison",
+        "6-reuse-provenance-and-stopping",
+        "closure-audit-equations-events-and-identity",
+        "collective-inheritance-retains-constituents",
+        "composition-memory-and-effective-relations",
+        "conditional-law-selection-and-independent-information-premises",
+        "constitutive-information-justification",
+        "formation-premise-ledger",
+        "four-foundation-source-audit",
+        "fundamental-research-dependencies",
+        "inherited-response-storage-and-predictive-state",
+        "localized-organization-and-transport",
+        "nodal-research-strategy-information-interaction-and-complete-laws",
+        "nodal-research-strategy-organized-objects-and-their-foundations",
+        "ordered-geometry-connects-transfer-to-formation",
+        "organization-dependent-nonlinear-interaction",
+        "organization-dependent-nonlinearity",
+        "present-interaction-and-sufficient-future-state",
+        "pressure-clock-archive-reuse",
+        "pulse-foundation-synthesis",
+        "pulse-resonance-and-retained-internal-motion",
+        "relational-capture-reuse-audit",
+        "relational-geometry-and-time-as-an-identification-question",
+        "resonant-persistence-and-pulse-audit"
+      ]
+    },
+    {
+      "path": "theory/research/FIVE_STAGE_EXECUTION_PLAN.md",
+      "title": "Retired research guide",
+      "anchors": [
+        "2-one-status-board-and-dependency-chain",
+        "acquired-mediator-effective-memory",
+        "acquired-organized-network-capture",
+        "acquisition-composition-gate",
+        "active-admission-finite-interaction-near-an-invisible-pair-family",
+        "active-admission-gate-validated-finite-aperture-observations",
+        "active-admission-information-interaction-and-justified-complete-laws",
+        "active-analytical-gate-operational-relational-geometry-and-clock-admission",
+        "active-gate-bounded-signed-variational-evaluation",
+        "active-gate-reserved-geometry-and-gain-inference-from-two-inputs",
+        "active-primary-admission-acquired-mediator-effective-memory",
+        "active-primary-admission-class-mediated-collective-response",
+        "active-primary-admission-freeze-the-matched-four-history-evaluation",
+        "active-primary-admission-informative-nonlinear-interaction-protocol",
+        "active-primary-admission-two-probe-nonlinear-superposition",
+        "active-primary-admission-validated-four-history-observation-producer",
+        "active-primary-evaluation-retain-the-first-frozen-outcome",
+        "active-priority-justified-grammar-and-operator-occurrence-in-nfrs",
+        "active-reserved-admission-nonconstant-clock-mean-rate-inference",
+        "active-reserved-gate-finite-aperture-software-inference",
+        "active-reserved-gate-four-reading-clock-and-gain-resolution",
+        "active-theoretical-gate-bounded-clock-drift-and-sampled-exposure",
+        "active-theoretical-gate-finite-aperture-observation",
+        "active-theoretical-gate-finite-curvature-from-one-additional-reading",
+        "active-theoretical-gate-finite-noise-and-horizon-resolution",
+        "active-theoretical-gate-inference-under-a-bounded-observation-clock",
+        "acute-contact-geometry",
+        "alternative-weak-contact-source-admission",
+        "autonomous-relational-response",
+        "boundary-information-applicability",
+        "bridge-memory-admission",
+        "calibrated-constitutive-observation",
+        "canonical-grammar-integration",
+        "canonical-operator-integration-completion",
+        "carried-state-constitutive-discrimination",
+        "causal-interface-composition",
+        "changed-input-collective-interface-transfer",
+        "changed-input-full-law-comparison",
+        "chemical-hidden-memory-admission",
+        "chemical-memory-dependency",
+        "chemical-source-state-admission",
+        "closed-acquisition-child-oz-and-measured-history",
+        "closed-admission-a-causal-nonlinear-collective-interface",
+        "closed-admission-a-constitutive-change-can-imitate-orientation",
+        "closed-admission-a-justified-amplitude-regime-for-discrimination",
+        "closed-admission-a-single-scaled-cross-class-observation-protocol",
+        "closed-admission-actual-sha-and-its-complete-successor-law",
+        "closed-admission-an-executable-changed-input-port-prediction",
+        "closed-admission-an-independent-changed-input-full-law-comparison",
+        "closed-admission-bounded-departures-in-both-evolution-rows",
+        "closed-admission-carried-return-for-repeated-joined-interaction",
+        "closed-admission-causal-composition-through-existing-boundary-currents",
+        "closed-admission-child-grammar-and-eventhistory-timing",
+        "closed-admission-committed-um-endpoint-and-theorem-applicability",
+        "closed-admission-constitutive-information-with-small-preparation-resources",
+        "closed-admission-finite-interaction-near-an-invisible-pair-family",
+        "closed-admission-finite-receiver-readout-with-uncertainty",
+        "closed-admission-finite-transport-of-a-prepared-localized-identity",
+        "closed-admission-gate-canonical-contact-between-maintained-stars",
+        "closed-admission-gate-child-thol-and-its-complete-successor",
+        "closed-admission-gate-validated-finite-aperture-observations",
+        "closed-admission-independent-distinct-neighbor-producer-and-protocol",
+        "closed-admission-interaction-and-geometric-identity-under-one-complete-law",
+        "closed-admission-mixed-response-to-distinct-neighboring-organizations",
+        "closed-admission-nonlinear-excess-storage-and-loss",
+        "closed-admission-preparation-reachability-and-resource-distinction",
+        "closed-admission-prepared-acquisition-and-actual-receiver-response",
+        "closed-admission-reciprocal-form-resources-beyond-matching-contacts",
+        "closed-admission-two-formed-attracting-classes-under-one-complete-law",
+        "closed-admission-two-receiver-times-under-one-law",
+        "closed-admission-two-unknown-constant-constitutive-coefficients",
+        "closed-analytical-admission-a-prepared-mobile-encounter",
+        "closed-analytical-comparison-contact-strength-and-retained-identity",
+        "closed-analytical-continuation-collective-fold-with-retained-identity",
+        "closed-analytical-gate-a-finite-amplitude-identity-boundary",
+        "closed-analytical-gate-actual-local-dynamics-of-the-critical-registration",
+        "closed-analytical-gate-attracting-targets-for-the-actual-source",
+        "closed-analytical-gate-chemical-source-state-and-observation-admission",
+        "closed-analytical-gate-collective-targets-and-unavoidable-saddle-capture",
+        "closed-analytical-gate-complete-collective-state-of-the-actual-contact",
+        "closed-analytical-gate-composition-of-maintained-identities",
+        "closed-analytical-gate-constitutive-dependence-of-collective-registration",
+        "closed-analytical-gate-contact-necessity-and-finite-identity-scope",
+        "closed-analytical-gate-dynamical-reachability-beyond-storage-and-means",
+        "closed-analytical-gate-finite-amplitude-validity-of-the-minimal-response",
+        "closed-analytical-gate-finite-internal-response-after-canonical-contact",
+        "closed-analytical-gate-internal-feedback-and-sufficient-collective-state",
+        "closed-analytical-gate-leading-nonlinear-transfer-and-quartic-correction",
+        "closed-analytical-gate-linear-transverse-stability-on-the-fixed-band",
+        "closed-analytical-gate-minimal-state-of-relative-regional-response",
+        "closed-analytical-gate-observed-pattern-and-physical-admission",
+        "closed-analytical-gate-operational-relational-geometry-and-clock-admission",
+        "closed-analytical-gate-original-sources-under-the-alternative-weak-contact",
+        "closed-analytical-gate-permanent-common-registration",
+        "closed-analytical-gate-preparation-through-the-word-and-into-the-flow",
+        "closed-analytical-gate-principal-minima-and-invariant-shell-confinement",
+        "closed-analytical-gate-relative-coupling-probe-admission",
+        "closed-analytical-gate-robustness-beyond-the-exact-collective-family",
+        "closed-analytical-gate-structural-robustness-along-the-retained-law-family",
+        "closed-analytical-gate-weighted-collective-closure-and-capacity-actions",
+        "closed-analytical-question-minimal-regular-boundary-information",
+        "closed-applicability-decision-an-existing-organized-boundary",
+        "closed-assessment-organization-dependent-nonlinear-response",
+        "closed-assessment-spatial-receiver-contrast-and-joint-recording-limit",
+        "closed-auxiliary-admission-terrestrial-coupled-phase-feasibility",
+        "closed-bounded-admission-a-free-relative-phase-probe",
+        "closed-bounded-admission-a-marked-boundary-of-the-critical-parent",
+        "closed-bounded-admission-finite-records-of-the-free-probe",
+        "closed-bounded-admission-independent-content-for-a-constitutive-restriction",
+        "closed-bounded-implementation-a-certified-primitive-record-reader",
+        "closed-bounded-review-foundations-after-actual-source-capture",
+        "closed-charge-plus-internal-state-comparison",
+        "closed-charge-versus-spatial-response-admission",
+        "closed-complete-flow-convergence-unit-strength-classification-deferred",
+        "closed-component-collective-hierarchy-and-complete-law-admission",
+        "closed-computable-prospective-prediction",
+        "closed-conditional-admission-identity-preserving-interaction",
+        "closed-conditional-admission-independently-observed-collective-kinetics",
+        "closed-conditional-compressed-state-initialization",
+        "closed-conditional-current-amplitude-discrimination",
+        "closed-conditional-five-child-electrical-specification",
+        "closed-conditional-predictive-compression-admission",
+        "closed-constitutive-discrimination-identity-barriers-and-work",
+        "closed-decision-the-independent-input-boundary",
+        "closed-electrical-description-of-the-acquired-organizations",
+        "closed-evaluation-first-changed-input-full-law-response",
+        "closed-evaluation-first-independent-class-comparison",
+        "closed-evaluation-first-independent-distinct-neighbor-response",
+        "closed-execution-gate-one-acquired-child-birth-and-selected-closure",
+        "closed-finite-coupling-factorization-admission",
+        "closed-finite-intervention-on-the-actual-organization",
+        "closed-finite-result-source-preserving-receiver-enclosure",
+        "closed-finite-stationary-search-and-marked-chamber-admission",
+        "closed-fixed-gate-nonstationary-principal-confinement",
+        "closed-gate-a-joint-child-window-in-the-retained-continuation",
+        "closed-gate-accumulated-error-of-an-independently-evolved-child-core",
+        "closed-gate-actual-formed-class-contact-with-joint-identity-retention",
+        "closed-gate-actual-um-contact-between-maintained-organizations",
+        "closed-gate-all-time-form-tracking-with-the-unchanged-surrogate",
+        "closed-gate-all-time-tracking-with-phase-only-resolution",
+        "closed-gate-an-interior-phase-probe-of-acquired-deformation",
+        "closed-gate-canonical-word-and-constitutive-continuation",
+        "closed-gate-capture-of-the-unchanged-prepared-family",
+        "closed-gate-collective-coupling-and-its-support-law-boundary",
+        "closed-gate-compatibility-through-two-distinct-component-ports",
+        "closed-gate-complete-valnul-form-capacity-action",
+        "closed-gate-conservative-confinement-and-energy-barriers-after-contact",
+        "closed-gate-default-parent-target-um-admission",
+        "closed-gate-degree-aware-network-composition-of-reduced-ports",
+        "closed-gate-finite-collective-exchange-in-the-maintained-contact",
+        "closed-gate-finite-retention-after-the-completed-word",
+        "closed-gate-first-finite-common-registration-episode",
+        "closed-gate-formed-classes-common-probe-response-and-recovery",
+        "closed-gate-full-law-deformation-from-an-undeformed-pair",
+        "closed-gate-genuine-local-history-acquisition",
+        "closed-gate-hierarchy-to-contact-composition",
+        "closed-gate-identity-through-an-admitted-form-capacity-transformation",
+        "closed-gate-information-beyond-scalar-energy-for-maintenance",
+        "closed-gate-internal-geometry-under-the-objects-own-continuous-law",
+        "closed-gate-local-canonical-capacity-and-joint-temporal-admission",
+        "closed-gate-maintained-parent-thol-event-admission",
+        "closed-gate-maintained-source-capacity-and-temporal-access",
+        "closed-gate-mutation-evidence-and-complete-law-compatibility",
+        "closed-gate-nonacute-stationary-geometry-in-the-same-marked-class",
+        "closed-gate-one-collective-word-on-a-sufficient-pair-state",
+        "closed-gate-one-relational-action-on-the-retained-pair-object",
+        "closed-gate-organized-source-birth-evidence",
+        "closed-gate-phase-nearest-contact-and-joint-maintenance",
+        "closed-gate-pressure-completion-admissibility",
+        "closed-gate-quantitative-response-and-identity-under-repeated-probes",
+        "closed-gate-reception-on-the-existing-weighted-contact",
+        "closed-gate-reduced-component-state-with-controlled-receiver-transfer",
+        "closed-gate-reserved-geometry-and-gain-inference-from-two-inputs",
+        "closed-gate-reserved-software-inference-from-complete-law-responses",
+        "closed-gate-robustness-to-independent-constituent-registration",
+        "closed-gate-scoped-canonical-operator-integration",
+        "closed-gate-stationary-geometry-on-the-actual-acute-um-support",
+        "closed-gate-successor-stationary-geometry-and-identity",
+        "closed-gate-supplied-transmission-through-the-acquired-composite",
+        "closed-gate-the-born-childs-own-temporal-capability",
+        "closed-gate-the-scalar-storage-test-cannot-establish-this-handoff",
+        "closed-gate-transition-with-retained-lifecycle-and-regime-context",
+        "closed-information-gate-unknown-collective-initialization",
+        "closed-interaction-admission-own-law-finite-collective-contact",
+        "closed-joint-preparation-resource-admission",
+        "closed-mechanism-question-dynamical-cancellation-on-ideal-contact",
+        "closed-mechanism-question-internal-preparation-and-nonlinear-exposure",
+        "closed-observation-with-finite-inputs",
+        "closed-operational-forecast-from-a-joint-record",
+        "closed-operational-identification-of-the-collective-dictionary",
+        "closed-post-contact-foundational-review",
+        "closed-premise-review-selection-remains-independent-of-distinction",
+        "closed-prepared-reference-identity-and-matrix-response",
+        "closed-primary-admission-acquired-mediator-effective-memory",
+        "closed-primary-admission-class-mediated-collective-response",
+        "closed-primary-admission-freeze-the-matched-four-history-evaluation",
+        "closed-primary-admission-informative-nonlinear-interaction-protocol",
+        "closed-primary-admission-two-probe-nonlinear-superposition",
+        "closed-primary-admission-validated-four-history-observation-producer",
+        "closed-primary-evaluation-first-frozen-four-history-outcome",
+        "closed-reserved-certificate-nominal-mobile-pair-interaction",
+        "closed-reserved-gate-finite-aperture-software-inference",
+        "closed-reserved-gate-four-reading-clock-and-gain-resolution",
+        "closed-reserved-gate-nonconstant-clock-mean-rate-inference",
+        "closed-review-foundational-priority-after-the-constitutive-transition",
+        "closed-scoped-finite-window-observation-design",
+        "closed-scoped-gate-iloz-across-constitutive-pressure-refresh",
+        "closed-scoped-obstruction-stationary-identity-with-reflection",
+        "closed-scoped-operational-recovery-area-admission",
+        "closed-scoped-review-independent-preparation-and-measurement-feasibility",
+        "closed-source-admission-a-phase-flat-preparation-lacks-the-target-resource",
+        "closed-source-admission-own-law-formation-of-the-five-child-host",
+        "closed-source-to-geometry-gate-exponential-internal-relaxation",
+        "closed-structural-admission-boundary-constraints-and-constitutive-premises",
+        "closed-theoretical-admission-acquired-parent-registration",
+        "closed-theoretical-admission-acquisition-across-matched-laws",
+        "closed-theoretical-admission-acquisition-and-maintenance-of-outer-winding",
+        "closed-theoretical-admission-calibration-of-a-common-scalar-observation",
+        "closed-theoretical-admission-capture-of-the-acquired-three-object-assembly",
+        "closed-theoretical-admission-carried-collective-external-interaction",
+        "closed-theoretical-admission-collective-actuation-with-unresolved-fine-state",
+        "closed-theoretical-admission-complete-organized-source-port",
+        "closed-theoretical-admission-complete-post-slip-limits",
+        "closed-theoretical-admission-composition-compatible-constitutive-laws",
+        "closed-theoretical-admission-constitutive-inheritance-through-organized-composition",
+        "closed-theoretical-admission-constructive-continuous-realization",
+        "closed-theoretical-admission-controlled-slow-receiver-evolution",
+        "closed-theoretical-admission-finite-discrimination-after-acquisition",
+        "closed-theoretical-admission-finite-response-of-the-acquired-organization",
+        "closed-theoretical-admission-finite-work-continuous-actuation-obstruction",
+        "closed-theoretical-admission-fixed-autonomous-reservoir-obstruction",
+        "closed-theoretical-admission-full-state-capture-and-collective-registration",
+        "closed-theoretical-admission-identity-preserving-assembly-work",
+        "closed-theoretical-admission-interface-robust-profile-inheritance",
+        "closed-theoretical-admission-joint-acquisition-on-preexisting-fine-support",
+        "closed-theoretical-admission-locally-unprepared-receiver-mechanism",
+        "closed-theoretical-admission-matched-preparation-different-acquired-modes",
+        "closed-theoretical-admission-network-wide-organized-compatibility",
+        "closed-theoretical-admission-observation-on-one-continuing-organization",
+        "closed-theoretical-admission-outer-identity-with-unknown-phase-origins",
+        "closed-theoretical-admission-predictive-repeated-organized-composition",
+        "closed-theoretical-admission-relative-origin-interaction-capability",
+        "closed-theoretical-admission-restoring-response-of-an-acquired-parent",
+        "closed-theoretical-admission-retained-memory-and-local-equilibrium",
+        "closed-theoretical-admission-stationary-contact-and-actual-control-capture",
+        "closed-theoretical-admission-target-matched-organized-pattern-laws",
+        "closed-theoretical-admission-uniform-constitutive-selector-robustness",
+        "closed-theoretical-admission-uniform-source-path-corridors",
+        "closed-theoretical-admission-whole-family-winding-one-capture",
+        "closed-theoretical-gate-bounded-clock-drift-and-sampled-exposure",
+        "closed-theoretical-gate-finite-aperture-observation",
+        "closed-theoretical-gate-finite-curvature-from-one-additional-reading",
+        "closed-theoretical-gate-finite-noise-and-horizon-resolution",
+        "closed-theoretical-gate-geometry-and-held-gain-from-two-phase-inputs",
+        "closed-theoretical-gate-inference-under-a-bounded-observation-clock",
+        "closed-theoretical-gate-local-geometry-from-a-partial-response",
+        "closed-theoretical-inherited-response-admission",
+        "closed-two-law-identifiability-with-unknown-initialization",
+        "closed-uniform-comparison-original-source-and-finite-receiver-exclusion",
+        "collective-boundary-foundation-admission",
+        "collective-directional-maintenance-admission",
+        "collective-form-capacity-admission",
+        "collective-grammar-admission",
+        "collective-hierarchy-admission",
+        "collective-mutation-evidence-admission",
+        "collective-organization-contact",
+        "collective-pressure-handoff",
+        "collective-reception-admission",
+        "collective-relational-action",
+        "collective-support-transition",
+        "collective-transformed-identity-admission",
+        "collective-transition-admission",
+        "common-probe-admission",
+        "completion-and-resumption",
+        "composition-compatible-constitutive-laws",
+        "conservative-regional-formation",
+        "conservative-regional-organization",
+        "constitutive-geometry-admission",
+        "constitutive-identity-barriers-and-work",
+        "constitutive-receiver-long-time-trapping",
+        "constitutive-receiver-source-outcome",
+        "constitutive-selector-robustness",
+        "contact-conservative-confinement",
+        "contact-maintenance-certificate-admission",
+        "critical-parent-interaction-admission",
+        "critical-parent-two-port-admission",
+        "critical-registration-dynamics",
+        "current-checkpoint",
+        "current-checkpoint-and-resumption",
+        "current-g3-gate",
+        "deferred-analytical-gate-chemical-hidden-state-memory-and-predictive-reduction",
+        "deferred-branch-analytical-compatibility-of-localized-formation",
+        "deferred-dependencies",
+        "deferred-dependency-prepared-envelope-variational-certification",
+        "deferred-work-and-reopening-conditions",
+        "effective-loss-admission",
+        "entry-requirement-for-further-constitutive-selection",
+        "evaluated-response-and-resumption-boundary",
+        "finite-directional-transfer",
+        "finite-pair-exchange-admission",
+        "formation-response-admission",
+        "formation-retention-handoff",
+        "formed-class-contact-admission",
+        "foundational-organized-pattern-admission",
+        "free-phase-probe-admission",
+        "free-phase-probe-reader-admission",
+        "free-phase-probe-record-admission",
+        "free-probe-independent-kinetic-observation",
+        "free-probe-preparation-reachability",
+        "frozen-nonlinear-four-history-evaluation",
+        "generative-class-mediated-response",
+        "geometry-response-identifiability",
+        "grammatical-organization-comparison",
+        "hierarchy-to-contact-composition",
+        "independent-boundary-premise-admission",
+        "independent-neighbor-evaluation-admission",
+        "inequivalent-formed-classes-admission",
+        "informative-nonlinear-interaction-protocol",
+        "interaction-information-admission",
+        "interface-robust-profile-inheritance",
+        "joined-class-interaction-return-admission",
+        "local-capacity-history-acquisition",
+        "local-capacity-temporal-admission",
+        "localized-formation-compatibility-admission",
+        "localized-identity-transport-admission",
+        "localized-mobile-interaction-admission",
+        "localized-transport-source-admission",
+        "localized-variational-resource-dependency",
+        "maintained-contact-exchange",
+        "maintained-parent-default-um-admission",
+        "maintained-parent-thol-event",
+        "maintained-source-capacity-access",
+        "maintained-successor-principal-minima",
+        "maintained-successor-stationary-identity",
+        "mediator-organization-nonlinear-interaction",
+        "minimal-boundary-information",
+        "mixed-neighbor-response-admission",
+        "mobile-organization-feasibility-admission",
+        "mobile-pair-response-admission",
+        "new-constitutive-evidence-admission",
+        "next-primary-admission-a-causal-nonlinear-collective-interface",
+        "next-primary-admission-acquired-mediator-effective-memory",
+        "next-primary-admission-an-executable-changed-input-port-prediction",
+        "next-primary-admission-an-independent-changed-input-full-law-comparison",
+        "next-primary-admission-an-observation-of-organization-dependent-interaction",
+        "next-primary-admission-carried-return-for-repeated-joined-interaction",
+        "next-primary-admission-causal-composition-through-existing-boundary-currents",
+        "next-primary-admission-class-mediated-collective-response",
+        "next-primary-admission-execute-and-retain-the-first-frozen-outcome",
+        "next-primary-admission-freeze-the-matched-four-history-evaluation",
+        "next-primary-admission-informative-nonlinear-interaction-protocol",
+        "next-primary-admission-mixed-response-to-distinct-neighboring-organizations",
+        "next-primary-admission-two-probe-nonlinear-superposition",
+        "next-primary-admission-validated-four-history-observation-producer",
+        "next-primary-evaluation-retain-the-first-changed-input-full-law-response",
+        "next-primary-evaluation-retain-the-first-independent-class-comparison",
+        "nine-point-critique-assessment-and-acceptance-obligations",
+        "nodal-research-execution-plan",
+        "nonacute-contact-geometry",
+        "nonlinear-collective-interface-admission",
+        "nonlinear-excess-storage-admission",
+        "observed-pattern-physical-admission",
+        "organization-probe-amplitude-feasibility",
+        "organization-sensitive-observation",
+        "organized-alternative-contact-admission",
+        "organized-alternative-outer-acquisition",
+        "organized-assembly-work-admission",
+        "organized-charge-internal-state-admission",
+        "organized-charge-response-bridge-admission",
+        "organized-collective-electrical-source-admission",
+        "organized-composite-interaction-admission",
+        "organized-compressed-initialization-admission",
+        "organized-computable-prediction-admission",
+        "organized-constitutive-inheritance",
+        "organized-contact-dynamic-cancellation",
+        "organized-contact-maintenance-admission",
+        "organized-contact-preparation-sensitivity",
+        "organized-contact-reflection-admission",
+        "organized-contact-stationary-search",
+        "organized-effective-law-admission",
+        "organized-electrical-finite-actuation",
+        "organized-electrical-finite-observation",
+        "organized-electrical-finite-window-design",
+        "organized-electrical-fixed-support-protocol",
+        "organized-electrical-operational-identification",
+        "organized-electrical-physical-feasibility",
+        "organized-electrical-robust-current-test",
+        "organized-external-port-registration-admission",
+        "organized-form-resource-envelope",
+        "organized-full-fine-contact-identity-admission",
+        "organized-identity-preserving-interaction",
+        "organized-inherited-response-admission",
+        "organized-interaction-driven-acquisition",
+        "organized-interface-factorization-admission",
+        "organized-joint-acquisition",
+        "organized-joint-preparation-resources",
+        "organized-law-state-identifiability",
+        "organized-network-compatibility",
+        "organized-observed-forecast-construction",
+        "organized-observed-prediction-admission",
+        "organized-outer-observation-admission",
+        "organized-outer-response-admission",
+        "organized-outer-winding-admission",
+        "organized-parent-acquisition-admission",
+        "organized-parent-collective-actuation-admission",
+        "organized-parent-constructive-actuation-admission",
+        "organized-parent-continuous-actuation-admission",
+        "organized-parent-reservoir-exchange-admission",
+        "organized-parent-reservoir-memory-admission",
+        "organized-parent-restoring-response-admission",
+        "organized-predictive-compression-admission",
+        "organized-receiver-mechanism-admission",
+        "organized-receiver-prospective-enclosure",
+        "organized-receiver-slow-capture-admission",
+        "organized-sensitive-loaded-response",
+        "organized-sequential-observation-admission",
+        "organized-small-resource-information",
+        "organized-source-birth-evidence",
+        "organized-source-capture-admission",
+        "organized-source-port-admission",
+        "persistent-pattern-interaction-admission",
+        "phase-directed-regional-accessibility",
+        "phase-information-admission",
+        "phase-nearest-contact-maintenance",
+        "physical-atlas-selection-and-dependencies",
+        "physical-confrontation-p1-p5",
+        "post-capture-foundation-review",
+        "post-contact-foundation-review",
+        "post-identifiability-premise-review",
+        "post-resource-foundation-review",
+        "post-slip-capture-admission",
+        "post-transition-foundation-review",
+        "preparation-information-mode-selection",
+        "prepared-deferred-independent-storage-comparison",
+        "pressure-completion-admission",
+        "primary-plan-foundations-tested-by-organized-patterns",
+        "priority-readiness-and-missing-evidence",
+        "prospective-constitutive-admission",
+        "queue-status",
+        "receiver-constitutive-confounding-admission",
+        "receiver-defect-admission",
+        "receiver-readout-admission",
+        "receiver-two-law-admission",
+        "receiver-two-time-admission",
+        "reduced-formed-class-port-admission",
+        "reduced-port-network-composition-admission",
+        "relational-geometry-clock-admission",
+        "relative-coupling-finite-observation",
+        "relative-coupling-probe-admission",
+        "relative-registration-contact",
+        "repeated-organized-composition-admission",
+        "repeated-probe-maintenance-admission",
+        "research-priority-assessment",
+        "reserved-aperture-inference-admission",
+        "reserved-changed-input-full-law-response",
+        "reserved-clock-drift-inference-admission",
+        "reserved-curvature-inference-admission",
+        "reserved-distinct-neighbor-full-law-response",
+        "reserved-nonlinear-four-history-response",
+        "reserved-scaled-cross-class-comparison",
+        "reserved-two-pulse-inference-admission",
+        "resource-limited-numerical-dependency",
+        "result-ownership",
+        "retained-admission-and-exact-null-control",
+        "retained-admission-links",
+        "retained-relative-frame-gate",
+        "reuse-boundary-eliminating-a-retained-pair",
+        "same-source-acquisition-result",
+        "scaled-cross-class-evaluation-admission",
+        "shared-admission-and-evidence-requirements",
+        "shared-admission-f1-f4",
+        "sine-aperture-inference-admission",
+        "sine-aperture-readout-admission",
+        "sine-aperture-resolution-admission",
+        "sine-clock-drift-inference-admission",
+        "sine-clock-inference-admission",
+        "sine-finite-curvature-inference-admission",
+        "sine-port-form-tracking-admission",
+        "sine-port-relaxation-admission",
+        "sine-two-port-capture-admission",
+        "sine-two-port-compatibility-admission",
+        "sine-two-port-dipole-admission",
+        "sine-two-port-handoff-admission",
+        "sine-two-port-inverse-admission",
+        "sine-two-port-probe-admission",
+        "sine-two-port-reserved-inference-admission",
+        "sine-two-port-transit-admission",
+        "sine-two-pulse-inference-admission",
+        "source-specific-basin-selection",
+        "source-to-basin-mode-selection",
+        "stopping-provenance-and-resumption",
+        "storage-comparison-producer-admission",
+        "storage-robustness-admission",
+        "successor-child-grammar-timing-admission",
+        "successor-child-history-acquisition",
+        "successor-child-history-admission",
+        "successor-child-joint-window-admission",
+        "successor-child-thol-admission",
+        "successor-child-thol-closure-execution",
+        "successor-il-stabilization-admission",
+        "successor-nonstationary-confinement",
+        "successor-post-closure-retention",
+        "successor-sha-law-admission",
+        "successor-um-endpoint-inclusion",
+        "supporting-measurement-bridge",
+        "supporting-physical-confrontation-p1-p5",
+        "target-matched-organized-law-result",
+        "terrestrial-coupled-phase-admission",
+        "two-probe-nonlinear-superposition",
+        "validated-nonlinear-four-history-observation",
+        "variable-definition-identification-and-evolution",
+        "weak-contact-collective-selection",
+        "weak-contact-constitutive-registration",
+        "weak-contact-constitutive-transition",
+        "weak-contact-fine-relaxation-admission",
+        "weak-contact-maintenance-admission",
+        "weak-contact-source-basin-admission",
+        "weak-contact-stationary-continuation",
+        "weighted-collective-capacity-closure",
+        "weighted-collective-finite-identity",
+        "weighted-collective-maintenance-composition",
+        "weighted-collective-state-sufficiency",
+        "weighted-collective-transverse-stability",
+        "weighted-star-canonical-contact-admission",
+        "weighted-star-canonical-continuation-admission",
+        "weighted-star-canonical-response",
+        "weighted-star-common-identity-mechanism",
+        "weighted-star-contact-collective-state",
+        "weighted-star-contact-nonlinear-validity",
+        "weighted-star-contact-off-family-robustness",
+        "weighted-star-contact-preparation-robustness",
+        "weighted-star-contact-relative-realization",
+        "weighted-star-finite-identity-admission",
+        "weighted-star-finite-registration-episode",
+        "weighted-star-quartic-transfer-admission",
+        "weighted-star-reachability-obstruction"
+      ]
+    },
+    {
+      "path": "TNFR_lineas_de_investigacion.txt",
+      "title": "Retired research portfolio",
+      "anchors": []
+    }
+  ]
+}
