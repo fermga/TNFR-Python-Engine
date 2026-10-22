@@ -11,7 +11,7 @@ This owner closes that distinction for general admissible states and for the
 marked collective contact as a conditional control. It does not require the
 EN/IL/SHA/NAV sequence, supply missing research histories or identify a child
 with an autonomously maintained organization. The
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+[research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns status. The [registered action](../STRUCTURAL_OPERATORS.md#62-self-organization-thol),
 [THOL pressure owner](../THOL_PRESSURE_FEEDBACK.md) and
 [native birth and transport owner](../THOL_BIRTH_AND_TRANSPORT.md) retain their

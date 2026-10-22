@@ -9,7 +9,7 @@ mathematical/software result under supplied preparation, law and event timing;
 it establishes no autonomous occurrence or physical identification.
 
 The [local-admission theorem](SINE_LOCAL_CAPACITY_ADMISSION.md) owns the open
-source domain and whole-window proof. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+source domain and whole-window proof. The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns status. The frozen [protocol](../../docs/assets/local_capacity_history/protocol.json),
 [source](../../docs/assets/local_capacity_history/source.json),
 [freeze](../../docs/assets/local_capacity_history/freeze.json),

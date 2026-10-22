@@ -10,9 +10,9 @@ first correction panel is evaluated in section 17; the full horizon,
 nonlinear envelope maintenance and interaction-generated composites
 remain unproved. The original source and
 [strict-passage result](LOCALIZED_ORGANIZATION_GEOMETRY.md#mobile-relative-rate-obstruction)
-remain unchanged. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+remain unchanged. The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 alone selects further work and owns reactivation of the
-[deferred variational dependency](../research/FIVE_STAGE_EXECUTION_PLAN.md#localized-variational-resource-dependency).
+[deferred variational dependency](../RESEARCH_PROGRAM.md#research-deferred-dependencies).
 
 ## 1. Retained law and internal relations
 

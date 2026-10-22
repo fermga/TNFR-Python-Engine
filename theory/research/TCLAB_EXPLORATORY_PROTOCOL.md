@@ -11,7 +11,7 @@ The [complete exploratory record](archive/measurement/TCLAB_EXPLORATORY_RECORD.m
 preserves the frozen model, calibration/evaluation split, numerical results,
 source hashes and limitations. Those observations are already inspected;
 no refit or new acquisition is scheduled here. A new physical comparison
-requires the plan's [P1-P5 admission](FIVE_STAGE_EXECUTION_PLAN.md#supporting-measurement-bridge).
+requires the research program's [P1-P5 admission](../RESEARCH_PROGRAM.md#physical-comparison-a-separate-admission).
 
 ## Earlier section links
 

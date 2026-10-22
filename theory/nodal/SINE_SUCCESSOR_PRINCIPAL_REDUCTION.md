@@ -12,7 +12,7 @@ its storage and two means alone do not separate it from principal cuts.
 This is a restriction of the existing phase potential for stationary
 classification. It is not a new pressure law, a closed temporal model,
 a selected equilibrium or a trajectory. The
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+[research program](../RESEARCH_PROGRAM.md#research-current-question)
 remains the sole active queue.
 
 ## 1. Actual law and principal domain

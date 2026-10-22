@@ -8,7 +8,7 @@ successor admits the new node. This is a finite mathematical/software result
 under a supplied preparation, event time and constitutive completion. It
 does not establish autonomous occurrence or a coupled enlarged organization.
 
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns status. The [hierarchy contract](SINE_COLLECTIVE_HIERARCHY.md) owns the
 general THOL reset, metabolic construction and continuation obstruction;
 the [hierarchy-to-contact owner](SINE_HIERARCHY_CONTACT.md) owns the explicit

@@ -20,9 +20,9 @@ from __future__ import annotations
 from collections.abc import Mapping, Set
 from dataclasses import dataclass
 from fractions import Fraction
-from math import isqrt
 
 from .._exact_time import exact_or_represented_real as _rational
+from ..mathematics._exact_linear_algebra import exact_rank_one_rational_lift
 from ..mathematics.krylov import exact_rank
 from ._cycle_algebra import dot
 from .hybrid_operator_stability import _exact_matrix_product
@@ -232,21 +232,6 @@ class P5ReflectionInvariants:
     scope: str
 
 
-def _rational_square_root(value: Fraction) -> Fraction:
-    """Return a nonnegative rational root, rejecting an algebraic-only lift."""
-    numerator = isqrt(value.numerator)
-    denominator = isqrt(value.denominator)
-    if (
-        numerator * numerator != value.numerator
-        or denominator * denominator != value.denominator
-    ):
-        raise ValueError(
-            "reflection invariants admit a real lift but this decoder requires "
-            "an exact rational square root"
-        )
-    return Fraction(numerator, denominator)
-
-
 def decode_p5_reflection_invariants(orbit_epi, quadratic_invariants) -> Vector:
     """Decode the canonical rational representative of one reflection orbit.
 
@@ -275,11 +260,7 @@ def decode_p5_reflection_invariants(orbit_epi, quadratic_invariants) -> Vector:
         raise ValueError(
             "quadratic invariants must satisfy the exact rank-one cone identity"
         )
-    if j00:
-        r = _rational_square_root(j00)
-        s = j01 / r
-    else:
-        r, s = Fraction(0), _rational_square_root(j11)
+    r, s = exact_rank_one_rational_lift(((j00, j01), (j01, j11)))
     a, p, c = orbit
     return a + r, p + s, c, p - s, a - r
 

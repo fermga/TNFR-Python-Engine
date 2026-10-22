@@ -29,7 +29,7 @@ exact hidden-state representations retain their independent initialization.
 None of these results derives support birth or physical identification.
 
 Section numbers remain stable. The
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+[research program](../RESEARCH_PROGRAM.md#research-current-question)
 alone assigns research work.
 
 ## 24. Equilibrium geometry of components joined by bridges

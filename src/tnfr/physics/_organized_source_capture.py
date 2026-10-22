@@ -579,6 +579,24 @@ class _OrganizedSourceReflectionRetention:
     )
 
 
+def _organized_source_offset_edge_angles(geometry, phase_offsets):
+    """Retain the fixed winding-one lift of already admitted carrier offsets.
+
+    The caller owns normalized coordinates and the shared organized support.
+    Every oriented cycle edge, including its closing edge, has carrier gap
+    alpha. Matching edges have zero carrier gap. No wrapping, raw-phase
+    conversion or sector restriction is performed by this prepared helper.
+    """
+    return tuple(
+        (
+            geometry.alpha_bounds + phase_offsets[b] - phase_offsets[a]
+            if a // 9 == b // 9
+            else I(phase_offsets[b] - phase_offsets[a])
+        )
+        for a, b, _ in geometry.weighted_edges
+    )
+
+
 def _assess_organized_source_reflection_retention(*, form, phase_offsets):
     """Admit one state to the fixed joint winding-and-form-rail domain.
 
@@ -595,14 +613,7 @@ def _assess_organized_source_reflection_retention(*, form, phase_offsets):
         form=state.form, phase_offsets=state.phase_offsets
     )
     geometry = barrier.geometry
-    angles = tuple(
-        (
-            geometry.alpha_bounds + state.phase_offsets[b] - state.phase_offsets[a]
-            if a // 9 == b // 9
-            else I(state.phase_offsets[b] - state.phase_offsets[a])
-        )
-        for a, b, _ in geometry.weighted_edges
-    )
+    angles = _organized_source_offset_edge_angles(geometry, state.phase_offsets)
     in_cell = all(angle.abs_max < barrier.cell_edge_gap_bounds.lo for angle in angles)
     excess = observation.joint_storage_bounds - barrier.target_storage_bounds
     ceiling = _RETENTION_CEILING

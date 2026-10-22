@@ -18,6 +18,7 @@ from itertools import islice
 from numbers import Integral
 
 from .._exact_time import exact_or_represented_real
+from ..mathematics._comparison_flow import decay_convolution_upper
 from ..mathematics._phase_midpoint import _affine_interval, _oriented_turn, _pi_bounds
 from ..operators._phase_gate import resolve_u3_phase_limits
 from .forcing_realization import (
@@ -561,16 +562,8 @@ def _times(values):
 
 
 def _duhamel_upper(first_rate, second_rate, time, first_exp, second_exp):
-    """Enclose the convolution of two decays without unstable cancellation."""
-    if not time:
-        return Fraction(0)
-    slower_exp = first_exp if first_rate <= second_rate else second_exp
-    simple = time * slower_exp[1]
-    if first_rate == second_rate:
-        return simple
-    faster_exp = second_exp if first_rate <= second_rate else first_exp
-    difference_bound = (slower_exp[1] - faster_exp[0]) / abs(first_rate - second_rate)
-    return min(simple, difference_bound)
+    """Retain the cycle adapter while sharing the prepared decay arithmetic."""
+    return decay_convolution_upper(first_rate, second_rate, time, first_exp, second_exp)
 
 
 def _decay_bounds(exponent):

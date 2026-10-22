@@ -2,7 +2,7 @@
 
 **Scope:** a supporting measurement/error contract for two declared pure-EPI
 transport models. Physical admission is `not_admitted`; an admitted physical
-prediction has not been tested. The [execution plan](FIVE_STAGE_EXECUTION_PLAN.md#supporting-measurement-bridge)
+prediction has not been tested. The [research program](../RESEARCH_PROGRAM.md#physical-comparison-a-separate-admission)
 owns P1-P5 and any reopening. No data search, acquisition or refit is active.
 
 The mathematical candidates below remain useful with their own hypotheses.

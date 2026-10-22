@@ -16,7 +16,7 @@ already establishes finite constitutive discrimination on its different
 complete model. The new obligation is to relate a small declared phase
 resource to both distinguishable and indistinguishable endpoint records.
 Task status belongs to the
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).
+[research program](../RESEARCH_PROGRAM.md#research-current-question).
 
 ## 1. Complete law and the endpoint observation
 

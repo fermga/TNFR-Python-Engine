@@ -4,8 +4,9 @@ Contributions should make an implemented behavior, mathematical statement or
 documented limitation more accurate and useful. The nodal equation does not make
 every configured algorithm a derived physical law. Read the
 [contributor and agent instructions](AGENTS.md) before changing the repository.
-The [theory catalog](theory/README.md) owns definitions and scientific evidence;
-the instructions explain how to preserve their scope.
+The [research program](theory/RESEARCH_PROGRAM.md#research-current-question)
+owns the objective, current question and technical chapters; the instructions
+explain how to preserve their scope.
 
 ## Getting Started
 
@@ -78,16 +79,42 @@ explicit accuracy or behavior tradeoff.
 Keep technical code, comments, documentation, commits and pull requests in
 English. Verbatim quotations and raw data retain their original language.
 
-Use [the theory index](theory/README.md) to find derivation owners and
-[the documentation index](docs/README.md) for usage material. The
-[execution plan](theory/research/FIVE_STAGE_EXECUTION_PLAN.md) owns the single
-active queue; the [portfolio](TNFR_lineas_de_investigacion.txt) classifies research
-lines. Explain current behavior in maintained guides and contracts; keep results
-with their proof/evidence owners and avoid delivery logs in overviews. Preserve
-valid anchors and immutable evidence when consolidating documents. Check imports,
-public consumers and frozen dependencies before removing an obsolete file; record
-its recovery identity and replacement in the existing archive instead of copying
-unchanged committed source. Do not create a competing task list or catalog.
+Use the [research program](theory/RESEARCH_PROGRAM.md#research-current-question)
+for the sole active question, scientific priorities and technical studies. The
+[theory index](theory/README.md) is its generated chapter catalog;
+[the documentation index](docs/README.md) routes usage material. The old plan,
+strategy and portfolio are retired compatibility routes.
+
+Open `theory/RESEARCH_PROGRAM.md` for the research objective and current task.
+Follow its links or the generated theory catalog to open and edit each canonical
+chapter directly in VS Code. Each chapter is an ordinary Markdown file; preview
+loads that chapter alone. The metadata-only `theory/research_catalog.json`
+declares ordering, titles and retired routes without duplicating chapter prose.
+
+The chapter reader also supports optional working-copy extraction:
+
+```sh
+python scripts/research_book.py list
+python scripts/research_book.py extract theory/NODAL_PARAMETER_FOUNDATIONS.md --file chapter-working.md
+# Edit chapter-working.md, then replace only that chapter:
+python scripts/research_book.py replace theory/NODAL_PARAMETER_FOUNDATIONS.md --file chapter-working.md
+```
+
+Extraction requires a new output file. Replacement writes the canonical chapter
+while preserving other sources and its published route. Direct chapter edits
+are visible to all documentation tools. Keep the research program within 96 KiB
+and each chapter, program and maintained guide within 4,000 physical lines.
+Do not concatenate the corpus into a maintained Markdown preview. Regenerate
+checked views after changing their inputs and run the
+[documentation checks](TESTING.md#code-quality-and-documentation-checks).
+
+Explain current behavior in maintained guides and contracts; keep results with
+their proof/evidence chapters and avoid delivery logs in overviews. Preserve
+valid anchors and immutable evidence. Check imports, public consumers and frozen
+dependencies before retiring obsolete material. Record its Git revision/blob and
+replacement instead of keeping superseded instructions or known errors as active
+guidance. Preserve unique proofs, counterexamples and frozen source records.
+Do not create a competing task list or catalog.
 
 ## Pull Request Process
 

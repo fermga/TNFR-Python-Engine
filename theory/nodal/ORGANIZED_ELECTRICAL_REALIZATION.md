@@ -31,7 +31,7 @@ This detached proof changes no execution law, consumes no newly evaluated
 trajectory and installs no operator or event selector. Its organized states
 remain conditional test cases of the supplied complete law, as required by
 the [NFR ontology](../EMERGENT_ONTOLOGY.md#research-target-physical-properties-of-collective-patterns).
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 alone selects subsequent work.
 
 ## Independent passive electrical reference

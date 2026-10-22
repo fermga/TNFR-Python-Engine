@@ -13,7 +13,7 @@ Fixed-support form balance is the common starting point. Regional response, phas
 | [Winding generation and native writer boundaries](nodal/FORCED_WINDING_AND_WRITERS.md) | Acute winding retention, chart escape and native Mutation/capacity writer obstructions. |
 | [Geometric identity and capacity-feedback bounds](nodal/FORCED_GEOMETRIC_IDENTITY.md) | Local restoring response, geometric identity and prospective capacity tubes. |
 
-Section numbers remain stable across this collection. The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) alone assigns research work.
+Section numbers remain stable across this collection. The [research program](RESEARCH_PROGRAM.md#research-current-question) alone assigns research work.
 
 ## 1. The reference comes from the existing nodal channels
 

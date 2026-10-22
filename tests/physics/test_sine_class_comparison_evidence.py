@@ -16,6 +16,7 @@ from pathlib import Path
 
 import pytest
 
+from scripts.research_book import read_document_bytes
 from tests.physics import test_sine_class_readout_evidence as old_audit
 from tnfr.mathematics._phase_midpoint import _pi_bounds
 from tnfr.mathematics._rational_interval import I
@@ -282,8 +283,7 @@ def test_frozen_attempt_outcome_and_archive_association(retained):
             assert archive.getinfo(item["path"]).file_size == _integer(item["bytes"])
         proof = "theory/nodal/SINE_CLASS_COMPARISON_PROTOCOL.md"
         assert (
-            (ROOT / proof)
-            .read_bytes()
+            read_document_bytes(ROOT, proof)
             .replace(b"\r\n", b"\n")
             .startswith(archive.read(proof).replace(b"\r\n", b"\n"))
         )

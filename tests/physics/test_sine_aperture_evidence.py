@@ -16,6 +16,8 @@ from pathlib import Path, PurePosixPath
 
 import pytest
 
+from scripts.research_book import read_document_bytes
+
 # Import modules as namespaces; do not import their autouse fixtures into this
 # module, where pytest would collect them and leak unrelated patch contexts.
 from tests.physics import test_sine_curvature_evidence as curvature_audit
@@ -238,7 +240,7 @@ def test_prospective_prefix_public_worker_and_exclusive_attempt():
     with zipfile.ZipFile(DIRECTORY / (STEM + ".source.zip")) as archive:
         prospective = archive.read(PROOF)
         suffix = retained_helpers._documentation_suffix(
-            (ROOT / PROOF).read_bytes(), prospective
+            read_document_bytes(ROOT, PROOF), prospective
         )
         assert suffix is not None
         assert b"sine-aperture-reserved-protocol" in prospective

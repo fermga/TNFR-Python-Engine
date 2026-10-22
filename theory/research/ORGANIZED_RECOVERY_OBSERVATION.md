@@ -7,7 +7,7 @@ The [loaded-window result](ORGANIZED_FINITE_WINDOW_DESIGN.md) resolves matrix
 response but proves overlap with a matched phase-blind reference during its
 short pulse. This candidate keeps that complete loaded law, pulse and sensor,
 and changes the observation to a signed integral covering recovery. The
-[execution plan](FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) owns admission.
+[research program](../RESEARCH_PROGRAM.md#research-current-question) owns admission.
 The [form/phase memory identities](../nodal/SINE_FORM_PHASE_REDUCTION.md#sine-form-phase-memory-equivalence)
 motivate retaining the endpoint information exactly; their decay coefficients
 are not transferred to the loaded model.

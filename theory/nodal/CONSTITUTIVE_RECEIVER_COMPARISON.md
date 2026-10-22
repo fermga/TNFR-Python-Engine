@@ -16,7 +16,7 @@ elapsed slow time \(19/2\). This was the stopping horizon of the
 whose original prospective maximum was \(32\). No continuation to that
 unevaluated maximum, parameter-interval reduction or preparation change is
 part of this comparison. The
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+[research program](../RESEARCH_PROGRAM.md#research-current-question)
 remains the sole queue.
 
 <a id="constitutive-receiver-source"></a>

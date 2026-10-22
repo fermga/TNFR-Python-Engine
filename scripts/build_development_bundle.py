@@ -32,6 +32,7 @@ if __package__:
         check_path_collisions,
         validate_manifest,
     )
+    from .research_book import BOOK_PATH, CATALOG_PATH, parse_book, parse_catalog
 else:
     from development_bundle_evidence import (
         MAX_FILE_BYTES,
@@ -39,6 +40,7 @@ else:
         check_path_collisions,
         validate_manifest,
     )
+    from research_book import BOOK_PATH, CATALOG_PATH, parse_book, parse_catalog
 
 REPOSITORY = "fermga/TNFR-Python-Engine"
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -53,8 +55,6 @@ REQUIRED = {
     "pyproject.toml",
     "src/tnfr/_version.py",
     "theory/README.md",
-    "theory/EMERGENT_ONTOLOGY.md",
-    "theory/research/FIVE_STAGE_EXECUTION_PLAN.md",
     "docs/API_CONTRACTS.md",
     "docs/assets/mathjax.js",
     "scripts/build_development_bundle.py",
@@ -106,7 +106,33 @@ def _inventory(root: Path, commit: str) -> dict[str, tuple[str, str, int]]:
             raise ValueError(f"Duplicate or case-colliding source path: {name}")
         folded.add(name.casefold())
         inventory[name] = mode, blob, size
-    missing = REQUIRED - inventory.keys()
+    research = (
+        {BOOK_PATH, "scripts/research_book.py"}
+        if BOOK_PATH in inventory or CATALOG_PATH in inventory
+        else {
+            "theory/EMERGENT_ONTOLOGY.md",
+            "theory/research/FIVE_STAGE_EXECUTION_PLAN.md",
+        }
+    )
+    if CATALOG_PATH in inventory:
+        # The selected commit owns this catalog and its chapter inventory;
+        # uncommitted edits cannot repair or redefine a release snapshot.
+        catalog = parse_catalog(_git(root, "show", f"{commit}:{CATALOG_PATH}"))
+        research |= {
+            CATALOG_PATH,
+            *(chapter.path for chapter in catalog.chapters),
+            *(alias.path for alias in catalog.aliases),
+        }
+    elif BOOK_PATH in inventory:
+        # A modular program without its committed catalog is not a legacy book.
+        # Admit old releases through the actual legacy schema, not a filename.
+        try:
+            parse_book(_git(root, "show", f"{commit}:{BOOK_PATH}"))
+        except ValueError as exc:
+            raise ValueError(
+                "Selected commit lacks a valid legacy sourcebook or " + CATALOG_PATH
+            ) from exc
+    missing = (REQUIRED | research) - inventory.keys()
     if missing:
         raise ValueError(f"Selected commit lacks required owners: {sorted(missing)}")
     for name in inventory:

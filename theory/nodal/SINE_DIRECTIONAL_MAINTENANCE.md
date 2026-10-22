@@ -3,7 +3,7 @@
 The [form-capacity analysis](SINE_FORM_CAPACITY_ACTION.md) showed why a scalar
 storage sublevel cannot decide retention of the specified local resets. This
 owner supplies an exact reduction of the retained source and a conditional
-nonlinear enclosure method. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+nonlinear enclosure method. The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 alone selects further investigation and its dependencies. No change of
 nodal law, radius, source origin or operator gains is part of this comparison.
 

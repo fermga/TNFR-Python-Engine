@@ -537,8 +537,8 @@ of declared complete models, not a new universal term in the nodal equation.
 <a id="foundational-state-admission"></a>
 ### 2.10 Foundation decision ledger: state, equivalence and origin
 
-This ledger records the scoped F1 reference admission of the revised
-[research plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).
+This ledger records the scoped F1 reference admission. The
+[research program](RESEARCH_PROGRAM.md#research-current-question) owns active tasks.
 It is not a new axiom list or a declaration that every entry is uniquely
 necessary. The preceding sections own the definitions and counterexamples.
 
@@ -814,7 +814,8 @@ This complex packaging retains the two real coordinates. Correlation measured
 on particular trajectories does not reduce their algebraic degrees of freedom
 or establish completeness of the field representation.
 
-### 3.6 Emergent Invariants
+<a id="36-emergent-invariants"></a>
+### 3.6 Algebraic field diagnostics
 
 The following algebraic read-outs combine the fields. Their conventional names
 do not prove conservation, quantization or physical dimensional compatibility:
@@ -1111,7 +1112,7 @@ examples rather than inferring an object or a complete law from topology alone.
 
 ## 12. References
 
-- [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) — U1–U6 derivations
+- [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) — U1–U6 admission rules, policies and scoped mathematical implications
 - [MINIMAL_STRUCTURAL_DEGREES.md](MINIMAL_STRUCTURAL_DEGREES.md) — Four diagnostic channels and open reconstruction/minimality questions
 - [DIAGNOSTIC_AND_GRAMMAR_SCOPE.md](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md) — Exact hypotheses, numerical policies, and finite-graph witnesses
 - [Theory reading routes](README.md#choose-a-question) — Locate the state, evolution, diagnostic and implementation owner for a question

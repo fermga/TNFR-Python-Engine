@@ -18,7 +18,7 @@ stationary state by fitting a numerical residual.
 | Execution boundary | No source assessment, trajectory, eigensolver, scan, parameter tuning or root search beyond enclosure of this single analytically proved cubic root |
 
 No numerical result or passing verdict is asserted by this declaration.
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns activation and the next task; this illustration creates no second queue.
 
 ## 1. Question, complete model and candidate sector

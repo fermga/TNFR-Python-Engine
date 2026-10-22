@@ -14,7 +14,7 @@ response, noise, work and identity requirements simultaneously.
 The argument uses the retained coefficient through exact homogeneity
 and a derived delayed-work estimate. It evaluates no new coefficient,
 source, nonlinear trajectory or response sweep. The
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+[research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns selection of a later intervention or evaluation.
 
 <a id="sine-amplitude-model-and-scaling"></a>

@@ -6,7 +6,7 @@ condition, and a strictly signed nominal nonlinear rate distinction between
 resource-matched initial controls. A lobe is a region of concentrated full-state amplitude; a chosen
 sum does not supply independent dynamical constituents or an NFR identity.
 This is analytical admission, not an evaluated trajectory, formation result
-or physical identification. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+or physical identification. The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns this branch's status and any later response evaluation.
 
 ## 1. Complete state and a bounded one-carrier preparation

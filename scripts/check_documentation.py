@@ -13,17 +13,35 @@ import sys
 from collections import Counter
 from contextlib import redirect_stdout
 from datetime import date
+from html import escape
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 SRC = REPO_ROOT / "src"
 # The path may already follow site-packages (for example through PYTHONPATH).
 # Documentation must consume this checkout, never an older installed release.
 if str(SRC) in sys.path:
     sys.path.remove(str(SRC))
 sys.path.insert(0, str(SRC))
+
+from scripts.research_book import (
+    BOOK_PATH,
+    chapter_id,
+    compatibility_view_drift,
+    documents,
+    front,
+    is_modular,
+    read_book,
+    read_document,
+    render_program,
+    write_book,
+    write_compatibility_views,
+    write_document,
+)
 
 
 def require(condition: bool, message: str) -> None:
@@ -195,6 +213,8 @@ DOCS_CATALOG_END = "<!-- END DOCS CATALOG -->"
 DOCS_NAVIGATION_START = "# BEGIN GENERATED DOCS NAVIGATION"
 DOCS_NAVIGATION_END = "# END GENERATED DOCS NAVIGATION"
 MAX_DOCUMENTATION_OWNER_LINES = 4_000
+MAX_RESEARCH_PROGRAM_BYTES = 96 * 1024
+RESEARCH_BOOK = BOOK_PATH
 
 
 def _catalog_entries(
@@ -253,24 +273,42 @@ def _catalog_paths(directory: str) -> set[Path]:
     index = REPO_ROOT / directory / "README.md"
     folder = index.parent.resolve()
     excluded = folder / ("research/archive" if directory == "theory" else "assets")
+    candidates = set(folder.rglob("*.md")) | {
+        REPO_ROOT / relative
+        for relative in documents(REPO_ROOT)
+        if relative.endswith(".md")
+    }
     return {
         path.resolve()
-        for path in folder.rglob("*.md")
-        if path.resolve() != index.resolve()
+        for path in candidates
+        if path.resolve().is_relative_to(folder)
+        and path.resolve() != index.resolve()
         and not path.resolve().is_relative_to(excluded)
     }
 
 
 def check_documentation_size() -> None:
-    """Bound maintained owner size using the existing catalog scope."""
+    """Bound each logical owner and the book front, not the complete container."""
+    if is_modular(REPO_ROOT):
+        program_bytes = (REPO_ROOT / RESEARCH_BOOK).stat().st_size
+        require(
+            program_bytes <= MAX_RESEARCH_PROGRAM_BYTES,
+            f"{RESEARCH_BOOK} has {program_bytes} bytes "
+            f"(limit {MAX_RESEARCH_PROGRAM_BYTES}); "
+            "keep the current program compact and technical results in their chapters",
+        )
     for directory in ("theory", "docs"):
         owners = _catalog_paths(directory) | {
             (REPO_ROOT / directory / "README.md").resolve()
         }
         for path in sorted(owners):
-            with path.open(encoding="utf-8") as document:
-                line_count = sum(1 for _ in document)
             relative = path.relative_to(REPO_ROOT.resolve()).as_posix()
+            document = (
+                front(REPO_ROOT)
+                if relative == RESEARCH_BOOK
+                else read_document(REPO_ROOT, path)
+            )
+            line_count = sum(1 for _ in io.StringIO(document, newline=None))
             require(
                 line_count <= MAX_DOCUMENTATION_OWNER_LINES,
                 f"{relative} has {line_count} physical lines "
@@ -311,7 +349,104 @@ def _check_catalog(directory: str, entries: list[tuple[str, str, Path]]) -> None
 
 
 def _theory_catalog_entries() -> list[tuple[str, str, Path]]:
+    if (REPO_ROOT / RESEARCH_BOOK).is_file():
+        book = read_book(REPO_ROOT)
+        entries = [
+            (
+                "Research program",
+                "TNFR research program",
+                (REPO_ROOT / RESEARCH_BOOK).resolve(),
+            )
+        ]
+        entries.extend(
+            (chapter.group, chapter.title, (REPO_ROOT / chapter.path).resolve())
+            for chapter in book.chapters
+        )
+        entries.extend(
+            ("Published guide routes", alias.title, (REPO_ROOT / alias.path).resolve())
+            for alias in book.aliases
+            if alias.path.startswith("theory/") and alias.path.endswith(".md")
+        )
+        return entries
     return _catalog_entries("theory", THEORY_CATALOG_START, THEORY_CATALOG_END)
+
+
+def theory_catalog_region(document: str) -> tuple[int, int]:
+    """Locate the generated catalog while retaining the index's published IDs."""
+    return _generated_region(
+        document, THEORY_CATALOG_START, THEORY_CATALOG_END, "theory catalog"
+    )
+
+
+def render_theory_catalog() -> str:
+    """Render the book metadata as links usable in the physical repository."""
+    book = read_book(REPO_ROOT)
+    chapter_paths = {chapter.path for chapter in book.chapters}
+    modular = is_modular(REPO_ROOT)
+
+    def label(value: str) -> str:
+        return (
+            escape(value, quote=False)
+            .replace("\\", "&#92;")
+            .replace("|", "&#124;")
+            .replace("[", "&#91;")
+            .replace("]", "&#93;")
+            .replace("`", "&#96;")
+            .replace("\r", " ")
+            .replace("\n", " ")
+        )
+
+    rows = []
+    previous_group = None
+    for group, title, path in _theory_catalog_entries():
+        if group != previous_group:
+            if rows:
+                rows.append("")
+            rows.extend(
+                [f"## {label(group)}", "", "| Chapter | Source |", "| --- | --- |"]
+            )
+            previous_group = group
+        relative = path.relative_to(REPO_ROOT.resolve()).as_posix()
+        target = Path(RESEARCH_BOOK).name
+        if relative == RESEARCH_BOOK:
+            scope = (
+                "Objective, current decision and chapter routes"
+                if modular
+                else "Objective, current decision and complete theory"
+            )
+        elif relative in chapter_paths:
+            target = (
+                Path(relative).relative_to("theory").as_posix()
+                if modular
+                else target + "#" + chapter_id(relative)
+            )
+            scope = "Maintained technical chapter" if modular else "Sourcebook chapter"
+        else:
+            target += "#research-current-question"
+            scope = "Generated link to the current program"
+        rows.append(f"| [{label(title)}]({target}) | {scope} |")
+    return "\n".join(rows)
+
+
+def update_theory_catalog() -> None:
+    """Regenerate only the book catalog, preserving surrounding bytes and IDs."""
+    if not (REPO_ROOT / RESEARCH_BOOK).is_file():
+        return
+    path = REPO_ROOT / "theory/README.md"
+    original = path.read_bytes()
+    document = original.decode("utf-8")
+    start, end = theory_catalog_region(document)
+    if is_modular(REPO_ROOT):
+        # Keep the editor-visible compatibility links in the physical program
+        # synchronized with the same metadata used by the site and catalog.
+        write_book(REPO_ROOT, read_book(REPO_ROOT))
+        write_compatibility_views(REPO_ROOT)
+    rendered = render_theory_catalog()
+    if document[start:end].replace("\r\n", "\n").strip("\n") == rendered:
+        return
+    newline = "\r\n" if b"\r\n" in original else "\n"
+    region = newline * 2 + rendered.replace("\n", newline) + newline * 2
+    path.write_bytes((document[:start] + region + document[end:]).encode("utf-8"))
 
 
 def _docs_catalog_entries() -> list[tuple[str, str, Path]]:
@@ -320,6 +455,27 @@ def _docs_catalog_entries() -> list[tuple[str, str, Path]]:
 
 def check_theory_catalog() -> None:
     """Require one primary row per maintained theory owner, excluding archives."""
+    if (REPO_ROOT / RESEARCH_BOOK).is_file():
+        if is_modular(REPO_ROOT):
+            require(
+                (REPO_ROOT / RESEARCH_BOOK).read_bytes()
+                == render_program(read_book(REPO_ROOT)),
+                "program chapter routes drifted; run "
+                "scripts/check_documentation.py --write-generated",
+            )
+            drift = compatibility_view_drift(REPO_ROOT)
+            require(
+                not drift,
+                "generated compatibility views drifted: "
+                + ", ".join(drift)
+                + "; run scripts/check_documentation.py --write-generated",
+            )
+        document = (REPO_ROOT / "theory/README.md").read_text(encoding="utf-8")
+        start, end = theory_catalog_region(document)
+        require(
+            document[start:end].strip("\n") == render_theory_catalog(),
+            "theory catalog drifted; run scripts/check_documentation.py --write-generated",
+        )
     _check_catalog("theory", _theory_catalog_entries())
 
 
@@ -542,22 +698,21 @@ def render_grammar_roles_table() -> str:
 
 def update_grammar_view() -> None:
     path = REPO_ROOT / "theory/UNIFIED_GRAMMAR_RULES.md"
-    document = path.read_text(encoding="utf-8")
+    document = read_document(REPO_ROOT, path)
     start, end = grammar_region(document)
-    path.write_text(
+    write_document(
+        REPO_ROOT,
+        path,
         document[:start]
         + "\n\n"
         + render_grammar_roles_table()
         + "\n\n"
         + document[end:],
-        encoding="utf-8",
     )
 
 
 def check_grammar_view() -> None:
-    document = (REPO_ROOT / "theory/UNIFIED_GRAMMAR_RULES.md").read_text(
-        encoding="utf-8"
-    )
+    document = read_document(REPO_ROOT, "theory/UNIFIED_GRAMMAR_RULES.md")
     start, end = grammar_region(document)
     require(
         document[start:end].strip() == render_grammar_roles_table(),
@@ -642,6 +797,7 @@ def check_build_inputs() -> None:
         "scripts/prepare_docs.py",
         "scripts/verify_internal_references.py",
         "scripts/check_glossary.py",
+        "scripts/research_book.py",
     ):
         require(
             (REPO_ROOT / relative).is_file(), f"missing documentation input: {relative}"
@@ -653,13 +809,14 @@ def main() -> int:
     parser.add_argument(
         "--write-generated",
         action="store_true",
-        help="Refresh operator contracts, grammar roles, theory/docs navigation and the concept-card index",
+        help="Refresh operator contracts, grammar roles, book catalog, theory/docs navigation and the concept-card index",
     )
     args = parser.parse_args()
     if args.write_generated:
         update_glossary_index()
         update_contract_view()
         update_grammar_view()
+        update_theory_catalog()
         update_theory_navigation()
         update_docs_navigation()
     checks = (

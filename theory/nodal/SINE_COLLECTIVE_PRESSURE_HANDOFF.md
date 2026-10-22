@@ -8,7 +8,7 @@ per-target IL phase-error certificate was unresolved in the original report;
 a [separate retained-input review](#collective-pressure-phase-review) now
 certifies the original error allowance. Direct endpoint and work checks have
 independent support. The
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+[research program](../RESEARCH_PROGRAM.md#research-current-question)
 alone selects further work; the result and its accuracy distinction remain here.
 No additional pressure law, event selector or research queue is introduced.
 

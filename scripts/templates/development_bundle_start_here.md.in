@@ -13,10 +13,8 @@ byte-identical agent mirror remain authoritative for this snapshot.
 ## Start from the maintained owners
 
 - [README](README.md): present model and organized-object example.
-- [Theory catalog](theory/README.md) and
-  [NFR ontology](theory/EMERGENT_ONTOLOGY.md): definitions and conditional results.
-- [Execution plan](theory/research/FIVE_STAGE_EXECUTION_PLAN.md): the sole
-  research queue, active question and stopping condition.
+- [Theory catalog](theory/README.md): entry to the research sourcebook,
+  definitions, conditional proofs, active question and stopping conditions.
 - [Architecture](ARCHITECTURE.md), [API contracts](docs/API_CONTRACTS.md),
   [contributing](CONTRIBUTING.md) and [testing](TESTING.md): implementation and
   verification boundaries.

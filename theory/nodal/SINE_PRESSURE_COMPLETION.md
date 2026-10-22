@@ -5,7 +5,7 @@ contact after the [IL/OZ handoff](SINE_COLLECTIVE_PRESSURE_HANDOFF.md).
 The result is a conditional incompatibility between specified requirements,
 with explicit countermodels when a requirement is dropped. It neither selects
 a pressure-memory law nor requires every organization to realize every operator.
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns task status. No trajectory or new operator response is evaluated here.
 
 <a id="pressure-completion-premises"></a>

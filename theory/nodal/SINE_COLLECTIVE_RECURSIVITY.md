@@ -10,7 +10,7 @@ continuous nodal dynamics or automatically select when to apply it.
 This owner specializes existing mechanisms to the
 [weighted sine law](SINE_COLLECTIVE_RECEPTION.md#1-complete-model-and-event-boundary)
 and [contextual collective chart](SINE_COLLECTIVE_IDENTITY_TRANSITION.md#2-a-contextual-chart-for-the-exact-twin-stratum).
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md) owns task order;
+The [research program](../RESEARCH_PROGRAM.md#research-current-question) owns task order;
 the [runtime REMESH derivation](../REMESH_INFINITY_DERIVATION.md#11-exact-raw-update)
 and [event contracts](../../docs/contracts/OPERATOR_EVENTS.md) retain the
 general map, transactions, history advancement and recurrence results.

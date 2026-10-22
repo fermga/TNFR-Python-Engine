@@ -60,7 +60,7 @@ declared obsolete merely because they are outside the routine gate. Add a new
 production-field regression to `testpaths` when it belongs in that gate. A
 routine pass is not a claim that every mathematical campaign was replayed.
 
-Choose affected mechanisms through the [theory-to-execution map](theory/README.md#theory-to-execution),
+Choose affected mechanisms through the [theory-to-execution map](theory/RESEARCH_PROGRAM.md#theory-to-execution),
 then inspect their source and tests. That map links shared implementations,
 representative controls and theorem owners; this guide does not maintain a
 second inventory of research results or individual test cases.
@@ -146,7 +146,7 @@ monitors, activity policies and pressure refresh must match the studied path.
 
 ## Select research checks by contract
 
-Use the [theory-to-execution map](theory/README.md#theory-to-execution) to select
+Use the [theory-to-execution map](theory/RESEARCH_PROGRAM.md#theory-to-execution) to select
 the affected proof, shared implementation and test owners. Inspect those tests
 before invoking them: explicit research paths override the routine testpaths,
 and a producer's availability does not authorize new evaluated responses.
@@ -172,8 +172,8 @@ regression: its original unresolved interval-width outcome remains evidence.
 Likewise, the prepared-envelope, relative-probe and maintained-successor
 instruments keep their frozen protocols, budgets and response permissions.
 Select their read-only evidence consumers for documentation or parser changes.
-The [execution plan](theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-alone admits new research evaluation.
+The [research program's current question](theory/RESEARCH_PROGRAM.md#research-current-question)
+alone schedules new research evaluation under its stated admission conditions.
 
 ### Boundaries that need explicit regression coverage
 
@@ -440,11 +440,17 @@ python scripts/prepare_docs.py
 python -m mkdocs build --strict
 ```
 
-The reference checker accepts `--dirs` followed by files or directories to
-bound the check; a missing selected path fails instead of silently checking
-nothing. The staging script copies repository owners into
-`build/docs-source/`; MkDocs renders that generated source into `site/`.
-Edit the repository owners, never either generated tree. The documentation
+The reference checker accepts `--dirs` followed by files or directories,
+including logical research chapter paths, to bound the check; an unknown
+selected path fails instead of silently checking nothing. The staging script
+validates the modular catalog and canonical chapter files before replacing
+`build/docs-source/`, then stages the small program, chapters at their original
+routes and other repository owners.
+MkDocs renders that generated source into `site/`. Chapter links and frozen
+evidence associations retain their original contexts. Edit canonical research
+chapters directly, or use the optional reader workflow in
+[Contributing](CONTRIBUTING.md#documentation), never either generated tree.
+The documentation
 stager queries Git once for recursive source trees: tracked files remain
 eligible even when an ignore pattern matches, and untracked nonignored work
 remains eligible. Git-ignored generated artifacts are omitted. The existing
@@ -455,6 +461,11 @@ checkout stops before replacing the previous stage.
 
 The documentation integrity check also validates the theory catalog, its
 generated navigation, operator contracts, grammar roles and glossary cards/index.
+Its 4,000-line limit applies to each chapter, program and maintained guide; the
+program also has a 96-KiB file budget to prevent a return to a corpus-sized
+preview. Research storage changes need the `tests/scripts/test_research_book*.py` contracts plus
+the affected documentation and retained-evidence readers, without replaying
+scientific producers.
 Regenerate views with
 `python scripts/check_documentation.py --write-generated` after changing their
 source declarations, then rerun the read-only check.

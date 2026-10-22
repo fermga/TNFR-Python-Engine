@@ -32,7 +32,7 @@ for its response, transformations admitted on that state, and observations of
 the resulting behavior. Collective means or identity labels do not automatically
 close a law. Requested operator actions require live targets and grammar
 context; their availability does not select their occurrence. The
-[collective readiness contract](theory/EMERGENT_ONTOLOGY.md#collective-grammar-readiness)
+[collective readiness contract](theory/EMERGENT_ONTOLOGY.md)
 owns these mathematical obligations.
 
 ## Implementation owners
@@ -68,7 +68,7 @@ owns these mathematical obligations.
 | JSON report I/O | [`sdk/utils.py`](src/tnfr/sdk/utils.py); delegates to shared decoding/writing, also used by the CLI and fluent `save()` |
 | Research artifact records and byte integrity | [`research/artifact_io.py`](src/tnfr/research/artifact_io.py); exact tagged records, bounded reads/hashes, receipts, ZIP inventory and exclusive creation; scientific admission remains with each consumer |
 | Pinned frozen-source preparation | [`research/frozen_source.py`](src/tnfr/research/frozen_source.py); explicit freeze-schema inspection and detached source restoration, without evaluator execution or runtime certification |
-| Model-specific research instruments | [Theory-to-execution map](theory/README.md#theory-to-execution); each instrument retains its own state, law and evidence admission |
+| Model-specific research instruments | [Theory-to-execution map](theory/RESEARCH_PROGRAM.md#theory-to-execution); each instrument retains its own state, law and evidence admission |
 | Configured validation orchestration | [`validation/validator.py`](src/tnfr/validation/validator.py); fresh checks, shared input/precondition owners and explicit runtime clamp effects |
 | Manifest graph transport | [`engines/manifest.py`](src/tnfr/engines/manifest.py); strict v1 records for the supported finite JSON state subset |
 | Buffered event storage | [`telemetry/unified_telemetry_system.py`](src/tnfr/telemetry/unified_telemetry_system.py); shared capture/flush path using `utils.io` atomic writes |
@@ -141,7 +141,7 @@ Selection occurs at each outer call's left boundary; integrator subdivision
 does not add decisions. The capacity gate reads retained pressure and Si after
 integration and phase coordination. Changing those decision times or refreshing
 inputs at another boundary changes the supplied hybrid model; see
-[native selector timing and inputs](theory/NATIVE_OPERATOR_DYNAMICS.md#native-selector-clock-admission).
+[native selector timing and inputs](theory/NATIVE_OPERATOR_DYNAMICS.md).
 
 ### Foundational integration boundaries
 
@@ -149,7 +149,7 @@ Shared admission precedes materialization, caching and arithmetic:
 `_exact_time.py` admits represented real values, `types.py` signed scalar form,
 and `alias.py` authoritative attribute access. Each consuming law declares
 required coordinates and defaults. The
-[parameter ledger](theory/NODAL_PARAMETER_FOUNDATIONS.md#11-thresholds-constants-and-numerical-settings-have-different-duties)
+[parameter ledger](theory/NODAL_PARAMETER_FOUNDATIONS.md)
 classifies units and thresholds; a diagnostic policy does not select a law.
 
 Pressure and integration keep distinct owners. Graph/dense pure-EPI paths use
@@ -241,7 +241,7 @@ from `dynamics/relational.py`. They add their own domain, symmetry, positive
 capacity/loss and uncertainty premises. Validated trajectories share the Taylor
 kernel; static basin readers do not execute an integrator or mutate a graph.
 
-The [theory-to-execution map](theory/README.md#theory-to-execution) owns the
+The [theory-to-execution map](theory/RESEARCH_PROGRAM.md#theory-to-execution) owns the
 module/proof/test inventory. Public admission and outputs belong to the
 [native relational contract](docs/contracts/relational/RELATIONAL_CAPTURE_AND_MEMORY.md).
 A small residual cannot substitute for a theorem's full hypothesis set.
@@ -272,7 +272,7 @@ source evidence. Isolated-process checks enforce these dependency boundaries.
 An observed sector remains partial information: a later interaction still
 needs carried coordinates or an endpoint enclosure and the actual contact law.
 The [regional instrument guide](docs/guides/REGIONAL_AND_RELATIONAL.md#detached-collective-organization-instruments)
-routes these interfaces, and the [theory-to-execution map](theory/README.md#theory-to-execution)
+routes these interfaces, and the [theory-to-execution map](theory/RESEARCH_PROGRAM.md#theory-to-execution)
 owns their source and test inventory.
 
 The [organized source port](theory/nodal/ORGANIZED_SOURCE_PORT.md) connects
@@ -298,7 +298,7 @@ owns those interfaces. A static correlated error set, a captured state, a
 symbolic invariant family and a validated endpoint box are different inputs.
 A chosen moving reference is not a frozen environmental node.
 
-The [scientific connection map](theory/EMERGENT_ONTOLOGY.md#pulse-resonance-scale-connections)
+The [scientific connection map](theory/EMERGENT_ONTOLOGY.md)
 owns the mathematical implications of reuse. A tangent memory kernel cannot
 replace a different nonlinear environment; off-family deviations remain part
 of collective interaction.
@@ -337,8 +337,8 @@ immutable freeze, source restoration and first-outcome execution.
 The [benchmark catalog](benchmarks/README.md) owns instrument selection and
 lifecycle. Preparation, prospective prediction, reserved evaluation and
 retrospective analysis remain distinct. Available code or a saved verdict does
-not create another campaign: the [execution plan](theory/research/FIVE_STAGE_EXECUTION_PLAN.md)
-alone schedules research.
+not create another campaign: the [research program](theory/RESEARCH_PROGRAM.md#research-current-question)
+alone schedules research under its current question and admission conditions.
 
 ### Operator events and history
 
@@ -564,10 +564,24 @@ responsibility; specialized cache and count telemetry keep their own owners.
 ## Documentation architecture
 
 The [documentation map](docs/README.md) owns guide responsibilities and update
-rules. The [theory index](theory/README.md) owns scientific reference status;
-the [execution plan](theory/research/FIVE_STAGE_EXECUTION_PLAN.md) owns research
-work. Generated contract tables read the registry; historical captures retain
-their original context and do not redefine current behavior.
+rules. The [research program](theory/RESEARCH_PROGRAM.md#research-current-question)
+contains the objective and sole active question, with links to the technical
+chapters. Each chapter has one canonical Markdown file. The
+[theory index](theory/README.md) is a generated navigation view. Definitions,
+conditional results, counterexamples and open premises retain their distinct
+status in their respective owners.
+
+[`scripts/research_book.py`](scripts/research_book.py) reads chapter metadata
+from `theory/research_catalog.json` and content from canonical chapter files.
+It preserves the reader API for historical monolithic captures. Direct file
+edits are visible to all consumers; optional `list`, `extract` and `replace`
+commands support focused work. Staging resolves each chapter in its original
+link context and publishes the same routes. The program has a separate 96-KiB
+preview budget; the execution map is its own chapter. The old
+plan, strategy and portfolio routes are generated inactive compatibility views.
+The editorial size check applies to each chapter and the front separately.
+Generated contract tables read the registry; frozen captures retain their
+original paths, hashes and historical context without redefining current work.
 
 Documentation checks, staging and site construction are described in
 [scripts/README](scripts/README.md). Publication triggers and permissions belong

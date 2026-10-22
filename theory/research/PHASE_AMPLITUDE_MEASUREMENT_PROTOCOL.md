@@ -4,7 +4,7 @@
 physical prediction `not_tested`; exact-model data search parked after the
 bounded review below.** This is the observation annex for the
 [derived phase/amplitude candidate](../nodal/DERIVED_FORM_PHASE.md#unequal-capacity-mode-selection-and-a-finite-phase-only-discriminator).
-The [execution plan](FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) owns scheduling;
+The [research program](../RESEARCH_PROGRAM.md#research-current-question) owns scheduling;
 the [existing source inventory](archive/measurement/TRANSPORT_SOURCE_REVIEWS.md#terrestrial-source-review-2026-09-21)
 owns general dataset descriptions. This document owns the candidate-specific
 measurement map, resolution criterion and source admission decision. It does

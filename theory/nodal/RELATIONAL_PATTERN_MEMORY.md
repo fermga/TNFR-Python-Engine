@@ -28,7 +28,7 @@ recovery and formation claims must retain the live environment. Related
 own complete-law hypotheses.
 
 Section numbers remain stable. The
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+[research program](../RESEARCH_PROGRAM.md#research-current-question)
 alone assigns research work; retained case studies do not activate campaigns.
 
 ## 1. Exact symmetry quotient: ten even and eight odd coordinates

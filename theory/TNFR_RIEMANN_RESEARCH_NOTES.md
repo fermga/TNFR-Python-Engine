@@ -6,7 +6,7 @@ no derived Hilbert–Pólya bridge, and no autonomous arithmetic NFR mechanism.
 not rerun for this consolidation.
 **Authority**: this note owns the current scope of the arithmetic comparison.
 The active research queue remains in
-[FIVE_STAGE_EXECUTION_PLAN.md](research/FIVE_STAGE_EXECUTION_PLAN.md).
+[research program](RESEARCH_PROGRAM.md#research-current-question).
 
 ## 1. Current conclusion
 

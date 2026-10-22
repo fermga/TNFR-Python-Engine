@@ -13,7 +13,7 @@ tangent model's own quadratic interaction.
 This is a response-free theorem under the supplied smooth-sine law. Static
 graph powers and rational inequalities are evaluated; no trajectory,
 finite-time variational coefficient or retained response is evaluated here.
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns the next gate. Structural storage is not identified with physical energy.
 
 <a id="sine-storage-complete-comparison"></a>

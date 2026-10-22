@@ -18,7 +18,7 @@ unchanged. This audit derives laboratory-unit consequences and reviews
 methods/specifications; it acquires no experimental response, fits no
 coefficient and reruns no frozen producer. A published method is not a
 calibration certificate for a proposed assembly. The
-[execution plan](FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) alone owns
+[research program](../RESEARCH_PROGRAM.md#research-current-question) alone owns
 the next task.
 
 ## 1. Complete object and physical reference

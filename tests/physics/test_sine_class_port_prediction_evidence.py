@@ -17,6 +17,7 @@ from pathlib import Path
 
 import pytest
 
+from scripts.research_book import read_document_bytes
 from tests.sine_evidence_helpers import forbid_sine_regeneration
 from tnfr.mathematics._rational_interval import I, cos, pi_interval, sin
 from tnfr.research.artifact_io import (
@@ -220,7 +221,9 @@ def test_full_base_overlays_receipts_and_prospective_proof(retained):
         assert _integer(receipt["bytes"]) == len(source[receipt["path"]])
     proof_path = "theory/nodal/SINE_CLASS_CHANGED_INPUT_PREDICTION.md"
     archived = source[proof_path].decode("utf-8").replace("\r\n", "\n")
-    current = (ROOT / proof_path).read_text(encoding="utf-8").replace("\r\n", "\n")
+    current = (
+        read_document_bytes(ROOT, proof_path).decode("utf-8").replace("\r\n", "\n")
+    )
     assert current.startswith(archived)
     assert 'id="sine-changed-input-causal-numerics"' in archived
     assert "No reduction of the reading error" in archived

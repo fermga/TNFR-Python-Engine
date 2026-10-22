@@ -8,7 +8,7 @@ the constituent state needed to describe native execution. A sufficient
 coordinate description does not itself establish operator inheritance.
 This owner also identifies the state needed when an inherited partial
 transition reaches its clipping boundary.
-The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](RESEARCH_PROGRAM.md#research-current-question)
 owns the research queue.
 
 The results below concern a declared arithmetic aggregation and restricted

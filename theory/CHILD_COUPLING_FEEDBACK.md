@@ -12,7 +12,7 @@ Recovery of an earlier relative pattern requires a fixed comparison target.
 **Research status:** The regional-response and C6 continuations recorded here
 are parked. Their hypotheses, obstructions and historical follow-ups remain
 reusable evidence; they are not active instructions. Scientific resumption
-belongs only to the [current G3 gate](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).
+belongs only to the [research program](RESEARCH_PROGRAM.md#research-current-question).
 
 ## 1. Closing an existing structural feedback path
 

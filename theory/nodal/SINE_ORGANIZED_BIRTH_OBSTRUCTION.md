@@ -9,7 +9,7 @@ for one snapshot or a small-window limit.
 
 This is a source-specific result about the child-creation condition. THOL also
 has a pressure action that does not require crossing the child threshold.
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns research status; the [hierarchy contract](SINE_COLLECTIVE_HIERARCHY.md)
 owns the operator's temporal observation and separate admission requirements.
 

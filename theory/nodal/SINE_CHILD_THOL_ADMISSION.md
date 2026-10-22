@@ -9,7 +9,7 @@ and lifecycle state. No trajectory or new temporal samples are evaluated in that
 continuation. The reset requires the actor's actual neighbor, hierarchy,
 identifiers and represented arithmetic.
 
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns status. The [acquisition owner](SINE_CHILD_GRAMMAR_TIMING.md#child-history-acquisition-result)
 owns the numerical history; the [operator contract](../STRUCTURAL_OPERATORS.md#62-self-organization-thol),
 [collective hierarchy](SINE_COLLECTIVE_HIERARCHY.md) and

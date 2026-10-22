@@ -4,7 +4,7 @@ This result admits a prospective finite reading after four actual `AL → SHA`
 preparations of the retained weighted-star contact. It supplies an error and
 identity certificate under one specified complete law. No reserved trajectory,
 finite response or physical measurement has been evaluated. The
-[execution plan](FIVE_STAGE_EXECUTION_PLAN.md#relative-coupling-probe-admission)
+[research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns scheduling; [relation foundations](../nodal/RELATION_FOUNDATIONS.md#matched-finite-phase-probe)
 owns the general matched-phase remainder.
 

@@ -8,7 +8,7 @@ synchronized preparation does not select its occurrence.
 Part of [Native regional composition](RELATIONAL_PATTERN_COMPOSITION.md).
 Section numbers remain stable across this collection. Each result keeps
 its full hypotheses, implementation and checks; the
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+[research program](../RESEARCH_PROGRAM.md#research-current-question)
 alone assigns research work.
 
 <a id="one-bridge-interface-admission"></a>

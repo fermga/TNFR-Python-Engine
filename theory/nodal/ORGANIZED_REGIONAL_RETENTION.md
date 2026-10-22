@@ -15,7 +15,7 @@ requires the retained constituent and boundary state when discussing a
 collective identity. Here that identity is the integer winding on each
 marked C9, with its continuous phase lift, fine form and incident contacts
 retained. It is not a complete description of an NFR or a physical identity.
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 alone owns subsequent research priorities.
 
 ## Complete law, clock and regional balance

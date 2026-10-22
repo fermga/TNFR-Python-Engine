@@ -13,7 +13,7 @@ orders without changing the real nodal model.
 This is a conditional coefficient calculation and finite-error theorem.
 It executes no formation assessment or nonlinear reserved trajectory and
 does not reuse the retained class-two response as new cross-class data.
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns its research status.
 
 <a id="sine-cubic-source-and-observer"></a>

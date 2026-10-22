@@ -1,14 +1,111 @@
-"""Exact modified-energy kernels for conditional reciprocal-potential recovery.
+"""Exact modified-energy kernels for conditional reciprocal-law recovery.
 
 Public owners admit the full law, mean leaf, acute trapping neighborhood and
 primitive values. These private kernels take normalized rational bounds only;
 they neither admit a report nor establish those geometric premises. They run
 no exponential evaluator, choose no clock or horizon, and cache no evidence.
+
+The common-quadratic helpers allow a time-varying symmetric stiffness under
+fixed matrix bounds; their metric does not consume a stiffness derivative.
+The separate fixed-potential helpers retain their autonomous gradient and
+target-potential premises. Neither theorem transfers those premises to the
+other mechanism.
 """
 
 from __future__ import annotations
 
 from fractions import Fraction as Q
+
+from .._exact_time import exact_or_represented_real
+
+
+def _quadratic_rational(value: Q, name: str) -> Q:
+    """Require rational bounds and normalize fixed-width integer payloads."""
+    if not isinstance(value, Q):
+        raise TypeError(f"{name} must be an exact Fraction bound")
+    return exact_or_represented_real(value, name)
+
+
+def _common_quadratic_gamma(lower: Q, upper: Q) -> None:
+    """Validate already normalized common-metric coupling bounds."""
+    if not Q(0) <= lower <= upper <= Q(1, 2):
+        raise ValueError("gamma bounds must satisfy 0 <= lower <= upper <= 1/2")
+
+
+def _sine_common_quadratic_coefficients(
+    *,
+    gamma_lower: Q,
+    gamma_upper: Q,
+    cosine_lower: Q,
+    gap_lower: Q,
+    capacity_lower: Q,
+    capacity_upper: Q,
+) -> tuple[Q, Q, Q]:
+    """Return norm metric bounds and a common quadratic decay rate.
+
+    For ``a'=-(V H a+gamma V K b)/4`` and ``b'=gamma V H a/4``, let
+    ``W=a^T V^-1 a+b^T V^-1 b+2 gamma a^T V^-1 b``. The caller proves
+    symmetric ``H >= gap_lower I``, ``cosine_lower H <= K <= H`` and
+    positive fixed diagonal V with the supplied capacity bounds. K may vary
+    with time or state; no derivative of K enters this metric's identity.
+
+    The returned ``(lower, upper, rate)`` satisfy
+    ``lower ||(a,b)||^2 <= W <= upper ||(a,b)||^2`` and ``W' <= -rate W``
+    under those hypotheses. Bounds obey ``0 <= gamma_lower <= gamma_upper
+    <= 1/2``, ``0 <= cosine_lower <= 1`` and positive gap and capacities.
+    Zero lower coupling or cosine gives rate zero, not positive recovery.
+    All bounds must be Fractions; their payloads normalize before algebra.
+    Geometry, trapping, clocks and event jumps remain caller obligations.
+    """
+    gamma_lower = _quadratic_rational(gamma_lower, "gamma_lower")
+    gamma_upper = _quadratic_rational(gamma_upper, "gamma_upper")
+    cosine_lower = _quadratic_rational(cosine_lower, "cosine_lower")
+    gap_lower = _quadratic_rational(gap_lower, "gap_lower")
+    capacity_lower = _quadratic_rational(capacity_lower, "capacity_lower")
+    capacity_upper = _quadratic_rational(capacity_upper, "capacity_upper")
+    _common_quadratic_gamma(gamma_lower, gamma_upper)
+    if not Q(0) <= cosine_lower <= Q(1):
+        raise ValueError("cosine_lower must lie in [0, 1]")
+    if gap_lower <= 0:
+        raise ValueError("gap_lower must be positive")
+    if not 0 < capacity_lower <= capacity_upper:
+        raise ValueError("capacity bounds must satisfy 0 < lower <= upper")
+    return (
+        (1 - gamma_upper) / capacity_upper,
+        (1 + gamma_upper) / capacity_lower,
+        capacity_lower
+        * gamma_lower**2
+        * cosine_lower
+        * gap_lower
+        / (4 * (1 + gamma_upper)),
+    )
+
+
+def _sine_common_quadratic_initial_upper(
+    *,
+    gamma_lower: Q,
+    gamma_upper: Q,
+    weighted_square: Q,
+    weighted_cross: Q,
+) -> Q:
+    """Bound the common metric while retaining the signed mixed product.
+
+    The caller supplies ``weighted_square=sum((a_i^2+b_i^2)/nu_i)`` and
+    ``weighted_cross=sum(a_i*b_i/nu_i)`` from the same admitted state and
+    positive fixed V. Their necessary inequality is
+    ``weighted_square >= 2*abs(weighted_cross)``. A nonnegative mixed sum
+    uses gamma_upper; a negative one uses gamma_lower. No source or report
+    authentication is inferred from these scalar bounds.
+    """
+    gamma_lower = _quadratic_rational(gamma_lower, "gamma_lower")
+    gamma_upper = _quadratic_rational(gamma_upper, "gamma_upper")
+    weighted_square = _quadratic_rational(weighted_square, "weighted_square")
+    weighted_cross = _quadratic_rational(weighted_cross, "weighted_cross")
+    _common_quadratic_gamma(gamma_lower, gamma_upper)
+    if weighted_square < 2 * abs(weighted_cross):
+        raise ValueError("weighted_square must be >= 2*abs(weighted_cross)")
+    gamma = gamma_upper if weighted_cross >= 0 else gamma_lower
+    return weighted_square + 2 * gamma * weighted_cross
 
 
 def _sine_lyapunov_coefficients(

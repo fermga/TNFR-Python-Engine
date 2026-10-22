@@ -7,7 +7,7 @@ class that the word can preserve, and the larger state needed to predict its
 actual action. It instantiates the existing
 [operator and grammar descent criteria](../STRUCTURAL_OPERATORS.md#collective-grammar-descent)
 for this contact; it introduces neither a replacement retention radius nor a
-new constitutive law. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+new constitutive law. The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns subsequent work.
 
 ## 1. A marked phase class is not a sufficient state

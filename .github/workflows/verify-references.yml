@@ -6,6 +6,8 @@ on:
       - '**.md'
       - '**.ipynb'
       - 'scripts/verify_internal_references.py'
+      - 'scripts/research_book.py'
+      - 'theory/research_catalog.json'
       - '.github/workflows/verify-references.yml'
   push:
     branches:
@@ -15,6 +17,8 @@ on:
       - '**.md'
       - '**.ipynb'
       - 'scripts/verify_internal_references.py'
+      - 'scripts/research_book.py'
+      - 'theory/research_catalog.json'
       - '.github/workflows/verify-references.yml'
 
 concurrency:

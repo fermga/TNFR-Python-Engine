@@ -4,7 +4,7 @@ Symmetry obstructions, nonlinear orientation, source work and actual event occur
 
 Section numbers are stable locators across this document family.
 The [parameter reference](../NODAL_PARAMETER_FOUNDATIONS.md) owns the
-reading map; the [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+reading map; the [research program](../RESEARCH_PROGRAM.md#research-current-question)
 alone owns active tasks. Each result retains its stated model and scope.
 
 ## 17. Primitive phase origin: symmetry, retained state and the missing row

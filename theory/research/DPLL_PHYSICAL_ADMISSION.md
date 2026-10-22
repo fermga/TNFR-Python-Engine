@@ -15,7 +15,7 @@ realization supplies the state, law and independently justified observation
 premises needed by the existing TNFR sine inference. Selection is a
 methods review, not admission of measured responses or a prerequisite for
 deriving collective interaction properties from TNFR patterns. The
-[execution plan](FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) owns its status.
+[research program](../RESEARCH_PROGRAM.md#research-current-question) owns its status.
 
 The [ontology](../EMERGENT_ONTOLOGY.md#research-target-physical-properties-of-collective-patterns)
 allows collective physical observations; it does not identify electronic

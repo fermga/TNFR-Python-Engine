@@ -15,6 +15,7 @@ from pathlib import Path, PurePosixPath
 
 import pytest
 
+from scripts.research_book import read_document
 from tnfr.utils.io import json_loads
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -150,7 +151,7 @@ def test_outer_and_archive_hashes_protocol_and_base_overlay_association(evidence
 def test_prospective_prefix_and_single_archived_assessment_call():
     with zipfile.ZipFile(DIRECTORY / (STEM + ".source.zip")) as archive:
         prospective = archive.read(PROOF).decode("utf-8").replace("\r\n", "\n")
-        current = (ROOT / PROOF).read_text(encoding="utf-8").replace("\r\n", "\n")
+        current = read_document(ROOT, PROOF).replace("\r\n", "\n")
         assert current.startswith(prospective)
         assert 'id="sine-class-mediated-protocol"' in prospective
         assert 'id="sine-class-mediated-result"' not in prospective

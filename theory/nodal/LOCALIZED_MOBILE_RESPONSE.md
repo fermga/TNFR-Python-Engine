@@ -7,7 +7,7 @@ identity contract are unchanged. This is a detached calculation of an
 analytic Duhamel integral with a proved transfer to the complete nonlinear
 flow, not numerical integration of a nonlinear trajectory. It installs no
 new native flow or support event. The
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+[research program](../RESEARCH_PROGRAM.md#research-current-question)
 alone owns the next task.
 
 <a id="mobile-response-numerics"></a>

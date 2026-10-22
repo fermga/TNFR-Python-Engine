@@ -7,7 +7,7 @@ This design admission follows the [prepared matrix-response theorem](../nodal/OR
 It asks whether a finite observation with an explicit passive sensor can
 preserve a predictive consequence and support an independent physical test.
 The analytical declaration and result below remain reusable under their stated
-premises; the [execution plan](FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+premises; the [research program](../RESEARCH_PROGRAM.md#research-current-question)
 alone selects further work. No apparatus, measured response, source acquisition
 or fine-node extension is supplied by this mathematical design.
 

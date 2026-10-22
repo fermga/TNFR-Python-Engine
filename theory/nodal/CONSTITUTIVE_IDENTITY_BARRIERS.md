@@ -15,7 +15,7 @@ These are static and conditional complete-law results. A minimum over a
 phase-cell boundary is not the work consumed by an actual trajectory, an
 activation law or a proof that a source reaches that boundary. The
 [frozen sine-source loss](ORGANIZED_RECEIVER_ENCLOSURE.md#organized-receiver-enclosure-result)
-is preserved in its own model. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+is preserved in its own model. The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 remains the sole queue.
 
 <a id="constitutive-barrier-model"></a>

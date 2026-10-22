@@ -10,7 +10,7 @@ for nonstationary retention under the unchanged law. The
 53 branches through structural time `1/2` and proves a child-parent relative
 phase turn within that window.
 
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns gate status and subsequent scope. The discussion below introduces no
 new pressure, event selector, primitive coordinate or physical identification.
 This certificate was computed for a hypothetical UM family from the retained

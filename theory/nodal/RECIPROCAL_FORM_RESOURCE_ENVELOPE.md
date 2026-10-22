@@ -12,7 +12,7 @@ not a new TNFR axiom, a source mechanism or a sufficient preparation
 construction. The [form foundation](../FUNDAMENTAL_THEORY.md) and
 [parameter foundation](../NODAL_PARAMETER_FOUNDATIONS.md) retain their
 definitions. Task status belongs only to the
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).
+[research program](../RESEARCH_PROGRAM.md#research-current-question).
 
 ## 1. Complete law and admitted contact histories
 

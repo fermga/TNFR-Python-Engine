@@ -5,7 +5,7 @@ the [actual canonical contact](SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md).
 Registration is a supplied geometric observation. Calling an episode a new
 collective NFR additionally requires the identity, retained state and response
 obligations in the [ontology](../EMERGENT_ONTOLOGY.md#generative-bound-organization).
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md) alone queues work.
+The [research program](../RESEARCH_PROGRAM.md#research-current-question) alone queues work.
 
 The nonlinear continuation is the declared held weighted sine model. Its
 full real-lift tangent at consensus is a separate mathematical control, not

@@ -11,7 +11,7 @@ predicted successor. Primitive inclusion transfers the existing conditional
 half-unit motion certificate to that endpoint under its selected complete
 law. No new trajectory is evaluated; autonomous enlarged formation remains open.
 
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns status. The [actual retained birth](SINE_MAINTAINED_PARENT_THOL.md)
 provides primitive input. The [coupling owner](SINE_PAIR_COUPLING.md),
 [candidate-selection owner](SINE_PROXIMITY_CONTACT.md) and

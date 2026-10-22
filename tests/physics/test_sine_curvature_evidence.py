@@ -16,6 +16,7 @@ from pathlib import Path, PurePosixPath
 
 import pytest
 
+from scripts.research_book import read_document_bytes
 from tests.physics import test_sine_formed_evidence as retained_helpers
 from tnfr.mathematics._rational_interval import I, cos, sin
 from tnfr.research.relational_acquisition import _verify_archive
@@ -189,7 +190,7 @@ def test_prospective_prefix_public_worker_and_first_attempt_guard():
     with zipfile.ZipFile(DIRECTORY / (STEM + ".source.zip")) as archive:
         prospective = archive.read(PROOF)
         suffix = retained_helpers._documentation_suffix(
-            (ROOT / PROOF).read_bytes(), prospective
+            read_document_bytes(ROOT, PROOF), prospective
         )
         assert suffix is not None
         assert b"sine-curvature-reserved-protocol" in prospective

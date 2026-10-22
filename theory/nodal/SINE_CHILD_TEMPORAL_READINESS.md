@@ -13,7 +13,7 @@ admits the joint form, positive-pressure and acceleration conditions later in
 the already retained continuation. The child's missing measured history and
 executed U4b context remain independent obligations.
 
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns the next task. The [THOL compatibility owner](SINE_COLLECTIVE_HIERARCHY.md)
 defines acceleration, three-sample evidence and the separate event contracts;
 the [ontology](../EMERGENT_ONTOLOGY.md#collective-grammar-readiness) distinguishes

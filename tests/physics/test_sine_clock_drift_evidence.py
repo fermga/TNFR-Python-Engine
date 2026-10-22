@@ -16,6 +16,7 @@ from pathlib import Path, PurePosixPath
 
 import pytest
 
+from scripts.research_book import read_document_bytes
 from tests.physics import test_sine_curvature_evidence as curvature_audit
 from tests.physics import test_sine_formed_evidence as retained_helpers
 from tnfr.mathematics._rational_interval import I, cos, sin
@@ -187,7 +188,7 @@ def test_prospective_prefix_exclusive_attempt_and_public_worker():
     with zipfile.ZipFile(DIRECTORY / (STEM + ".source.zip")) as archive:
         prospective = archive.read(PROOF)
         suffix = retained_helpers._documentation_suffix(
-            (ROOT / PROOF).read_bytes(), prospective
+            read_document_bytes(ROOT, PROOF), prospective
         )
         assert suffix is not None
         assert b"sine-clock-drift-reserved-protocol" in prospective

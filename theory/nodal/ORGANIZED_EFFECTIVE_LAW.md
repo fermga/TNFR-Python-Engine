@@ -11,7 +11,7 @@ identities are conditional algebra. The [prepared-reference theorem](#prepared-m
 adds own-law identity retention, a finite response separation and a precise
 state-reduction obstruction. Acquisition of this preparation, fine-source
 inheritance and physical realization remain unestablished.
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 alone selects work and acceptance conditions.
 
 The question is how retained state, response and storage must change together

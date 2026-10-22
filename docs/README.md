@@ -2,8 +2,10 @@
 
 This map routes the maintained documentation for the checked-out source.
 Usage guides show how to call an interface, contracts specify admission and
-outputs, and [theory](../theory/README.md) owns definitions, hypotheses and
-proofs. Research priorities belong to the single execution plan.
+outputs, and the [research program](../theory/RESEARCH_PROGRAM.md#research-current-question)
+owns the objective, current question and chapters containing definitions,
+hypotheses and proofs. Its generated [chapter index](../theory/README.md)
+provides navigation.
 
 Start with the [root README](../README.md) for installation and an organized
 mathematical object, then use the
@@ -39,11 +41,11 @@ Choose the execution contract before following an example:
   pressure and operator events have different execution semantics.
 
 Use the [regional workflow index](guides/REGIONAL_AND_RELATIONAL.md) to find an
-interface and the [theory reading routes](../theory/README.md#choose-a-question)
+interface and the [theory reading routes](../theory/RESEARCH_PROGRAM.md#reading-the-research-as-one-program)
 to assess its scientific claim. A captured state, supplied invariant family,
 finite enclosure and physical measurement have different source obligations.
 Common variables or storage do not join their theorems. The
-[execution plan](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+[research program](../theory/RESEARCH_PROGRAM.md#research-current-question)
 selects research work; an available guide does not authorize a campaign.
 
 <!-- BEGIN DOCS CATALOG -->
@@ -97,9 +99,8 @@ selects research work; an available guide does not authorize a campaign.
 | CI, publication and reporting | [Workflows](../.github/WORKFLOWS.md), [Security](../SECURITY.md) |
 | Documentation commands and staging | [Scripts](../scripts/README.md) |
 | Definitions, derivations and scientific scope | [Theory catalog](../theory/README.md); [glossary](../theory/GLOSSARY.md) for classified concept cards |
-| Grammar policies and verification | [Unified grammar](../theory/UNIFIED_GRAMMAR_RULES.md#9-verification-and-reporting); rules and evidence share that owner |
-| Research rationale and branch roles | [Portfolio](../TNFR_lineas_de_investigacion.txt) classifies branches; [strategy](../theory/NODAL_RESEARCH_STRATEGY.md) explains their scientific purpose |
-| Current research state and resumption | [Execution checkpoint](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-checkpoint) and its [current gate status](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate), not additional overview task lists |
+| Grammar policies and verification | [Unified grammar](../theory/UNIFIED_GRAMMAR_RULES.md); rules and evidence share that owner |
+| Research objective, priorities and current state | [Research program](../theory/RESEARCH_PROGRAM.md#research-objective), with the [sole current question](../theory/RESEARCH_PROGRAM.md#research-current-question) |
 | Maintained runnable entry points | [Examples](../examples/README.md), [benchmarks](../benchmarks/README.md), [basic arithmetic utility](../applications/primality-test/README.md) |
 | Retained evidence and retirement provenance | [Archive](../theory/research/archive/README.md); source-bound records remain separate from maintained contracts |
 
@@ -110,12 +111,21 @@ to that owner; they do not copy derivations, configuration tables or delivery
 histories. Keep usage examples separate from the full admission contract.
 The agent mirror is the only intentionally exact prose duplicate.
 
-Keep each maintained theory or documentation owner at most 4,000 physical lines.
-This editorial limit is checked by `scripts/check_documentation.py`; split by
-model and responsibility before extending a large owner. Put shared admission
-in its contract, proofs in their theory chapter, and examples in the matching
-guide. Update canonical links and retain existing section aliases when moving
-published material. Archived records and frozen evidence retain their own
+`theory/RESEARCH_PROGRAM.md` owns the objective and current question in a small
+entry document. Each linked chapter is a canonical Markdown file that can be
+opened and edited directly. `theory/research_catalog.json` supplies metadata
+for generated navigation. The compiled site reads these same sources; the
+optional `scripts/research_book.py` workflow is described in
+[Contributing](../CONTRIBUTING.md#documentation). Generated pages preserve
+paths, relative links and frozen proof associations. Old plan, strategy and
+portfolio routes are compact compatibility views, not active guidance.
+
+Keep the research program within 96 KiB and each research chapter, program and
+maintained guide at most 4,000 physical lines. These limits are checked by
+`scripts/check_documentation.py`. Split chapters
+by model and responsibility. Put shared admission in its contract, proofs in
+their chapter, and examples in the matching guide. Preserve published routes
+and section aliases. Archived records and frozen evidence retain their own
 provenance and are outside this size guard.
 
 The catalog above owns the technical website menu; the theory catalog owns its

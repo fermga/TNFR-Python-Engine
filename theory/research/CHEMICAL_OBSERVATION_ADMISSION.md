@@ -18,7 +18,7 @@ remains `not_admitted`, and empirical evaluation remains `not_tested`.
 No response array, experiment, trajectory or fitted pressure is used.
 The [atlas admission](../PHYSICAL_REGIME_CORRESPONDENCES.md#observed-pattern-admission-result)
 owns source selection and measurement gaps; the
-[execution plan](FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+[research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns scheduling. The [ontology](../EMERGENT_ONTOLOGY.md#research-target-physical-properties-of-collective-patterns)
 permits collective observations without identifying a sensor with primitive EPI.
 

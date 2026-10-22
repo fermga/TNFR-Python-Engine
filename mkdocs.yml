@@ -83,7 +83,10 @@ nav:
 # BEGIN GENERATED THEORY NAVIGATION
   - "Theory and research":
       - "Reading routes and implementation map": theory/README.md
+      - "Research program":
+          - "TNFR research program": theory/RESEARCH_PROGRAM.md
       - "State and laws":
+          - "Conceptual core, dependencies and worked examples": theory/CONCEPTUAL_CORE.md
           - "Fundamental theory": theory/FUNDAMENTAL_THEORY.md
           - "Parameter foundations": theory/NODAL_PARAMETER_FOUNDATIONS.md
           - "Relation foundations": theory/nodal/RELATION_FOUNDATIONS.md
@@ -197,6 +200,9 @@ nav:
           - "Autonomous exchange with a finite auxiliary reservoir": theory/nodal/ORGANIZED_PARENT_RESERVOIR_EXCHANGE.md
           - "Retained reservoir information and local organized equilibria": theory/nodal/ORGANIZED_PARENT_RESERVOIR_MEMORY.md
           - "Complete port inherited from an organized C9 source": theory/nodal/ORGANIZED_SOURCE_PORT.md
+          - "State-guard sensitivity of the organized word": theory/nodal/ORGANIZED_SOURCE_GUARD_SENSITIVITY.md
+          - "Sufficient hybrid state on the organized child-swap sector": theory/nodal/ORGANIZED_SOURCE_CHILD_QUOTIENT.md
+          - "Exact organized-source state modulo a global child exchange": theory/nodal/ORGANIZED_SOURCE_CHILD_ORBIT.md
           - "Full-state capture and collective registration of the organized source": theory/nodal/ORGANIZED_SOURCE_CAPTURE.md
       - "Collective winding and contact response":
           - "Acquisition of an outer winding by five acquired C9 organizations": theory/nodal/ORGANIZED_OUTER_WINDING.md
@@ -331,8 +337,6 @@ nav:
           - "Arithmetic operators — R8": theory/TNFR_ARITHMETIC_OPERATORS.md
           - "Riemann scope": theory/TNFR_RIEMANN_RESEARCH_NOTES.md
       - "Research, measurement and parked evidence":
-          - "Execution plan": theory/research/FIVE_STAGE_EXECUTION_PLAN.md
-          - "Research strategy": theory/NODAL_RESEARCH_STRATEGY.md
           - "Passive transport protocol": theory/research/PASSIVE_TRANSPORT_PROTOCOL.md
           - "Regional phase/amplitude protocol": theory/research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md
           - "Chemical observation and predictive information": theory/research/CHEMICAL_OBSERVATION_ADMISSION.md
@@ -340,6 +344,11 @@ nav:
           - "TCLab comparison boundary": theory/research/TCLAB_EXPLORATORY_PROTOCOL.md
           - "Parked C6 evidence boundary": theory/C6_RESEARCH_MECHANISM_AUDIT.md
           - "Relative-coupling observation admission": theory/research/RELATIVE_COUPLING_PROBE.md
+      - "Research navigation":
+          - "Theory-to-execution map": theory/THEORY_TO_EXECUTION.md
+      - "Published guide routes":
+          - "Retired research guide": theory/NODAL_RESEARCH_STRATEGY.md
+          - "Retired research guide": theory/research/FIVE_STAGE_EXECUTION_PLAN.md
 # END GENERATED THEORY NAVIGATION
       - Historical archive: theory/research/archive/README.md
       - Retired programme boundaries: theory/research/archive/RETIRED_PROGRAMME_BOUNDARIES.md

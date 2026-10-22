@@ -1,30 +1,33 @@
 # TNFR concept glossary
 
-This compact vocabulary maps concepts to their maintained definitions, proofs
-and execution owners. It is not another theory owner or research queue. Use the
-[theory catalog](README.md) and the authority hierarchy in [AGENTS.md](../AGENTS.md)
-to resolve conflicts against explicit premises, mathematics and actual execution.
+Use these concept cards to distinguish what a model assumes, what follows
+from it, what the engine implements and what remains open. Definitions and
+proofs belong to the linked technical chapters of the
+[research program](RESEARCH_PROGRAM.md#research-objective); its
+[decision procedure](RESEARCH_PROGRAM.md#research-selection) owns priorities.
+This glossary is an index of those meanings, not a second plan or proof.
+For a first reading, use the [conceptual core](CONCEPTUAL_CORE.md): it connects
+state, identity and complete laws, then traces claim dependencies and works
+through progressively richer examples. Return here for the maintained concept
+classification and to the linked technical owner for its definition or proof.
 
-**Canonical** means a maintained definition or execution contract here; it does
-not mean uniquely derived or physically established. **Fundamental** names a
-primitive or an identity of a declared model, whose premises remain revisable.
-**Emergence** requires a dynamical result under stated assumptions. Computing a
-quantity, assigning a label or configuring a controller is not that result.
+**Canonical** means a maintained definition or execution contract, with its
+stated scope. It does not mean uniquely derived or physically established.
+**Fundamental** refers to a primitive or an identity of a declared model;
+its premises remain revisable. **Emergence** needs a dynamical result, not
+only a computed quantity, configured event, nested graph or assigned label.
 
-Each card separates its basis from its emergence claim. Primitive state,
-identities, constitutive premises, derived consequences, diagnostics, policies,
-auxiliary models and hypotheses have different roles. **Maintained** means the
-scoped declaration is maintained, not that nature has validated it. **Candidate**
-retains an unresolved proposal. Conditional emergence is reserved for derived
-dynamical results with explicit hypotheses. Exact identities, conditional proofs,
-represented arithmetic and finite numerical observations remain distinct evidence.
+Each card separates **basis**, **emergence** and **status**. A maintained
+conditional theorem and a maintained diagnostic are different kinds of
+knowledge. A candidate retains an unresolved proposal. Mathematical proof,
+represented arithmetic, finite observation and empirical identification
+remain distinct evidence; the linked premises determine what transfers.
 
-Dependencies are prerequisites of definitions or justifications, not the
-interaction edges of the dynamical system. Their acyclic declaration does not
-exclude coupled phase/form feedback. Related-reading links need not be dependencies.
-
-The cards are the only editable concept catalog. Generate their index with
-`python scripts/check_documentation.py --write-generated`.
+Dependencies concern definitions or justifications, not dynamical edges.
+Their acyclic declaration does not exclude coupled form/phase feedback.
+Edit these cards in `theory/GLOSSARY.md` and regenerate their index with
+`python scripts/check_documentation.py --write-generated`. Preserve concept
+IDs and update the definition/proof owner before changing its summary.
 
 <!-- BEGIN GENERATED CONCEPT INDEX -->
 
@@ -53,6 +56,7 @@ The cards are the only editable concept catalog. Generate their index with
 | [Derived form geometry](#form-geometry) | derived | not-claimed | maintained |
 | [Conditional dynamical scale inheritance](#scale-inheritance) | derived | conditional | maintained |
 | [Coarse closure and hidden-state obstruction](#closure) | derived | not-claimed | maintained |
+| [Controlled predictive approximation](#predictive-approximation) | derived | not-claimed | maintained |
 | [Derived hidden-state memory](#hidden-memory) | derived | not-claimed | maintained |
 | [Retained relational phase offset](#retained-phase-offset) | derived | conditional | maintained |
 | [Supplied bridge interfaces](#attachment) | derived | not-claimed | maintained |
@@ -474,6 +478,23 @@ The cards are the only editable concept catalog. Generate their index with
 - **Tests:** [Linear closure](../tests/test_linear_observation.py), [global pair rows and realizability](../tests/physics/test_sine_global_pair_state.py).
 - **Limits:** Instantaneous interaction sufficiency, future closure and recovery from observations differ. On doubled C5, (X,Z) supplies currents but realized (X,Z,P,U,W) retains predictive internal information through cancellation. These are derived coordinates, not new constitutive parameters; tangent or snapshot agreement alone proves no nonlinear closure.
 
+<a id="predictive-approximation"></a>
+
+### Controlled predictive approximation
+
+- **Status:** maintained
+- **Basis:** derived
+- **Emergence:** not-claimed
+- **Definition:** A bound on the difference between a selected full-state observation and an independently evolved reduced prediction from an admitted initialization.
+- **Domain:** The retained source-child result uses its 45-node reciprocal law, unit held capacities, acute energy domain and no events; other reductions require their own bounds.
+- **Premises:** Match law, clock, initialization, conserved means, domain and norm; retain hidden-state forcing and accumulated error, not only a snapshot discrepancy.
+- **Dependencies:** closure, storage-work, capacity, sine-law
+- **Owner:** [Independent-core comparison](nodal/ORGANIZED_SOURCE_CHILD_ORBIT.md#organized-source-child-tracking).
+- **Evidence:** [Hidden relaxation and instantaneous error](nodal/ORGANIZED_SOURCE_CHILD_ORBIT.md#organized-source-child-relaxation); [uniform accumulated prediction error](nodal/ORGANIZED_SOURCE_CHILD_ORBIT.md#organized-source-child-tracking).
+- **Implementation:** [Shared tracking certificate](../src/tnfr/physics/_organized_source_child_tracking.py).
+- **Tests:** [Certificate contracts](../tests/physics/test_organized_source_child_tracking.py), [complete-law proof controls](../tests/physics/test_organized_source_child_tracking_proof.py).
+- **Limits:** Exact closure, instantaneous tolerance and accumulated prediction error are different claims. This bound does not select an NFR identity, establish formation, transfer across events or changing capacities, or demonstrate a runtime speedup.
+
 <a id="hidden-memory"></a>
 
 ### Derived hidden-state memory
@@ -708,13 +729,13 @@ The cards are the only editable concept catalog. Generate their index with
 - **Emergence:** not-claimed
 - **Definition:** Thirteen registered transformations define declared jump contracts on nodal/graph state.
 - **Domain:** The actual glyph, public operator, atomic stage or word-execution path.
-- **Premises:** Identify primary and secondary writes and preserve their execution provenance.
+- **Premises:** Identify the actual target, primary and secondary writes, consumed state/history and selection origin. Resolve names and tokens through the shared registry.
 - **Dependencies:** nodal-equation, phase, support
 - **Owner:** [Structural operators](STRUCTURAL_OPERATORS.md).
-- **Evidence:** [Execution contracts](../docs/API_CONTRACTS.md#contract-model).
+- **Evidence:** [Execution contracts](../docs/API_CONTRACTS.md#contract-model); [collective action and ordered-language descent](STRUCTURAL_OPERATORS.md#collective-grammar-descent).
 - **Implementation:** [Operator registry](../src/tnfr/operators/operator_contracts.py).
 - **Tests:** [Operator contracts](../tests/operators/test_operator_contracts.py).
-- **Limits:** A named jump is not a finite-duration nodal solution. Defining a transformation does not derive when it occurs or prove catalog completeness.
+- **Limits:** A named jump is not a finite-duration nodal solution. The REMESH node advisory does not execute network mixing or support replacement. A configured birth does not establish acquired collective identity. Admission, occurrence and collective descent each need their own argument; registration proves no universal completeness.
 
 <a id="grammar"></a>
 
@@ -725,13 +746,13 @@ The cards are the only editable concept catalog. Generate their index with
 - **Emergence:** not-claimed
 - **Definition:** U1-U5 impose word/live-state contracts; U6 monitors reference-relative potential drift. Automatic selection is a separate policy.
 - **Domain:** Declared history, node state, grammar profile and execution path.
-- **Premises:** Retain registered roles, configured choices, history and actual execution context; a supplied flag is not verified evidence.
+- **Premises:** Retain registered roles, configured choices, history and actual execution context; a supplied flag is not verified evidence. Collective execution must retain or descend every consumed part of this context.
 - **Dependencies:** operators
 - **Owner:** [Unified grammar](UNIFIED_GRAMMAR_RULES.md).
 - **Evidence:** [Premises and trajectories](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#8-grammar-derivation-premises-language-and-trajectories).
 - **Implementation:** [Grammar bases](../src/tnfr/operators/grammar_canon.py), [selectors](../src/tnfr/dynamics/selectors.py).
 - **Tests:** [Grammar bases](../tests/operators/test_grammar_canon.py).
-- **Limits:** Admission is neither autonomous selection nor stability. U6 cannot be certified from a word. Mutation's observed signed growth evidence is distinct from the predicted nodal product.
+- **Limits:** Admission is neither autonomous selection nor stability. Continuous collective closure does not prove a collective grammar or occurrence law. U6 cannot be certified from a word. Mutation's observed signed growth evidence is distinct from the predicted nodal product.
 
 <a id="thresholds"></a>
 
@@ -829,7 +850,7 @@ The cards are the only editable concept catalog. Generate their index with
 - **Domain:** A future identified model with independent observable predictions and terrestrial evidence.
 - **Premises:** Admit complete state, constitutive laws, support/capacity evolution and the physical measurement bridge.
 - **Dependencies:** nfr, nodal-equation, measurement-bridge
-- **Owner:** [Research strategy](NODAL_RESEARCH_STRATEGY.md).
+- **Owner:** [Physical identification scope](PHYSICAL_REGIME_CORRESPONDENCES.md#observed-pattern-admission-result).
 - **Evidence:** [Foundation origin ledger](FUNDAMENTAL_THEORY.md#foundational-state-admission).
 - **Implementation:** none: the engine implements scoped models, not an established physical ontology.
 - **Tests:** none: model tests cannot replace independent physical validation.
@@ -873,5 +894,5 @@ concept automatically.
 Reproducibility also requires fixed source, configuration, inputs, ordering,
 precision and execution path; a seed alone is insufficient. Use
 [TESTING.md](../TESTING.md) for validation and the
-[sole execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+[research program](RESEARCH_PROGRAM.md#research-current-question)
 for the next research task.

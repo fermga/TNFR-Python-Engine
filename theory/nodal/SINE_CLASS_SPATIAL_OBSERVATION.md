@@ -12,7 +12,7 @@ degree alone does not guarantee greater organization sensitivity.
 The law, acquired families, support, clock, events and recording budget
 remain unchanged. This is a conditional mathematical observation study,
 not a physical identification or a new formation or nonlinear-response
-campaign. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+campaign. The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns its status.
 
 <a id="sine-spatial-source-and-observer"></a>

@@ -5,7 +5,7 @@ conservative contact. Local form scaling changes relative geometry and both
 subsequent rate rows; it is not generally a common clock change. The retained
 source also gives an analytical limitation of the existing sufficient
 maintenance certificate. No new operator word or trajectory is evaluated.
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 alone selects further work; identity admission retains its own hypotheses.
 
 ## 1. State, law and execution boundary

@@ -13,7 +13,7 @@ or support change is evaluated. The earlier
 and its unresolved original-family interaction bound remain unchanged.
 A separately declared preparation and mechanism would be needed to acquire
 a common, finite-lived organization under this law while retaining the original
-pair's exclusions. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+pair's exclusions. The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 alone admits further investigation of that deferred question.
 
 <a id="geometry-and-formation"></a>

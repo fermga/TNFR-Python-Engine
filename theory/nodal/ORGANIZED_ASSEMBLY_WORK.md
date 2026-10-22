@@ -6,7 +6,7 @@ simultaneous form/phase reset that retains their acute winding-one internal
 geometry requires positive net storage work. Allowing internal deformation
 and arbitrary relative phase origins does not remove that requirement.
 This is a lower-bound theorem, not the sharp minimum, an event selector or a
-claim about physical binding. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md)
+claim about physical binding. The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 alone assigns subsequent work.
 
 The [acquired network capture theorem](ACQUIRED_ORGANIZED_NETWORK_CAPTURE.md)

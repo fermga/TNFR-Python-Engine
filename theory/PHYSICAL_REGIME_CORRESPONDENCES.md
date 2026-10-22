@@ -18,7 +18,7 @@ unimplemented thermal proxies are not research routes or validation evidence.
 
 This is also the single owner of the physical-emergence atlas: correspondence
 cards, reuse and evidence boundaries. The
-[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+[research program](RESEARCH_PROGRAM.md#research-current-question)
 alone selects work and its order. The atlas does not replace the generative
 objective or establish that physical entities emerge from TNFR.
 

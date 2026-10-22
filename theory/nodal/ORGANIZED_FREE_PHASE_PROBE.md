@@ -20,7 +20,7 @@ from what any unforced common-contact schedule can generate.
 This is conditional operational access under the existing supplied
 constitutive family. It does not select that family, establish physical
 measurement, or replace source, event-work and observation admission.
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 alone selects further work. The
 [phase-faithfulness classification](SINE_CONSTITUTIVE_INFORMATION.md#phase-response-faithfulness)
 still distinguishes a complete operational alphabet from one current

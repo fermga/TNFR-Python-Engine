@@ -6,7 +6,7 @@ identifies cubic interaction channels, distinguishes temporal resonance from
 spatial aliasing, and excludes one stationary bright-profile comparison.
 This pair is an analytical control with a separate static source-absence
 admission. It supplies no evaluated source, full-law envelope closure, formation event
-or physical identification. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+or physical identification. The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns admission of a preparation and any subsequent response evaluation.
 
 ## 1. Complete law, state and clock

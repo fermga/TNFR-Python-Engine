@@ -9,20 +9,30 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
-from urllib.parse import quote
+from urllib.parse import quote, unquote, urlsplit
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from scripts.clean_repository import generated_directory
+from scripts.research_book import (
+    BOOK_PATH,
+    chapter_id,
+    documents,
+    front,
+    read_book,
+    read_document_bytes,
+)
 from scripts.verify_internal_references import (
     _markdown_segments,
+    _repository_url,
     is_frozen_markdown_capture,
     rewrite_markdown_prose,
 )
 
 STAGE_DIR = REPO_ROOT / "build" / "docs-source"
+RESEARCH_BOOK = BOOK_PATH
 
 ROOT_FILES = (
     "AGENTS.md",
@@ -162,6 +172,15 @@ def prepare() -> Path:
     if STAGE_DIR.absolute() != expected:
         raise RuntimeError(f"unsafe documentation staging path: {STAGE_DIR}")
     source_inventory = _source_inventory()
+    # Validate the complete catalog and every source chapter before replacing
+    # prior staging. A missing modular chapter must preserve the last build.
+    chapter_sources = documents(REPO_ROOT)
+    book_front = front(REPO_ROOT) if (REPO_ROOT / RESEARCH_BOOK).is_file() else None
+    chapter_routes = (
+        {chapter_id(c.path): c.path for c in read_book(REPO_ROOT).chapters}
+        if book_front is not None
+        else {}
+    )
     shutil.rmtree(STAGE_DIR, ignore_errors=True)
     STAGE_DIR.mkdir(parents=True)
 
@@ -169,7 +188,11 @@ def prepare() -> Path:
     _copy_file(readme, STAGE_DIR / "index.md")
 
     for relative in ROOT_FILES:
-        _copy_file(REPO_ROOT / relative, STAGE_DIR / relative)
+        source, destination = REPO_ROOT / relative, STAGE_DIR / relative
+        if source.is_file():
+            _copy_file(source, destination)
+        else:
+            destination.write_bytes(read_document_bytes(REPO_ROOT, relative))
 
     for relative in (
         ".github",
@@ -184,6 +207,19 @@ def prepare() -> Path:
     ):
         _copy_tree(relative, source_inventory=source_inventory)
 
+    # Chapter paths remain website routes and link-resolution bases in both
+    # legacy containers and modular checkouts. The program route stays compact.
+    for relative, payload in chapter_sources.items():
+        if is_frozen_markdown_capture(Path(relative)):
+            continue
+        destination = STAGE_DIR / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(payload)
+    if book_front is not None:
+        destination = STAGE_DIR / RESEARCH_BOOK
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(book_front, encoding="utf-8")
+
     # Preserve repository paths, but link directory targets to an actual index
     # or the repository browser. A static site cannot display source folders.
     for document in STAGE_DIR.rglob("*.md"):
@@ -191,19 +227,37 @@ def prepare() -> Path:
 
         def site_link(match: re.Match[str]) -> str:
             target, fragment = match.group(1), match.group(2) or ""
-            if not target or ":" in target or target.startswith("/"):
-                return match.group(0)
-            destination = (source.parent / target).resolve()
+            repository_target = _repository_url(target + fragment)
+            if repository_target is not None:
+                parsed = urlsplit(repository_target)
+                destination = (REPO_ROOT / unquote(parsed.path)).resolve()
+                fragment = "#" + parsed.fragment if parsed.fragment else ""
+            else:
+                if not target or ":" in target or target.startswith("/"):
+                    return match.group(0)
+                destination = (source.parent / target).resolve()
+            chapter_route = (
+                chapter_routes.get(unquote(fragment.removeprefix("#")))
+                if destination == (REPO_ROOT / RESEARCH_BOOK).resolve()
+                else None
+            )
+            if chapter_route is not None:
+                destination = (REPO_ROOT / chapter_route).resolve()
+                fragment = ""
             if not destination.is_relative_to(REPO_ROOT):
                 return match.group(0)
             if destination == readme.resolve():
                 linked = STAGE_DIR / "index.md"
-            elif destination.is_dir():
+            elif (
+                destination.is_dir()
+                or (STAGE_DIR / destination.relative_to(REPO_ROOT)).is_dir()
+            ):
+                staged_destination = STAGE_DIR / destination.relative_to(REPO_ROOT)
                 index = next(
                     (
-                        destination / name
+                        staged_destination / name
                         for name in ("README.md", "index.md")
-                        if (destination / name).is_file()
+                        if (staged_destination / name).is_file()
                     ),
                     None,
                 )
@@ -216,7 +270,11 @@ def prepare() -> Path:
                         + fragment
                         + ")"
                     )
-                linked = STAGE_DIR / index.relative_to(REPO_ROOT)
+                linked = index
+            elif (repository_target is not None or chapter_route is not None) and (
+                STAGE_DIR / destination.relative_to(REPO_ROOT)
+            ).is_file():
+                linked = STAGE_DIR / destination.relative_to(REPO_ROOT)
             else:
                 return match.group(0)
             relative = Path(os.path.relpath(linked, document.parent)).as_posix()

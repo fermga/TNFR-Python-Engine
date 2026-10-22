@@ -29,7 +29,7 @@ premises and the full environmental state. Continuous theorems, admitted
 finite steps and validated trajectory enclosures provide different evidence.
 
 Section numbers remain stable. The
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+[research program](../RESEARCH_PROGRAM.md#research-current-question)
 alone assigns research work.
 
 ## 1. State, inherited geometry and the independent premise

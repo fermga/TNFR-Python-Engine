@@ -26,9 +26,9 @@ explicitly set requested node attributes.
 
 References
 ----------
-- ``theory/research/FIVE_STAGE_EXECUTION_PLAN.md`` — roadmap and acceptance criteria
+- ``theory/RESEARCH_PROGRAM.md`` — research objective and admission criteria
 - ``src/tnfr/validation/phase_gate.py`` — low-level U3/tetrad diagnostics
-- AGENTS.md §"Telemetry & Structural Field Tetrad"
+- AGENTS.md §"Numerical and observation integrity"
 """
 
 from __future__ import annotations

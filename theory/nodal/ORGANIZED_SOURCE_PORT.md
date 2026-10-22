@@ -3275,3 +3275,236 @@ of later responses after both words have completed, or equality modulo a
 declared observation and symmetry. Ideal waiting and passivity also supply
 no new uniform floating-point defect certificate. The frozen represented
 handoffs, source archives and their verdicts remain unchanged.
+
+<a id="organized-source-flow-word-timing"></a>
+## 24. Timing changes the response after both words have completed
+
+**Conditional counterexample.** Waiting before Reception (EN), Coherence
+(IL) and Silence (SHA) need not give the same later response as applying
+the word first and waiting under its successor capacity. The distinction
+survives common form and phase offsets and is present in both continuous
+rows. It holds on the ideal organized-source domain of section 23; it is
+not a numerical trajectory, a prescribed finite-horizon separation or a
+law selecting when an operator occurs.
+
+### Fixed state, neighborhood and observation
+
+Retain the 45 labeled nodes, ninety unit edges, targets `(0,1)`, positive
+capacities, primitive phase lifts and structural clock tau from sections
+21–23. Initially every capacity is one. The comparison uses one word,
+the shared default represented factors and the section 22 context:
+common `organized-source` kind, supplied `AL, IL` history, ordinal two,
+zero debt, prior Coherence, initialized core grammar, `raise`, hard unit
+rails and explicit IL `event_domain` policy. Retain the actual Reception
+ceilings and inclusive Silence floor. There is no extra controller,
+custom monitor, held-step nodal validator or state-mutating callback.
+
+Write `h=1/64`, `alpha=2*pi/9` and choose the exact primitive state
+
+\[
+ x^*=h(e_0-e_1),\qquad
+ \Theta^*_{9c+j}=\psi_j=\alpha(j-4),\quad 0\le c<5,\ 0\le j<9.
+\]
+
+This is the winding-one organized carrier, not a globally constant phase.
+The closing-edge lift branches are those of the existing acute cell.
+Declare the open neighborhood, with the discrete context held fixed,
+
+\[
+ U=\{(x,\Theta):\|x-x^*\|_\infty<\varepsilon,
+                  \|\Theta-\psi\|_\infty<\varepsilon\},
+ \qquad\varepsilon=10^{-5}.
+\]
+
+The retained node/port associations are part of this comparison. Its
+coordinate symmetries are common form translation and common circular
+phase rotation, with the corresponding continuous lifts. They are used
+locally where admission holds; arbitrary translations need not preserve
+the absolute form rails. Do not rescale the structural clock or relabel
+ports to compare endpoints. Fix the observation
+
+\[
+ \mathcal O(x,\Theta)=
+ \bigl(x_8-x_2,\ (\Theta_8-\psi_8)-(\Theta_2-\psi_2)\bigr).
+\]
+
+It removes both common offsets. The section 14 affine signed reflection
+also cannot remove the counterexample: the chosen state, both flows and
+the word remain in its fixed sector with offset origin zero.
+
+At the center, `S(psi)=0`, `E=6h^2=3/2048` and the form mean is zero.
+Each of the five cycles has its retained winding, and every marked angle
+is acute. The form edge differences obey `sum_edges abs(Delta x*)=10h`.
+For the whole box, quadratic expansion of form storage gives
+`F<=6h^2+20h*epsilon+180*epsilon^2`. The carrier phase is stationary:
+its linear phase terms telescope around each cycle and vanish on the
+matching edges. The second derivative of each cosine potential is at
+most one, so its excess is at most `180*epsilon^2`. Hence
+
+\[
+ E\le6h^2+20h\varepsilon+360\varepsilon^2<1/100,
+ \qquad |m(1)|<\varepsilon<1/30.
+\]
+
+Each marked edge angle differs from its carrier angle by less than
+`2*epsilon`, retaining the acute branch. Thus U lies in section 23's
+larger domain. It is not the section 22 box centered on a frozen response;
+no historical response is needed to specify these primitives. Section 23
+admits arbitrary finite initial waiting, the complete ideal word and its
+positive-capacity continuation with all geometric, form and fresh-pressure
+bounds. Silence initially sees unit capacities, above its floor. Each
+stage reads one common snapshot at its two targets; the stages are ordered
+and separately atomic, with no intervening continuous step.
+
+### Complete local difference
+
+Let L be the actual fine Laplacian, P the diagonal selector of nodes zero
+and one, `a=beta/5`, `A=I-a*P*L` and `D=I+(kappa-1)*P`. Set
+
+\[
+ S_i(\Theta)=\sum_{j\sim i}\sin(\Theta_j-\Theta_i),\qquad
+ z_i(\Theta)=\sum_{j\sim i}\exp(i(\Theta_j-\Theta_i)).
+\]
+
+The complete primary word sends `(x,Theta,1)` to `(Ax,C(Theta),D*1)`,
+where `C_i(Theta)=Theta_i+lambda*Arg(z_i)` on the targets and C is the
+identity elsewhere. On the admitted domain `Re(z_i)>4`, so this local
+lifted map is smooth. With `J=DC(Theta)`, its actual derivative is
+
+\[
+ (Jv)_i=v_i+\lambda\operatorname{Re}
+ \frac{\sum_{j\sim i}e^{i(\Theta_j-\Theta_i)}(v_j-v_i)}{z_i(\Theta)}
+ \quad(i=0,1),\qquad (Jv)_i=v_i\quad(i\notin\{0,1\}).
+\]
+
+The two flows use the same independently defined pressure and both rows:
+
+\[
+ F_D(x,\Theta)=\frac14
+ \begin{pmatrix}D[-Lx+\gamma S(\Theta)]\\ \gamma DLx\end{pmatrix},
+ \qquad\gamma=(1023\pi)^{-1}.
+\]
+
+Here the flow parameter is elapsed structural time tau; capacity is held
+on each segment. Differentiate the two endpoints `W(Phi_t(s))` and
+`Phi_t^kappa(W(s))` at zero elapsed time. Their complete primary difference
+`K=DW(s)F_1(s)-F_D(W(s))` is
+
+\[
+ \begin{split}
+ K_x&=\tfrac14\{(DLA-AL)x+
+                  \gamma[A S(\Theta)-D S(C(\Theta))]\},\\
+ K_\Theta&=\tfrac\gamma4[J Lx-DLAx],\\
+ K_\nu&=0,\qquad K_{\rm clock}=0.
+ \end{split}
+\]
+
+In particular, Coherence's derivative cannot be replaced by the identity
+merely because its phase displacement vanishes at one state. The IL
+pressure retention factor b still has its specified stored-pressure event
+effect. Before continuation, refresh `p=(-Lx+gamma*S(Theta))/4` from its
+independent law. It is an algebraic state association, not a freely chosen
+forcing or an extra pressure evolution law. If pressure is also retained
+as a refreshed derived coordinate, its difference is
+`K_p=(-L*K_x+gamma*DS(C(Theta))*K_Theta)/4`.
+
+Do not center either endpoint. Its form mean is computed with its actual
+inverse capacities; its phase-origin mean first subtracts the carrier
+from the primitive lifts and uses those same weights. These are derived
+coordinates of the retained state, not disposable integration constants.
+The histories, ordinals and lifecycle records follow their separate update
+maps on the stipulated discrete context: both completed histories are
+`AL, IL, EN, IL, SHA`, with ordinal five. This tangent is taken on the
+primary continuous state; those record update maps remain separate.
+Silence's wall timestamp is not the structural clock.
+
+### An exact projected coefficient
+
+At the carrier put `c=cos(alpha)` and `R=3+2c`. Each target has two cycle
+neighbors and three matching neighbors, so `z_0=z_1=R>9/2`. Let `L_c`
+denote the Laplacian with cycle-edge weights c and matching-edge weights
+one. Although `C(psi)=psi`,
+
+\[
+ J=I-\frac\lambda R P L_c.
+\]
+
+For `q=Lx*`, the actual incidence gives
+
+\[
+ \begin{gathered}
+ q_0=6h,\quad q_1=-6h,\quad q_2=h,\quad q_8=-h,\\
+ q_9=q_{18}=q_{36}=-h,\qquad q_{10}=q_{19}=q_{37}=h,
+ \end{gathered}
+\]
+
+with all other coordinates zero. In particular `P*L*q=40*x*`.
+Write `r=1-6a` and `T=(21+19c)/(3+2c)`. Then `Ax*=r*x*` and
+`Jq=q-lambda*T*x*`. The complete difference at this state is
+
+\[
+ \begin{split}
+ K_x&=\tfrac14[-6a q+\{40a-6r(1-\kappa)\}x^*],\\
+ K_\Theta&=\tfrac\gamma4[6a q+
+                         \{6r(1-\kappa)-\lambda T\}x^*].
+ \end{split}
+\]
+
+Both inverse-capacity form means, before and after the word at this
+center, are exactly zero, and both carrier-subtracted phase-origin means
+are zero. This does not impose a zero-mean restriction on U. The fixed
+observation yields
+
+\[
+ D\mathcal O\,K=(3ah,-3\gamma ah),\qquad
+ 3ah=\frac{815555754282159}{360287970189639680}>0,
+\]
+
+using the shared represented default
+`beta=271851918094053/1125899906842624`. The other factors are
+`lambda=5404319552844595/18014398509481984` and
+`kappa=518151819521135/562949953421312`; their target-row contributions
+were retained even though this observation eliminates them at the center.
+
+Both flows and W are smooth locally. Their endpoints agree at `t=0`,
+and Taylor expansion therefore gives
+
+\[
+ \mathcal O(W\Phi_t(s^*))-\mathcal O(\Phi_t^\kappa W(s^*))
+       =(3ah,-3\gamma ah)t+O(t^2).
+\]
+
+The first component is strictly positive for all sufficiently small
+positive t. Both words have then completed, both capacities equal D and
+both structural clocks have advanced by the same amount. The difference
+is an internal contrast, not a common offset or the earlier interval's
+capacity mismatch. Continuity also retains a nonzero projected derivative
+on some neighborhood of the center inside U; no numerical size for that
+smaller neighborhood or time interval is asserted. The result does not
+claim persistent asymptotic separation or a finite observation margin.
+
+### Detached implementation and scope
+
+The private
+[`_assess_organized_source_carrier_timing`](../../src/tnfr/physics/_organized_source_timing.py)
+reader computes the local difference at the exact carrier for admitted
+rational or represented form coordinates. It reuses the shared support,
+factor admission and rational interval arithmetic. It retains the exact
+form difference, the full phase difference as rational coefficients of
+`cos(alpha)`, its outward enclosure, both form means and successor
+capacities. It does not approximate the carrier by binary64 phases or
+hold phases fixed during either hypothetical flow.
+
+[Independent tests](../../tests/physics/test_organized_source_timing.py)
+rebuild the incidence, verify both rows and the nonidentity phase
+derivative, and exercise translation and zero-form controls, an asymmetric
+nonzero successor mean, invalid domains and prohibited runtime execution.
+No event, integrator, source producer or frozen response is evaluated.
+These checks support the algebraic implementation; smoothness and the
+admission proof above supply the local mathematical conclusion.
+
+Thus event timing can be necessary predictive information even after the
+same complete word has occurred. The supplied state, continuous law and
+grammar do not select that timing. A quantified later response or an
+occurrence mechanism would need its own bounded question and premises;
+neither follows from this counterexample.

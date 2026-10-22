@@ -1,252 +1,10 @@
-# Nodal research execution plan
+# Retired research guide
 
-This is the sole research task queue. Its objective is to investigate the scope
-of TNFR: which justified laws and retained state support organized structures,
-their evolution, interaction and emergent properties. Autonomous hierarchy
-formation, universal realization and a uniquely selected law remain open
-hypotheses.
+This retired route is a generated compatibility view.
+The [TNFR research program](../RESEARCH_PROGRAM.md#research-objective) owns the objective,
+current decision and admission criteria. Historical task instructions are inactive.
 
-Organized mathematical objects are instruments for this inquiry. Their
-existing state, dynamics, identity and intervention domains let a foundational
-question be decided under explicit premises. The plan develops those premises
-and their consequences; it does not treat a catalog of patterns or operator
-sequences as a progression toward a predetermined phenomenon.
-
-The [strategy](../NODAL_RESEARCH_STRATEGY.md) explains the rationale;
-the [portfolio](../../TNFR_lineas_de_investigacion.txt) classifies contributions.
-Definitions, proofs, implementations and tests belong to the
-[theory-to-execution map](../README.md#theory-to-execution).
-This plan contains decisions and acceptance conditions, not a result history.
-
-<a id="current-checkpoint"></a>
-<a id="current-checkpoint-and-resumption"></a>
 <a id="2-one-status-board-and-dependency-chain"></a>
-## Queue status
-
-| Status | Work and activation condition |
-| --- | --- |
-| Active analytical priority | [Flow/word timing on the organized source](#current-g3-gate): decide whether changing the time of one admitted word changes its later response modulo declared symmetries |
-| Supporting implementation | Keep shared engine contracts, numerical admission, documentation and affected tests consistent with the admitted model |
-| Conditional capacity renewal | Deferred until sustained activity is required by the active claim; a larger repetition count is not an independent objective |
-| Physical comparison | Unadmitted until a named prediction has the [P1-P5 bridge](#supporting-measurement-bridge) |
-| Other research branches | [Deferred dependencies](#deferred-work-and-reopening-conditions); existing instruments and examples do not activate them |
-
-Only the active analytical priority selects the next research calculation.
-Maintenance work does not authorize new events, trajectories or frozen-producer
-replays. Begin from the current owner and its evidence; a completed example
-is neither a required next sequence nor a reason to refine another bound.
-
-<a id="current-g3-gate"></a>
-<a id="foundational-organized-pattern-admission"></a>
-<a id="organized-full-fine-contact-identity-admission"></a>
-<a id="canonical-grammar-integration"></a>
-<a id="research-priority-assessment"></a>
-## Active question: does the time of an admitted word affect its later response?
-
-**Question.** On the existing ideal organized-source domain, is waiting before
-one Reception–Coherence–Silence word equivalent to waiting after it under the
-changed-capacity law, once the word has completed in both comparisons?
-Retain the declared symmetries and a fixed state or boundary observation;
-different common coordinate offsets alone do not establish a distinguishable
-organized response.
-
-Use the [organized source](../nodal/ORGANIZED_SOURCE_PORT.md) as an already
-available conditional object. Its raw form, primitive phase lifts, support,
-capacity and clocks are explicit. The
-[complete-word theorem](../nodal/ORGANIZED_SOURCE_PORT.md#organized-source-word-reuse)
-provides a reusable passive intervention domain and separates geometric
-maintenance from capacity-policy admission. Its finite repetition bound
-belongs to that supplied configuration; extending it is not the active question.
-
-The [conditional timing corollary](../nodal/ORGANIZED_SOURCE_PORT.md#organized-source-occurrence-nonselection)
-resolves the preceding implication: common complete initial state, shared
-continuous rows, word maps, grammar and identity do not select the time of the
-first word. Two supplied schedules give different complete hybrid models,
-distinguished by target capacity before both words finish. It does not decide
-whether the timing difference survives in their later response. That remaining
-equivalence question is the active analytical obligation.
-
-### Fixed comparison and reuse
-
-1. Retain section 23's fine support, raw form and phase lifts, initial unit
-   capacities, clocks, targets, factors, initialized context and explicit IL
-   event-domain policy. Use one word only. Declare the source neighborhood
-   and the observation/symmetry before deciding equivalence.
-2. Let W be the complete ideal word map on the retained mathematical state.
-   Compare `W(Phi_t(s))` with `Phi_t^kappa(W(s))`, where the first flow uses
-   unit capacities and the second uses the actual Silence successor
-   capacities. Both use the same independent pressure formula and structural
-   clock. Retain the phase action, changed mean weights and context updates;
-   refreshing pressure is not an additional chosen forcing.
-3. Derive the complete local difference
-   `DW(s) F_1(s) - F_kappa(W(s))`. Use the existing joint maps, fine rows,
-   weighted means and work bounds. Differentiate only the continuous
-   coordinates on the fixed discrete-context domain; histories, ordinals and
-   lifecycle records retain their separate update maps. A nonzero projected
-   component can disprove equivalence; a vanishing first derivative cannot
-   prove finite-time commutation. A form-only witness must still be evaluated
-   within both complete form/phase laws and the admitted domain.
-4. Test whether the difference survives the declared symmetry and fixed
-   observation. A constant common form/phase shift, a diagnostic label, or a
-   difference in instantaneous capacity before the second word completes is
-   not the requested discriminator. Reuse primitive-state admission and
-   independent algebraic controls; no response producer is needed.
-
-### Acceptance and stopping
-
-Close this gate with an exact admitted projected counterexample, an
-equivalence theorem on a stated nontrivial domain, or a precise missing
-regularity/state premise. Distinguish local noncommutation from a quantified
-finite response. The result identifies whether timing is necessary predictive
-information; it does not choose an occurrence law or derive a controller.
-Keep any subsequent premise-selection task outside this gate until its need
-is established.
-
-Do not extend a horizon, improve a tolerance, search words or add Coupling
-solely to keep one constructed sequence running. Capacity renewal becomes a
-bounded dependency only when the selected claim requires sustained activity.
-If needed, evaluate the complete existing Coupling map, including actual U3
-neighbor selection, phase writes, held neighbor capacities, weighted means,
-support, pressure refresh and grammar. Its scalar capacity fixed point is
-not a complete mechanism or an independently derived reservoir.
-
-No new numerical response campaign, physical-data fit, autonomous selector
-or unmodeled source is admitted by this gate. Preserve frozen protocols and
-responses; represented event defects remain distinct from ideal passivity.
-
-<a id="deferred-work-and-reopening-conditions"></a>
-## Deferred dependencies
-
-These questions remain available only when the active claim needs them.
-Reopening requires a bounded question, actual source/model admission and
-an explicit prospective budget. A missing sufficient certificate is not
-proof that the desired behavior is impossible.
-
-<a id="relative-coupling-finite-observation"></a>
-<a id="relative-coupling-probe-admission"></a>
-
-| Dependency | Reopening requirement and owner |
-| --- | --- |
-| Relative-coupling response | A named observation need and renewed source/path admission. Preserve the [frozen protocol](RELATIVE_COUPLING_PROBE.md#5-frozen-declaration-and-numerical-boundary), twenty coordinates and one bounded attempt; freeze evaluator source and check analytical controls first. No retuning or replay |
-| Grammatical preparation across scales | A named organization/response discriminator beyond existing [word descent](../STRUCTURAL_OPERATORS.md#collective-grammar-descent). Resolve words through `list_sequences()`, retain actual event work and continuation laws, and prove collective state/context descent before a multiscale claim |
-| Localized common organization | A source-absent identity and a compatible mechanism under the [same complete model](../nodal/LOCALIZED_FORMATION_COMPATIBILITY.md). Retain preparation, actual loss, both rows and the [formation criterion](../nodal/LOCALIZED_ORGANIZATION_GEOMETRY.md#common-pattern-formation-contract); overlap and nonadditivity alone are insufficient |
-| Prepared-envelope certification | A named formation or discriminating maintenance need and credible whole-pipeline time, memory, storage and error bounds. Preserve [canonical inputs and evidence](../nodal/LOCALIZED_RETENTION_MECHANISMS.md#canonical-variational-first-panel); local speedups do not activate the full horizon |
-| Unit-strength stationary contact | A new global mechanism or a claim requiring the complete nonseparable marked class. Retain asymmetric, nonacute and degenerate candidates in the [contact owner](../nodal/ORGANIZED_CONTACT_MAINTENANCE.md); carrier refinements and local restarts do not settle it |
-| Receiver formation | A named accessibility hypothesis requiring the [same source](../nodal/CONSTITUTIVE_RECEIVER_COMPARISON.md), or a reusable source-derived inward/work criterion. Retain all source errors, own-law loss, velocity and endpoint correlations; a horizon extension alone is insufficient |
-| Operational saddle source width | A downstream claim needing a positive inverse-inclusion radius and complete forward horizon in the [admitted preparation](../nodal/SINE_CONSERVATIVE_PREPARATION.md#sine-operational-saddle-preparation). New evidence and budget remain separate from the retained trial |
-| Formation across alternative laws | An independently constrained law or preparation with a positive own-law barrier margin. Preserve the [constitutive counterexample](../nodal/SINE_CONSERVATIVE_PREPARATION.md#sine-constitutive-robustness); moving its source does not correct its verdict |
-| Eleven-node receiver transfer | A formation claim needing the unresolved range `(5-sqrt(5))/2<F<=4`. Reuse [port work and exclusions](archive/receiver/SINE_RECEIVER_TRANSFER_AND_CAPTURE.md#sine-receiver-port-passage); no threshold optimization or producer replay |
-| Alternative-mobility recurrence | A named internal-activity or observation claim. Establish nonstalling/circulation and an equivalent invariant density for the actual [mobility law](../nodal/SINE_PAIR_MOBILITY.md#sine-mobility-relative-geometry); geometric protection alone does not transfer recurrence |
-| <a id="storage-comparison-producer-admission"></a>Independent storage comparison | The [eight-history passive-loss observer](../nodal/SINE_CLASS_STORAGE_EXCESS.md) is prepared, with no frozen protocol, attempt or response. Reopen for a named foundational need with independent source, observation and numerical budgets and a prospective freeze; do not reuse the mediator-reading allowance or constrain observed output by its analytical prediction |
-| General partial observation | A selected prediction requiring broader joint noisy-state admission or a sufficient derivative order. Reuse [sample admission](../nodal/SINE_ENVIRONMENTAL_MEMORY.md#sine-finite-sample-admission), retained internal-state counterexamples and [observability](../nodal/SINE_PAIR_STATE.md#sine-replica-internal-observability) |
-| Reduced bridge memory | A prediction requiring reduction of [exact causal memory](../nodal/RESONANCE_FOUNDATIONS.md#sine-bridge-causal-memory). Fix hidden preparation, forcing, domain and horizon; bound the coupled full/reduced error rather than inferring damping from a static coefficient |
-| Nonlinear rebound or wider pulse bounds | A response claim outside the admitted finite-kick domain, with its nonlinear remainder or finite-preparation bound specified |
-| Autonomous capacity, support and hierarchy | A claim consuming their occurrence or origin, admitted through F1-F4. A passive event, supplied reservoir or compatible nested representation does not select it |
-| Physical reduction and data | A named measurable property and independent P1-P5 admission. The [methods comparison](../PHYSICAL_REGIME_CORRESPONDENCES.md#observed-pattern-admission-result) admits no empirical TNFR prediction; apparatus, input and observation gaps remain |
-
-<a id="chemical-hidden-memory-admission"></a>
-### Chemical memory dependency
-
-The [chemical comparator](CHEMICAL_OBSERVATION_ADMISSION.md) retains its
-supplied spatial matrix, nonnegative domain, row coefficients, clock,
-initial bromide field and independent illumination. Reopen only for a
-specific predictive-state or TNFR-mapping need. Elimination must follow its
-actual time-dependent linear equation; re-derive the kernel rather than
-importing coefficients from a TNFR example. Separate contraction at one
-prescribed history from error between coupled predicted histories.
-Accept an exact memory identity and scoped forgetting/error criterion or
-obstruction. No adiabatic substitution, controller or empirical evaluation
-follows from this dependency.
-
-<a id="localized-variational-resource-dependency"></a>
-### Resource-limited numerical dependency
-
-The [finite variational owner](../nodal/LOCALIZED_RETENTION_MECHANISMS.md)
-retains the canonical pi/4 carrier, periodic `m=1/2` profile, phase time,
-initial error class and actual loss. A different source or regime creates
-another study. If reopened, preserve signed cancellation, both source rows,
-all generated residual degrees, nonzero carried endpoints and independent
-join checks. Apply the proved gain 512 once to accumulated initial error,
-defects and joins; the numerical target remains `2^-24`, the pre-gain
-allowance at most `2^-34`, and analytical tails are separate.
-
-Admit representation/backend changes before evaluation. Include source,
-candidate, validation and I/O costs; independently bound memory and interval
-widths before a full grid. Close the full nonlinear bootstrap, arbitrary-mode
-errors, phase gaps, means and localization/readout margins before claiming
-maintenance. The original failures and partial results remain immutable.
-
-<a id="prospective-constitutive-admission"></a>
-<a id="variable-definition-identification-and-evolution"></a>
-<a id="new-constitutive-evidence-admission"></a>
-## Shared admission: F1-F4
-
-| Stage | Required record |
-| --- | --- |
-| F1: sufficient state | Domains, units, chart, support/identity, observations and discarded information |
-| F2: complete law | Pressure, consumed phase/capacity/clock/input/event laws, held quantities and remaining freedom |
-| F3: consistency | Actual-model symmetries, boundaries, means, storage, event work and execution path |
-| F4: discrimination | A prospective prediction, equivalence or obstruction with fixed preparation, law, observation, horizon and numerical budget |
-
-Constitutive selection requires independent information that distinguishes
-retained countermodels. Compatibility, a matched tangent or a successful
-organization does not uniquely select a fundamental law. Controlled conditional
-formation work need not wait for uniqueness.
-
-Record source/configuration, support and node order, inputs, seeds where
-used, precision, backend, pressure refresh, events and residuals. A seed or
-report label alone is insufficient. Use the [theory-to-execution map](../README.md#theory-to-execution)
-and [testing guide](../../TESTING.md); routine engine tests are not a replay
-of all research evidence.
-
-<a id="supporting-measurement-bridge"></a>
-<a id="physical-atlas-selection-and-dependencies"></a>
-## Physical confrontation: P1-P5
-
-| Stage | Obligation |
-| --- | --- |
-| P1 | Correct diagnostics and causal access; separate calibration and evaluation |
-| P2 | Independently admit measurement, preparation, input, clock and uncertainty |
-| P3 | Freeze reserved predictions and equally informed alternatives; evaluate without refitting |
-| P4 | Test partial observation and memory under the same law and information budget |
-| P5 | Test formation, maintenance, recovery and transitions required by the same claim |
-
-Physical comparison remains deferred; no dataset has passed this complete
-admission. Any proposed comparison must name an observable property supported
-by the admitted model and its operational definition. The
-[physical atlas](../PHYSICAL_REGIME_CORRESPONDENCES.md#physical-emergence-atlas)
-is a comparison library, not a queue. Collective measurement maps are allowed;
-EPI need not be a sensor reading.
-
-Use workstation-accessible terrestrial data or ordinary laboratory-scale
-protocols. Laboratory designs require separately admitted apparatus and source
-availability; current resources are a workstation. Astronomical, satellite
-and large-facility programs are outside scope. A scoped bridge may retain independently calibrated geometry and
-clock; deriving all spacetime is not a prerequisite for every comparison.
-Evaluated exploration cannot become reserved evidence again.
-
-## Completion and resumption
-
-Stop when the admitted question is proved, excluded or limited by a named
-missing premise. Replace the active decision and link its result owner;
-do not append a completed-task inventory. Reopen a dependency only after
-stating how it advances the selected claim.
-
-Frozen declarations, source archives, responses and verdicts retain their
-provenance. Corrections require separate evidence. Missing observations stay
-unavailable; cleanup and routine regression do not regenerate producers.
-
-<a id="retained-admission-links"></a>
-## Result ownership
-
-Published result links resolve to this owner boundary. Use the
-[theory catalog](../README.md) for current definitions and proofs and its
-[execution map](../README.md#theory-to-execution) for implementation and tests.
-Evidence recovery belongs to the [evidence guide](../../docs/guides/RESEARCH_EVIDENCE.md)
-and [retained source records](archive/README.md). Result narratives are
-maintained with their mathematical owners rather than duplicated in this queue.
-
-<!-- Stable published fragments; current result owners are in the theory catalog. -->
 <a id="acquired-mediator-effective-memory"></a>
 <a id="acquired-organized-network-capture"></a>
 <a id="acquisition-composition-gate"></a>
@@ -278,11 +36,14 @@ maintained with their mathematical owners rather than duplicated in this queue.
 <a id="boundary-information-applicability"></a>
 <a id="bridge-memory-admission"></a>
 <a id="calibrated-constitutive-observation"></a>
+<a id="canonical-grammar-integration"></a>
 <a id="canonical-operator-integration-completion"></a>
 <a id="carried-state-constitutive-discrimination"></a>
 <a id="causal-interface-composition"></a>
 <a id="changed-input-collective-interface-transfer"></a>
 <a id="changed-input-full-law-comparison"></a>
+<a id="chemical-hidden-memory-admission"></a>
+<a id="chemical-memory-dependency"></a>
 <a id="chemical-source-state-admission"></a>
 <a id="closed-acquisition-child-oz-and-measured-history"></a>
 <a id="closed-admission-a-causal-nonlinear-collective-interface"></a>
@@ -378,6 +139,7 @@ maintained with their mathematical owners rather than duplicated in this queue.
 <a id="closed-finite-stationary-search-and-marked-chamber-admission"></a>
 <a id="closed-fixed-gate-nonstationary-principal-confinement"></a>
 <a id="closed-gate-a-joint-child-window-in-the-retained-continuation"></a>
+<a id="closed-gate-accumulated-error-of-an-independently-evolved-child-core"></a>
 <a id="closed-gate-actual-formed-class-contact-with-joint-identity-retention"></a>
 <a id="closed-gate-actual-um-contact-between-maintained-organizations"></a>
 <a id="closed-gate-all-time-form-tracking-with-the-unchanged-surrogate"></a>
@@ -515,6 +277,7 @@ maintained with their mathematical owners rather than duplicated in this queue.
 <a id="collective-transformed-identity-admission"></a>
 <a id="collective-transition-admission"></a>
 <a id="common-probe-admission"></a>
+<a id="completion-and-resumption"></a>
 <a id="composition-compatible-constitutive-laws"></a>
 <a id="conservative-regional-formation"></a>
 <a id="conservative-regional-organization"></a>
@@ -528,9 +291,14 @@ maintained with their mathematical owners rather than duplicated in this queue.
 <a id="critical-parent-interaction-admission"></a>
 <a id="critical-parent-two-port-admission"></a>
 <a id="critical-registration-dynamics"></a>
+<a id="current-checkpoint"></a>
+<a id="current-checkpoint-and-resumption"></a>
+<a id="current-g3-gate"></a>
 <a id="deferred-analytical-gate-chemical-hidden-state-memory-and-predictive-reduction"></a>
 <a id="deferred-branch-analytical-compatibility-of-localized-formation"></a>
+<a id="deferred-dependencies"></a>
 <a id="deferred-dependency-prepared-envelope-variational-certification"></a>
+<a id="deferred-work-and-reopening-conditions"></a>
 <a id="effective-loss-admission"></a>
 <a id="entry-requirement-for-further-constitutive-selection"></a>
 <a id="evaluated-response-and-resumption-boundary"></a>
@@ -539,6 +307,7 @@ maintained with their mathematical owners rather than duplicated in this queue.
 <a id="formation-response-admission"></a>
 <a id="formation-retention-handoff"></a>
 <a id="formed-class-contact-admission"></a>
+<a id="foundational-organized-pattern-admission"></a>
 <a id="free-phase-probe-admission"></a>
 <a id="free-phase-probe-reader-admission"></a>
 <a id="free-phase-probe-record-admission"></a>
@@ -562,6 +331,7 @@ maintained with their mathematical owners rather than duplicated in this queue.
 <a id="localized-identity-transport-admission"></a>
 <a id="localized-mobile-interaction-admission"></a>
 <a id="localized-transport-source-admission"></a>
+<a id="localized-variational-resource-dependency"></a>
 <a id="maintained-contact-exchange"></a>
 <a id="maintained-parent-default-um-admission"></a>
 <a id="maintained-parent-thol-event"></a>
@@ -573,6 +343,7 @@ maintained with their mathematical owners rather than duplicated in this queue.
 <a id="mixed-neighbor-response-admission"></a>
 <a id="mobile-organization-feasibility-admission"></a>
 <a id="mobile-pair-response-admission"></a>
+<a id="new-constitutive-evidence-admission"></a>
 <a id="next-primary-admission-a-causal-nonlinear-collective-interface"></a>
 <a id="next-primary-admission-acquired-mediator-effective-memory"></a>
 <a id="next-primary-admission-an-executable-changed-input-port-prediction"></a>
@@ -590,6 +361,7 @@ maintained with their mathematical owners rather than duplicated in this queue.
 <a id="next-primary-evaluation-retain-the-first-changed-input-full-law-response"></a>
 <a id="next-primary-evaluation-retain-the-first-independent-class-comparison"></a>
 <a id="nine-point-critique-assessment-and-acceptance-obligations"></a>
+<a id="nodal-research-execution-plan"></a>
 <a id="nonacute-contact-geometry"></a>
 <a id="nonlinear-collective-interface-admission"></a>
 <a id="nonlinear-excess-storage-admission"></a>
@@ -621,6 +393,7 @@ maintained with their mathematical owners rather than duplicated in this queue.
 <a id="organized-electrical-robust-current-test"></a>
 <a id="organized-external-port-registration-admission"></a>
 <a id="organized-form-resource-envelope"></a>
+<a id="organized-full-fine-contact-identity-admission"></a>
 <a id="organized-identity-preserving-interaction"></a>
 <a id="organized-inherited-response-admission"></a>
 <a id="organized-interaction-driven-acquisition"></a>
@@ -655,6 +428,8 @@ maintained with their mathematical owners rather than duplicated in this queue.
 <a id="phase-directed-regional-accessibility"></a>
 <a id="phase-information-admission"></a>
 <a id="phase-nearest-contact-maintenance"></a>
+<a id="physical-atlas-selection-and-dependencies"></a>
+<a id="physical-confrontation-p1-p5"></a>
 <a id="post-capture-foundation-review"></a>
 <a id="post-contact-foundation-review"></a>
 <a id="post-identifiability-premise-review"></a>
@@ -666,6 +441,8 @@ maintained with their mathematical owners rather than duplicated in this queue.
 <a id="pressure-completion-admission"></a>
 <a id="primary-plan-foundations-tested-by-organized-patterns"></a>
 <a id="priority-readiness-and-missing-evidence"></a>
+<a id="prospective-constitutive-admission"></a>
+<a id="queue-status"></a>
 <a id="receiver-constitutive-confounding-admission"></a>
 <a id="receiver-defect-admission"></a>
 <a id="receiver-readout-admission"></a>
@@ -674,9 +451,12 @@ maintained with their mathematical owners rather than duplicated in this queue.
 <a id="reduced-formed-class-port-admission"></a>
 <a id="reduced-port-network-composition-admission"></a>
 <a id="relational-geometry-clock-admission"></a>
+<a id="relative-coupling-finite-observation"></a>
+<a id="relative-coupling-probe-admission"></a>
 <a id="relative-registration-contact"></a>
 <a id="repeated-organized-composition-admission"></a>
 <a id="repeated-probe-maintenance-admission"></a>
+<a id="research-priority-assessment"></a>
 <a id="reserved-aperture-inference-admission"></a>
 <a id="reserved-changed-input-full-law-response"></a>
 <a id="reserved-clock-drift-inference-admission"></a>
@@ -685,12 +465,16 @@ maintained with their mathematical owners rather than duplicated in this queue.
 <a id="reserved-nonlinear-four-history-response"></a>
 <a id="reserved-scaled-cross-class-comparison"></a>
 <a id="reserved-two-pulse-inference-admission"></a>
+<a id="resource-limited-numerical-dependency"></a>
+<a id="result-ownership"></a>
 <a id="retained-admission-and-exact-null-control"></a>
+<a id="retained-admission-links"></a>
 <a id="retained-relative-frame-gate"></a>
 <a id="reuse-boundary-eliminating-a-retained-pair"></a>
 <a id="same-source-acquisition-result"></a>
 <a id="scaled-cross-class-evaluation-admission"></a>
 <a id="shared-admission-and-evidence-requirements"></a>
+<a id="shared-admission-f1-f4"></a>
 <a id="sine-aperture-inference-admission"></a>
 <a id="sine-aperture-readout-admission"></a>
 <a id="sine-aperture-resolution-admission"></a>
@@ -711,6 +495,7 @@ maintained with their mathematical owners rather than duplicated in this queue.
 <a id="source-specific-basin-selection"></a>
 <a id="source-to-basin-mode-selection"></a>
 <a id="stopping-provenance-and-resumption"></a>
+<a id="storage-comparison-producer-admission"></a>
 <a id="storage-robustness-admission"></a>
 <a id="successor-child-grammar-timing-admission"></a>
 <a id="successor-child-history-acquisition"></a>
@@ -723,11 +508,13 @@ maintained with their mathematical owners rather than duplicated in this queue.
 <a id="successor-post-closure-retention"></a>
 <a id="successor-sha-law-admission"></a>
 <a id="successor-um-endpoint-inclusion"></a>
+<a id="supporting-measurement-bridge"></a>
 <a id="supporting-physical-confrontation-p1-p5"></a>
 <a id="target-matched-organized-law-result"></a>
 <a id="terrestrial-coupled-phase-admission"></a>
 <a id="two-probe-nonlinear-superposition"></a>
 <a id="validated-nonlinear-four-history-observation"></a>
+<a id="variable-definition-identification-and-evolution"></a>
 <a id="weak-contact-collective-selection"></a>
 <a id="weak-contact-constitutive-registration"></a>
 <a id="weak-contact-constitutive-transition"></a>
@@ -753,3 +540,5 @@ maintained with their mathematical owners rather than duplicated in this queue.
 <a id="weighted-star-finite-registration-episode"></a>
 <a id="weighted-star-quartic-transfer-admission"></a>
 <a id="weighted-star-reachability-obstruction"></a>
+
+See the [current research question](../RESEARCH_PROGRAM.md#research-current-question).

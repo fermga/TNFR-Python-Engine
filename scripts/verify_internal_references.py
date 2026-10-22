@@ -6,12 +6,19 @@ from __future__ import annotations
 import argparse
 import os
 import re
+import sys
 from bisect import bisect_right
 from collections.abc import Callable, Iterable, Iterator
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from scripts.research_book import BOOK_PATH, document_exists, documents, read_document
+
+RESEARCH_BOOK = Path(BOOK_PATH)
 EXCLUDED_PARTS = frozenset(
     {
         ".git",
@@ -66,10 +73,23 @@ def _excluded(path: Path) -> bool:
     ) or relative.as_posix().startswith(".github/agents/")
 
 
-def _markdown_files(search_roots: Iterable[str]) -> list[Path]:
+def _markdown_files(
+    search_roots: Iterable[str], logical_documents: dict[str, bytes] | None = None
+) -> list[Path]:
+    """Select physical pages and book chapters in their original path contexts."""
+    logical = documents(REPO_ROOT) if logical_documents is None else logical_documents
+    logical_paths = tuple((REPO_ROOT / path).resolve() for path in logical)
     files: set[Path] = set()
     for value in search_roots:
         root = (REPO_ROOT / value).resolve()
+        whole_book = root == (REPO_ROOT / RESEARCH_BOOK).resolve()
+        files.update(
+            path
+            for path in logical_paths
+            if (whole_book or path == root or path.is_relative_to(root))
+            and path.suffix.lower() == ".md"
+            and not _excluded(path)
+        )
         if root.is_file() and root.suffix.lower() == ".md" and not _excluded(root):
             files.add(root)
         elif root.is_dir():
@@ -191,8 +211,10 @@ def _without_tex_math(content: str) -> str:
     return "".join(parts)
 
 
-def _anchors(markdown: Path) -> set[str]:
-    content = _without_fenced_code(markdown.read_text(encoding="utf-8-sig"))
+def _anchors(markdown: Path, document_text: str | None = None) -> set[str]:
+    content = _without_fenced_code(
+        read_document(REPO_ROOT, markdown) if document_text is None else document_text
+    )
     anchors = set(HTML_ID_PATTERN.findall(content))
     counts: dict[str, int] = {}
     for heading in HEADING_PATTERN.findall(content):
@@ -234,20 +256,37 @@ def _repository_url(target: str) -> str | None:
 
 def verify(search_roots: Iterable[str], verbose: bool = False) -> tuple[int, list[str]]:
     search_roots = tuple(search_roots)
+    logical = documents(REPO_ROOT)
+    logical_paths = {(REPO_ROOT / path).resolve() for path in logical}
+
+    def exists(path: Path) -> bool:
+        return path in logical_paths or path.exists()
+
+    def directory(path: Path) -> bool:
+        return path.is_dir() or any(
+            candidate != path and candidate.is_relative_to(path)
+            for candidate in logical_paths
+        )
+
+    def content_at(path: Path) -> str:
+        relative = path.relative_to(REPO_ROOT).as_posix()
+        if relative in logical:
+            return logical[relative].decode("utf-8-sig")
+        return read_document(REPO_ROOT, path)
+
     references = 0
     failures = [
         f"missing search root: {value}"
         for value in search_roots
-        if not (REPO_ROOT / value).resolve().exists()
+        if not exists((REPO_ROOT / value).resolve())
+        and not directory((REPO_ROOT / value).resolve())
     ]
     anchor_cache: dict[Path, set[str]] = {}
 
-    for source in _markdown_files(search_roots):
+    for source in _markdown_files(search_roots, logical):
         content = "".join(
             text if prose else "\n" * text.count("\n")
-            for text, prose in _markdown_segments(
-                source.read_text(encoding="utf-8-sig")
-            )
+            for text, prose in _markdown_segments(content_at(source))
         )
         # Algebra such as [1-s](q-k) is not a link inside a math wrapper.
         content = _without_tex_math(content)
@@ -276,15 +315,15 @@ def verify(search_roots: Iterable[str], verbose: bool = False) -> tuple[int, lis
             if not destination.is_relative_to(REPO_ROOT):
                 failures.append(f"target outside repository: {display}")
                 continue
-            if not destination.exists():
+            if not exists(destination) and not directory(destination):
                 failures.append(f"missing target: {display}")
                 continue
-            if separator and fragment and destination.is_dir():
+            if separator and fragment and directory(destination):
                 index = next(
                     (
                         destination / name
                         for name in ("README.md", "index.md")
-                        if (destination / name).is_file()
+                        if document_exists(REPO_ROOT, destination / name)
                     ),
                     None,
                 )
@@ -294,7 +333,9 @@ def verify(search_roots: Iterable[str], verbose: bool = False) -> tuple[int, lis
                 destination = index
             if separator and fragment and destination.suffix.lower() == ".md":
                 if destination not in anchor_cache:
-                    anchor_cache[destination] = _anchors(destination)
+                    anchor_cache[destination] = _anchors(
+                        destination, content_at(destination)
+                    )
                 if fragment not in anchor_cache[destination]:
                     failures.append(f"missing fragment: {display}")
                     continue

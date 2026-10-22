@@ -435,7 +435,8 @@ class CoherenceError(TNFRUserError):
         super().__init__(
             message=f"Unexpected coherence decrease during '{operation}'",
             suggestion=suggestion,
-            docs_url=_REFERENCE_ROOT + "theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md",
+            docs_url=_REFERENCE_ROOT
+            + "theory/RESEARCH_PROGRAM.md#chapter-theory-diagnostic-and-grammar-scope-md",
             context=context,
         )
 
@@ -489,7 +490,8 @@ class FrequencyError(TNFRUserError):
         super().__init__(
             message=f"Invalid structural frequency{node_msg}",
             suggestion=suggestion,
-            docs_url=_REFERENCE_ROOT + "theory/NODAL_PARAMETER_FOUNDATIONS.md",
+            docs_url=_REFERENCE_ROOT
+            + "theory/RESEARCH_PROGRAM.md#chapter-theory-nodal-parameter-foundations-md",
             context=context,
         )
 

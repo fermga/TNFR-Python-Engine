@@ -8,6 +8,7 @@ from types import MappingProxyType
 
 import pytest
 
+from scripts.research_book import read_document_bytes
 from tnfr.operators import grammar_canon as gc
 from tnfr.sdk.simple import TNFR
 
@@ -44,7 +45,7 @@ def test_declared_owners_resolve_without_executing_them():
     for bases in gc.GRAMMAR_BASES.values():
         for basis in bases:
             if basis.owner.startswith("theory/"):
-                assert (root / basis.owner.split("#")[0]).is_file()
+                assert read_document_bytes(root, basis.owner.split("#")[0])
                 continue
             parts = basis.owner.split(".")
             # Owners may be module-level functions or methods on a class.

@@ -11,7 +11,7 @@ fails it, while an explicit smaller source domain passes.
 
 This owner closes a bounded analytical question, without a new retained-source
 word, trajectory or physical observation. The
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+[research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns subsequent work. Regime labels, event timing and jitter configuration
 remain supplied policies, not autonomous dynamical causes.
 

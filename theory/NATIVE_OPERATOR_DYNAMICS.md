@@ -11,7 +11,7 @@ The [structural operator contracts](STRUCTURAL_OPERATORS.md),
 [collective action criterion](STRUCTURAL_OPERATORS.md#collective-operator-descent)
 and [ordered-language descent](STRUCTURAL_OPERATORS.md#collective-grammar-descent)
 own the underlying event and grammar obligations. The
-[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) remains
+[research program](RESEARCH_PROGRAM.md#research-current-question) remains
 the sole research queue.
 
 The [conditional collective calculus](NATIVE_COLLECTIVE_CALCULUS.md#native-collective-calculus) combines the

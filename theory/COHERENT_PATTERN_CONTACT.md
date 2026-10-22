@@ -4,7 +4,7 @@ This note owns the conditional two-ring contact result. It reuses the
 [supplied phase law](nodal/FORCED_PHASE_LOCKING.md#29-graph-independent-locking-and-phase-source-constraints),
 [cycle-period geometry](nodal/FORCED_PHASE_LOCKING.md#30-acute-phase-locks-are-circulation-states-with-integral-cycle-periods)
 and [isolated-ring relaxation](nodal/FORCED_WINDING_AND_WRITERS.md#32-acute-cycle-relaxation-retains-phase-winding-while-form-relaxes).
-The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](RESEARCH_PROGRAM.md#research-current-question)
 alone owns the next research task.
 
 Its [formation boundary](#formation-boundary-under-the-same-gated-law)
@@ -34,7 +34,7 @@ The [phase-premise review](nodal/PRIMITIVE_PHASE_CLOSURE.md#phase-premise-review
 separates this supplied law from operator admission and derived form phase.
 Changing the cutoff changes the preparation bounds; the exclusions below
 cannot be transferred unchanged to another phase law. The remaining
-gate-itinerary question is open and deferred in the sole execution plan.
+gate-itinerary question is open and deferred in the research program.
 
 ## Model and prospective control
 

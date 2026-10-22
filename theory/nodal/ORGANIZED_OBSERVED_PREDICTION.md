@@ -3,7 +3,7 @@
 <a id="organized-observed-prediction-declaration"></a>
 ## Fixed observation-to-future comparison
 
-The [active information gate](../research/FIVE_STAGE_EXECUTION_PLAN.md#organized-observed-prediction-admission)
+The [retained information comparison](#fixed-observation-to-future-comparison)
 removes the exact collective initialization consumed by the
 [preparation-based forecast](ORGANIZED_COMPUTABLE_PREDICTION.md).
 It asks whether two complete histories compatible with one existing noisy

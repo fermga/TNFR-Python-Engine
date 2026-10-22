@@ -4,7 +4,7 @@ The [committed UM successor](SINE_MAINTAINED_PARENT_UM.md#maintained-um-committe
 provides a concrete `VAL,THOL,UM` prefix with genuine parent history and a
 connected child. This study admits one parent-target SHA closure, accounting
 for its capacity reset, latency metadata and complete subsequent law.
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns task status.
 
 SHA is a deliberately simple control for isolating capacity effects. The

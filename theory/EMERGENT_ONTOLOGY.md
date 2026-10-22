@@ -6,7 +6,7 @@
 The objects are conditional mathematical constructions with declared state,
 laws and identity. Proofs, finite numerical evidence and open hypotheses retain
 distinct status. This owner defines how claims about those objects are admitted;
-the [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md) selects research.
+the [research program](RESEARCH_PROGRAM.md#research-current-question) selects research.
 
 ## 0. What counts as emergence here
 
@@ -119,8 +119,9 @@ not independent dynamical constituents merely because an envelope is written
 as their sum; a collective description must retain the relative and boundary
 information its identity and evolution consume.
 
-The [formation premise ledger](NODAL_RESEARCH_STRATEGY.md#formation-premise-ledger)
-compares model-specific scope. In particular, a missing sufficient certificate
+The [program overview](RESEARCH_PROGRAM.md#research-current-state) summarizes
+available capabilities; each linked model owns its premises and verdict.
+In particular, a missing sufficient certificate
 is not proof that an organization cannot exist. Source-dependent exclusions
 remain constraints on those source classes, not universal exclusions.
 
@@ -223,9 +224,11 @@ Three distinct questions must be tested:
   a stated identity under surrounding interactions. This need not create
   vertices. A coherent snapshot, stationary minimum or topology label alone
   does not demonstrate temporal maintenance.
-- **Autonomous effective description:** aggregate coordinates predict their
-  evolution, possibly with derived memory and a hidden-initial-state source.
-  A failed reduction does not refute the region's existence in the full state.
+- **Predictive effective description:** retained coordinates, or derived
+  memory with its hidden-initial-state source, predict the declared response.
+  An autonomous law on current aggregate coordinates additionally requires
+  closure on those coordinates. A failed reduction does not refute the region's
+  existence in the full state.
 
 Operators specify transformations of existing state; they are not separate
 entities whose birth must be simulated. Deriving when a transformation occurs
@@ -252,74 +255,36 @@ state even when a continuous quotient already closes. The native full-form
 formation obstruction also supplies a conditional phase-acquisition budget;
 it does not turn a storage-passive reset into an autonomous mechanism.
 
-The [formation premise ledger](NODAL_RESEARCH_STRATEGY.md#formation-premise-ledger)
-owns the cross-model distinction between positive results and exclusions;
-the [theory-to-execution map](README.md#theory-to-execution) locates proofs,
+The [program overview](RESEARCH_PROGRAM.md#research-current-state) distinguishes
+available capabilities and their boundaries; each model retains its positive
+results and exclusions. The [theory-to-execution map](README.md#theory-to-execution) locates proofs,
 code and tests. The ontological obligations can be stated without maintaining
 a second inventory of preparations:
 
 | Claim about an organization | Required distinction |
 | --- | --- |
-| Formation and maintenance | Show entry from an initial set lacking the claimed identity, then its declared lifetime or recovery. Native validated transit and sine prepared acquisition have separate law/domain and uncertainty hypotheses. |
+| Formation | Show entry from an initial set lacking the claimed identity, then its declared retention and response. Native validated transit and sine prepared acquisition have separate law/domain and uncertainty hypotheses. |
+| Maintenance and recovery | Admit the initial identity and prove retention over its declared interval; recovery additionally needs a declared intervention and return criterion. These claims do not require that the identity was initially absent. |
 | Effective description | Prove sufficient collective state, or retain hidden initialization through derived memory. Means, winding and instantaneous rates alone need not close. |
 | Interaction and composition | Retain environmental influence, relative frames and causal controls. Compatible isolated identities need not remain compatible after attachment. |
 | Birth or structural action | Admit state/support jumps and their costs separately from occurrence. A configured child, favorable budget or named operator does not derive its own activation. |
 
-The [weighted-contact formation admission](nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-formation-admission)
-applies these distinctions to the actual word and its separately prepared
-comparison families. Failure of a sufficient maintenance certificate does
-not establish absence of the geometric identity. An observation unavailable
-before a support change is likewise not a measured absence: declare how the
-identity is evaluated across that change before claiming acquisition.
+Failure of a sufficient maintenance certificate does not establish absence
+of an identity. An observation unavailable before a support change is not a
+measured absence; declare its cross-support meaning before claiming acquisition.
+The following linked studies make those distinctions precise on their own laws.
 
-The [permanent common-registration boundary](nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-permanent-registration-result)
-declares a closed full-state target with one common circular phase
-origin and proves its absence throughout admitted source neighborhoods.
-The actual weighted conservative law preserves finite ambient volume, so
-almost every state in those neighborhoods returns outside that target.
-Robust permanent capture is excluded in this scope; neither a nominal
-point's recurrence nor failure of finite-lived formation follows. Common
-registration remains a candidate identity condition; it does not select a
-unique complete law.
+| Technical result | Scope retained for the formation question |
+| --- | --- |
+| [Weighted-contact admission](nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-formation-admission) | Actual word and separately prepared comparison families; canonical execution does not itself establish source-to-identity entry. |
+| [Permanent registration boundary](nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-permanent-registration-result) | The closed full-state target with one common circular origin is initially absent throughout admitted neighborhoods. Finite-volume preservation excludes robust permanent capture there; almost-everywhere return does not prove recurrence of a specified nominal point or exclude finite-lived formation. |
+| [Finite registration](nodal/SINE_WEIGHTED_STAR_FINITE_IDENTITY.md#weighted-star-finite-registration-result) and [retained episode](nodal/SINE_WEIGHTED_STAR_FINITE_IDENTITY.md#weighted-star-finite-episode-result) | Separate component invariants exclude the target for the disconnected control and its source boxes. Joined storage and lifted means permit a target and a configuration path, not an integral curve; the tangent construction has its own storage. The frozen sine/tangent central-source episode excludes entry on `[0,8]`, not all time or the surrounding preparation families. |
+| [Quadratic obstruction](nodal/SINE_WEIGHTED_STAR_FINITE_IDENTITY.md#weighted-star-quadratic-reachability-result) | The central tangent source cannot register at any time. Its conserved quadratic does not transfer to the sine law, which has no nonzero homogeneous quadratic first integral on an open mean-fixed domain. Losing that obstruction does not establish nonlinear entry. |
+| [Quartic continuation](nodal/SINE_WEIGHTED_STAR_FINITE_IDENTITY.md#weighted-star-quartic-transfer-result) | Formal leading-drift removal increases drift at the actual source and is not uniformly small on its storage domain. This limits the approximation, not every possible formation mechanism. |
+| [Word-to-flow comparison](nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-constitutive-handoff-result) | The same admitted AL/UM/SHA preparation supports distinct periodic continued fields, each maintaining the marked constituents under its own law. This proves compatibility, not common-identity entry or unique constitutive selection. |
 
-The [finite-registration admission](nodal/SINE_WEIGHTED_STAR_FINITE_IDENTITY.md#weighted-star-finite-registration-result)
-distinguishes a necessary role for contact from actual entry. Separate
-component phase invariants exclude the same circular target for all time in
-the matched disconnected control, including its independent source boxes.
-The joined law permits a target configuration and a continuous configuration
-path at its source storage and both conserved lifted means. Those displayed
-invariants do not establish an integral curve or exhaust possible dynamical
-restrictions. A corresponding construction for the full tangent law keeps
-its own quadratic storage. The [frozen central-source episode](nodal/SINE_WEIGHTED_STAR_FINITE_IDENTITY.md#weighted-star-finite-episode-result)
-excludes entry throughout elapsed `[0,8]` for the declared sine continuation
-and its tangent control. That finite result does not cover all time, other
-nominal sources or their independent preparation boxes. Canonical preparation
-does not uniquely derive the subsequent continuous law; the
-[law-admission distinction](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#canonical-execution-and-law-selection)
-retains that boundary.
-
-The [exact quadratic obstruction](nodal/SINE_WEIGHTED_STAR_FINITE_IDENTITY.md#weighted-star-quadratic-reachability-result)
-excludes registration for all time in that central tangent source, even
-though storage and means permit target configurations. Its conserved
-quadratic does not survive the sine law, which has no nonzero homogeneous
-quadratic first integral on an open mean-fixed domain. This separates a
-proved tangent obstruction from still-open nonlinear accessibility; losing
-an invariant does not establish entry or a new collective identity.
-
-The [quartic continuation](nodal/SINE_WEIGHTED_STAR_FINITE_IDENTITY.md#weighted-star-quartic-transfer-result)
-removes the leading drift formally, but its fixed correction increases
-instantaneous drift at the actual source and is not uniformly small on its
-storage domain. This limits that approximation method, not nonlinear
-formation or other identities. Candidate identity criteria need their own
-state, observation and dynamical admission.
-
-The [actual word-to-flow comparison](nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-constitutive-handoff-result)
-makes the boundary explicit: the same admitted AL/UM/SHA preparation supports
-distinct periodic continued fields, each with its own proved maintenance of
-both marked constituent identities. The comparison reuses retained phase
-information; it does not select a new law or establish common-identity entry.
-Organized constituents and canonical event compatibility therefore still need
-additional justification before they can select a unique complete dynamics.
+The [law-admission distinction](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md#canonical-execution-and-law-selection)
+separates those conditional results from a uniquely derived complete dynamics.
 
 Nonlinearity is not a universal definition-level requirement for an NFR.
 If a linear alternative acquires the same declared organization, that limits
@@ -477,6 +442,24 @@ or their future interaction. Phase product and form/phase association retain
 their state through cancellation. This is continuity of a supplied pair's
 description, not a proof that its observed coherent identity persists.
 
+The [organized-source asymmetry bound](nodal/ORGANIZED_SOURCE_CHILD_ORBIT.md#organized-source-child-relaxation)
+gives a complementary condition under which hidden information becomes
+progressively less important for an instantaneous prediction. A common
+quadratic metric controls both hidden form and phase while the surrounding
+state moves, and it is unchanged by the admitted marked ideal word.
+This yields a finite deadline for a declared approximation tolerance.
+Exact equality is only asymptotic, and the result neither closes a lossy
+state at finite time nor establishes a new NFR identity. Thus a practical
+collective approximation requires a law, domain and error criterion in
+addition to a grouping or an exact symmetry.
+The [independent-core comparison](nodal/ORGANIZED_SOURCE_CHILD_ORBIT.md#organized-source-child-tracking)
+also bounds accumulated prediction error when that symmetric core evolves
+from the matched projected initial state, at unit capacities without events.
+The projected error is uniformly quadratic in initial hidden amplitude and
+tends to zero. This gives a conditional reason to discard detail for a
+specified prediction; the full reconstructed error still includes that
+detail, and the result does not select a grouping or an NFR identity.
+
 | Connection | Established result and compatible reuse | Missing implication |
 | --- | --- | --- |
 | Pulse and internal organization | The [actual mean-contact balance](nodal/SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-collective-pulse-transfer) derives exchange between collective motion and contact deviations on the conservative unit C5/private-leaf support. Certain phase preparations release collective storage and initiate internal form/phase motion. | The mean pulse is not generally closed; its lift-dependent remainder is signed. Release and internal growth do not prove the receiver acquires an identity. |
@@ -507,7 +490,7 @@ Thus the useful synthesis is **retained internal dynamics plus ordered
 contact geometry**, with a compatible full-state maintenance budget. It
 does not require adding a new primitive pulse, treating resonance as an
 autonomous input, or assuming that a larger NFR erases its constituents.
-The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](RESEARCH_PROGRAM.md#research-current-question)
 owns the current gate's status, the next admitted question and any reopening
 of a deferred dependency.
 
@@ -652,7 +635,7 @@ tools within their declared TNFR laws. A change of vocabulary neither adds
 an omitted mechanism nor invalidates an existing continuous result. The
 useful foundation question is whether a retained organization supports the
 claimed TNFR transformation, with enough state to predict and admit it.
-The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](RESEARCH_PROGRAM.md#research-current-question)
 owns the single next test of that question.
 
 <a id="collective-memory-and-operators"></a>
@@ -693,128 +676,31 @@ delayed mixing, explicit topology helpers and continuous effective laws have
 different execution and proof obligations. A complete implementation catalog
 does not establish that every collective organization realizes all its actions.
 
-The [maintained-parent birth](nodal/SINE_MAINTAINED_PARENT_THOL.md) supplies
-one actual THOL action with genuine associated parent history and a declared
-frozen-isolate successor. The child does not inherit an observed temporal
-baseline from its parent. The [successor motion result](nodal/SINE_SUCCESSOR_NONSTATIONARY.md#successor-nonstationary-result)
-certifies a conditional hypothetical UM family's finite principal
-identity. Actual event inclusion and the changed law after word closure
-remain distinct from that mathematical continuation. This evidence does
-not require every new organization to execute all registered operators.
+The operator studies identify which additional state a claimed action
+consumes. Their detailed derivations and retained evaluations belong to the
+linked owners; the distinctions needed for collective interpretation are:
 
-The [collective IL/OZ foundation](nodal/SINE_COLLECTIVE_PRESSURE_HANDOFF.md)
-gives a concrete use of these distinctions. The maintained contact has usable
-local neighbor resultants even when its global circular phase is unavailable.
-Its simultaneous IL reset has a conditional work and identity argument;
-OZ followed immediately by the selected constitutive refresh preserves the
-continuous-law state while retaining a different execution history. The
-[retained represented word](nodal/SINE_COLLECTIVE_PRESSURE_HANDOFF.md#collective-pressure-handoff-result)
-separately establishes actual IL work/endpoint admission and OZ projection,
-with its original phase-accuracy uncertainty resolved by a
-[separate retained-input certificate](nodal/SINE_COLLECTIVE_PRESSURE_HANDOFF.md#collective-pressure-phase-review).
-Neither evidence level supplies autonomous occurrence. Retained history does
-not itself make pressure a dynamic memory coordinate; a law for retaining
-pressure or environmental
-memory must be justified separately if a later claim consumes it.
+| State or action boundary | Scoped result and implication |
+| --- | --- |
+| Birth, contact and changed capacity | [Maintained-parent THOL](nodal/SINE_MAINTAINED_PARENT_THOL.md) uses genuine parent history and an explicit frozen-isolate successor. The [committed UM endpoint](nodal/SINE_MAINTAINED_PARENT_UM.md#maintained-um-committed-result) has its own inclusion proof, and [post-SHA retention](nodal/SINE_MAINTAINED_PARENT_CLOSURE.md#maintained-sha-retention-result) separately certifies the changed law. Neither gives the child its parent's temporal baseline. |
+| The child's own execution state | [Acquired samples and OZ](nodal/SINE_CHILD_GRAMMAR_TIMING.md#child-history-acquisition-result) support the [actual child word](nodal/SINE_CHILD_THOL_ADMISSION.md#child-word-result). Its level-two descendant remains isolated with no acquired temporal baseline; the word does not establish autonomous growth or a maintained larger organization. |
+| Local resultants and stored pressure | [IL/OZ handoff](nodal/SINE_COLLECTIVE_PRESSURE_HANDOFF.md#collective-pressure-handoff-result) uses local resultants even when a global circular phase is unavailable. It accounts for actual IL work and OZ erased by immediate constitutive refresh; the [separate phase review](nodal/SINE_COLLECTIVE_PRESSURE_HANDOFF.md#collective-pressure-phase-review) resolves the original accuracy uncertainty. Executed history remains distinct from the refreshed continuous state. |
+| Pressure as independent state | [Pressure completion](nodal/SINE_PRESSURE_COMPLETION.md) adds mean, storage and event-work obligations. Its incompatibility of the old rows, invariant constitutive graph and smooth zero-baseline passive storage does not exclude memory with changed reciprocal reservoirs, phase laws or supplied held intervals. An independently specified pressure law need not make pressure an independent coordinate. |
+| Absolute form and local scaling | [VAL/NUL action](nodal/SINE_FORM_CAPACITY_ACTION.md) can expose a form origin discarded by the continuous translation symmetry. Retain signed form or a declared reference. Failure of its scalar-storage confinement certificate does not itself demonstrate departure. |
+| Grammar and future identity | The [directional counterexample](nodal/SINE_DIRECTIONAL_MAINTENANCE.md#directional-maintenance-result) passes live NUL/IL/SHA grammar and finite U6, then leaves its original identity tube. Its exact nominal symmetry reduction does not admit an independent surrounding family. This rejects that retention claim, not every possible identity. |
+| Declared identity transformation | [Contextual identity transition](nodal/SINE_COLLECTIVE_IDENTITY_TRANSITION.md) preserves a marked acute winding class on its explicit source domain. Prediction consumes internal coordinates, actual neighbor counts, absolute form and associated context; successor capacities/history remain retained. It is not all-time maintenance or a scalar closure. |
+| Incoming mixture and work | [Reception](nodal/SINE_COLLECTIVE_RECEPTION.md) admits EN/IL/SHA while an unweighted mixture can raise weighted storage. Unchanged instantaneous pressure and form rate coexist with changed phase rates and form acceleration; a compensating source or event selector is not supplied. |
+| Lifecycle memory | [Transition](nodal/SINE_COLLECTIVE_TRANSITION.md) changes phase/capacity according to SHA latency at otherwise equal nodal state. Refresh erases raw jitter, not that reset. A valid event can leave the original acute sector; a separately declared narrower domain retains it. |
+| Temporal evidence and Mutation | [Mutation admission](nodal/SINE_COLLECTIVE_MUTATION_ADMISSION.md) separates general capacity-dependent growth, actual NAV-successor conditions and acquired history. The [phase action](nodal/SINE_COLLECTIVE_MUTATION_ACTION.md) has its own work and successor-domain obligations; an instantaneous rate supplies no observed secant. |
+| Disconnected birth and delayed mixing | [Hierarchy](nodal/SINE_COLLECTIVE_HIERARCHY.md) distinguishes a pressure reset erased by refresh from a birth outside the connected-law domain. A parent reference supplies no edge or child law. [Recursivity](nodal/SINE_COLLECTIVE_RECURSIVITY.md) requires associated historical forms and actual mixing work; its advisory executes neither mixing nor topology replacement. |
+| Coupled constituent versus formed composite | The [small hierarchy-to-contact family](nodal/SINE_HIERARCHY_CONTACT.md) uses an explicit frozen-isolate law, actual parent-target UM, positive event work and a disconnected inactive null. Its child responds, but that study supplies neither maintained-parent birth nor a new stable composite identity. Cross-support identity and U6 require explicit observation maps. |
+| Maintenance versus birth eligibility | The [maintained-source obstruction](nodal/SINE_ORGANIZED_BIRTH_OBSTRUCTION.md) preserves the original count-three contact for all time while every genuine event-free acceleration window stays below the default birth threshold. It excludes neither THOL's pressure action nor birth from another admitted preparation. |
+| Capacity and temporal access | The [common-capacity comparison](nodal/SINE_CAPACITY_TEMPORAL_ACCESS.md) changes temporal eligibility at the original clock while preserving the same spatial identity. Even a genuine acceleration crossing can leave pressure or grammar blocking the event. |
 
-The [pressure-completion result](nodal/SINE_PRESSURE_COMPLETION.md)
-clarifies that an independently specified pressure law need not make pressure
-an independent coordinate. Admitting that additional freedom brings mean,
-storage and event-work obligations. The conditional incompatibility between
-the old rows, invariant constitutive graph and smooth zero-baseline passive
-storage is not an exclusion of memory: reciprocal reservoirs, altered phase
-laws and supplied held intervals have different premises. None follows merely
-from having a collective NFR or a recorded operator history.
-
-The [complete form-capacity action](nodal/SINE_FORM_CAPACITY_ACTION.md) exposes
-an additional event-state obligation. A common form translation is a symmetry
-of the selected continuous law, but local VAL/NUL form scaling can turn that
-discarded origin into different relative outputs. Retain signed form or a
-declared event reference before asserting collective descent. The same
-analysis separates identity at the reset endpoint from future maintenance:
-for the specified default local actions, sublevels of the scalar storage on
-the two conserved mean leaves cannot certify confinement in the identity ball. This
-certificate obstruction does not establish a departing trajectory. The
-[directional maintenance owner](nodal/SINE_DIRECTIONAL_MAINTENANCE.md) admits
-an exact nominal-state symmetry reduction and nonlinear error metric,
-retaining multiplicities, the actual weighted law and the complete word's
-grammar context. Exact symmetry of one preparation does not admit an
-independent surrounding source family. Grammar admission, U6 observations
-and future geometric identity have separate obligations.
-The [frozen complete-word counterexample](nodal/SINE_DIRECTIONAL_MAINTENANCE.md#directional-maintenance-result)
-makes that distinction concrete: NUL/IL/SHA passes live grammar and finite U6,
-yet the subsequent law leaves the original small identity tube in finite
-time. This rejects that retention claim, not every identity the organization
-might carry. A transformed identity requires an independently defined
-observation and event map; it cannot be fitted to erase a failed prediction.
-The [contextual transition contract](nodal/SINE_COLLECTIVE_IDENTITY_TRANSITION.md)
-supplies one such scoped distinction. A marked acute winding class is
-preserved by the ideal complete word on an explicit source domain, while
-predicting and admitting its action needs the internal coordinates, actual
-neighbor multiplicities, absolute form and associated context. Successor
-domains retain the changed capacities and histories. This is a conditional
-organizational transformation, not a smaller scalar NFR or all-time retention.
-
-The [collective Reception contract](nodal/SINE_COLLECTIVE_RECEPTION.md)
-admits EN/IL/SHA on the same contextual contact. Its unweighted incoming
-mixture can raise weighted storage while preserving the phase class at the
-event. Unchanged instantaneous pressure and form rate still permit changed
-phase rates and form acceleration. Organizational descent, event work and
-future maintenance therefore require distinct arguments; a local mixture
-does not install a compensating source law or autonomous event selector.
-
-The [collective Transition contract](nodal/SINE_COLLECTIVE_TRANSITION.md)
-makes lifecycle context observable in a later action: SHA's latent flag
-changes NAV's phase and capacity reset at otherwise equal nodal state.
-That execution memory differs from an independent continuous pressure law;
-immediate constitutive refresh removes NAV's raw jitter but retains the
-phase/capacity reset. The original acute sector can fail at a valid event,
-while a separately declared narrower domain preserves it. Neither grammar
-acceptance nor a regime label alone defines the retained organization.
-
-The [Mutation compatibility contract](nodal/SINE_COLLECTIVE_MUTATION_ADMISSION.md)
-adds associated temporal state. General continuous growth is possible under
-a sharp capacity condition, while the actual NAV successor has distinct
-evidence, grammar and conditional sector restrictions. Thus an obstruction
-on one preparation does not establish incompatibility between an operator
-and the complete law. Conversely, a permitted instantaneous rate does not
-supply the observed history needed to execute that operator.
-
-Three distinct continuations complete the scoped mechanism classification.
-The [Mutation action](nodal/SINE_COLLECTIVE_MUTATION_ACTION.md) accounts for
-actual phase-reset work and its changed form rate; admission alone preserves
-neither storage nor an acute phase identity. The
-[hierarchy contract](nodal/SINE_COLLECTIVE_HIERARCHY.md) separates a pressure
-reset erased by refresh from an actual isolated birth, which leaves the
-connected sine law's domain. A stored parent reference supplies neither an
-edge nor a child continuation law. The
-[delayed Recursivity contract](nodal/SINE_COLLECTIVE_RECURSIVITY.md) retains
-associated historical forms and their actual reset work; a node advisory
-does not execute that map. These results locate the state and law boundaries
-for composition. They do not turn the mechanism classification into a proof
-of universal word closure or autonomous grouping.
-
-The [hierarchy-to-contact result](nodal/SINE_HIERARCHY_CONTACT.md) gives an
-explicit conditional composition. An isolated THOL child is frozen under a
-supplied intermediate law; actual parent-target UM then generates a link and
-a nonzero child response. Its positive event work is included, and the null
-retains an isolated, inactive child under the same law. This demonstrates a
-dynamically coupled constituent in a declared small source family. It does
-not establish birth from a previously maintained organization, a new stable
-composite identity or autonomous occurrence. Comparing identities and U6
-references across changed node support requires an explicit observation map.
-The [maintained-source counterexample](nodal/SINE_ORGANIZED_BIRTH_OBSTRUCTION.md)
-sharpens this distinction: the original count-three contact retains its
-identity for all time while every genuine event-free acceleration window stays
-below the default child-creation threshold. Maintenance does not imply access
-to every operator mechanism; this does not exclude THOL's pressure action or
-birth under a separately admitted preparation.
-The [common-capacity comparison](nodal/SINE_CAPACITY_TEMPORAL_ACCESS.md)
-shows that the same maintained spatial identity can admit different
-temporal event eligibility at the original clock. A genuine history may cross
-the acceleration threshold while pressure or grammar still blocks an event.
-The organization, observation protocol and complete hybrid admission must
-therefore be retained together; temporal eligibility alone is not formation.
+A transformed identity requires an independently specified observation and
+event map; it cannot be fitted to erase a failed prediction. Retaining history
+does not by itself install a pressure-memory law or derive an occurrence rule.
+Keep organization, observation protocol and full hybrid admission together.
 
 ## 2. Geometry and diagnostics do not close the dynamics
 
@@ -851,7 +737,7 @@ evaluation. Preserve counterexamples and null outcomes. A model that needs
 an added source must expose that source; a closure that loses information
 must expose the missing state or memory.
 
-The [sole execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](RESEARCH_PROGRAM.md#research-current-question)
 selects the next bounded question. Existing conditional laws, formation,
 controls and memory forecasts are reusable evidence; their presence does not
 start additional law-selection or contact campaigns.

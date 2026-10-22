@@ -11,7 +11,7 @@ predicted source to the acute boundary.
 These are analytical results for the supplied conservative complete law.
 No UM event, trajectory, autonomous selection or physical identification is
 provided. Nonacute equilibria and nonstationary organizations are not excluded.
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 alone selects further work; this conditional geometry does not activate it.
 
 ## 1. Complete law, source and every edge branch

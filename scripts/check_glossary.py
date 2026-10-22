@@ -8,10 +8,17 @@ scientific status. Normal checks are read-only; index replacement is explicit.
 
 import importlib.util
 import re
+import sys
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
+
+_SCRIPT_ROOT = Path(__file__).resolve().parents[1]
+if str(_SCRIPT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_SCRIPT_ROOT))
+
+from scripts.research_book import document_exists, read_document, write_document
 
 CARDS_START = "<!-- BEGIN CONCEPT CARDS -->"
 CARDS_END = "<!-- END CONCEPT CARDS -->"
@@ -254,11 +261,11 @@ def _local_links(value: str, source: Path, root: Path, label: str):
         _require(
             path.is_relative_to(root), f"{label}: link leaves the repository: {target}"
         )
-        _require(path.is_file(), f"{label}: missing local file: {target}")
+        _require(document_exists(root, path), f"{label}: missing local file: {target}")
         fragment = unquote(parsed.fragment)
         if fragment and path.suffix.lower() == ".md":
             _require(
-                fragment in references._anchors(path),
+                fragment in references._anchors(path, read_document(root, path)),
                 f"{label}: missing fragment: {target}",
             )
         links.append((path, fragment))
@@ -383,7 +390,7 @@ def load_cards(root: Path) -> tuple[ConceptCard, ...]:
     """Validate card structure, status boundaries, references and dependency DAG."""
     root = Path(root).resolve()
     source = root / "theory" / "GLOSSARY.md"
-    cards = _parse_cards(source.read_text(encoding="utf-8"))
+    cards = _parse_cards(read_document(root, source))
     identifiers = {card.identifier for card in cards}
     _require(len(identifiers) == len(cards), "glossary contains duplicate concept IDs")
     _require(
@@ -431,7 +438,7 @@ def check_glossary(root: Path) -> None:
     """Check declarations and exact generated-index text without writing files."""
     root = Path(root).resolve()
     cards = load_cards(root)
-    document = (root / "theory" / "GLOSSARY.md").read_text(encoding="utf-8")
+    document = read_document(root, "theory/GLOSSARY.md")
     start, end = _region(document, INDEX_START, INDEX_END)
     expected = "\n\n" + render_concept_index(cards) + "\n\n"
     _require(
@@ -445,13 +452,14 @@ def update_concept_index(root: Path) -> None:
     root = Path(root).resolve()
     cards = load_cards(root)
     path = root / "theory" / "GLOSSARY.md"
-    document = path.read_text(encoding="utf-8")
+    document = read_document(root, path)
     start, end = _region(document, INDEX_START, INDEX_END)
-    path.write_text(
+    write_document(
+        root,
+        path,
         document[:start]
         + "\n\n"
         + render_concept_index(cards)
         + "\n\n"
         + document[end:],
-        encoding="utf-8",
     )

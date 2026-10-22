@@ -1,4 +1,4 @@
-"""Rational upper bounds for a bounded-dimensional Metzler comparison flow.
+"""Rational upper bounds for comparison flows and decay convolutions.
 
 For two solutions remaining in the same convex smooth-domain tube, let
 ``M[i,i] >= sup J[i,i]`` and ``M[i,j] >= sup abs(J[i,j])`` for ``i != j``.
@@ -12,6 +12,9 @@ dyadic arithmetic bounds every term, and an infinity-norm geometric tail
 bounds all omitted terms. The negative scalar exponential uses the existing
 exact-time Taylor owner. Neither empirical exponentials nor matrix libraries
 participate in the bound. The unit-scaled work limits are numerical policies.
+
+The prepared two-decay convolution reuses supplied exponential enclosures;
+it evaluates no exponential and imposes no new exponent-work budget.
 """
 
 from __future__ import annotations
@@ -24,6 +27,7 @@ from ._rational_interval import I
 
 __all__ = (
     "comparison_flow_upper",
+    "decay_convolution_upper",
     "scalar_affine_upper",
     "COMPARISON_FLOW_METHOD",
     "MAX_COMPARISON_DIMENSION",
@@ -32,6 +36,75 @@ __all__ = (
 COMPARISON_FLOW_METHOD = "metzler_shift_nonnegative_series32_dyadic128_norm_tail_v1"
 _TERMS = 32
 MAX_COMPARISON_DIMENSION = 24
+
+
+def _convolution_fraction(value, label):
+    """Admit prepared Fractions before any comparison or arithmetic."""
+    if not isinstance(value, Q):
+        raise TypeError(f"{label} must be an exact Fraction")
+    return exact_or_represented_real(value, label)
+
+
+def _convolution_decay_pair(values, label):
+    raw = _ordered(values, label)
+    if len(raw) != 2:
+        raise ValueError(f"{label} requires two ordered endpoints")
+    lower, upper = (
+        _convolution_fraction(value, f"{label}[{index}]")
+        for index, value in enumerate(raw)
+    )
+    if not 0 <= lower <= upper <= 1:
+        raise ValueError(f"{label} must satisfy 0 <= lower <= upper <= 1")
+    return lower, upper
+
+
+def decay_convolution_upper(first_rate, second_rate, time, first_exp, second_exp):
+    """Enclose the convolution of two nonnegative-rate exponential decays.
+
+    Return an upper bound for the integral from zero to ``time`` of
+    ``exp(-first_rate*(time-s))*exp(-second_rate*s)``. Every scalar must be
+    a prepared Fraction; fixed-width integer payloads normalize before
+    arithmetic. Rates and time are nonnegative, and each ordered endpoint
+    pair lies in [0,1]. The caller establishes that the pairs enclose
+    ``exp(-rate*time)`` at the matching rate; consistency checks here do
+    not authenticate that association or establish a dynamical premise.
+
+    The simple bound ``time*slow_upper`` avoids division by a small rate
+    difference. For unequal rates, the difference-of-exponentials bound
+    supplies a second upper bound and their minimum is retained. Zero
+    time and equal rates are regular exact branches. No float conversion,
+    dyadic rounding, exponential evaluation or new work limit is introduced.
+    """
+    first_rate, second_rate, time = (
+        _convolution_fraction(value, label)
+        for value, label in (
+            (first_rate, "first_rate"),
+            (second_rate, "second_rate"),
+            (time, "time"),
+        )
+    )
+    first_exp = _convolution_decay_pair(first_exp, "first_exp")
+    second_exp = _convolution_decay_pair(second_exp, "second_exp")
+    if min(first_rate, second_rate, time) < 0:
+        raise ValueError("decay rates and time must be nonnegative")
+    for rate, bounds in ((first_rate, first_exp), (second_rate, second_exp)):
+        if rate * time == 0 and bounds[1] != 1:
+            raise ValueError("a zero decay exponent requires bounds containing one")
+        if bounds[1] == 0:
+            raise ValueError("a finite decay exponent requires a positive upper bound")
+    if not time:
+        return Q(0)
+    slower_exp = first_exp if first_rate <= second_rate else second_exp
+    faster_exp = second_exp if first_rate <= second_rate else first_exp
+    if slower_exp[1] < faster_exp[0]:
+        raise ValueError("exponential bounds contradict decay-rate ordering")
+    simple = time * slower_exp[1]
+    if first_rate == second_rate:
+        if faster_exp[1] < slower_exp[0]:
+            raise ValueError("equal-rate exponential bounds must overlap")
+        return simple
+    difference = (slower_exp[1] - faster_exp[0]) / abs(first_rate - second_rate)
+    return min(simple, difference)
 
 
 def scalar_affine_upper(radius, rate, duration, defect):

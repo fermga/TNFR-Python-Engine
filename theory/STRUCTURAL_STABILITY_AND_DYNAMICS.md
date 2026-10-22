@@ -20,7 +20,7 @@ The field-energy balance belongs to
 [the conservation note](STRUCTURAL_CONSERVATION_THEOREM.md), and phase/telemetry
 interpretations to [parameter foundations](NODAL_PARAMETER_FOUNDATIONS.md).
 Current research priorities belong to the
-[single execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md).
+[research program](RESEARCH_PROGRAM.md#research-current-question).
 
 ---
 

@@ -5,7 +5,7 @@ domain in which the maintained contact retains its identity and fresh positive
 parent pressure while genuine three-sample histories exceed the unchanged THOL
 child threshold. This is a conditional mathematical admission with a separate
 observation-precision obligation. It supplies neither measured samples nor an
-executed child event. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+executed child event. The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns status and subsequent work.
 
 <a id="local-capacity-fixed-model"></a>

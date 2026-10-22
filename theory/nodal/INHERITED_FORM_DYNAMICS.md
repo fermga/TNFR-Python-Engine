@@ -4,7 +4,7 @@ Fine-to-coarse form, inherited pressure and metric, tetrad reconstruction and ch
 
 Section numbers are stable locators across this document family.
 The [parameter reference](../NODAL_PARAMETER_FOUNDATIONS.md) owns the
-reading map; the [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+reading map; the [research program](../RESEARCH_PROGRAM.md#research-current-question)
 alone owns active tasks. Each result retains its stated model and scope.
 
 ## 12. Intrinsic response from a closed fine nodal model

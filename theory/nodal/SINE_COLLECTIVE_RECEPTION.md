@@ -7,7 +7,7 @@ weights and need not be nonpositive. The selected conservative sine law
 leaves fresh pressure and the instantaneous form row unchanged at this event,
 but can change the phase-rate row. These are conditional analytical results,
 not an evaluation of a new retained-source word or trajectory. The
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+[research program](../RESEARCH_PROGRAM.md#research-current-question)
 alone selects any subsequent investigation.
 
 ## 1. Complete model and event boundary

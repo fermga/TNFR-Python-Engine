@@ -6,7 +6,7 @@ organization's relative identity. This is a conditional accessibility result
 for an open part of the existing source family. It does not supply an event
 that realizes the capacity increase, a measured history, or admission of THOL.
 The original source's no-crossing theorem remains valid at its original
-capacities. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+capacities. The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns the research status.
 
 <a id="capacity-temporal-source"></a>

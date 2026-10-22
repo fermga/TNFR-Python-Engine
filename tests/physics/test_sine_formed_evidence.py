@@ -17,6 +17,7 @@ from pathlib import Path, PurePosixPath
 
 import pytest
 
+from scripts.research_book import read_document_bytes
 from tnfr.research.relational_acquisition import _exact, _verify_archive
 from tnfr.utils.io import json_loads
 
@@ -1693,7 +1694,7 @@ def test_inference_archive_retains_prospective_proof_and_separate_public_worker(
         }
         proof_path = "theory/nodal/SINE_TWO_PORT_INFERENCE.md"
         prospective = archive.read(proof_path)
-        current = (Path(__file__).parents[2] / proof_path).read_bytes()
+        current = read_document_bytes(Path(__file__).parents[2], proof_path)
         suffix = _documentation_suffix(current, prospective)
         assert suffix is not None
         assert b"sine-two-port-inference-protocol" in prospective
@@ -2188,7 +2189,7 @@ def test_two_pulse_archive_preserves_prospective_owner_and_public_only_worker():
     with zipfile.ZipFile(DIRECTORY / "two-pulse-inference-v1.source.zip") as archive:
         proof_path = "theory/nodal/SINE_TWO_PULSE_INFERENCE.md"
         prospective = archive.read(proof_path)
-        current = (Path(__file__).parents[2] / proof_path).read_bytes()
+        current = read_document_bytes(Path(__file__).parents[2], proof_path)
         suffix = _documentation_suffix(current, prospective)
         assert suffix is not None
         assert b"sine-two-pulse-inference-protocol" in prospective

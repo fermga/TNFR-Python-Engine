@@ -8,7 +8,7 @@ sine-law research.
 The [full B71-B75 mechanism audit](research/archive/c6/MECHANISM_AUDIT.md)
 preserves conditional algebra, verification defects and repairs, search
 outcomes, source references and their limitations. Its dated priorities are
-historical; the [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+historical; the [research program](RESEARCH_PROGRAM.md#research-current-question)
 is the sole active queue. Current implementation/test ownership belongs to
 the [theory catalog](README.md#theory-to-execution).
 

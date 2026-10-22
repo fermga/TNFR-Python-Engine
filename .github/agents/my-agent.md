@@ -31,8 +31,8 @@ model and scope, preserving valid conditional results and counterexamples.
   apostrophes for compact words and formulas; derive names from the registry.
 - Distinguish definitions, supplied laws, derived identities, conditional
   theorems, finite observations, policies and open hypotheses.
-- Explain the present model directly. Definitions belong with their owners,
-  usage in guides and task status in the execution plan; overviews are neither
+- Explain the present model directly. Definitions belong with their chapters,
+  usage in guides and task status in the research program; overviews are neither
   delivery logs nor copies of derivations.
 - Arithmetic encodings, graph analogies, auxiliary Hamiltonians and diagnostic
   scores retain their own premises. External identifications require an
@@ -168,11 +168,19 @@ state budgets do not prove entry.
 
 ## 5. Research and evidence discipline
 
-The [execution plan] is the sole queue; the [portfolio] classifies branches and
-[strategy] explains their rationale. Existing examples/theorems do not activate
-campaigns. On closing a gate, replace its queue status and link the result
-owner. Preserve unresolved dependencies and frozen evidence without per-turn
-logs or duplicate result inventories. Follow F1-F4:
+The [research program] owns the global objective, current state, priorities and
+sole active question. Its technical chapters retain definitions, proofs and
+counterexamples in their original contexts. The old plan, strategy and portfolio
+routes are generated compatibility views, not active instructions.
+Before resuming research, read the program's current task and complete any
+open documentation prerequisite there. Its ordered checklist is the persistent
+continuation record; do not rely on conversation memory or create another queue.
+After the gate closes, reassess the next scientific question against the global
+objective instead of automatically continuing the most recent example. Existing
+examples/theorems do not activate campaigns. On closing a gate, update the
+program's current question and link the result chapter. Preserve unresolved
+dependencies and frozen evidence without per-turn logs or duplicate result
+inventories. Follow F1-F4:
 
 1. Define identity, sufficient constituent/boundary state, domains, units,
    observations and discarded information.
@@ -229,7 +237,7 @@ frozen producers for unrelated changes.
 | Need | Owner |
 | --- | --- |
 | Introduction / first use | [README] |
-| Definitions, proofs, theory/code/test map | [Theory catalog] |
+| Research objective and current question | [Research program]; linked chapters own definitions and proofs; [Theory catalog] is generated navigation |
 | Concept classification | [Glossary]; change definition/proof owners before summaries |
 | Package boundaries / shared execution | [Architecture] |
 | Guide responsibilities / website navigation | [Documentation map] |
@@ -241,11 +249,22 @@ Catalogs generate website menus; operator contracts and grammar roles generate
 their checked tables. Glossary checks validate declarations/references, not
 scientific truth. Do not create duplicate catalogs, rule tables or glossaries.
 
-Maintained theory/docs owners have a 4,000-physical-line editorial limit checked
-by `scripts/check_documentation.py`. Split by model/responsibility; update
-canonical links and preserve published aliases. Archive inactive chronology
-with its evidence; retain useful conditional results and do not create a second
-next-task queue.
+`theory/RESEARCH_PROGRAM.md` is the sole research planning entry point. Keep it
+small enough for ordinary editor and Markdown-preview use. Each linked chapter
+has one canonical Markdown file at its declared path; edit that file directly.
+`theory/research_catalog.json` contains only ordering, titles and compatibility
+routes. It generates navigation, not a second theory or task queue. The optional
+`scripts/research_book.py` reader supports both this layout and historical
+monolithic captures. Never reassemble the maintained corpus into one preview
+page or edit generated website copies; [Contributing] gives the workflow.
+
+The program has a 96-KiB file budget. Each research chapter, the program and
+each maintained docs owner also has a 4,000-physical-line editorial limit,
+checked by `scripts/check_documentation.py`. Split chapters by model and
+responsibility while preserving their published routes and evidence.
+Retain useful conditional results and counterexamples. Superseded instructions
+and corrected errors belong in Git recovery records, not active guidance.
+Frozen source captures remain historical evidence, never another task queue.
 Retire superseded drivers, duplicate plans and unused compatibility layers only
 after checking imports, public consumers and evidence dependencies. For unchanged
 committed files, record recovery revision/blob and replacement rather than
@@ -318,12 +337,10 @@ Detailed admission and verification belong to the linked contracts.
 [event contracts]: https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/contracts/OPERATOR_EVENTS.md
 [relational contracts]: https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/contracts/RELATIONAL_DYNAMICS.md
 [separate normalized-sine comparison]: https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/contracts/relational/SINE_COMPARISON_AND_INFERENCE.md#detached-normalized-sine-complete-law-comparison
-[pressure contract]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md#21-the-implemented-pressure-is-a-specified-relational-map
+[pressure contract]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md
 [structural field guide]: https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/STRUCTURAL_FIELDS_TETRAD.md
-[execution plan]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate
-[portfolio]: https://github.com/fermga/TNFR-Python-Engine/blob/main/TNFR_lineas_de_investigacion.txt
-[strategy]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_RESEARCH_STRATEGY.md
-[theory-to-execution map]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md#theory-to-execution
+[research program]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/RESEARCH_PROGRAM.md#research-current-question
+[theory-to-execution map]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/RESEARCH_PROGRAM.md#theory-to-execution
 [Glossary]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/GLOSSARY.md
 [Architecture]: https://github.com/fermga/TNFR-Python-Engine/blob/main/ARCHITECTURE.md
 [Documentation map]: https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/README.md

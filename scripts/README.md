@@ -11,7 +11,8 @@ current repository.
 | `check_documentation.py` | Check the agent mirror, version references, operator contracts and grammar roles, public examples, technical/theory catalogs and navigation, glossary cards/index, and documentation build inputs. |
 | `check_distribution.py` | Inspect completed wheel/sdist payloads against current package source and explicit publication size budgets, without extraction. |
 | `generate_physics_stub.py` | Check the typed physics facade against its sole runtime export registry without importing the engine; `--write` regenerates that facade after a registry change. |
-| `check_glossary.py` | Shared concept-card parser and validator used by the documentation gate; no separate CLI or engine law registry. |
+| `check_glossary.py` | Validate the canonical glossary's concept cards and generated index; no separate CLI or engine law registry. |
+| `research_book.py` | Read the modular research catalog and canonical chapters, with legacy monolithic compatibility; list, extract or atomically replace one chapter. |
 | `verify_internal_references.py` | Validate repository-relative Markdown targets and GitHub-style heading fragments. |
 | `prepare_docs.py` | Build the deterministic MkDocs source tree under `build/docs-source`. |
 | `clean_repository.py` | Preflight declared generated directories and package metadata before deletion; reject redirected paths and retain frozen source under `build/`. |
@@ -37,12 +38,14 @@ The reference check also resolves this repository's GitHub `blob/main` and
 ignores Markdown examples inside fenced code blocks.
 External websites and frozen run captures are outside this local check.
 
-The operator table in `docs/API_CONTRACTS.md` and the role table in
-`theory/UNIFIED_GRAMMAR_RULES.md` are generated from their shared registries;
-the technical and theory sections of `mkdocs.yml` share a generator reading
-the primary catalog headings and owner rows in `docs/README.md` and
-`theory/README.md`; the glossary index is generated from the concept cards in `theory/GLOSSARY.md`. After an intentional
-contract, catalog or concept-card change, run
+The operator table in `docs/API_CONTRACTS.md` and the logical grammar chapter's
+role table are generated from their shared registries. Technical navigation
+reads `docs/README.md`; theory navigation and its repository index are generated
+from `theory/research_catalog.json`. The glossary index reads concept cards in
+`theory/GLOSSARY.md`. Edit canonical chapters directly, or use the optional
+`research_book.py` extract/replace workflow; do not edit generated navigation.
+Keep `theory/RESEARCH_PROGRAM.md` within its 96-KiB preview budget. After an intentional contract, chapter
+metadata or concept-card change, run
 `python scripts/check_documentation.py --write-generated` and review the diff.
 The ordinary gate verifies these generated views and complete catalog coverage;
 it does not update documentation silently or maintain a second owner registry.

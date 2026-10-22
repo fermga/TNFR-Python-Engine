@@ -8,7 +8,7 @@ of the declared execution path, not a new runtime or a derived occurrence law.
 The [aggregate transition owner](NATIVE_AGGREGATE_OPERATORS.md#native-uniform-capacity-transition)
 separately proves a restricted lossy reduction under the actual uniform-capacity
 native policy, retaining its admission margins and discarded-output boundary.
-The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](RESEARCH_PROGRAM.md#research-current-question)
 remains the sole research queue.
 
 <a id="native-collective-calculus"></a>

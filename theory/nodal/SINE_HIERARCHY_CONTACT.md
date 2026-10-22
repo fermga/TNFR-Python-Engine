@@ -6,7 +6,7 @@ connected sine reader is not silently widened. The result concerns a
 conditional mechanism on an open connected-state family, not the formation
 or maintenance of the previously studied winding organizations.
 
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns status. The [hierarchy owner](SINE_COLLECTIVE_HIERARCHY.md),
 [actual UM owner](SINE_PAIR_COUPLING.md) and
 [native birth/transport comparison](../THOL_BIRTH_AND_TRANSPORT.md) retain

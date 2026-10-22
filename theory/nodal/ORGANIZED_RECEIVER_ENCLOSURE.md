@@ -13,7 +13,7 @@ The [slow-admission theorem](ORGANIZED_RECEIVER_SLOW_ADMISSION.md)
 supplies the source-inclusive phase inclusion. The numerical reference below
 is an instrument for enclosing the actual complete law; it is not a
 replacement phase-only model and does not discard form or preparation errors.
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 remains the sole task queue.
 
 ## Complete model and retained source

@@ -150,11 +150,11 @@ different claims:
 
 | Capability | Established scope | Mathematical owner |
 | --- | --- | --- |
-| Native winding-pattern recovery | A prepared five-node unit ring (C5) and its ideal continuation under admitted capacity, phase and storage premises | [Native recovery](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/RELATIONAL_EFFECTIVE_CONNECTIONS.md#relational-pattern-detachment) |
-| Formation, retention and recovery | Prepared families under specified laws, with source, stability and uncertainty conditions | [Pattern dynamics](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/SINE_PATTERN_DYNAMICS.md#reading-map) |
+| Native winding-pattern recovery | A prepared five-node unit ring (C5) and its ideal continuation under admitted capacity, phase and storage premises | [Native recovery](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/RELATIONAL_EFFECTIVE_CONNECTIONS.md) |
+| Formation, retention and recovery | Prepared families under specified laws, with source, stability and uncertainty conditions | [Pattern dynamics](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/SINE_PATTERN_DYNAMICS.md) |
 | Collective state, interaction and memory | Exact reductions or bounded descriptions that retain required constituent and boundary information | [Emergent ontology](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/EMERGENT_ONTOLOGY.md) |
 | Localized motion | Finite transport of a prepared full-state identity on supplied support | [Identity transport](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/LOCALIZED_IDENTITY_TRANSPORT.md) |
-| Operator actions on organized states | Admitted actions and conditional compositions, with explicit event work, capacity and live grammar requirements | [Structural operators](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/STRUCTURAL_OPERATORS.md#collective-grammar-descent) |
+| Operator actions on organized states | Admitted actions and conditional compositions, with explicit event work, capacity and live grammar requirements | [Structural operators](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/STRUCTURAL_OPERATORS.md) |
 
 Combine results only when their state, law, support, capacity, clock and
 preparation agree. Proofs establish consequences of premises, tests check
@@ -188,7 +188,7 @@ English names lead explanations; codes abbreviate words and formulas.
 Grammar checks composition and execution context, while every action must
 satisfy its target's live preconditions. Admitting a requested action does not
 derive its occurrence. The
-[collective readiness criterion](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/EMERGENT_ONTOLOGY.md#collective-grammar-readiness)
+[collective readiness criterion](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/EMERGENT_ONTOLOGY.md)
 states what an organization must retain to support collective actions.
 
 For requested words, the CLI and SDK share the operator-study runner:
@@ -230,13 +230,25 @@ definitions, interpretation and numerical limits.
 
 ## Read the research
 
+The [TNFR research program](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/RESEARCH_PROGRAM.md#research-objective)
+keeps the objective, current state and priorities in a small entry document.
+Its linked chapters preserve each model's premises, proofs and evidence in
+separate canonical Markdown files. Open and preview one chapter at a time.
+Use the [compiled research pages](https://fermga.github.io/TNFR-Python-Engine/theory/RESEARCH_PROGRAM/)
+for chapter navigation, or `python scripts/research_book.py list` in a checkout.
+The [conceptual core](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/CONCEPTUAL_CORE.md)
+is the starting point for the foundations and their dependencies. The
+[chapter workflow](https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING.md#documentation)
+explains focused extraction and editing.
+
 | Need | Maintained owner |
 | --- | --- |
-| Find a definition, proof or model | [Theory reading routes](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md#choose-a-question) |
-| Locate its implementation and tests | [Theory-to-execution map](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md#theory-to-execution) |
+| Start with the foundations | [Conceptual core, dependencies and worked examples](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/CONCEPTUAL_CORE.md) |
+| Find a definition, proof or model | [Research reading route](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/RESEARCH_PROGRAM.md#reading-the-research-as-one-program) and [chapter index](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md) |
+| Locate its implementation and tests | [Theory-to-execution map](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/RESEARCH_PROGRAM.md#theory-to-execution) |
 | Distinguish premises, results, diagnostics and hypotheses | [Glossary](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/GLOSSARY.md) |
-| Understand the research rationale | [Strategy](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_RESEARCH_STRATEGY.md) |
-| Resume the active task | [Execution plan and checkpoint](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-checkpoint) |
+| Understand priorities and select a question | [Selection criteria](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/RESEARCH_PROGRAM.md#research-selection) |
+| Resume the active task | [Current task and documentation prerequisites](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/RESEARCH_PROGRAM.md#research-current-question) |
 
 Auxiliary Hamiltonian, graph-wave, geometric and arithmetic studies keep their
 own premises. The catalog identifies their scope; their presence does not
@@ -255,9 +267,8 @@ what a larger node must retain to inherit its constituents' dynamics and
 admissible actions. Grouping nodes alone does not establish that inheritance
 or autonomous formation across scales.
 
-The execution plan linked above is the sole task queue; the
-[portfolio](https://github.com/fermga/TNFR-Python-Engine/blob/main/TNFR_lineas_de_investigacion.txt)
-classifies supporting branches. Comparisons with independent observations
+The research program owns the sole task queue. The old execution plan,
+strategy and portfolio are retired compatibility routes. Comparisons with independent observations
 require preparation, measurement, clock and uncertainty models, separate
 calibration and reserved evaluation, and suitable alternatives. EPI need not
 equal a sensor reading. The conditional results do not select a unique
@@ -269,7 +280,7 @@ Resonance is an input/output response property of a declared model. Internal
 pulses, recurrence and the registered Resonance operator have separate
 contracts; a response peak alone proves none of them. The
 [resonance foundation](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/RESONANCE_FOUNDATIONS.md)
-and [scale connection map](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/EMERGENT_ONTOLOGY.md#pulse-resonance-scale-connections)
+and [scale connection map](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/EMERGENT_ONTOLOGY.md)
 explain when internal motion, memory and collective response can be combined.
 
 ## Repository map
@@ -277,7 +288,7 @@ explain when internal motion, memory and collective response can be combined.
 | Location | Responsibility |
 | --- | --- |
 | `src/tnfr/` | Shared dynamics, operators, observations, numerical tools, CLI and SDK; boundaries in [Architecture](https://github.com/fermga/TNFR-Python-Engine/blob/main/ARCHITECTURE.md) |
-| `theory/` | Definitions, derivations, research rationale and the single execution plan |
+| `theory/RESEARCH_PROGRAM.md` | Research objective, sole current question and technical chapters; the theory index is generated navigation |
 | `docs/` | Usage and execution contracts, organized by the [documentation map](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/README.md) |
 | `tests/` | Contract checks and explicitly selected research tests; selection in [Testing](https://github.com/fermga/TNFR-Python-Engine/blob/main/TESTING.md) |
 | `examples/`, `benchmarks/` | [Runnable illustrations](https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/README.md) and [scoped instruments](https://github.com/fermga/TNFR-Python-Engine/blob/main/benchmarks/README.md) |

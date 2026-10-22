@@ -13,7 +13,7 @@ Conditional cycle transport and winding protection remain reusable. The C6 globa
 | [C6 history refinement and retained exclusions](research/archive/c6/HISTORY_EXCLUSIONS.md) | Exact union, safe-memory and refinement evidence with its source-bound budgets. |
 | [C6 remaining verification obligations](research/archive/c6/REMAINING_OBLIGATIONS.md) | Retained bounded-search failures and unresolved certification conditions. |
 
-Section numbers remain stable across this collection. The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate) alone assigns research work.
+Section numbers remain stable across this collection. The [research program](RESEARCH_PROGRAM.md#research-current-question) alone assigns research work.
 
 ## 1. The structural state and the actual operator realization
 

@@ -2,7 +2,7 @@
 
 This reference owns the parameter ledger, units and
 cross-channel dependencies. Detailed proofs have one topical owner in the
-reading map below. The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+reading map below. The [research program](RESEARCH_PROGRAM.md#research-current-question)
 alone defines active research; these notes are not parallel task queues.
 
 Form, tangent pressure and chart definitions belong to
@@ -905,7 +905,7 @@ channel can alter that conclusion, but their origin and work balance must be
 part of the same model. This is the link to the original generative objective,
 not permission to add a tuned stabilizer or a desired attractor.
 
-The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md) alone records the
+The [research program](RESEARCH_PROGRAM.md#research-current-question) alone records the
 current gate and next action. A universally selected multichannel closure, a unique
 selection of all numerical coefficients, and emergence of laboratory particles
 or the observable world remain unproved. The audit covers foundational

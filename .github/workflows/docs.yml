@@ -5,11 +5,11 @@ on:
     branches: [main]
     paths:
       - '**.md'
-      - 'TNFR_lineas_de_investigacion.txt'
       - 'docs/assets/**'
       - 'src/tnfr/operators/operator_contracts.py'
       - 'src/tnfr/operators/grammar_canon.py'
       - 'tests/scripts/test_documentation.py'
+      - 'tests/scripts/test_research_book*.py'
       - 'tests/scripts/test_glossary.py'
       - 'mkdocs.yml'
       - 'pyproject.toml'
@@ -17,6 +17,8 @@ on:
       - 'CITATION.cff'
       - 'src/tnfr/_version.py'
       - 'scripts/check_documentation.py'
+      - 'scripts/research_book.py'
+      - 'theory/research_catalog.json'
       - 'scripts/check_glossary.py'
       - 'scripts/prepare_docs.py'
       - 'scripts/clean_repository.py'
@@ -26,11 +28,11 @@ on:
     branches: [main]
     paths:
       - '**.md'
-      - 'TNFR_lineas_de_investigacion.txt'
       - 'docs/assets/**'
       - 'src/tnfr/operators/operator_contracts.py'
       - 'src/tnfr/operators/grammar_canon.py'
       - 'tests/scripts/test_documentation.py'
+      - 'tests/scripts/test_research_book*.py'
       - 'tests/scripts/test_glossary.py'
       - 'mkdocs.yml'
       - 'pyproject.toml'
@@ -38,6 +40,8 @@ on:
       - 'CITATION.cff'
       - 'src/tnfr/_version.py'
       - 'scripts/check_documentation.py'
+      - 'scripts/research_book.py'
+      - 'theory/research_catalog.json'
       - 'scripts/check_glossary.py'
       - 'scripts/prepare_docs.py'
       - 'scripts/clean_repository.py'

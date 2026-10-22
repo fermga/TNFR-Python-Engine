@@ -14,6 +14,7 @@ from types import SimpleNamespace
 
 import pytest
 
+from scripts.research_book import read_document_bytes
 from tests.sine_evidence_helpers import forbid_sine_regeneration
 from tnfr.research.artifact_io import (
     decode_exact_tree,
@@ -294,7 +295,7 @@ def test_prospective_proof_is_an_unchanged_prefix_with_source_and_decision_scope
         "sine-neighbor-forward-decisions",
     ):
         assert f'id="{anchor}"'.encode() in archived
-    current = read_bytes_bounded(ROOT / PROOF, max_bytes=2 * 1024**2)
+    current = read_document_bytes(ROOT, PROOF, max_bytes=2 * 1024**2)
     assert current.replace(b"\r\n", b"\n").startswith(archived.replace(b"\r\n", b"\n"))
 
 

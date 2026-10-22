@@ -16,6 +16,7 @@ from pathlib import Path, PurePosixPath
 
 import pytest
 
+from scripts.research_book import read_document_bytes
 from tnfr._exact_time import exact_or_represented_real
 from tnfr.mathematics._comparison_flow import _exact
 from tnfr.mathematics._phase_midpoint import _pi_bounds
@@ -486,7 +487,7 @@ def test_archive_inventory_prospective_prefix_and_dormant_single_attempt(frozen,
                     == item["normalized_lf_sha256"]
                 )
         proof = "theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md"
-        assert pure["normalized_text"]((ROOT / proof).read_bytes()).startswith(
+        assert pure["normalized_text"](read_document_bytes(ROOT, proof)).startswith(
             pure["normalized_text"](archive.read(proof))
         )
         assert b"sine-nonlinear-protocol-frozen-evaluation" in archive.read(proof)

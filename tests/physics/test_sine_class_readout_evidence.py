@@ -14,6 +14,7 @@ from pathlib import Path
 
 import pytest
 
+from scripts.research_book import read_document_bytes
 from tnfr._exact_time import exact_or_represented_real
 from tnfr.mathematics._phase_midpoint import _pi_bounds
 from tnfr.mathematics._rational_interval import I
@@ -262,8 +263,7 @@ def test_archive_inventory_and_maintained_prospective_prefix(evidence):
         assert archive.read(protocol_path) == paths[".protocol.json"].read_bytes()
         proof = "theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md"
         assert (
-            (ROOT / proof)
-            .read_bytes()
+            read_document_bytes(ROOT, proof)
             .replace(b"\r\n", b"\n")
             .startswith(archive.read(proof).replace(b"\r\n", b"\n"))
         )

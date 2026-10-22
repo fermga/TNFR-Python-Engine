@@ -18,7 +18,7 @@ here concerns the actual two-contact acquired C9 mediator, its matched
 nonlinear source histories and a finite error small enough to preserve the
 certified class contrast. A generic convolution identity alone would not
 meet that obligation. Task status remains in the
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate).
+[research program](../RESEARCH_PROGRAM.md#research-current-question).
 
 <a id="sine-class-memory-state-and-law"></a>
 ## Full state and declared visible observation

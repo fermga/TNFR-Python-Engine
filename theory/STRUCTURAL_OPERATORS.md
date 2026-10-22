@@ -12,7 +12,7 @@ independently defined admissible-transformation space remains open
 ## Table of Contents
 
 1. [Scope and Motivation](#1-scope-and-motivation)
-2. [Operator Algebra from the Nodal Equation](#2-operator-algebra-from-the-nodal-equation)
+2. [State, event maps and composition](#2-state-event-maps-and-composition)
 3. [The Operator Taxonomy](#3-the-operator-taxonomy)
 4. [Generators](#4-generators)
 5. [Integrator](#5-integrator)
@@ -91,7 +91,8 @@ Throughout this document:
 
 ---
 
-## 2. Operator Algebra from the Nodal Equation
+<a id="2-operator-algebra-from-the-nodal-equation"></a>
+## 2. State, event maps and composition
 
 ### 2.1 Structural Triad
 
@@ -1736,11 +1737,9 @@ automatic selector is a policy, not a derived invocation law.
 
 ## 16. Summary
 
-Use the registry for **what a named operator promises**, grammar for **word
-and live admission**, and the selected execution contract for **what commits
-and what evidence is retained**. The [mechanism audit](#operator-mechanism-and-activation-audit)
-separates these from collective descent, autonomous occurrence and physical
-identification. None follows solely from a catalog label or a diagnostic score.
+The [mechanism and activation audit](#operator-mechanism-and-activation-audit)
+separates registered promises, live admission and committed execution from
+collective descent, autonomous occurrence and physical identification.
 
 ---
 
@@ -2065,36 +2064,19 @@ declared identity, as the [directional counterexample](nodal/SINE_DIRECTIONAL_MA
 shows. Unsupported observations must remain unavailable rather than being
 filled from a parent, a previous support or a diagnostic label.
 
-The [maintained-parent source](nodal/SINE_MAINTAINED_PARENT_THOL.md) now provides
-genuine temporal evidence and an actual birth. The subsequent
-[finite motion certificate](nodal/SINE_SUCCESSOR_NONSTATIONARY.md#successor-nonstationary-result)
-covers a conditional hypothetical UM family. The subsequent
-[runtime attempt](nodal/SINE_MAINTAINED_PARENT_UM.md#maintained-um-transaction-result)
-retains an included raw reset but rolls back after a separately diagnosed
-pressure-guard false rejection. A separately frozen
-[corrected event](nodal/SINE_MAINTAINED_PARENT_UM.md#maintained-um-committed-result)
-now commits an endpoint admitted into that family by a primitive-state review;
-the original failed attempt and first assessment remain immutable. SHA changes
-the continued capacity law even when it completes a grammatical word, so the
-UM motion certificate does not transfer through SHA without new admission.
-These are operator-to-law admission boundaries,
-not grounds to repeat all thirteen actions or assume a universal collective
-executor. The [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
-alone selects which boundary is investigated next.
+The following completed studies supply distinct operator-to-law handoffs.
+Their coefficients and source domains must remain attached to each result.
 
-The [weighted-star constitutive handoff](nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-constitutive-handoff-result)
-checks the actual no-refresh AL/UM/SHA prefixes. Two complete continuations
-consume the same raw word output but assign different fresh pressure and form
-rates, with their own storage balances and constituent maintenance. This
-specific compatibility does not select either law or cover every operator.
+| Technical owner | Admitted result and continuing boundary |
+| --- | --- |
+| [Maintained-parent THOL](nodal/SINE_MAINTAINED_PARENT_THOL.md) and [committed UM](nodal/SINE_MAINTAINED_PARENT_UM.md#maintained-um-committed-result) | Genuine parent history, actual birth and a connected endpoint admitted by primitive-state review into the [finite motion family](nodal/SINE_SUCCESSOR_NONSTATIONARY.md#successor-nonstationary-result). The [original failed transaction](nodal/SINE_MAINTAINED_PARENT_UM.md#maintained-um-transaction-result) and first assessment remain immutable evidence, distinct from the corrected committed result. |
+| [Weighted-star handoff](nodal/SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#weighted-star-constitutive-handoff-result) | The actual no-refresh AL/UM/SHA output admits two complete continuations with different fresh pressure/form rates, each with its own storage balance and constituent maintenance. This selects neither law and covers no unexamined operator. |
+| [Maintained-parent SHA](nodal/SINE_MAINTAINED_PARENT_CLOSURE.md#maintained-parent-sha-result) and [changed-law retention](nodal/SINE_MAINTAINED_PARENT_CLOSURE.md#maintained-sha-retention-result) | Zero storage jump, changed capacities and nonzero parent rates; all 53 principal branches are separately certified through elapsed `[0,1/2]`. The earlier UM certificate is not transferred through SHA. |
 
-The [maintained-parent SHA composition](nodal/SINE_MAINTAINED_PARENT_CLOSURE.md#maintained-parent-sha-result)
-now executes that selected closure with zero storage jump and a separately
-admitted complete changed-capacity law. Latency leaves both parent rates
-nonzero; future retention has its own proof obligation. SHA is one convenient
-capacity-only control among the canonical closure roles, not a preferred or
-necessary ending for every object. A different closing action requires its
-own full word, live context and successor-law admission.
+SHA is one capacity-only closure control, not a preferred ending for every
+organization. Another closing action needs its own full word, live context
+and successor law. These examples establish neither a universal collective
+executor nor an obligation to repeat all thirteen actions.
 
 A reusable complete-law handoff must associate the requested and executed
 action with its source, raw endpoint, refreshed pressure, both continued
@@ -2294,7 +2276,7 @@ the stated law, not the autonomous execution of the registered AL event.
 Thus an NFR's identity, its inherited response, a realizable event and the
 event's occurrence are separate proof obligations. A useful operator can be
 a supplied intervention while autonomous occurrence remains open. The
-[sole research queue](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+[research program](RESEARCH_PROGRAM.md#research-current-question)
 selects the next bounded comparison from these obligations.
 A justified negative result remains useful;
 the map provides mechanisms to test without asserting autonomous connection,

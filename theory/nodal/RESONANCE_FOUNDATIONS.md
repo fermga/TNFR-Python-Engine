@@ -48,7 +48,7 @@ This owner defines what a resonance claim must establish. The
 state and closure premises; the
 [pattern-memory owner](SINE_PATTERN_RECOVERY.md#sine-relative-pattern-state)
 owns the complete sine state, storage and recovery results.
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 remains the sole research queue.
 
 <a id="resonance-scope"></a>

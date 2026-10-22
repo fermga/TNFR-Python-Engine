@@ -21,7 +21,7 @@ equations and phase-domain admission. The smooth-sine comparison changes that
 law; a shared storage identity does not transfer a trajectory or theorem.
 Supplied support, instantaneous compatibility, formation and maintenance are
 separate obligations. The
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+[research program](../RESEARCH_PROGRAM.md#research-current-question)
 alone assigns the next task.
 
 ## 1. Fixed model and observation

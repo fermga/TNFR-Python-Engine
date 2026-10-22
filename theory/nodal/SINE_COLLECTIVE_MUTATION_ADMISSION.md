@@ -10,7 +10,7 @@ This owner establishes a sharp general rate-admission condition and then
 separates three restrictions on that control: unavailable temporal evidence,
 recent-grammar rejection and a conditional continuous-rate obstruction.
 No trajectory, manufactured source history or Mutation event is evaluated.
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns subsequent investigation.
 
 ## 1. Complete law and the independent Mutation requirements

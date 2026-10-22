@@ -8,7 +8,7 @@ bounds differences between complete histories without supplying their unknown
 initialization. This owner derives the contract for using one proposed carrier
 history as a forecast. Sections 1-4 establish its analytical admission;
 section 5 declares one operational test on archived synthetic readings.
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns its evaluation status and subsequent dependencies.
 
 Retain the complete fine law, source class, command, support, held capacities,

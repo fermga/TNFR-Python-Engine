@@ -8,12 +8,22 @@ import json
 import subprocess
 import sys
 import zipfile
+from dataclasses import replace
 from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 
 from scripts import build_development_bundle as bundle
+from scripts.research_book import (
+    BOOK_PATH,
+    CATALOG_PATH,
+    Alias,
+    Book,
+    Chapter,
+    write_book,
+    write_modular_book,
+)
 
 pytestmark = pytest.mark.skipif(
     sys.version_info < (3, 11), reason="Release builder uses Python 3.11+ tomllib"
@@ -38,7 +48,10 @@ def source(tmp_path):
     _git(root, "config", "user.name", "Bundle test")
     _git(root, "config", "user.email", "bundle@example.invalid")
     _git(root, "config", "core.autocrlf", "false")
-    for name in bundle.REQUIRED:
+    for name in bundle.REQUIRED | {
+        "theory/EMERGENT_ONTOLOGY.md",
+        "theory/research/FIVE_STAGE_EXECUTION_PLAN.md",
+    }:
         path = root / name
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(b"retained input\r\n")
@@ -283,3 +296,141 @@ def test_git_batch_reader_rejects_invalid_bytes(response):
     process = SimpleNamespace(stdin=io.BytesIO(), stdout=io.BytesIO(data))
     with pytest.raises(ValueError):
         bundle._read_blob(process, blob, 3)
+
+
+def test_sourcebook_commit_replaces_legacy_required_owners(source, tmp_path):
+    root, _ = source
+    for name in (
+        "theory/EMERGENT_ONTOLOGY.md",
+        "theory/research/FIVE_STAGE_EXECUTION_PLAN.md",
+    ):
+        (root / name).unlink()
+    write_book(
+        root,
+        Book(
+            "# Sourcebook\n",
+            (
+                Chapter(
+                    "theory/PROOF.md", "Proof", "Results", b"Retained proof: x = y.\r\n"
+                ),
+            ),
+            (),
+        ),
+    )
+    payload = (root / BOOK_PATH).read_bytes()
+    (root / "scripts/research_book.py").write_text("# retained sourcebook reader\n")
+    _commit(root)
+    report = bundle.build_bundle(tmp_path / "sourcebook-output", root=root)
+    with zipfile.ZipFile(report["archive"]) as archive:
+        assert (
+            archive.read("TNFR-1.2.3-light-development/theory/RESEARCH_PROGRAM.md")
+            == payload
+        )
+        assert (
+            "TNFR-1.2.3-light-development/theory/EMERGENT_ONTOLOGY.md"
+            not in archive.namelist()
+        )
+    (root / "scripts/research_book.py").unlink()
+    _commit(root)
+    with pytest.raises(ValueError, match="research_book.py"):
+        bundle.build_bundle(tmp_path / "missing-reader", root=root)
+    assert not (tmp_path / "missing-reader").exists()
+
+
+def _modular_source(root):
+    for name in (
+        "theory/EMERGENT_ONTOLOGY.md",
+        "theory/research/FIVE_STAGE_EXECUTION_PLAN.md",
+    ):
+        (root / name).unlink()
+    book = Book(
+        "# Research program\n\nThe sole active question.\n",
+        (
+            Chapter(
+                "theory/nodal/FOUNDATION.md",
+                "Foundation",
+                "Foundations",
+                b"# Foundation\r\n\r\nPreserved proof.\r\n",
+            ),
+        ),
+        (),
+    )
+    write_modular_book(root, book)
+    (root / "scripts/research_book.py").write_text("# retained modular reader\n")
+    return book
+
+
+def test_modular_bundle_uses_committed_catalog_and_physical_chapter_bytes(
+    source, tmp_path
+):
+    root, _ = source
+    book = _modular_source(root)
+    catalog = (root / CATALOG_PATH).read_bytes()
+    commit = _commit(root)
+    (root / CATALOG_PATH).write_bytes(b'{"version":false}\n')
+    (root / book.chapters[0].path).write_bytes(b"Uncommitted replacement.\n")
+
+    report = bundle.build_bundle(tmp_path / "modular-output", root=root)
+
+    assert report["commit"] == commit
+    prefix = "TNFR-1.2.3-light-development/"
+    with zipfile.ZipFile(report["archive"]) as archive:
+        assert archive.read(prefix + CATALOG_PATH) == catalog
+        assert archive.read(prefix + book.chapters[0].path) == book.chapters[0].body
+        assert len(archive.read(prefix + BOOK_PATH)) < 96 * 1024
+
+
+@pytest.mark.parametrize("missing", ("chapter", "compatibility"))
+def test_missing_committed_modular_owner_cannot_be_repaired_by_working_tree(
+    source, tmp_path, missing
+):
+    root, _ = source
+    book = _modular_source(root)
+    if missing == "chapter":
+        name = book.chapters[0].path
+        (root / name).unlink()
+    else:
+        name = "theory/research/PLAN.md"
+        book = replace(book, aliases=(Alias(name, "Retired plan"),))
+        write_modular_book(root, book)
+    _commit(root)
+    (root / name).write_bytes(b"An uncommitted owner cannot repair the release.\n")
+
+    with pytest.raises(ValueError, match="required owners.*" + Path(name).name):
+        bundle.build_bundle(tmp_path / "incomplete-modular-output", root=root)
+
+    assert not (tmp_path / "incomplete-modular-output").exists()
+
+
+def test_modular_program_without_committed_catalog_rejects(source, tmp_path):
+    root, _ = source
+    _modular_source(root)
+    (root / CATALOG_PATH).unlink()
+    _commit(root)
+
+    with pytest.raises(ValueError, match="research_catalog.json"):
+        bundle.build_bundle(tmp_path / "missing-catalog-output", root=root)
+
+    assert not (tmp_path / "missing-catalog-output").exists()
+
+
+@pytest.mark.parametrize("corruption", ("traversal", "duplicate", "version"))
+def test_invalid_committed_research_catalog_rejects_before_bundle_output(
+    source, tmp_path, corruption
+):
+    root, _ = source
+    _modular_source(root)
+    catalog = json.loads((root / CATALOG_PATH).read_bytes())
+    if corruption == "traversal":
+        catalog["chapters"][0]["path"] = "theory/../README.md"
+    elif corruption == "duplicate":
+        catalog["chapters"].append(catalog["chapters"][0])
+    else:
+        catalog["version"] = True
+    (root / CATALOG_PATH).write_text(json.dumps(catalog), encoding="utf-8")
+    _commit(root)
+
+    with pytest.raises(ValueError):
+        bundle.build_bundle(tmp_path / "invalid-modular-output", root=root)
+
+    assert not (tmp_path / "invalid-modular-output").exists()

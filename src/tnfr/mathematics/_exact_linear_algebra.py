@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Set
 from fractions import Fraction
+from math import isqrt
 
 from .._exact_time import exact_or_represented_real
 
@@ -11,6 +12,7 @@ __all__ = [
     "ExactSquareMatrix",
     "exact_matrix_inverse",
     "exact_matrix_product",
+    "exact_rank_one_rational_lift",
     "exact_square_matrix_power",
     "exact_square_matrix_product",
     "exact_symmetric_semidefinite",
@@ -43,6 +45,57 @@ def _rational_matrix(values, label, *, allow_empty=False):
     if not rows and not allow_empty:
         raise ValueError(f"{label} must be nonempty")
     return tuple(_rational_vector(row, f"{label}[{i}]") for i, row in enumerate(rows))
+
+
+def exact_rank_one_rational_lift(matrix: object) -> tuple[Fraction, ...]:
+    """Factor a nonempty positive-semidefinite rank-at-most-one matrix exactly.
+
+    Ordered rows admit exact rational or finite represented-real entries and
+    normalize them before algebra. The first positive diagonal chooses a
+    positive coordinate of the canonical factor; the zero matrix gives the
+    zero vector. A valid real factor without a rational square root is outside
+    this decoder's domain and raises ``ValueError`` instead of being rounded.
+    The factor's sign convention is not a globally smooth coordinate chart.
+    """
+    values = _rational_matrix(matrix, "matrix")
+    dimension = len(values)
+    if any(len(row) != dimension for row in values):
+        raise ValueError("matrix must be square")
+    if any(
+        values[i][j] != values[j][i]
+        for i in range(dimension)
+        for j in range(i + 1, dimension)
+    ):
+        raise ValueError("matrix must be exactly symmetric")
+    cone_error = "matrix must be positive semidefinite with rank at most one"
+    if any(values[i][i] < 0 for i in range(dimension)):
+        raise ValueError(cone_error)
+    pivot = next((i for i in range(dimension) if values[i][i] > 0), None)
+    if pivot is None:
+        if any(value for row in values for value in row):
+            raise ValueError(cone_error)
+        return (Fraction(0),) * dimension
+
+    diagonal = values[pivot][pivot]
+    column = tuple(row[pivot] for row in values)
+    if any(
+        diagonal * values[i][j] != column[i] * column[j]
+        for i in range(dimension)
+        for j in range(dimension)
+    ):
+        raise ValueError(cone_error)
+    numerator = isqrt(diagonal.numerator)
+    denominator = isqrt(diagonal.denominator)
+    if (
+        numerator * numerator != diagonal.numerator
+        or denominator * denominator != diagonal.denominator
+    ):
+        raise ValueError(
+            "matrix admits a real lift but this decoder requires an exact rational "
+            "square root"
+        )
+    root = Fraction(numerator, denominator)
+    return tuple(value / root for value in column)
 
 
 def _require_exact_square_matrix(

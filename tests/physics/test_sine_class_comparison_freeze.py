@@ -13,6 +13,7 @@ from pathlib import Path
 
 import pytest
 
+from scripts.research_book import read_document_bytes
 from tnfr.physics._sine_class_contrast import _contrast_decision
 from tnfr.research.artifact_io import (
     decode_exact_tree,
@@ -204,7 +205,9 @@ def test_prospective_proof_prefix_is_preserved(frozen):
     assert len(prospective) == 17358 and len(prospective.splitlines()) == 362
     # Git's newline conversion does not change the mathematical content.
     normalized = prospective.replace(b"\r\n", b"\n")
-    assert (ROOT / PROOF).read_bytes().replace(b"\r\n", b"\n").startswith(normalized)
+    assert (
+        read_document_bytes(ROOT, PROOF).replace(b"\r\n", b"\n").startswith(normalized)
+    )
 
 
 def _calls(node, name):

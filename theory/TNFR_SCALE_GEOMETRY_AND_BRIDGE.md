@@ -20,7 +20,7 @@ storage balance does not make their complete dynamics interchangeable.
 | [Pair actions, regional exchange and cancellation](nodal/SINE_PAIR_INTERACTION.md) | Form events, autonomous currents, cancellation and the retained interaction interface. |
 
 Section numbers remain stable. The
-[execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+[research program](RESEARCH_PROGRAM.md#research-current-question)
 alone assigns research work.
 
 Formation, observation and maintenance are distinct. Protection of a

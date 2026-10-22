@@ -5,7 +5,7 @@ positive-loss sine law as the [prepared transport theorem](LOCALIZED_IDENTITY_TR
 No trajectory, response search, source reconstruction or physical measurement
 is evaluated. This result identifies a missing preparation resource for one
 class of mobile identities; it does not exclude every moving organization.
-The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+The [research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns closure and subsequent admission.
 
 ## 1. Complete law and an independent source class
