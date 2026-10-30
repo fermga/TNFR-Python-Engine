@@ -1,0 +1,24 @@
+{
+  "source":{
+    "path":"artifacts/formed-two-port-method-20261029/chapter-proposed-v2.md",
+    "bytes":35533,
+    "sha256":"d97469ba40e16db7e6a00fd1ca4f5368b1a0c3fbbc06b1cd75858e53f290f8cb"
+  },
+  "final":{
+    "path":"artifacts/formed-two-port-method-20261029/chapter-proposed-v3.md",
+    "bytes":35542,
+    "sha256":"ab36ac0738d1dfa707f5adf45a52ee2c6245dd2d3efe6b3e9bb4cfa2377c2338"
+  },
+  "suffix":{
+    "path":"artifacts/formed-two-port-method-20261029/chapter-append-v3.md",
+    "bytes":12802,
+    "sha256":"25e4a4aaa2d7a373dde9f106f7679e6ee015ebd96aaaf7a772c7539c9704ddb7"
+  },
+  "script":{
+    "path":"artifacts/formed-two-port-method-20261029/refine_proof.py",
+    "bytes":1516,
+    "sha256":"81d5ef53f53bc4854403fb90a1f94abe06793c51df5fcb56beb74b6e9bac6da4"
+  },
+  "change":"Use the consumed non-strict phase inequality and display the endpoint excess-storage inequality explicitly in M9.",
+  "candidate_or_budget_changed":false
+}

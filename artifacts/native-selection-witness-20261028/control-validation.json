@@ -1,0 +1,16 @@
+{
+  "passed":true,
+  "tests":[
+    "test_interval_field_matches_independent_full_native_rows",
+    "test_jet_field_keeps_capacity_native_mixed_derivatives",
+    "test_uniform_capacity_reduction_and_transport_balance",
+    "test_domain_rejects_hidden_capacity_and_phase_boundary",
+    "test_capture_requires_whole_box_storage_and_geometry",
+    "test_step_delegates_once_and_retains_failed_evidence"
+  ],
+  "junit":{
+    "path":"artifacts/native-selection-witness-20261028/control-results.xml",
+    "bytes":1107,
+    "sha256":"885377931efa11c623a7cbc99ff667936c2ee86fcdea1cb04a52c690cff6a731"
+  }
+}

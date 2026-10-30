@@ -1,0 +1,21 @@
+{
+  "script":"C:\\TNFR-Python-Engine\\artifacts\\formed-two-port-attempt-20261029\\worker.py",
+  "arguments":[
+    "--root",
+    "C:\\TNFR-Python-Engine",
+    "--protocol",
+    "C:\\TNFR-Python-Engine\\artifacts\\formed-two-port-attempt-20261029\\producing-protocol.json",
+    "--output",
+    "C:\\TNFR-Python-Engine\\artifacts\\formed-two-port-attempt-20261029\\attempt"
+  ],
+  "cwd":"C:\\TNFR-Python-Engine",
+  "interpreter":"C:\\TNFR-Python-Engine\\.venv313\\Scripts\\python.exe",
+  "prefix":"C:\\TNFR-Python-Engine\\.venv313",
+  "wall_seconds":3600,
+  "closing_reserve_seconds":10.0,
+  "worker_seconds_budget":3590.0,
+  "process_memory_bytes":1073741824,
+  "memory_metric":"Windows committed virtual memory per process and job",
+  "log_limit_bytes":1048576,
+  "one_worker":true
+}

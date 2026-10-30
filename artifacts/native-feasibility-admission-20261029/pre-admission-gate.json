@@ -1,0 +1,9 @@
+{
+  "exit_code":1,
+  "output":"Research prerequisite check failed: physical mapping blocked: missing final readiness review\n",
+  "registry":{
+    "path":"theory/research_prerequisites.json",
+    "bytes":4636,
+    "sha256":"4b7d1fd108d64a5b64f3ecf0a20097ad6eff391618189f1bb656a1b111e447af"
+  }
+}

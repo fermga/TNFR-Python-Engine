@@ -1991,3 +1991,174 @@ capacity independence make that balance an additional restriction, not a
 free relabeling. Together with section 11.8 this closes the equivalence
 question without selecting a unique microscopic law, justifying cosine
 storage, changing an executor or revising any retained response.
+
+### 11.10 Constitutive provenance of the acquired dissipative regime
+
+<a id="acquired-damping-exchange-provenance"></a>
+
+The present mixed-pair relaxation result depends on a supplied damping and
+exchange regime. The nodal identity does not select that regime. This audit
+connects the actual consumed sources to the existing
+[coefficient invariant](RELATIONAL_RESPONSE_IDENTIFICATION.md#coefficient-synergy-audit)
+and separates reusable structural identities from source-specific guarantees.
+It changes no law, source, observation, coefficient or retained verdict.
+
+#### Actual source, storage and attachment lineage
+
+The [own-law acquisition](ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-same-source-acquisition)
+starts from the original two phase-flat C9 ramp families. Its implementation
+`_assess_constitutive_class_pair` imports their exact primitives from
+[relational_sine_formed_classes.py](../../src/tnfr/physics/relational_sine_formed_classes.py).
+The original constructor explicitly supplies `e=1023/1024` and `w=1/1024`.
+The common unit capacity and storage coefficient `beta=1` are also premises.
+The two nominal form slopes are class-specific, with zero form and lifted
+phase means; this is not the later equal-observation preparation study.
+The former constants and preparation were chosen for a constructive
+acquisition argument, not inferred from the nodal product or a physical fit.
+The earlier [prepared-sector argument](SINE_PATTERN_DYNAMICS.md#sine-prepared-sector-entry)
+chooses small positive `r=w/e` and encodes the target phase profile in the
+supplied form profile. Keeping that encoded profile while decreasing r
+costs form storage of order `r^-2`. In the C9 source, the rational slope
+`m=(2046/9)*(355/113)^2` makes `gamma*m` close to `2*pi/9`. A proposed
+retuning `m` proportional to `1/gamma` changes both preparation and its
+storage cost; it is not the same source in different units. The complementary
+[fixed-budget consensus result](SINE_PATTERN_DYNAMICS.md#sine-budget-consensus)
+shows why this matters: sufficiently small exchange with a fixed admitted
+source budget can force consensus instead of the desired nonzero winding.
+Smaller exchange is not an unrestricted improvement in formation.
+
+The [complete law](ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md#organized-pattern-complete-law)
+declares a matched potential family. The consumed mixed construction takes
+its sine member, deformation zero. With `q=Lx`, `grad U=-S` and `D=diag(d_i)`,
+its two rows and storage are
+
+\[
+\dot x=-eD^{-1}Lx+\frac w\pi D^{-1}S,\qquad
+\dot\theta=\frac w\pi D^{-1}Lx,\qquad
+H=\frac12x^{\mathsf T}Lx+U(\theta).
+\]
+
+Both rows use the same held unit capacities. In `tau=e*t`,
+`gamma=w/(e*pi)=1/(1023*pi)`, they become
+`x'=D^-1*(-Lx+gamma*S)` and `theta'=gamma*D^-1*Lx`, with
+`H'=-(Lx)^T*D^-1*(Lx)`. Reciprocal exchange cancels; its coefficient is
+not another loss term.
+
+| Consumed stage | Complete-law premise and retained boundary |
+| --- | --- |
+| Two isolated C9 sources | Degree two, unit capacities, fixed ramp sources and fixed coefficients. The own-law acquisition proof precedes capture; target geometry alone does not authenticate that source. |
+| Recovery and source waiting | `_assess_constitutive_recovery` uses formation time 100 and the declared unforced dwell `10^13` in tau. The successor consumes `_assess_sine_mixed_capture` for isolated source and waiting premises only. Its separate degree-three joined-capture verdict is not the source of the present child. |
+| Coupling image and held-conductance child | `_assess_sine_coupling_successor` admits the `common_sense` ideal Coupling (UM) image. Its completed 18-node support has 63 added edges and divisor nine in both rows. Original cycle form weights are one; added form weights lie in `[3/4,1]`. The bare internal sine potential uses unit edge coefficients. This changes support and storage, rather than rewriting the source clock. |
+| Reciprocal pair and phase-sensitive port | The 36-node construction retains the internal divisor nine and adds matching form and phase ports. Writing their coefficients as nine inside the common divisor gives `L_+=L_internal+9*L_matching` and matching sine-potential coefficient nine. The port is a supplied protocol, not an autonomously selected new edge occurrence or a replacement of the divisor by ten. |
+
+The actual latter field is
+[`_mixed_phase_sensitive_field`](../../src/tnfr/physics/_mixed_phase_sensitive_interface.py),
+which composes the prior full form field and both reciprocal phase-port
+rows. On the admitted held support, let `S_+=-grad U_+`. It gives
+
+\[
+x'=\frac{-L_+x+\gamma S_+}{9},\qquad
+\theta'=\frac{\gamma L_+x}{9},\qquad
+H_+=\frac12x^{\mathsf T}L_+x+U_+,\qquad
+H_+'=-\frac{\|L_+x\|^2}{9}.
+\]
+
+The [complete edge-current owner](ORGANIZED_REGIONAL_TRANSPORT.md)
+derives these rows and their balances independently of a reduced forecast.
+Support joins, changed conductances and port switches have their own storage
+jumps. Continuous loss does not pay those jumps without an additional
+reservoir law. The existing source, work and future-window certificates
+retain their original activation and registration premises.
+
+#### What a unit or clock change preserves
+
+The [joint unit owner](../NODAL_PARAMETER_FOUNDATIONS.md#dimensionless-relaxation-invariant)
+and [sine clock owner](RESONANCE_FOUNDATIONS.md#resonance-clock) already give
+the complete transformation. In the representation with unchanged mobility
+matrix, `y=s*x` and `t_new=c*t`, `s,c>0` require
+
+\[
+\beta_{\rm new}=s^2\beta,\qquad
+e_{\rm new}=e/c,\qquad w_{\rm new}=sw/c .
+\]
+
+Storage in the transformed form units scales by `s^2`. If the convention
+`e+w=1` is restored instead, the mobility must also receive the compensating
+factor given by that owner. Transforming the capacity/clock elsewhere and
+also applying this factor would count the clock change twice.
+Under either consistent representation,
+
+\[
+\chi=\beta(e/w)^2,\qquad
+\chi_{\rm source}=1023^2,\qquad
+\gamma^2=\frac1{\pi^2\chi_{\rm source}} .
+\]
+
+The last equality uses the current `beta=1` form chart. With arbitrary beta,
+the two exchange coefficients are `w/pi` and `w/(beta*pi)`; their product
+divided by `e^2` is `1/(pi^2*chi)`. An arbitrary form-unit change need not
+leave the two numeric exchange coefficients equal.
+
+This invariant is relative to the declared pressure normalization. Rescaling
+the definition of the phase channel changes its coefficient and the numeric
+threshold together, as the coefficient owner proves. Neither chi nor a
+pi-containing normalization is an ontological constant. Geometry, support,
+relative capacities, preparation and observation remain additional data.
+The [noncommuting local-mode proof](ORGANIZED_REGIONAL_TRANSPORT.md#mixed-local-modes)
+uses the actual phase Hessian as well as the form Laplacian; chi alone does
+not classify every organized geometry.
+
+In particular, regular positive unit/clock changes cannot turn this
+positive-loss source into `e=0`. The normalization `tau=e*t` is singular at
+zero loss. A conservative comparison must declare its own clock and source;
+it cannot inherit the old acquisition times by substituting zero.
+
+#### Which results transfer, and which must be re-admitted
+
+| Result | Coefficient dependency |
+| --- | --- |
+| Mean conservation, reciprocal work cancellation and continuous loss identity | Structural identities of the declared paired rows and support. They hold for the corresponding positive parameter family with its matched storage, capacities and clock, without selecting a value of chi. Ordinary means here rely on common capacities and divisors; general positive held mobility requires its weighted means. |
+| Critical target geometry, winding and support/Hessian bounds | Reusable when the same potential, weights, phase chart and target are retained. They do not establish acquisition or classify the full temporal response alone. |
+| Source construction, entry, capture and recovery duration | The actual supplied ramps, gamma, source costs, semigroup forcing, stiffness and Lyapunov rates enter. Existing certificates at fixed gamma do not extend to a changed damping/exchange regime. |
+| Attachment-work identity | The jump formula is structural once the old/new storage and actual state are declared. Its numerical allowance and retained source bound are source- and coefficient-dependent. |
+| Marked identity, registration, finite maintenance and forecasts | Their sufficient inequalities consume the reached state, inherited errors, coefficient bounds and durations. An admitted held-weight interval or potential-deformation interval is not an admitted gamma scan. |
+| Two common zero modes and the local tangent formula | Retained on this connected positive-stiffness geometry with positive exchange and the same reciprocal rows. Zero exchange has additional stationary phase directions. The seventy real negative poles, separation intervals and branch certificates additionally consume the proved damping margin; old bounds cannot be assigned to another chi. |
+
+This is a reconstruction of the maintained declarations and consumed
+dependency chain, not a fresh authentication of historical execution.
+The original formed-class evidence did not retain its evaluated source
+snapshot; saved report bytes and hashes alone cannot restore that missing
+chronology. This audit does not replay it or strengthen its provenance claim.
+
+The shared proof methods can be applied to a separately admitted model.
+Matching equilibrium, storage cancellation or a matrix formula is insufficient
+to transfer finite acquisition, source association, a numerical tolerance or
+an entire nonlinear trajectory.
+
+#### Pulse orientation and the remaining constitutive question
+
+The [existing conservative pulse](SINE_REPLICA_PULSE.md#sine-pulse-internal-rotation)
+is a positive comparison with its own zero-loss law and preparation. Its EPI
+can be the projection of internal circulation, and a broader open family
+already retains [active organization](SINE_REPLICA_PULSE.md#sine-replica-joint-persistence).
+This explains why the present dissipative relaxation and that circulation
+are compatible results. It does not derive zero loss as a universal law,
+or make the dissipative source a coarse version of that conservative object.
+
+If loss is proposed as an effective description, the
+[exact elimination boundary](RESONANCE_FOUNDATIONS.md#effective-loss-setup)
+requires an observation, hidden preparation, memory, horizon and error.
+For the proved finite conservative positive-energy tangent and all-state
+response class, elimination does not by itself give strictly positive
+Markovian damping exact for all future times. This is not a blanket nonlinear
+impossibility theorem. Existing finite-window
+obstructions and memory kernels remain part of that research, rather than
+being removed by the interpretation of an internal angle.
+
+The historical manuscript's prescribed oscillatory term does not supply
+those missing premises. Its role is hypothesis generation; the maintained
+complete laws and the derived angle have independent definitions and evidence.
+The immediate gap after this audit is operational preparation of an active
+organized object under one declared complete law. The sole next question is
+maintained in the [research program](../RESEARCH_PROGRAM.md#research-current-question),
+not in a new pulse or parameter-scan queue.

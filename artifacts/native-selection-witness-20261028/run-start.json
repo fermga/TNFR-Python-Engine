@@ -1,0 +1,19 @@
+{
+  "started_utc":"2026-10-28T20:14:50.827362+00:00",
+  "attempt":1,
+  "plan":{
+    "path":"artifacts/native-selection-witness-20261028/validation-plan.json",
+    "bytes":213907,
+    "sha256":"6a5fe5d5f651e52ea009c9def96fdab04c90b3b68d48b8978830be708fb99e6b"
+  },
+  "budget":{
+    "watchdog_wall_budget_seconds":1200,
+    "maximum_rss_bytes":2147483648,
+    "maximum_response_bytes":67108864,
+    "maximum_log_bytes":1048576,
+    "diagnostic_reserve_bytes":1048576,
+    "handshake_timeout_seconds":30,
+    "poll_seconds":0.1
+  },
+  "resource_scope":"Total 1200-second watchdog includes handshake, setup, controls, seed generation and both interleaved transits; Windows kill-on-close job, sampled aggregate RSS and actual-worker OS peak, not a hard RSS allocation limit. All task-folder outputs except baseline/before-edit/source archive/validation plan count toward 64 MiB; job log has its own 1 MiB bound. Cleanup is separately bounded."
+}

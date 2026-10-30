@@ -308,10 +308,11 @@ $$
 \frac{\Delta\rho(i)}{\Delta t} + \operatorname{div}\mathbf{J}(i) = S_{\text{grammar}}(i)
 $$
 
-Projecting the measured balance onto eigenvectors $\psi_k$:
+Projecting both snapshots and their interval balance onto the same
+fixed orthonormal eigenbasis $\{\psi_k\}$ gives:
 
 $$
-\frac{d\hat{\rho}_k}{dt} + \widehat{\operatorname{div}\mathbf J}_k = \hat{S}_k
+\frac{\Delta\hat{\rho}_k}{\Delta t} + \widehat{\operatorname{div}\mathbf J}_k = \hat{S}_k
 $$
 
 where:
@@ -333,15 +334,21 @@ multiplied into a quantity already defined as the projected divergence.
 
 ### 6.3 Parseval Conservation
 
-Energy in the spatial domain equals energy in the spectral domain:
+The squared norm of the density diagnostic agrees in its spatial and
+spectral representations:
 
 $$
 \|\rho\|^2 = \sum_k |\hat{\rho}_k|^2
 $$
 
-For one field and one fixed orthonormal basis this is an exact coordinate
-identity. Apparent drift signals numerical error, a changed graph/basis, or a
-mismatched normalization; it is not by itself a grammar violation.
+This is an exact coordinate identity at each snapshot, not temporal
+conservation of the density norm. A mismatch between its two sides concerns
+the basis, normalization or arithmetic. The API's legacy-named
+`parseval_drift` instead reports the relative change between the before/after
+squared density norms, with its declared denominator floor. Valid dynamics
+can change that statistic while preserving the identity at both snapshots.
+Neither the norm nor its temporal change is an identified physical energy
+or a grammar-violation certificate.
 
 ### 6.4 Spectral Energy Decomposition
 

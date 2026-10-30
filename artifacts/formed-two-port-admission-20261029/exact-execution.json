@@ -1,0 +1,28 @@
+{
+  "passed":true,
+  "command":[
+    "C:\\TNFR-Python-Engine\\.venv313\\Scripts\\python.exe",
+    "-E",
+    "C:\\TNFR-Python-Engine\\artifacts\\formed-two-port-admission-20261029\\check_admission.py"
+  ],
+  "timeout_seconds":60,
+  "timed_out":false,
+  "exit_code":0,
+  "wall_seconds":1.5408709999974235,
+  "assertions":"enabled: -E, no -O",
+  "source_freeze":{
+    "path":"artifacts/formed-two-port-admission-20261029/source-freeze.json",
+    "bytes":5288,
+    "sha256":"45305d4ec4f5e2e0cca9aad6d9a473f054ee22f39222f7752f938b78e780614b"
+  },
+  "log":{
+    "path":"artifacts/formed-two-port-admission-20261029/exact-controls.log",
+    "bytes":75,
+    "sha256":"bac0f72612dcec1f63c72de64dd9af6905e7e926adc97ca644c438e9bcd5fd09"
+  },
+  "wrapper":{
+    "path":"artifacts/formed-two-port-admission-20261029/run_exact_controls.py",
+    "bytes":1718,
+    "sha256":"be6855fb71618fcfba74e3cf3ce18c9b5a4b15b8a9d288244c13daadd32c10e3"
+  }
+}

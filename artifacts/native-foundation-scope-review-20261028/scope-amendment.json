@@ -1,0 +1,26 @@
+{
+  "kind":"Explicit scope extension for the substantive scoped closure found by the joint review",
+  "scope":{
+    "path":"artifacts/native-foundation-scope-review-20261028/scope.json",
+    "bytes":1031,
+    "sha256":"c7ebfb1dd1c291fa61ac41123de4054659e9468386f35bfdaed04289d523a099"
+  },
+  "baseline":{
+    "path":"artifacts/native-foundation-scope-review-20261028/baseline.json",
+    "bytes":584157,
+    "sha256":"ff6415ede18dd9b9f69f7e840acff38d0caa85fe643b230578882193b0859ee9"
+  },
+  "additional_maintained_change":"theory/research_prerequisites.json",
+  "reason":"Record independently reviewed P1-P4 resolutions for the same prepared mathematical capability instead of leaving demonstrated local closure administratively open. No final physical-readiness review is supplied.",
+  "final_allowed_changed_paths":[
+    "theory/RESEARCH_PROGRAM.md",
+    "theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+    "theory/research_prerequisites.json"
+  ],
+  "registry_change_condition":"Only after the actual final owner and program pass independent scope review and each requirement receives its schema-valid independent evidence-bound review.",
+  "physical_mapping_readiness_review":null,
+  "research_activity":"foundations",
+  "new_scientific_evaluations":0,
+  "producer_replays":0,
+  "new_tests":0
+}

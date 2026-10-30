@@ -115,6 +115,17 @@ def _u6_graph() -> nx.Graph:
     return graph
 
 
+def _fitted_path(length: float = 1.0) -> nx.Graph:
+    graph = nx.path_graph(8)
+    nx.set_node_attributes(graph, 0.0, "theta")
+    nx.set_node_attributes(
+        graph, {node: math.exp(node / 3) - 1 for node in graph}, "delta_nfr"
+    )
+    nx.set_edge_attributes(graph, length, "length")
+    nx.set_edge_attributes(graph, 1.0, "weight")
+    return graph
+
+
 @pytest.mark.parametrize(
     "baseline",
     [
@@ -296,9 +307,8 @@ def test_missing_curvature_does_not_hide_independent_critical_drift():
 
 
 def test_admitted_fraction_cuts_and_large_comparison_scales_remain_evaluable():
-    graph = nx.path_graph(3)
-    nx.set_node_attributes(graph, dict(enumerate((0.0, 0.25, 0.0))), "theta")
-    nx.set_node_attributes(graph, 0.0, "delta_nfr")
+    graph = _fitted_path()
+    graph.nodes[1]["theta"] = 0.25
     report = run_structural_validation(
         graph,
         max_phase_gradient=Fraction(1, 8),
@@ -310,3 +320,70 @@ def test_admitted_fraction_cuts_and_large_comparison_scales_remain_evaluable():
     assert report.thresholds_exceeded["k_phi_flag"] is True
     assert report.thresholds_exceeded["xi_c_critical"] is False
     assert report.field_metrics["threshold_status"]["xi_c_critical"] == "evaluated"
+
+
+def test_fitted_length_comparisons_scale_with_the_same_structural_geometry():
+    reports = [
+        run_structural_validation(_fitted_path(scale), xi_c_critical_multiplier=2.0)
+        for scale in (0.125, 1.0, 16.0)
+    ]
+    reference = reports[1].field_metrics["xi_c"]
+    for scale, report in zip((0.125, 1.0, 16.0), reports):
+        fields = report.field_metrics
+        assert fields["xi_c_provenance"]["method"] == "autocorrelation_fit"
+        assert fields["xi_c"] == pytest.approx(scale * reference)
+        assert fields["system_diameter"] == 7 * scale
+        assert fields["mean_node_distance"] == 5.5 * scale
+        assert fields["geometry_provenance"]["units"] == "path_length"
+        assert (
+            fields["geometry_provenance"]["mean_node_distance"]
+            == "mean_node_eccentricity"
+        )
+        assert fields["threshold_status"]["xi_c_critical"] == "evaluated"
+        assert report.thresholds_exceeded["xi_c_critical"] is False
+        assert report.thresholds_exceeded["xi_c_watch"] is False
+        assert report.risk_level == "low"
+
+
+def test_finite_spectral_scale_remains_available_but_not_path_comparable():
+    graph = _u6_graph()
+    nx.set_edge_attributes(graph, 100.0, "length")
+    report = run_structural_validation(graph)
+    fields = report.field_metrics
+    assert fields["field_availability"]["xi_c"] is True
+    assert fields["xi_c_provenance"]["method"] == "spectral_gap"
+    assert fields["system_diameter"] == 100.0
+    assert fields["mean_node_distance"] == 100.0
+    for name in ("xi_c_critical", "xi_c_watch"):
+        assert fields["threshold_status"][name] == "not_comparable"
+        assert "path length" in fields["threshold_reasons"][name]
+        assert name not in report.thresholds_exceeded
+    assert report.risk_level == "elevated"
+    health = compute_structural_health(graph)
+    assert health["threshold_status"]["xi_c_critical"] == "not_comparable"
+    assert "checkpoint_state" not in health["recommended_actions"]
+
+
+def test_comparison_geometry_uses_parallel_minimum_and_explicit_length_priority():
+    graph = nx.MultiGraph(_fitted_path(2.0))
+    for left, right in nx.path_graph(8).edges():
+        graph.add_edge(left, right, length=9.0, weight=0.01)
+    report = run_structural_validation(graph)
+    assert report.field_metrics["system_diameter"] == 14.0
+    assert report.field_metrics["mean_node_distance"] == 11.0
+    assert report.field_metrics["xi_c_provenance"]["method"] == "autocorrelation_fit"
+
+
+@pytest.mark.parametrize("invalid", [True, "1.0", -1.0, math.inf])
+def test_invalid_structural_geometry_cannot_produce_length_comparisons(invalid):
+    graph = _fitted_path()
+    graph.edges[0, 1]["length"] = invalid
+    report = run_structural_validation(graph)
+    fields = report.field_metrics
+    assert fields["system_diameter"] is None
+    assert fields["mean_node_distance"] is None
+    assert fields["geometry_provenance"] is None
+    assert fields["field_errors"]["system_geometry"]
+    assert fields["threshold_status"]["xi_c_critical"] == "unavailable"
+    assert "xi_c_critical" not in report.thresholds_exceeded
+    assert report.risk_level == "elevated"

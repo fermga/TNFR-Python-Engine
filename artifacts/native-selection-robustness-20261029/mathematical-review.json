@@ -1,0 +1,58 @@
+{
+  "schema":"tnfr.native-selection-robustness-mathematical-review.v1",
+  "author":"/root",
+  "reviewer":"/root/robust_math",
+  "independent":true,
+  "verdict":"PASS",
+  "review_scope":"Independent static review of root-authored RB7 and the presentation/correspondence of its interface to the existing complete-state recovery guard. The verdict is explicitly limited to this scope.",
+  "authorship_exclusion":"The reviewer authored math-draft.md, from which RB1-RB6 were integrated. This receipt does not independently approve those derivations or substitute for the collective_controls review of the complete proof. Confirming that the unified text preserves that contribution is an authorship consistency check, not independent validation.",
+  "sources":[
+    {
+      "path":"artifacts/native-selection-robustness-20261029/robustness-section.md",
+      "bytes":14725,
+      "sha256":"cdade3d189040e0c4ca8657d9c9d6a1e1a29cc8b934d39ce41ab58ff500a31da"
+    },
+    {
+      "path":"artifacts/native-selection-robustness-20261029/transport-draft.md",
+      "bytes":4374,
+      "sha256":"01341339b04cfed49bb39160b0b56f0010d16f9a3fd8c864280a52f62b0120b2"
+    },
+    {
+      "path":"theory/nodal/RELATIONAL_RECOVERY_AND_INTERACTION.md",
+      "bytes":30557,
+      "sha256":"e28b84af254fcd2443d1bb785189143ff715bdaff6c2c50b74fc9d90d24f764a"
+    },
+    {
+      "path":"artifacts/native-selection-robustness-20261029/before-edit.zip",
+      "bytes":72890,
+      "sha256":"348798b03cfea29e7159853b089ad8f74b1c2ebc9a5a78a212b9b7a0892afd02"
+    }
+  ],
+  "source_scope_note":"The existing DA/CS/W chapter is retained in before-edit.zip; the pending canonical append does not change the source version consumed for this review. The final section receipt is the reviewed proposed addition.",
+  "independent_assessments":{
+    "state_and_norm":"RB7 uses the full thirty-coordinate sup norm restricted only by sum(nu)=10. Neutral common form/phase directions remain in the ball. The same perturbed preparation, including held capacities, is used in both laws.",
+    "inverse_metric":"The integral expression for h=H^-1 is correct on the positive-real chamber and extends smoothly across S=0. Its C/S derivatives satisfy the stated 1/(pi*m^2) bounds; the Arg-source derivatives satisfy 1/(pi*m).",
+    "complete_jacobian":"Absolute row sums include form, phase and capacity derivatives. In particular, held capacity is retained as perturbed state with a zero evolution row, not silently removed from native crosscolumns. N=2,d<=3,X=8,m=2^-34 satisfy the conservative row bounds and L=2^82.",
+    "bootstrap_domain":"The perturbation of any resultant real part is at most6*a0 on this support. With a0=2^-37, the retained/analytic reference reserve2^-33 therefore leaves a strict lower bound above2^-34 along the comparison segments. Capacity and form bounds remain inside the declared inflated domain.",
+    "gronwall":"Conditional on the independently established entry bound T=2^163, L*T=2^245. Since exp(1)<4, rho*exp(L*T)<=2^(-2^250+2^246)<2^-37. This rules out the first tube exit and supplies finite continuation through each actual reference entry time; no later trajectory coordinates are assumed.",
+    "recovery_interface":"At the entry time, orthogonal projection cannot enlarge the Euclidean native error, which is at most sqrt(20)*a0<2^-34. Combining with the independently supplied reference norm bound gives Z<2^-12. The full potential is explicitly defined as the edge sum, and ||B||<=6 gives E_rel<3*2^-24<1/663552. These are the stated complete-state recovery guard premises.",
+    "guard_presentation":"Principal target edge gaps are used in the acute margin, not their possibly larger raw lifts. Compactness and LaSalle concern the quotient by the two common origins; absolute limits are recovered through the eventual exponential tail. A quotient observation does not remove directions from the initial full-state ball.",
+    "claim_strength":"The theorem is conditional on the finite retained-data audit. The radius is a symbolic positive real, not a materialized denominator, binary64 tolerance, preparation accuracy, basin-volume estimate or physical bridge."
+  },
+  "author_consistency_note":"The unified RB1-RB6 preserve the submitted derivation and constants. epsilon_L is only a notation change; V(theta) now explicitly denotes the full edge potential in RB6. This note is outside the independent verdict.",
+  "pending_data_premises":[
+    "Every retained tube must pass the actual primitive |q|,|r|<1 and real-resultant lower bounds.",
+    "Both endpoint associations, protected rectangles and E<=7-2^-30 must pass their frozen static audit.",
+    "The shared exact preparation, capacity hull, complete-law associations and source inventory must be verified."
+  ],
+  "performed":{
+    "static_source_reading":true,
+    "scientific_imports":0,
+    "candidate_generations":0,
+    "trajectory_runs":0,
+    "tests_executed":0,
+    "stored_producer_replays":0,
+    "canonical_edits":0
+  },
+  "physical_mapping_authorized":false
+}

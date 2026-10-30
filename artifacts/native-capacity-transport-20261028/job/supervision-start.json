@@ -1,0 +1,20 @@
+{
+  "budget": {
+    "diagnostic_reserve_bytes": 1048576,
+    "handshake_timeout_seconds": 30,
+    "maximum_log_bytes": 1048576,
+    "maximum_response_bytes": 33554432,
+    "maximum_rss_bytes": 2147483648,
+    "poll_seconds": 0.1,
+    "watchdog_wall_budget_seconds": 120
+  },
+  "interpreter": "C:\\TNFR-Python-Engine\\.venv313\\Scripts\\python.exe",
+  "job_name": "Local\\TNFR-28192-a4c5ac53f0685ecc",
+  "maximum_job_processes": 64,
+  "nonce": "a4c5ac53f0685ecc7dae2d1f1323fe4f8404dedeb2c8e85cfe7835ea58007c6d",
+  "schema": "tnfr.windows-job-supervision-start.v1",
+  "scope": "One venv launch and actual-interpreter handshake; no TNFR target before ACK; no retry.",
+  "started_utc": "2026-10-28T18:00:43.267986+00:00",
+  "supervisor_pid": 28192,
+  "worker": "C:\\TNFR-Python-Engine\\artifacts\\native-capacity-transport-20261028\\validate.py"
+}

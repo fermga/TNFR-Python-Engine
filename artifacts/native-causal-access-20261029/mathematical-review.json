@@ -1,0 +1,74 @@
+{
+  "schema":"tnfr.native-causal-access-mathematical-review.v1",
+  "verdict":"PASS",
+  "independent":true,
+  "author":"/root",
+  "reviewer":"/root/access_control",
+  "reviewed_files":[
+    {
+      "path":"artifacts/native-causal-access-20261029/causal-access-section.md",
+      "bytes":12293,
+      "sha256":"cff87e3cac051583aa397b1822315b6e872af252171ff59f1ad4346012e86232"
+    },
+    {
+      "path":"artifacts/native-causal-access-20261029/program-introduction.md",
+      "bytes":819,
+      "sha256":"6e901e246bce2a6590526f85a1e153b5cb419382b18ea9de2beb79d5f65e1073"
+    },
+    {
+      "path":"artifacts/native-causal-access-20261029/program-decision.md",
+      "bytes":4607,
+      "sha256":"55d092dc934557744550d14e927196581f9d45256b573171cd3a3fa46d542e5e"
+    }
+  ],
+  "consulted_sources":[
+    {
+      "path":"AGENTS.md",
+      "bytes":25901,
+      "sha256":"d5dd67a0352cfddb08c5e1abc7899341c9aea557f2b8754a2404a805de1fb969"
+    },
+    {
+      "path":"theory/RESEARCH_PROGRAM.md",
+      "bytes":79872,
+      "sha256":"2afb8790f28c176520427fe92178a153e260c8d8ac34f919986fbca4ede06e96"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "bytes":170846,
+      "sha256":"c770953d110aa3f92c112fa5af3ba675a8a1e9ea8b5b51025f9f317dd49b933e"
+    },
+    {
+      "path":"theory/STRUCTURAL_OPERATORS.md",
+      "bytes":154384,
+      "sha256":"aed3accdf76f58efa76214f505a6c646d2f5fa92b53d84bbe3444abdd653c88c"
+    },
+    {
+      "path":"src/tnfr/research/artifact_io.py",
+      "bytes":10924,
+      "sha256":"298708039b86876b1f70de7f8e49db787300850395d77cedccd1cf02fad5f011"
+    }
+  ],
+  "contribution_disclosure":"The reviewer supplied prior analytical control/preparation analysis used in CA2-CA3, including the passive-extension obstruction and stored-profile consequences. Review of those sections is a transcription and consistency check, not an independent derivation of the same contribution. The reviewer did not author or edit the submitted drafts. The review of CA1, the hidden-phase collision CA4, CA5 and both program fragments is independent of their derivation. A separate fresh reviewer supplies the full-proof independent review.",
+  "assessments":{
+    "CA1":"The sufficient access record retains support, labels, phases, capacities, clock, readout, intervention and trial association. Common form and phase origins are actual symmetries and y removes the form origin. Removing those origins by declared representatives is not removal of relative regional shifts or proof of minimal observable dimension. Dimensions 29 and 27 are correct for the mean-one leaf and its two neutral symmetries.",
+    "CA2":"The connected capacity Laplacian kernel admits only uniform exact holds without input. Form/phase-only interventions cannot leave the invariant uniform capacity subspace. A finite closed connected linear diffusion extension has analytic coordinates and converges to a common capacity; exact nonuniform holding of the original nodes on any open interval is therefore impossible in that stated class. The excluded approximate, active, infinite, boundary and variable-support cases are correctly retained.",
+    "CA3":"The initialized static transport bit gives a complete supplied mathematical family. Feedback u=Bnu/2 cancels native capacity rates, preserves total, and contributes +nu^T Bnu/2 to variance. The edge representation has opposite endpoint reactions. No actuator resource conclusion follows from zero total input or the native storage lacking capacity. The stored-reference solution and exact-hold iff B(nu0-rho)=0 are correct, including the uniform-offset freedom. Its positivity condition and sup-norm drift bound are sufficient, not a FO initial-error certificate for the different controlled law.",
+    "CA4_derivative":"At nominal receiver capacities one, changing theta5 gives derivatives g5_theta5=-1/pi and g6_theta5=g9_theta5=1/(2pi). The y-rate derivative is -1/(2pi)-1/(8pi)=-5/(8pi). All initial x and nu, and y(0), remain unchanged.",
+    "CA4_analytic_bounds":"The delta-family lies in the existing complex initial cube: delta occupies a phase coordinate distinct from the fixed a and eta coordinates, so the maximum initial distance is p, not their sum. The bound |Y|<=1/16 gives the stated Cauchy coefficients. The first geometric sum yields 2^16 |delta| and the second 2^12 T^2. On delta<=2^-110 the normalized derivative error is at most 2^-94+2^-24<1/32. Combining with 3<pi<4 gives -T/4<fprime<-T/8.",
+    "CA4_collision":"The nominal gap has magnitude at least S and less than 9S<2^-154. The endpoint phase shift decreases f by more than T*2^-110/8=2^-149, so it brackets the negative target gap. Strict monotonicity gives a unique delta. Integrating the derivative bounds gives delta>4S/T=2^-120 and delta<8*2^-154/T=2^-115; the stated closed lower endpoint is a safe weakening. The collision lies inside recovery admission and outside the FO error budget. It identifies only the terminal readings and retained initial form/capacity data, not whole traces.",
+    "scope_and_program":"The audit preserves FO as conditional, distinguishes supplied control from autonomous realization, and does not extend the original four prerequisites. The next task is a concrete exact-scope admission review before any physical source search or comparison. A feasibility label is explicitly not a gate bypass, and a missing premise may lead to narrowing or rejection rather than approval."
+  },
+  "blocking_findings":[],
+  "performed":{
+    "source_reading":true,
+    "analytical_proof_review":true,
+    "new_scientific_evaluations":0,
+    "symbolic_or_numeric_model_evaluations":0,
+    "trajectory_runs":0,
+    "tests_run":0,
+    "historical_producer_replays":0,
+    "canonical_edits":0,
+    "draft_edits":0,
+    "artifact_metadata_serialization_only":true
+  }
+}

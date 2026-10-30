@@ -6,6 +6,11 @@ docs/assets/** -text -whitespace
 theory/research/archive/** -text -whitespace
 applications/factorization-lab/** -text -whitespace
 applications/primality-test/archive/** -text -whitespace
+# Foundation readiness receipts bind these exact bytes across platforms.
+theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+theory/research/ORGANIZED_ELECTRICAL_FEASIBILITY.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+theory/research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+artifacts/** -text -whitespace
 # These maintained producer files still match their pinned raw-source receipts.
 src/tnfr/research/local_capacity_history.py -text
 src/tnfr/research/local_capacity_history_certificate.py -text

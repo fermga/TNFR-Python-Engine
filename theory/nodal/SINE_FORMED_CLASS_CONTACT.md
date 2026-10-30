@@ -626,3 +626,102 @@ relaxation duration \(10^{13}\), readout error \(10^{-30}\), positive
 contact work and both source families. No trajectory measurement,
 laboratory-time interpretation, realizable sensor precision or autonomous
 contact mechanism has been established.
+
+## Eligibility of an independent relational cycle
+
+<a id="sine-formed-joint-cycle-eligibility"></a>
+
+The following source-based decision concerns only the retained donor-class-two
+and receiver-class-one branch. The preparation, actual reached families,
+nonzero relative phase origin, structural dwell, complete law, supplied bridge,
+event work and subsequent fixed-support dynamics above remain unchanged.
+It asks whether a new organization requiring a cycle channel independent of
+both constituent cycles is eligible on this support. No numerical evaluation
+or historical producer was repeated.
+
+### A necessary carrier, available before and after contact
+
+Give each edge an arbitrary orientation and let
+\[
+Z_1(G;\mathbb Z)=\ker\partial_G,
+\qquad \partial_G(i\mathbin{\to}j)=e_j-e_i.
+\]
+The two unchanged internal cycle lattices have their actual edge inclusions
+\(i_{\rm D},i_{\rm R}\). Define
+\[
+Q_{\rm rel}(G)=Z_1(G;\mathbb Z)/
+\bigl(i_{\rm D}Z_1(G_{\rm D};\mathbb Z)
+      +i_{\rm R}Z_1(G_{\rm R};\mathbb Z)\bigr).
+\]
+The candidate requires \(Q_{\rm rel}(G)\ne0\). This is a necessary structural
+carrier for an additional independent cycle channel, not a sufficient dynamic
+identity, a state reduction or a predicted response. The graph has no filled
+faces supplied by its drawing. Orientations and consistent relabelings change
+the presentation, not this carrier condition.
+
+The same quotient is defined on the actual disjoint precontact support, the
+joined support and the matched disconnected control. A trivial quotient is
+an available observation; it is not a missing precontact measurement.
+
+**Proposition.** This quotient is trivial in all three cases and throughout
+the retained fixed-support continuation.
+
+**Proof.** Before contact, every integer cycle chain is the sum of its two
+internal restrictions. After contact, take a chain \(z\) with
+\(\partial_Gz=0\) and sum this boundary equation over all donor vertices.
+Contributions from internal edges cancel. The only remaining term, up to
+orientation, is the coefficient of the single donor-receiver bridge. That
+coefficient must therefore vanish. The remaining chain splits into cycles
+on the two original components, so every element of \(Z_1(G;\mathbb Z)\)
+already belongs to the denominator. The disconnected control has the same
+direct-sum decomposition as the precontact graph. The support is held after
+the declared event, so evolving any retained nodal state cannot change this
+conclusion. The argument covers the whole source family without a fitted
+numerical margin. \(\square\)
+
+Primitive phases and their inherited lift conventions remain separate state
+data. A sum of wrapped phase gaps around a cycle does not automatically define
+a period on this quotient: adding an internal cycle changes that sum by its
+nonzero internal period. In particular, the retained windings two and one
+cannot silently be factored out while assigning a representative-independent
+scalar winding to \(Q_{\rm rel}\). No such period observation is asserted.
+
+### What this decision preserves and what it excludes
+
+The necessary carrier is absent both before and after contact, so this
+candidate cannot be acquired under the present fixed support. This is not
+an impossibility theorem for every joint identity, composite NFR or feedback
+mechanism. A reciprocal bridge transmits influence in both directions; the
+class-dependent receiver response already proved above explicitly includes
+later complete-law feedback. A closed walk may cross the bridge and return
+without adding an independent cycle class.
+
+The joined acute neighborhood, both constituent windings, actual conserved
+means, eventual alignment and finite response remain valid. They are already
+retained at contact or established by the existing theorem. Neither renaming
+these predicates nor tightening their tolerances establishes a newly acquired
+identity. The report's joined-identity flag certifies those stated retention
+conditions, not a further relational acquisition claim.
+
+The independent review accepts the negative necessary-condition argument,
+not a positive identity criterion. The exact protocol, source versions,
+review and consolidation are retained in
+`artifacts/formed-joint-identity-20261029/`. The anticipated bridge obstruction
+was known before the review; this is an analytical source audit, not a blinded
+response prediction.
+
+An additional contact is a different support and event. Existing
+[two-port compatibility](SINE_TWO_PORT_COMPATIBILITY.md#sine-two-port-compatibility)
+already supplies a deformed joint geometry under the same sine coefficients,
+and [capture](SINE_TWO_PORT_CAPTURE.md#sine-two-port-capture-result) retains its
+own prepared source. Neither theorem admits a new handoff merely by naming
+the source as formed. The
+[storage-only handoff obstruction](SINE_TWO_PORT_COMPATIBILITY.md#sine-two-port-handoff-obstruction)
+already includes the actual formed endpoints and does not exclude convergence
+by a different justified method. The research program alone selects the
+next source, event and identity-admission obligation.
+
+Geometry here means the actual support, coefficients and interfaces consumed
+by the law. A triangle of drawn regions supplies no extra interaction. A
+collective capability also does not establish fractality: compatible retained
+state, observation and dynamics across scales remain separate obligations.

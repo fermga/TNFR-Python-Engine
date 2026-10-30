@@ -43,6 +43,85 @@ distance differ should declare both attributes explicitly. The executable
 policy is centralized in
 [`_edge_semantics.py`](../src/tnfr/physics/_edge_semantics.py).
 
+<a id="scale-dependent-effective-laws"></a>
+## A candidate hypothesis within the foundational review
+
+A common fine dynamics may admit organizations whose effective laws depend
+on internal structure, interfaces and retained information. This is a
+candidate explanation of constitutive differences, not a selected fundamental
+law or an automatic next task. It belongs within the
+[four-pillar review](RESEARCH_PROGRAM.md#foundational-pillars); it does not
+replace operator causality, sufficient state, identity or model selection.
+An effective description need not have the same coordinate count or bare-graph
+formula at every scale. Nor does increasing size alone select a unique next
+law: different organizations at the same size can respond differently.
+
+The existing [registered-pattern calculation](nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md#organized-constitutive-inheritance)
+supplies conditional support. On its specified invariant family, interface
+geometry induces a parameter map, together with explicit form, clock and
+storage transformations. The current's harmonic coefficients change by
+different factors. The special sine member remains sine under that map;
+this calculation does not generate arbitrary new harmonics from it. Its
+output is an effective pair, not another pair of C9 organizations on which
+the same construction can automatically be repeated. The later acquired-state
+results in that owner retain their own finite-error domains.
+
+Three outcomes must remain admissible when testing a proposed observation:
+closure within a declared family with derived coefficients; closure in a
+larger family requiring inherited terms; or failure of instantaneous closure,
+requiring internal state or derived memory. Coordinate and clock equivalence
+must be checked across these outcomes, with the observation and every consumed
+row transformed consistently. Renaming observed velocity as pressure does
+not establish any of them. The [state-map criterion](FUNDAMENTAL_THEORY.md#29-assumed-substrate-and-emergence-between-scales)
+owns this obligation.
+
+The [nested P5 reduction](DERIVED_EPI_MEMORY.md#92-the-memory-is-removed-by-a-genuine-nested-nodal-quotient)
+already locates a memory-producing second observation after a closed first
+reduction. This preserves one fine law without forcing every description to
+be an instantaneous nodal law. The broader projection-with-memory method
+provides a useful mathematical reference: [Chorin, Hald and Kupferman (2000)](https://math.huji.ac.il/~razk/Publications/PDF/CHK00.pdf).
+That reference supplies neither TNFR's constitutive choice nor a physical
+identification. If a later study tests iterative scale inheritance, it must
+construct compatible domains, observations, boundaries and any event descent
+at each step before comparing direct and staged reduction. Multiplying
+parameter factors alone does not establish a hierarchy or its formation.
+
+<a id="scale-similarity-and-error"></a>
+### Units, closure and asymptotic similarity
+
+A change of units, an exact state reduction, repeated geometric shape and
+an asymptotic scale law are different operations. The first transforms every
+consumed row without discarding information. The second needs the actual
+state-map and closure hypotheses above. A finite-range geometric pattern
+describes an observation; it does not establish a closed collective dynamics
+or justify repeating a reduction on its own output.
+
+Barenblatt, *Scaling* (2003), sections 1.2 and 4.1-4.3, supplies a useful
+methodological distinction, documented in the
+[bibliographic synthesis](BIBLIOGRAPHIC_METHODS.md#bibliographic-scaling).
+Dimensional analysis starts from all governing quantities, including initial
+and boundary data; dimensionless groups constrain a response but do not
+determine it. For the declared limits and power-type similarity variables,
+retain three possibilities:
+complete similarity with an appropriate finite nonzero limit; incomplete
+similarity with essential parameter dependence in rescaled combinations;
+or absence of that similarity reduction. This last case does not exclude
+every conceivable reduction, such as one using logarithmic factors. The extra
+exponents of incomplete similarity
+do not generally follow from dimensions alone. These classifications do not
+classify every TNFR quotient or guarantee that TNFR has such a limit.
+
+For a finite TNFR approximation, declare the transformed state, source family,
+support and boundary, clock, observable, parameter domain, horizon and error.
+A small parameter or a limiting argument alone does not bound the cumulative
+effect of an omitted row over a long dwell. The discarded initialization may
+remain relevant through a source term or memory. Exact coordinate changes and
+same-information memory descriptions need no small-parameter argument.
+Discarding or approximating terms requires its own exact justification or
+controlled error bound. Reuse a matched bound from the
+existing full-state or slow-comparison owner before replacing the fine model.
+
+
 ## 1. Pure-EPI coarse-graining
 
 On fixed symmetric nonnegative conductance with positive fine row strengths

@@ -1,0 +1,21 @@
+{
+  "reason":"Separate the form/phase-only preparation obstruction from the finite passive extension exact-hold obstruction; a nonuniform auxiliary preparation is not excluded. Identified by independent reviewer before canonical application.",
+  "archive":{
+    "path":"artifacts/native-causal-access-20261029/draft-before-clarification.zip",
+    "bytes":8287,
+    "sha256":"c54d9651b75f12d78661d29bd403bd77e3829fcd731eb96d4de5a15ea3af0911"
+  },
+  "superseded_reviews":[
+    {
+      "path":"artifacts/native-causal-access-20261029/mathematical-review.json",
+      "bytes":5825,
+      "sha256":"3820a1561efbd902fe33a2aa1168fd4747d326046efbf541818e88574d4eeaf5"
+    },
+    {
+      "path":"artifacts/native-causal-access-20261029/field-and-contract-review.json",
+      "bytes":6279,
+      "sha256":"c76448b5f234224f98b10337258da6e37f22c9633822cd841df4e2342c6aa439"
+    }
+  ],
+  "new_scientific_evaluations":0
+}

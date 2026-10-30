@@ -1,0 +1,31 @@
+{
+  "task":"Finite receiver-form observation separation for the one-bridge JO complete laws, with full preparation, timing and readout uncertainty.",
+  "route":"Analytical bounds and independently reviewed proof only. No computational scientific evaluation or sampled trajectory.",
+  "preparation":"Two unit C5 rings, bridge(0,5), e=w=1/2,beta=b=kappa=1; a=eta=2^-20 in JO6. Exact phases theta_* and x=a e1, nu=1+eta(e0-e1). Chosen for a simple dyadic small preparation before any response evaluation, not by search.",
+  "observation":"y=x5-(x6+x7+x8+x9)/4, same native structural clock; dynamic minus held with actual prepared capacities held.",
+  "proof_obligations":[
+    "Concrete regular and recovery domain",
+    "Effective remainder or finite-response enclosure",
+    "Nonempty finite observation interval",
+    "Full preparation/shared versus mismatch errors",
+    "Clock and readout errors",
+    "Blind controls and abstention",
+    "No independent physical bridge supplied"
+  ],
+  "allowed_maintained_changes":[
+    "theory/RESEARCH_PROGRAM.md",
+    "theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+    "theory/research_prerequisites.json"
+  ],
+  "chapter_original_prefix_bytes":159069,
+  "program_regions":[
+    "Continuation introduction before foundational-pillars",
+    "Decision from The [native foundation account] to foundation-refactoring-plan"
+  ],
+  "prerequisite_scope":"Original prepared single-bridge domain unchanged; renew current source hashes after independent review.",
+  "physical_mapping_readiness":null,
+  "new_scientific_evaluations":0,
+  "new_trajectories":0,
+  "historical_producer_replays":0,
+  "numerical_budget":"None: no evaluator is authorized by this analytical scope. Any change to a computational route requires a separate prospective declaration, final-source review, source freeze and explicit resource budget before execution."
+}

@@ -1,0 +1,16 @@
+{
+  "ack_path": "C:\\TNFR-Python-Engine\\artifacts\\native-joint-organization-20261028\\job\\bootstrap-ack.json",
+  "exit_path": "C:\\TNFR-Python-Engine\\artifacts\\native-joint-organization-20261028\\job\\bootstrap-exit.json",
+  "expected_base_executable": "C:\\Program Files\\Python313\\python.exe",
+  "expected_executable": "C:\\TNFR-Python-Engine\\.venv313\\Scripts\\python.exe",
+  "expected_prefix": "C:\\TNFR-Python-Engine\\.venv313",
+  "handshake_timeout_seconds": 30,
+  "nonce": "2106ac0acf44e2ce98876611e5c0246f20e44548f1e5956e6711860a2e8592a3",
+  "ready_path": "C:\\TNFR-Python-Engine\\artifacts\\native-joint-organization-20261028\\job\\bootstrap-ready.json",
+  "schema": "tnfr.bootstrap-request.v1",
+  "supervisor_pid": 22764,
+  "worker": "C:\\TNFR-Python-Engine\\artifacts\\native-joint-organization-20261028\\validate.py",
+  "worker_args": [
+    "--worker"
+  ]
+}

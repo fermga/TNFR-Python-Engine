@@ -1,16 +1,33 @@
-# TNFR theory: generated chapter catalog
+# TNFR theory: reading route and chapter catalog
+
+<a id="tnfr-theory-generated-chapter-catalog"></a>
 
 <!-- Navigation generated from theory/research_catalog.json; edit chapter metadata there. -->
 
-The [research program](RESEARCH_PROGRAM.md#research-objective) owns the objective,
-current question and scientific priorities. Linked chapters own definitions
-and technical proofs in separate canonical Markdown files. Open and edit those
-files directly, or use the compiled site. This index is generated navigation;
-`scripts/prepare_docs.py` publishes the same sources without duplicating their
-ownership.
+The [research program](RESEARCH_PROGRAM.md#research-current-question) owns the
+objective, current question and priorities. The chapters below own definitions,
+conditional results and proofs. This index helps choose a reading route; it
+does not introduce another research plan.
 
-The [theory-to-execution map](RESEARCH_PROGRAM.md#theory-to-execution) links
-theoretical contracts to the shared implementation and tests.
+## A short reading route
+
+| Question | Primary reading |
+| --- | --- |
+| What are the state, complete laws and levels of evidence? | [Conceptual core](CONCEPTUAL_CORE.md), with the [glossary](GLOSSARY.md) for definitions and dependencies |
+| What makes a collection an organized object? | [Emergence and ontology](EMERGENT_ONTOLOGY.md): formation, identity, maintenance and collective prediction |
+| What would justify a physical interpretation? | [Physical correspondence atlas](PHYSICAL_REGIME_CORRESPONDENCES.md), including the [electromagnetic prerequisite audit](PHYSICAL_REGIME_CORRESPONDENCES.md#electromagnetic-emergence-audit) |
+| How do these distinctions apply to an interacting pair? | [Marked-pair identity](nodal/ORGANIZED_COMPOSITE_RELAXATION.md#mixed-pair-identity) and its [source-associated prediction](nodal/ORGANIZED_COMPOSITE_RELAXATION.md#mixed-collective-sensitivity); follow the linked premises for the complete construction |
+| Where are a result's implementation, contract and checks? | [Theory-to-execution map](THEORY_TO_EXECUTION.md) and [technical documentation](../docs/README.md) |
+
+Each complete law retains its own source, state and observation contract.
+The worked pair is a conditional construction, not a replacement for those
+foundations or a demonstrated physical identification. Use the full catalog
+for other models and proofs; their presence does not schedule an experiment.
+
+Open and edit the linked canonical Markdown files directly, or read the
+compiled site. `theory/research_catalog.json` owns the catalog metadata;
+`scripts/prepare_docs.py` publishes the same sources without duplicating their
+ownership. The catalog and compatibility routes below are generated.
 
 <!-- BEGIN THEORY CATALOG -->
 
@@ -27,6 +44,7 @@ theoretical contracts to the shared implementation and tests.
 | [Conceptual core, dependencies and worked examples](CONCEPTUAL_CORE.md) | Maintained technical chapter |
 | [Fundamental theory](FUNDAMENTAL_THEORY.md) | Maintained technical chapter |
 | [Parameter foundations](NODAL_PARAMETER_FOUNDATIONS.md) | Maintained technical chapter |
+| [Native C5 foundation account and dynamic capacity](nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md) | Maintained technical chapter |
 | [Relation foundations](nodal/RELATION_FOUNDATIONS.md) | Maintained technical chapter |
 | [Pressure premises](nodal/PRESSURE_CONSTITUTIVE_SCOPE.md) | Maintained technical chapter |
 | [Joint parameter response](nodal/JOINT_PARAMETER_RESPONSE.md) | Maintained technical chapter |
@@ -37,8 +55,11 @@ theoretical contracts to the shared implementation and tests.
 | Chapter | Source |
 | --- | --- |
 | [Emergence and ontology](EMERGENT_ONTOLOGY.md) | Maintained technical chapter |
+| [Acquired native organization and regional response](nodal/NATIVE_ACQUIRED_RESPONSE.md) | Maintained technical chapter |
 | [Scale, geometry and collective-state index](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md) | Maintained technical chapter |
 | [Resonance foundations](nodal/RESONANCE_FOUNDATIONS.md) | Maintained technical chapter |
+| [Global pulse, emergence and resonance: hypothesis audit](nodal/GLOBAL_PULSE_HYPOTHESIS.md) | Maintained technical chapter |
+| [Operators, autonomous occurrence and pulse closure](nodal/OPERATOR_PULSE_CLOSURE.md) | Maintained technical chapter |
 
 ## Operators, grammar and support events
 
@@ -53,7 +74,8 @@ theoretical contracts to the shared implementation and tests.
 
 | Chapter | Source |
 | --- | --- |
-| [Minimal structural degrees](MINIMAL_STRUCTURAL_DEGREES.md) | Maintained technical chapter |
+| [Structural observation families and reconstruction](MINIMAL_STRUCTURAL_DEGREES.md) | Maintained technical chapter |
+| [Coherence profiles and observation limits](COHERENCE_OBSERVATION_FOUNDATIONS.md) | Maintained technical chapter |
 | [Structural conservation diagnostics](STRUCTURAL_CONSERVATION_THEOREM.md) | Maintained technical chapter |
 | [Stability and dynamics diagnostics](STRUCTURAL_STABILITY_AND_DYNAMICS.md) | Maintained technical chapter |
 | [Extended fields](EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md) | Maintained technical chapter |
@@ -149,6 +171,7 @@ theoretical contracts to the shared implementation and tests.
 | [REMESH fixed-delay models](REMESH_INFINITY_DERIVATION.md) | Maintained technical chapter |
 | [Sufficient unordered pair state](nodal/SINE_PAIR_STATE.md) | Maintained technical chapter |
 | [Internal replica pulses and their perturbations](nodal/SINE_REPLICA_PULSE.md) | Maintained technical chapter |
+| [Collective prediction and temporal error allowances](nodal/SINE_COLLECTIVE_PREDICTION.md) | Maintained technical chapter |
 | [Phase and joint form-phase grouping](nodal/SINE_PAIR_GROUPING.md) | Maintained technical chapter |
 | [Pair geometry under alternative reciprocal mobility](nodal/SINE_PAIR_MOBILITY.md) | Maintained technical chapter |
 | [Pair actions, regional exchange and cancellation](nodal/SINE_PAIR_INTERACTION.md) | Maintained technical chapter |
@@ -165,6 +188,9 @@ theoretical contracts to the shared implementation and tests.
 | --- | --- |
 | [Constitutive freedom of organized patterns](nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md) | Maintained technical chapter |
 | [Constitutive inheritance through organized interfaces](nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md) | Maintained technical chapter |
+| [Carried prediction through a reciprocal composite interaction](nodal/ORGANIZED_COMPOSITE_RECIPROCITY.md) | Maintained technical chapter |
+| [Composite relaxation, effective interaction and marked-pair identity](nodal/ORGANIZED_COMPOSITE_RELAXATION.md) | Maintained technical chapter |
+| [Regional contact transport and hidden-profile information](nodal/ORGANIZED_REGIONAL_TRANSPORT.md) | Maintained technical chapter |
 | [Predictive repeated organized composition](nodal/REPEATED_ORGANIZED_COMPOSITION.md) | Maintained technical chapter |
 | [Parent registration acquired from organized children](nodal/ORGANIZED_PARENT_ACQUISITION.md) | Maintained technical chapter |
 | [Restoring response of an acquired organized parent](nodal/ORGANIZED_PARENT_RESTORING_RESPONSE.md) | Maintained technical chapter |
@@ -225,6 +251,7 @@ theoretical contracts to the shared implementation and tests.
 | Chapter | Source |
 | --- | --- |
 | [Organized identity under continued external contact](nodal/ORGANIZED_CONTACT_MAINTENANCE.md) | Maintained technical chapter |
+| [Composition error of simultaneous contact responses](nodal/SINE_CONTACT_COMPOSITION.md) | Maintained technical chapter |
 | [Organized identity under weak external contact](nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md) | Maintained technical chapter |
 | [Alternative-law weak-contact registration and capture](nodal/ORGANIZED_ALTERNATIVE_WEAK_CONTACT.md) | Maintained technical chapter |
 | [Constitutive transition of collective registration](nodal/ORGANIZED_CONSTITUTIVE_TRANSITION.md) | Maintained technical chapter |
@@ -310,6 +337,7 @@ theoretical contracts to the shared implementation and tests.
 | [THOL birth on a certified maintained parent](nodal/SINE_MAINTAINED_PARENT_THOL.md) | Maintained technical chapter |
 | [Default UM on the retained THOL successor](nodal/SINE_MAINTAINED_PARENT_UM.md) | Maintained technical chapter |
 | [Maintained-parent SHA closure and changed law](nodal/SINE_MAINTAINED_PARENT_CLOSURE.md) | Maintained technical chapter |
+| [Finite preparation families for the held sine law](nodal/SINE_PREPARATION_ROBUSTNESS.md) | Maintained technical chapter |
 | [Connected child's temporal capability](nodal/SINE_CHILD_TEMPORAL_READINESS.md) | Maintained technical chapter |
 | [Child OZ and observation timing](nodal/SINE_CHILD_GRAMMAR_TIMING.md) | Maintained technical chapter |
 | [Acquired-child THOL and word completion](nodal/SINE_CHILD_THOL_ADMISSION.md) | Maintained technical chapter |
@@ -330,7 +358,7 @@ theoretical contracts to the shared implementation and tests.
 | [Variational and exchange models](TNFR_VARIATIONAL_PRINCIPLE.md) | Maintained technical chapter |
 | [Dissipative/open-system models](DISSIPATIVE_AND_OPEN_SYSTEMS.md) | Maintained technical chapter |
 | [Gauge and polarization constructions](GAUGE_SYMMETRY_AND_UNIFICATION.md) | Maintained technical chapter |
-| [Physical phenomena atlas](PHYSICAL_REGIME_CORRESPONDENCES.md) | Maintained technical chapter |
+| [Physical correspondence atlas and emergence boundaries](PHYSICAL_REGIME_CORRESPONDENCES.md) | Maintained technical chapter |
 
 ## Arithmetic and applications
 
@@ -364,13 +392,14 @@ theoretical contracts to the shared implementation and tests.
 | Chapter | Source |
 | --- | --- |
 | [Theory-to-execution map](THEORY_TO_EXECUTION.md) | Maintained technical chapter |
+| [Bibliographic methods for TNFR foundations](BIBLIOGRAPHIC_METHODS.md) | Maintained technical chapter |
 
 ## Published guide routes
 
 | Chapter | Source |
 | --- | --- |
-| [Retired research guide](RESEARCH_PROGRAM.md#research-current-question) | Generated link to the current program |
-| [Retired research guide](RESEARCH_PROGRAM.md#research-current-question) | Generated link to the current program |
+| [Retired nodal research strategy](RESEARCH_PROGRAM.md#research-current-question) | Generated link to the current program |
+| [Retired five-stage execution plan](RESEARCH_PROGRAM.md#research-current-question) | Generated link to the current program |
 
 <!-- END THEORY CATALOG -->
 

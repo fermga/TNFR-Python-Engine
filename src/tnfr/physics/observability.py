@@ -9,11 +9,15 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import Any, Callable, Mapping, Sequence
+from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence
 
 import numpy as np
 
+from ..metrics.common import finite_mean
 from ._helpers import finite_real_scalar
+
+if TYPE_CHECKING:
+    from .canonical import CoherenceLengthEstimate
 
 __all__ = [
     "EpiDiffusionReconstructionCertificate",
@@ -68,7 +72,13 @@ class LocalObserverCertificate:
 
 @dataclass(frozen=True)
 class ObservationSignature:
-    """Explicit observation channels for a fixed state-comparison task."""
+    """Explicit channels for a fixed comparison, not a complete event state.
+
+    ``history`` is categorical glyph history, not timestamped EPI evidence.
+    Optional primitive fields require actual stored values when requested.
+    The appended defaults preserve construction of historical records, but
+    comparisons require bound estimator provenance, including unavailable xi.
+    """
 
     tetrad_representation: str
     tetrad: tuple[float, ...]
@@ -76,6 +86,8 @@ class ObservationSignature:
     pressure: tuple[float, ...] | None
     history: tuple[tuple[str, ...], ...] | None
     node_order: tuple[Any, ...]
+    form: tuple[float, ...] | None = None
+    xi_c_provenance: CoherenceLengthEstimate | None = None
 
 
 @dataclass(frozen=True)
@@ -122,25 +134,108 @@ def minimal_distinguishing_channels(
 ) -> tuple[str, ...]:
     """Return the smallest individual channels separating two signatures.
 
-    This is task-specific pair discrimination, not Kalman state
-    observability.  Categorical history remains categorical and capacity
-    remains a model parameter rather than being forced into ``C x``.
+    This is exact represented-value pair discrimination, not a tolerance
+    test, Kalman observability or proof of observational equivalence. Missing
+    tetrad values cannot distinguish states; an empty result proves no state
+    equality. Representation, requested channels and xi policy must match.
     """
+    from .canonical import CoherenceLengthEstimate
+
     if left.node_order != right.node_order:
         raise ValueError("signatures must use the same node order")
+    if left.tetrad_representation != right.tetrad_representation:
+        raise ValueError("signatures must use the same tetrad representation")
+    if left.tetrad_representation not in {"global", "full"}:
+        raise ValueError("unknown tetrad representation")
+    size = len(left.node_order)
+    if len(set(left.node_order)) != size:
+        raise ValueError("signature node order must contain distinct nodes")
+    expected = 4 if left.tetrad_representation == "global" else 3 * size + 1
+
+    def numeric(values, name, count, *, missing=False):
+        if len(values) != count:
+            raise ValueError(f"{name} must align with the declared representation")
+        result = []
+        for value in values:
+            if missing and isinstance(value, (float, np.floating)) and np.isnan(value):
+                result.append(float("nan"))
+            else:
+                admitted = finite_real_scalar(value, name)
+                if name == "capacity" and admitted < 0:
+                    raise ValueError("capacity must be nonnegative")
+                result.append(admitted)
+        return tuple(result)
+
+    tetrads = [
+        numeric(s.tetrad, "tetrad", expected, missing=True) for s in (left, right)
+    ]
+    policies = []
+    for signature, tetrad in zip((left, right), tetrads):
+        estimate = signature.xi_c_provenance
+        if estimate is None:
+            raise ValueError("signature comparison requires coherence provenance")
+        if not isinstance(estimate, CoherenceLengthEstimate):
+            raise ValueError("coherence provenance must be a CoherenceLengthEstimate")
+        value = numeric((estimate.value,), "coherence value", 1, missing=True)[0]
+        if not (value == tetrad[-1] or (math.isnan(value) and math.isnan(tetrad[-1]))):
+            raise ValueError("coherence provenance is not bound to the tetrad value")
+        if estimate.method not in {
+            "autocorrelation_fit",
+            "spectral_gap",
+            "unavailable",
+        }:
+            raise ValueError("unknown coherence estimator method")
+        if not isinstance(estimate.fit_available, (bool, np.bool_)):
+            raise ValueError("coherence fit availability must be boolean")
+        if bool(estimate.fit_available) != (estimate.method == "autocorrelation_fit"):
+            raise ValueError("coherence fit availability disagrees with its method")
+        if (
+            not math.isnan(value)
+            if estimate.method == "unavailable"
+            else not (math.isfinite(value) and value > 0)
+        ):
+            raise ValueError("coherence method disagrees with its value")
+        policies.append(
+            tuple(
+                getattr(estimate, name)
+                for name in (
+                    "method",
+                    "distance_weighting",
+                    "sample_selection",
+                    "fit_quality",
+                    "positive_mode_selection",
+                    "graph_regime",
+                )
+            )
+        )
+        if not all(isinstance(item, str) and item for item in policies[-1]):
+            raise ValueError("coherence policy descriptions must be nonempty strings")
+    if policies[0] != policies[1]:
+        raise ValueError("signatures must use compatible coherence estimator policies")
     channels = (
-        ("tetrad", left.tetrad, right.tetrad),
+        ("tetrad", tetrads[0], tetrads[1]),
         ("capacity", left.capacity, right.capacity),
         ("pressure", left.pressure, right.pressure),
         ("history", left.history, right.history),
+        ("form", left.form, right.form),
     )
-    return tuple(
-        name
-        for name, left_value, right_value in channels
-        if left_value is not None
-        and right_value is not None
-        and left_value != right_value
-    )
+    differences = []
+    for name, left_value, right_value in channels:
+        if (left_value is None) != (right_value is None):
+            raise ValueError("signatures must request the same observation channels")
+        if left_value is None:
+            continue
+        if name == "tetrad":
+            if not all(math.isfinite(v) for v in (*left_value, *right_value)):
+                continue
+        elif name != "history":
+            left_value = numeric(left_value, name, size)
+            right_value = numeric(right_value, name, size)
+        elif len(left_value) != size or len(right_value) != size:
+            raise ValueError("history must align with the node order")
+        if left_value != right_value:
+            differences.append(name)
+    return tuple(differences)
 
 
 def _finite_matrix(value, name: str) -> np.ndarray:
@@ -222,16 +317,27 @@ def tetrad_observation_channels(
     node_order: Sequence[Any] | None = None,
 ) -> dict[str, np.ndarray]:
     """Return named tetrad channels under one declared representation."""
-    from .canonical import (
-        compute_phase_curvature,
-        compute_phase_gradient,
-        compute_structural_potential,
-        estimate_coherence_length,
-    )
+    from .canonical import estimate_coherence_length
 
     nodes = tuple(graph.nodes()) if node_order is None else tuple(node_order)
     if set(nodes) != set(graph.nodes()) or len(nodes) != len(graph):
         raise ValueError("node_order must contain every graph node exactly once")
+    channels = _tetrad_field_channels(graph, representation, nodes)
+    channels["coherence_length"] = np.asarray(
+        [float(estimate_coherence_length(graph))], dtype=float
+    )
+    return channels
+
+
+def _tetrad_field_channels(graph, representation, nodes):
+    from .canonical import (
+        compute_phase_curvature,
+        compute_phase_gradient,
+        compute_structural_potential,
+    )
+
+    if representation not in {"global", "full"}:
+        raise ValueError("representation must be 'global' or 'full'")
     fields = {
         "structural_potential": compute_structural_potential(graph),
         "phase_gradient": compute_phase_gradient(graph),
@@ -240,7 +346,14 @@ def tetrad_observation_channels(
     if representation == "global":
         channels = {
             name: np.asarray(
-                [float(np.mean([field[node] for node in nodes]))], dtype=float
+                [
+                    (
+                        finite_mean((field[node] for node in nodes), name=name)
+                        if nodes
+                        else np.nan
+                    )
+                ],
+                dtype=float,
             )
             for name, field in fields.items()
         }
@@ -251,9 +364,6 @@ def tetrad_observation_channels(
         }
     else:
         raise ValueError("representation must be 'global' or 'full'")
-    channels["coherence_length"] = np.asarray(
-        [float(estimate_coherence_length(graph))], dtype=float
-    )
     return channels
 
 
@@ -264,30 +374,54 @@ def observation_signature(
     include_capacity: bool = False,
     include_pressure: bool = False,
     include_history: bool = False,
+    include_form: bool = False,
     node_order: Sequence[Any] | None = None,
 ) -> ObservationSignature:
-    """Build explicit channels without treating history as a numeric state."""
+    """Capture requested stored primitives alongside a tagged tetrad view.
+
+    Requested primitive fields must be present and admitted; missing capacity
+    is not measured freezing. Form uses signed uniform-real EPI admission.
+    History remains categorical and supplies no derivative/event certificate.
+    """
+    from .._exact_time import bounded_represented_real
     from ..alias import get_attr
-    from ..constants.aliases import ALIAS_DNFR, ALIAS_VF
+    from ..config.parsing import parse_bool
+    from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_VF
+    from ..types import require_finite_real_scalar_epi
+    from .canonical import estimate_coherence_length_with_provenance
 
     nodes = tuple(graph.nodes()) if node_order is None else tuple(node_order)
     if set(nodes) != set(graph.nodes()) or len(nodes) != len(graph):
         raise ValueError("node_order must contain every graph node exactly once")
+    for name, option in (
+        ("include_capacity", include_capacity),
+        ("include_pressure", include_pressure),
+        ("include_history", include_history),
+        ("include_form", include_form),
+    ):
+        if not isinstance(option, (bool, np.bool_)):
+            raise ValueError(f"{name} must be boolean")
+    include_capacity, include_pressure, include_history, include_form = map(
+        parse_bool, (include_capacity, include_pressure, include_history, include_form)
+    )
+
+    def stored(node, aliases):
+        if not any(alias in graph.nodes[node] for alias in aliases):
+            raise ValueError(f"requested {aliases[0]} is missing at node {node!r}")
+        return get_attr(
+            graph.nodes[node], aliases, strict=True, conv=lambda value: value
+        )
+
     # Validate explicitly requested primitive channels before the composite
     # tetrad. This preserves this observer's scalar ValueError contract and
     # rejects invalid input before field computation or cache bookkeeping.
     capacity = (
         tuple(
-            finite_real_scalar(
-                get_attr(
-                    graph.nodes[node],
-                    ALIAS_VF,
-                    0.0,
-                    strict=True,
-                    conv=lambda value: value,
-                ),
+            bounded_represented_real(
+                finite_real_scalar(stored(node, ALIAS_VF), "structural frequency"),
                 "structural frequency",
-            )
+                minimum=0,
+            )[0]
             for node in nodes
         )
         if include_capacity
@@ -296,13 +430,7 @@ def observation_signature(
     pressure = (
         tuple(
             finite_real_scalar(
-                get_attr(
-                    graph.nodes[node],
-                    ALIAS_DNFR,
-                    0.0,
-                    strict=True,
-                    conv=lambda value: value,
-                ),
+                stored(node, ALIAS_DNFR),
                 "DeltaNFR",
             )
             for node in nodes
@@ -310,11 +438,15 @@ def observation_signature(
         if include_pressure
         else None
     )
-    tetrad = tuple(
-        float(value)
-        for value in tetrad_observation_vector(
-            graph, representation=tetrad_representation, node_order=nodes
-        )
+    form = (
+        tuple(require_finite_real_scalar_epi(stored(node, ALIAS_EPI)) for node in nodes)
+        if include_form
+        else None
+    )
+    fields = _tetrad_field_channels(graph, tetrad_representation, nodes)
+    estimate = estimate_coherence_length_with_provenance(graph)
+    tetrad = tuple(float(value) for field in fields.values() for value in field) + (
+        float(estimate.value),
     )
     history = (
         tuple(tuple(graph.nodes[node].get("glyph_history", ())) for node in nodes)
@@ -322,7 +454,14 @@ def observation_signature(
         else None
     )
     return ObservationSignature(
-        tetrad_representation, tetrad, capacity, pressure, history, nodes
+        tetrad_representation,
+        tetrad,
+        capacity,
+        pressure,
+        history,
+        nodes,
+        form,
+        estimate,
     )
 
 

@@ -432,6 +432,28 @@ review; CI's formatting gate checks all tracked files selected by those hooks.
 For Markdown-only changes, use the relevant reference check. For site or
 documentation-infrastructure changes, also run integrity and build checks:
 
+The research prerequisite checker runs at the start of documentation integrity,
+including CI. It admits ongoing foundation work with open requirements, but
+rejects a physical-mapping activity until all four evidence-backed resolutions
+and the final readiness review are valid. Run its independent contract checks
+when changing that enforcement:
+
+```sh
+python scripts/check_research_prerequisites.py
+python -m pytest tests/scripts/test_research_prerequisites.py -q
+```
+
+Before starting or extending a physical mapping study, run
+`python scripts/check_research_prerequisites.py --require-physical-mapping`.
+While the foundations are unresolved its nonzero exit is the required
+prohibition, not a defect to bypass. The
+[research program](theory/RESEARCH_PROGRAM.md#physical-mapping-prerequisite)
+owns the substantive closure and review criteria. Machine checks validate
+declared associations, hashes and review completeness; they do not establish
+the scientific truth of a submitted proof.
+
+The remaining documentation checks are:
+
 ```sh
 python scripts/verify_internal_references.py --ci
 python scripts/check_documentation.py

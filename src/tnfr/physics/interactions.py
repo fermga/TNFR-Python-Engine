@@ -1,51 +1,26 @@
-"""Canonical interaction sequences composed from TNFR operators (centralized).
+"""Legacy-named convenience words composed from public TNFR operators.
 
-Overview
---------
-This module provides physics-first helpers that compose structural operators
-into interaction-like sequences while enforcing unified grammar awareness
-(U1–U6) and instrumenting read-only telemetry via the Structural Field Tetrad
-(Φ_s, |∇φ|, K_φ, ξ_C). These helpers are thin orchestrators and never mutate
-EPI directly; they invoke canonical operators from
-``tnfr.operators.definitions``.
+The helpers invoke caller-selected operator instances sequentially at each
+node and collect before/after field telemetry. They do not install physical
+interaction laws or derive electromagnetic, weak, strong or gravitational
+behavior. The names remain public compatibility labels.
 
-Operator–Grammar Mapping (informative):
-- Coupling (UM): requires phase verification (U3) inside operator
-- Resonance (RA): propagates EPI coherently; phase-aware (U3)
-- Coherence (IL): stabilizer enforcing boundedness (U2)
-- Dissonance (OZ): controlled destabilizer; must be followed by handlers (U4a)
-- Mutation (ZHIR): transformer at threshold; requires recent OZ and
-    prior IL (U4b)
-- SelfOrganization (THOL): creates sub-EPIs; stabilizer and
-    transformer (U2, U4)
-- Silence (SHA): closure/observation window (U1b)
+Each public operator call retains its live preconditions and incremental
+grammar selection, including the configured fallback policy. These helpers
+perform no separate whole-word validation or joint graph transaction;
+prior successful calls remain committed if a later call fails. Passing an
+individual call does not establish future boundedness, collective identity,
+confinement or autonomous occurrence. Operator contracts and grammar owners
+retain those distinct execution and admission responsibilities.
 
-Telemetry (read-only):
-- |∇φ|: phase gradient; selected early-warning policy π/16 (exact bound π)
-- K_φ: phase curvature (part of unified Ψ); selected warning margin 0.9π
-- Φ_s: structural potential; mean absolute drift as passive safety (ΔΦ_s < π/2)
+The requested words are Coupling/Resonance/Coherence, optional Coherence
+followed by Dissonance/Mutation/Coherence, Coupling/Coherence/SelfOrganization,
+and Coherence with optional Silence. Telemetry and warning thresholds are
+observations and policies, not evolution laws or stability certificates.
 
-Contracts (summary):
-- EM-like: [UM → RA → IL]. Preserve identity; phase-verified coupling (U3).
-- Weak-like: [IL? → OZ → ZHIR → IL]. U4b-compliant (prior IL + recent OZ).
-- Strong-like: [UM → IL → THOL]. Curvature-driven confinement;
-    post-coupling IL.
-- Gravity-like: [IL → SHA?]. Telemetry-oriented stabilization (Φ_s drift only).
-
-Usage pattern
--------------
-Given a graph G with phase (``theta``/``phase``) and ΔNFR
-(``delta_nfr``/``dnfr``) attributes set (e.g., via
-``tnfr.physics.patterns``), call one of the helpers with an iterable of
-nodes. Results contain operator names applied and key telemetry means
-before/after, plus optional warnings when thresholds are exceeded.
-
-Notes
------
-- English-only documentation for canonicity and single
-    source-of-truth alignment.
-- Extend carefully with physics-first justification and tests. Keep parameters
-    minimal and respect U-rules and structural invariants at all times.
+InteractionResult.applied retains requested operator names after successful
+calls. A grammar fallback can execute a different operator; the retained
+operator history, not this legacy list, records the actual selection.
 """
 
 from __future__ import annotations
@@ -94,7 +69,7 @@ def _mean(d: dict[Any, float]) -> float:
 
 
 def _apply_to_nodes(G: Any, nodes: Iterable[Any], ops: Iterable[Any]) -> list[str]:
-    """Apply operator instances to each node in order; return names applied."""
+    """Call each requested operator per node; retain requested names on success."""
     applied: list[str] = []
     for node in nodes:
         for op in ops:
@@ -141,37 +116,31 @@ def em_like(
     compute_phi_s: bool = False,
     grad_threshold: float = GRAD_PHI_CANONICAL_THRESHOLD,
 ) -> InteractionResult:
-    """EM-like sequence: [Coupling → Resonance → Coherence].
+    """Request Coupling, Resonance and Coherence in sequence at each node.
 
-    Purpose
-    -------
-    Reinforce/coherently propagate existing patterns under phase-compatible
-    coupling, then stabilize. Identity-preserving and phase-aware.
-
-    Contracts
-    ---------
-    - U3: Coupling/Resonance require phase compatibility (verified internally).
-    - U2: Coherence stabilizes to maintain boundedness.
-    - Read-only telemetry: |∇φ|, K_φ, optional Φ_s drift.
+    The legacy EM-like name identifies this convenience word, not an
+    electromagnetic law. Each call uses its own live preconditions and
+    incremental grammar policy. Collective identity and future stability
+    are not certified by completing the word.
 
     Parameters
     ----------
     G : Any
-        NetworkX-like graph with node attributes ``theta``/``phase`` and
-        ``delta_nfr``/``dnfr``.
+        Graph with the primitive state and history required by each operator
+        and the requested field observations.
     nodes : Iterable
-        Nodes to which the operator sequence will be applied.
+        Nodes visited sequentially.
     compute_phi_s : bool, default False
-        If True, compute Φ_s before/after and report mean drift.
+        Collect structural potential before and after and report mean drift.
     grad_threshold : float, default GRAD_PHI_CANONICAL_THRESHOLD
-        Selected early-warning policy for mean |∇φ| (≈ 0.196, π/16). It is
-        not a derived bound; the kinematic bound is |∇φ| ≤ π and the measured
-        sync-onset is σ-dependent and near 0.29.
+        Selected warning policy for mean phase gradient (pi/16), not a
+        derived instability threshold. The kinematic bound is pi.
 
     Returns
     -------
     InteractionResult
-        Names of operators applied, warnings, and telemetry means.
+        Requested operator names after successful calls, warnings and
+        telemetry means. The list does not authenticate fallback selections.
     """
     snap = _telemetry_before_after(G, compute_phi_s=compute_phi_s)
 
@@ -228,33 +197,26 @@ def weak_like(
     ensure_stable_base: bool = True,
     grad_threshold: float = GRAD_PHI_CANONICAL_THRESHOLD,
 ) -> InteractionResult:
-    """Weak-like sequence: [IL (optional) → Dissonance → Mutation → Coherence].
+    """Request optional Coherence, then Dissonance, Mutation and Coherence.
 
-    Purpose
-    -------
-    Trigger controlled qualitative transformations (ZHIR) with stabilized
-    pre/post conditions.
-
-    Contracts
-    ---------
-    - U4b: Mutation (ZHIR) requires a stable base (prior IL) and recent
-      destabilizer (OZ) within ~3 operations.
-    - U2: Final Coherence to contain elevated ΔNFR.
-    - Read-only telemetry: |∇φ|, K_φ, optional Φ_s drift.
+    Mutation still requires its actual source history and live preconditions.
+    Prepending Coherence does not by itself prove those premises or establish
+    a weak interaction, transformation outcome or future stability.
 
     Parameters
     ----------
     ensure_stable_base : bool, default True
-        Insert IL before OZ→ZHIR to satisfy U4b stable base requirement.
+        Prepend the Coherence request. Incremental admission remains with
+        the public operators and configured grammar policy.
     grad_threshold : float, default GRAD_PHI_CANONICAL_THRESHOLD
-        Selected early-warning policy for mean |∇φ| (≈ 0.196, π/16). It is
-        not a derived bound; the kinematic bound is |∇φ| ≤ π and the measured
-        sync-onset is σ-dependent and near 0.29.
+        Selected mean phase-gradient warning policy (pi/16), not a derived
+        instability threshold.
 
     Returns
     -------
     InteractionResult
-        Names of operators applied, warnings, and telemetry means.
+        Requested operator names after successful calls, warnings and
+        telemetry means; actual selections remain in operator history.
     """
     snap = _telemetry_before_after(G, compute_phi_s=compute_phi_s)
 
@@ -313,29 +275,22 @@ def strong_like(
     compute_phi_s: bool = False,
     curvature_hotspot_threshold: float = K_PHI_CANONICAL_THRESHOLD,
 ) -> InteractionResult:
-    """Strong-like sequence: [Coupling → Coherence → SelfOrganization].
+    """Request Coupling, Coherence and SelfOrganization at each node.
 
-    Purpose
-    -------
-    Promote local confinement and sub-EPI formation in regions of high
-    curvature, with stabilization immediately after coupling.
-
-    Contracts
-    ---------
-    - U3: Coupling remains phase-aware.
-    - U2: Coherence right after coupling (boundedness).
-    - U5: SelfOrganization creates sub-EPIs while preserving parent coherence.
-    - Telemetry: flags |K_φ| hotspots; optional Φ_s drift.
+    The calls retain their actual admission and configured action. Curvature
+    is observed afterward for warnings; it does not select this word or
+    prove confinement, substructure formation or a strong interaction.
 
     Parameters
     ----------
     curvature_hotspot_threshold : float, default K_PHI_CANONICAL_THRESHOLD
-        Selected |K_φ| warning margin for hotspot flagging (0.9×π ≈ 2.8274).
+        Selected absolute phase-curvature warning policy (0.9*pi).
 
     Returns
     -------
     InteractionResult
-        Names of operators applied, warnings, and telemetry means.
+        Requested operator names after successful calls, warnings and
+        telemetry means; actual selections remain in operator history.
     """
     snap = _telemetry_before_after(G, compute_phi_s=compute_phi_s)
 
@@ -392,30 +347,24 @@ def gravity_like(
     compute_phi_s: bool = True,
     quiet: bool = True,
 ) -> InteractionResult:
-    """Gravity-like: telemetry-oriented stabilization [Coherence → Silence].
+    """Request Coherence and optional Silence, with field telemetry.
 
-    Purpose
-    -------
-    Stabilize and observe while interpreting Φ_s drift as passive confinement
-    (no explicit attraction operator).
-
-    Contracts
-    ---------
-    - U1b: Silence serves as closure/observation window when ``quiet=True``.
-    - U2: Coherence preserves boundedness.
-    - Telemetry: Φ_s drift is read-only and used as safety signal.
+    Structural-potential drift is a before/after observation. It is not an
+    attraction law, a confinement proof or a gravitational field. Silence
+    is an operator action, not an elapsed observation window by itself.
 
     Parameters
     ----------
     compute_phi_s : bool, default True
-        Compute Φ_s before/after and report mean absolute drift.
+        Collect structural potential before and after and report mean drift.
     quiet : bool, default True
-        Append Silence after Coherence for an observation window.
+        Append the Silence request; its live operator contract still applies.
 
     Returns
     -------
     InteractionResult
-        Names of operators applied, warnings, and telemetry means.
+        Requested operator names after successful calls, warnings and
+        telemetry means; actual selections remain in operator history.
     """
     snap = _telemetry_before_after(G, compute_phi_s=compute_phi_s)
 

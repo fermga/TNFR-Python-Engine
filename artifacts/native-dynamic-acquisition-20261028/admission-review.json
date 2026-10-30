@@ -1,0 +1,153 @@
+{
+  "schema":"tnfr.native-dynamic-acquisition-admission-review.v1",
+  "reviewed_utc":"2026-10-28T19:28:48.215698+00:00",
+  "verdict":"approved",
+  "independent":true,
+  "author":"/root",
+  "reviewer":"/root/collective_controls",
+  "scope":{
+    "path":"artifacts/native-dynamic-acquisition-20261028/scope.json",
+    "bytes":1828,
+    "sha256":"4ad4c71d2df982a3886a26c21884e9357988ed250e59e072b146a9ef14b86d81"
+  },
+  "baseline":{
+    "path":"artifacts/native-dynamic-acquisition-20261028/baseline.json",
+    "bytes":584133,
+    "sha256":"edb5a6d1af0a2a6ff587b85c2ebf04e38fe3afe7ca545566f33b21dada8435a8"
+  },
+  "before_archive":{
+    "path":"artifacts/native-dynamic-acquisition-20261028/before-edit.zip",
+    "bytes":59760,
+    "sha256":"7380aa06ad1d8ee0764e5bd423c8f5dcb3721e83298c43597cd302aaefa39186"
+  },
+  "final_sources":[
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "bytes":109764,
+      "sha256":"d882de5ada26a5181934edba5f14ceedb5d5895135d809e6f994e8c86df3b8b4"
+    },
+    {
+      "path":"theory/RESEARCH_PROGRAM.md",
+      "bytes":81289,
+      "sha256":"4703ac85c0e3dde38b021afa6c857f3fc646e68adabdbd7fe1a934d0ef1e986c"
+    },
+    {
+      "path":"theory/research_prerequisites.json",
+      "bytes":4660,
+      "sha256":"094ba9d5d1ecf9b80ad0dad897e519954f1e1db6a4ff2712a0219c6c92d06612"
+    }
+  ],
+  "evidence_manifest":{
+    "path":"artifacts/native-dynamic-acquisition-20261028/evidence-source.json",
+    "bytes":6411,
+    "sha256":"abbd37b2a5b04c4a2f8809318ba0063800c9f57b26dffaef5ec867242029b32c"
+  },
+  "reviewed_source_archive":{
+    "path":"artifacts/native-dynamic-acquisition-20261028/reviewed-source.zip",
+    "bytes":3343923,
+    "sha256":"bd368489193db805c675d979839eaf40f73fffca7a4d06defd848fbe007feb5c"
+  },
+  "other_independent_reviews":[
+    {
+      "path":"artifacts/native-dynamic-acquisition-20261028/reference-review.json",
+      "bytes":6492,
+      "sha256":"7ddb570fd8635229e438e5c2a6d07c1caac59818c6ea9d7ea568f3347fd05344"
+    },
+    {
+      "path":"artifacts/native-dynamic-acquisition-20261028/mathematical-review.json",
+      "bytes":6490,
+      "sha256":"dbf4b83645f4084b6d280388058d253102d34595e9dad8accf3af1b7b3b84f58"
+    }
+  ],
+  "review_cohort":[
+    "reference-review.json",
+    "mathematical-review.json",
+    "admission-review.json"
+  ],
+  "prerequisite_reviews":{
+    "operator_causality":{
+      "path":"artifacts/native-dynamic-acquisition-20261028/operator_causality-review.json",
+      "bytes":4419,
+      "sha256":"6f8f5ac23793485f7b11b9528f394dca27412f73600371de688504172a896afa"
+    },
+    "state_observation":{
+      "path":"artifacts/native-dynamic-acquisition-20261028/state_observation-review.json",
+      "bytes":4349,
+      "sha256":"1ee21c58c9800f3289036c69f7f7fb528d6811c4605efd98ccc77dfedab3f75c"
+    },
+    "organizational_identity":{
+      "path":"artifacts/native-dynamic-acquisition-20261028/organizational_identity-review.json",
+      "bytes":3435,
+      "sha256":"4cb87b41e5742e2eaf4f614d03cb4cb30f09e245af3bb91d7c2c28edc1af04c5"
+    },
+    "research_selection":{
+      "path":"artifacts/native-dynamic-acquisition-20261028/research_selection-review.json",
+      "bytes":4292,
+      "sha256":"4a863ac540fab11a2bf07bc8e2b19e968ef786382e67bc7e16f7c982c507e3ef"
+    }
+  },
+  "prerequisite_validation":{
+    "path":"artifacts/native-dynamic-acquisition-20261028/prerequisite-validation.json",
+    "bytes":1026,
+    "sha256":"c9af653c0c6d01536944c196e39972009f07e8f40dc4fdda84a3f70915f43546"
+  },
+  "prerequisite_logs":[
+    {
+      "path":"artifacts/native-dynamic-acquisition-20261028/foundations.log",
+      "bytes":77,
+      "sha256":"119accc3a927b5a786fa6418ff085bbe7aa3b1a3743838eb66d7225ef27c45b1"
+    },
+    {
+      "path":"artifacts/native-dynamic-acquisition-20261028/physical-mapping-block.log",
+      "bytes":94,
+      "sha256":"67778c6009a6e2b1509fef2456fd33aa1ee865becf774603a3fc4692af1c4556"
+    }
+  ],
+  "source_preservation":{
+    "head":"0d3813fe7dd977968140d8ac05d54ba8685aae7b",
+    "head_unchanged":true,
+    "dirty_path_inventory_unchanged":true,
+    "baseline_files":4624,
+    "unchanged_baseline_files":4621,
+    "changed_existing_paths":[
+      "theory/RESEARCH_PROGRAM.md",
+      "theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "theory/research_prerequisites.json"
+    ],
+    "added_maintained_paths":[],
+    "removed_maintained_paths":[],
+    "chapter_previous_prefix_bytes":98150,
+    "chapter_previous_prefix_sha256":"3e3a6fbb438bfe13b9c5b9078d0524a67a715fdcd1d1fa88de42c79f1be766e1",
+    "chapter_previous_prefix_preserved":true,
+    "program_outside_two_declared_regions_preserved":true,
+    "previous_registry_preserved_in_archive":true,
+    "prerequisite_statuses_and_evidence_anchors_unchanged":true,
+    "manifest_entries_checked":32,
+    "all_manifest_live_and_archive_receipts_match":true,
+    "agent_instruction_mirror_identical":true,
+    "prerequisite_checker_unchanged":true
+  },
+  "criteria_assessment":{
+    "complete_law_and_reference":"Independently read all DA1-DA3 text and equations DA1-DA7, the final PROGRAM and relevant retained proof owners. The actual two-bridge support, all four ports, full nodal state, positive mean-one capacity leaf, coefficients and clock match the selected CT/native law. The exact represented source is retained. The uniform-capacity slice is invariant because B*1=0, so the old continuous reference embeds exactly for each fixed kappa>0. The historical numerical proof remains attributed to its archived source; this review neither reran the producer nor recomputed its interval enclosures. The separately read reference-source review binds that source/certificate association.",
+    "new_joint_neighborhood":"B and K include both bridge Laplacians and the target metric has four degree-three port values. The complete30-coordinate field restricts to a29-dimensional mean-one leaf and27 relative coordinates. Capacity crosscolumns vanish at the actual lock, not along arbitrary trajectories. Positive damping and invertible exchange coupling prove Hurwitz stability, with a strictly negative capacity block. The Lyapunov-integral construction supplies a new invariant positive-capacity acute neighborhood and integrable common-origin drift. No isolated-cycle, held-capacity or single-bridge basin or numerical cofactor is transferred.",
+    "open_acquisition_and_retention":"The retained reference converges to the two-bridge target, hence enters the new joint neighborhood at some finite T_kappa>32. Its compact regular path permits smooth finite-transit dependence for the actual full dynamic law. Pulling the target set back and intersecting with the positive-capacity and initial winding-zero margin neighborhoods yields a nonempty open set on the mean-one leaf. Its trajectories have initial target absence, later entry and all-forward retention. Intermediate ordinary winding can be undefined at antipodal edges without invalidating the regular resultant field. No numerical entry time or radius is asserted.",
+    "genuine_capacity_activity":"The capacity exponential is invertible at each finite time and B is invertible on the zero-mean subspace. Thus every nonuniform capacity in the open source neighborhood has nonzero contrast and nonzero redistribution vector at every finite time. The nonuniform subset is open and nonempty. This does not require every individual node derivative to be nonzero and does not supply a parameter-uniform zero-transport limit.",
+    "countermodels_and_selection":"The held-capacity model already forms the same target locally, and uniform form with phase consensus remains native-rest during capacity redistribution. These contrasts correctly prevent claims that transport is necessary, improves the basin or creates structure from nothing. The isolated-C5 obstruction remains intact. The next matched dynamic-versus-held organizational-selection question is prospective and preserves identical full initial capacities, form, phase, graph and clock. The proposed saddle route must admit the actual capacity-compatible symmetry reduction and justify both departure and capture; a different jet or path alone is not a different final organization.",
+    "readiness_and_scope":"The four renewed prerequisite approvals retain their prepared single-bridge scope and original evidence anchors; only complete-source associations and temporally obsolete assessment wording changed. The acquisition theorem has its own independent analytical review. The registry matches all four receipts, keeps the final physical-readiness review null and activity foundations. Actual existing logs show ordinary validation succeeds with4/4resolved while physical mapping remains blocked, and the required-physical invocation fails specifically for the missing final review. No guard or interpretation exception was introduced."
+  },
+  "scope_limits":[
+    "The acquisition result is conditional on the supplied structured preparation, support, law and clock. Initial absence means absence of the declared target identity, not absence of every organization.",
+    "No numerical radius, entry time, maximal basin, rate advantage, probability, generic outcome classification, runtime executor, regional closure or physical identification is established.",
+    "The new next-question separatrix/outcome comparison is not evaluated or proved by this gate.",
+    "The evidence manifest is an integrity inventory. This reviewer independently read the new proof, program and consumed source arguments, while the separate reference-source review owns the full historical archived-code association; no claim is made that every inventoried line was re-proved.",
+    "Documentation and rendered-link validation run separately. This approval does not prematurely assert their completion."
+  ],
+  "scoped_prerequisites_resolved":4,
+  "prerequisite_scope":"Original prepared single-bridge capability; acquisition theorem reviewed separately, not added to the four prerequisite scopes.",
+  "physical_mapping_readiness_review":null,
+  "physical_mapping_authorized":false,
+  "is_physical_readiness_review":false,
+  "scientific_executions_by_reviewer":0,
+  "historical_producer_replays_by_reviewer":0,
+  "new_scientific_tests":0
+}

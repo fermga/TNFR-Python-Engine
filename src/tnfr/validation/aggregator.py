@@ -20,8 +20,8 @@ Threshold Defaults (Selected Monitoring Policies)
 ΔΦ_s_mean     : π/2    (U6 drift policy; evaluated only with a baseline)
 |∇φ|_max      : π/16  (selected early-warning policy; exact bound π)
 |K_φ|_flag    : 0.9π  (selected margin inside the exact bound π)
-ξ_C_crit_mult : 1.0   (finite-size comparison with graph diameter)
-ξ_C_watch_mult: π     (comparison with mean node eccentricity)
+ξ_C_crit_mult : 1.0   (fitted length compared with structural path diameter)
+ξ_C_watch_mult: π     (fitted length compared with mean path eccentricity)
 
 Report Semantics
 ----------------
@@ -32,6 +32,9 @@ field_metrics : raw field snapshots + aggregates
 thresholds_exceeded: dict[name, bool] for evaluated checks only; availability
 and failure reasons are retained in field_metrics. Missing observations or
 invalid thresholds do not establish a low-risk result.
+Fit comparisons retain the same path geometry and units as the estimator.
+The dimensionless spectral fallback remains available as a readout, but its
+path-length comparisons are ``not_comparable`` rather than passing flags.
 
 Usage
 -----
@@ -78,6 +81,11 @@ from ..operators.grammar_error_factory import (
 )
 from ..operators.grammar_u6 import validate_structural_potential_confinement
 from ..performance.guardrails import PerformanceRegistry
+from ..physics._coherence_fit import DISTANCE_DESCRIPTION
+from ..physics._edge_semantics import (
+    structural_distance_rows,
+    validate_structural_graph,
+)
 from ..physics.fields import (
     compute_structural_potential,
     estimate_coherence_length_with_provenance,
@@ -171,9 +179,12 @@ def run_structural_validation(
         wrapped-angle bound π.
     xi_c_critical_multiplier : float
         Finite-size diameter flag when ξ_C > system_diameter * multiplier. It
-        does not by itself establish a critical transition.
+        uses only the fitted path length, with matching structural geometry;
+        it does not by itself establish a critical transition.
     xi_c_watch_multiplier : float
-        Watch condition when ξ_C > mean_node_distance * multiplier.
+        Watch condition when fitted ξ_C > mean_node_distance * multiplier.
+        The legacy mean_node_distance key denotes mean node eccentricity,
+        measured with the same structural paths as the fit.
     baseline_structural_potential : dict | None
         Optional prior Φ_s snapshot to compute drift; if omitted
         ΔΦ_s is not computed. Supplied snapshots must cover exactly the current
@@ -277,40 +288,47 @@ def run_structural_validation(
         else:
             u6_status = "evaluated"
 
-    # Global finite-size comparisons require connected undirected support;
-    # a component-local diameter cannot stand in for disconnected geometry.
+    # Preserve the connected undirected comparison domain and existing mean
+    # eccentricity watch policy, using the fit's structural path geometry.
+    # A component-local diameter cannot stand in for disconnected geometry.
     system_diameter = mean_node_distance = None
+    geometry_provenance = None
     if nx is not None:
         try:
             if G.number_of_nodes() < 2 or G.is_directed() or not nx.is_connected(G):
                 raise ValueError(
                     "finite-size comparisons require connected undirected support with >= 2 nodes"
                 )
-            # Use the linear-traversal heuristic; runtime is workload-specific.
-            try:
-                from ..utils.fast_diameter import (
-                    approximate_diameter_2sweep,
-                    compute_eccentricity_cached,
+            nodes = tuple(G)
+            validate_structural_graph(G, nodes)
+            eccentricities = []
+            for source, row in structural_distance_rows(G, nodes):
+                eccentricities.append(
+                    max(
+                        (
+                            distance
+                            for target, distance in row.items()
+                            if source != target and distance > 0.0
+                        ),
+                        default=0.0,
+                    )
                 )
-
-                system_diameter = approximate_diameter_2sweep(G)
-            except Exception:
-                # Fallback to exact (slow) diameter
-                system_diameter = nx.diameter(G)  # type: ignore
-                compute_eccentricity_cached = None  # type: ignore
+            diameter = max(eccentricities)
+            if diameter <= 0.0:
+                raise ValueError("no positive structural pair distances")
+            mean_distance = finite_mean(eccentricities, name="node eccentricity")
+            system_diameter = diameter
+            mean_node_distance = mean_distance
+            geometry_provenance = {
+                "method": "all_node_structural_shortest_paths",
+                "distance_weighting": DISTANCE_DESCRIPTION,
+                "units": "path_length",
+                "system_diameter": "maximum_node_eccentricity",
+                "mean_node_distance": "mean_node_eccentricity",
+                "graph_regime": "connected_undirected",
+            }
         except Exception as exc:
             field_errors["system_geometry"] = str(exc)
-            compute_eccentricity_cached = None  # type: ignore
-        # Mean node eccentricity (cached when dependencies are unchanged)
-        try:
-            if system_diameter is None:
-                raise ValueError(field_errors["system_geometry"])
-            if compute_eccentricity_cached is not None:
-                ecc = compute_eccentricity_cached(G)
-            else:
-                ecc = nx.eccentricity(G)  # type: ignore
-            mean_node_distance = finite_mean(ecc.values(), name="node eccentricity")
-        except Exception as exc:
             field_errors["mean_node_distance"] = str(exc)
     else:  # pragma: no cover
         field_errors["system_geometry"] = "networkx unavailable"
@@ -321,12 +339,25 @@ def run_structural_validation(
     threshold_reasons = {"delta_phi_s": u6_reason}
     normalized_thresholds = {}
 
-    def assess(name, value, raw_threshold, *, scale=1.0, inclusive=True):
+    def assess(
+        name, value, raw_threshold, *, scale=1.0, inclusive=True, path_length=False
+    ):
         """Admit a configured comparison; unavailable is not a passing flag."""
         try:
             threshold = finite_represented_real(raw_threshold, name)[0]
             if raw_threshold < 0:
                 raise ValueError("monitoring threshold must be nonnegative")
+            if (
+                path_length
+                and value is not None
+                and xi_c_provenance is not None
+                and xi_c_provenance["method"] != "autocorrelation_fit"
+            ):
+                reason = "spectral mode scale is not comparable to path length"
+                threshold_status[name] = "not_comparable"
+                threshold_reasons[name] = reason
+                notes.append(f"{name} not comparable: {reason}")
+                return False
             if value is None or scale is None or scale <= 0:
                 raise ValueError("required field or comparison geometry is unavailable")
             limit = Fraction(threshold) * Fraction(scale)
@@ -381,6 +412,7 @@ def run_structural_validation(
         xi_c_critical_multiplier,
         scale=system_diameter,
         inclusive=False,
+        path_length=True,
     )
     xi_c_watch = assess(
         "xi_c_watch",
@@ -388,6 +420,7 @@ def run_structural_validation(
         xi_c_watch_multiplier,
         scale=mean_node_distance,
         inclusive=False,
+        path_length=True,
     )
     if xi_c_critical:
         notes.append(
@@ -415,7 +448,10 @@ def run_structural_validation(
             risk_level = "critical"
         elif (
             not all(field_availability.values())
-            or "unavailable" in threshold_status.values()
+            or any(
+                value in {"unavailable", "not_comparable"}
+                for value in threshold_status.values()
+            )
             or thresholds_exceeded.get("phase_gradient_max")
             or thresholds_exceeded.get("k_phi_flag")
             or thresholds_exceeded.get("xi_c_watch")
@@ -438,6 +474,7 @@ def run_structural_validation(
         "u6_reason": u6_reason,
         "system_diameter": system_diameter,
         "mean_node_distance": mean_node_distance,
+        "geometry_provenance": geometry_provenance,
         "field_availability": field_availability,
         "field_errors": field_errors,
         "xi_c_provenance": xi_c_provenance,

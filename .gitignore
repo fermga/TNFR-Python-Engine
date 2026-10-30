@@ -30,6 +30,9 @@ Thumbs.db
 artifacts/
 profiles/
 
+# User-supplied reference books remain local; their citations are in theory.
+/bibliografia/
+
 # Exact frozen full-step response is versioned losslessly in its response ZIP.
 /docs/assets/sine_formed_classes/class-nonlinear-readout-v1.json
 

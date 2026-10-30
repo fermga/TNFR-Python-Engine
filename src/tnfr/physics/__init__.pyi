@@ -28,6 +28,13 @@ from .fields import (
     estimate_coherence_length_with_provenance as estimate_coherence_length_with_provenance,
 )
 from .fields import CoherenceLengthEstimate as CoherenceLengthEstimate
+from .fields import observe_coherence_profile as observe_coherence_profile
+from .fields import CoherenceProfile as CoherenceProfile
+from .fields import CoherenceDistanceBin as CoherenceDistanceBin
+from .fields import CoherenceFitDiagnostics as CoherenceFitDiagnostics
+from .fields import observe_coherence_resolution as observe_coherence_resolution
+from .fields import CoherenceResolution as CoherenceResolution
+from .fields import CoherenceResolutionPoint as CoherenceResolutionPoint
 from .fields import (
     compute_k_phi_multiscale_variance as compute_k_phi_multiscale_variance,
 )
@@ -1392,6 +1399,13 @@ __all__ = [
     "estimate_coherence_length",
     "estimate_coherence_length_with_provenance",
     "CoherenceLengthEstimate",
+    "observe_coherence_profile",
+    "CoherenceProfile",
+    "CoherenceDistanceBin",
+    "CoherenceFitDiagnostics",
+    "observe_coherence_resolution",
+    "CoherenceResolution",
+    "CoherenceResolutionPoint",
     "compute_k_phi_multiscale_variance",
     "fit_k_phi_asymptotic_alpha",
     "k_phi_multiscale_safety",

@@ -1,4 +1,4 @@
-"""Shared own-law recovery of the original isolated class-one C9 source.
+"""Shared own-law recovery of the original isolated C9 source classes.
 
 Every call re-admits primitive preparation and derives its capture and
 uninterrupted fixed dwell. This owner contains no later support, contact,
@@ -34,11 +34,18 @@ _DECAY_POWER = 512
 _GAP, _RATE = Q(1, 5), Q(2)
 
 
+def _target_winding(value):
+    """Admit one of the two original acquired winding classes."""
+    if type(value) is not int or value not in (1, 2):
+        raise ValueError("target_winding must be ordinary integer one or two")
+    return value
+
+
 @dataclass(frozen=True)
 class _ConstitutiveRecovery:
-    """Actual isolated class-one source and its own-law recovery certificate.
+    """Actual selected isolated source and its own-law recovery certificate.
 
-    Only the first source class is consumed. Later consumers must admit
+    Only the selected source class is consumed. Later consumers must admit
     their own support changes and events; none is certified by this report.
     """
 
@@ -85,7 +92,7 @@ class _ConstitutiveRecovery:
 
 
 def _assess_constitutive_recovery(
-    *, deformation, form_error_bound, phase_error_bound
+    *, deformation, form_error_bound, phase_error_bound, target_winding=1
 ) -> _ConstitutiveRecovery:
     """Rebuild isolated capture and recovery before any application event.
 
@@ -94,6 +101,8 @@ def _assess_constitutive_recovery(
     retain explicit unavailability. No incoming report or altered dwell
     can replace the primitive preparation and fixed recovery premises.
     """
+    winding = _target_winding(target_winding)
+    index = winding - 1
     coefficient = _deformation(deformation)
     rx = _exact(form_error_bound, "form_error_bound")
     rt = _exact(phase_error_bound, "phase_error_bound")
@@ -120,14 +129,14 @@ def _assess_constitutive_recovery(
         rate_upper=_RATE,
         gap_lower=_GAP,
         position_upper=upper,
-        form_norm_upper=source.endpoint_form_norm_upper_bounds[0],
-        phase_norm_upper=source.endpoint_target_phase_norm_upper_bounds[0],
+        form_norm_upper=source.endpoint_form_norm_upper_bounds[index],
+        phase_norm_upper=source.endpoint_target_phase_norm_upper_bounds[index],
     )
     source_ok = (
         coefficient <= 1
         and source.initial_zero_winding_certified
-        and source.formation_certified_by_class[0]
-        and source.source_budget_certified_by_class[0]
+        and source.formation_certified_by_class[index]
+        and source.source_budget_certified_by_class[index]
     )
     exponent = rate * _DWELL if rate is not None else None
     decay_ok = (
@@ -153,7 +162,11 @@ def _assess_constitutive_recovery(
     if coefficient > 1:
         unresolved.append("deformation_outside_proved_family")
     if not source_ok:
-        unresolved.append("original_class_one_source_not_certified")
+        unresolved.append(
+            "original_class_one_source_not_certified"
+            if winding == 1
+            else "original_class_two_source_not_certified"
+        )
     if not decay_ok:
         unresolved.append("fixed_dwell_decay_not_certified")
     if form_margin is None or form_margin <= 0:
@@ -182,4 +195,13 @@ def _assess_constitutive_recovery(
         recovery_certified=recovery,
         status="certified_constitutive_recovery" if not unresolved else "unavailable",
         unresolved_conditions=tuple(unresolved),
+        target_winding=winding,
+        scope=(
+            _ConstitutiveRecovery.scope
+            if winding == 1
+            else (
+                "fresh_own_law_class_two_source_and_original_zero_sum_errors",
+                *_ConstitutiveRecovery.scope[1:],
+            )
+        ),
     )

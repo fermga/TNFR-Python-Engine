@@ -100,7 +100,7 @@ IDs and update the definition/proof owner before changing its summary.
 - **Evidence:** [Types and implementation](FUNDAMENTAL_THEORY.md#24-physical-concepts-mathematical-types-and-implementation).
 - **Implementation:** [Scalar admission](../src/tnfr/types.py).
 - **Tests:** [EPI domain](../tests/operators/test_epi_domain_consistency.py).
-- **Limits:** Magnitude cannot substitute for the signed structure of richer BEPI; EPI is not automatically voltage, energy or matter.
+- **Limits:** Magnitude cannot substitute for the signed structure of richer BEPI. A scalar EPI observation is not automatically a sufficient full state; primitive versus derived status is model-relative. EPI is not automatically voltage, energy or matter.
 
 <a id="capacity"></a>
 
@@ -185,7 +185,7 @@ IDs and update the definition/proof owner before changing its summary.
 - **Evidence:** [Formation and identity obligations](EMERGENT_ONTOLOGY.md#11-nfr-formation-definition-birth-and-collective-dynamics); [retained pair state](nodal/SINE_PAIR_STATE.md#sine-global-pair-state).
 - **Implementation:** [SDK observation](../src/tnfr/sdk/simple.py), [collective-state reader](../src/tnfr/physics/relational_sine_pair.py).
 - **Tests:** [Observation scope](../tests/sdk/test_nfr_observation_scope.py), [realizable pair state](../tests/physics/test_sine_global_pair_state.py).
-- **Limits:** A node, nested child or named region is not proved autopoiesis or matter. Identity can persist while internal state changes; nesting alone proves neither predictive closure nor formation.
+- **Limits:** A node, nested child or named region is not proved autopoiesis or matter. Identity can persist while internal state changes; neither exact periodicity nor maximum coherence is required for every identity. Nesting alone proves neither predictive closure nor formation.
 
 <a id="pressure"></a>
 
@@ -459,7 +459,7 @@ IDs and update the definition/proof owner before changing its summary.
 - **Evidence:** [Native exact replication](nodal/RELATIONAL_EXCHANGE_ADMISSION.md#4-origin-units-and-exact-replication), [replica composition and constitutive freedom](nodal/SINE_PAIR_MOBILITY.md#sine-replica-constitutive-nonselection).
 - **Implementation:** [Native field](../src/tnfr/dynamics/relational.py), [retained sine state](../src/tnfr/physics/relational_sine_scale.py).
 - **Tests:** [Complete replica rows](../tests/physics/test_relational_sine_replica.py), [counterfamily inheritance](../tests/physics/test_relational_sine_comparison.py).
-- **Limits:** This does not derive generic fractality, a fractal dimension, spontaneous hierarchy or unique dynamics. Discarding internal coordinates requires closure or memory evidence; a repeated graph alone is insufficient.
+- **Limits:** This does not derive generic fractality, a fractal dimension, spontaneous hierarchy or unique dynamics. Discarding internal coordinates requires closure or memory evidence; a repeated graph alone is insufficient. The [effective-law hypothesis](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#scale-dependent-effective-laws) remains a candidate within the general foundational review.
 
 <a id="closure"></a>
 
@@ -623,14 +623,14 @@ IDs and update the definition/proof owner before changing its summary.
 - **Status:** maintained
 - **Basis:** diagnostic
 - **Emergence:** not-claimed
-- **Definition:** Interface (Phi_s, abs(grad phi), K_phi, xi_C) observing pressure aggregation, local phase structure and coherence range.
+- **Definition:** A selected four-channel view (Phi_s, abs(grad phi), K_phi, xi_C) within task-dependent structural observations: three nodal fields and one global estimate.
 - **Domain:** Each constituent retains its independent data and availability conditions.
-- **Premises:** Four complementary questions motivate the interface; completeness is a separate mathematical obligation.
+- **Premises:** Specify the task, admitted state, complete law and equivalences before claiming sufficiency or minimality; channel count is not state dimension.
 - **Dependencies:** potential, phase-gradient, phase-curvature, coherence-length
 - **Owner:** [Diagnostic degrees and reconstruction](MINIMAL_STRUCTURAL_DEGREES.md).
-- **Evidence:** [Dynamical non-reconstruction](MINIMAL_STRUCTURAL_DEGREES.md#33-dynamical-non-reconstruction).
-- **Implementation:** [Shared fields](../src/tnfr/physics/fields.py).
-- **Tests:** [Read-out consistency](../tests/physics/test_field_readout_consistency.py).
+- **Evidence:** [Dynamical non-reconstruction](MINIMAL_STRUCTURAL_DEGREES.md#33-dynamical-non-reconstruction); [task-dependent reconstruction requirements](MINIMAL_STRUCTURAL_DEGREES.md).
+- **Implementation:** [Shared fields](../src/tnfr/physics/fields.py), [optional SDK observations](../src/tnfr/sdk/study.py).
+- **Tests:** [Read-out consistency](../tests/physics/test_field_readout_consistency.py), [observation requirements](../tests/physics/test_structural_observation_requirements.py).
 - **Limits:** The tetrad does not reconstruct general form, capacity, support, history or future evolution; unavailable fields cannot certify a complete safety verdict.
 
 <a id="potential"></a>
@@ -665,7 +665,7 @@ IDs and update the definition/proof owner before changing its summary.
 - **Evidence:** [Gradient scope](MINIMAL_STRUCTURAL_DEGREES.md#42-phase-gradient).
 - **Implementation:** [Phase gradient](../src/tnfr/physics/fields.py).
 - **Tests:** [Field observations](../tests/physics/test_field_readout_consistency.py).
-- **Limits:** A warning cut is not a derived instability threshold or a future-transition proof.
+- **Limits:** The mean angular mismatch is not a spatial derivative per unit length. A warning cut is not a derived instability threshold or a future-transition proof.
 
 <a id="phase-curvature"></a>
 
@@ -696,10 +696,10 @@ IDs and update the definition/proof owner before changing its summary.
 - **Premises:** Pressure-derived products and fallback rules specify the observation.
 - **Dependencies:** pressure, support
 - **Owner:** [Shared fit definition](NODAL_PARAMETER_FOUNDATIONS.md#52-one-coherence-fit-definition-across-implementations).
-- **Evidence:** [Correlation scope](MINIMAL_STRUCTURAL_DEGREES.md#44-correlation-length).
+- **Evidence:** [Correlation scope](MINIMAL_STRUCTURAL_DEGREES.md#44-correlation-length); [finite profile identities and observation limits](COHERENCE_OBSERVATION_FOUNDATIONS.md).
 - **Implementation:** [Estimator](../src/tnfr/physics/fields.py).
-- **Tests:** [Estimator provenance](../tests/sdk/test_nfr_observation_scope.py).
-- **Limits:** An uncentered static fit is neither a temporal relaxation measurement nor proof of criticality; its fallback is a different observable.
+- **Tests:** [Estimator provenance](../tests/sdk/test_nfr_observation_scope.py), [profile contract](../tests/physics/test_coherence_profile.py), [observation witnesses](../tests/physics/test_coherence_observation_scope.py).
+- **Limits:** An accepted uncentered fit need not be exponential or identify fluctuation decay. Profile moments retain discarded evidence, with algebraic dependencies; they do not close dynamics. The spectral fallback is a different observable.
 
 <a id="balance-diagnostic"></a>
 
@@ -735,7 +735,7 @@ IDs and update the definition/proof owner before changing its summary.
 - **Evidence:** [Execution contracts](../docs/API_CONTRACTS.md#contract-model); [collective action and ordered-language descent](STRUCTURAL_OPERATORS.md#collective-grammar-descent).
 - **Implementation:** [Operator registry](../src/tnfr/operators/operator_contracts.py).
 - **Tests:** [Operator contracts](../tests/operators/test_operator_contracts.py).
-- **Limits:** A named jump is not a finite-duration nodal solution. The REMESH node advisory does not execute network mixing or support replacement. A configured birth does not establish acquired collective identity. Admission, occurrence and collective descent each need their own argument; registration proves no universal completeness.
+- **Limits:** A named jump is not a finite-duration nodal solution. The REMESH node advisory does not execute network mixing or support replacement. A configured birth does not establish acquired collective identity. Admission, occurrence and collective descent each need their own argument; registration proves no universal completeness. The [causal role](STRUCTURAL_OPERATORS.md#operator-causal-role) must distinguish basic mechanisms, realized effective actions and supplied interventions.
 
 <a id="grammar"></a>
 
@@ -786,7 +786,7 @@ IDs and update the definition/proof owner before changing its summary.
 - **Evidence:** [Graph-mode calculation](PHYSICAL_REGIME_CORRESPONDENCES.md#43-retained-graph-mode-calculation); [generator distinction](nodal/RESONANCE_FOUNDATIONS.md#spectral-rhythm-reuse).
 - **Implementation:** [Pulse read-outs](../src/tnfr/physics/structural_diffusion.py).
 - **Tests:** [Pulse scope](../tests/physics/test_nodal_pulse_scope.py).
-- **Limits:** A modal readout is not a maintained wave or physical clock. The unit sine consensus tangent has frequency lambda in tau=t/pi, not sqrt(lambda). Same-law periodic motion uses the separate autonomous-pulse theorem.
+- **Limits:** A modal readout is not a maintained wave or physical clock. At e=0, unit held capacities and w=beta=1, the sine consensus tangent has angular frequency lambda in tau=t/pi, not sqrt(lambda). Same-law periodic motion uses the separate autonomous-pulse theorem.
 
 <a id="symplectic"></a>
 
@@ -850,8 +850,8 @@ IDs and update the definition/proof owner before changing its summary.
 - **Domain:** A future identified model with independent observable predictions and terrestrial evidence.
 - **Premises:** Admit complete state, constitutive laws, support/capacity evolution and the physical measurement bridge.
 - **Dependencies:** nfr, nodal-equation, measurement-bridge
-- **Owner:** [Physical identification scope](PHYSICAL_REGIME_CORRESPONDENCES.md#observed-pattern-admission-result).
-- **Evidence:** [Foundation origin ledger](FUNDAMENTAL_THEORY.md#foundational-state-admission).
+- **Owner:** [Matter-emergence hypothesis](EMERGENT_ONTOLOGY.md#matter-emergence-hypothesis).
+- **Evidence:** [Foundation origin ledger](FUNDAMENTAL_THEORY.md#foundational-state-admission); [electromagnetic prerequisites](PHYSICAL_REGIME_CORRESPONDENCES.md#electromagnetic-emergence-audit).
 - **Implementation:** none: the engine implements scoped models, not an established physical ontology.
 - **Tests:** none: model tests cannot replace independent physical validation.
 - **Limits:** Conditional formation, winding, symmetry and memory results do not themselves derive matter, spin, quantum mechanics or substrate creation from nothing.

@@ -16,6 +16,7 @@ import importlib.util
 import math
 import sys
 import zipfile
+from dataclasses import replace
 from pathlib import Path
 
 import numpy as np
@@ -158,6 +159,15 @@ def test_window_tetrad_series_structure(synthetic_fold_observation):
         out.lag1_autocorr,
     ):
         assert arr.shape == (n,)
+    assert len(out.xi_c_provenance) == n
+    for value, evidence, metadata in zip(
+        out.xi_c, out.xi_c_provenance, out.as_dict()["xi_c_provenance"]
+    ):
+        assert value == evidence.value or (
+            math.isnan(value) and math.isnan(evidence.value)
+        )
+        assert metadata["method"] == evidence.method
+        assert metadata["available"] == (math.isfinite(value) and value > 0)
 
 
 def test_window_tetrad_series_rejects_short_signal():
@@ -466,3 +476,130 @@ def test_retrospective_scope_and_whole_record_availability_are_explicit():
     report = evaluate_early_warning(signal, config=cfg)
     assert report.metadata["channel_selection"] == "same_record_descriptive"
     assert report.metadata["prospective_prediction"] is False
+
+
+def _xi_series(methods):
+    import networkx as nx
+
+    from tnfr.physics.canonical import estimate_coherence_length_with_provenance
+
+    evidence = []
+    for index, method in enumerate(methods):
+        graph = nx.path_graph(8 if method == "fit" else index + 2)
+        nx.set_node_attributes(
+            graph,
+            {
+                node: math.exp(node / 3) - 1 if method == "fit" else 0.0
+                for node in graph
+            },
+            "delta_nfr",
+        )
+        nx.set_edge_attributes(graph, float(2**index), "length")
+        nx.set_edge_attributes(graph, 1.0, "weight")
+        evidence.append(estimate_coherence_length_with_provenance(graph))
+    count = len(evidence)
+    return WindowTetradSeries(
+        window_end=np.arange(1, count + 1) * 16 - 1,
+        grad_phi=np.zeros(count),
+        k_phi=np.zeros(count),
+        xi_c=np.array([item.value for item in evidence]),
+        phi_s=np.zeros(count),
+        variance=np.arange(count, dtype=float),
+        lag1_autocorr=np.arange(count, dtype=float),
+        available_at=np.arange(1, count + 1) * 16 - 1,
+        xi_c_provenance=tuple(evidence),
+    )
+
+
+@pytest.mark.parametrize("legacy", [False, True])
+def test_xi_trend_requires_one_declared_estimator_and_retains_raw_values(
+    monkeypatch, legacy
+):
+    series = _xi_series(("fit", "fit", "spectral", "fit"))
+    if legacy:
+        series = replace(series, xi_c_provenance=())
+    before = series.xi_c.copy()
+    monkeypatch.setattr(
+        temporal_interface, "window_tetrad_series", lambda *a, **k: series
+    )
+    report = evaluate_early_warning(np.arange(64))
+    assert math.isnan(report.trends["xi_c"])
+    assert report.best_tnfr[0] != "xi_c"
+    assert report.metadata["xi_c_comparison"]["available"] is False
+    assert report.metadata["xi_c_comparison"]["reason"] == (
+        "missing_or_misaligned_estimator_provenance"
+        if legacy
+        else "mixed_estimators_or_distance_conventions"
+    )
+    np.testing.assert_array_equal(series.xi_c, before)
+
+
+def test_xi_comparability_uses_only_requested_pre_transition_windows(monkeypatch):
+    series = _xi_series(("fit", "fit", "fit", "spectral"))
+    monkeypatch.setattr(
+        temporal_interface, "window_tetrad_series", lambda *a, **k: series
+    )
+    report = evaluate_early_warning(np.arange(64), transition_index=48)
+    assert report.trends["xi_c"] == 1.0
+    assert report.metadata["xi_c_comparison"]["method"] == "autocorrelation_fit"
+    assert report.metadata["xi_c_comparison"]["units"] == "path_length"
+    assert report.metadata["xi_c_comparison"]["available_windows"] == 3
+
+
+def test_prospective_xi_selection_freezes_estimator_and_rejects_changed_method(
+    monkeypatch,
+):
+    fit = _xi_series(("fit",) * 4)
+    monkeypatch.setattr(temporal_interface, "window_tetrad_series", lambda *a, **k: fit)
+    calibration = temporal_interface.calibrate_temporal_warning(
+        np.arange(64),
+        calibration_run_id="fit",
+        config=TemporalInterfaceConfig(window=16),
+    )
+    assert calibration.tnfr_channel == "xi_c"
+    assert calibration.xi_c_method == "autocorrelation_fit"
+    spectral = _xi_series(("spectral",) * 4)
+    monkeypatch.setattr(
+        temporal_interface, "window_tetrad_series", lambda *a, **k: spectral
+    )
+    report = temporal_interface.evaluate_prospective_warning(
+        np.arange(64) + 1, calibration=calibration, evaluation_run_id="spectral"
+    )
+    assert report.status == "unavailable"
+    assert report.tnfr_trend is None and report.tnfr_valid_windows == 0
+    assert (
+        report.metadata["xi_c_comparison"]["reason"]
+        == "estimator_differs_from_calibration"
+    )
+
+
+def test_xi_numeric_array_cannot_borrow_stale_estimator_provenance():
+    series = _xi_series(("fit",) * 4)
+    stale = series.xi_c.copy()
+    stale[0] *= 2.0
+    values, metadata = temporal_interface._coherence_comparison(
+        stale, series.xi_c_provenance
+    )
+    assert np.all(np.isnan(values))
+    assert metadata["available"] is False
+    assert metadata["reason"] == "value_provenance_mismatch_or_invalid_value"
+
+
+@pytest.mark.parametrize("mask", [[True], [1, 1, 1, 1], [[True] * 4]])
+def test_xi_comparison_rejects_misaligned_or_nonboolean_selection(mask):
+    series = _xi_series(("fit",) * 4)
+    with pytest.raises(ValueError, match="aligned boolean"):
+        temporal_interface._coherence_comparison(
+            series.xi_c, series.xi_c_provenance, mask
+        )
+
+
+def test_xi_comparison_does_not_consume_values_outside_declared_selection():
+    series = _xi_series(("fit",) * 4)
+    values = series.xi_c.copy()
+    values[-1] = math.inf
+    selected, metadata = temporal_interface._coherence_comparison(
+        values, series.xi_c_provenance, np.array([True, True, True, False])
+    )
+    np.testing.assert_array_equal(selected, series.xi_c[:3])
+    assert metadata["available"] is True

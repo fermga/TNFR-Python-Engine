@@ -1,0 +1,16 @@
+{
+  "reason":"Independent reviews found an outdated open-status introduction contradicting the new scoped resolution and active question.",
+  "changed_path":"theory/RESEARCH_PROGRAM.md",
+  "additional_replaced_region":{
+    "start":"## Continuation point: resolve the four foundations",
+    "end_exclusive":"<a id=\"foundational-pillars\"></a>"
+  },
+  "new_start":"## Continuation point: acquisition under the admitted foundational law",
+  "chapter_changed":false,
+  "program":{
+    "path":"theory/RESEARCH_PROGRAM.md",
+    "bytes":80104,
+    "sha256":"0e5f65d93672500fe952a93333fefb88f70072980048abd4052901eae51984dc"
+  },
+  "new_scientific_evaluations":0
+}

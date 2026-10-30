@@ -1,0 +1,57 @@
+{
+  "passed":true,
+  "checks":[
+    "all original edges and live mass",
+    "incidence and degree-weighted current conservation",
+    "degree norm controls both source rows",
+    "nominal common mean coefficients",
+    "fixed cycle lift reconstruction",
+    "fixed cycle lift reconstruction",
+    "distinct actual contact affine gaps",
+    "positive contact work excludes old energy ceiling",
+    "source energy includes both internal residuals and contact",
+    "port speed ceiling",
+    "rational gamma envelope",
+    "eta ceiling",
+    "horizon square root ceiling",
+    "comparison denominator",
+    "initial mixed-coordinate budgets",
+    "new mixed phase envelope",
+    "new global scaled form envelope",
+    "old stronger global bound does not follow from this envelope",
+    "phase comparison and first-exit margin",
+    "initial donor margin",
+    "analytic first quarter margin",
+    "tail decay exponent premise",
+    "last-unit forcing bound",
+    "reconstructed endpoint form",
+    "endpoint phase",
+    "full-state endpoint storage and radius",
+    "basin boundary constant",
+    "fixed reference schedule",
+    "static field and domain call bounds",
+    "fixed artifact byte allocation"
+  ],
+  "source":{
+    "path":"artifacts/formed-two-port-method-20261029/check_method.py",
+    "bytes":4565,
+    "sha256":"e2f698676bf3d437a59bf28e45ef23b75d9708f03cd48ca41a27418a46a17c16"
+  },
+  "protocol":{
+    "path":"artifacts/formed-two-port-method-20261029/controls-protocol.md",
+    "bytes":1663,
+    "sha256":"b67e4a9e257ac70b0c0a01ffdcc7f8f845be8970397385e7950062aa1d318023"
+  },
+  "review":{
+    "path":"artifacts/formed-two-port-method-20261029/controls-review.md",
+    "bytes":10136,
+    "sha256":"19bba7c6f2f4216fda3e66e00827b4aeed340e41ca09d26e5f65830335406825"
+  },
+  "actual_source_transits":0,
+  "reference_steps":0,
+  "root_solves":0,
+  "target_sign_assessments":0,
+  "response_assessments":0,
+  "historical_producer_replays":0,
+  "boundary":"Exact algebra only: graph/source and newly derived comparison/tail design constants. No reference domain or endpoint has been numerically evaluated."
+}

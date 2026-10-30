@@ -55,6 +55,26 @@ def _epi_velocity(graph: nx.Graph) -> np.ndarray:
     return -capacity * (laplacian @ epi)
 
 
+@pytest.mark.parametrize("pressure", [1e308, -1e308])
+def test_global_tetrad_mean_preserves_finite_extreme_potential(pressure):
+    graph = nx.path_graph(2)
+    nx.set_node_attributes(graph, pressure, ALIAS_DNFR[0])
+    nx.set_node_attributes(graph, 0.0, ALIAS_THETA[0])
+    with np.errstate(over="raise", invalid="raise"):
+        fields = tetrad_observation_channels(graph, representation="full")
+        summary = tetrad_observation_channels(graph, representation="global")
+    assert fields["structural_potential"].tolist() == [pressure, pressure]
+    assert summary["structural_potential"].tolist() == [pressure]
+    assert all(np.all(np.isfinite(value)) for value in summary.values())
+
+
+def test_empty_global_tetrad_has_no_measured_zero_fields():
+    channels = tetrad_observation_channels(nx.Graph(), representation="global")
+    assert all(
+        value.shape == (1,) and np.isnan(value[0]) for value in channels.values()
+    )
+
+
 def test_tetrad_alone_does_not_identify_uniform_capacity_rate():
     slow = _state_with_uniform_capacity(1.0)
     fast = _state_with_uniform_capacity(2.0)

@@ -16,6 +16,31 @@ The engine, conditional mathematics and finite computational evidence support
 this work. Proofs and numerical experiments do not constitute empirical
 validation; a uniquely selected fundamental law remains open.
 
+The [matter-emergence hypothesis] asks whether persistent organizations under
+one justified complete dynamics can account for observed physical properties.
+The [physical assessment] owns shared requirements across electromagnetic,
+weak, strong, gravitational and quantum phenomena and their measurement
+boundaries. Favor useful common prerequisites while preserving distinct
+experimental discriminators and compatible scale matching under one law.
+Use them to select discriminating structural questions;
+do not promote a diagnostic label, supplied circuit law or illustrative
+particle profile into a derived physical identification.
+
+**Mandatory foundation prerequisite.** The four pillars in the
+[foundation prerequisites] must be
+resolved with scoped evidence and review before starting or extending a
+fundamental-physics mapping, analogy campaign, particle identification or
+experimental fit. Read `theory/research_prerequisites.json` and run
+`python scripts/check_research_prerequisites.py --require-physical-mapping`
+before such work. A nonzero result prohibits that work; continue the active
+foundation question instead. Do not bypass the prerequisite by calling a
+mapping an illustration, assigning a physical label, or editing readiness
+metadata without its required evidence. Historical physical studies may be
+read as context; their existence does not activate them. Mathematical
+foundation work in `src/tnfr/physics/` remains allowed: a package name is not
+a physical identification. The program owns the sole active task; the JSON
+record owns readiness evidence, not another research queue.
+
 Justify canonical TNFR structure and dynamics against definitions, hypotheses,
 derivations and counterexamples; neither a manuscript nor a runtime registry
 establishes their necessity. Evaluate implemented claims against these premises,
@@ -50,7 +75,8 @@ A complete model specifies pressure and every consumed phase, capacity,
 support, clock, input and event law. Holding a quantity fixed is an explicit
 premise. Do not invent or coerce coordinates the model does not consume.
 
-- **Form:** signed real EPI and uniform-real `BEPIElement` use shared
+- **Form:** in the current scalar runtime, signed real EPI and uniform-real
+  `BEPIElement` use shared
   signed-scalar admission. Complex/nonuniform BEPI or magnitude projection
   cannot substitute for signed form.
 - **Capacity:** nonnegative. Zero freezes the unforced form row even at nonzero
@@ -139,12 +165,18 @@ and `diagnose_network` for detached stored-state observations. Other readers
 may maintain rebuildable caches only within their declared mutation scope.
 The [structural field guide] and [API contracts] own these boundaries:
 
-- The tetrad is diagnostic, not complete state or a future predictor. Geometry
-  uses edge `length` with `weight` fallback; diffusion uses conductance.
+- The tetrad is a selected diagnostic view within task-dependent structural
+  observations. Specify the response, state and equivalences before adding
+  channels or claiming sufficiency; channel count is not state dimension.
+  Geometry uses edge `length` with `weight` fallback; diffusion uses conductance.
 - Curvature may be undefined at zero resultant. Coherence-length fit and
   spectral fallback retain separate provenance and availability.
 - Stored pressure, refreshed fields, predicted rates and measured temporal
   evidence differ; snapshots and operator labels cannot prove conservation.
+- Reuse admitted primitive state and existing profile/phase/winding owners.
+  Requested optional observations retain independent availability. Spatial
+  width and query radii are explicit observation policies; their perturbation
+  claims require the declared pair population and numerical error contract.
 - Missing observations/baselines remain unavailable, not zero or passing flags.
   Invalid thresholds cannot certify safety. Preserve rejection contracts;
   tolerance alerts are not exact equality, equilibrium or endpoint nonincrease.
@@ -173,7 +205,7 @@ sole active question. Its technical chapters retain definitions, proofs and
 counterexamples in their original contexts. The old plan, strategy and portfolio
 routes are generated compatibility views, not active instructions.
 Before resuming research, read the program's current task and complete any
-open documentation prerequisite there. Its ordered checklist is the persistent
+open documentation prerequisite there. Its current gate is the persistent
 continuation record; do not rely on conversation memory or create another queue.
 After the gate closes, reassess the next scientific question against the global
 objective instead of automatically continuing the most recent example. Existing
@@ -332,6 +364,8 @@ Detailed admission and verification belong to the linked contracts.
 [form foundation]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/FUNDAMENTAL_THEORY.md
 [parameter foundation]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md
 [NFR ontology]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/EMERGENT_ONTOLOGY.md
+[matter-emergence hypothesis]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/EMERGENT_ONTOLOGY.md#matter-emergence-hypothesis
+[physical assessment]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/PHYSICAL_REGIME_CORRESPONDENCES.md#fundamental-phenomena-synergies
 [grammar]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/UNIFIED_GRAMMAR_RULES.md
 [operator]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/STRUCTURAL_OPERATORS.md
 [event contracts]: https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/contracts/OPERATOR_EVENTS.md
@@ -340,6 +374,7 @@ Detailed admission and verification belong to the linked contracts.
 [pressure contract]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md
 [structural field guide]: https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/STRUCTURAL_FIELDS_TETRAD.md
 [research program]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/RESEARCH_PROGRAM.md#research-current-question
+[foundation prerequisites]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/RESEARCH_PROGRAM.md#foundational-pillars
 [theory-to-execution map]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/RESEARCH_PROGRAM.md#theory-to-execution
 [Glossary]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/GLOSSARY.md
 [Architecture]: https://github.com/fermga/TNFR-Python-Engine/blob/main/ARCHITECTURE.md

@@ -1,0 +1,12 @@
+{
+  "executable": "C:\\TNFR-Python-Engine\\.venv313\\Scripts\\python.exe",
+  "job_name": "Local\\TNFR-28192-a4c5ac53f0685ecc",
+  "job_verified": true,
+  "nonce": "a4c5ac53f0685ecc7dae2d1f1323fe4f8404dedeb2c8e85cfe7835ea58007c6d",
+  "prefix": "C:\\TNFR-Python-Engine\\.venv313",
+  "schema": "tnfr.bootstrap-ack.v1",
+  "supervisor_pid": 28192,
+  "worker": "C:\\TNFR-Python-Engine\\artifacts\\native-capacity-transport-20261028\\validate.py",
+  "worker_creation_time": 134376840433103328,
+  "worker_pid": 26060
+}

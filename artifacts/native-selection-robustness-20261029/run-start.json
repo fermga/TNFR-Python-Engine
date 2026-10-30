@@ -1,0 +1,19 @@
+{
+  "started_utc":"2026-10-29T02:50:58.513213+00:00",
+  "attempt":1,
+  "plan":{
+    "path":"artifacts/native-selection-robustness-20261029/validation-plan.json",
+    "bytes":215575,
+    "sha256":"fc7e1ace5cd7efe1a723c83dfa4ecf8f5049c46f119a88cf0d5b8d9f421c892f"
+  },
+  "budget":{
+    "watchdog_wall_budget_seconds":180,
+    "maximum_rss_bytes":2147483648,
+    "maximum_response_bytes":16777216,
+    "maximum_log_bytes":1048576,
+    "diagnostic_reserve_bytes":1048576,
+    "handshake_timeout_seconds":30,
+    "poll_seconds":0.1
+  },
+  "resource_scope":"One static audit of existing primitive boxes and source associations; 180-second supervised watchdog includes interpreter handshake, verification and audit; root preflight/freeze metadata checks are outside this worker allowance, 2 GiB sampled aggregate RSS (not a hard allocation cap), 16 MiB task outputs excluding baseline/before-edit/evaluated-source/validation-plan. Job log bound1MiB; cleanup separately bounded. No trajectory, candidate generator or historical producer runs."
+}

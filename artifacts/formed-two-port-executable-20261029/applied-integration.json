@@ -1,0 +1,17 @@
+{
+  "files":[
+    {
+      "path":"theory/nodal/SINE_TWO_PORT_CAPTURE.md",
+      "bytes":41294,
+      "sha256":"a032a058f08a7e604311c7a6cad782e52713516d92ef4f8276672b7545c7710b"
+    },
+    {
+      "path":"theory/RESEARCH_PROGRAM.md",
+      "bytes":92894,
+      "sha256":"244c88b6379f2b7c2590d40c659386fbd963b6bac5eca72d464c93e7fddcef2a"
+    }
+  ],
+  "reference_steps":0,
+  "actual_source_transits":0,
+  "next_question":"Freeze/review producing wrapper and protocol, then one fixed source-aware reference attempt."
+}

@@ -1,0 +1,34 @@
+{
+  "schema":"tnfr.research-prerequisite-review.v1",
+  "requirement":"state_observation",
+  "verdict":"approved",
+  "independent":true,
+  "author":"/root",
+  "reviewer":"/root/collective_controls",
+  "criteria_assessment":{
+    "closure":"Approved only for the same prepared mathematical domain: the supplied unit C5 pair (0,1,2,3,4) and (5,6,7,8,9) with bridge (0,5), signed scalar form, circular phase, strictly positive capacities, fixed ordinary capacity mean, e=w=1/2, beta=1, a supplied fixed kappa>0, equal constituent measure and one structural clock. The capability is full-state prediction, local all-forward retention and recovery near the aligned winding-one family, and the declared internal receiver response. CT and JO retain all thirty nodal coordinates, node labels, ports, graph, parameters, measure and clock. The regular native resultant chart and positive capacity domain make the full field smooth. JO establishes a local invariant domain and unique all-forward continuation rather than inferring closure from successful samples. Fixing capacity mean and quotienting only the two global origins gives an exact 27-coordinate relative state; absolute outputs retain and reconstruct both origins through their actual rates, which need not vanish. The receiver observations are defined continuous form/phase deformations relative to the prepared shape, not an asserted replacement for predictive state. Structural units and the common clock are declared; no laboratory calibration is implied. No independent pressure state or hidden event memory is consumed. Regional totals, winding, diagnostic tuples and receiver readings are not promoted to autonomous state, and this state is not advertised as a hybrid-runtime checkpoint. This is not approval of acquisition, spontaneous support or event creation, a reduced autonomous regional state, a numerical executor or finite-horizon error guarantee, a universal TNFR law, or physical mapping. The next two-bridge acquisition claim requires its own regular-transit and joint-capture proof for nonuniform evolving capacity; the held-capacity transit and single-bridge neighborhood are not silently transferred. The separate final physical-readiness review remains absent. This independent source review performed zero scientific evaluations or producer replays.",
+    "primitive_or_derived":"Signed form, circular phase and positive capacity are independent coordinates in this model; the graph, associations, coefficients and clock are supplied data. Pressure is the independently specified current-state constitutive map, never x_dot/nu inferred from an observed response. Resultants, metric, storage, winding and receiver readings are derived observations with explicit availability domains. The relative quotient is an exact symmetry reduction on a fixed mean-capacity leaf, with origins needed for absolute reconstruction. EPI is not equated with every measurement, capacity is not equated with frequency, and a regional scalar has not been assumed sufficient merely because it is measurable."
+  },
+  "evidence":[
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-foundation-scope-decision",
+      "sha256":"3e3a6fbb438bfe13b9c5b9078d0524a67a715fdcd1d1fa88de42c79f1be766e1"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-foundational-account",
+      "sha256":"3e3a6fbb438bfe13b9c5b9078d0524a67a715fdcd1d1fa88de42c79f1be766e1"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-capacity-transport",
+      "sha256":"3e3a6fbb438bfe13b9c5b9078d0524a67a715fdcd1d1fa88de42c79f1be766e1"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-joint-organization",
+      "sha256":"3e3a6fbb438bfe13b9c5b9078d0524a67a715fdcd1d1fa88de42c79f1be766e1"
+    }
+  ]
+}

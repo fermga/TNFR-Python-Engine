@@ -188,3 +188,172 @@ def _sine_lyapunov_return_squared(
     form_squared = 4 * returned / (eta_lower * gap_lower)
     phase_squared = rate_upper * returned / position_lower
     return returned, form_squared, phase_squared
+
+
+def _sine_common_quadratic_exchange_coefficients(
+    *,
+    gamma_lower: Q,
+    gamma_upper: Q,
+    cosine_lower: Q,
+    gap_lower: Q,
+    capacity: Q,
+    exchange_norm_upper: Q,
+) -> tuple[Q, Q, Q]:
+    """Extend the common metric by commuting symmetric form exchange.
+
+    The complete rows are ``a'=-(v H a+gamma v K b)/4-G a`` and
+    ``b'=gamma v H a/4`` with one positive scalar v. In addition to the
+    base kernel's bounds, the caller proves held symmetric H and G, G>=0,
+    ||G||<=exchange_norm_upper, preservation of the declared invariant leaf,
+    and HG=GH. H is positive on that leaf; H^-1 is used only there.
+    K can vary and need not commute with either matrix.
+
+    Add ``4 b^T G H^-1 b/v^2`` to the base W. Its derivative cancels the
+    mixed exchange term, leaving the nonpositive term ``-2 a^T G a/v``.
+    If extra=4||G||/(v^2*gap), then Wbase<=Wplus<=
+    (1+extra/lower)*Wbase. Returned bounds are consequently
+    (lower, upper+extra, rate*lower/(lower+extra)). Zero exchange returns
+    exactly the original coefficients. These scalars do not certify any
+    matrix, chart, source, event, physical capacity or clock premise.
+
+    Every primitive is normalized before calling the base kernel. That
+    owner admits its original domains; the new capacity and exchange
+    domains are admitted here. No inverse, trajectory or exponential runs.
+    """
+    gamma_lower = _quadratic_rational(gamma_lower, "gamma_lower")
+    gamma_upper = _quadratic_rational(gamma_upper, "gamma_upper")
+    cosine_lower = _quadratic_rational(cosine_lower, "cosine_lower")
+    gap_lower = _quadratic_rational(gap_lower, "gap_lower")
+    capacity = _quadratic_rational(capacity, "capacity")
+    exchange_norm_upper = _quadratic_rational(
+        exchange_norm_upper, "exchange_norm_upper"
+    )
+    if capacity <= 0:
+        raise ValueError("capacity must be positive")
+    if exchange_norm_upper < 0:
+        raise ValueError("exchange_norm_upper must be nonnegative")
+    lower, upper, rate = _sine_common_quadratic_coefficients(
+        gamma_lower=gamma_lower,
+        gamma_upper=gamma_upper,
+        cosine_lower=cosine_lower,
+        gap_lower=gap_lower,
+        capacity_lower=capacity,
+        capacity_upper=capacity,
+    )
+    extra = 4 * exchange_norm_upper / (capacity**2 * gap_lower)
+    return lower, upper + extra, rate * lower / (lower + extra)
+
+
+def _sine_noncommuting_port_coefficients(
+    *, transport_gap_lower: Q, port_norm_upper: Q, loss_divisor: Q
+) -> tuple[Q, Q | None]:
+    """Bound total quadratic loss with a noncommuting positive form port.
+
+    The caller proves held symmetric H>=h I>0 on an invariant leaf and
+    symmetric G>=0 preserving that leaf, with ||G||<=C. No commutation is
+    required. For D=||H x||^2/d+x^T H G x, positive-contraction Jordan
+    algebra gives D>=(1/d-C/(8h))*||H x||^2. Return that bracket and its
+    product with h^2 only when the bracket is nonnegative; otherwise no
+    Euclidean coercivity follows from a lower spectral bound alone.
+
+    These are candidate scalar coefficients, not matrix, source, storage,
+    port-only passivity or physical-unit admission. Every primitive must
+    be an exact Fraction and is normalized before domain checks or algebra.
+    No inverse, field, exponential, trajectory or event is evaluated.
+    """
+    transport_gap_lower = _quadratic_rational(
+        transport_gap_lower, "transport_gap_lower"
+    )
+    port_norm_upper = _quadratic_rational(port_norm_upper, "port_norm_upper")
+    loss_divisor = _quadratic_rational(loss_divisor, "loss_divisor")
+    if transport_gap_lower <= 0:
+        raise ValueError("transport_gap_lower must be positive")
+    if port_norm_upper < 0:
+        raise ValueError("port_norm_upper must be nonnegative")
+    if loss_divisor <= 0:
+        raise ValueError("loss_divisor must be positive")
+    bracket = 1 / loss_divisor - port_norm_upper / (8 * transport_gap_lower)
+    coercivity = bracket * transport_gap_lower**2 if bracket >= 0 else None
+    return bracket, coercivity
+
+
+def _sine_strict_energy_coefficients(
+    *,
+    storage_lower: Q,
+    storage_upper: Q,
+    form_loss_lower: Q,
+    transport_norm_upper: Q,
+    damping_norm_upper: Q,
+    phase_stiffness_lower: Q,
+    gamma_lower: Q,
+    gamma_upper: Q,
+    loss_divisor: Q,
+    cross_coefficient: Q,
+) -> tuple[Q, Q, Q, Q, Q | None]:
+    """Strictify an admitted full-state energy using the complete phase row.
+
+    The caller proves ``L*(||x||^2+||y||^2)<=E<=U*(||x||^2+||y||^2)``
+    and ``E'<=-a*||x||^2`` on an invariant domain for the complete rows
+    ``x'=-D*x-gamma*g(y)/d`` and ``y'=gamma*H*x/d``. The fixed coupling
+    lies in the supplied interval, ``||D||<=Dbar``, ``||H||<=Hbar``, and
+    ``y.g(y)>=k*||y||^2`` on the admitted phase leaf. The form leaf can
+    retain common modes. These matrix, gradient, storage and domain premises
+    are not established by this scalar helper; no commutation is required.
+
+    For ``V=E+eps*gamma*x.y``, return candidate bounds ``(Ls,Us,qx,qy,rate)``.
+    When Ls,qx,qy are strictly positive, ``Ls*N^2<=V<=Us*N^2`` and
+    ``V'<=-qx*||x||^2-qy*||y||^2<=-rate*V``. Young's inequality uses a/2
+    of the original form loss. A nonpositive candidate phase bracket does
+    not give a valid loss coefficient by substituting the lower gamma;
+    such candidates retain rate None, rather than claiming recovery.
+
+    All ten bounds must be Fractions and normalize before any comparison
+    or algebra. Zero cross coefficient, lower coupling or phase stiffness
+    gives no positive rate. No horizon, exponential, state or field runs.
+    """
+    storage_lower = _quadratic_rational(storage_lower, "storage_lower")
+    storage_upper = _quadratic_rational(storage_upper, "storage_upper")
+    form_loss_lower = _quadratic_rational(form_loss_lower, "form_loss_lower")
+    transport_norm_upper = _quadratic_rational(
+        transport_norm_upper, "transport_norm_upper"
+    )
+    damping_norm_upper = _quadratic_rational(damping_norm_upper, "damping_norm_upper")
+    phase_stiffness_lower = _quadratic_rational(
+        phase_stiffness_lower, "phase_stiffness_lower"
+    )
+    gamma_lower = _quadratic_rational(gamma_lower, "gamma_lower")
+    gamma_upper = _quadratic_rational(gamma_upper, "gamma_upper")
+    loss_divisor = _quadratic_rational(loss_divisor, "loss_divisor")
+    cross_coefficient = _quadratic_rational(cross_coefficient, "cross_coefficient")
+    if not 0 < storage_lower <= storage_upper:
+        raise ValueError("storage bounds must satisfy 0 < lower <= upper")
+    if form_loss_lower <= 0:
+        raise ValueError("form_loss_lower must be positive")
+    if min(transport_norm_upper, damping_norm_upper, phase_stiffness_lower) < 0:
+        raise ValueError("transport, damping and phase bounds must be nonnegative")
+    if not 0 <= gamma_lower <= gamma_upper:
+        raise ValueError("gamma bounds must satisfy 0 <= lower <= upper")
+    if loss_divisor <= 0:
+        raise ValueError("loss_divisor must be positive")
+    if cross_coefficient < 0:
+        raise ValueError("cross_coefficient must be nonnegative")
+    cross = cross_coefficient * gamma_upper / 2
+    lower, upper = storage_lower - cross, storage_upper + cross
+    form_loss = (
+        form_loss_lower / 2
+        - cross_coefficient * gamma_upper**2 * transport_norm_upper / loss_divisor
+    )
+    phase_loss = (
+        cross_coefficient
+        * gamma_lower**2
+        * (
+            phase_stiffness_lower / loss_divisor
+            - cross_coefficient * damping_norm_upper**2 / (2 * form_loss_lower)
+        )
+    )
+    rate = (
+        min(form_loss, phase_loss) / upper
+        if lower > 0 and form_loss > 0 and phase_loss > 0
+        else None
+    )
+    return lower, upper, form_loss, phase_loss, rate

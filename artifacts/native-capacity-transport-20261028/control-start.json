@@ -1,0 +1,19 @@
+{
+  "started_utc":"2026-10-28T18:00:43.241844+00:00",
+  "plan":{
+    "path":"artifacts/native-capacity-transport-20261028/validation-plan.json",
+    "bytes":218052,
+    "sha256":"123dce08d173ffea8a71366524076db9f34d8e9036abd0a610a1ebeac1c6c450"
+  },
+  "attempt":1,
+  "budget":{
+    "watchdog_wall_budget_seconds":120,
+    "maximum_rss_bytes":2147483648,
+    "maximum_response_bytes":33554432,
+    "maximum_log_bytes":1048576,
+    "diagnostic_reserve_bytes":1048576,
+    "handshake_timeout_seconds":30,
+    "poll_seconds":0.1
+  },
+  "resource_scope":"Windows kill-on-close job; aggregate RSS sampled with a nominal 100 ms polling interval, with actual-worker OS peak additionally checked; no hard allocation limit. The 120-second watchdog includes the interpreter handshake and worker setup; owned-process cleanup has its separate bounded allowance."
+}

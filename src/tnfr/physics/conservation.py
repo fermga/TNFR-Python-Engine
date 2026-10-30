@@ -326,9 +326,13 @@ class ConservationTimeSeries:
 def compute_charge_density(G: Any) -> dict[Any, float]:
     r"""Compute structural charge density ρ(i) = Φ_s(i) + K_φ(i).
 
-    This is the Noether-like charge-density diagnostic used by TNFR:
-    - Φ_s captures global structural potential (long-range coupling)
-    - K_φ captures local geometric curvature (short-range confinement)
+    This legacy-named diagnostic combines two readouts:
+    - Φ_s: the declared inverse-distance-weighted pressure sum.
+    - K_φ: the local phase discrepancy from the neighbor resultant.
+
+    These observations do not install forces, establish confinement or
+    identify electric charge. Their normalized sum needs the reference
+    scales described in this module before any physical interpretation.
 
     Their sum combines global and local structural fields. Conservation of its
     total must be checked on the actual trajectory or derived for a specified

@@ -1,0 +1,33 @@
+{
+  "schema":"tnfr.research-prerequisite-review.v1",
+  "requirement":"research_selection",
+  "verdict":"approved",
+  "independent":true,
+  "author":"/root",
+  "reviewer":"/root/admission_foundation",
+  "criteria_assessment":{
+    "closure":"Approved only for the same prepared mathematical domain: the supplied unit C5 pair (0,1,2,3,4) and (5,6,7,8,9) with bridge (0,5), signed scalar form, circular phase, strictly positive capacities, fixed ordinary capacity mean, e=w=1/2, beta=1, a supplied fixed kappa>0, equal constituent measure and one structural clock. The capability is full-state prediction, local all-forward retention and recovery near the aligned winding-one family, and the declared internal receiver response. The native admission, CT comparison and JO response assess P1-P3 in the same complete realization. Joint storage and nodewise work cancellation, equal node measure and fixed reciprocal edge flux are explicit premises with an independent structural interpretation; they are not fitted to the desired receiver signal. CT compares equal-measure and degree-normalized transport under matched graph, state, clock and observables, preserving their distinct conserved measures and blind controls. JO compares dynamic and held capacities from the same initial state and clock: receiver acceleration agrees and its third derivative differs. Passive-loss, nonlinear-passive and capacity-mediated alternatives retain their actual own-capacity, locality, exact-loss and held-capacity boundaries. They show why passivity, equilibria or tangent agreement alone do not select a unique law. Normalized-sine and hybrid results are not transferred to the native model. The complete law is therefore sufficient for the admitted prepared capability without a claim of unique fundamental necessity. This prerequisite approval retains exactly the prepared single-bridge domain above; it does not include acquisition, autonomous support/event creation, an autonomous reduced regional state, a dynamic-capacity graph executor, a universal law or physical mapping. The two-bridge acquisition, selection, concrete witness and quantitative robustness results have separate complete-law proofs and reviews. RB now supplies the symbolic positive radius rho=2^(-2^250) for the same two-bridge matched witness, with all finite premises admitted by one static audit; this is not a practical tolerance or a change to this prepared approval. The first 183408 bytes of the chapter remain identical, preserving the original prepared proof, the separate acquisition/selection/robustness results, and the FO finite-observation and CA causal-access conclusions. The appended exact-scope admission decision and both updated program regions exactly match their final independently reviewed drafts. This reviewer assessed the four existing prepared resolutions together with FO/CA and independently reviewed the concrete documentary question, its consumer, evidence limits and execution restrictions; prior consultative contribution is declared in foundation-review-final.json. The separate admission decision permits asking whether independent access is documented for the prepared consumer without assuming a physical actuator, calibration or measurement bridge already exists. It does not enlarge this prerequisite's prepared single-bridge domain, supply an autonomous hardware/control mechanism, admit a physical variable identification, validate FO on data, or select a unique natural law. The proposed audit is bounded to the fixed three apparatus families, at most one apparatus per family, six primary documents and six targeted queries, with unavailable selections retained and provenance/location recorded. Its maximum positive outcome is a documented candidate warranting a separate complete-bridge review. Missing or incompatible source evidence is not a universal impossibility theorem; native sufficient error bounds are not direct instrument requirements without independent conversion. The current program labels only that limited documentary inquiry as physical activity; this hash renewal does not itself authorize external inspection. Execution remains conditional on a separate final exact-task readiness review binding the current program and all four current resolutions, and a passing unchanged strict guard. Broader bridge derivation, fitting, simulation, particle/field identification or empirical evaluation remains outside the admitted documentary task and requires its own substantive admission. Source hashes are renewed without changing evidence anchors, original scope text or primitive/derived assessments. This renewal used source/draft reading and artifact bookkeeping only, with no external search, scientific computation, test, trajectory, candidate evaluation or historical producer replay."
+  },
+  "evidence":[
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-foundation-scope-decision",
+      "sha256":"73f872bab36468fbe37be62aa1d944587f36a1790f3ec2b45ba0f1d08fdfba66"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-foundation-admission",
+      "sha256":"73f872bab36468fbe37be62aa1d944587f36a1790f3ec2b45ba0f1d08fdfba66"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-capacity-transport",
+      "sha256":"73f872bab36468fbe37be62aa1d944587f36a1790f3ec2b45ba0f1d08fdfba66"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-joint-organization",
+      "sha256":"73f872bab36468fbe37be62aa1d944587f36a1790f3ec2b45ba0f1d08fdfba66"
+    }
+  ]
+}

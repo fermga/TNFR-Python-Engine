@@ -1,7 +1,8 @@
 # Research archive and recovery index
 
-The [execution plan](../FIVE_STAGE_EXECUTION_PLAN.md) is the sole active queue;
-the [portfolio](../../../TNFR_lineas_de_investigacion.txt) classifies branches.
+The [research program](../../RESEARCH_PROGRAM.md#research-current-question)
+owns the current question and priorities. Old plan, strategy and portfolio
+paths are generated compatibility routes, not active instructions.
 This archive retains scoped evidence, inactive narratives and byte-level
 recovery records. Use the [theory catalog](../../README.md) for current
 definitions and mathematical capabilities. Historical instructions, milestone
@@ -17,8 +18,8 @@ labels and reported successes are not current authority.
 
 An inactive investigation can contain reusable mathematics. Archiving its
 narrative changes neither its conditional result nor its frozen evidence.
-Reuse a result through its maintained owner; scheduling belongs only to the
-execution plan.
+Reuse a result through its maintained owner; selecting further work belongs
+only to the research program.
 
 ## Retained campaign and measurement evidence
 

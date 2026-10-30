@@ -1,0 +1,29 @@
+{
+  "kind":"New analytical proof using retained computer-assisted reference evidence; no new scientific computation.",
+  "claim":"For each fixed kappa>0, an open mean-one full-state neighborhood of the original winding-zero preparation acquires and retains the winding-one pair with genuinely evolving nonuniform capacities.",
+  "state":"Ten signed forms, ten circular phases, ten positive capacities on the mean-one leaf; all labels/ports retained.",
+  "law":"Native pressure p=-D^-1 B x/2+g/2; x_dot=diag(nu)p; theta_dot=H^-1 diag(nu) Bx/2; nu_dot=-kappa Bnu/2; supplied two-C5 support with bridges(0,5),(1,6), structural clock.",
+  "proof_obligations":[
+    "Match retained original IVP and frozen source evidence",
+    "Derive actual two-bridge local joint basin",
+    "Embed uniform capacity reference exactly",
+    "Pull joint basin back through finite regular transit",
+    "Retain initial absence and genuinely evolving contrasts",
+    "Keep constitutive alternatives and claim limits explicit"
+  ],
+  "allowed_maintained_changes":[
+    "theory/RESEARCH_PROGRAM.md",
+    "theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+    "theory/research_prerequisites.json"
+  ],
+  "chapter_original_prefix_bytes":98150,
+  "program_regions":[
+    "Continuation introduction before foundational-pillars",
+    "Current decision and active question from The [native foundation account] to foundation-refactoring-plan"
+  ],
+  "registry":"Renew independent hash associations for the already accepted prepared claim after chapter append; no physical readiness approval.",
+  "new_scientific_evaluations":0,
+  "historical_producer_replays":0,
+  "new_tests":0,
+  "checks":"Independent mathematical/source review; evidence integrity and archive association; prerequisite guard both modes; documentation and rendered links; preservation audit."
+}

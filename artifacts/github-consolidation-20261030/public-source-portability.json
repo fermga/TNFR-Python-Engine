@@ -1,0 +1,20 @@
+{
+  "documentary_only":true,
+  "current_raw_crlf_receipts":743,
+  "already_in_selected_raw_archives":740,
+  "unarchived_current_crlf_sources":[
+    {
+      "path":"theory/research/ORGANIZED_ELECTRICAL_FEASIBILITY.md",
+      "sha256":"47b1db39946962d736d620f0468ccbb27fab837c0fcee93eff190b21bcd87146"
+    },
+    {
+      "path":"theory/research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md",
+      "sha256":"c693f2b8fc20abee38b526e86c7e937ed08c4f2d421eb1272a9802421a3d3e7e"
+    },
+    {
+      "path":"theory/research/archive/measurement/TRANSPORT_SOURCE_REVIEWS.md",
+      "sha256":"3ada2f4f3f3719719ace348c4cd5ee823bb6d990f163406d57327c7959993fd4"
+    }
+  ],
+  "meaning":"Newline normalization can change these current raw source associations. Pin -text where it is a live CI prerequisite; otherwise publish an exact source supplement before normalization or explicitly retain this historical publication limitation."
+}

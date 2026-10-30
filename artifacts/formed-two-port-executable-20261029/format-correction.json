@@ -1,0 +1,40 @@
+{
+  "passed":true,
+  "ast_identical":true,
+  "before":[
+    {
+      "path":"src/tnfr/research/formed_two_port_reference.py",
+      "bytes":20520,
+      "sha256":"ea845a1f3d80834c1cc07121752742f92e4ae6efed3caee4f0446283f1fde863"
+    },
+    {
+      "path":"tests/research/test_formed_two_port_reference.py",
+      "bytes":12774,
+      "sha256":"29ee268f13034f84016e25a23e4cf0f9d19122147d0f9de1c253908fbaac5ee1"
+    }
+  ],
+  "after":[
+    {
+      "path":"src/tnfr/research/formed_two_port_reference.py",
+      "bytes":20488,
+      "sha256":"0a141ab0ec38b468a96a4ddc65e09884fe2687e34e26e2f341f99eb950cf1345"
+    },
+    {
+      "path":"tests/research/test_formed_two_port_reference.py",
+      "bytes":12890,
+      "sha256":"db56dd753b88c97d5c330b5ed76cf35d748d35ff8929884d0677b1a6ee8fd5c3"
+    }
+  ],
+  "format_log":{
+    "path":"artifacts/formed-two-port-executable-20261029/format-correction.log",
+    "bytes":182,
+    "sha256":"dbdeafcff5d267d76cd561a5ac36a3761bd587bd788d7626a7a5e6bfb3cb7fa2"
+  },
+  "check_log":{
+    "path":"artifacts/formed-two-port-executable-20261029/format-check-final.log",
+    "bytes":70,
+    "sha256":"7f71b86ed914f0506f920b5cce4cb3ac305729e9cd0ab03bcb2cd635e3e61ce4"
+  },
+  "scientific_controls_replayed":0,
+  "reason":"Black reported two files after successful frozen controls; token formatting only, complete AST unchanged."
+}

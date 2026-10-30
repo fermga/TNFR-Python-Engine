@@ -1,0 +1,16 @@
+{
+  "schema":"tnfr.native-selection-robustness-closure-decision.v1",
+  "evaluation":{
+    "path":"artifacts/native-selection-robustness-20261029/validation.json",
+    "bytes":5157,
+    "sha256":"0af811be1fee6a4a5b7a288020b174a089f87f7718a706e336eb86a76de10eba"
+  },
+  "analytical_radius":"2^(-2^250)",
+  "result":"An explicit symbolic positive sup-norm ball of radius rho=2^(-2^250) in the full29-dimensional mean-one capacity leaf preserves the matched destinations: held capacity converges to positive aligned twist, dynamic capacity to consensus. The same perturbed initial state is used in both laws, including all capacity directions and both neutral common origins. Quantitative recovery/entry and complete-field perturbation arguments are independently reviewed; all finite retained-evidence guards passed one static audit.",
+  "limitations":[
+    "The radius and entry-time bound are extremely conservative analytical expressions, not practical preparation tolerances or computed long-time trajectories.",
+    "This does not quantify the actual basin size, admit general laws or altered supports, or identify a physical observable.",
+    "The four prerequisite entries retain their original prepared scope; a joint scope/readiness review remains required before physical mapping."
+  ],
+  "next_active_claim":"Review the foundational scope jointly for the same complete native law using the prepared, acquisition, matched selection and full-state robustness results. Distinguish supplied premises, demonstrated capabilities, existential versus quantitative claims and practical preparation limits; identify the first remaining dependency for a narrowly specified future physical comparison without activating that comparison or refining this example automatically."
+}

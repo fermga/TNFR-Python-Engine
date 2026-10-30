@@ -6,6 +6,8 @@ neither preparation, acquisition, an observation map nor a solver policy.
 
 from fractions import Fraction as Q
 
+from .._exact_time import exact_or_represented_real
+from ..mathematics._comparison_flow import MAX_COMPARISON_DIMENSION
 from ..mathematics._interval_taylor import Jet
 from ..mathematics._interval_taylor import sin as jet_sin
 from ..mathematics._rational_interval import I, sin
@@ -176,3 +178,164 @@ def _full_sine_field(model, geometry, degrees):
         return (Q(1),)
 
     return flow, domain
+
+
+def _prepared_quarter_sine_rows(*, gradient, current, capacity, gamma):
+    """Assemble admitted complete weighted D/4 rows in their supplied clock.
+
+    Gradient and current have the same shape as positive held capacities.
+    The current includes its conductance weights. This arithmetic works with
+    rational intervals or common-order Taylor jets; it neither selects the
+    bare-neighbor law nor supplies a reduction or a trajectory.
+    """
+    return tuple(
+        (-q + gamma * s) * (nu / 4) for q, s, nu in zip(gradient, current, capacity)
+    ) + tuple(q * (gamma * nu / 4) for q, nu in zip(gradient, capacity))
+
+
+def _held_quarter_sine_field(
+    *,
+    capacity,
+    gamma,
+    weighted_edges,
+    retained_indices=None,
+    hidden_form=(),
+    hidden_phase=(),
+):
+    """Compile weighted quarter-law rows with optional fixed hidden references.
+
+    ``capacity`` retains the full positive nodal vector. Edges are simple
+    indexed ``(i,j,weight)`` triples. A nonempty ordered retained index set
+    declares the evolving coordinates; its complement follows full node
+    order and supplies fixed hidden form/phase references. Omitting the set
+    prepares all rows. Evaluation consumes exactly the retained forms then
+    retained lifted phases, returning only those two evolving rows. Hidden
+    neighbors are constant boundary values; no hidden dynamic row is built.
+
+    All coefficient and shape admission precedes interval or sine work.
+    States accept exact or represented finite scalars, rational intervals,
+    or uniformly ordered jets. Constants are lifted to the same jet order.
+    The caller establishes the source, held law, interpretation of phases
+    and any approximation error; this function executes no solver or event.
+    """
+    capacity = _ordered(capacity, "capacity", limit=MAX_COMPARISON_DIMENSION + 1)
+    size = len(capacity)
+    if not 1 <= size <= MAX_COMPARISON_DIMENSION:
+        raise ValueError("quarter field requires between 1 and 24 nodal capacities")
+    capacity = tuple(
+        exact_or_represented_real(value, f"capacity[{i}]")
+        for i, value in enumerate(capacity)
+    )
+    gamma = exact_or_represented_real(gamma, "gamma")
+    if gamma < 0 or any(value <= 0 for value in capacity):
+        raise ValueError(
+            "quarter field requires positive capacities and nonnegative gamma"
+        )
+    max_edges = size * (size - 1) // 2
+    raw_edges = _ordered(weighted_edges, "weighted_edges", limit=max_edges + 1)
+    if len(raw_edges) > max_edges:
+        raise ValueError("quarter field exceeds its simple-edge budget")
+    edges, seen = [], set()
+    for raw in raw_edges:
+        edge = _ordered(raw, "weighted edge", limit=4)
+        if len(edge) != 3:
+            raise ValueError("weighted edges require two indices and one conductance")
+        i, j, weight = edge
+        if any(type(index) is not int or not 0 <= index < size for index in (i, j)):
+            raise ValueError("weighted edge indices must be ordinary in-range integers")
+        pair = (min(i, j), max(i, j))
+        if i == j or pair in seen:
+            raise ValueError("quarter field support must be simple and loop-free")
+        seen.add(pair)
+        weight = exact_or_represented_real(weight, "conductance")
+        if weight < 0:
+            raise ValueError("conductances must be nonnegative")
+        edges.append((i, j, weight))
+    retained = (
+        tuple(range(size))
+        if retained_indices is None
+        else _ordered(retained_indices, "retained_indices", limit=size + 1)
+    )
+    if (
+        not retained
+        or len(retained) > size
+        or any(type(i) is not int or not 0 <= i < size for i in retained)
+        or len(set(retained)) != len(retained)
+    ):
+        raise ValueError("retained indices must be a nonempty ordered distinct subset")
+    hidden = tuple(i for i in range(size) if i not in retained)
+    references = []
+    for raw, label in ((hidden_form, "hidden_form"), (hidden_phase, "hidden_phase")):
+        raw = _ordered(raw, label, limit=len(hidden) + 1)
+        if len(raw) != len(hidden):
+            raise ValueError(f"{label} must match the hidden complement order")
+        references.append(
+            tuple(exact_or_represented_real(value, label) for value in raw)
+        )
+    retained_positions = {node: local for local, node in enumerate(retained)}
+    hidden_positions = {node: local for local, node in enumerate(hidden)}
+    active_edges = tuple(
+        (i, j, weight)
+        for i, j, weight in edges
+        if weight and (i in retained_positions or j in retained_positions)
+    )
+    retained_capacity = tuple(capacity[i] for i in retained)
+    count = len(retained)
+
+    def flow(state):
+        values = _ordered(state, "retained state", limit=2 * count + 1)
+        if len(values) != 2 * count:
+            raise ValueError(
+                "state must contain exactly the retained form and phase rows"
+            )
+        jets = tuple(isinstance(value, Jet) for value in values)
+        if any(jets):
+            if not all(jets) or len({value.order for value in values}) != 1:
+                raise ValueError("retained jets must have one common order")
+            order = values[0].order
+
+            def constant(value):
+                return Jet.constant(value, order)
+
+            zero, sine = constant(0), jet_sin
+        else:
+            # Admit the whole raw row before allocating intervals or taking sine.
+            normalized = tuple(
+                (
+                    value
+                    if isinstance(value, I)
+                    else exact_or_represented_real(value, "state")
+                )
+                for value in values
+            )
+            values = tuple(I.coerce(value) for value in normalized)
+            constant = I.coerce
+            zero, sine = I(0), sin
+        hidden_forms = tuple(constant(value) for value in references[0])
+        hidden_phases = tuple(constant(value) for value in references[1])
+
+        def coordinate(node, phase):
+            if node in retained_positions:
+                return values[retained_positions[node] + (count if phase else 0)]
+            return (hidden_phases if phase else hidden_forms)[hidden_positions[node]]
+
+        gradient, currents = [zero] * count, [zero] * count
+        for i, j, weight in active_edges:
+            difference = (coordinate(i, False) - coordinate(j, False)) * weight
+            current = sine(coordinate(j, True) - coordinate(i, True)) * weight
+            if i in retained_positions:
+                slot = retained_positions[i]
+                gradient[slot] += difference
+                currents[slot] += current
+            if j in retained_positions:
+                slot = retained_positions[j]
+                gradient[slot] -= difference
+                currents[slot] -= current
+        return _prepared_quarter_sine_rows(
+            gradient=tuple(gradient),
+            current=tuple(currents),
+            capacity=retained_capacity,
+            gamma=gamma,
+        )
+
+    return flow

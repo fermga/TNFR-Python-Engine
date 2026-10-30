@@ -1,31 +1,30 @@
 """Structural field computations for TNFR physics.
 
-REORGANIZED (Nov 14, 2025): Canonical field implementations moved to modular
-submodules (canonical.py, extended.py) to reduce coupling and improve
-maintainability. This module now acts as the public API, re-exporting all
-canonical fields and containing only research-phase utilities.
+Canonical and extended field implementations have shared modular owners.
+This facade exports those observations, optional spatial profiles and scoped
+research utilities.
 
 This module exposes structural read-outs of graph state. Their algebraic
 composition does not derive an evolution law or a macroscopic interaction.
 
 CANONICAL FIELDS (Read-Only Telemetry)
 ---------------------------------------
-All four structural fields form the canonical diagnostic interface:
+The historical tetrad remains a selected view within structural observations:
 
 - Φ_s (Structural Potential): Global field from ΔNFR distribution
 - |∇φ| (Phase Gradient): Local phase desynchronization metric
 - K_φ (Phase Curvature): Wrapped displacement from a defined neighbor direction
 - ξ_C (Coherence Length): State- and topology-dependent correlation estimate
 
-Canonical status specifies the required read-outs and their implementations.
-It does not prove that four lossy summaries reconstruct the graph state or its
-dynamics; minimal complete observability remains open. In particular, ξ_C is
+The view specifies shared read-outs and their implementations. Sufficient
+observations depend on the task, admitted state and complete law; four channel
+names do not specify four independent state coordinates. In particular, ξ_C is
 nonlinear in the sampled field and can use a spectral-gap fallback on supported
 symmetric graphs. The static product fit uses declared structural path-length
 units; the normalized-generator spectral fallback is dimensionless. Its
 provenance must be retained when interpretations differ.
 
-EXTENDED CANONICAL FIELDS (Promoted Nov 12, 2025)
+EXTENDED SIGNED OBSERVATIONS
 -------------------------------------------------
 Two additional signed neighbor statistics, without an inferred transport law:
 
@@ -85,7 +84,10 @@ _ISING_2D_EXPONENT_TOLERANCE = 0.15
 
 # Canonical diagnostic tetrad (Φ_s, |∇φ|, K_φ, ξ_C)
 from .canonical import (
+    CoherenceDistanceBin,
+    CoherenceFitDiagnostics,
     CoherenceLengthEstimate,
+    CoherenceProfile,
     PhaseCurvatureNodeObservation,
     PhaseCurvatureObservation,
     UndefinedPhaseCurvatureError,
@@ -94,7 +96,13 @@ from .canonical import (
     compute_structural_potential,
     estimate_coherence_length,
     estimate_coherence_length_with_provenance,
+    observe_coherence_profile,
     observe_phase_curvature,
+)
+from .coherence_resolution import (
+    CoherenceResolution,
+    CoherenceResolutionPoint,
+    observe_coherence_resolution,
 )
 
 # Backward-compatible alias (used by pattern_discovery and parallel modules)
@@ -104,7 +112,7 @@ compute_structural_potential_field = compute_structural_potential
 from ..constants.aliases import ALIAS_DNFR as ALIAS_DNFR  # noqa: F401
 from ..constants.aliases import ALIAS_THETA
 
-# Extended canonical fields (J_φ, J_ΔNFR) - Promoted Nov 12, 2025
+# Extended signed fields (J_φ, J_ΔNFR)
 from .extended import (
     compute_dnfr_flux,
     compute_extended_canonical_suite,
@@ -142,6 +150,13 @@ __all__ = [
     "estimate_coherence_length",
     "estimate_coherence_length_with_provenance",
     "CoherenceLengthEstimate",
+    "observe_coherence_profile",
+    "CoherenceProfile",
+    "CoherenceResolution",
+    "CoherenceResolutionPoint",
+    "observe_coherence_resolution",
+    "CoherenceDistanceBin",
+    "CoherenceFitDiagnostics",
     # Unified Telemetry
     "compute_structural_telemetry",
     # Extended Canonical Fields (NEWLY PROMOTED Nov 12, 2025)

@@ -1,0 +1,17 @@
+{
+  "schema":"tnfr.native-selection-witness-closure-decision.v1",
+  "evaluation":{
+    "path":"artifacts/native-selection-witness-20261028/validation.json",
+    "bytes":5422,
+    "sha256":"2c018e9fda13596f5373f6890e5e5f4650df2019b204d7c88355ccb813cec79e"
+  },
+  "paired_certificate_passed":true,
+  "result":"One shared exact represented six-coordinate preparation is certified under the two complete native ODEs: dynamic capacity enters consensus capture at 123/4 after246steps; held capacity enters positive-twist capture at63/2 after252steps. Both whole-time paths retain regularity and positive capacities; both entire endpoint boxes satisfy strict rectangle and storage<7 conditions. The predicted orientation is confirmed in the only declared attempt.",
+  "limitations":[
+    "The fixed two-C5/two-bridge model and supplied e=w=1/2,beta=kappa=1 law; no uniquely necessary TNFR law or physical identification.",
+    "Initial winding is one: the comparison establishes selection/retention versus loss, not winding-zero acquisition.",
+    "No explicit nonsymmetric full-state robustness radius or basin-volume comparison has been certified.",
+    "The shared validated arithmetic supplies a detached ideal-ODE certificate; no dynamic-capacity graph executor was installed."
+  ],
+  "next_active_claim":"Derive a reusable quantitative full-state perturbation certificate around this frozen matched witness, retaining all form, phase and mean-one capacity coordinates without copied/reflected symmetry. Establish one explicit positive jointly valid radius in a declared norm from the retained tubes and capture margins, or name the missing bound; no trajectory replay, new seed or scan is admitted merely by selecting this prerequisite."
+}

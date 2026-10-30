@@ -1,0 +1,105 @@
+{
+  "schema":"tnfr.native-selection-robustness-post-evaluation-review.v1",
+  "author":"/root",
+  "reviewer":"/root/robust_controls",
+  "independent":true,
+  "verdict":"PASS",
+  "evaluation":{
+    "path":"artifacts/native-selection-robustness-20261029/validation.json",
+    "bytes":5157,
+    "sha256":"0af811be1fee6a4a5b7a288020b174a089f87f7718a706e336eb86a76de10eba"
+  },
+  "proof":{
+    "path":"artifacts/native-selection-robustness-20261029/robustness-section.md",
+    "bytes":14725,
+    "sha256":"cdade3d189040e0c4ca8657d9c9d6a1e1a29cc8b934d39ce41ab58ff500a31da"
+  },
+  "validation_plan":{
+    "path":"artifacts/native-selection-robustness-20261029/validation-plan.json",
+    "bytes":215575,
+    "sha256":"fc7e1ace5cd7efe1a723c83dfa4ecf8f5049c46f119a88cf0d5b8d9f421c892f"
+  },
+  "static_audit":{
+    "path":"artifacts/native-selection-robustness-20261029/static-audit-result.json",
+    "bytes":797839,
+    "sha256":"66e6b8dd241f2dc35bb7dc6d16140345c121d9cf2032ae49ba34b142ba20f391"
+  },
+  "pre_evaluation_review":{
+    "path":"artifacts/native-selection-robustness-20261029/pre-evaluation-review.json",
+    "bytes":13088,
+    "sha256":"105af64bc8e06e92ee0fe0a9cd04b5ecc7d0e86298c566a807d8b6a18ef8b574"
+  },
+  "pre_audit_prerequisites":{
+    "path":"artifacts/native-selection-robustness-20261029/pre-audit-prerequisites.json",
+    "bytes":294,
+    "sha256":"80d88ecdc60756787be6b1226ec73459642b72bf9e84f30a1032f167181046ce"
+  },
+  "source_archive":{
+    "path":"artifacts/native-selection-robustness-20261029/evaluated-source.zip",
+    "bytes":4847630,
+    "sha256":"340135a7a4b9bb4721b639590c7c56aa56e561b57cf417c4b44d8adffb5cc3fa"
+  },
+  "source_preservation":"All963 archived members verified against the frozen manifest; all10 pinned old inputs remain identical. Only authorized canonical documents are being changed after evaluation. The135065-byte chapter prefix is intact and its appended bytes exactly match the reviewed frozen proof.",
+  "retained_result":{
+    "numerical_guards":2003,
+    "saved_steps":498,
+    "failed_guards":0,
+    "arms":{
+      "held":{
+        "steps":252,
+        "horizon":{
+          "numerator":63,
+          "denominator":2
+        },
+        "minimum_real_resultant_lower_bound":{
+          "numerator":10461881914608438533018368752291288831,
+          "denominator":10633823966279326983230456482242756608
+        },
+        "capture_deficit_lower_bound":{
+          "numerator":671159683939873213935574082801,
+          "denominator":340282366920938463463374607431768211456
+        },
+        "sector":1
+      },
+      "dynamic":{
+        "steps":246,
+        "horizon":{
+          "numerator":123,
+          "denominator":4
+        },
+        "minimum_real_resultant_lower_bound":{
+          "numerator":167390102783673696551138064847470453253,
+          "denominator":170141183460469231731687303715884105728
+        },
+        "capture_deficit_lower_bound":{
+          "numerator":992727411989550931069022212505,
+          "denominator":340282366920938463463374607431768211456
+        },
+        "sector":0
+      }
+    },
+    "preparation_and_source_admissions":"Verified additionally by the audited admission checks; not included in the2003 numerical-guard counter.",
+    "symbolic_radius":"2^(-2^250)",
+    "radius_denominator_materialized":false
+  },
+  "findings":[
+    "The only declared static audit completed successfully. Its selected finite premises now hold for the unchanged earlier witness and all498 retained enclosures.",
+    "Combined with the separately reviewed RB proof, these data admit the symbolic full-state sup-norm radius on the29-dimensional mean-one leaf. The same perturbed preparation, including held capacity coordinates, is used in both laws.",
+    "No new trajectory or candidate was computed. The time2^163 is an analytic upper bound; neither that future state nor a practical relaxation time was numerically observed.",
+    "The source, input, normal-prerequisite and resource records agree with the declared supervised run. RSS is sampled aggregate usage, not a hard allocation bound.",
+    "The independent-review contribution disclosure and complementary RB6 review remain as recorded in the pre-review. This post review interprets the frozen result and does not repeat its field/observation computations.",
+    "The canonical append preserves all prior results. The current program correctly moves to a substantive joint scope review rather than automatically refining the radius or starting a physical mapping."
+  ],
+  "resource_summary":{
+    "elapsed_seconds":13.510109900000316,
+    "sampled_peak_rss_bytes":264171520,
+    "cleanup_complete":true
+  },
+  "limitations":[
+    "The bound is mathematically explicit but extraordinarily conservative and unusable as a binary64 or laboratory preparation tolerance.",
+    "The actual basin width, constitutive uniqueness, autonomous support/event generation and physical identification remain outside this result.",
+    "Prepared prerequisite approvals keep their old scope; their source renewal is not the pending joint readiness review. Physical mapping remains blocked."
+  ],
+  "new_scientific_execution_by_reviewer":false,
+  "field_or_solver_replays":0
+}

@@ -1,0 +1,81 @@
+{
+  "schema":"tnfr.reference-source-review.v1",
+  "reviewed_utc":"2026-10-28T19:45:02.949947+00:00",
+  "author":"/root",
+  "reviewer":"/root/collective_engine",
+  "independent":true,
+  "verdict":"PASS",
+  "scope":"Independent static analytical review of CS1-CS6 at native-capacity-selection, including the exact even-capacity reduction, actual held/dynamic capture, local boundary comparison and amended full-state open selection claim. No physical readiness approval.",
+  "sources":[
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "bytes":126419,
+      "sha256":"91c09e1f68422c8bef5a0399de64882f3a7232d00790482bdf901a1b5a5a62e8"
+    },
+    {
+      "path":"theory/nodal/RELATIONAL_DOMAIN_AND_CAPTURE.md",
+      "bytes":79242,
+      "sha256":"5a9278ec65ce62df0e174c17cf446c0cbcfadb88678c18866365a9d4b860fbbb"
+    },
+    {
+      "path":"theory/nodal/RELATIONAL_RECOVERY_AND_INTERACTION.md",
+      "bytes":30557,
+      "sha256":"e28b84af254fcd2443d1bb785189143ff715bdaff6c2c50b74fc9d90d24f764a"
+    }
+  ],
+  "scope_declaration":{
+    "path":"artifacts/native-capacity-selection-20261028/scope.json",
+    "bytes":2180,
+    "sha256":"a1519d8dc093f72923b9b330746716dfdf043a15b1fcb8fd08235a87183e2e22"
+  },
+  "scope_amendment":{
+    "path":"artifacts/native-capacity-selection-20261028/scope-amendment.json",
+    "bytes":941,
+    "sha256":"bb556496d3eca01926a54ab9ad259b560e9758b1883afb13655f9cb3f211a42d"
+  },
+  "preservation":{
+    "chapter_prior_prefix_bytes":109764,
+    "chapter_prior_prefix_sha256":"d882de5ada26a5181934edba5f14ceedb5d5895135d809e6f994e8c86df3b8b4",
+    "chapter_prior_prefix_unchanged":true
+  },
+  "criteria_assessment":{
+    "CS1_exact_complete_reduction":{
+      "passed":true,
+      "assessment":"The graph has both bridges and four degree-three ports. Even copied capacities preserve the reflected native coordinates. The four native rows carry factors s,t exactly; central native rows vanish only on the admitted regular symmetric slice. The transport equations and weighted mean constraint give the displayed C_kappa, with a stable mean-one capacity quotient. The held comparison uses the identical initial profile and native rows."
+    },
+    "CS2_storage_domain_and_capture":{
+      "passed":true,
+      "assessment":"Full two-ring storage is independent of capacity; its derivative is exactly -e(4sq^2/3+2tr^2). The retained R+/S boundary costs and positive-resultant bounds therefore remain applicable under either actual capacity law. A positive invariant capacity hull and the energy-confined product give global regular continuation. The native invariant zero-loss conditions select only twist in R+ and consensus in S. For dynamic capacity the stated variance derivative completes LaSalle and gives nu=1. The barrier remains E<7beta, without an unjustified E+Vnu threshold."
+    },
+    "CS3_saddle_family_and_boundaries":{
+      "passed":true,
+      "assessment":"The actual J0 and row scaling diag(s,t,s,t) match the reflected equations at the regular saddle with H0=H4=pi. The retained unit saddle has one unstable and three stable native directions; continuity supplies a uniform gap for nearby held profiles. The held boundary is specifically the smooth union of stable fibers, while the dynamic boundary is the stable manifold of the hyperbolic enlarged saddle. Both are comparable codimension-one graphs and coincide on the uniform slice and exact native saddle sheet."
+    },
+    "CS4_boundary_nonidentity":{
+      "passed":true,
+      "assessment":"If the graphs agreed, tangency of the pure capacity difference gives D_zeta h C_kappa zeta=0. Capacity-variance ellipsoids stay in the chart and relax to zero, forcing h independent of capacity. The resulting common native stable hyperplane would have a fixed nonzero annihilator ell satisfying ell diag(s,t,s,t)=(lambda(s,t)/lambda0)ell. Independent s,t force support in one row group; the displayed nonzero cross-group columns of J0 exclude either possibility. The argument proves nonidentity arbitrarily near the origin for each fixed kappa>0 without a computed displacement or orientation."
+    },
+    "CS5_departure_to_real_organizations":{
+      "passed":true,
+      "assessment":"Uniform saddle branches have strict energy deficit and enter the actual R+/S capture sets. The dynamic unstable manifold stays exactly at nu=1, while nearby held branches vary smoothly. Simultaneous stable/unstable straightening gives sign-preserving unstable growth and decay in an adapted stable norm, hence exits of sufficiently near points approach the respective captured branch sections. A shared point between distinct graph values has opposite exit signs, and CS2 then proves different final geometries. A mere derivative or exit-time difference is not substituted for this continuation argument."
+    },
+    "CS6_full_state_amendment":{
+      "passed":true,
+      "assessment":"Both twist and consensus are acute critical geometries on the actual two-bridge graph. The general native held-capacity recovery theorem applies with the capacity profile retained as a parameter. Dynamic recovery adds a strictly stable full capacity quotient with zero native crosscolumns at either lock; its origin-drift argument remains valid. Each reduced matched witness reaches its own full-state attracting neighborhood after a finite regular segment. Intersecting both initial-state pullbacks on the29-dimensional mean-one leaf gives the claimed nonempty open shared set without retaining reflection. This discharges the explicit scope amendment rather than asserting an unproved extension."
+    },
+    "controls_and_claim_limits":{
+      "passed":true,
+      "assessment":"The theorem compares phase destinations, not merely the differing capacity limits. It preserves the uniform-capacity and exact-native-saddle null controls; near-saddle initial winding is already(1,1), so this is selection/retention-versus-loss rather than winding-zero acquisition. No concrete numerical witness, orientation, perturbation radius, kappa-uniform separation, basin-volume improvement, new runtime or physical mapping is claimed."
+    }
+  },
+  "evidence_use":{
+    "analytic_owners_reviewed":true,
+    "original_transit_certificate_consumed_for_this_selection_proof":false,
+    "historical_604_source_archive_reread_or_recomputed":false,
+    "note":"The selection proof uses retained analytical saddle/capture and full-state recovery results; it does not require the earlier validated-transit numerical certificate."
+  },
+  "new_scientific_evaluations":0,
+  "historical_producer_replays":0,
+  "test_imports_or_runs":0,
+  "actions_performed":"Read source and scope, manually review the analytical argument, verify maintained-file hashes and the preserved prior chapter prefix, and exclusively write this review receipt."
+}

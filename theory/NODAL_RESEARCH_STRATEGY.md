@@ -1,4 +1,4 @@
-# Retired research guide
+# Retired nodal research strategy
 
 This retired route is a generated compatibility view.
 The [TNFR research program](RESEARCH_PROGRAM.md#research-objective) owns the objective,

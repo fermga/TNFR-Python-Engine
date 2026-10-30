@@ -1,0 +1,29 @@
+{
+  "source":{
+    "path":"artifacts/formed-two-port-method-20261029/chapter-proposed.md",
+    "bytes":35528,
+    "sha256":"f81704f436641e915423e6d0a9d4da23d3428acec11632d8ffc945a75e8ca290"
+  },
+  "final":{
+    "path":"artifacts/formed-two-port-method-20261029/chapter-proposed-v2.md",
+    "bytes":35533,
+    "sha256":"d97469ba40e16db7e6a00fd1ca4f5368b1a0c3fbbc06b1cd75858e53f290f8cb"
+  },
+  "suffix":{
+    "path":"artifacts/formed-two-port-method-20261029/chapter-append-v2.md",
+    "bytes":12793,
+    "sha256":"e6b344883f2e0e2055e5ebc9cc50917e107768b35131438f02e6e741c7b359c2"
+  },
+  "script":{
+    "path":"artifacts/formed-two-port-method-20261029/refine_draft.py",
+    "bytes":1569,
+    "sha256":"544e5134412acd07c3e82a8c56eaade249c6c4a5b3b5e07538c52d51b2cbbb6b"
+  },
+  "target_input":{
+    "path":"docs/assets/sine_formed_classes/two-port-compatibility-v1.json",
+    "bytes":477037,
+    "sha256":"55edde9341b1be286d7f5927e09d1bf97d1519bad5d24665b3417a2868ffdba2"
+  },
+  "change":"Select the primary compatibility report for later primitive root readmission; avoid loading the unrelated 41-MB prepared capture chain.",
+  "mathematical_candidate_changed":false
+}

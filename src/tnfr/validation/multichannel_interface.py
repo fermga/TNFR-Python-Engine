@@ -56,11 +56,13 @@ except ImportError:  # pragma: no cover - optional dependency guard
     nx = None  # type: ignore[assignment]
 
 from ..physics.canonical import (
+    CoherenceLengthEstimate,
     compute_phase_curvature,
     compute_phase_gradient,
     compute_structural_potential,
-    estimate_coherence_length,
+    estimate_coherence_length_with_provenance,
 )
+from .temporal_interface import _coherence_comparison, _coherence_window_metadata
 
 __all__ = [
     "MultichannelConfig",
@@ -145,6 +147,8 @@ class MultichannelWindowSeries:
     most-recent sample is ``window_end[i]``.  TNFR channels are ``grad_phi``,
     ``k_phi``, ``xi_c`` and ``phi_s``; baselines are ``order_parameter``
     (Kuramoto ``R``), ``mean_plv`` and ``phase_dispersion``.
+    Raw xi values retain aligned canonical estimates with method and units;
+    numeric-only legacy construction cannot establish a comparable xi series.
     """
 
     window_end: "np.ndarray"
@@ -155,8 +159,9 @@ class MultichannelWindowSeries:
     order_parameter: "np.ndarray"
     mean_plv: "np.ndarray"
     phase_dispersion: "np.ndarray"
+    xi_c_provenance: tuple[CoherenceLengthEstimate, ...] = ()
 
-    def as_dict(self) -> dict[str, list[float]]:
+    def as_dict(self) -> dict[str, Any]:
         return {
             "window_end": [int(v) for v in self.window_end],
             "grad_phi": [float(v) for v in self.grad_phi],
@@ -166,6 +171,9 @@ class MultichannelWindowSeries:
             "order_parameter": [float(v) for v in self.order_parameter],
             "mean_plv": [float(v) for v in self.mean_plv],
             "phase_dispersion": [float(v) for v in self.phase_dispersion],
+            "xi_c_provenance": [
+                _coherence_window_metadata(item) for item in self.xi_c_provenance
+            ],
         }
 
 
@@ -179,6 +187,8 @@ class SynchronyDiscrimination:
     regimes; near 1.0 means clean separation. If the labelled windows lack
     either class, ``metadata['auc_available']`` is false and the retained 0.5
     values are compatibility placeholders, not performance measurements.
+    Per-channel availability separately excludes an incomparable xi series
+    from best-channel selection while preserving the other comparisons.
     """
 
     indicators: tuple[str, ...]
@@ -468,6 +478,7 @@ def multichannel_window_series(
     grad: list[float] = []
     kphi: list[float] = []
     xi: list[float] = []
+    xi_provenance: list[CoherenceLengthEstimate] = []
     phis: list[float] = []
     order: list[float] = []
     plv_mean: list[float] = []
@@ -483,7 +494,9 @@ def multichannel_window_series(
         graph = build_coupling_graph(phase, amplitude, k_neighbours=cfg.k_neighbours)
         grad.append(_mean_abs_dict(compute_phase_gradient(graph)))
         kphi.append(_mean_abs_dict(compute_phase_curvature(graph)))
-        xi.append(float(estimate_coherence_length(graph)))
+        estimate = estimate_coherence_length_with_provenance(graph)
+        xi.append(float(estimate.value))
+        xi_provenance.append(estimate)
         phis.append(_mean_abs_dict(compute_structural_potential(graph)))
 
         order.append(kuramoto_order_parameter(phase))
@@ -504,6 +517,7 @@ def multichannel_window_series(
         order_parameter=np.asarray(order, dtype=float),
         mean_plv=np.asarray(plv_mean, dtype=float),
         phase_dispersion=np.asarray(dispersion, dtype=float),
+        xi_c_provenance=tuple(xi_provenance),
     )
 
 
@@ -602,8 +616,9 @@ def evaluate_synchrony_discrimination(
 
     Scores describe this supplied labelled sample. Distinct formulas do not
     prove independent information or out-of-sample prediction. The report's
-    comparison bands are descriptive policies, not uncertainty intervals;
-    ``xi_c`` also lacks fit/fallback provenance in the retained numeric series.
+    comparison bands are descriptive policies, not uncertainty intervals.
+    Raw ``xi_c`` values retain per-window estimator provenance. Mixed estimators
+    or distance conventions are unavailable for a pooled xi comparison.
     """
     _require_numpy()
     cfg = config or MultichannelConfig()
@@ -627,23 +642,36 @@ def _evaluate_synchrony_series(
     cfg = config
     labels = _binary_sample_labels(labels, n_samples=n_samples)
     window_labels = _window_labels(labels, series, cfg.window)
+    xi_values, xi_comparison = _coherence_comparison(
+        series.xi_c, series.xi_c_provenance
+    )
 
     channels = {
         "grad_phi": series.grad_phi,
         "k_phi": series.k_phi,
-        "xi_c": series.xi_c,
+        "xi_c": xi_values,
         "phi_s": series.phi_s,
         "order_parameter": series.order_parameter,
         "mean_plv": series.mean_plv,
         "phase_dispersion": series.phase_dispersion,
     }
-    auc = {
-        name: _discriminative_auc(values, window_labels)
-        for name, values in channels.items()
-    }
+    auc = {}
+    channel_availability = {}
+    channel_reasons = {}
+    for name, values in channels.items():
+        finite_labels = window_labels[np.isfinite(values)]
+        available = bool(np.any(finite_labels) and np.any(~finite_labels))
+        channel_availability[name] = available
+        channel_reasons[name] = (
+            xi_comparison["reason"]
+            if name == "xi_c" and not xi_comparison["available"]
+            else (None if available else "finite_windows_lack_both_label_classes")
+        )
+        auc[name] = _discriminative_auc(values, window_labels) if available else 0.5
 
     def _best(group: tuple[str, ...]) -> tuple[str, float]:
-        best_name = max(group, key=lambda n: auc[n])
+        candidates = tuple(name for name in group if channel_availability[name])
+        best_name = max(candidates or group, key=lambda n: auc[n])
         return best_name, auc[best_name]
 
     best_tnfr = _best(_TNFR_CHANNELS)
@@ -657,12 +685,16 @@ def _evaluate_synchrony_series(
         unavailable_reason = "missing_positive_class"
     elif n_pos == n_windows:
         unavailable_reason = "missing_negative_class"
+    elif not any(channel_availability[name] for name in _TNFR_CHANNELS) or not any(
+        channel_availability[name] for name in _BASELINE_CHANNELS
+    ):
+        unavailable_reason = "no_available_channel_in_required_family"
 
     gap = best_tnfr[1] - best_baseline[1]
     if unavailable_reason is not None:
         interpretation = (
-            "AUC comparison unavailable: analysis windows must contain both "
-            "label classes. Retained 0.5 scores and best-channel entries are "
+            "AUC comparison unavailable: finite comparable channels in both "
+            "families must cover both label classes. Retained 0.5 scores and best-channel entries are "
             "compatibility placeholders, not evidence of discrimination or "
             "chance performance."
         )
@@ -691,6 +723,12 @@ def _evaluate_synchrony_series(
             f"'{best_tnfr[0]}' (AUC={best_tnfr[1]:.3f}); Δ={gap:+.3f}."
         )
 
+    if unavailable_reason is None and not channel_availability["xi_c"]:
+        interpretation += (
+            " xi_c is excluded from channel selection: "
+            f"{channel_reasons['xi_c']}; its 0.5 score is an unavailable placeholder."
+        )
+
     return SynchronyDiscrimination(
         indicators=tuple(channels),
         auc=auc,
@@ -704,6 +742,9 @@ def _evaluate_synchrony_series(
         metadata={
             "auc_available": unavailable_reason is None,
             "auc_unavailable_reason": unavailable_reason,
+            "channel_auc_available": channel_availability,
+            "channel_auc_unavailable_reason": channel_reasons,
+            "xi_c_comparison": xi_comparison,
             "n_channels": int(n_channels),
             "config": {
                 "window": cfg.window,

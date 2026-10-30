@@ -1,0 +1,58 @@
+{
+  "schema":"tnfr.native-selection-witness-protocol.v1",
+  "scope":{
+    "path":"artifacts/native-selection-witness-20261028/scope.json",
+    "bytes":2388,
+    "sha256":"5d56f53ddc0c14adc3b5bf738dceff7ddfdbf62f387057367f916da02a067566"
+  },
+  "independent_review":{
+    "path":"artifacts/native-selection-witness-20261028/pre-evaluation-review.json",
+    "bytes":13687,
+    "sha256":"2f411c282ca2146f0f39a9878fe3b00eaa305ecbd7d64b594aca5d8d1962e2d4"
+  },
+  "question":"Can the same exact represented native preparation be certified to enter sectors 0 and +1 under the held and dynamic capacity rows?",
+  "candidate":"One fixed epsilon=1/32 midpoint including common native quadratic curvature; stable direction from delta=Delta R^T Ps, v=Ps delta^T/||Ps delta^T||. Binary64 proposes A,B,a,b once; their exact represented rationals define both IVPs; q/r derived exactly.",
+  "law":"e=w=1/2,beta=kappa=1; two C5 cycles with two bridges, copied reflection; (q,r,a,b,s,t),u=5-2s-2t. Only final capacity evolution rows differ.",
+  "numerics":{
+    "time_step":"1/8",
+    "Taylor_order":14,
+    "maximum_steps_per_model":512,
+    "maximum_horizon":64,
+    "interval_precision_bits":128,
+    "interleaved_models":[
+      "held",
+      "dynamic"
+    ]
+  },
+  "acceptance":"Both complete interval transits must capture the whole box in protected rectangles with storage.hi<7 and positive full domain; unordered sectors exactly {0,+1}. Predicted orientation held +1/dynamic 0 recorded separately.",
+  "stopping":"First capture or unavailable step per model; horizon/resource stop inconclusive. Preserve every accepted step and failed enclosure. No retry, parameter change or second candidate.",
+  "budget":{
+    "watchdog_wall_budget_seconds":1200,
+    "maximum_rss_bytes":2147483648,
+    "maximum_response_bytes":67108864,
+    "maximum_log_bytes":1048576,
+    "diagnostic_reserve_bytes":1048576,
+    "handshake_timeout_seconds":30,
+    "poll_seconds":0.1
+  },
+  "resource_scope":"Total 1200-second watchdog includes handshake, setup, controls, seed generation and both interleaved transits; Windows kill-on-close job, sampled aggregate RSS and actual-worker OS peak, not a hard RSS allocation limit. All task-folder outputs except baseline/before-edit/source archive/validation plan count toward 64 MiB; job log has its own 1 MiB bound. Cleanup is separately bounded.",
+  "excluded_response_files":[
+    "evaluated-source.zip",
+    "baseline.json",
+    "before-edit.zip",
+    "validation-plan.json"
+  ],
+  "test_names":[
+    "test_interval_field_matches_independent_full_native_rows",
+    "test_jet_field_keeps_capacity_native_mixed_derivatives",
+    "test_uniform_capacity_reduction_and_transport_balance",
+    "test_domain_rejects_hidden_capacity_and_phase_boundary",
+    "test_capture_requires_whole_box_storage_and_geometry",
+    "test_step_delegates_once_and_retains_failed_evidence"
+  ],
+  "new_candidate_limit":1,
+  "parameter_scans":0,
+  "prior_producer_replays":0,
+  "physical_identification":false,
+  "review_binding":"The independent reviewer checks this substantive protocol and source receipts. Only independent_review is then replaced with that immutable review receipt to avoid a circular hash; freeze captures the final protocol and review together."
+}

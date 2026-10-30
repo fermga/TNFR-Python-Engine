@@ -1,0 +1,56 @@
+{
+  "replacements":[
+    {
+      "old":"## Continuation point: source and identity admission for joint reorganization",
+      "new":"## Continuation point: actual-source entry into the two-port organization"
+    },
+    {
+      "old":"source. The first obligation is one source/event and identity-admission\ncontract, preserving actual states and their origins. No new transit,\ntrajectory or source-to-target result is admitted yet.\n",
+      "new":"source. The [formed-source admission](nodal/SINE_TWO_PORT_COMPATIBILITY.md#sine-formed-two-port-admission)\nnow fixes the source/event, internal identity collar and conditional response,\nwith an initial-absence margin and supplied work bound. What remains is a\nsource-aware entry method under the same complete law. No new transit,\ntrajectory or source-to-target result has been evaluated.\n"
+    },
+    {
+      "old":"Select one source/event and identity-admission decision before any transit evaluation.",
+      "new":"Source/event/identity admission is closed at the [formed-source contract](nodal/SINE_TWO_PORT_COMPATIBILITY.md#sine-formed-two-port-admission). Select one source-aware entry method and freeze its protocol before transit evaluation."
+    },
+    {
+      "old":"The actual formed-source to two-port-organization admission above remains the",
+      "new":"The actual formed-source to two-port-organization question above remains the"
+    },
+    {
+      "old":"Carry the useful intersections into that question's admission declaration:",
+      "new":"Carry the useful intersections into the selected entry-method declaration:"
+    }
+  ],
+  "sources":[
+    {
+      "path":"artifacts/formed-two-port-admission-20261029/before-edit.zip",
+      "bytes":38908,
+      "sha256":"298a9b933ca4db955efdddb072868ab8cdcc5219ae1cab6ddbca678c6c893322"
+    },
+    {
+      "path":"artifacts/formed-two-port-admission-20261029/chapter-append.md",
+      "bytes":11923,
+      "sha256":"c15c0f0a7f07cb3a7eb99f330701686868a0e1ac22f8e942ea7cbd123a85c5ba"
+    },
+    {
+      "path":"artifacts/formed-two-port-admission-20261029/program-current.md",
+      "bytes":3324,
+      "sha256":"989f98a351f610a61907acba1726637a9f24fa923b41b7d79b422655a6a18f0c"
+    },
+    {
+      "path":"artifacts/formed-two-port-admission-20261029/build_drafts.py",
+      "bytes":3167,
+      "sha256":"b7579b9b8583fa1194a4172c4ae4634a7b33bb0d00811fae7ece18224f299921"
+    },
+    {
+      "path":"artifacts/formed-two-port-admission-20261029/chapter-proposed.md",
+      "bytes":42582,
+      "sha256":"766fb66ead73d757e46fb3e7ad81e3a37442f6216bd505d79dd2c5adc44a0c0f"
+    },
+    {
+      "path":"artifacts/formed-two-port-admission-20261029/program-proposed.md",
+      "bytes":89809,
+      "sha256":"ee00bcc4147cfb7ae52f080ba495542924e74dc8347431031357a256bf7bc960"
+    }
+  ]
+}

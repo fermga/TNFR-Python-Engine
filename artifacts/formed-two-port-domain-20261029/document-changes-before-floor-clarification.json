@@ -1,0 +1,34 @@
+{
+  "replacements":[
+    {
+      "old":"certificate remains unavailable. The next obligation is a justified\ntransient-domain/comparison method, with the failed attempt preserved.",
+      "new":"certificate remains unavailable. The subsequent\n[analytical domain decision](nodal/SINE_TWO_PORT_CAPTURE.md#sine-formed-two-port-domain-decision)\nrefutes invariance of the whole buffered energy sublevel and extends the\nphase-potential floor. A source-compatible corridor still needs full-network\ncurvature and whole-time clearance before another computation."
+    },
+    {
+      "old":"The single frozen attempt certified four reference steps and stopped on its fifth candidate's domain admission. Establish a usable transient-domain/comparison certificate before another calculation; actual-source entry remains open.",
+      "new":"The frozen attempt remains incomplete. The analytical decision excludes whole-energy-sublevel invariance while extending the potential floor. Specify and assess a source-compatible corridor with full-graph curvature and a whole-time comparison collar; no new transit is admitted."
+    },
+    {
+      "old":"The next bounded obligation is **justifying the transient domain and\ncomparison**, before another numerical attempt:\n\n1. Trace the acute-collar, potential-floor and first-exit dependencies of\n   M1--M9 under the unchanged full law. Identify exactly what a larger domain\n   or a different enclosure must prove; a local matrix growth bound alone\n   cannot replace every premise of M4--M7.\n2. Compare a correlation-preserving enclosure in the existing domain with a\n   genuinely wider, justified comparison domain. The failed unvalidated box\n   does not establish actual trajectory departure or identify which method\n   is needed. Close this analytical decision with a proof, obstruction or\n   named missing premise before selecting any new finite computation.\n3. Preserve the original failed attempt. No automatic step reduction,\n   precision/order change, longer horizon, source adjustment, resumed prefix\n   or larger budget is admitted. Any later computation needs a new justified\n   method, independent review and a prospective finite policy; it cannot be\n   relabeled a continuation of the consumed attempt.\n\n",
+      "new":"The [domain decision](nodal/SINE_TWO_PORT_CAPTURE.md#sine-formed-two-port-domain-decision)\nnow closes two analytical premises. The buffered acute cell intersected with\nthe source energy sublevel is not invariant under the reference law: a\ncycle-compatible boundary state has a strictly outward derivative, even in\nthe nominal source's exact energy-sublevel component. This does not prove\nthat the nominal trajectory reaches it. Separately, a supporting-affine\ninequality extends the same phase-potential floor beyond the acute cell.\nEnergy bounds, full-network curvature and transient clearance are distinct\nrequirements; the old attempt and failed diagnostic remain untouched.\n\nThe next bounded obligation is **a source-compatible comparison corridor**:\n\n1. Specify a candidate domain using the original affine cycle constraints,\n   source and actual graph paths. Assess the full cosine Hessian over its\n   required segments, accounting for any negative edge contributions and\n   shared-path loads. Reuse existing graph-compensation proofs as methods,\n   without importing another model's constants or verdicts.\n2. Establish a boundary or enclosure argument supplying whole-time clearance\n   for the reference, actual phase and mixed phase. The extended potential\n   floor alone does not supply it; neither does curvature along sampled\n   reference states. Close the candidate with a proof, explicit obstruction\n   or named missing premise. A narrower correlated enclosure in the old\n   domain remains an alternative, whose success is not implied by the failed\n   candidate box. No broader-domain method is admitted merely by naming it.\n3. Keep both full rows, memberwise means and the final target handoff. The\n   old comparison constants transfer only with the proved floor,\n   nonexpansion, reference-speed control and adequate collar over the complete\n   horizon. A positive growth bound requires new error/speed bounds. Reaching\n   a domain boundary is not itself loss of identity or impossibility of\n   formation.\n\nNo new trajectory, sign admission, parameter scan, source reset, resumed\nprefix or diagnostic repair/replay belongs to this analytical task. Any\nlater computation needs a justified method, independent review and a new\nprospective finite policy. The previous single-attempt policy is consumed.\n\n"
+    },
+    {
+      "old":"Carry the useful intersections into the transient-domain/comparison review:",
+      "new":"Carry the useful intersections into the source-compatible corridor review:"
+    }
+  ],
+  "append":{
+    "path":"artifacts/formed-two-port-domain-20261029/chapter-append.md",
+    "bytes":10865,
+    "sha256":"fdc8534b457e807d4abcee918f77ecf15c26fffc268bb3693c1f785b0983af67"
+  },
+  "program_before_bytes":92570,
+  "program_proposed_bytes":94061,
+  "next_question":"Specify and assess a source-compatible comparison corridor with full-graph curvature and whole-time clearance; preserve the full-state target handoff before any new numerical policy.",
+  "analytical_results":[
+    "Buffered acute source-energy sublevel is not forward invariant under M2, including its nominal-source component.",
+    "The unchanged potential floor extends to donor gaps [-pi,5pi/9] and receiver gaps [-pi,7pi/9] with the original affine cycle sums.",
+    "Conditional M3--M7 transfer requires a common convex floor/PSD domain and complete reference clearance; no such corridor is established here."
+  ],
+  "new_numerical_evaluations":0
+}

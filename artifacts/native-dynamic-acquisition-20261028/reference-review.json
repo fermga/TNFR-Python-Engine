@@ -1,0 +1,105 @@
+{
+  "schema":"tnfr.reference-source-review.v1",
+  "reviewed_utc":"2026-10-28T19:23:37.830252+00:00",
+  "author":"/root",
+  "reviewer":"/root/collective_engine",
+  "independent":true,
+  "verdict":"PASS",
+  "scope":"Static audit of DA1-DA3 and contrasts in native-dynamic-acquisition, including exact correspondence to the retained two-bridge unit-capacity reference and the complete full-state dynamic-capacity extension. No physical-readiness approval.",
+  "sources":[
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "bytes":109764,
+      "sha256":"d882de5ada26a5181934edba5f14ceedb5d5895135d809e6f994e8c86df3b8b4"
+    },
+    {
+      "path":"theory/nodal/RELATIONAL_FORMATION_CONTROLS.md",
+      "bytes":61914,
+      "sha256":"4a2aadc10efb2b1a72689a2fc88b3d40c3df471d1f223efc1606c8885eac1e9f"
+    },
+    {
+      "path":"theory/nodal/RELATIONAL_DOMAIN_AND_CAPTURE.md",
+      "bytes":79242,
+      "sha256":"5a9278ec65ce62df0e174c17cf446c0cbcfadb88678c18866365a9d4b860fbbb"
+    },
+    {
+      "path":"theory/nodal/RELATIONAL_RECOVERY_AND_INTERACTION.md",
+      "bytes":30557,
+      "sha256":"e28b84af254fcd2443d1bb785189143ff715bdaff6c2c50b74fc9d90d24f764a"
+    }
+  ],
+  "scope_declaration":{
+    "path":"artifacts/native-dynamic-acquisition-20261028/scope.json",
+    "bytes":1828,
+    "sha256":"4ad4c71d2df982a3886a26c21884e9357988ed250e59e072b146a9ef14b86d81"
+  },
+  "reference_records":[
+    {
+      "path":"docs/assets/relational_capture_response/continuous-transit.audit.protocol.json",
+      "bytes":69621,
+      "sha256":"d8913d6af0d40fd1c903eaf24be29fb8ebeb6d3be28d6415d4e8dafb9974db99"
+    },
+    {
+      "path":"docs/assets/relational_capture_response/continuous-transit.audit.json",
+      "bytes":1676688,
+      "sha256":"ac3104c42cf9054968eac770fee5c1b1e174547a408875edac0b635fe04ca781"
+    },
+    {
+      "path":"docs/assets/relational_capture_response/continuous-transit.audit.source.zip",
+      "bytes":2863883,
+      "sha256":"381212374968f32fe59751c752b4dc812844a3309e00f771704a72b31a154c93"
+    }
+  ],
+  "archive_association":{
+    "member_count":604,
+    "exact_member_set_matches_protocol":true,
+    "all_member_sha256_match":true,
+    "embedded_protocol_matches_separate_protocol":true,
+    "archived_owner_sha256":{
+      "src/tnfr/dynamics/relational.py":"86fa1b269bd054917c3609c4d0f2f3e40a9d2d277b6a91c0c8a28e491906184e",
+      "src/tnfr/physics/relational_transit.py":"9778a02c20a8e1ccb697169ab1fe83df98d1b5bfe5cf43f10c82b07a870bd803",
+      "src/tnfr/physics/relational_capture.py":"22ee053a3633be4715d224c20aa3b52cd35eef879d8cdac4316397c18c178f98",
+      "benchmarks/relational_transit_proof.py":"63df7bf444fbec948529f43923318fe0b69b009ac708ac64934195d845d78fdd"
+    },
+    "current_owner_files_differ_from_archived_versions":true,
+    "interpretation":"The retained proof computation is attributed to these archived bytes, not to current implementations."
+  },
+  "preservation":{
+    "chapter_prior_prefix_bytes":98150,
+    "chapter_prior_prefix_unchanged":true
+  },
+  "criteria_assessment":{
+    "exact_preparation_and_support":{
+      "passed":true,
+      "assessment":"DA1-DA2 retain both bridges (0,5),(1,6), all four degree-three ports, unit conductances, all ten unit capacities, e=w=1/2, beta=1 and the original clock. The exact binary64 A/B0 and rational a0 are retained; the archived initial box uses q=1+2^-54,r=0, not the rounded field diagnostic q=1."
+    },
+    "reference_law_and_domain":{
+      "passed":true,
+      "assessment":"The frozen transit _flow lines108-129 and frozen relational admission/field were read directly. They match the native form and phase rows on the reflected reference. B*1=0 embeds that complete reference exactly for every fixed kappa>0. Positive-resultant reference admission is inside the declared full regular domain; ordinary edge-antipodal crossing is not a resultant singularity."
+    },
+    "retained_transit_and_capture":{
+      "passed":true,
+      "assessment":"The immutable report records admitted complete 256-step transit to32, initial winding zero and whole-box positive reflected capture. The retained reflected theorem gives full future regular continuation and convergence to DA3. This review read the certificate and its source; it did not recompute interval inequalities or rerun the producer. The prior finite-executor false verdict remains distinct."
+    },
+    "actual_joint_recovery_domain":{
+      "passed":true,
+      "assessment":"DA4 uses two bridges in B and K and all four port metrics. DA5 retains the full27 relative coordinates on the29-dimensional mean-one leaf, with zero capacity crosscolumns only at the actual lock. The native storage similarity is Hurwitz and the capacity quotient block is negative for fixed kappa>0. DA6 gives an invariant local neighborhood and integrable common-origin drift, without importing the old one-bridge basin."
+    },
+    "finite_transit_transfer_and_initial_absence":{
+      "passed":true,
+      "assessment":"Reference convergence yields some later finite T_kappa inside the new joint neighborhood, without identifying it with32. The compact regular reference path permits smooth dependence for the complete30-coordinate law. Intersecting its pullback with the initial antipodal-margin neighborhood retains both initial windings zero; the maintained reference proof supplies pi-2a0>1/32."
+    },
+    "nonuniform_capacity_and_contrasts":{
+      "passed":true,
+      "assessment":"DA7 and connectedness imply every nonuniform mean-one capacity has a nonzero redistribution vector at every finite time, while positivity and convergence follow from the selected transport row. The uniform slice is removed from an open full-state neighborhood, not substituted for dynamic contrasts. The held-capacity acquisition comparison and the stationary uniform-form/phase-consensus counterexample correctly prevent necessity or basin-improvement claims."
+    },
+    "limits":{
+      "passed":true,
+      "assessment":"The result remains conditional on supplied support, preparation and constitutive law. No numerical radius or entry time, kappa-uniform limit, runtime installation, physical mapping or transfer of one-bridge receiver derivatives is claimed."
+    }
+  },
+  "new_scientific_evaluations":0,
+  "historical_producer_replays":0,
+  "test_imports_or_runs":0,
+  "actions_performed":"Read maintained and archived source, parse retained JSON metadata, compare byte hashes/archive membership, and create this exclusive review receipt."
+}

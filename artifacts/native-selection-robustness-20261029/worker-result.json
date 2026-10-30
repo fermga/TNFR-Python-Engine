@@ -1,0 +1,16 @@
+{
+  "finished_utc":"2026-10-29T02:51:11.784171+00:00",
+  "passed":true,
+  "plan":{
+    "path":"artifacts/native-selection-robustness-20261029/validation-plan.json",
+    "bytes":215575,
+    "sha256":"fc7e1ace5cd7efe1a723c83dfa4ecf8f5049c46f119a88cf0d5b8d9f421c892f"
+  },
+  "static_audit":{
+    "path":"artifacts/native-selection-robustness-20261029/static-audit-result.json",
+    "bytes":797839,
+    "sha256":"66e6b8dd241f2dc35bb7dc6d16140345c121d9cf2032ae49ba34b142ba20f391"
+  },
+  "new_trajectories":0,
+  "historical_producer_replays":0
+}

@@ -1,0 +1,19 @@
+{
+  "passed":false,
+  "exit_code":1,
+  "script":{
+    "path":"artifacts/formed-two-port-method-20261029/finalize.py",
+    "bytes":8861,
+    "sha256":"a2b7fb916b99a357972aaeae28236866c6cb52e1a884e6dae4aa04d15aac951c"
+  },
+  "failed_line":41,
+  "failed_condition":"Bibliography inventory equals the seven baseline files",
+  "cause":"A new TNFR.pdf appeared after the baseline/source freeze. All seven original files retain their bytes.",
+  "final_outputs_written":false,
+  "external_addition":{
+    "path":"artifacts/formed-two-port-method-20261029/external-addition.json",
+    "bytes":2063,
+    "sha256":"e1669bd9e68b7d3a7a7df2c78baf313dcb77242760cb1a98688df0c17e13bcd4"
+  },
+  "scientific_controls_repeated":false
+}

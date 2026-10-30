@@ -1,0 +1,9 @@
+{
+  "finished_utc":"2026-10-28T18:00:47.433131+00:00",
+  "exit_code":0,
+  "plan":{
+    "path":"artifacts/native-capacity-transport-20261028/validation-plan.json",
+    "bytes":218052,
+    "sha256":"123dce08d173ffea8a71366524076db9f34d8e9036abd0a610a1ebeac1c6c450"
+  }
+}

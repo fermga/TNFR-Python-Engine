@@ -8,8 +8,10 @@ have no transport. No graph state or persistent cache is changed.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from numbers import Integral
 from typing import Any
 
+from .._exact_time import finite_represented_real
 from ..mathematics._weight_normalization import normalize_weights
 from ..mathematics.unified_numerical import np
 
@@ -182,8 +184,12 @@ def read_conductance(
     """Read effective finite nonnegative weights, optionally requiring symmetry.
 
     The explicit node list describes an induced adjacency, like NetworkX's
-    matrix interface. Validation applies to aggregated parallel conductance;
-    a zero-weight one-way arc does not break effective matrix symmetry.
+    matrix interface. Each raw weight must be a finite represented real scalar;
+    Boolean/textual inputs and nonzero sources lost in binary64 are rejected
+    before aggregation or spectral-cache lookup. Nonnegativity applies to the
+    aggregated parallel conductance, retaining signed components and exact
+    integer/rational cancellation. A zero-weight one-way arc does not break
+    effective matrix symmetry.
     """
     import networkx as nx
 
@@ -200,19 +206,30 @@ def read_conductance(
             for neighbor, attributes in G.adj[node].items():
                 if neighbor not in indices:
                     continue
-                weight = (
-                    float(sum(data.get("weight", 1.0) for data in attributes.values()))
-                    if multiple
-                    else float(attributes.get("weight", 1.0))
+                if multiple:
+                    values = []
+                    for data in attributes.values():
+                        raw = data.get("weight", 1.0)
+                        finite_represented_real(raw, "Diffusion edge weight")
+                        # Keep the supplied integer/rational sum before final
+                        # rounding. NumPy integral addition must not wrap.
+                        values.append(int(raw) if isinstance(raw, Integral) else raw)
+                    raw_weight = sum(values)
+                else:
+                    raw_weight = attributes.get("weight", 1.0)
+                weight, _ = finite_represented_real(
+                    raw_weight, "Diffusion effective edge weight"
                 )
-                if not np.isfinite(weight) or weight < 0.0:
+                if weight < 0.0:
                     raise ValueError(
                         "Diffusion requires finite nonnegative edge weights"
                     )
                 if weight:
                     entries[source, indices[neighbor]] = weight
-    except (TypeError, OverflowError) as exc:
-        raise ValueError("Diffusion requires finite nonnegative edge weights") from exc
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError(
+            f"Diffusion requires finite nonnegative edge weights: {exc}"
+        ) from exc
     if symmetric and any(
         entries.get((target, source)) != weight
         for (source, target), weight in entries.items()

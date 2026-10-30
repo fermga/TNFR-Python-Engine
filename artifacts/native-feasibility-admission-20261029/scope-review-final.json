@@ -1,0 +1,123 @@
+{
+  "schema":"tnfr.native-feasibility-admission-scope-review.v1",
+  "verdict":"PASS",
+  "independent":true,
+  "author":"/root",
+  "reviewer":"/root/admission_guard",
+  "reviewed_files":[
+    {
+      "path":"artifacts/native-feasibility-admission-20261029/admission-section.md",
+      "bytes":5982,
+      "sha256":"88bcd00588b24585851f4830f8e2d4072176633d03f1738283e341d54779754c"
+    },
+    {
+      "path":"artifacts/native-feasibility-admission-20261029/program-introduction.md",
+      "bytes":863,
+      "sha256":"ca53e27019639b943f193ee5ee2514f063e952714767a04ae706e30b93ba929e"
+    },
+    {
+      "path":"artifacts/native-feasibility-admission-20261029/program-decision.md",
+      "bytes":6498,
+      "sha256":"3b14fb3a49829fc38a1136857453f8850ccf1b139c5b925d95a160d0841c9990"
+    }
+  ],
+  "consulted_sources":[
+    {
+      "path":"AGENTS.md",
+      "bytes":25901,
+      "sha256":"d5dd67a0352cfddb08c5e1abc7899341c9aea557f2b8754a2404a805de1fb969"
+    },
+    {
+      "path":"theory/RESEARCH_PROGRAM.md",
+      "bytes":79951,
+      "sha256":"a30a1a3b8e175033e83c57f1bf01b0ce9722535387fc7c40295e2d38235e8781"
+    },
+    {
+      "path":"theory/research_prerequisites.json",
+      "bytes":4636,
+      "sha256":"4b7d1fd108d64a5b64f3ecf0a20097ad6eff391618189f1bb656a1b111e447af"
+    },
+    {
+      "path":"scripts/check_research_prerequisites.py",
+      "bytes":11362,
+      "sha256":"95829b94bb851690b733d16772a8a38dd94de51be04313a4312f15d1c3117e3c"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "bytes":183408,
+      "sha256":"ef28a7c868a161fd289e9939fc7969a418312639b6900b294fe41057008e0c12"
+    },
+    {
+      "path":"theory/PHYSICAL_REGIME_CORRESPONDENCES.md",
+      "bytes":127002,
+      "sha256":"8c575318aec6add1110e92cb6b9276dbfc696bcf6832be1eb90cfb7ad17c4667"
+    },
+    {
+      "path":"artifacts/native-causal-access-20261029/operator_causality-review.json",
+      "bytes":6280,
+      "sha256":"88800276947b885b318b581d9fcc6c1fd9aeac3e34bb4ff88305793accc3086c"
+    },
+    {
+      "path":"artifacts/native-causal-access-20261029/state_observation-review.json",
+      "bytes":6210,
+      "sha256":"425175c556fbf0e94efdc307081b195a1e0c12c8fdd390756d57227d72e132f5"
+    },
+    {
+      "path":"artifacts/native-causal-access-20261029/organizational_identity-review.json",
+      "bytes":5296,
+      "sha256":"03b7656535b626b3b9e921b1ebedc2bc6bb62fdfca5ddf29417d9446eff02f10"
+    },
+    {
+      "path":"artifacts/native-causal-access-20261029/research_selection-review.json",
+      "bytes":5531,
+      "sha256":"b69be3b86a9e92792c755572f6a814a25859d2a72a58b0a8824bbeff2e40982e"
+    }
+  ],
+  "contribution_disclosure":"The reviewer previously advised the root on the distinction between investigating access and assuming it, the exact readiness schema, and the fact that the checker does not enforce semantic source budgets. The reviewer did not author or edit the three submitted drafts. This receipt independently assesses their concrete final formulation, not an actual physical realization.",
+  "assessments":{
+    "exact_question":"The proposed task asks whether independently published apparatus descriptions warrant a later bridge review. It does not consume a physical preparation, actuator or instrument dictionary as already realized and does not apply the FO threshold to physical data. This is a substantive restriction rather than a feasibility label used to bypass the gate.",
+    "joint_foundations":"The original prepared single-bridge P1-P4 scopes remain intact. The complete native law is a well-defined conditional comparator; sufficient state and hidden-phase ambiguity identify access obligations; prepared organization is not promoted to formation; and matched-law alternatives remain available. No additional autonomous controller mechanism is assumed in order to ask whether a source documents one. A later prediction using such a mechanism requires its own admission.",
+    "activity_and_guard":"The physical-mapping activity marker is appropriate because external apparatus inspection is treated as physical work, even though only documentary feasibility is permitted. The draft requires a substantive final readiness review binding exact final program bytes and all four current prerequisite reviews, then a passing unchanged strict guard before external inspection. The checker cannot interpret the documentary limits; PROGRAM and the readiness assessment must remain the exact authority. Its generic ready message does not authorize broader physics.",
+    "bounded_selection":"The program fixes three ordered terrestrial apparatus families and at most one concrete apparatus per family, selected for documented access rather than waveform resemblance. Six primary documents and six targeted search queries are explicit ceilings. Separate supplements/methods/acquisition documents count separately; unavailable selected documents remain counted. Identity and selection reason are recorded before detailed assessment. Query results locate documents and are not capability evidence. The final draft additionally requires access date, available version/DOI/revision/commit, and section/page support for each extracted fact, retaining unknown metadata explicitly.",
+    "allowed_evidence":"Primary papers, methods and authoritative acquisition descriptions may be read for support, state/dynamics, preparation, actual capacity policy, hidden memory, reactions, readout, gain, clock and error evidence. Source-backed facts must remain separate from missing information, proposed interpretation and exact-law or controlled-reduction obligations. An extracted phase, oscillator label or measured frequency is not silently equated to a native coordinate.",
+    "excluded_work":"Raw signal archives, plot digitization, response extraction, model-output calculation, fitting, simulation, controller installation and apparatus construction are excluded. No physical variable identification, particle/field identity, empirical validation or FO classification is admitted. Existing source exposure is not reserved validation data. Programmed equation emulators cannot be used as independent evidence for a candidate natural dynamics.",
+    "outcomes_and_uncertainty":"The three permitted conclusions distinguish documented incompatibility with a specific requirement, insufficient/inaccessible/not-yet-comparable evidence, and a documented candidate warranting a separate bridge review. None admits a physical realization or changes experimental admission automatically. Missing documentation is not physical absence, and a bounded search cannot exclude a platform class universally. The native 2^-166 budget cannot be compared to published precision without independently justified units, gain and clock; it is sufficient, not a demonstrated necessary resolution.",
+    "closure_and_followup":"New searches and document selections stop when either ceiling is reached. Classification may finish only for already admitted material, without extra retrievals or queries. The audit closes even if no candidate survives, retains one source ledger and one physical-assessment result, and recommends at most one separate bridge review or concrete dependency. PROGRAM remains the sole queue. No follow-up mapping, fitting, numerical response, expanded budget or changed consumer is implicitly authorized; each needs a new exact-task admission and applicable prospective evaluation controls.",
+    "readiness_boundary":"This PASS is a review of proposed draft scope only. It is not a tnfr.physical-mapping-readiness.v1 record, does not alter the registry and does not authorize external source inspection before the required exact final readiness review and strict guard succeed."
+  },
+  "blocking_findings":[],
+  "performed":{
+    "source_reading_and_scope_review":true,
+    "artifact_bookkeeping_only":true,
+    "external_source_searches":0,
+    "scientific_evaluations":0,
+    "simulations":0,
+    "tests_executed":0,
+    "historical_producer_replays":0,
+    "draft_edits":0,
+    "canonical_edits":0,
+    "checker_edits":0,
+    "readiness_records_written":0
+  },
+  "writer":{
+    "path":"artifacts/native-feasibility-admission-20261029/write-scope-review-final.py",
+    "bytes":4471,
+    "sha256":"356440287d60924666088ad05b332ad3797bdea0d7ac3403d432385d3b1c656e"
+  },
+  "supersedes":{
+    "path":"artifacts/native-feasibility-admission-20261029/scope-review.json",
+    "bytes":7993,
+    "sha256":"4410d80ef08b12c839fc849a5fa1c91b560355f8030b6d7811ce2f4d8bfe5d83"
+  },
+  "clarification_record":{
+    "path":"artifacts/native-feasibility-admission-20261029/clarification-record.json",
+    "bytes":864,
+    "sha256":"e906da8067cdcc13cdd376d96ddcd6f60dcab8833f9754522ca3d85b43cf93ce"
+  },
+  "prior_draft_archive":{
+    "path":"artifacts/native-feasibility-admission-20261029/draft-before-clarification.zip",
+    "bytes":6490,
+    "sha256":"97569171d3c48a806f992289317edec30c456fcb4d286b6f93286485ff4b65e5"
+  },
+  "clarification_assessment":"PASS after re-reading the final program draft. The only changes are explicit source provenance requirements and clarification that reaching either budget stops new acquisition while classification is completed only from already admitted material, without extra retrievals or queries. The six-document/six-query ceiling, three fixed apparatus families, one apparatus per family, allowed conclusions, physical activity marker and exclusions are unchanged. Missing version or location metadata remain unavailable rather than being invented. This refinement does not expand the source budget or authorize an empirical response."
+}

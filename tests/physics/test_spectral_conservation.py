@@ -1,25 +1,16 @@
-"""Tests for TNFR Spectral Conservation — Conservation Laws in Spectral Space.
+"""Tests for two-snapshot structural-balance and spectral diagnostics.
 
-Validates the spectral continuity theorem:
-    dρ̂_k/dt + Ĵ_k = Ŝ_k  (projected spatial balance)
+The fixed-basis projection retains the measured finite interval:
+    Delta rho_hat_k / Delta t + projected div(J)_k = residual_k.
+The residual is computed from supplied snapshots; this identity does not
+derive a conservation law or an operator occurrence law.
 
-derived via GFT of the structural continuity equation
-    ∂ρ/∂t + div(J) = S_grammar.
-
-Tests verify:
-1.  SpectralConservationBalance: Two-snapshot spectral continuity
-2.  Parseval identity: ‖ρ‖² = Σ|ρ̂_k|² across snapshots
-3.  SpectralWardIdentity: Per-operator spectral signatures
-4.  SpectralLyapunovResult: Mode-by-mode energy stability
-5.  SpectralSectorDecomposition: Potential vs. geometric sector in eigenbasis
-6.  Spectral energy conservation via Parseval across all five fields
-7.  Mode classification: conserved / dissipative / accumulative
-8.  Cross-topology validation: Watts-Strogatz, Barabási-Albert, Grid
-9.  Equilibrium networks: identical snapshots → zero residual
-10. Reproducibility: deterministic seeds → identical results
-
-TIER: CORE PHYSICS — spectral conservation extends the structural conservation
-theorem to the eigenvalue domain.
+Checks cover orthonormal squared-norm identities at each snapshot, temporal
+norm-change statistics, configured operator signatures, field decompositions,
+mode classification and reproducible graph fixtures. The legacy energy and
+parseval_drift names do not identify physical energy or a failure of Parseval.
+Finite perturbation comparisons retain their particular fixtures and do not
+establish a universal dynamics or stability theorem.
 """
 
 from __future__ import annotations

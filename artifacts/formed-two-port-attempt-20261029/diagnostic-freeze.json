@@ -1,0 +1,26 @@
+{
+  "before_diagnostic":true,
+  "post_hoc":true,
+  "script":{
+    "path":"artifacts/formed-two-port-attempt-20261029/diagnose_stored_tubes.py",
+    "bytes":10166,
+    "sha256":"f1834bc8cdce75f8bf9d261f50a06b6a1292ad8359280c68c1b94059c2b27b51"
+  },
+  "plan":{
+    "path":"artifacts/formed-two-port-attempt-20261029/diagnostic_plan.md",
+    "bytes":3527,
+    "sha256":"4f0a76aa6c09665c0a6d14fd5e49439ecf737b994a2a37d6ce229bdee4ef6a3f"
+  },
+  "review":{
+    "path":"artifacts/formed-two-port-attempt-20261029/diagnostic-review.md",
+    "bytes":3623,
+    "sha256":"26b549a1bc49a04e7f661b7c7c9bab05e23dc83437021946da99a48b31bc759b"
+  },
+  "wrapper":{
+    "path":"artifacts/formed-two-port-attempt-20261029/run_diagnostic.py",
+    "bytes":1997,
+    "sha256":"c492e04858407f285de026ddfb5a439372aff78b8c46e25dc79a6ffb93412051"
+  },
+  "new_reference_steps_authorized":false,
+  "timeout_seconds":30
+}

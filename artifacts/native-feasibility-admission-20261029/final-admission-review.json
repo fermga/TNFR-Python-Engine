@@ -1,0 +1,144 @@
+{
+  "schema":"tnfr.native-feasibility-admission-final-maintenance-review.v1",
+  "author":"/root",
+  "reviewer":"/root/joint_review_controls",
+  "independent":true,
+  "verdict":"PASS",
+  "reviewed_files":[
+    {
+      "path":"artifacts/native-feasibility-admission-20261029/applied-decision.json",
+      "bytes":1701,
+      "sha256":"07e426faf889d5d26c0322b1af2c7be18fc147d09fb8aa35c7b3834c081d9917"
+    },
+    {
+      "path":"artifacts/native-feasibility-admission-20261029/documentation-validation.json",
+      "bytes":3102,
+      "sha256":"2d4a712fb581b3872c3a55202a58fc5a798ae26abb7bf38d9d07bc979b17176e"
+    },
+    {
+      "path":"artifacts/native-feasibility-admission-20261029/finalize.py",
+      "bytes":11673,
+      "sha256":"20fe273e5c086b8a30c6cd2b8ea62dc87ade08a0fd4a5ce486c8676e7bee6125"
+    },
+    {
+      "path":"artifacts/native-feasibility-admission-20261029/foundation-review-final.json",
+      "bytes":8396,
+      "sha256":"4c7b7383eacb348b1310c5d4a3694d83c49621bac8d4ca7bd60c73afb06f28f9"
+    },
+    {
+      "path":"artifacts/native-feasibility-admission-20261029/operator_causality-review.json",
+      "bytes":6392,
+      "sha256":"594279106175e43573a10a1e5501e429f47926341d8a2350b46afc1c2e21afc7"
+    },
+    {
+      "path":"artifacts/native-feasibility-admission-20261029/organizational_identity-review.json",
+      "bytes":5408,
+      "sha256":"b14305badcfda7cbd1b8d9031defab47f26b630997acb5cd0bcda6ecd98fbfd2"
+    },
+    {
+      "path":"artifacts/native-feasibility-admission-20261029/physical-readiness-review.json",
+      "bytes":7301,
+      "sha256":"1edd4b3ecb9e74d66a3ad9c354a1e2892b33dc3dbb90bbb62b865142627fa6e5"
+    },
+    {
+      "path":"artifacts/native-feasibility-admission-20261029/prerequisite-validation.json",
+      "bytes":1206,
+      "sha256":"79fb3ed43d22d8742d04602751dfe0dfb36cc66d57046e29e2020948094ba982"
+    },
+    {
+      "path":"artifacts/native-feasibility-admission-20261029/protocol-review.json",
+      "bytes":7095,
+      "sha256":"d99468e6a0f470940083ddef8f5d73a946c9790ea17074598eadb9587cec7421"
+    },
+    {
+      "path":"artifacts/native-feasibility-admission-20261029/rendered-links.json",
+      "bytes":67,
+      "sha256":"5142a814d9851e2cceec4ca46b867693fe46b4eb0814ac688efe0a24b117a852"
+    },
+    {
+      "path":"artifacts/native-feasibility-admission-20261029/research_selection-review.json",
+      "bytes":5643,
+      "sha256":"973a9460739a761291b26e177dec2c9234777bbb1035c4a5595c0208865f7c10"
+    },
+    {
+      "path":"artifacts/native-feasibility-admission-20261029/scope-review-final.json",
+      "bytes":9607,
+      "sha256":"c6d4157c625ccf569f37bc975dd62a9724cd3f1f703b3f9167ca016604a4ce1f"
+    },
+    {
+      "path":"artifacts/native-feasibility-admission-20261029/state_observation-review.json",
+      "bytes":6322,
+      "sha256":"22b172ab5b53a3bc751580efb3eb49ab707a33f432e7570409326a4279074ea8"
+    },
+    {
+      "path":"theory/RESEARCH_PROGRAM.md",
+      "bytes":81918,
+      "sha256":"2ead7e46eb9f9eedcdfb78b39bedba9ab1719e513f7b53fddfbf83e3b62cd8d4"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "bytes":189476,
+      "sha256":"73f872bab36468fbe37be62aa1d944587f36a1790f3ec2b45ba0f1d08fdfba66"
+    },
+    {
+      "path":"theory/research_prerequisites.json",
+      "bytes":4842,
+      "sha256":"25fa4f14b271df36d027f539e0a21383d960f9a39f624edb2fd2d5267929c1ee"
+    }
+  ],
+  "scope":"Independent maintenance, evidence-association, preservation and authorization-boundary review of the final documentary feasibility admission. This is not a candidate physical assessment, empirical comparison or additional historical mathematical proof.",
+  "contribution_disclosure":"The reviewer previously audited maintenance of the prepared, finite-observation and causal-access stages. The reviewer did not author or edit this admission decision, the program fragments, the four renewed approvals or the physical-readiness assessment. The substantive exact-task authorization is supplied by the independent physical-readiness review; this receipt audits its binding and maintained limits.",
+  "assessments":{
+    "preservation":"The baseline equals the preceding final-state source inventory. All 4626 maintained paths remain present, with exactly three authorized changes and 4623 unchanged sources. HEAD and dirty-path inventory are preserved. Prior immutable artifact receipts and the pre-edit archive verify.",
+    "canonical_application":"The original 183408 chapter bytes are unchanged before the exact reviewed admission append. PROGRAM contains exactly the two reviewed replacement fragments, preserving every other byte. The three final reviews bind the same draft bytes, and historical canonical source associations match the pre-edit archive.",
+    "clarification":"The archived old drafts and their superseded review receipts verify. Admission section and introduction are unchanged by clarification. The only two program edits add source/version/location provenance and distinguish stopping new acquisition from completing classification of already admitted material. Neither expands the three-family, six-document or six-query ceilings.",
+    "prerequisites":"The four original prepared approval prefixes, primitive/derived assessments, statuses and evidence paths/anchors are unchanged. Source hashes and review associations are renewed. The only additional registry contract change is the separately reviewed exact-task readiness receipt; no autonomous physical actuator or experimental bridge is added to the prepared pillar scopes.",
+    "strict_gate":"The prerequisite checker remains byte-identical to the baseline. The preserved pre-admission strict run failed for missing readiness. The final exact eight-field readiness record binds current PROGRAM bytes and the SHA-256 of all four current reviews. The registered receipt and validation receipt agree. Both final ordinary and strict checks pass. The checker verifies integrity, not semantic execution of documentary limits.",
+    "limited_permission":"The readiness text and program authorize only the frozen primary-source access-feasibility audit: three ordered terrestrial apparatus families, at most one apparatus per family, six primary documents and six targeted queries. Inaccessible selected documents count. Source selection, provenance and supporting locations must be recorded, and new retrieval/search stops at either ceiling.",
+    "excluded_work":"No physical realization, variable identification, empirical comparison, FO threshold on data, raw-response retrieval, fitting, simulation, controller installation or apparatus construction is admitted. The strongest positive outcome is a documented candidate for a separate bridge review. Missing documentation and failure to establish a sufficient native error budget are not universal physical exclusions.",
+    "transition":"Physical activity now denotes the limited documentary task, not unrestricted physics. Any changed program, pillar review, broader budget, new consumer, bridge derivation or empirical follow-up requires a new substantive exact-task admission. The completed audit cannot authorize its own follow-up implicitly.",
+    "validation":"Five documentation checks exit zero, all current source and log receipts verify, and rendered links contain no failures. The finalizer's exact sixteen-file evidence set was inspected. This reviewer did not execute the finalizer, external searches, model evaluations, trajectories, scientific tests or producer replays."
+  },
+  "verified_counts":{
+    "maintained_files":4626,
+    "unchanged_files":4623,
+    "changed_paths":[
+      "theory/RESEARCH_PROGRAM.md",
+      "theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "theory/research_prerequisites.json"
+    ],
+    "historical_artifact_receipts":16,
+    "reviewed_files":16,
+    "documentation_checks":5,
+    "rendered_pages":318,
+    "rendered_fragment_links":22739
+  },
+  "authorized_scope":"Only the frozen bounded primary-source access-feasibility documentary audit.",
+  "empirical_comparison_authorized":false,
+  "physical_readiness_binding":{
+    "path":"artifacts/native-feasibility-admission-20261029/physical-readiness-review.json",
+    "sha256":"1edd4b3ecb9e74d66a3ad9c354a1e2892b33dc3dbb90bbb62b865142627fa6e5"
+  },
+  "performed":{
+    "metadata_and_source_audit":true,
+    "external_source_searches":0,
+    "new_scientific_evaluations":0,
+    "scientific_tests":0,
+    "trajectory_runs":0,
+    "historical_producer_replays":0,
+    "documentation_checks_rerun":0,
+    "canonical_edits":0,
+    "checker_edits":0,
+    "finalizer_runs":0
+  },
+  "limitations":[
+    "Hash and metadata checks prove source association and preservation, not scientific truth or empirical validity.",
+    "The independent readiness assessment supplies the substantive documentary-task admission; this maintenance receipt is not another physical study.",
+    "Strict readiness does not authorize any empirical comparison or physical realization beyond the frozen documentary task."
+  ],
+  "receipt_writer":{
+    "path":"artifacts/native-feasibility-admission-20261029/write-final-maintenance-review.py",
+    "bytes":18032,
+    "sha256":"527372ec23c42a4bdb0df22ba1f85bf27aafda41bb7fbf583a740745a4e30e50"
+  }
+}

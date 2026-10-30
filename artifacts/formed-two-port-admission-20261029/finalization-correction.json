@@ -1,0 +1,23 @@
+{
+  "failure":{
+    "path":"artifacts/formed-two-port-admission-20261029/finalization-attempt-v1.json",
+    "bytes":827,
+    "sha256":"d6d83f481eb18b9db440e97c52c44106f2c28c46f4750e84b4477686e932e4da"
+  },
+  "original":{
+    "path":"artifacts/formed-two-port-admission-20261029/finalize.py",
+    "bytes":8244,
+    "sha256":"a065d18b8d88e4d13fe6830baeb170bf36801e6e03817016703d6d02f6d213d9"
+  },
+  "corrected":{
+    "path":"artifacts/formed-two-port-admission-20261029/finalize-v2.py",
+    "bytes":8679,
+    "sha256":"1c55d130a32fde7ca0cf0a0732a4f35d7f08c496fb1e4caae91ae3aae1006b1e"
+  },
+  "preparer":{
+    "path":"artifacts/formed-two-port-admission-20261029/correct_finalization.py",
+    "bytes":2948,
+    "sha256":"9ba9a23b0c4129de41806b8df3a04c1d2f33c44defdcd5af04ee5ee74ac4f987"
+  },
+  "scope":"Only replace dirty-inventory equality with preservation of all old entries and exactly one declared new modified owner."
+}

@@ -1,0 +1,39 @@
+{
+  "schema":"tnfr.research-prerequisite-review.v1",
+  "requirement":"operator_causality",
+  "verdict":"approved",
+  "independent":true,
+  "author":"/root",
+  "reviewer":"/root/collective_controls",
+  "criteria_assessment":{
+    "closure":"Approved only for the same prepared mathematical domain: the supplied unit C5 pair (0,1,2,3,4) and (5,6,7,8,9) with bridge (0,5), signed scalar form, circular phase, strictly positive capacities, fixed ordinary capacity mean, e=w=1/2, beta=1, a supplied fixed kappa>0, equal constituent measure and one structural clock. The capability is full-state prediction, local all-forward retention and recovery near the aligned winding-one family, and the declared internal receiver response. CT1-CT2 define all three autonomous rows before response is evaluated: p=-e*D^-1*B*x+w*g(theta), x_dot=diag(nu)*p, theta_dot=(w/beta)*H^-1*diag(nu)*B*x, and nu_dot=-(kappa/2)*B*nu. Native pressure, joint Dirichlet/cosine storage and nodewise work cancellation are independent constitutive premises; continuity fixes the selected phase row on its regular domain. Equal node measure and fixed reciprocal linear edge flux independently specify capacity redistribution. CT proves the capacity hull, additive and cut balances and native storage cancellation. JO supplies the claimed joint causal capability and continuation. No input, registered invocation, selector, history or graph event is consumed by this event-free prediction. The Coupling comparison prevents identifying finite UM with elapsed continuous transport; all thirteen actions are not asserted to be realized. There is no remaining occurrence or reaction law needed for this prepared claim. This is not approval of acquisition, spontaneous support or event creation, a reduced autonomous regional state, a numerical executor or finite-horizon error guarantee, a universal TNFR law, or physical mapping. The appended two-bridge acquisition theorem has its own complete-law proof and independent review; its result is not included in this prepared-scope prerequisite approval. The new matched organizational-selection question remains unevaluated. Held-capacity transit and single-bridge neighborhoods cannot be transferred to broader claims without their actual domain arguments. The separate final physical-readiness review remains absent. This independent source review performed zero scientific evaluations or producer replays. Source associations are renewed after independent review of the complete DA1-DA3 append and the final program; the original 98,150-byte chapter prefix is preserved. The approved prerequisite scope and evidence anchors remain the prepared single-bridge capability, not the new acquisition theorem.",
+    "primitive_or_derived":"Primitive model data are the full nodal coordinates, supplied fixed support, equal constituent measure, coefficients and clock. The pressure mixture, storage/work accounting and capacity flux are independently declared constitutive hypotheses, not definitions recovered from the desired response. The reciprocal phase row follows conditionally from the selected work premise; current pressure, phase metric, conservation, dissipation, recovery and response are derived at their stated domains. Capacity is not identified with an observed frequency. Initialization and the bridge are supplied, not explained as autonomous operator occurrence."
+  },
+  "evidence":[
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-foundation-scope-decision",
+      "sha256":"d882de5ada26a5181934edba5f14ceedb5d5895135d809e6f994e8c86df3b8b4"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-foundation-admission",
+      "sha256":"d882de5ada26a5181934edba5f14ceedb5d5895135d809e6f994e8c86df3b8b4"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-capacity-transport",
+      "sha256":"d882de5ada26a5181934edba5f14ceedb5d5895135d809e6f994e8c86df3b8b4"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-joint-organization",
+      "sha256":"d882de5ada26a5181934edba5f14ceedb5d5895135d809e6f994e8c86df3b8b4"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-coupling-realization",
+      "sha256":"d882de5ada26a5181934edba5f14ceedb5d5895135d809e6f994e8c86df3b8b4"
+    }
+  ]
+}

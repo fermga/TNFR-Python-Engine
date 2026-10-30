@@ -1,0 +1,57 @@
+{
+  "passed":true,
+  "counts":{
+    "tests":101,
+    "failures":0,
+    "errors":0,
+    "skipped":0
+  },
+  "command":[
+    "C:\\TNFR-Python-Engine\\.venv313\\Scripts\\python.exe",
+    "-E",
+    "-m",
+    "pytest",
+    "-o",
+    "addopts=",
+    "-q",
+    "tests/research/test_formed_two_port_run.py",
+    "tests/research/test_formed_two_port_launch.py",
+    "artifacts/formed-two-port-executable-20261029/admission_controls.py",
+    "artifacts/formed-two-port-attempt-20261029/test_record_attempt.py",
+    "artifacts/formed-two-port-attempt-20261029/test_audit_attempt.py",
+    "--junitxml=artifacts/formed-two-port-attempt-20261029/controls-junit.xml",
+    "--basetemp=artifacts/formed-two-port-attempt-20261029/controls-temp"
+  ],
+  "exit_code":0,
+  "timed_out":false,
+  "timeout_seconds":180,
+  "wall_seconds":17.67519130000437,
+  "junit_parse_error":null,
+  "runtime":{
+    "python":"C:\\TNFR-Python-Engine\\.venv313\\Scripts\\python.exe",
+    "version":"3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+    "prefix":"C:\\TNFR-Python-Engine\\.venv313",
+    "flags":"sys.flags(debug=0, inspect=0, interactive=0, optimize=0, dont_write_bytecode=0, no_user_site=0, no_site=0, ignore_environment=1, verbose=0, bytes_warning=0, quiet=0, hash_randomization=1, isolated=0, dev_mode=False, utf8_mode=0, warn_default_encoding=0, safe_path=False, int_max_str_digits=4300)"
+  },
+  "freeze":{
+    "path":"artifacts/formed-two-port-attempt-20261029/controls-freeze.json",
+    "bytes":170100,
+    "sha256":"3df8fbb018a26ca86636e40455bb843ffe97f8eb3e65e1019199bf1acffaa541"
+  },
+  "log":{
+    "path":"artifacts/formed-two-port-attempt-20261029/controls.log",
+    "bytes":184,
+    "sha256":"0bafcfb2341a182648fd5b606cb94b29ca0db48a3c02fd4ca707e828ee869425"
+  },
+  "reserved_reference_steps":0,
+  "actual_source_transits":0,
+  "target_sign_admissions":0,
+  "root_searches":0,
+  "historical_producer_replays":0,
+  "real_workers_launched":0,
+  "junit":{
+    "path":"artifacts/formed-two-port-attempt-20261029/controls-junit.xml",
+    "bytes":18362,
+    "sha256":"cd65c35b4ce8390d4277caca7ad352ec834b39fd9bd4a6feedecb0d84cdc53f5"
+  }
+}

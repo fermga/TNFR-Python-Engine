@@ -1,0 +1,189 @@
+{
+  "documentary_only":true,
+  "json_receipt_edges":1435,
+  "summary":{
+    "current_raw_match":1336,
+    "deliberately_omitted_bookkeeping":32,
+    "frozen_archive_match":49
+  },
+  "unresolved":[
+    {
+      "path":"artifacts/formed-two-port-domain-20261029/chapter-append.md",
+      "sha256":"fdc8534b457e807d4abcee918f77ecf15c26fffc268bb3693c1f785b0983af67",
+      "reason":"no current or selected archive match",
+      "consumers":[
+        "artifacts/formed-two-port-domain-20261029/document-changes-before-floor-clarification.json"
+      ]
+    },
+    {
+      "path":"artifacts/native-causal-access-20261029/causal-access-section.md",
+      "sha256":"cff87e3cac051583aa397b1822315b6e872af252171ff59f1ad4346012e86232",
+      "reason":"no current or selected archive match",
+      "consumers":[
+        "artifacts/native-causal-access-20261029/field-and-contract-review.json",
+        "artifacts/native-causal-access-20261029/mathematical-review.json"
+      ]
+    },
+    {
+      "path":"artifacts/native-feasibility-admission-20261029/program-decision.md",
+      "sha256":"488312f3aa98f427ca2c44bbbec9eb56b8388ab6452b02e415083c16ff767797",
+      "reason":"no current or selected archive match",
+      "consumers":[
+        "artifacts/native-feasibility-admission-20261029/foundation-review.json",
+        "artifacts/native-feasibility-admission-20261029/scope-review.json"
+      ]
+    },
+    {
+      "path":"attempt-verdict.json",
+      "sha256":"fd5c8c0725916a6b48d1bdcdd179911b11103de2d4109c33ba5b3840974d429d",
+      "reason":"no current or selected archive match",
+      "consumers":[
+        "artifacts/formed-two-port-attempt-20261029/audit.json",
+        "artifacts/formed-two-port-attempt-20261029/caller-result.json"
+      ]
+    },
+    {
+      "path":"attempt.json",
+      "sha256":"2fe5265af1b0fc76140fd03e85b79c9140ce99af75e4aa50c1f4b6ecdb2ead3d",
+      "reason":"no current or selected archive match",
+      "consumers":[
+        "artifacts/formed-two-port-attempt-20261029/attempt/attempt-verdict.json",
+        "artifacts/formed-two-port-attempt-20261029/attempt/execution.json",
+        "artifacts/formed-two-port-attempt-20261029/caller-result.json"
+      ]
+    },
+    {
+      "path":"execution.json",
+      "sha256":"4911a418f4d612387bba33837dbe20e3462f79ff3197120bb009a35743bb45eb",
+      "reason":"no current or selected archive match",
+      "consumers":[
+        "artifacts/formed-two-port-attempt-20261029/attempt/attempt-verdict.json",
+        "artifacts/formed-two-port-attempt-20261029/caller-result.json"
+      ]
+    },
+    {
+      "path":"protocol.json",
+      "sha256":"94b7e48015a3c7767996a1c41ad355f96fd69887a26b01819c13191e829f125a",
+      "reason":"no current or selected archive match",
+      "consumers":[
+        "artifacts/formed-two-port-attempt-20261029/attempt/admission.json",
+        "artifacts/formed-two-port-attempt-20261029/attempt/failed-step.json",
+        "artifacts/formed-two-port-attempt-20261029/attempt/steps/0000.json",
+        "artifacts/formed-two-port-attempt-20261029/attempt/steps/0001.json",
+        "artifacts/formed-two-port-attempt-20261029/attempt/steps/0002.json",
+        "artifacts/formed-two-port-attempt-20261029/attempt/steps/0003.json",
+        "artifacts/formed-two-port-attempt-20261029/attempt/worker-result.json"
+      ]
+    },
+    {
+      "path":"source.zip",
+      "sha256":"43e2a0760cb5e0e8db5822ebde72ecc7e9bda0992490d26e8b8c3abe47fec374",
+      "reason":"no current or selected archive match",
+      "consumers":[
+        "artifacts/formed-two-port-attempt-20261029/attempt/admission.json",
+        "artifacts/formed-two-port-attempt-20261029/attempt/failed-step.json",
+        "artifacts/formed-two-port-attempt-20261029/attempt/steps/0000.json",
+        "artifacts/formed-two-port-attempt-20261029/attempt/steps/0001.json",
+        "artifacts/formed-two-port-attempt-20261029/attempt/steps/0002.json",
+        "artifacts/formed-two-port-attempt-20261029/attempt/steps/0003.json",
+        "artifacts/formed-two-port-attempt-20261029/attempt/worker-result.json"
+      ]
+    },
+    {
+      "path":"src/tnfr/research/native_capacity_selection.py",
+      "sha256":"ded6a8e6536f8716e633ac917a1d7130566b82738c49426316dbd8ce69376b66",
+      "reason":"no current or selected archive match",
+      "consumers":[
+        "artifacts/native-selection-witness-20261028/mathematical-review.json"
+      ]
+    },
+    {
+      "path":"steps/0000.json",
+      "sha256":"eac5ee5f4c11be99095fcafc6dd0009fd6f081fefbf9aa29eb8e8f531b6feeea",
+      "reason":"no current or selected archive match",
+      "consumers":[
+        "artifacts/formed-two-port-attempt-20261029/attempt/steps/0001.json"
+      ]
+    },
+    {
+      "path":"steps/0001.json",
+      "sha256":"f7557892a772d1dcfd64d26e7ecf29a70f0b075e6d31e3439d17077bccfe1ae9",
+      "reason":"no current or selected archive match",
+      "consumers":[
+        "artifacts/formed-two-port-attempt-20261029/attempt/steps/0002.json"
+      ]
+    },
+    {
+      "path":"steps/0002.json",
+      "sha256":"9ddbc5e3bd16de4cbc303877d04213672869fc97dd8764e3e8b4bf22573644cf",
+      "reason":"no current or selected archive match",
+      "consumers":[
+        "artifacts/formed-two-port-attempt-20261029/attempt/steps/0003.json"
+      ]
+    },
+    {
+      "path":"steps/0003.json",
+      "sha256":"b9fc7c6946db8dfe7c42b16dbdd17e5a1f26560cb5e8154bbcae406377d6ce60",
+      "reason":"no current or selected archive match",
+      "consumers":[
+        "artifacts/formed-two-port-attempt-20261029/attempt/failed-step.json",
+        "artifacts/formed-two-port-attempt-20261029/attempt/worker-result.json",
+        "artifacts/formed-two-port-attempt-20261029/audit.json"
+      ]
+    },
+    {
+      "path":"steps/certificate-fields.json",
+      "sha256":"31b008de3160b6e31ee1f6efc56df4b26a1f2d7572aea6298acfb4adb17754bc",
+      "reason":"no current or selected archive match",
+      "consumers":[
+        "artifacts/formed-two-port-attempt-20261029/attempt/steps/0000.json",
+        "artifacts/formed-two-port-attempt-20261029/attempt/steps/0001.json",
+        "artifacts/formed-two-port-attempt-20261029/attempt/steps/0002.json",
+        "artifacts/formed-two-port-attempt-20261029/attempt/steps/0003.json"
+      ]
+    },
+    {
+      "path":"tests/research/test_native_capacity_selection.py",
+      "sha256":"7d6ed13831562f0fdf54407a03213c86b72d1720253b8b383a7b1e5145b8bc4d",
+      "reason":"no current or selected archive match",
+      "consumers":[
+        "artifacts/native-selection-witness-20261028/mathematical-review.json"
+      ]
+    },
+    {
+      "path":"theory/PHYSICAL_REGIME_CORRESPONDENCES.md",
+      "sha256":"8c575318aec6add1110e92cb6b9276dbfc696bcf6832be1eb90cfb7ad17c4667",
+      "reason":"no current or selected archive match",
+      "consumers":[
+        "artifacts/native-feasibility-admission-20261029/protocol-review.json",
+        "artifacts/native-feasibility-admission-20261029/scope-review-final.json",
+        "artifacts/native-feasibility-admission-20261029/scope-review.json",
+        "artifacts/native-joint-scope-review-20261029/mathematical-review.json"
+      ]
+    },
+    {
+      "path":"worker-result.json",
+      "sha256":"2ed9015816d2576df451c0078dd622d1f1e5705aa2b7d1e57bc456c2012ce44e",
+      "reason":"no current or selected archive match",
+      "consumers":[
+        "artifacts/formed-two-port-attempt-20261029/attempt/attempt-verdict.json",
+        "artifacts/formed-two-port-attempt-20261029/audit.json",
+        "artifacts/formed-two-port-attempt-20261029/caller-result.json"
+      ]
+    },
+    {
+      "path":"worker.log",
+      "sha256":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reason":"no current or selected archive match",
+      "consumers":[
+        "artifacts/formed-two-port-attempt-20261029/attempt/attempt-verdict.json",
+        "artifacts/formed-two-port-attempt-20261029/attempt/execution.json",
+        "artifacts/formed-two-port-attempt-20261029/caller-result.json"
+      ]
+    }
+  ],
+  "limitations":[
+    "Only structured path/sha256 receipts in selected JSON were traversed; Markdown citation claims are not automatically proof-checked.",
+    "Bookkeeping exclusions and historical paths are retained as declared; no scientific source was executed or modified."
+  ]
+}

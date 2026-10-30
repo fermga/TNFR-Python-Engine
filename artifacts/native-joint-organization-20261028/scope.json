@@ -1,0 +1,50 @@
+{
+  "question":"Does the supplied joined winding-one organization recover jointly and transmit internal receiver deformation under the same admitted evolving-capacity law?",
+  "status":"prospective conditional analytical proof and six symbolic controls; not evaluated",
+  "state":"Full thirty-coordinate state: ten signed forms, circular phases on local continuous deviations from prepared twist, and positive capacities. Fixed ordinary capacity mean b; two global origins quotiented, leaving27relative coordinates.",
+  "support":"Unit undirected simple graph: cycles(0,1,2,3,4),(5,6,7,8,9),bridge(0,5). Degrees3atports,2elsewhere. No event or support change.",
+  "law":"xdot=N[-e D^-1 Bx+w g],thetadot=(w/beta)H^-1 N Bx,nudot=-(kappa/2)Bnu; e=w=1/2,beta=1,kappa>0. Actual native resultant g,H, current pressure refresh; capacity/topology pressure channels and inputs absent. Same structural clock.",
+  "equilibrium":"x=c1,theta_i=theta_(i+5)=2*pi*i/5+alpha,nu=b1,b>0. Prepared labeled organization with both winding numbers1.",
+  "preparation":"x=a e1,theta=theta*,nu=b1+eta(e0-e1); a>0,0<eta<b. Joint recovery additionally requires sufficiently small a,eta: quotientnorm\u00b2=9a\u00b2/10+2eta\u00b2; positivity alone is insufficient.",
+  "observations":"Fulltangent and actualmeanrows, receiverport5minusmean(rest6..9) for form and local phase deviations. Joined-vs-disconnected secondjets, dynamic-vs-held thirdjets at identical full initial state.",
+  "prospective_response":"K=1/36-1/(4*pi\u00b2*h\u00b2)>0,J=1/(12*pi*h)>0,h=(1+sqrt5)/2. Receiversecond=a b(b+eta)*(K,-J), shared by dynamic/held. Their thirdjetdifference=kappa eta a(eta-b)*(K,-J); otherreceiver differenceszero.",
+  "method":"Exact SymPy algebra, independently assembled native resultants/derivatives and analytic Hurwitz/Lyapunov argument; no trajectories, numerical eigenfits or parameter search.",
+  "horizon":"Analytical local all-forward recovery; exact initial jets imply some sufficiently short nonzero response interval. No chosen numerical horizon, radius, solver tolerance or uniform amplitude-independent separation bound.",
+  "claims_to_check":[
+    "Full30nativecapacitytangent withjoinedmetrics",
+    "Positive quotientwork structure,27stabletransversedirections and actualnonconserved originrows",
+    "Meanpreserving positivecapacity source and actualredistribution rates",
+    "Internalreceiversecondordertransmission",
+    "Thirdorder nativeeffect ofcapacityrelease againstmatchedheld law",
+    "Blind limits, origin-invariant observations and exactdisconnectedreceiver lock"
+  ],
+  "expected_test_names":[
+    "test_full_thirty_state_tangent_from_native_resultants",
+    "test_quotient_stability_structure_and_origin_drift",
+    "test_mean_preserving_capacity_source",
+    "test_receiver_second_jet_under_joint_law",
+    "test_receiver_third_jet_distinguishes_capacity_release",
+    "test_blind_preparations_and_disconnected_receiver"
+  ],
+  "control_group_count":6,
+  "evaluation_budget":{
+    "pytest_attempts":1,
+    "wall_seconds":120,
+    "memory_bytes":2147483648,
+    "trajectory_runs":0,
+    "parameter_scans":0
+  },
+  "memory_supervision":"Windows kill-on-close job, sampled aggregate RSS at nominal100ms plus worker OS peak; not a hard allocation limit.",
+  "scope_limits":[
+    "No inherited held-capacity numerical basin or global arbitrary-state attraction.",
+    "No autonomous acquisition, support event, sustained pulse, universal law selection or physical mapping.",
+    "No executor installation: current native runtime holds capacity.",
+    "All four broader foundation requirements remain open until joint review."
+  ],
+  "failure_policy":"Preserve frozen sources and all results; no retry under this declaration. Any correction needs separate declaration, source freeze and independent review.",
+  "prior_result":{
+    "path":"artifacts/native-capacity-transport-20261028/final-state.json",
+    "bytes":3983,
+    "sha256":"c8e5753f8fb0f09d9247a74c995928b2e333645b84fd3c522f46bde53661ee63"
+  }
+}

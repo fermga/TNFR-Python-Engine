@@ -1,0 +1,97 @@
+{
+  "schema":"tnfr.native-selection-robustness-static-protocol.v1",
+  "scope":{
+    "path":"artifacts/native-selection-robustness-20261029/scope.json",
+    "bytes":1919,
+    "sha256":"f63ebf9b14044a336c4f6da8b6592c3d9b06fd5f92fe40494e4ab527dffcaa4f"
+  },
+  "proof":{
+    "path":"artifacts/native-selection-robustness-20261029/robustness-section.md",
+    "bytes":14725,
+    "sha256":"cdade3d189040e0c4ca8657d9c9d6a1e1a29cc8b934d39ce41ab58ff500a31da"
+  },
+  "independent_review":{
+    "path":"artifacts/native-selection-robustness-20261029/pre-evaluation-review.json",
+    "bytes":13088,
+    "sha256":"105af64bc8e06e92ee0fe0a9cd04b5ecc7d0e86298c566a807d8b6a18ef8b574"
+  },
+  "activity":"A static exact arithmetic audit of already evaluated evidence, not a reserved prediction or new evolution.",
+  "inputs":[
+    {
+      "path":"artifacts/native-selection-witness-20261028/final-state.json",
+      "bytes":186178,
+      "sha256":"c9698db64d2c9ad2e9b9bbe4c4e1eee9b7eef1c745ee8c1af3849f426aa65f4b"
+    },
+    {
+      "path":"artifacts/native-selection-witness-20261028/validation-plan.json",
+      "bytes":213907,
+      "sha256":"6a5fe5d5f651e52ea009c9def96fdab04c90b3b68d48b8978830be708fb99e6b"
+    },
+    {
+      "path":"artifacts/native-selection-witness-20261028/validation.json",
+      "bytes":5422,
+      "sha256":"2c018e9fda13596f5373f6890e5e5f4650df2019b204d7c88355ccb813cec79e"
+    },
+    {
+      "path":"artifacts/native-selection-witness-20261028/paired-result.json",
+      "bytes":5184,
+      "sha256":"3090b043274294f672dab48beaf50540cc7b33c9c0da86377af110a93222d9d3"
+    },
+    {
+      "path":"artifacts/native-selection-witness-20261028/candidate.json",
+      "bytes":6498,
+      "sha256":"b2fde87eb0772f673798387d2a1781ae9c3dd08d45a4be16e45a0de07fa47b40"
+    },
+    {
+      "path":"artifacts/native-selection-witness-20261028/held-steps.jsonl",
+      "bytes":1322267,
+      "sha256":"34f74438fc2bd4171db46a4c345bfc8db6c5726426c7dde2cf5f411757e8fe74"
+    },
+    {
+      "path":"artifacts/native-selection-witness-20261028/dynamic-steps.jsonl",
+      "bytes":1356818,
+      "sha256":"bed2d33428a3989144a7f32e7ba2ada4783c02ccc0830d96da1ec068fa090c5b"
+    },
+    {
+      "path":"artifacts/native-selection-witness-20261028/held-capture.json",
+      "bytes":9320,
+      "sha256":"a1d8c1a7bdf43cdff3cf64cb5b4223129a8add8dec6e33716484303bde4f4cb6"
+    },
+    {
+      "path":"artifacts/native-selection-witness-20261028/dynamic-capture.json",
+      "bytes":9306,
+      "sha256":"d6462befc1227209c13032cd9954aebf2b875466d39d629e0be321f4332153cc"
+    },
+    {
+      "path":"artifacts/native-selection-witness-20261028/evaluated-source.zip",
+      "bytes":4842630,
+      "sha256":"c7bca937785874c972ab05b74cd79dcfdc1fca8920812f0c7af0ae017bffa961"
+    }
+  ],
+  "selected_guards":[
+    "fixed previous final-state and consumed code/source archive associations",
+    "identical exact preparation and mean-one capacity hull",
+    "498 exact contiguous saved whole-time tubes and endpoint associations",
+    "recompute every real resultant from primitive a,b and require >=2^-33",
+    "require every tube |q|,|r|<1 and embedded |x|<1",
+    "recompute complete9margin domain and compare to retained evidence",
+    "recompute final complete geometry/storage in same reduced exact embedding, sectors held+1/dynamic0 and deficit>=2^-30"
+  ],
+  "analytical_result":"If the reviewed proof and all finite data guards hold, the exact symbolic rho=2^(-2^250) sup-norm ball in the full29Dmean-one leaf preserves both destinations; this is not a practical tolerance.",
+  "budget":{
+    "watchdog_wall_budget_seconds":180,
+    "maximum_rss_bytes":2147483648,
+    "maximum_response_bytes":16777216,
+    "maximum_log_bytes":1048576,
+    "diagnostic_reserve_bytes":1048576,
+    "handshake_timeout_seconds":30,
+    "poll_seconds":0.1
+  },
+  "resource_scope":"One static audit of existing primitive boxes and source associations; 180-second supervised watchdog includes interpreter handshake, verification and audit; root preflight/freeze metadata checks are outside this worker allowance, 2 GiB sampled aggregate RSS (not a hard allocation cap), 16 MiB task outputs excluding baseline/before-edit/evaluated-source/validation-plan. Job log bound1MiB; cleanup separately bounded. No trajectory, candidate generator or historical producer runs.",
+  "new_trajectories":0,
+  "producer_replays":0,
+  "candidate_generations":0,
+  "attempts":1,
+  "failure_policy":"Retain the exact failed guard or resource failure. Do not reduce a threshold, change the seed, replay a source or retry this audit after seeing the result.",
+  "review_binding":"The final review compares this whole substantive protocol excluding independent_review. That sole field is then bound to the immutable review receipt before freeze. Canonical documents stay unchanged during evaluation so the current prerequisite associations remain valid."
+}

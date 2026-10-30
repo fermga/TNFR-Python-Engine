@@ -1,11 +1,11 @@
 # Documentation ownership and navigation
 
 This map routes the maintained documentation for the checked-out source.
-Usage guides show how to call an interface, contracts specify admission and
-outputs, and the [research program](../theory/RESEARCH_PROGRAM.md#research-current-question)
-owns the objective, current question and chapters containing definitions,
-hypotheses and proofs. Its generated [chapter index](../theory/README.md)
-provides navigation.
+Usage guides show how to call an interface; contracts specify admission and
+outputs. The [theory reading route](../theory/README.md#a-short-reading-route)
+leads to the owners of definitions, hypotheses and proofs. The
+[research program](../theory/RESEARCH_PROGRAM.md#research-current-question)
+alone selects the current research question.
 
 Start with the [root README](../README.md) for installation and an organized
 mathematical object, then use the
@@ -14,8 +14,8 @@ and [recovery-report guide](guides/relational/RELATIONAL_CAPTURE_AND_MEMORY.md#r
 to inspect its state, law, identity and response. Continue with the
 [CLI/SDK object workflow](CLI_AND_SDK.md#work-with-an-organized-object) or the
 [regional workflows](guides/REGIONAL_AND_RELATIONAL.md) for the supported
-actions and observations. For their mathematical meaning, the theory index
-connects definitions and proofs to engine modules, tests and SDK entry points.
+actions and observations. The [theory-to-execution map](../theory/THEORY_TO_EXECUTION.md)
+connects the corresponding mathematical owners to engine modules and checks.
 Numerical evidence and conditional certificates retain the premises of their
 source objects; they are not empirical validation.
 
@@ -41,9 +41,9 @@ Choose the execution contract before following an example:
   pressure and operator events have different execution semantics.
 
 Use the [regional workflow index](guides/REGIONAL_AND_RELATIONAL.md) to find an
-interface and the [theory reading routes](../theory/RESEARCH_PROGRAM.md#reading-the-research-as-one-program)
-to assess its scientific claim. A captured state, supplied invariant family,
-finite enclosure and physical measurement have different source obligations.
+interface and its linked proof owner to assess the scientific claim. A captured
+state, supplied invariant family, finite enclosure and physical measurement
+have different source obligations.
 Common variables or storage do not join their theorems. The
 [research program](../theory/RESEARCH_PROGRAM.md#research-current-question)
 selects research work; an available guide does not authorize a campaign.
@@ -128,8 +128,8 @@ their chapter, and examples in the matching guide. Preserve published routes
 and section aliases. Archived records and frozen evidence retain their own
 provenance and are outside this size guard.
 
-The catalog above owns the technical website menu; the theory catalog owns its
-own menu. `python scripts/check_documentation.py --write-generated` refreshes
+The catalog above owns the technical website menu; `theory/research_catalog.json`
+owns the theory menu metadata. `python scripts/check_documentation.py --write-generated` refreshes
 both menus, the registry-derived operator table and the glossary index. The
 ordinary gate checks catalog coverage and generated agreement. Link/fragment
 checking and a strict site build also belong to the

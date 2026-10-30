@@ -1,12 +1,12 @@
 """TNFR structural-field diagnostics - core implementation.
 
-The four canonical public read-outs organize complementary aggregation, phase
-and correlation information. They do not reconstruct a complete network state:
+The selected tetrad organizes pressure aggregation, phase structure and
+coherence-profile information within task-dependent observations:
 
-- Φ_s: Global structural potential (field theory dimension)
-- |∇φ|: Local phase desynchronization (gradient dimension)
-- K_φ: Phase curvature / geometric confinement (real part of unified Ψ = K_φ + i·J_φ)
-- ξ_C: Coherence length / spatial correlations (correlation dimension)
+- Φ_s: Distance-weighted stored-pressure aggregation
+- |∇φ|: Mean absolute wrapped neighbor mismatch
+- K_φ: Wrapped displacement from a defined neighbor-resultant direction
+- ξ_C: Static product-fit length or separately identified spectral scale
 
 All fields are read-only telemetry that never mutate EPI.
 
@@ -50,6 +50,11 @@ from ..constants.aliases import ALIAS_THETA
 # Import TNFR cache system
 from ..mathematics.unified_cache import CacheLevel, cache_tnfr_computation
 from ..mathematics.unified_numerical import np
+from ._coherence_fit import (
+    CoherenceDistanceBin,
+    CoherenceFitDiagnostics,
+    CoherenceProfile,
+)
 from ._edge_semantics import (
     has_explicit_edge_lengths,
     has_nonpositive_edge_length,
@@ -570,13 +575,55 @@ def estimate_coherence_length(G: Any) -> float:
     return estimate_coherence_length_with_provenance(G).value
 
 
+def observe_coherence_profile(G: Any) -> CoherenceProfile:
+    """Observe the full static profile behind the historical decay-fit scalar.
+
+    All sampled positive-distance bins are retained, including bins excluded
+    from regression. Descriptive residuals and R² add no quality threshold.
+    Centered products and semivariograms concern the same pressure-only
+    coherence field; they do not establish independent state coordinates,
+    stationarity or a dynamical correlation law. Directed roles and source
+    sampling follow the existing scalar estimator exactly.
+
+    This optional detached report recomputes from admitted live inputs and
+    never substitutes the separate spectral scale for an unavailable fit.
+    Existing scalar calls do not collect these additional moments.
+    """
+    from ._coherence_fit import coherence_sources, fit_coherence_length
+
+    nodes = tuple(G.nodes())
+    validate_structural_graph(G, nodes)
+    mode = get_precision_mode()
+    return fit_coherence_length(
+        G,
+        nodes,
+        {node: _get_dnfr(G, node) for node in nodes},
+        sources=coherence_sources(nodes, mode),
+        dtype=_get_precision_dtype(),
+        materialize=bool(_VECTORIZATION_AVAILABLE) and len(nodes) < 1000,
+        return_profile=True,
+        precision_mode=mode,
+    )
+
+
 def estimate_coherence_length_with_provenance(
     G: Any,
 ) -> CoherenceLengthEstimate:
     """Return ``ξ_C`` together with the fit/fallback method used."""
+    return _coherence_length_estimate_from_fit(
+        G, _estimate_coherence_length_autocorr(G)
+    )
+
+
+def _coherence_length_estimate_from_fit(G: Any, fit: float) -> CoherenceLengthEstimate:
+    """Project an internally computed live fit through the established fallback.
+
+    The scalar reader and optional detached SDK profile share this projection.
+    Callers must compute the fit from the same live graph through its shared
+    owner; this private helper does not admit or authenticate external reports.
+    """
     from ._coherence_fit import DISTANCE_DESCRIPTION, FIT_DESCRIPTION
 
-    fit = _estimate_coherence_length_autocorr(G)
     if fit == fit and fit > 0.0:
         return CoherenceLengthEstimate(
             float(fit),
@@ -666,4 +713,8 @@ __all__ = [
     "estimate_coherence_length",
     "estimate_coherence_length_with_provenance",
     "CoherenceLengthEstimate",
+    "observe_coherence_profile",
+    "CoherenceProfile",
+    "CoherenceDistanceBin",
+    "CoherenceFitDiagnostics",
 ]

@@ -1,0 +1,100 @@
+{
+  "acknowledged": true,
+  "all_owned_processes_waited": true,
+  "cleanup_complete": true,
+  "cleanup_errors": [],
+  "cleanup_timeout_seconds": 10,
+  "detail": null,
+  "elapsed_seconds": 4.466782299990882,
+  "excluded_lineage": {
+    "omitted_observations": 0,
+    "records": []
+  },
+  "handshake": {
+    "base_executable": "C:\\Program Files\\Python313\\python.exe",
+    "base_prefix": "C:\\Program Files\\Python313",
+    "executable": "C:\\TNFR-Python-Engine\\.venv313\\Scripts\\python.exe",
+    "nonce": "a4c5ac53f0685ecc7dae2d1f1323fe4f8404dedeb2c8e85cfe7835ea58007c6d",
+    "pid": 26060,
+    "ppid": 9616,
+    "prefix": "C:\\TNFR-Python-Engine\\.venv313",
+    "schema": "tnfr.bootstrap-ready.v1",
+    "tnfr_imported": false,
+    "version": "3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]"
+  },
+  "handshake_verified": true,
+  "job_empty_after_cleanup": true,
+  "job_verified": true,
+  "launch_pid": 9616,
+  "launcher_exit_code": 0,
+  "launcher_identity": {
+    "creation_time": 134376840432810306,
+    "image": "C:\\TNFR-Python-Engine\\.venv313\\Scripts\\python.exe",
+    "parent_pid": 28192,
+    "pid": 9616
+  },
+  "launcher_pid": 9616,
+  "launcher_waited": true,
+  "maximum_job_processes": 64,
+  "observed_members": [
+    {
+      "creation_time": 134376840432810306,
+      "image": "C:\\TNFR-Python-Engine\\.venv313\\Scripts\\python.exe",
+      "job_verified": true,
+      "parent_pid": 28192,
+      "peak_working_set_bytes": 4366336,
+      "pid": 9616
+    },
+    {
+      "creation_time": 134376840469285765,
+      "image": "C:\\Program Files\\Git\\cmd\\git.exe",
+      "job_verified": true,
+      "parent_pid": 26060,
+      "peak_working_set_bytes": 7045120,
+      "pid": 12464
+    },
+    {
+      "creation_time": 134376840432887628,
+      "image": "C:\\Windows\\System32\\conhost.exe",
+      "job_verified": true,
+      "parent_pid": 9616,
+      "peak_working_set_bytes": 7528448,
+      "pid": 22136
+    },
+    {
+      "creation_time": 134376840433103328,
+      "image": "C:\\Program Files\\Python313\\python.exe",
+      "job_verified": true,
+      "parent_pid": 9616,
+      "peak_working_set_bytes": 142569472,
+      "pid": 26060
+    },
+    {
+      "creation_time": 134376840469438840,
+      "image": "C:\\Program Files\\Git\\mingw64\\bin\\git.exe",
+      "job_verified": true,
+      "parent_pid": 12464,
+      "peak_working_set_bytes": 7499776,
+      "pid": 29204
+    }
+  ],
+  "peak_aggregate_working_set_bytes": 168206336,
+  "peak_worker_working_set_bytes": 142569472,
+  "reason": null,
+  "resource_scope": "Whole-job aggregate RSS sampled at most every100ms; actual-worker OS peak additionally checked. Shared pages may be counted more than once. No hard OS RSS allocation limit is claimed.",
+  "retry_permitted": false,
+  "rss_samples": 43,
+  "schema": "tnfr.windows-job-supervision-result.v1",
+  "target_authorized": true,
+  "terminated_process_ids": [],
+  "termination_call_diagnostics": [],
+  "worker_exit_code": 0,
+  "worker_identity": {
+    "creation_time": 134376840433103328,
+    "image": "C:\\Program Files\\Python313\\python.exe",
+    "parent_pid": 9616,
+    "pid": 26060
+  },
+  "worker_pid": 26060,
+  "worker_waited": true
+}

@@ -157,13 +157,13 @@ include = ["tnfr", "tnfr.*"]
 [tool.black]
 line-length = 88
 target-version = ["py310", "py311", "py312", "py313"]
-extend-exclude = '^/(docs/assets|build|applications/factorization-lab|applications/primality-test/archive)/'
+extend-exclude = '^/(docs/assets|artifacts|build|applications/factorization-lab|applications/primality-test/archive)/'
 
 [tool.isort]
 profile = "black"
 line_length = 88
 skip = ["benchmarks"]
-skip_glob = ["docs/assets/*", "build/*", "applications/factorization-lab/*", "applications/primality-test/archive/*"]
+skip_glob = ["docs/assets/*", "artifacts/*", "build/*", "applications/factorization-lab/*", "applications/primality-test/archive/*"]
 
 [tool.flake8]
 max-line-length = 88

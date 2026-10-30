@@ -1,0 +1,36 @@
+{
+  "task":"One explicit matched native organizational-selection candidate and a bounded paired rigorous transit attempt.",
+  "model":"Two C5 cycles with bridges(0,5),(1,6), unit conductances, e=w=1/2,beta=kappa=1, copied reflection and even capacity mean one; six variables(q,r,a,b,s,t),u=5-2s-2t.",
+  "comparison":"Same exact represented initial point for dynamic capacity versus held capacity; only the capacity evolution row changes.",
+  "candidate_policy":"One deterministic second-order midpoint recipe, epsilon=1/32, initial capacity direction(s-1,t-1)=(epsilon,epsilon),u=1-4epsilon; common nonlinear boundary term retained. Approximate spectral arithmetic chooses a candidate only, not a certificate.",
+  "admission":"Independent whole-time interval tubes, positive full resultants/capacities and branch margins; each entire endpoint box must enter a different protected rectangle with storage<7. The entire pair, not a finite response, supplies the verdict.",
+  "evaluation_budget":{
+    "attempts":1,
+    "candidates":1,
+    "paired_models":2,
+    "maximum_horizon":64,
+    "time_step":"1/8",
+    "Taylor_order":14,
+    "maximum_steps_per_model":512,
+    "wall_seconds":1200,
+    "memory_bytes":2147483648,
+    "response_bytes":67108864,
+    "parameter_scans":0,
+    "prior_producer_replays":0
+  },
+  "execution_condition":"No test, candidate generation or transit may execute until final sources and protocol receive independent review and a source archive is frozen. No adaptive retry or seed retuning.",
+  "stopping":"Stop each model on the first whole-box protected capture, first unavailable enclosure, declared horizon or resource limit; retain all accepted steps and the failure context. A failure is not a refutation of the existence theorem.",
+  "allowed_maintained_changes":[
+    "theory/RESEARCH_PROGRAM.md",
+    "theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+    "theory/research_prerequisites.json",
+    "src/tnfr/research/native_capacity_selection.py",
+    "tests/research/test_native_capacity_selection.py"
+  ],
+  "chapter_original_prefix_bytes":126419,
+  "program_regions":[
+    "Continuation introduction before foundational-pillars",
+    "Current decision/task from The [native foundation account] to foundation-refactoring-plan"
+  ],
+  "prerequisites":"Renew four prepared-scope source associations only after final review; physical readiness stays null."
+}

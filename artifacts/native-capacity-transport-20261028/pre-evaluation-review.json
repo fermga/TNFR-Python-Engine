@@ -1,0 +1,69 @@
+{
+  "schema":"tnfr.scientific-pre-evaluation-review.v1",
+  "reviewed_utc":"2026-10-28T18:00:07.599487+00:00",
+  "author":"/root",
+  "control_author":"/root/collective_engine",
+  "reviewer":"/root/collective_controls",
+  "verdict":"PASS",
+  "scope":{
+    "path":"artifacts/native-capacity-transport-20261028/scope.json",
+    "bytes":3737,
+    "sha256":"275c1172e85ece9d1fec596f49e1054d8280de10921c29dda789665f0b8ea54a"
+  },
+  "sources":[
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "bytes":71485,
+      "sha256":"5c338550e1a6db1806714139699e825d09b1612416391303e64df7f10f269457"
+    },
+    {
+      "path":"tests/physics/test_native_capacity_transport.py",
+      "bytes":14629,
+      "sha256":"cc6f009ae22d5336ef01d5c1fdabb607edeaf39ce8ae96a5d529fa50ad1e6107"
+    }
+  ],
+  "source_preservation":{
+    "previous_chapter_prefix_bytes":59185,
+    "previous_chapter_prefix_sha256":"018dd017582885d09f4a3f4eab3c8908e7ac3b1ce618b449df0bd6472333e08a",
+    "prefix_preserved":true
+  },
+  "reviewed_findings":[
+    "Read the complete appended transport proof, entire six-group test, prospective scope and relevant driver freeze requirements without importing or executing the controls.",
+    "The two alternatives share reciprocal extensive edge flux and differ in fixed positive node measure M. Equal measure and degree-normalized measure preserve different linear totals; normalized averaging is reciprocal in its own measure.",
+    "The equal-node extension follows conditionally from explicitly supplied support-independent unit measure, continuous additive degree-independent unit-edge contrast flux and absence of sources. Neither C5 recovery nor storage passivity uniquely selects those premises.",
+    "Independent neighbor rows and oriented-edge incidence retain the actual joined two-C5 graph, including degree-three ports. Cycle coincidence does not survive as an equality of generators on that irregular support.",
+    "The positive Metzler generator, row sums, connected rank, invariant measure and weighted variance imply the stated capacity-subsystem positivity and consensus theorem. This does not establish global continuation of the native phase law.",
+    "Native storage is differentiated from its actual edge sums. Its gradients match independent neighbor formulas; the existing native H*g identity and exact locked resultants retain the phase metric rather than substituting a sine-law constant.",
+    "Independently checked by hand the port-bump rates, ordinary-total drift kappa*eta/3 for normalized averaging, half-degree drift -kappa*eta/2 for equal measure, limiting means and right-region cut influx.",
+    "The common-clock minor is -kappa squared times eta squared/4. The regional-uniform source hides ordinary-total drift, while the positive fixed-regional-total rearrangement changes the port flux by -kappa*base/8.",
+    "The matched initial native velocities differ at second order only through capacity columns. Exact form acceleration differences are kappa*eta*a/4 and kappa*eta*a/36 at ports; phase differences are -3*kappa*eta*a/(4*pi*h) and -kappa*eta*a/(12*pi*h).",
+    "Uniform capacity and exact uniform-form native lock remain the correct blind cases. Fixed-state support comparisons separate the degree-measure amount jump from the Dirichlet/cosine storage jump without executing an event.",
+    "The analytical replica limitation is accurately restricted: copied capacity rates and native rates need not transform together. No refinement invariance, general coarse closure or replica experiment is claimed.",
+    "Final editorial clarification correctly permits a positive unit-conversion coefficient when combining weighted variance with native storage. It does not change either balance or a scientific expectation.",
+    "Reviewed exact symbolic comparison forms and assumptions statically, including the cofactor25 and Q(sqrt(5)) locked metrics. No unresolved representation hazard was identified before evaluation."
+  ],
+  "scope_caveats":[
+    "The controls are exact symbolic algebra on supplied preparations, not public runtime stages, trajectories, fitted clocks or represented floating-point certificates.",
+    "Capacity-subsystem all-time positivity and convergence do not establish full native global continuation, a nonlinear interaction basin or acquisition.",
+    "The initial-acceleration witness does not assert a finite-horizon separation band, propagation speed or physical response.",
+    "Fixed support and fixed node measure are essential. Support-change comparisons do not supply event admission, occurrence, remapping, work funding or measure-jump laws.",
+    "Regional amount balance retains boundary capacities and does not close a scalar effective regional capacity.",
+    "The native executor still holds capacity; this review does not install the dynamic completion or derive a finite registered operator from it.",
+    "All four broader foundational pillars remain open; this is not prerequisite closure or physical-mapping readiness metadata."
+  ],
+  "evaluation_budget_reviewed":{
+    "prospective_pytest_attempts":1,
+    "control_groups":6,
+    "wall_seconds":120,
+    "aggregate_rss_ceiling_bytes":2147483648,
+    "nominal_poll_seconds":0.1,
+    "hard_allocation_limit":false,
+    "supervision":"Existing Windows Job wrapper with sampled aggregate RSS and actual-worker OS peak check; no hard allocation-limit claim.",
+    "trajectory_runs":0,
+    "parameter_scans":0
+  },
+  "scientific_executions_by_reviewer":0,
+  "historical_producer_replays":0,
+  "foundation_pillars_resolved":0,
+  "physical_mapping_authorized":false
+}

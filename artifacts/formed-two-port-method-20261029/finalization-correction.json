@@ -1,0 +1,28 @@
+{
+  "original":{
+    "path":"artifacts/formed-two-port-method-20261029/finalize.py",
+    "bytes":8861,
+    "sha256":"a2b7fb916b99a357972aaeae28236866c6cb52e1a884e6dae4aa04d15aac951c"
+  },
+  "corrected":{
+    "path":"artifacts/formed-two-port-method-20261029/finalize-v2.py",
+    "bytes":9504,
+    "sha256":"e58fa27848c8d03f653f6b31831a58c4e53fa38cf811c9fd0c80224b4128944e"
+  },
+  "failure":{
+    "path":"artifacts/formed-two-port-method-20261029/finalization-attempt-v1.json",
+    "bytes":716,
+    "sha256":"2d5b57838e1f8848c1b7f7874c7abea578c82ce743894f9883d95a22a30802cd"
+  },
+  "addition":{
+    "path":"artifacts/formed-two-port-method-20261029/external-addition.json",
+    "bytes":2063,
+    "sha256":"e1669bd9e68b7d3a7a7df2c78baf313dcb77242760cb1a98688df0c17e13bcd4"
+  },
+  "preparer":{
+    "path":"artifacts/formed-two-port-method-20261029/record_external_addition.py",
+    "bytes":5333,
+    "sha256":"30889f5208b452df81e4a035b97517768ab0fbf32c1331854ea41855a3f1f8b7"
+  },
+  "scope":"Preserve exactly one concurrent unread external file, all original source bytes outside the two approved owners, and all original dirty states. No scientific or documentation check is repeated."
+}

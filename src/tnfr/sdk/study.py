@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import json
 import platform
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import InitVar, asdict, dataclass, field, fields
 from numbers import Integral, Real
 from typing import Any, Callable
@@ -19,6 +19,7 @@ import numpy as np
 
 from .._exact_time import bounded_represented_real, finite_represented_real
 from ..config import get_precision_mode
+from ..config.parsing import parse_bool
 from ..constants.aliases import ALIAS_DNFR, ALIAS_EPI, ALIAS_THETA, ALIAS_VF
 from ..physics.fields import (
     compute_structural_potential,
@@ -209,16 +210,162 @@ def _state_projection(graph: nx.Graph) -> dict[str, Any]:
     }
 
 
-def diagnose_network(network: Network) -> dict[str, Any]:
+def _observation_options(
+    include_coherence_profile, include_phase_evidence, winding_cycles
+):
+    """Admit optional readout requests before copying or observing graph state."""
+    flags = []
+    for name, value in (
+        ("include_coherence_profile", include_coherence_profile),
+        ("include_phase_evidence", include_phase_evidence),
+    ):
+        if not isinstance(value, (bool, np.bool_)):
+            raise TypeError(f"{name} must be a boolean")
+        flags.append(parse_bool(value))
+    if isinstance(winding_cycles, (str, bytes, bytearray)) or not isinstance(
+        winding_cycles, Sequence
+    ):
+        raise TypeError("winding_cycles must be a finite ordered sequence of cycles")
+    cycles = []
+    for cycle in winding_cycles:
+        if isinstance(cycle, (str, bytes, bytearray)) or not isinstance(
+            cycle, Sequence
+        ):
+            raise TypeError(
+                "each winding cycle must be a finite ordered sequence of node IDs"
+            )
+        nodes = tuple(cycle)
+        for node in nodes:
+            hash(node)  # Node identity must be admissible independently of presence.
+        cycles.append(nodes)
+    return *flags, tuple(cycles)
+
+
+def _coherence_profile_projection(profile, indices):
+    """Project opaque node identities before copying numerical dataclass fields."""
+    data = {
+        item.name: getattr(profile, item.name)
+        for item in fields(profile)
+        if item.name not in {"nodes", "sources", "bins", "fit"}
+    }
+    data.update(
+        nodes=[indices[node] for node in profile.nodes],
+        sources=[indices[node] for node in profile.sources],
+        bins=[asdict(row) for row in profile.bins],
+        fit=asdict(profile.fit),
+    )
+    return data
+
+
+def _rational_projection(value):
+    return (
+        None
+        if value is None
+        else {"numerator": value.numerator, "denominator": value.denominator}
+    )
+
+
+def _phase_evidence_projection(observation, indices):
+    """Retain exact represented sums without coercing rational evidence to floats."""
+    rows = []
+    for row in observation.rows:
+        resultant = row.resultant
+        evidence = None
+        if resultant is not None:
+            evidence = {
+                "count": resultant.count,
+                "real_sum": _rational_projection(resultant.real_sum),
+                "imag_sum": _rational_projection(resultant.imag_sum),
+                "joint_zero": resultant.joint_zero,
+                "scale": _rational_projection(resultant.scale),
+                "scaled_exact": (
+                    None
+                    if resultant.scaled_exact is None
+                    else [
+                        _rational_projection(value) for value in resultant.scaled_exact
+                    ]
+                ),
+                "scaled_binary64": resultant.scaled_binary64,
+                "scaled_rounding_defect": (
+                    None
+                    if resultant.scaled_rounding_defect is None
+                    else [
+                        _rational_projection(value)
+                        for value in resultant.scaled_rounding_defect
+                    ]
+                ),
+                "angle": resultant.angle,
+            }
+        rows.append(
+            {
+                "node": indices[row.node],
+                "neighbors": [indices[node] for node in row.neighbors],
+                "gradient": row.gradient,
+                "curvature": row.curvature,
+                "status": row.status,
+                "resultant": evidence,
+            }
+        )
+    return {
+        "version": observation.version,
+        "nodes": [indices[node] for node in observation.nodes],
+        "neighbor_order": [
+            [indices[node] for node in neighbors]
+            for neighbors in observation.neighbor_order
+        ],
+        "primitive_phases": observation.primitive_phases,
+        "components": observation.components,
+        "requested_precision_mode": observation.requested_precision_mode,
+        "gradient_accumulator_dtype": observation.gradient_accumulator_dtype,
+        "rows": rows,
+        "scope": observation.scope,
+    }
+
+
+def _winding_projection(certificate, indices):
+    """Snapshot indices preserve known identities; absent nodes remain explicit."""
+    data = {
+        item.name: getattr(certificate, item.name)
+        for item in fields(certificate)
+        if item.name != "cycle_nodes"
+    }
+    data["cycle_nodes"] = [indices.get(node) for node in certificate.cycle_nodes]
+    data["cycle_labels"] = [str(node) for node in certificate.cycle_nodes]
+    data["scope"] = (
+        "Declared oriented cycle; null indices mean absent nodes and labels are display only. "
+        "The winding owner's default branch tolerance and pi/2 phase gate apply; "
+        "U3 metadata is separate from winding availability and does not resolve a runtime operator gate."
+    )
+    return data
+
+
+def diagnose_network(
+    network: Network,
+    *,
+    include_coherence_profile: bool = False,
+    include_phase_evidence: bool = False,
+    winding_cycles: Sequence[Sequence[Any]] = (),
+) -> dict[str, Any]:
     """Observe stored state on a detached graph, preserving independent availability.
 
     Pressure is not refreshed or inferred from motion. Each failed observation
     retains its exception type/message; other fields remain measurable. Curvature
     uses the canonical represented-resultant observer and xi retains the existing
     fit/fallback provenance. No threshold or telemetry value controls evolution.
+
+    Optional observations preserve their own scopes and failure states. A
+    coherence profile reuses its fit for xi provenance; phase evidence reuses
+    the tetrad's represented-resultant observation. Winding cycles are explicit
+    ordered node sequences, never an inferred orientation. Flags require actual
+    booleans. Opaque node IDs project to this snapshot's indices, while rational
+    phase evidence retains integer numerator/denominator pairs. With no options,
+    the established v1 report shape and computation path remain unchanged.
     """
     if not isinstance(network, Network):
         raise TypeError("diagnose_network requires an SDK Network")
+    include_coherence_profile, include_phase_evidence, cycles = _observation_options(
+        include_coherence_profile, include_phase_evidence, winding_cycles
+    )
     graph = copy_graph_state(network.G)
     observed = Network(graph, name=network.name, seed=network._seed)
     nodes = tuple(graph)
@@ -232,6 +379,7 @@ def diagnose_network(network: Network) -> dict[str, Any]:
 
     # The phase evidence contains rational resultant carriers. Project only its
     # already-computed finite values/status, not an invented JSON phase kernel.
+    phase_observation = None
     try:
         phase_observation = observe_phase_curvature(graph)
         gradient = _capture(lambda: [row.gradient for row in phase_observation.rows])
@@ -256,8 +404,20 @@ def diagnose_network(network: Network) -> dict[str, Any]:
         gradient = dict(failed)
         curvature = {**failed, "complete": False}
 
+    profile = None
+    profile_error = None
     try:
-        estimate = estimate_coherence_length_with_provenance(graph)
+        if include_coherence_profile:
+            from ..physics.canonical import _coherence_length_estimate_from_fit
+            from ..physics.fields import observe_coherence_profile
+
+            profile = observe_coherence_profile(graph)
+            fitted = profile.fit.value
+            estimate = _coherence_length_estimate_from_fit(
+                graph, fitted if fitted is not None else float("nan")
+            )
+        else:
+            estimate = estimate_coherence_length_with_provenance(graph)
         metadata = asdict(estimate)
         value = metadata.pop("value")
         xi = _capture(lambda: value)
@@ -268,12 +428,13 @@ def diagnose_network(network: Network) -> dict[str, Any]:
             "value": None,
             "error": {"type": type(error).__name__, "message": str(error)},
         }
+        profile_error = xi
 
     def potential_read():
         potential = compute_structural_potential(graph)
         return [potential[node] for node in nodes]
 
-    return {
+    report = {
         "schema_version": "tnfr.diagnostics.v1",
         "name": str(network.name),
         "state": state,
@@ -298,6 +459,59 @@ def diagnose_network(network: Network) -> dict[str, Any]:
             "their own contracts. No stability, autonomous-law or checkpoint claim."
         ),
     }
+    if include_coherence_profile or include_phase_evidence or cycles:
+        observations = {
+            "request": {
+                "include_coherence_profile": include_coherence_profile,
+                "include_phase_evidence": include_phase_evidence,
+                "winding_cycles": [
+                    [indices.get(node) for node in cycle] for cycle in cycles
+                ],
+            },
+            "scope": (
+                "Optional task-dependent observations of the same detached stored state. "
+                "Channels remain distinct from the historical tetrad and supply no "
+                "universal sufficient state, closure or future prediction."
+            ),
+        }
+        if include_coherence_profile:
+            observations["coherence_profile"] = (
+                _capture(lambda: _coherence_profile_projection(profile, indices))
+                if profile is not None
+                else dict(profile_error)
+            )
+        if include_phase_evidence:
+            observations["phase_evidence"] = (
+                _capture(lambda: _phase_evidence_projection(phase_observation, indices))
+                if phase_observation is not None
+                else dict(gradient)
+            )
+        if cycles:
+            from ..physics.winding_certificates import certify_phase_winding
+
+            winding = []
+            for index, cycle in enumerate(cycles):
+                try:
+                    certificate = certify_phase_winding(graph, cycle)
+                    observation = _capture(
+                        lambda: _winding_projection(certificate, indices)
+                    )
+                    if not certificate.is_defined:
+                        observation["available"] = False
+                        observation["error"] = {
+                            "type": "UndefinedPhaseWinding",
+                            "message": certificate.reason,
+                        }
+                except Exception as error:
+                    observation = {
+                        "available": False,
+                        "value": None,
+                        "error": {"type": type(error).__name__, "message": str(error)},
+                    }
+                winding.append({"index": index, **observation})
+            observations["winding_cycles"] = winding
+        report["observations"] = observations
+    return report
 
 
 def run_study(spec: StudySpec) -> StudyResult:

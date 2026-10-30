@@ -117,6 +117,10 @@ jobs:
         continue-on-error: true
         run: python -m pydocstyle src/tnfr
 
+      - name: Verify foundation prerequisites before physical mapping
+        if: matrix.python-version == '3.11'
+        run: python scripts/check_research_prerequisites.py
+
       - name: Collect the complete retained test inventory
         if: matrix.python-version == '3.11'
         run: python -m pytest tests --collect-only -q

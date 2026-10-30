@@ -46,7 +46,7 @@ from __future__ import annotations
 
 import hashlib
 import math
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from typing import Any, Mapping, Sequence
 
 try:
@@ -59,11 +59,13 @@ try:
 except ImportError:  # pragma: no cover - optional dependency guard
     nx = None  # type: ignore[assignment]
 
+from .._exact_time import finite_represented_real
+from ..physics.canonical import CoherenceLengthEstimate
 from ..physics.fields import (
     compute_phase_curvature,
     compute_phase_gradient,
     compute_structural_potential,
-    estimate_coherence_length,
+    estimate_coherence_length_with_provenance,
 )
 from .structural_interface import build_knn_graph
 
@@ -155,7 +157,9 @@ class WindowTetradSeries:
     """Per-window TNFR tetrad telemetry plus the matched EWS baselines.
 
     All arrays are aligned by index; entry ``i`` corresponds to the window whose
-    most-recent sample is ``window_end[i]``.
+    most-recent sample is ``window_end[i]``. Raw xi values retain their canonical
+    per-window estimates; comparisons require a common estimator contract.
+    An empty provenance tuple supports legacy construction, not inferred units.
     """
 
     window_end: "np.ndarray"
@@ -169,6 +173,7 @@ class WindowTetradSeries:
     available_at: "np.ndarray | None" = None
     warmup_samples: int = 0
     latency_samples: int = 0
+    xi_c_provenance: tuple[CoherenceLengthEstimate, ...] = ()
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -187,7 +192,130 @@ class WindowTetradSeries:
             ),
             "warmup_samples": self.warmup_samples,
             "latency_samples": self.latency_samples,
+            "xi_c_provenance": [
+                _coherence_window_metadata(item) for item in self.xi_c_provenance
+            ],
         }
+
+
+def _coherence_window_metadata(estimate: CoherenceLengthEstimate) -> dict[str, Any]:
+    """Expose estimator identity and units without changing its numeric value."""
+    metadata = asdict(estimate)
+    value = metadata.pop("value")
+    metadata["available"] = math.isfinite(value) and value > 0.0
+    metadata["units"] = {
+        "autocorrelation_fit": "path_length",
+        "spectral_gap": "dimensionless",
+    }.get(estimate.method)
+    return metadata
+
+
+def _coherence_comparison(values, provenance, mask=None):
+    """Retain one estimator/geometry per comparison; abstain from mixed units.
+
+    Legacy numeric-only series remain constructible but cannot establish an
+    estimator identity. Missing estimates may be omitted transparently; a mix
+    of available fit and spectral values is never silently pooled.
+    """
+    raw_values = np.asarray(values)
+    if raw_values.ndim != 1:
+        raise ValueError("coherence comparison requires a one-dimensional series")
+    selected = (
+        np.ones(raw_values.shape, dtype=bool) if mask is None else np.asarray(mask)
+    )
+    if selected.shape != raw_values.shape or selected.dtype.kind != "b":
+        raise ValueError("coherence comparison mask must be an aligned boolean vector")
+
+    def admitted(value):
+        if isinstance(value, (float, np.floating)) and math.isnan(value):
+            return float("nan")
+        return finite_represented_real(value, "coherence window")[0]
+
+    try:
+        observed = np.asarray(
+            [admitted(value) for value in raw_values[selected]], dtype=float
+        )
+    except (TypeError, ValueError, OverflowError):
+        observed = np.full(raw_values[selected].shape, np.nan)
+        invalid_values = True
+    else:
+        invalid_values = False
+    metadata = {
+        "available": False,
+        "reason": "missing_or_misaligned_estimator_provenance",
+        "method": None,
+        "units": None,
+        "distance_weighting": None,
+        "window_count": int(observed.size),
+        "available_windows": 0,
+        "omitted_windows": int(observed.size),
+        "observed_methods": [],
+        "sample_selection": [],
+        "graph_regimes": [],
+    }
+    unavailable = np.full(observed.shape, np.nan)
+    if len(provenance) != raw_values.size:
+        return unavailable, metadata
+    records = [item for item, keep in zip(provenance, selected) if keep]
+    try:
+        source_values = [admitted(item.value) for item in records]
+    except (TypeError, ValueError, OverflowError):
+        invalid_values = True
+        source_values = []
+    if invalid_values or any(
+        not (value == source or (math.isnan(value) and math.isnan(source)))
+        for value, source in zip(observed, source_values)
+    ):
+        metadata["reason"] = "value_provenance_mismatch_or_invalid_value"
+        return unavailable, metadata
+    usable = np.asarray(
+        [
+            math.isfinite(value)
+            and value > 0.0
+            and _coherence_window_metadata(item)["available"]
+            for value, item in zip(observed, records)
+        ],
+        dtype=bool,
+    )
+    identities = {
+        (
+            item.method,
+            item.distance_weighting,
+            item.fit_quality,
+            item.positive_mode_selection,
+        )
+        for item, keep in zip(records, usable)
+        if keep
+    }
+    metadata["available_windows"] = int(np.count_nonzero(usable))
+    metadata["omitted_windows"] = int(observed.size - np.count_nonzero(usable))
+    metadata["observed_methods"] = sorted({identity[0] for identity in identities})
+    metadata["sample_selection"] = sorted({item.sample_selection for item in records})
+    metadata["graph_regimes"] = sorted({item.graph_regime for item in records})
+    if not identities:
+        metadata["reason"] = "no_available_estimates"
+    elif len(identities) != 1:
+        metadata["reason"] = "mixed_estimators_or_distance_conventions"
+    else:
+        method, distance, fit_policy, mode_policy = identities.pop()
+        units = {
+            "autocorrelation_fit": "path_length",
+            "spectral_gap": "dimensionless",
+        }.get(method)
+        if units is None:
+            metadata["reason"] = "unknown_estimator_units"
+        else:
+            metadata.update(
+                available=True,
+                reason=None,
+                method=method,
+                units=units,
+                distance_weighting=distance,
+                fit_policy=fit_policy,
+                positive_mode_selection=mode_policy,
+            )
+            return np.where(usable, observed, np.nan), metadata
+    return unavailable, metadata
 
 
 @dataclass(frozen=True)
@@ -413,6 +541,7 @@ def window_tetrad_series(
     grad: list[float] = []
     kphi: list[float] = []
     xic: list[float] = []
+    xi_provenance: list[CoherenceLengthEstimate] = []
     phis: list[float] = []
     var: list[float] = []
     ac1: list[float] = []
@@ -436,8 +565,9 @@ def window_tetrad_series(
         )
         grad.append(_mean_abs(compute_phase_gradient(G)))
         kphi.append(_mean_abs(compute_phase_curvature(G)))
-        xi = estimate_coherence_length(G)
-        xic.append(float(xi) if math.isfinite(xi) else float("nan"))
+        estimate = estimate_coherence_length_with_provenance(G)
+        xic.append(float(estimate.value))
+        xi_provenance.append(estimate)
         phis.append(_mean_abs(compute_structural_potential(G)))
 
         var.append(float(np.var(seg)))
@@ -461,6 +591,7 @@ def window_tetrad_series(
         available_at=np.asarray(availability, dtype=int),
         warmup_samples=warmup_samples,
         latency_samples=latency_samples,
+        xi_c_provenance=tuple(xi_provenance),
     )
 
 
@@ -589,8 +720,15 @@ def evaluate_early_warning(
     n_pre = int(np.count_nonzero(pre_mask))
 
     trends: dict[str, float] = {}
+    xi_values, xi_comparison = _coherence_comparison(
+        series.xi_c, series.xi_c_provenance, pre_mask
+    )
     for name in (*_TNFR_CHANNELS, *_BASELINE_CHANNELS):
-        values = np.asarray(data[name], dtype=float)[pre_mask]
+        values = (
+            xi_values
+            if name == "xi_c"
+            else np.asarray(data[name], dtype=float)[pre_mask]
+        )
         trends[name] = kendall_tau(values)
 
     def _best(channels: tuple[str, ...]) -> tuple[str, float]:
@@ -630,6 +768,9 @@ def evaluate_early_warning(
                 f"'{best_tnfr[0]}' (Δτ={gap:+.3f})."
             )
 
+    if not xi_comparison["available"]:
+        interpretation += f" xi_c trend unavailable: {xi_comparison['reason']}."
+
     return EarlyWarningComparison(
         indicators=(*_TNFR_CHANNELS, *_BASELINE_CHANNELS),
         trends=trends,
@@ -644,6 +785,7 @@ def evaluate_early_warning(
             "channel_selection": "same_record_descriptive",
             "prospective_prediction": False,
             "n_windows": int(ends.size),
+            "xi_c_comparison": xi_comparison,
             "transition_index": transition_index,
             "config": {
                 "embedding_dim": cfg.embedding_dim,
@@ -673,6 +815,10 @@ class TemporalWarningCalibration:
     calibration_run_id: str
     calibration_sha256: str
     calibration_samples: int
+    xi_c_method: str | None = None
+    xi_c_distance_weighting: str | None = None
+    xi_c_fit_policy: str | None = None
+    xi_c_positive_mode_selection: str | None = None
 
 
 @dataclass(frozen=True)
@@ -690,6 +836,7 @@ class ProspectiveWarningComparison:
     reason: str
     calibration_run_id: str
     evaluation_run_id: str
+    metadata: Mapping[str, Any] = field(default_factory=dict)
 
 
 def _run_id(value: str) -> str:
@@ -732,9 +879,19 @@ def calibrate_temporal_warning(
         latency_samples=latency_samples,
     )
 
+    xi_values, xi_comparison = _coherence_comparison(
+        series.xi_c, series.xi_c_provenance
+    )
+
     def select(channels: tuple[str, ...]) -> str:
         choices = [
-            (name, _resolved_trend(getattr(series, name))[0]) for name in channels
+            (
+                name,
+                _resolved_trend(xi_values if name == "xi_c" else getattr(series, name))[
+                    0
+                ],
+            )
+            for name in channels
         ]
         finite = [(name, value) for name, value in choices if value is not None]
         if not finite:
@@ -752,6 +909,10 @@ def calibrate_temporal_warning(
         calibration_run_id=run_id,
         calibration_sha256=_signal_digest(np.asarray(signal)),
         calibration_samples=len(signal),
+        xi_c_method=xi_comparison["method"],
+        xi_c_distance_weighting=xi_comparison["distance_weighting"],
+        xi_c_fit_policy=xi_comparison.get("fit_policy"),
+        xi_c_positive_mode_selection=xi_comparison.get("positive_mode_selection"),
     )
 
 
@@ -806,17 +967,38 @@ def evaluate_prospective_warning(
             warmup_samples=calibration.warmup_samples,
             latency_samples=calibration.latency_samples,
         )
-    tnfr, n_tnfr = (
-        (None, 0)
-        if series is None
-        else _resolved_trend(getattr(series, calibration.tnfr_channel))
-    )
+    xi_comparison = None
+    tnfr_values = None if series is None else getattr(series, calibration.tnfr_channel)
+    if series is not None and calibration.tnfr_channel == "xi_c":
+        tnfr_values, xi_comparison = _coherence_comparison(
+            series.xi_c, series.xi_c_provenance
+        )
+        if xi_comparison["available"] and (
+            calibration.xi_c_method != xi_comparison["method"]
+            or calibration.xi_c_distance_weighting
+            != xi_comparison["distance_weighting"]
+            or calibration.xi_c_fit_policy != xi_comparison["fit_policy"]
+            or calibration.xi_c_positive_mode_selection
+            != xi_comparison["positive_mode_selection"]
+        ):
+            xi_comparison.update(
+                available=False, reason="estimator_differs_from_calibration"
+            )
+            tnfr_values = np.full(tnfr_values.shape, np.nan)
+    tnfr, n_tnfr = (None, 0) if series is None else _resolved_trend(tnfr_values)
     baseline, n_baseline = (
         (None, 0)
         if series is None
         else _resolved_trend(getattr(series, calibration.baseline_channel))
     )
     resolved = tnfr is not None and baseline is not None
+    reason = (
+        "Frozen-channel trends; no event or physical-regime certificate."
+        if resolved
+        else "Insufficient finite windows or a degenerate selected trend."
+    )
+    if xi_comparison is not None and not xi_comparison["available"]:
+        reason = f"xi_c comparison unavailable: {xi_comparison['reason']}."
     return ProspectiveWarningComparison(
         tnfr_channel=calibration.tnfr_channel,
         baseline_channel=calibration.baseline_channel,
@@ -828,11 +1010,8 @@ def evaluate_prospective_warning(
             () if series is None else tuple(int(x) for x in series.available_at)
         ),
         status="descriptive_evaluation" if resolved else "unavailable",
-        reason=(
-            "Frozen-channel trends; no event or physical-regime certificate."
-            if resolved
-            else "Insufficient finite windows or a degenerate selected trend."
-        ),
+        reason=reason,
         calibration_run_id=calibration.calibration_run_id,
         evaluation_run_id=run_id,
+        metadata={"xi_c_comparison": xi_comparison},
     )
