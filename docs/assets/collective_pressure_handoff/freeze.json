@@ -1,0 +1,28 @@
+{
+  "schema":"tnfr.collective-pressure-handoff-freeze.v1",
+  "created_utc":"2026-10-14T17:03:18.534424+00:00",
+  "evaluation_status_at_freeze":"not_evaluated",
+  "byte_associations_are_not_authentication":true,
+  "artifacts":[
+    {
+      "path":"protocol.json",
+      "bytes":7939,
+      "sha256":"a64a078d497bcee34bb0aa185676588ebc8ed04bb33bc90183165464298d36ff"
+    },
+    {
+      "path":"source-manifest.json",
+      "bytes":160291,
+      "sha256":"11f7ee12bcd5335149d1b19c773945e1ce84280c0199e4947e518d41fee91133"
+    },
+    {
+      "path":"source.zip",
+      "bytes":4041184,
+      "sha256":"176b7fc114bd404d2753c417981e2c725d160e9f9fd068ed189d271a7268a1ce"
+    },
+    {
+      "path":"evaluate.py",
+      "bytes":5090,
+      "sha256":"0e154db1e191ce1320e478a2c05ffdfe12ddca827f9a00cd62f1c0f742b242f9"
+    }
+  ]
+}

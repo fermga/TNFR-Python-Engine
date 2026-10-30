@@ -1,0 +1,126 @@
+{
+  "schema":"tnfr.maintained-child-word-protocol.v1",
+  "evidence_kind":"one_reserved_canonical_word_continuation_on_acquired_history",
+  "actor":"2_sub_0",
+  "new_child":"2_sub_0_sub_0",
+  "source_node_order":[
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    "2_sub_0"
+  ],
+  "successor_node_order":[
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    "2_sub_0",
+    "2_sub_0_sub_0"
+  ],
+  "original_edges":53,
+  "new_edges":0,
+  "context_word":[
+    "OZ",
+    "THOL",
+    "SHA"
+  ],
+  "already_executed_prefix":[
+    "OZ"
+  ],
+  "reserved_events":[
+    "THOL",
+    "SHA"
+  ],
+  "target_order_each_stage":[
+    "2_sub_0"
+  ],
+  "execution_path":"shared execute_network_operator_stage; separate two_phase_jacobi stages",
+  "maximum_reserved_evaluations":1,
+  "maximum_events":2,
+  "numerical_steps":0,
+  "new_history_samples":0,
+  "clock":"original structural clock; no elapsed time between the two supplied events",
+  "structural_time":{
+    "numerator":3683329,
+    "denominator":524288
+  },
+  "sha_metadata_timestamp":"2030-01-02T03:04:10+00:00",
+  "stage_wall_clock_patch":"2030-01-02T03:04:10+00:00 for both stages; THOL record timestamp remains operator step 2",
+  "continuous_law":"x_dot=M*S(theta); theta_dot=M*L_W*x; M=diag(nu/(pi*d)) on nontrivial components",
+  "isolate_completion":"explicit p=x_dot=theta_dot=0; held form, phase and positive capacity",
+  "held_between_events":[
+    "support",
+    "conductances",
+    "capacities",
+    "real phase lifts"
+  ],
+  "forcing":0,
+  "loss":0,
+  "pressure_refresh":"full frozen-isolate law after each raw event; only pressure aliases/caches may change",
+  "thol_policy":"unchanged defaults; own live timestamped history and OZ context",
+  "sha_policy":"unchanged resolved default factor; exact ideal versus represented capacity products separated",
+  "grammar_rejection":"raise",
+  "strict_preconditions":true,
+  "optional_metrics":false,
+  "precision":"IEEE binary64 runtime; exact represented rational primitives and outward rational bounds",
+  "backend":"Python scalar arithmetic; NumPy metabolic trigonometry; shared canonical stage kernels",
+  "event_comparison_allowance":{
+    "numerator":1,
+    "denominator":17592186044416
+  },
+  "represented_point_pressure_error_allowance":{
+    "numerator":1,
+    "denominator":70368744177664
+  },
+  "criterion":"all independently rebuilt primitive reset/law/identity/history/context checks pass; actual OZ THOL SHA word closes",
+  "storage":"edge-only H; two exact unchanged-argument zero jumps; no intrinsic isolate energy",
+  "failure_policy":"stop and preserve committed prefix, raw captures and failure endpoint; no retry, retuning or whole-word rollback",
+  "future_retention":"not claimed from the acquired numerical endpoint",
+  "physical_identification":false,
+  "random_seed":17,
+  "source_result":{
+    "path":"docs/assets/maintained_child_history/result.json",
+    "bytes":62867,
+    "sha256":"7f090a2d27b647ca05d7bce18e5ea3edbeaa8ad6cd9282e19b0cc38ac9b424f0"
+  },
+  "runtime":{
+    "python":"3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+    "platform":"Windows-11-10.0.26300-SP0",
+    "networkx":"3.6.1",
+    "numpy":"2.5.3",
+    "byteorder":"little"
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "schema": "tnfr.deep-cleanup.v1",
+  "date": "2026-10-06",
+  "scope": "Second dependency-checked cleanup; useful conditional results and negative controls consolidated in existing owners. No frozen protocol or response rewritten.",
+  "recovery": "Read the recorded Git blob in binary mode. Apply each declared newline conversion before descending-offset byte edits; verify working_sha256. For partial removals, recover the named definition and apply its declared normalization or retained uncommitted definition.",
+  "api_migration": "docs/API_CONTRACTS.md#removed-unsupported-helpers",
+  "files": [
+    {
+      "path": "theory/NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md",
+      "reason": "Duplicate equivariance scope and historical campaign overview; exact conditional statements and unique nonlinear/information-loss counterexamples consolidated in existing structural observability owner.",
+      "replacement": "theory/TNFR_STRUCTURAL_OBSERVABILITY.md",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "87a2715daf4bd2d2c8d9e52256745ad1cd7ca9fb",
+      "git_blob_bytes": 7550,
+      "git_blob_sha256": "ad4794a291ded0e3aeb3578de281b0b4f1d6fd6a2bec83d010dafc77ab6e5cc9",
+      "working_bytes": 7653,
+      "working_sha256": "c426dd96b1870b2b0955bd5b55f430ac6ad9c82d1f70a0dbdcd32e566c4acc8c",
+      "working_equals_git": false,
+      "working_equals_git_after_newline_normalization": false,
+      "uncommitted_byte_edits_from_git": [
+        {
+          "offset": 242,
+          "delete_bytes": 197,
+          "insert_utf8": "**Companion**: the [Riemann memo](TNFR_RIEMANN_RESEARCH_NOTES.md) owns the\r\ndeclared prime-ladder constructions, reproduction entry points and\r\nexternal-target boundary.\r\n"
+        }
+      ],
+      "recovery_note": "Read the Git blob, apply the explicit pre_edit_newline_conversion, then byte edits in descending offset order; verify working_sha256. Exact pre-edit local snapshot retained.",
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/theory/NUCLEUS_B_EQUIVARIANCE_OBSTRUCTIONS.md",
+      "pre_edit_newline_conversion": "Normalize CRLF to LF, then LF to CRLF before applying edits."
+    }
+  ],
+  "retired_symbols": [
+    {
+      "path": "src/tnfr/operators/registry.py",
+      "reason": "Unused discovery/decorator no-ops and telemetry that did not invalidate a cache; actual lazy lookup and subclass registration retained.",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "8922d7c5bf03be2bd6c14693b3a190e04ef09045",
+      "git_blob_sha256": "5bd89ea2a5d6711b3fda2230c60b35c507c8640066a2ca36192171d24d924428",
+      "replacement": "docs/API_CONTRACTS.md#removed-unsupported-helpers",
+      "symbols": [
+        {
+          "name": "discover_operators",
+          "definition_normalization": "UTF-8, LF, with one terminal newline",
+          "git_definition_sha256": "abb8a4c19f6b573670accbce92b4a95ed29b2535c0bb7bc47358431237a2f726",
+          "working_definition_sha256": "abb8a4c19f6b573670accbce92b4a95ed29b2535c0bb7bc47358431237a2f726"
+        },
+        {
+          "name": "structural_operator",
+          "definition_normalization": "UTF-8, LF, with one terminal newline",
+          "git_definition_sha256": "7292a8695ed64d2645811fd3ab001ac065942aa07cf1e84d4ee268d916cfe19f",
+          "working_definition_sha256": "7292a8695ed64d2645811fd3ab001ac065942aa07cf1e84d4ee268d916cfe19f"
+        },
+        {
+          "name": "invalidate_operator_cache",
+          "definition_normalization": "UTF-8, LF, with one terminal newline",
+          "git_definition_sha256": "5d923b0397346f5d8e8c330e84ef1c7a899d1c5f039e8ad9c425177b7cab3d62",
+          "working_definition_sha256": "5d923b0397346f5d8e8c330e84ef1c7a899d1c5f039e8ad9c425177b7cab3d62"
+        },
+        {
+          "name": "get_operator_cache_stats",
+          "definition_normalization": "UTF-8, LF, with one terminal newline",
+          "git_definition_sha256": "2425369ce8bf5f00780d090b3231f7ebe1805e9d1fc75cf21a16affb568a4b89",
+          "working_definition_sha256": "2425369ce8bf5f00780d090b3231f7ebe1805e9d1fc75cf21a16affb568a4b89"
+        }
+      ]
+    },
+    {
+      "path": "src/tnfr/validation/rules.py",
+      "reason": "Unused identity map; actual sequence grammar and live event admission remain with their existing owners.",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "93581ef5acc9b91bacf68d12c7c35981ad8e913e",
+      "git_blob_sha256": "3cd3480ed35d3e6a7bc51905ff327878a09ccc886c54e66ed3252a0991fc5010",
+      "replacement": "docs/API_CONTRACTS.md#removed-unsupported-helpers",
+      "symbols": [
+        {
+          "name": "_check_compatibility",
+          "definition_normalization": "UTF-8, LF, with one terminal newline",
+          "git_definition_sha256": "4bb50deeedf7c655a0e0ce162e2a7f7c34c4d4a5627b4dc841e73420b10ac8ef",
+          "working_definition_sha256": "618a35b28a771b8d522dae13558953d96c3408fef0e27544ae93fb9ca3fe6172",
+          "uncommitted_definition_utf8": "def _check_compatibility(ctx: \"GrammarContext\", n, cand: Glyph | str) -> Glyph | str:\n    \"\"\"Leave the candidate unchanged; the sequence validator owns U1-U5.\n\n    This rule does not independently admit a word or verify live phase,\n    capacity, history or operator preconditions.\n    \"\"\"\n    # All transitions allowed - validation at sequence level via U1-U5\n    return cand\n"
+        }
+      ]
+    }
+  ],
+  "corrections": [
+    {
+      "paths": [
+        "src/tnfr/validation/__init__.py",
+        "src/tnfr/validation/__init__.pyi"
+      ],
+      "scope": "Restore nine advertised input-validation exports as aliases of the existing input_validation owner; no added live-event certificate."
+    },
+    {
+      "paths": [
+        "benchmarks/directed_transient_u2.py",
+        "tests/physics/test_transient_u2.py"
+      ],
+      "scope": "Replace unsupported universal non-consensus contraction claim with finite comparisons and the existing exact weighted directed counterexample. Corrected run is separate from frozen evidence."
+    },
+    {
+      "paths": [
+        "benchmarks/directed_paley_bridge.py",
+        "benchmarks/bridge_primes_riemann.py",
+        "benchmarks/operational_irreducibility.py",
+        "benchmarks/composition_arithmetic.py",
+        "benchmarks/inverse_spectrum_to_symmetry.py",
+        "examples/08_emergent_geometry/155_ontological_position_of_numbers.py"
+      ],
+      "scope": "Retain finite graph, Paley, rank-collision and representation controls while removing unsupported analytic-zeta complement and autonomous arithmetic-emergence interpretations. Replace unsupported symmetry certification by an explicit supplied-group comparison and ambiguity control.",
+      "owners": [
+        "theory/TNFR_NUMBER_THEORY.md",
+        "theory/TNFR_STRUCTURAL_OBSERVABILITY.md#6-limits-beyond-linear-symmetry",
+        "theory/TNFR_RIEMANN_RESEARCH_NOTES.md"
+      ]
+    },
+    {
+      "paths": [
+        "src/tnfr/physics/word_equivariance.py",
+        "tests/physics/test_word_equivariance.py"
+      ],
+      "scope": "Clarify fixed-set preservation, nonlinear complement counterexample, finite selected words and sequential-sweep ordering; whole-graph spread is only a vertex-transitive proxy. Executable calculations retained."
+    },
+    {
+      "paths": [
+        "src/tnfr/validation/rules.pyi"
+      ],
+      "scope": "Resolve GrammarContext through the actual shared grammar owner and remove duplicate/unused imports."
+    }
+  ]
+}

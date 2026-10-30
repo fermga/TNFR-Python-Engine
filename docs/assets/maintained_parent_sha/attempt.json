@@ -1,0 +1,20 @@
+{
+  "schema":"tnfr.maintained-parent-sha-attempt.v1",
+  "freeze":{
+    "path":"freeze.json",
+    "bytes":135764,
+    "sha256":"a9e060d705a30ce07371b88129c2bc26d15391ab35bb8afb50d3bd7142ff9c46"
+  },
+  "attempt_number":1,
+  "evaluation_status_at_start":"not_evaluated",
+  "created_utc":"2026-10-15T11:14:53.509213+00:00",
+  "python":"3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+  "platform":"Windows-11-10.0.26300-SP0",
+  "versions":{
+    "numpy":"2.5.3",
+    "networkx":"3.6.1",
+    "mpmath":"1.3.0"
+  },
+  "seed":17,
+  "backend":"binary64 canonical SHA; rational/dyadic interval admission"
+}

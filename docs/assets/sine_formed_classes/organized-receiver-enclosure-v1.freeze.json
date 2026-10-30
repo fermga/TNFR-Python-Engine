@@ -1,0 +1,21 @@
+{
+  "schema":"tnfr.organized-receiver-enclosure-freeze.v1",
+  "created_utc":"2026-10-10T10:50:19.758397+00:00",
+  "evaluation_status_at_freeze":"not_evaluated",
+  "source_base_commit":"3e5f552bc5b8f7e8a73e2469f71bf9305032c7ef",
+  "runtime_overlays":[],
+  "future_evaluator":"build/organized-receiver-enclosure-freeze/evaluate_receiver.py",
+  "artifacts":[
+    {
+      "path":"docs/assets/sine_formed_classes/organized-receiver-enclosure-v1.protocol.json",
+      "bytes":144353,
+      "sha256":"513381a90728baa063c2314c495bc5a8a62a82d28ec8f95e4325e5c86ff6b4c9"
+    },
+    {
+      "path":"docs/assets/sine_formed_classes/organized-receiver-enclosure-v1.source.zip",
+      "bytes":134454,
+      "sha256":"25df9e88511ca086d19f2caae25af77d35cfac4b4e052165df629ea020d2fe48"
+    }
+  ],
+  "claim":"prospective byte and complete Git-base association; not authenticated chronology, execution or physical validation"
+}

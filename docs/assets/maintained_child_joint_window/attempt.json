@@ -1,0 +1,10 @@
+{
+  "schema":"tnfr.maintained-child-joint-window-attempt.v1",
+  "attempt_number":1,
+  "evidence_kind":"retrospective observation",
+  "freeze":{
+    "path":"freeze.json",
+    "bytes":185335,
+    "sha256":"205e5eccd9fecae735f140b9f56cd2c93a4b48960a0dcb2643015e600e418c79"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "schema": "tnfr.return-path-geometry-response-declaration.v1",
+  "kind": "known_source_mathematical_control_not_blind_physical_evaluation",
+  "nodes": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+  "left_cycle": [0, 1, 2, 3, 4],
+  "right_cycle": [5, 6, 7, 8, 9],
+  "mediator": 10,
+  "additional_edges": [[0, 10], [10, 5], [1, 6]],
+  "named_periods": [1, -1, 0],
+  "unit_conductance": true,
+  "capacity": "held unit at every node",
+  "law": "j(delta)=sin(delta)+epsilon*sin(delta)^3",
+  "loss": 0,
+  "exchange": 1,
+  "phase_mobility": 1,
+  "clock": "tau=t/pi",
+  "forcing": "none",
+  "support_events": "none",
+  "source_coefficient": 1,
+  "geometry_observation": {
+    "origin": "supplied_mathematical_interval",
+    "method": "independent mpmath root, then floor/ceil to the declared turn grid",
+    "root_bracket_radians": ["pi/6", "2*pi/5"],
+    "decimal_places": 95,
+    "turn_grid_denominator": 1000000,
+    "admission": "strict outward interval signs for F_1 at both quantized endpoints; fail if unresolved"
+  },
+  "prediction_inputs": "support, declared independent scales, geometric interval, origin, perturbation; no source coefficient or reserved response",
+  "form_direction": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  "phase_direction": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  "reserved_observable": "all eleven components of d^2(delta x)/d tau^2 at tau=0, for the linearized joint nodal law",
+  "horizon": "initial tangent derivative only; no positive-time or finite-amplitude trajectory",
+  "independent_response": "mpmath at 95 decimal places; differentiate full incoming current sums along independently assembled nodal phase velocities",
+  "response_record_digits": 80,
+  "acceptance": [
+    "inference returns bounded coefficient interval containing the known source coefficient",
+    "inferred lower coefficient bound is strictly positive, excluding epsilon=0 within this family",
+    "all eleven high-precision response components lie inside their predicted outward intervals"
+  ],
+  "failure_policy": "retain failure or unavailable result; do not change geometry, law, scales, observation or precision after response evaluation",
+  "randomness": "none",
+  "limitations": [
+    "known-source software control, not independent empirical identification",
+    "finite high-precision response cross-check is not an interval-certified oracle",
+    "the predictor's enclosure is conditional on the exact geometric interval and complete law premises",
+    "geometry does not infer the overall dynamic rate scale or physical clock",
+    "no microscopic law selection, spontaneous formation or material identification"
+  ]
+}

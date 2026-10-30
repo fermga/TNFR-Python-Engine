@@ -1,0 +1,275 @@
+{
+  "schema": "tnfr.retired-application.v1",
+  "status": "archived_reference_source",
+  "maintained_engine_dependency": false,
+  "automatic_engine_discovery": false,
+  "source_preservation": "The listed source and recorded outputs remain in place, including uncommitted corrections. Hashes associate the retained bytes; they are not scientific certification or provenance authentication.",
+  "recovery_revision": "a5ff1882a488667ea818f79bbbe7a989ca5d23f1",
+  "retired_root_consumers": [
+    {
+      "path": "tests/test_factorization_entrypoint.py",
+      "revision": "a5ff1882a488667ea818f79bbbe7a989ca5d23f1",
+      "blob": "cef5608c342c54c6f8999759a75c4c7f6b882524",
+      "original_sha256": "92f8e0d4ce12ad9d9dbf2fca5509411f938aa03660fd085566a6b0b01904972e",
+      "newline_normalized_equal_to_git_blob": true,
+      "replacement": "tests/test_factorization_entrypoint.py"
+    },
+    {
+      "path": "tests/test_replay_state_restoration.py",
+      "revision": "a5ff1882a488667ea818f79bbbe7a989ca5d23f1",
+      "blob": "3c838e478cb459e372384616bda0b0c4038a25b5",
+      "original_sha256": "7405e545d52a2a6eb1c9ec79b649aad59b387c20204d6bad05336d1076d217a2",
+      "newline_normalized_equal_to_git_blob": true,
+      "replacement": "tests/test_replay_state_restoration.py"
+    }
+  ],
+  "replacement_owners": {
+    "arithmetic_scope": "theory/TNFR_NUMBER_THEORY.md",
+    "exact_pressure": "theory/TNFR_ARITHMETIC_PRESSURE.md",
+    "generic_manifest_workflow": "src/tnfr/sdk/self_opt.py",
+    "generic_graph_runner": "scripts/run_self_optimization.py",
+    "legacy_external_bridge": "src/tnfr/factorization/__init__.py",
+    "retained_failure_record_reader": "scripts/rebuild_failure_manifest.py"
+  },
+  "known_boundaries": [
+    "The complete analysis factors its input arithmetically before candidate generation; the partial pure policy does not eliminate that dependency.",
+    "Proposed operator words are advisory. The partition attenuation surrogate is not execution of canonical operators.",
+    "Configured structural acceptance may include a nondivisor; the compatibility field name is not an arithmetic factor certificate.",
+    "Ordinary size_hint cardinality is conflated with the stabilization-waiver branch.",
+    "The direct assisted signature for 35 and accepted [5,7,11] marks complete while representing product 385.",
+    "The benchmark and feedback adapter call an absent factor method; their current timings do not support speed claims.",
+    "The archived source is outside routine tests, primary documentation and formatter hooks. Explicit archaeological execution does not make it maintained."
+  ],
+  "preserved_files": [
+    {
+      "path": "analysis/analyze_patterns.py",
+      "bytes": 17593,
+      "sha256": "7f5cdebe9a6ced6280bf8997222bee6dc492f761ad406c32ccd86fd9c44d20b3"
+    },
+    {
+      "path": "analysis/certificate_manifest.py",
+      "bytes": 13998,
+      "sha256": "feb72130870d5070551b323a5777385c869139998450e7e9b4bd07a5a7296534"
+    },
+    {
+      "path": "benchmarks/benchmark_analysis.py",
+      "bytes": 15181,
+      "sha256": "408fe9f58f0e9cefb4f611c773652c69d8e3cfb1bb82fc517e1c2fd8971a55e7"
+    },
+    {
+      "path": "benchmarks/benchmark_expansion_suite.py",
+      "bytes": 21475,
+      "sha256": "98cb2017f1dd4419b4a62d207108ce261560fc1f2db8a8aec4ac6e262b9635f7"
+    },
+    {
+      "path": "benchmarks/full_spectrum_factorization.py",
+      "bytes": 10142,
+      "sha256": "87b901decca74180cee78be8a2bf8b8ad662023d1ca25c8f6d0e0b0dfa4e298a"
+    },
+    {
+      "path": "benchmarks/paley_gap_extended.py",
+      "bytes": 3601,
+      "sha256": "8afbff8dbbd4024de757a339601e43c2956546bb7e82e9cda06f7a8efae0ba01"
+    },
+    {
+      "path": "benchmarks/paley_gap_smoke.py",
+      "bytes": 2296,
+      "sha256": "7968b8cccf372bbbc837d65529a5ce12d2ec3546cf59c0e7237a65cd9e83ccf4"
+    },
+    {
+      "path": "benchmarks/test_benchmark_suite.py",
+      "bytes": 2653,
+      "sha256": "2cccf3c52b9beec95e297282e2c05d461308e790bf7d05ea9c995d13d9d32089"
+    },
+    {
+      "path": "demos/experiment_contexts/exp_0b1663cd19b7.json",
+      "bytes": 31183,
+      "sha256": "0246be897541579377dca4f12d8483af612b1868f699e24b48eab92aa8e27613"
+    },
+    {
+      "path": "demos/experiment_contexts/exp_0bf0054b7474.json",
+      "bytes": 31182,
+      "sha256": "b23dac75ec561b9c30a15fd46da6fbebb1f566c2c67ea54d2195307a784d115d"
+    },
+    {
+      "path": "demos/experiment_contexts/exp_75a4c8ca616a.json",
+      "bytes": 31183,
+      "sha256": "c286e859b4ff989b217ff25d34933b5eb8e899a7eb7f88ccf2e397000c9c2d4b"
+    },
+    {
+      "path": "demos/experiment_contexts/exp_848ee0fd1857.json",
+      "bytes": 31182,
+      "sha256": "5307bab8292a03c5378ba572b4075b34b2e285706c0496004d3d716209e43bbf"
+    },
+    {
+      "path": "demos/experiment_contexts/exp_f6fe00562193.json",
+      "bytes": 31182,
+      "sha256": "832fb5f8435750a3f4ec42344345d4ab38922f5f523527fa7f23f3085ef386ac"
+    },
+    {
+      "path": "demos/experiment_contexts/exp_fdf3da424e1e.json",
+      "bytes": 31182,
+      "sha256": "115ea34bdb55baa77c4008f92c0912f0fd989d0477a2a081db48e8d38bcf2e2a"
+    },
+    {
+      "path": "demos/failure_telemetry_batch.py",
+      "bytes": 5967,
+      "sha256": "36394cf1e616611162ad3deb3523d13b0b744f8f43623f297f5df122157e43fc"
+    },
+    {
+      "path": "demos/feedback_integration_demo.py",
+      "bytes": 17322,
+      "sha256": "48694e2b18e676261150d888570bf31638a76c3721572a86a8768adad2a2f032"
+    },
+    {
+      "path": "demos/seed_management_integration_demo.py",
+      "bytes": 16614,
+      "sha256": "f74877227a556a407d364b4dbb137634c0fd49d9654144e9e2edbec8783920f7"
+    },
+    {
+      "path": "demos/snapshot_integration_demo.py",
+      "bytes": 16105,
+      "sha256": "9d8cb7668795333d33162cc255153c7013794c31fa8a1ca0ea08135220bb66de"
+    },
+    {
+      "path": "demos/trajectory_143.json",
+      "bytes": 68600,
+      "sha256": "3d08804372d1970ab5caf675a5a1102a1a9e4e004c22962ed9abfa1d8a54fd84"
+    },
+    {
+      "path": "demos/trajectory_77.json",
+      "bytes": 68586,
+      "sha256": "a3a05d498872089b7e0bc8f9d34870b7bc0eb6e49126aa23710fd654ff7ac195"
+    },
+    {
+      "path": "demos/trajectory_89.json",
+      "bytes": 70780,
+      "sha256": "9cbb7ef90547fe81c97032e5b8e42efeb84a34f944ccb46f599502c7c0cfb511"
+    },
+    {
+      "path": "demos/trajectory_91.json",
+      "bytes": 68595,
+      "sha256": "d6c210a1a951650f2a4e55462d9c3eff0a404df12b2c3140110c7c2905586c6c"
+    },
+    {
+      "path": "demos/trajectory_97.json",
+      "bytes": 70792,
+      "sha256": "0d675b869943e1fc1cf306f6256401563691b60122d3b0375055b02ce5e28e85"
+    },
+    {
+      "path": "experiment_contexts/exp_cebe1d9e7d8e.json",
+      "bytes": 31211,
+      "sha256": "e5eb0fef2f93f10344e661cf523bd077a19183c1e0d3fbe718c87394b822415e"
+    },
+    {
+      "path": "seed_management.py",
+      "bytes": 25871,
+      "sha256": "c8ca5548516534b6f741f953d7b891151cb23b765966630b266a56ed836108d7"
+    },
+    {
+      "path": "snapshot_system.py",
+      "bytes": 27403,
+      "sha256": "fcf5f6280077e6a39e92cb82b951c3a7026735f275b37019918dfc1afa955839"
+    },
+    {
+      "path": "test_installation.py",
+      "bytes": 1668,
+      "sha256": "d379592e718aba05069a3ae2c62a61fc07bd64b82b723877148420421b205bf6"
+    },
+    {
+      "path": "tests/test_cli.py",
+      "bytes": 4820,
+      "sha256": "7f5939aa6be63cbc7b438ca4a1f8a58a53f017e435d0ec979d953795a9e3d0d3"
+    },
+    {
+      "path": "tests/test_false_positive_verifier.py",
+      "bytes": 22638,
+      "sha256": "213e09c24d94f69aaac5a839a0d50833105915692471aa81b5d1ac02fdf13563"
+    },
+    {
+      "path": "tests/test_feedback_integration.py",
+      "bytes": 14263,
+      "sha256": "21f6c57108e442af6dba995f8083ef69090b20f26a5515d679e3e20b2f7b894e"
+    },
+    {
+      "path": "tests/test_partitioning.py",
+      "bytes": 2681,
+      "sha256": "9d86be407e80e1bab40f75a01c9ea1f9f30a5b8458283bef266539735308dda1"
+    },
+    {
+      "path": "tests/test_seed_management.py",
+      "bytes": 18187,
+      "sha256": "adc0a3a00f7c63c3d49d427c58ce623a6db5ff0ea196823851a046a475e1906d"
+    },
+    {
+      "path": "tests/test_self_opt_support.py",
+      "bytes": 5089,
+      "sha256": "e9208d564d169573d2b07be4d42949e4fcf05f4db468e3d30d6897e6f921cb7d"
+    },
+    {
+      "path": "tests/test_snapshot_system.py",
+      "bytes": 20220,
+      "sha256": "f76779641c793184c24b01823a26c51008a7cbc027bb9596ed68e93d13160db5"
+    },
+    {
+      "path": "tests/test_spectral_paley.py",
+      "bytes": 21814,
+      "sha256": "32400fd4fb7fde35ed13984c8c6ffe0aadc91738171f4b1dbe852abc1a11f91a"
+    },
+    {
+      "path": "tests/test_verification_robustness.py",
+      "bytes": 10012,
+      "sha256": "a534027d20b8cf7b98730e203abe05db72b76d29df4452e51310d91f47bbc0a8"
+    },
+    {
+      "path": "tnfr_factorization/__init__.py",
+      "bytes": 602,
+      "sha256": "07c8cf14ff42eacf0d78319d617b7b318c8f6125f962d8c62f015cdf5fd00488"
+    },
+    {
+      "path": "tnfr_factorization/api.py",
+      "bytes": 6078,
+      "sha256": "d92cb93e0b419627f410455aa743d3f852ce163a944bd2a6636680b746f21cfb"
+    },
+    {
+      "path": "tnfr_factorization/cli.py",
+      "bytes": 11977,
+      "sha256": "754223ed03d3598ebab2fe494ac136ae765bd7600e48b2f2c39698a218924d46"
+    },
+    {
+      "path": "tnfr_factorization/failure_telemetry.py",
+      "bytes": 19893,
+      "sha256": "d201f4292dc293c683219fcd1897dceb681682e1394da829ed734a16d9657bd5"
+    },
+    {
+      "path": "tnfr_factorization/feedback_adapter.py",
+      "bytes": 14917,
+      "sha256": "e216953e8a414574e7a393f9b3d41d6f64ec3a2c1d842cc75ec7f64395aafa8f"
+    },
+    {
+      "path": "tnfr_factorization/feedback_integration.py",
+      "bytes": 25027,
+      "sha256": "6107bd878db05cd93fcfd8839cb3a27548c68b16cc03cff16ce64d8f414c8774"
+    },
+    {
+      "path": "tnfr_factorization/partitioning.py",
+      "bytes": 13504,
+      "sha256": "ebdb2ab0f4e0b631557fff87b9d4de90d70a68b46012f94a058be856a96582a4"
+    },
+    {
+      "path": "tnfr_factorization/self_opt_support.py",
+      "bytes": 6382,
+      "sha256": "0d8135aa8721b54499a51f06c5ce44a47228085f213647a42bc79ab77fe1ef24"
+    },
+    {
+      "path": "tnfr_factorization/spectral_paley.py",
+      "bytes": 119337,
+      "sha256": "bc30c5160b1047b4f0c40da403a99e2878daa82241d9f9a8ae5b9c8f590b31d4"
+    },
+    {
+      "path": "verification_trajectory_77.json",
+      "bytes": 53367,
+      "sha256": "49840a66c2b7ef695f39f52ef5af436c10b0394cd41bcba0876e64976789d077"
+    }
+  ]
+}

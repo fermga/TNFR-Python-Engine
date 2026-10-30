@@ -1,0 +1,61 @@
+{
+  "schema":"tnfr.maintained-sha-retention-protocol.v1",
+  "evaluation_status_at_freeze":"not_evaluated",
+  "source":"actual committed VAL,THOL,UM,SHA endpoint, independently re-admitted",
+  "preparation":"exact represented source point; all x, real phase lifts, capacities and conductances; no inherited UM output-family allowance",
+  "node_order":[
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    "2_sub_0"
+  ],
+  "law":"x_dot=M*S(theta); theta_dot=M*L_W*x; M=diag(nu/(pi*d))",
+  "support":"all 53 held edges; all 42 coordinates; actual post-SHA positive capacities and conductances held",
+  "pressure":"bare-neighbor sine row/(pi*d) evaluated throughout the complete field; no Gamma or loss",
+  "clock":"elapsed original structural time from actual SHA endpoint; no laboratory conversion",
+  "prior_clock":{
+    "numerator":3670017,
+    "denominator":524288
+  },
+  "horizon":{
+    "numerator":1,
+    "denominator":2
+  },
+  "step":{
+    "numerator":1,
+    "denominator":512
+  },
+  "maximum_steps":256,
+  "order":12,
+  "wall_budget_seconds_between_steps":900,
+  "resource_clock_scope":"starts before fresh preparation in certify_sha_retention; checked between steps; excludes prior freeze/source equality checks",
+  "maximum_attempts":1,
+  "maximum_events":0,
+  "seed":null,
+  "method":"shared direct-source-box Picard/Taylor, outward dyadic128",
+  "readouts":[
+    "strict all-53 original branch margin over each whole-time tube, or independent rebuilt fixed-window storage bound"
+  ],
+  "target":"all 53 original principal branches retained throughout elapsed [0,1/2]",
+  "stop":"first unresolved enclosure/branch margin/resource stop; preserve prior records; no retries, retuning or IL",
+  "scope":"finite conditional complete-law continuation of an actual operator endpoint; no runtime event, turning-time target, periodicity, all-time confinement, formation or physical identification",
+  "preflight":"fresh analytical storage bounds certify41/53; exactly12 parent-incident edges remain unresolved; full42-state certificate required",
+  "evidence_limit":"recorded derivative jets and remainders retain frozen producer provenance; read-only audits reconstruct inclusion and arithmetic without regenerating jets"
+}

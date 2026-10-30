@@ -1,0 +1,200 @@
+{
+  "schema":"tnfr.collective-form-capacity-maintenance-protocol.v1",
+  "created_utc":"2026-10-14T18:24:13.214902+00:00",
+  "status_at_freeze":"not_evaluated",
+  "question":"Does the same joint identity persist throughout forty original structural time units after one live NUL/IL/SHA extension of the retained OZ-completed preparation?",
+  "prospective_hypothesis":"Z(t)<1/16 throughout elapsed 0<=t<=40; certified departure rejects this finite retention hypothesis; an unavailable enclosure is not departure.",
+  "source_response":"docs/assets/collective_pressure_handoff/correction_v2/response.json",
+  "source_capture":"OZ_completed",
+  "preparation":"new graph reconstructed from recorded primitives, bounded histories, debt, neighbor order and retained configuration; not authenticated checkpoint restoration",
+  "nodes":[
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+  ],
+  "targets":[
+    0,
+    1
+  ],
+  "tokens":[
+    "contraction",
+    "coherence",
+    "silence"
+  ],
+  "glyphs":[
+    "NUL",
+    "IL",
+    "SHA"
+  ],
+  "grammar":{
+    "whole_word":"ValidatedSequence actual instances",
+    "context":{
+      "initial_epi_nonzero":true,
+      "compatibility_profile":"core"
+    },
+    "live":"validate_candidate and canonical network stage preflight before each stage",
+    "GRAMMAR_REJECTION_MODE":"raise",
+    "VALIDATE_OPERATOR_PRECONDITIONS":true,
+    "inherited_debt":[
+      1,
+      1
+    ],
+    "required_terminal_debt":[
+      0,
+      0
+    ],
+    "no_replacement_or_context_erasure":true
+  },
+  "operator_settings":"retain every recorded setting; default NUL scale, retained IL coefficient, retained SHA_vf_factor=1/2 and SHA_MIN_VF=1/8; no gain, source, radius or capacity retuning",
+  "event_clock":{
+    "structural_time":7,
+    "timestamp":"2030-01-02T03:04:06+00:00",
+    "stages":"same-time declared hybrid jumps"
+  },
+  "pressure":"initial and each stage callback materializes midpoint of independently specified selected sine Phi; records raw, refreshed and completed states and residuals",
+  "u6":{
+    "owner":"physics.fields.compute_structural_potential and operators.grammar_u6.observe_structural_potential_confinement",
+    "field":"full-graph canonical inverse-square weighted shortest-path field; explicit length with weight fallback; no landmarks",
+    "threshold":"default represented pi/2",
+    "baselines":[
+      "each raw to refreshed state",
+      "each stage before to completed",
+      "retained source to complete word"
+    ],
+    "scope":"finite detached observations only; no between-snapshot or future confinement assertion; no controller or selection"
+  },
+  "law":{
+    "form":"xdot_i=nu_i*S_i/(pi*d_i)",
+    "phase":"thetadot_i=nu_i*(L_Wx)_i/(pi*d_i)",
+    "e":0,
+    "w":1,
+    "beta":1,
+    "support":"actual 45 held edges",
+    "weights":"actual retained conductances",
+    "capacity":"positive complete-word output held",
+    "forcing":0,
+    "continuous_loss":0,
+    "further_events":false
+  },
+  "reduction":{
+    "permutation":[
+      0,
+      1,
+      3,
+      2,
+      5,
+      4,
+      7,
+      6,
+      9,
+      8,
+      11,
+      10,
+      13,
+      12,
+      15,
+      14,
+      17,
+      16,
+      19,
+      18
+    ],
+    "premises":"exact held-support, conductance, capacity and represented-source symmetry re-admitted after the whole word",
+    "multiplicities":[
+      1,
+      1,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    "scope":"one nominal fixed-point source, not independent 40-coordinate uncertainty family"
+  },
+  "observation":{
+    "Z_squared":"full20-node arithmetic-centered squared form plus lifted phase error to original common-aligned twists",
+    "radius":{
+      "numerator":1,
+      "denominator":16
+    },
+    "phase_chart":"unique nearest original reference representative selected once before continuous evaluation; fixed thereafter",
+    "whole_step_bins":8
+  },
+  "forecast":{
+    "elapsed_duration":{
+      "numerator":40,
+      "denominator":1
+    },
+    "absolute_structural_interval":[
+      {
+        "numerator":7,
+        "denominator":1
+      },
+      {
+        "numerator":47,
+        "denominator":1
+      }
+    ],
+    "step":{
+      "numerator":1,
+      "denominator":4
+    },
+    "maximum_steps":160,
+    "order":12,
+    "domain_radius":{
+      "numerator":1,
+      "denominator":8
+    },
+    "growth_rate":{
+      "numerator":1,
+      "denominator":5
+    },
+    "metric":"diag(K+rho*rho^T/R,C0+rho*rho^T/R), C0=(309/1000)*L_old_reduced+L_added_reduced, rho=m*d/nu",
+    "initial_metric_radius":0,
+    "solver":"shared validated_metric_taylor_step; whole-tube Picard, interval Taylor, retained metric radius",
+    "observer":"eight fixed Taylor-polynomial time bins per step, same certified whole-step remainder and propagated initial metric error, no integration restart",
+    "stop":"first certified endpoint Z^2>1/256, numerical/domain rejection, or the full40-unit horizon",
+    "budget":"no adaptivity, retry, changed precision, alternate word, phase branch retune, source shrink, radius enlargement or gain tuning",
+    "horizon_basis":"covers one unchanged exact untouched-twin antisymmetric tangent period 2*pi^2/sqrt(cos(2*pi/5))<40; does not assert actual nonlinear periodicity"
+  },
+  "interval_bits":128,
+  "interval_method":"rational_outward_dyadic128_machin_trigonometry_v1",
+  "backend":"Python Fraction with outward dyadic128 interval arithmetic; runtime operator binary64 outputs are exact prepared inputs",
+  "numeric_threads":1,
+  "randomness":"none consumed; retain source seeds and configuration; no resampling",
+  "verdicts":[
+    "finite_horizon_maintained",
+    "finite_departure_certified",
+    "identity_verdict_unavailable",
+    "numerical_certificate_unavailable",
+    "execution_rejected_or_failed"
+  ],
+  "limitations":[
+    "No all-time conclusion from the finite window.",
+    "No physical identification.",
+    "No original frozen producer is imported or regenerated.",
+    "Original IL/OZ 8/9 evidence remains independently preserved."
+  ],
+  "maximum_evaluations":1
+}

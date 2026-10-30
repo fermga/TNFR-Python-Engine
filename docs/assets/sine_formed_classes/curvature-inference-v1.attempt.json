@@ -1,0 +1,8 @@
+{
+  "schema": "tnfr.sine-curvature-first-attempt.v1",
+  "started_utc": "2026-10-08T21:12:07.203527+00:00",
+  "source_base_commit": "8eb47d261ce971909c343901cc5ed7a7427a8428",
+  "source_archive_sha256": "c6d5992168d7e98d9a2107dab6912455033ee56e3795d16070c86b06b1643ac4",
+  "protocol_sha256": "43d07545901145f72ad6d165a58e86a43a23bcfd9294c2eda5e34d36aa0bccde",
+  "policy": "No second attempt or overwritten result"
+}

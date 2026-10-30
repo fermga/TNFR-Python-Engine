@@ -1,0 +1,20 @@
+{
+  "schema":"tnfr.maintained-parent-um-execution-attempt.v1",
+  "freeze":{
+    "path":"freeze.json",
+    "bytes":130637,
+    "sha256":"bad36c563afb1ab5dd2b94fb96e9525093209fd221c166e3c576f90944356ee8"
+  },
+  "evaluation_status_at_start":"not_evaluated",
+  "attempt_number":1,
+  "created_utc":"2026-10-15T10:26:18.343050+00:00",
+  "python":"3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+  "platform":"Windows-11-10.0.26300-SP0",
+  "versions":{
+    "numpy":"2.5.3",
+    "networkx":"3.6.1",
+    "mpmath":"1.3.0"
+  },
+  "seed":17,
+  "backend":"Python binary64 event / exact rational dyadic interval admission"
+}

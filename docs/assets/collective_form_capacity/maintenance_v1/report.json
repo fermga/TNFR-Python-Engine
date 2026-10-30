@@ -1,0 +1,12 @@
+{
+  "status":"finite_departure_certified",
+  "reason":"endpoint_identity_lower_bound_exceeds_frozen_radius",
+  "validated_duration":{
+    "numerator":57,
+    "denominator":4
+  },
+  "complete_word_executed":true,
+  "stage_count":3,
+  "all_time_maintenance_claimed":false,
+  "maximum_evaluations":1
+}

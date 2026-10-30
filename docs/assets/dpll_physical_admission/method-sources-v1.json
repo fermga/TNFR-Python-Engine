@@ -1,0 +1,81 @@
+{
+  "schema": "tnfr.dpll-physical-admission.method-sources.v1",
+  "scope": "Primary paper and manufacturer methodology review only.",
+  "measured_arrays_downloaded": false,
+  "response_fit_performed": false,
+  "reserved_response_evaluated": false,
+  "checksum_scope": "Content association only; checksums do not authenticate source provenance or guarantee future source or archive availability.",
+  "cache_scope": "Optional ignored local PDF cache; not a repository dependency. No source PDF or measurement archive is included in this receipt.",
+  "sources": [
+    {
+      "id": "wetzel_2017",
+      "title": "Wetzel et al., PLOS ONE 12(2):e0171590; DOI 10.1371/journal.pone.0171590",
+      "doi": "10.1371/journal.pone.0171590",
+      "canonical_url": "https://doi.org/10.1371/journal.pone.0171590",
+      "requested_url": "https://www.pks.mpg.de/fileadmin/user_upload/MPIPKS/group_pages/BiologicalPhysics/juelicher/publications/2017/S-oSoDP-lLwDCiTaE2017.pdf",
+      "resolved_url": "https://www.pks.mpg.de/fileadmin/user_upload/MPIPKS/group_pages/BiologicalPhysics/juelicher/publications/2017/S-oSoDP-lLwDCiTaE2017.pdf",
+      "retrieved_at_utc": "2026-10-08T23:28:16.108001+00:00",
+      "bytes": 2466741,
+      "sha256": "054b2f96ab0f184f2f2b69c304a3b9bec9f216ce329dc8135abdd7c4d6450b84",
+      "reviewed_sections": [
+        "Sections 1.1-1.2, Equations 1-8",
+        "Section 4.2, Equation 29",
+        "Section 5, Tables 1-2",
+        "Section 6, idealized phase-noise limitation",
+        "Appendix A, high-frequency suppression and phase-model approximation",
+        "Appendix C, Equations 39-40"
+      ],
+      "optional_local_cache_path": "build/physical-dpll-audit/wetzel-2017-plos-one.pdf"
+    },
+    {
+      "id": "ti_cd4046b_datasheet",
+      "title": "Texas Instruments CD4046B datasheet SCHS043B",
+      "doi": null,
+      "canonical_url": "https://www.ti.com/lit/ds/symlink/cd4046b.pdf",
+      "requested_url": "https://www.ti.com/lit/ds/symlink/cd4046b.pdf",
+      "resolved_url": "https://www.ti.com/lit/ds/symlink/cd4046b.pdf",
+      "retrieved_at_utc": "2026-10-08T23:28:15.640601+00:00",
+      "bytes": 956885,
+      "sha256": "08ddf4d70b355d8ce4787e2db9565834bf65b45bd736561964ceba0017226cbe",
+      "reviewed_sections": [
+        "Device description",
+        "Package option addendum"
+      ],
+      "optional_local_cache_path": "build/physical-dpll-audit/ti-cd4046b-datasheet.pdf"
+    },
+    {
+      "id": "ti_cd4046b_application_note",
+      "title": "Texas Instruments CD4046B application report SCHA002A",
+      "doi": null,
+      "canonical_url": "https://www.ti.com/lit/an/scha002a/scha002a.pdf",
+      "requested_url": "https://www.ti.com/lit/an/scha002a/scha002a.pdf",
+      "resolved_url": "https://www.ti.com/lit/an/scha002a/scha002a.pdf",
+      "retrieved_at_utc": "2026-10-08T23:28:15.605466+00:00",
+      "bytes": 333826,
+      "sha256": "28aae68cfa6d587870bee1de1f3e4b5bf309fcea155c8bdf5efe8619f2234586",
+      "reviewed_sections": [
+        "Section 3.1, Phase Comparators",
+        "Section 3.2, Voltage-Controlled Oscillator",
+        "Section 3.3, Table 4",
+        "Section 4.1, Figure 10"
+      ],
+      "optional_local_cache_path": "build/physical-dpll-audit/ti-cd4046b-application-note.pdf"
+    },
+    {
+      "id": "picoscope_2205mso_datasheet",
+      "title": "Pico Technology PicoScope 2205 MSO datasheet",
+      "doi": null,
+      "canonical_url": "https://www.picotech.com/download/datasheets/picoscope-2205mso-data-sheet.pdf",
+      "requested_url": "https://www.picotech.com/download/datasheets/picoscope-2205mso-data-sheet.pdf",
+      "resolved_url": "https://www.picotech.com/download/datasheets/picoscope-2205mso-data-sheet.pdf",
+      "retrieved_at_utc": "2026-10-08T23:28:15.970194+00:00",
+      "bytes": 1470868,
+      "sha256": "5463793c7dda0a714dee5ca501f5072cc0d6620790619439d3173bc7bb9827ae",
+      "reviewed_sections": [
+        "Full-featured oscilloscope overview",
+        "Product specifications: vertical, horizontal and dynamic performance"
+      ],
+      "optional_local_cache_path": "build/physical-dpll-audit/picoscope-2205mso-datasheet.pdf"
+    }
+  ]
+}

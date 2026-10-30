@@ -1,0 +1,59 @@
+{
+  "schema":"tnfr.successor-nonstationary-protocol.v1",
+  "evaluation_status_at_freeze":"not_evaluated",
+  "source":"unchanged hypothetical default UM after retained THOL",
+  "preparation":"conditional independent changed-output allowance 2^-40; ideal source included",
+  "node_order":[
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    "2_sub_0"
+  ],
+  "law":"x_dot=M*S(theta); theta_dot=M*L_W*x; M=diag(nu/(pi*d))",
+  "support":"all 53 held edges; 42 full coordinates; weights/capacities held",
+  "pressure":"refreshed bare-neighbor sine row/(pi*d), no Gamma or loss",
+  "clock":"elapsed structural time t from hypothetical reset; no laboratory conversion",
+  "prior_clock":{
+    "numerator":3670017,
+    "denominator":524288
+  },
+  "horizon":{
+    "numerator":1,
+    "denominator":2
+  },
+  "step":{
+    "numerator":1,
+    "denominator":512
+  },
+  "maximum_steps":256,
+  "order":12,
+  "wall_budget_seconds_between_steps":900,
+  "maximum_attempts":1,
+  "seed":null,
+  "method":"shared direct-source-box Picard/Taylor, outward dyadic128",
+  "readouts":[
+    "strict all-53 original branch margin over each whole-time tube, or independent fixed-window storage bound",
+    "child20-parent2 relative phase velocity at all 256 predetermined endpoints; at least one strictly positive after initially negative"
+  ],
+  "joint_target":"retain all branches through 1/2 and certify at least one velocity reversal",
+  "stop":"first unresolved enclosure/branch margin/resource stop; retain all prior records; no retries or retuning",
+  "scope":"conditional mathematical continuation; no actual UM/SHA/runtime trajectory; no physical identification",
+  "preflight":"41 slow edges retained by energy; 42 <= box cap64; order12 <=16; fast restoring coefficient about1475.69; wrapping success unknown"
+}

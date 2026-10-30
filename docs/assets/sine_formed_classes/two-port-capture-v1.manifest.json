@@ -1,0 +1,44 @@
+{
+  "schema": "tnfr.sine-two-port-capture-evidence.v1",
+  "artifacts": [
+    {
+      "file": "two-port-capture-v1.protocol.json",
+      "bytes": 8561,
+      "sha256": "eec9555ae04394f8ec53f9bc3501209b0b3c7e9ebaae013cdd1df9e9512d6b31"
+    },
+    {
+      "file": "two-port-capture-v1.source.zip",
+      "bytes": 23410,
+      "sha256": "b8df26578b59a32dae82b9cad58450b0d208d6c45dc234769575702830f0fb3f"
+    },
+    {
+      "file": "two-port-capture-v1.json",
+      "bytes": 40970976,
+      "sha256": "1bb276acd7d99572c0628a52d55f4fd9718127ad8f6d8c92f18bdc39c7ec089c"
+    }
+  ],
+  "source_base_commit": "29e4c02339f6246d003a7fbfbdf7f37c8a2c1277",
+  "runtime_overlays": [
+    "src/tnfr/physics/relational_sine_two_port_capture.py",
+    "src/tnfr/sdk/relational_reports.py"
+  ],
+  "source_reconstruction": "Checkout the base Git revision and overlay archived src/ files. Complete pre-evaluation proof, protocol and evaluator are included; unchanged dependencies remain at the base revision.",
+  "evaluation": "One assessment of the frozen nominal reference budget followed, only when admitted, by the analytic same-law tail and full-state capture argument. No numerical retry or narrowed source replaces the retained outcome.",
+  "result_owner": "../../../theory/nodal/SINE_TWO_PORT_CAPTURE.md#sine-two-port-capture-result",
+  "status": "certified_capture",
+  "frozen_stopping_rule": {
+    "complete_preparation_admitted": true,
+    "fresh_implicit_target_admitted": true,
+    "all_frozen_reference_steps_validated": true,
+    "strict_reference_tube_margins": true,
+    "reference_endpoint_target_distance": true,
+    "full_family_comparison": true,
+    "original_form_handoff": true,
+    "phase_handoff": true,
+    "strict_capture_storage_margin": true,
+    "full_law_convergence": true
+  },
+  "frozen_stopping_rule_passed": true,
+  "scope": "Conditional acquisition of joint geometry by the complete prepared family on supplied support. An unavailable bound is not nonconvergence; support formation, passive attachment, autonomous contact, physical binding and a laboratory clock remain unproved.",
+  "provenance_limitations": "Hashes establish content consistency and source recoverability, not independent chronology authentication or physical acquisition."
+}

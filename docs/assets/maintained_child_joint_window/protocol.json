@@ -1,0 +1,82 @@
+{
+  "schema":"tnfr.maintained-child-joint-window-protocol.v1",
+  "evidence_kind":"new_retrospective_observation_of_retained_evidence",
+  "not_a_prospective_reserved_prediction":true,
+  "child":"2_sub_0",
+  "parent":2,
+  "node_order":[
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    "2_sub_0"
+  ],
+  "state_dimension":42,
+  "original_edges":53,
+  "law":"x_dot=M*S(theta); theta_dot=M*L_W*x; M=diag(nu/(pi*d))",
+  "held":[
+    "support",
+    "conductances",
+    "positive capacities"
+  ],
+  "forcing":0,
+  "loss":0,
+  "clock":"original structural clock",
+  "source_time":{
+    "numerator":3670017,
+    "denominator":524288
+  },
+  "elapsed_horizon":{
+    "numerator":1,
+    "denominator":2
+  },
+  "cell_width":{
+    "numerator":1,
+    "denominator":512
+  },
+  "maximum_cells":256,
+  "minimum_form":{
+    "numerator":3602879701896397,
+    "denominator":18014398509481984
+  },
+  "threshold":{
+    "numerator":3602879701896397,
+    "denominator":36028797018963968
+  },
+  "criterion":{
+    "form":"whole-cell lower bound >= unchanged represented THOL_MIN_EPI",
+    "pressure":"whole-cell constitutive pressure lower bound > 0",
+    "acceleration":"whole-cell interval wholly above tau or below -tau",
+    "identity":"all original principal margins strictly positive on same cell"
+  },
+  "selection":"first qualifying whole original cell in chronological order; stop",
+  "unresolved_policy":"no certified cell is not a proof of impossibility",
+  "sample_acquisition":false,
+  "runtime_history_installation":false,
+  "maximum_new_trajectories":0,
+  "maximum_events":0,
+  "mesh_refinement":false,
+  "parameter_retuning":false,
+  "source_result":{
+    "path":"docs/assets/maintained_sha_retention/result.json",
+    "bytes":88951,
+    "sha256":"fc8da2a3c51345c11f7e828e5592e98349f11d985a21ad9827cb9f37dd1fd233"
+  },
+  "grammar":"empty executed child history independently blocks U4b"
+}

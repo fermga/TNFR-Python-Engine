@@ -1,0 +1,48 @@
+{
+  "schema": "tnfr.sine-port-relaxation-evidence.v1",
+  "artifacts": [
+    {
+      "file": "port-relaxation-v1.protocol.json",
+      "bytes": 9382,
+      "sha256": "84f70d39ba34f98b1113300fdaf295513e0292ccddc1a6b75b5644a151d7e6d3"
+    },
+    {
+      "file": "port-relaxation-v1.source.zip",
+      "bytes": 30067,
+      "sha256": "5ed129494818ad786d92d4e21fc53fd148646f98287e06aa0fb492db78066d48"
+    },
+    {
+      "file": "port-relaxation-v1.json",
+      "bytes": 129901,
+      "sha256": "42142f05aef9b2e46b91871a6c7cc46c09c69cd40f1df6888d592090644684bf"
+    }
+  ],
+  "source_base_commit": "c16b3d8b86b05da0a52c0ba7734264d8597812ec",
+  "runtime_overlays": [
+    "src/tnfr/physics/_sine_port_bounds.py",
+    "src/tnfr/physics/relational_sine_port_composition.py",
+    "src/tnfr/physics/relational_sine_port_relaxation.py",
+    "src/tnfr/sdk/relational_reports.py"
+  ],
+  "source_reconstruction": "Checkout the base Git commit, then overlay archived src/ files. Exact pre-evaluation proof, protocol and evaluator are included. Unchanged dependencies remain recoverable from Git.",
+  "evaluation": "One reserved evaluation after freezing proof, protocol and runtime overlays. The partial outcome and failed joint criterion are preserved without retuning. Current-source regression tests are separate.",
+  "result_owner": "../../../theory/nodal/SINE_PORT_RELAXATION.md#sine-port-relaxation",
+  "status": "phase_only",
+  "frozen_stopping_rule_passed": false,
+  "frozen_stopping_rule": {
+    "envelopes_admitted": true,
+    "phase_resolution_passed": true,
+    "form_resolution_passed": false,
+    "joint_resolution_passed": false
+  },
+  "phase_resolution_fraction": {
+    "numerator": 1,
+    "denominator": 2
+  },
+  "form_resolution_fraction": {
+    "numerator": 1,
+    "denominator": 2
+  },
+  "scope": "Uniform error envelopes for the unchanged degree-aware reduced C9 composition under its supplied source, law, support, clock and work. The phase channel meets its frozen natural-scale criterion for all future uninterrupted flow; the form sufficient bound does not. This is a partial certificate, not an observed form error or a trajectory counterexample.",
+  "provenance_limitations": "Hashes establish content consistency and source recoverability, not independent authentication of chronology or physical acquisition."
+}

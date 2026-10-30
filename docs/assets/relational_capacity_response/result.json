@@ -1,0 +1,4039 @@
+{
+  "observable_refinement": {
+    "chi": {
+      "coarse_to_middle": {
+        "denominator": 2305843009213693952,
+        "numerator": 62839292729
+      },
+      "contracting": true,
+      "middle_to_fine": {
+        "denominator": 2305843009213693952,
+        "numerator": 31419081695
+      },
+      "signal_resolved": true
+    },
+    "form": {
+      "coarse_to_middle": {
+        "denominator": 18014398509481984,
+        "numerator": 101049685
+      },
+      "contracting": true,
+      "middle_to_fine": {
+        "denominator": 18014398509481984,
+        "numerator": 50514739
+      },
+      "signal_resolved": true
+    }
+  },
+  "observables": {
+    "128": {
+      "chi": {
+        "capacity_responses": {
+          "counterpart": {
+            "denominator": 288230376151711744,
+            "numerator": -175058767345755
+          },
+          "relational": {
+            "denominator": 2305843009213693952,
+            "numerator": -15839510178771
+          }
+        },
+        "difference_of_differences": {
+          "denominator": 2305843009213693952,
+          "numerator": -1384630628587269
+        },
+        "inside_frozen_taylor_band": true,
+        "normalized_response": 0.9885709817290597
+      },
+      "form": {
+        "capacity_responses": {
+          "counterpart": {
+            "denominator": 9007199254740992,
+            "numerator": 80693009057
+          },
+          "relational": {
+            "denominator": 9007199254740992,
+            "numerator": 67415319311
+          }
+        },
+        "difference_of_differences": {
+          "denominator": 4503599627370496,
+          "numerator": 6638844873
+        },
+        "inside_frozen_taylor_band": true,
+        "normalized_response": 0.9758796193032416
+      }
+    },
+    "256": {
+      "chi": {
+        "capacity_responses": {
+          "counterpart": {
+            "denominator": 1152921504606846976,
+            "numerator": -700234175879343
+          },
+          "relational": {
+            "denominator": 1152921504606846976,
+            "numerator": -7950281232073
+          }
+        },
+        "difference_of_differences": {
+          "denominator": 576460752303423488,
+          "numerator": -346141947323635
+        },
+        "inside_frozen_taylor_band": true,
+        "normalized_response": 0.9885261169831687
+      },
+      "form": {
+        "capacity_responses": {
+          "counterpart": {
+            "denominator": 18014398509481984,
+            "numerator": 162005785607
+          },
+          "relational": {
+            "denominator": 9007199254740992,
+            "numerator": 67674678215
+          }
+        },
+        "difference_of_differences": {
+          "denominator": 18014398509481984,
+          "numerator": 26656429177
+        },
+        "inside_frozen_taylor_band": true,
+        "normalized_response": 0.9795930788739557
+      }
+    },
+    "512": {
+      "chi": {
+        "capacity_responses": {
+          "counterpart": {
+            "denominator": 1152921504606846976,
+            "numerator": -700233727522335
+          },
+          "relational": {
+            "denominator": 2305843009213693952,
+            "numerator": -15931084831825
+          }
+        },
+        "difference_of_differences": {
+          "denominator": 2305843009213693952,
+          "numerator": -1384536370212845
+        },
+        "inside_frozen_taylor_band": true,
+        "normalized_response": 0.9885036850133748
+      },
+      "form": {
+        "capacity_responses": {
+          "counterpart": {
+            "denominator": 18014398509481984,
+            "numerator": 162315624319
+          },
+          "relational": {
+            "denominator": 18014398509481984,
+            "numerator": 135608680403
+          }
+        },
+        "difference_of_differences": {
+          "denominator": 4503599627370496,
+          "numerator": 6676735979
+        },
+        "inside_frozen_taylor_band": true,
+        "normalized_response": 0.9814494373673214
+      }
+    }
+  },
+  "passed": true,
+  "prediction": {
+    "capacities": {
+      "baseline": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "intervened": [
+        1.0,
+        0.5,
+        1.0
+      ]
+    },
+    "conductance": 1,
+    "contrast": "counterpart_intervened-counterpart_baseline-(relational_intervened-relational_baseline)",
+    "counterpart_execution": "benchmark_only_S_gradV_with_shared_field_and_Euler_arithmetic",
+    "counterpart_formula": "Sij=(w/beta)*Aij*nu_i*nu_j/(nu_i+nu_j)/(d_i*d_j)*(Lx_i+Lx_j)*sin(theta_j-theta_i); Z=S*gradV",
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        2
+      ],
+      [
+        1,
+        2
+      ]
+    ],
+    "epi_weight": 0.5,
+    "gates": {
+      "maximum_actual_balance_residual": {
+        "denominator": 1000000000000,
+        "numerator": 1
+      },
+      "minimum_chart_margin": 0.39269908169872414,
+      "normalized_response_interval": [
+        {
+          "denominator": 4,
+          "numerator": 3
+        },
+        {
+          "denominator": 4,
+          "numerator": 5
+        }
+      ],
+      "numerical_slack": {
+        "denominator": 1000000000000,
+        "numerator": 1
+      },
+      "refinement_contraction": {
+        "denominator": 4,
+        "numerator": 3
+      },
+      "refinement_scope": "three_grid_observation_not_certified_error_or_convergence",
+      "signal_to_last_grid_difference": 32
+    },
+    "horizon": {
+      "denominator": 32,
+      "numerator": 1
+    },
+    "initial_epi_exact": [
+      {
+        "denominator": 3,
+        "numerator": 1
+      },
+      {
+        "denominator": 1,
+        "numerator": 0
+      },
+      {
+        "denominator": 3,
+        "numerator": -1
+      }
+    ],
+    "initial_epi_materialized": [
+      {
+        "denominator": 18014398509481984,
+        "numerator": 6004799503160661
+      },
+      {
+        "denominator": 1,
+        "numerator": 0
+      },
+      {
+        "denominator": 18014398509481984,
+        "numerator": -6004799503160661
+      }
+    ],
+    "initial_phase": [
+      {
+        "denominator": 1,
+        "numerator": 0
+      },
+      {
+        "denominator": 9007199254740992,
+        "numerator": 4716158501352293
+      },
+      {
+        "denominator": 9007199254740992,
+        "numerator": -4716158501352293
+      }
+    ],
+    "laws": [
+      "relational",
+      "counterpart"
+    ],
+    "nodes": [
+      0,
+      1,
+      2
+    ],
+    "observable": "chi=theta0-(theta1+theta2)/2; form=EPI0",
+    "phase_weight": 0.5,
+    "protocol": "relational-capacity-finite-response-v1",
+    "reference_execution": "production_step_relational_exchange",
+    "runtime": {
+      "integrator": "simultaneous_explicit_Euler_with_initial_acute_lift_admission",
+      "networkx": "3.6.1",
+      "numpy": "2.5.3",
+      "precision": "binary64_states_and_exact_Fraction_arithmetic_on_retained_scalars",
+      "pressure_path": "fused_canonical",
+      "python": "3.13.6",
+      "randomness": "none"
+    },
+    "scope": "finite_internal_conditional_model_comparison_not_physical_selection",
+    "source_sha256": {
+      "benchmarks/relational_capacity_response.py": "d2367dd0b05b5d39dd446325f3e134435a6da583bd6d900c1a7eecf1d8965279",
+      "src/tnfr/_exact_time.py": "69ef60f1405b6551f3d0fb64ad253dbe7267a053a6b390513c539a5a7a8878c0",
+      "src/tnfr/alias.py": "378e781b833d228fc24d66315fe81a8edfe2ef7204d4ead8c0822fa9fc096cc6",
+      "src/tnfr/config/defaults_core.py": "bf938cb6108005a519f7e184865366a0f00ccdfd4fd685fbb3a8ea7b73faf551",
+      "src/tnfr/dynamics/_euler_kernel.py": "2d355304c3b82fbdcde42a2c9b70d2d0ab9e53c9462e9746b74d30aab05635c7",
+      "src/tnfr/dynamics/canonical.py": "a3a1407b963f7846b1c005eaba3f76f2e2e72e0436b88b2ef2d7a4ebc1569221",
+      "src/tnfr/dynamics/dnfr.py": "e746586a987b223fda19192a49729e5274216668b4522d79cd46a935f184f7a1",
+      "src/tnfr/dynamics/fused_dnfr.py": "67ebc6c994da1f26ff1e1265dc135efe1fc24d0114d1b021fb9e5978eec77b2a",
+      "src/tnfr/dynamics/relational.py": "7429eb62726cede9fe4e2d357936d0e94ffb2467f62bac332bcba524fd504410",
+      "src/tnfr/gamma.py": "f21003b17e228c855c8c6aa0a1524072b153b1620211678519c89c3e01498027",
+      "src/tnfr/mathematics/_neighbor_differences.py": "253a6e1ca539a27c555ea0b500f56d49e3d370778fb8d2bdbf24d481deaf3ba6",
+      "src/tnfr/mathematics/_phase_midpoint.py": "aea8e1902f83b7d585c31119f96039816dc607b2bad40200d85264446826d446",
+      "src/tnfr/mathematics/epi.py": "0fc5498d18f4864be2cfa578d5fa3d7279dd84678c13a310cd9532b3d29e5f2e",
+      "src/tnfr/mathematics/unified_numerical.py": "d8b48a6cbb588db76c05194601094063d7c9c15121275bd37f51537c5d90fb0e",
+      "src/tnfr/metrics/common.py": "eb40d413b390a66592d1e36691060248b8002076af5c44d2221b3d4539b1a632",
+      "src/tnfr/types.py": "38cb289492b630d4fa9effc67c4b165d73821f4b7e6a2bc8953a41dc2029d5fb",
+      "src/tnfr/utils/graph.py": "c879155866bea82279e08cac35b1304180108f4c5d19869b80eb07228143ee8d"
+    },
+    "step_counts": [
+      128,
+      256,
+      512
+    ],
+    "storage_scale": 1.0,
+    "taylor": {
+      "chi_initial_slope_estimate": -0.01943776462275457,
+      "chi_initial_slope_exact": "-(2+sqrt(3))/192",
+      "chi_leading_response_estimate": -0.0006074301444610803,
+      "form_initial_acceleration_estimate": 0.00309361632236816,
+      "form_initial_acceleration_exact": "(2+sqrt(3))/(384*pi)",
+      "form_leading_response_estimate": 1.510554844906328e-06,
+      "scope": "estimates_for_prospective_finite_hypotheses_not_remainder_bounds"
+    },
+    "timesteps": [
+      {
+        "denominator": 4096,
+        "numerator": 1
+      },
+      {
+        "denominator": 8192,
+        "numerator": 1
+      },
+      {
+        "denominator": 16384,
+        "numerator": 1
+      }
+    ]
+  },
+  "scope": "finite_nonlinear_internal_comparison; empirical_grid_and_Taylor_checks_not_certified_ODE_bounds_or_physical_selection",
+  "state_refinement": {
+    "counterpart": {
+      "baseline": {
+        "final": {
+          "coarse_to_middle_inf": {
+            "denominator": 4503599627370496,
+            "numerator": 2145461167
+          },
+          "contracting": true,
+          "middle_to_fine_inf": {
+            "denominator": 18014398509481984,
+            "numerator": 4290591969
+          }
+        },
+        "midpoint": {
+          "coarse_to_middle_inf": {
+            "denominator": 18014398509481984,
+            "numerator": 4333736459
+          },
+          "contracting": true,
+          "middle_to_fine_inf": {
+            "denominator": 18014398509481984,
+            "numerator": 2166700809
+          }
+        }
+      },
+      "intervened": {
+        "final": {
+          "coarse_to_middle_inf": {
+            "denominator": 18014398509481984,
+            "numerator": 8113547859
+          },
+          "contracting": true,
+          "middle_to_fine_inf": {
+            "denominator": 9007199254740992,
+            "numerator": 2028236627
+          }
+        },
+        "midpoint": {
+          "coarse_to_middle_inf": {
+            "denominator": 18014398509481984,
+            "numerator": 4095724221
+          },
+          "contracting": true,
+          "middle_to_fine_inf": {
+            "denominator": 18014398509481984,
+            "numerator": 2047709773
+          }
+        }
+      }
+    },
+    "relational": {
+      "baseline": {
+        "final": {
+          "coarse_to_middle_inf": {
+            "denominator": 18014398509481984,
+            "numerator": 8732223463
+          },
+          "contracting": true,
+          "middle_to_fine_inf": {
+            "denominator": 2251799813685248,
+            "numerator": 545720511
+          }
+        },
+        "midpoint": {
+          "coarse_to_middle_inf": {
+            "denominator": 9007199254740992,
+            "numerator": 2205593319
+          },
+          "contracting": true,
+          "middle_to_fine_inf": {
+            "denominator": 2251799813685248,
+            "numerator": 275677127
+          }
+        }
+      },
+      "intervened": {
+        "final": {
+          "coarse_to_middle_inf": {
+            "denominator": 8796093022208,
+            "numerator": 4010501
+          },
+          "contracting": true,
+          "middle_to_fine_inf": {
+            "denominator": 9007199254740992,
+            "numerator": 2053220147
+          }
+        },
+        "midpoint": {
+          "coarse_to_middle_inf": {
+            "denominator": 18014398509481984,
+            "numerator": 4147283369
+          },
+          "contracting": true,
+          "middle_to_fine_inf": {
+            "denominator": 18014398509481984,
+            "numerator": 2073483169
+          }
+        }
+      }
+    }
+  },
+  "trajectories": {
+    "counterpart": {
+      "baseline": {
+        "128": {
+          "capacity_case": "baseline",
+          "checkpoints": {
+            "final": {
+              "actual_balance_residual": {
+                "denominator": 2658455991569831745807614120560689152,
+                "numerator": -59473131670160273565
+              },
+              "actual_storage_rate": {
+                "denominator": 10384593717069655257060992658440192,
+                "numerator": -4896031581111603965236588327650183
+              },
+              "capacity": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "clock": {
+                "denominator": 32,
+                "numerator": 1
+              },
+              "continuous_loss": {
+                "denominator": 2658455991569831745807614120560689152,
+                "numerator": 1253384084764570555627434941718173283
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.32559609478550927,
+                -0.003858901550106277,
+                -0.32173719323540284
+              ],
+              "extra_work": {
+                "denominator": 20769187434139310514121985316880384,
+                "numerator": -62305543239277771
+              },
+              "form_rate": [
+                -0.24516068459523171,
+                -0.12195678491037573,
+                0.3671174695056074
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.003495581848306131,
+                0.5224336898333183,
+                -0.5275516505833581
+              ],
+              "phase_metric": [
+                5.43698054086334,
+                5.460007064482416,
+                5.459830704396694
+              ],
+              "phase_rate": [
+                0.11047533167196184,
+                -0.0375931415529724,
+                -0.1244889749505766
+              ],
+              "phase_source": [
+                -0.0019272270121995858,
+                -0.24970192214591094,
+                0.2516291491581105
+              ],
+              "pressure": [
+                -0.24516068459523171,
+                -0.12195678491037573,
+                0.3671174695056074
+              ],
+              "storage": {
+                "denominator": 1329227995784915872903807060280344576,
+                "numerator": 1443683193488833544734404788875391521
+              }
+            },
+            "initial": {
+              "actual_balance_residual": {
+                "denominator": 649037107316853453566312041152512,
+                "numerator": -15308102035108237
+              },
+              "actual_storage_rate": {
+                "denominator": 324518553658426726783156020576256,
+                "numerator": -162259276829213353031230518360263
+              },
+              "capacity": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "clock": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "continuous_loss": {
+                "denominator": 649037107316853453566312041152512,
+                "numerator": 324518553658426690754359001612289
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.3333333333333333,
+                0.0,
+                -0.3333333333333333
+              ],
+              "extra_work": {
+                "denominator": 324518553658426726783156020576256,
+                "numerator": 6152031499462229
+              },
+              "form_rate": [
+                -0.25,
+                -0.125,
+                0.375
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0,
+                0.5235987755982988,
+                -0.5235987755982988
+              ],
+              "phase_metric": [
+                5.441398092702654,
+                5.464101615137755,
+                5.464101615137755
+              ],
+              "phase_rate": [
+                0.11323229617109717,
+                -0.03696914693413185,
+                -0.1284754978802415
+              ],
+              "phase_source": [
+                0.0,
+                -0.25,
+                0.25
+              ],
+              "pressure": [
+                -0.25,
+                -0.125,
+                0.375
+              ],
+              "storage": {
+                "denominator": 324518553658426726783156020576256,
+                "numerator": 357386612430380278165321949834925
+              }
+            },
+            "midpoint": {
+              "actual_balance_residual": {
+                "denominator": 42535295865117307932921825928971026432,
+                "numerator": -4868981862024546442541
+              },
+              "actual_storage_rate": {
+                "denominator": 166153499473114484112975882535043072,
+                "numerator": -80674892529345935414582031382341887
+              },
+              "capacity": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "clock": {
+                "denominator": 64,
+                "numerator": 1
+              },
+              "continuous_loss": {
+                "denominator": 42535295865117307932921825928971026432,
+                "numerator": 20652772487512554597151138009333080531
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.32944580923062416,
+                -0.0019413392233498998,
+                -0.32750447000727406
+              ],
+              "extra_work": {
+                "denominator": 5192296858534827628530496329220096,
+                "numerator": -100002811838315119
+              },
+              "form_rate": [
+                -0.247568923104531,
+                -0.1234702463523533,
+                0.3710391694568843
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0017585612395470906,
+                0.5230186707101478,
+                -0.5255907864557577
+              ],
+              "phase_metric": [
+                5.439170517002216,
+                5.462037702855049,
+                5.461949347917246
+              ],
+              "phase_rate": [
+                0.11184486715216446,
+                -0.03728720110901943,
+                -0.12647352200651912
+              ],
+              "phase_source": [
+                -0.0009691323631257857,
+                -0.24985250153973154,
+                0.25082163390285733
+              ],
+              "pressure": [
+                -0.247568923104531,
+                -0.1234702463523533,
+                0.3710391694568843
+              ],
+              "storage": {
+                "denominator": 21267647932558653966460912964485513216,
+                "numerator": 23257939881892078505174205975880087025
+              }
+            }
+          },
+          "dt": {
+            "denominator": 4096,
+            "numerator": 1
+          },
+          "elapsed_structural_clock": {
+            "denominator": 32,
+            "numerator": 1
+          },
+          "elapsed_wall_seconds": 0.3880591000051936,
+          "law": "counterpart",
+          "maximum_actual_balance_residual": {
+            "denominator": 42535295865117307932921825928971026432,
+            "numerator": 4868981862024546442541
+          },
+          "maximum_clock_defect": {
+            "denominator": 1,
+            "numerator": 0
+          },
+          "maximum_euler_storage_defect": {
+            "denominator": 1329227995784915872903807060280344576,
+            "numerator": 28940846223330391799506467015
+          },
+          "maximum_extra_work_residual": {
+            "denominator": 20769187434139310514121985316880384,
+            "numerator": 478986229606775241
+          },
+          "maximum_pressure_split_residual": {
+            "denominator": 18446744073709551616,
+            "numerator": 1349
+          },
+          "maximum_update_defect": {
+            "denominator": 590295810358705651712,
+            "numerator": 32583
+          },
+          "minimum_chart_margin": 0.5208109863782202,
+          "minimum_phase_metric": 5.43698054086334,
+          "pressure_paths": [
+            "fused_canonical"
+          ],
+          "steps": 128
+        },
+        "256": {
+          "capacity_case": "baseline",
+          "checkpoints": {
+            "final": {
+              "actual_balance_residual": {
+                "denominator": 10633823966279326983230456482242756608,
+                "numerator": 100977393319999483907
+              },
+              "actual_storage_rate": {
+                "denominator": 83076749736557242056487941267521536,
+                "numerator": -39168345301169971077720726968561327
+              },
+              "capacity": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "clock": {
+                "denominator": 32,
+                "numerator": 1
+              },
+              "continuous_loss": {
+                "denominator": 10633823966279326983230456482242756608,
+                "numerator": 5013548198549756398925646371975333763
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.3255963873967189,
+                -0.0038587177732392337,
+                -0.32173766962348005
+              ],
+              "extra_work": {
+                "denominator": 20282409603651670423947251286016,
+                "numerator": -136858212662751
+              },
+              "form_rate": [
+                -0.24516086131020207,
+                -0.12195691088530328,
+                0.36711777219550534
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.003495415069068414,
+                0.5224336524278574,
+                -0.527551409606502
+              ],
+              "phase_metric": [
+                5.436980982144696,
+                5.460007478212494,
+                5.459831126084127
+              ],
+              "phase_rate": [
+                0.11047542728451626,
+                -0.03759309821685918,
+                -0.12448912516531617
+              ],
+              "phase_source": [
+                -0.0019271415253255748,
+                -0.24970189843046522,
+                0.25162903995579083
+              ],
+              "pressure": [
+                -0.24516086131020207,
+                -0.12195691088530328,
+                0.36711777219550534
+              ],
+              "storage": {
+                "denominator": 5316911983139663491615228241121378304,
+                "numerator": 5774734686425729232933650523056505473
+              }
+            },
+            "initial": {
+              "actual_balance_residual": {
+                "denominator": 649037107316853453566312041152512,
+                "numerator": -15308102035108237
+              },
+              "actual_storage_rate": {
+                "denominator": 324518553658426726783156020576256,
+                "numerator": -162259276829213353031230518360263
+              },
+              "capacity": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "clock": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "continuous_loss": {
+                "denominator": 649037107316853453566312041152512,
+                "numerator": 324518553658426690754359001612289
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.3333333333333333,
+                0.0,
+                -0.3333333333333333
+              ],
+              "extra_work": {
+                "denominator": 324518553658426726783156020576256,
+                "numerator": 6152031499462229
+              },
+              "form_rate": [
+                -0.25,
+                -0.125,
+                0.375
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0,
+                0.5235987755982988,
+                -0.5235987755982988
+              ],
+              "phase_metric": [
+                5.441398092702654,
+                5.464101615137755,
+                5.464101615137755
+              ],
+              "phase_rate": [
+                0.11323229617109717,
+                -0.03696914693413185,
+                -0.1284754978802415
+              ],
+              "phase_source": [
+                0.0,
+                -0.25,
+                0.25
+              ],
+              "pressure": [
+                -0.25,
+                -0.125,
+                0.375
+              ],
+              "storage": {
+                "denominator": 324518553658426726783156020576256,
+                "numerator": 357386612430380278165321949834925
+              }
+            },
+            "midpoint": {
+              "actual_balance_residual": {
+                "denominator": 324518553658426726783156020576256,
+                "numerator": -19842275072283347
+              },
+              "actual_storage_rate": {
+                "denominator": 324518553658426726783156020576256,
+                "numerator": -157568335320039495327412990779797
+              },
+              "capacity": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "clock": {
+                "denominator": 64,
+                "numerator": 1
+              },
+              "continuous_loss": {
+                "denominator": 162259276829213363391578010288128,
+                "numerator": 78784167660019737742568959248225
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.32944595692355505,
+                -0.0019412463455811269,
+                -0.32750471057797403
+              ],
+              "extra_work": {
+                "denominator": 10384593717069655257060992658440192,
+                "numerator": -116551416646821489
+              },
+              "form_rate": [
+                -0.24756901231002046,
+                -0.12347030998018874,
+                0.3710393222902092
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.001758476930322346,
+                0.5230186514684069,
+                -0.525590664848627
+              ],
+              "phase_metric": [
+                5.439170739265131,
+                5.462037911183626,
+                5.461949560212199
+              ],
+              "phase_rate": [
+                0.11184491557972498,
+                -0.037287178891729396,
+                -0.12647359766916413
+              ],
+              "phase_source": [
+                -0.0009690892347082675,
+                -0.24985248947874908,
+                0.25082157871345734
+              ],
+              "pressure": [
+                -0.24756901231002046,
+                -0.12347030998018874,
+                0.3710393222902092
+              ],
+              "storage": {
+                "denominator": 20282409603651670423947251286016,
+                "numerator": 22180503740936727808223023263357
+              }
+            }
+          },
+          "dt": {
+            "denominator": 8192,
+            "numerator": 1
+          },
+          "elapsed_structural_clock": {
+            "denominator": 32,
+            "numerator": 1
+          },
+          "elapsed_wall_seconds": 0.7779863000032492,
+          "law": "counterpart",
+          "maximum_actual_balance_residual": {
+            "denominator": 10633823966279326983230456482242756608,
+            "numerator": 1419009827406905174131
+          },
+          "maximum_clock_defect": {
+            "denominator": 1,
+            "numerator": 0
+          },
+          "maximum_euler_storage_defect": {
+            "denominator": 2658455991569831745807614120560689152,
+            "numerator": 14470428554848718032693967047
+          },
+          "maximum_extra_work_residual": {
+            "denominator": 5192296858534827628530496329220096,
+            "numerator": 112007834583447331
+          },
+          "maximum_pressure_split_residual": {
+            "denominator": 4611686018427387904,
+            "numerator": 415
+          },
+          "maximum_update_defect": {
+            "denominator": 295147905179352825856,
+            "numerator": 16331
+          },
+          "minimum_chart_margin": 0.5208112647605372,
+          "minimum_phase_metric": 5.436980982144696,
+          "pressure_paths": [
+            "fused_canonical"
+          ],
+          "steps": 256
+        },
+        "512": {
+          "capacity_case": "baseline",
+          "checkpoints": {
+            "final": {
+              "actual_balance_residual": {
+                "denominator": 2658455991569831745807614120560689152,
+                "numerator": -98253522998179707509
+              },
+              "actual_storage_rate": {
+                "denominator": 2596148429267413814265248164610048,
+                "numerator": -1224012238245589975370169930725669
+              },
+              "capacity": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "clock": {
+                "denominator": 32,
+                "numerator": 1
+              },
+              "continuous_loss": {
+                "denominator": 2658455991569831745807614120560689152,
+                "numerator": 1253388531963484036525531010883377547
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.3255965336916157,
+                -0.0038586258924362916,
+                -0.3217379077991797
+              ],
+              "extra_work": {
+                "denominator": 324518553658426726783156020576256,
+                "numerator": 1910859525244361
+              },
+              "form_rate": [
+                -0.24516094966111926,
+                -0.12195697386777644,
+                0.3671179235288957
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0034953316859070403,
+                0.5224336337285237,
+                -0.5275512891269417
+              ],
+              "phase_metric": [
+                5.436981202765875,
+                5.460007685059213,
+                5.4598313369092475
+              ],
+              "phase_rate": [
+                0.110475475087458,
+                -0.037593076550681115,
+                -0.12448920026708354
+              ],
+              "phase_source": [
+                -0.001927098784814806,
+                -0.2497018865742072,
+                0.25162898535902195
+              ],
+              "pressure": [
+                -0.24516094966111926,
+                -0.12195697386777644,
+                0.3671179235288957
+              ],
+              "storage": {
+                "denominator": 1329227995784915872903807060280344576,
+                "numerator": 1443683910650972658983804042513038809
+              }
+            },
+            "initial": {
+              "actual_balance_residual": {
+                "denominator": 649037107316853453566312041152512,
+                "numerator": -15308102035108237
+              },
+              "actual_storage_rate": {
+                "denominator": 324518553658426726783156020576256,
+                "numerator": -162259276829213353031230518360263
+              },
+              "capacity": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "clock": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "continuous_loss": {
+                "denominator": 649037107316853453566312041152512,
+                "numerator": 324518553658426690754359001612289
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.3333333333333333,
+                0.0,
+                -0.3333333333333333
+              ],
+              "extra_work": {
+                "denominator": 324518553658426726783156020576256,
+                "numerator": 6152031499462229
+              },
+              "form_rate": [
+                -0.25,
+                -0.125,
+                0.375
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0,
+                0.5235987755982988,
+                -0.5235987755982988
+              ],
+              "phase_metric": [
+                5.441398092702654,
+                5.464101615137755,
+                5.464101615137755
+              ],
+              "phase_rate": [
+                0.11323229617109717,
+                -0.03696914693413185,
+                -0.1284754978802415
+              ],
+              "phase_source": [
+                0.0,
+                -0.25,
+                0.25
+              ],
+              "pressure": [
+                -0.25,
+                -0.125,
+                0.375
+              ],
+              "storage": {
+                "denominator": 324518553658426726783156020576256,
+                "numerator": 357386612430380278165321949834925
+              }
+            },
+            "midpoint": {
+              "actual_balance_residual": {
+                "denominator": 42535295865117307932921825928971026432,
+                "numerator": 2416896147690082228011
+              },
+              "actual_storage_rate": {
+                "denominator": 83076749736557242056487941267521536,
+                "numerator": -40337517628767818539158848040994149
+              },
+              "capacity": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "clock": {
+                "denominator": 64,
+                "numerator": 1
+              },
+              "continuous_loss": {
+                "denominator": 42535295865117307932921825928971026432,
+                "numerator": 20652809025929125508945477887071232299
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.32944603076459544,
+                -0.0019411999105656507,
+                -0.3275048308540303
+              ],
+              "extra_work": {
+                "denominator": 41538374868278621028243970633760768,
+                "numerator": 571281214275567563
+              },
+              "form_rate": [
+                -0.2475690569094365,
+                -0.12347034179157777,
+                0.37103939870101427
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0017584347789879429,
+                0.5230186418492767,
+                -0.5255906040495458
+              ],
+              "phase_metric": [
+                5.43917085038675,
+                5.462038015338675,
+                5.461949666350297
+              ],
+              "phase_rate": [
+                0.11184493979180751,
+                -0.03728716778405318,
+                -0.12647363549765958
+              ],
+              "phase_source": [
+                -0.0009690676719796036,
+                -0.24985248344900376,
+                0.25082155112098337
+              ],
+              "pressure": [
+                -0.2475690569094365,
+                -0.12347034179157777,
+                0.37103939870101427
+              ],
+              "storage": {
+                "denominator": 21267647932558653966460912964485513216,
+                "numerator": 23257945894914959790812161452559873465
+              }
+            }
+          },
+          "dt": {
+            "denominator": 16384,
+            "numerator": 1
+          },
+          "elapsed_structural_clock": {
+            "denominator": 32,
+            "numerator": 1
+          },
+          "elapsed_wall_seconds": 1.5325092999992194,
+          "law": "counterpart",
+          "maximum_actual_balance_residual": {
+            "denominator": 10633823966279326983230456482242756608,
+            "numerator": 1309309505329860554131
+          },
+          "maximum_clock_defect": {
+            "denominator": 1,
+            "numerator": 0
+          },
+          "maximum_euler_storage_defect": {
+            "denominator": 5316911983139663491615228241121378304,
+            "numerator": 7235215154238723433831200967
+          },
+          "maximum_extra_work_residual": {
+            "denominator": 10384593717069655257060992658440192,
+            "numerator": 242122897990533327
+          },
+          "maximum_pressure_split_residual": {
+            "denominator": 9223372036854775808,
+            "numerator": 831
+          },
+          "maximum_update_defect": {
+            "denominator": 1180591620717411303424,
+            "numerator": 65497
+          },
+          "minimum_chart_margin": 0.5208114039394312,
+          "minimum_phase_metric": 5.436981202765875,
+          "pressure_paths": [
+            "fused_canonical"
+          ],
+          "steps": 512
+        }
+      },
+      "intervened": {
+        "128": {
+          "capacity_case": "intervened",
+          "checkpoints": {
+            "final": {
+              "actual_balance_residual": {
+                "denominator": 21267647932558653966460912964485513216,
+                "numerator": -239412541718060135799
+              },
+              "actual_storage_rate": {
+                "denominator": 20769187434139310514121985316880384,
+                "numerator": -9791398027647466473161296597403067
+              },
+              "capacity": [
+                1.0,
+                0.5,
+                1.0
+              ],
+              "clock": {
+                "denominator": 32,
+                "numerator": 1
+              },
+              "continuous_loss": {
+                "denominator": 21267647932558653966460912964485513216,
+                "numerator": 10026391580311005429104625997680604809
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.3256050535091674,
+                -0.0019373041522429823,
+                -0.3217304452046817
+              ],
+              "extra_work": {
+                "denominator": 83076749736557242056487941267521536,
+                "numerator": -312018118189500125
+              },
+              "form_rate": [
+                -0.24458641371414855,
+                -0.06148197696179784,
+                0.3675503676377443
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0032748806423025553,
+                0.5228285769581754,
+                -0.5271732259066614
+              ],
+              "phase_metric": [
+                5.436960949433236,
+                5.45998063242614,
+                5.459821952376575
+              ],
+              "phase_rate": [
+                0.1034651512879522,
+                -0.02464380021623535,
+                -0.1125952217749861
+              ],
+              "phase_source": [
+                -0.0017338992406673655,
+                -0.24980251615167723,
+                0.2515364153923446
+              ],
+              "pressure": [
+                -0.24458641371414855,
+                -0.12296395392359569,
+                0.3675503676377443
+              ],
+              "storage": {
+                "denominator": 21267647932558653966460912964485513216,
+                "numerator": 23098934076840426667536330680037144201
+              }
+            },
+            "initial": {
+              "actual_balance_residual": {
+                "denominator": 1298074214633706907132624082305024,
+                "numerator": -61376361567527619
+              },
+              "actual_storage_rate": {
+                "denominator": 1298074214633706907132624082305024,
+                "numerator": -649037107316853442885079570752197
+              },
+              "capacity": [
+                1.0,
+                0.5,
+                1.0
+              ],
+              "clock": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "continuous_loss": {
+                "denominator": 649037107316853453566312041152512,
+                "numerator": 324518553658426690754359001612289
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.3333333333333333,
+                0.0,
+                -0.3333333333333333
+              ],
+              "extra_work": {
+                "denominator": 1298074214633706907132624082305024,
+                "numerator": -6152031499462229
+              },
+              "form_rate": [
+                -0.25,
+                -0.0625,
+                0.375
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0,
+                0.5235987755982988,
+                -0.5235987755982988
+              ],
+              "phase_metric": [
+                5.441398092702654,
+                5.464101615137755,
+                5.464101615137755
+              ],
+              "phase_rate": [
+                0.10611758052638656,
+                -0.0246460979560879,
+                -0.11615244890219754
+              ],
+              "phase_source": [
+                0.0,
+                -0.25,
+                0.25
+              ],
+              "pressure": [
+                -0.25,
+                -0.125,
+                0.375
+              ],
+              "storage": {
+                "denominator": 324518553658426726783156020576256,
+                "numerator": 357386612430380278165321949834925
+              }
+            },
+            "midpoint": {
+              "actual_balance_residual": {
+                "denominator": 85070591730234615865843651857942052864,
+                "numerator": 175598813064579961073
+              },
+              "actual_storage_rate": {
+                "denominator": 166153499473114484112975882535043072,
+                "numerator": -80673543657498641806649199759444257
+              },
+              "capacity": [
+                1.0,
+                0.5,
+                1.0
+              ],
+              "clock": {
+                "denominator": 64,
+                "numerator": 1
+              },
+              "continuous_loss": {
+                "denominator": 85070591730234615865843651857942052864,
+                "numerator": 41304854352639304780603203341415420657
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.32944804506670494,
+                -0.0009726289385840289,
+                -0.327502787189537
+              ],
+              "extra_work": {
+                "denominator": 20769187434139310514121985316880384,
+                "numerator": 80069653763921259
+              },
+              "form_rate": [
+                -0.24727910706374476,
+                -0.061989139975988525,
+                0.3712573870157218
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0016478022444403157,
+                0.5232136674458112,
+                -0.5253998970726345
+              ],
+              "phase_metric": [
+                5.439165650140601,
+                5.462028928328338,
+                5.461949385408015
+              ],
+              "phase_rate": [
+                0.1047830458170626,
+                -0.024647046802870873,
+                -0.11436585352372486
+              ],
+              "phase_source": [
+                -0.0008724609967240418,
+                -0.24990181778112208,
+                0.25077427877784614
+              ],
+              "pressure": [
+                -0.24727910706374476,
+                -0.12397827995197705,
+                0.3712573870157218
+              ],
+              "storage": {
+                "denominator": 85070591730234615865843651857942052864,
+                "numerator": 93031754788583341391945438792525484785
+              }
+            }
+          },
+          "dt": {
+            "denominator": 4096,
+            "numerator": 1
+          },
+          "elapsed_structural_clock": {
+            "denominator": 32,
+            "numerator": 1
+          },
+          "elapsed_wall_seconds": 0.38289789999544155,
+          "law": "counterpart",
+          "maximum_actual_balance_residual": {
+            "denominator": 5316911983139663491615228241121378304,
+            "numerator": 581447121315960327671
+          },
+          "maximum_clock_defect": {
+            "denominator": 1,
+            "numerator": 0
+          },
+          "maximum_euler_storage_defect": {
+            "denominator": 5316911983139663491615228241121378304,
+            "numerator": 107586644060979569946264675013
+          },
+          "maximum_extra_work_residual": {
+            "denominator": 5192296858534827628530496329220096,
+            "numerator": 56879354408284399
+          },
+          "maximum_pressure_split_residual": {
+            "denominator": 9223372036854775808,
+            "numerator": 771
+          },
+          "maximum_update_defect": {
+            "denominator": 295147905179352825856,
+            "numerator": 16379
+          },
+          "minimum_chart_margin": 0.5207945239300598,
+          "minimum_phase_metric": 5.436960949433236,
+          "pressure_paths": [
+            "fused_canonical"
+          ],
+          "steps": 128
+        },
+        "256": {
+          "capacity_case": "intervened",
+          "checkpoints": {
+            "final": {
+              "actual_balance_residual": {
+                "denominator": 5316911983139663491615228241121378304,
+                "numerator": -259149300924543755007
+              },
+              "actual_storage_rate": {
+                "denominator": 166153499473114484112975882535043072,
+                "numerator": -78331372197707538914282480071927059
+              },
+              "capacity": [
+                1.0,
+                0.5,
+                1.0
+              ],
+              "clock": {
+                "denominator": 32,
+                "numerator": 1
+              },
+              "continuous_loss": {
+                "denominator": 5316911983139663491615228241121378304,
+                "numerator": 2506603910326640986107738437757910881
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.3256053805243841,
+                -0.001937242463660054,
+                -0.3217308955970639
+              ],
+              "extra_work": {
+                "denominator": 83076749736557242056487941267521536,
+                "numerator": -287043001735060537
+              },
+              "form_rate": [
+                -0.2445866317776134,
+                -0.06148200563865024,
+                0.36755064305491386
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0032747204232315237,
+                0.5228285771078393,
+                -0.5271730109145785
+              ],
+              "phase_metric": [
+                5.436961290368039,
+                5.459980951255028,
+                5.459822279099464
+              ],
+              "phase_rate": [
+                0.10346525838174148,
+                -0.024643799731067277,
+                -0.11259535796712807
+              ],
+              "phase_source": [
+                -0.0017338140004806426,
+                -0.24980250748192112,
+                0.2515363214824018
+              ],
+              "pressure": [
+                -0.2445866317776134,
+                -0.12296401127730049,
+                0.36755064305491386
+              ],
+              "storage": {
+                "denominator": 5316911983139663491615228241121378304,
+                "numerator": 5774735950875365472213039109706229601
+              }
+            },
+            "initial": {
+              "actual_balance_residual": {
+                "denominator": 1298074214633706907132624082305024,
+                "numerator": -61376361567527619
+              },
+              "actual_storage_rate": {
+                "denominator": 1298074214633706907132624082305024,
+                "numerator": -649037107316853442885079570752197
+              },
+              "capacity": [
+                1.0,
+                0.5,
+                1.0
+              ],
+              "clock": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "continuous_loss": {
+                "denominator": 649037107316853453566312041152512,
+                "numerator": 324518553658426690754359001612289
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.3333333333333333,
+                0.0,
+                -0.3333333333333333
+              ],
+              "extra_work": {
+                "denominator": 1298074214633706907132624082305024,
+                "numerator": -6152031499462229
+              },
+              "form_rate": [
+                -0.25,
+                -0.0625,
+                0.375
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0,
+                0.5235987755982988,
+                -0.5235987755982988
+              ],
+              "phase_metric": [
+                5.441398092702654,
+                5.464101615137755,
+                5.464101615137755
+              ],
+              "phase_rate": [
+                0.10611758052638656,
+                -0.0246460979560879,
+                -0.11615244890219754
+              ],
+              "phase_source": [
+                0.0,
+                -0.25,
+                0.25
+              ],
+              "pressure": [
+                -0.25,
+                -0.125,
+                0.375
+              ],
+              "storage": {
+                "denominator": 324518553658426726783156020576256,
+                "numerator": 357386612430380278165321949834925
+              }
+            },
+            "midpoint": {
+              "actual_balance_residual": {
+                "denominator": 21267647932558653966460912964485513216,
+                "numerator": -196330745232254758295
+              },
+              "actual_storage_rate": {
+                "denominator": 332306998946228968225951765070086144,
+                "numerator": -161347280067707822622378485765300553
+              },
+              "capacity": [
+                1.0,
+                0.5,
+                1.0
+              ],
+              "clock": {
+                "denominator": 64,
+                "numerator": 1
+              },
+              "continuous_loss": {
+                "denominator": 21267647932558653966460912964485513216,
+                "numerator": 10326225924333300451501477856724477097
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.32944821028678706,
+                -0.0009725978694418186,
+                -0.32750301454790365
+              ],
+              "extra_work": {
+                "denominator": 83076749736557242056487941267521536,
+                "numerator": 818090745463522959
+              },
+              "form_rate": [
+                -0.24727921721787013,
+                -0.06198915441279846,
+                0.37125752604346707
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0016477212087019249,
+                0.5232136673906947,
+                -0.5253997885573811
+              ],
+              "phase_metric": [
+                5.439165821563589,
+                5.462029088573116,
+                5.461949549602118
+              ],
+              "phase_rate": [
+                0.10478310001161747,
+                -0.024647046374548252,
+                -0.11436592218389821
+              ],
+              "phase_source": [
+                -0.0008724179402804812,
+                -0.24990181339007728,
+                0.2507742313303578
+              ],
+              "pressure": [
+                -0.24727921721787013,
+                -0.12397830882559692,
+                0.37125752604346707
+              ],
+              "storage": {
+                "denominator": 21267647932558653966460912964485513216,
+                "numerator": 23257943748650123001699152712297309353
+              }
+            }
+          },
+          "dt": {
+            "denominator": 8192,
+            "numerator": 1
+          },
+          "elapsed_structural_clock": {
+            "denominator": 32,
+            "numerator": 1
+          },
+          "elapsed_wall_seconds": 0.7624666999909095,
+          "law": "counterpart",
+          "maximum_actual_balance_residual": {
+            "denominator": 1361129467683753853853498429727072845824,
+            "numerator": 174499542599067549246049
+          },
+          "maximum_clock_defect": {
+            "denominator": 1,
+            "numerator": 0
+          },
+          "maximum_euler_storage_defect": {
+            "denominator": 10633823966279326983230456482242756608,
+            "numerator": 53793340941824668330467631813
+          },
+          "maximum_extra_work_residual": {
+            "denominator": 41538374868278621028243970633760768,
+            "numerator": 476130404137047413
+          },
+          "maximum_pressure_split_residual": {
+            "denominator": 18446744073709551616,
+            "numerator": 1425
+          },
+          "maximum_update_defect": {
+            "denominator": 590295810358705651712,
+            "numerator": 32633
+          },
+          "minimum_chart_margin": 0.5207947387724787,
+          "minimum_phase_metric": 5.436961290368039,
+          "pressure_paths": [
+            "fused_canonical"
+          ],
+          "steps": 256
+        },
+        "512": {
+          "capacity_case": "intervened",
+          "checkpoints": {
+            "final": {
+              "actual_balance_residual": {
+                "denominator": 21267647932558653966460912964485513216,
+                "numerator": 375225430291496175873
+              },
+              "actual_storage_rate": {
+                "denominator": 166153499473114484112975882535043072,
+                "numerator": -78331466178826904139468926813618021
+              },
+              "capacity": [
+                1.0,
+                0.5,
+                1.0
+              ],
+              "clock": {
+                "denominator": 32,
+                "numerator": 1
+              },
+              "continuous_loss": {
+                "denominator": 21267647932558653966460912964485513216,
+                "numerator": 10026427670889844105077452923639282561
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.32560554401878444,
+                -0.0019372116211098386,
+                -0.3217311207765642
+              ],
+              "extra_work": {
+                "denominator": 2596148429267413814265248164610048,
+                "numerator": -539415631481451
+              },
+              "form_rate": [
+                -0.24458674080068907,
+                -0.061482019976296626,
+                0.3675507807532823
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.003274640320515135,
+                0.5228285771831945,
+                -0.5271729034265926
+              ],
+              "phase_metric": [
+                5.436961460821756,
+                5.45998111065667,
+                5.45982244244779
+              ],
+              "phase_rate": [
+                0.10346531192437473,
+                -0.024643799488359732,
+                -0.1125954260580509
+              ],
+              "phase_source": [
+                -0.0017337713837566853,
+                -0.24980250314740643,
+                0.2515362745311631
+              ],
+              "pressure": [
+                -0.24458674080068907,
+                -0.12296403995259325,
+                0.3675507807532823
+              ],
+              "storage": {
+                "denominator": 21267647932558653966460912964485513216,
+                "numerator": 23098948666475741736152503265929157505
+              }
+            },
+            "initial": {
+              "actual_balance_residual": {
+                "denominator": 1298074214633706907132624082305024,
+                "numerator": -61376361567527619
+              },
+              "actual_storage_rate": {
+                "denominator": 1298074214633706907132624082305024,
+                "numerator": -649037107316853442885079570752197
+              },
+              "capacity": [
+                1.0,
+                0.5,
+                1.0
+              ],
+              "clock": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "continuous_loss": {
+                "denominator": 649037107316853453566312041152512,
+                "numerator": 324518553658426690754359001612289
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.3333333333333333,
+                0.0,
+                -0.3333333333333333
+              ],
+              "extra_work": {
+                "denominator": 1298074214633706907132624082305024,
+                "numerator": -6152031499462229
+              },
+              "form_rate": [
+                -0.25,
+                -0.0625,
+                0.375
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0,
+                0.5235987755982988,
+                -0.5235987755982988
+              ],
+              "phase_metric": [
+                5.441398092702654,
+                5.464101615137755,
+                5.464101615137755
+              ],
+              "phase_rate": [
+                0.10611758052638656,
+                -0.0246460979560879,
+                -0.11615244890219754
+              ],
+              "phase_source": [
+                0.0,
+                -0.25,
+                0.25
+              ],
+              "pressure": [
+                -0.25,
+                -0.125,
+                0.375
+              ],
+              "storage": {
+                "denominator": 324518553658426726783156020576256,
+                "numerator": 357386612430380278165321949834925
+              }
+            },
+            "midpoint": {
+              "actual_balance_residual": {
+                "denominator": 85070591730234615865843651857942052864,
+                "numerator": 9017465995579747885713
+              },
+              "actual_storage_rate": {
+                "denominator": 664613997892457936451903530140172288,
+                "numerator": -322694752873331607905491934280709085
+              },
+              "capacity": [
+                1.0,
+                0.5,
+                1.0
+              ],
+              "clock": {
+                "denominator": 64,
+                "numerator": 1
+              },
+              "continuous_loss": {
+                "denominator": 85070591730234615865843651857942052864,
+                "numerator": 41304928367786454829368963167678648593
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.32944829289013033,
+                -0.0009725823357496058,
+                -0.32750312821863053
+              ],
+              "extra_work": {
+                "denominator": 10384593717069655257060992658440192,
+                "numerator": -15108175396924595
+              },
+              "form_rate": [
+                -0.24727927229054303,
+                -0.0619891616308103,
+                0.3712575955521636
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0016476806942951822,
+                0.5232136673634129,
+                -0.5253997343038312
+              ],
+              "phase_metric": [
+                5.439165907268191,
+                5.46202916868906,
+                5.461949631692568
+              ],
+              "phase_rate": [
+                0.10478312710672989,
+                -0.024647046160335043,
+                -0.1143659565113822
+              ],
+              "phase_source": [
+                -0.0008723964137656859,
+                -0.2499018111947407,
+                0.25077420760850644
+              ],
+              "pressure": [
+                -0.24727927229054303,
+                -0.1239783232616206,
+                0.3712575955521636
+              ],
+              "storage": {
+                "denominator": 85070591730234615865843651857942052864,
+                "numerator": 93031785096856791392945187048910147857
+              }
+            }
+          },
+          "dt": {
+            "denominator": 16384,
+            "numerator": 1
+          },
+          "elapsed_structural_clock": {
+            "denominator": 32,
+            "numerator": 1
+          },
+          "elapsed_wall_seconds": 1.5753431000048295,
+          "law": "counterpart",
+          "maximum_actual_balance_residual": {
+            "denominator": 85070591730234615865843651857942052864,
+            "numerator": 11712041373753199465529
+          },
+          "maximum_clock_defect": {
+            "denominator": 1,
+            "numerator": 0
+          },
+          "maximum_euler_storage_defect": {
+            "denominator": 21267647932558653966460912964485513216,
+            "numerator": 26896672766321377367744619205
+          },
+          "maximum_extra_work_residual": {
+            "denominator": 5192296858534827628530496329220096,
+            "numerator": 59943402543731075
+          },
+          "maximum_pressure_split_residual": {
+            "denominator": 9223372036854775808,
+            "numerator": 825
+          },
+          "maximum_update_defect": {
+            "denominator": 2361183241434822606848,
+            "numerator": 130907
+          },
+          "minimum_chart_margin": 0.5207948461851095,
+          "minimum_phase_metric": 5.436961460821756,
+          "pressure_paths": [
+            "fused_canonical"
+          ],
+          "steps": 512
+        }
+      }
+    },
+    "relational": {
+      "baseline": {
+        "128": {
+          "capacity_case": "baseline",
+          "checkpoints": {
+            "final": {
+              "actual_balance_residual": {
+                "denominator": 2658455991569831745807614120560689152,
+                "numerator": 78897684757605850099
+              },
+              "actual_storage_rate": {
+                "denominator": 20769187434139310514121985316880384,
+                "numerator": -9792265021154094201993630445287919
+              },
+              "capacity": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "clock": {
+                "denominator": 32,
+                "numerator": 1
+              },
+              "continuous_loss": {
+                "denominator": 2658455991569831745807614120560689152,
+                "numerator": 1253409922707724136752869454602703731
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.3256005224794876,
+                -0.003861123772968913,
+                -0.32173939870651846
+              ],
+              "extra_work": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "form_rate": [
+                -0.24487732669475987,
+                -0.12209927391561415,
+                0.36697660061037396
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.002839487489811694,
+                0.5235822701520962,
+                -0.5264099091926652
+              ],
+              "phase_metric": [
+                5.436986597262152,
+                5.459989044096039,
+                5.459865140989823
+              ],
+              "phase_rate": [
+                0.08982931537207951,
+                -0.0010607504177533322,
+                -0.08839212793675069
+              ],
+              "phase_source": [
+                -0.0013538696702884174,
+                -0.24999023349068178,
+                0.2513441031609702
+              ],
+              "pressure": [
+                -0.24487732669475987,
+                -0.12209927391561415,
+                0.36697660061037396
+              ],
+              "storage": {
+                "denominator": 1329227995784915872903807060280344576,
+                "numerator": 1443682891467501405730733105273240529
+              }
+            },
+            "initial": {
+              "actual_balance_residual": {
+                "denominator": 649037107316853453566312041152512,
+                "numerator": -27612165034032695
+              },
+              "actual_storage_rate": {
+                "denominator": 81129638414606681695789005144064,
+                "numerator": -40564819207303339795815504455623
+              },
+              "capacity": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "clock": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "continuous_loss": {
+                "denominator": 649037107316853453566312041152512,
+                "numerator": 324518553658426690754359001612289
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.3333333333333333,
+                0.0,
+                -0.3333333333333333
+              ],
+              "extra_work": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "form_rate": [
+                -0.25,
+                -0.125,
+                0.375
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0,
+                0.5235987755982988,
+                -0.5235987755982988
+              ],
+              "phase_metric": [
+                5.441398092702654,
+                5.464101615137755,
+                5.464101615137755
+              ],
+              "phase_rate": [
+                0.09188814923696532,
+                0.0,
+                -0.09150635094610965
+              ],
+              "phase_source": [
+                0.0,
+                -0.25,
+                0.25
+              ],
+              "pressure": [
+                -0.25,
+                -0.125,
+                0.375
+              ],
+              "storage": {
+                "denominator": 324518553658426726783156020576256,
+                "numerator": 357386612430380278165321949834925
+              }
+            },
+            "midpoint": {
+              "actual_balance_residual": {
+                "denominator": 42535295865117307932921825928971026432,
+                "numerator": 399030203786611569931
+              },
+              "actual_storage_rate": {
+                "denominator": 20769187434139310514121985316880384,
+                "numerator": -10084412653607677232367611724713755
+              },
+              "capacity": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "clock": {
+                "denominator": 64,
+                "numerator": 1
+              },
+              "continuous_loss": {
+                "denominator": 42535295865117307932921825928971026432,
+                "numerator": 20652877114588523370919072598825340171
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.32944691604240806,
+                -0.001941893664235492,
+                -0.3275050223781728
+              ],
+              "extra_work": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "form_rate": [
+                -0.24742557287208025,
+                -0.12354212573683528,
+                0.37096769860891554
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0014277865956767667,
+                0.5235946667566472,
+                -0.5250165081860588
+              ],
+              "phase_metric": [
+                5.439172072157782,
+                5.4620266554988435,
+                5.461964588777503
+              ],
+              "phase_rate": [
+                0.09085396959459846,
+                -0.0005332893228231763,
+                -0.08994154494824587
+              ],
+              "phase_source": [
+                -0.000680771680548312,
+                -0.24999709197002368,
+                0.250677863650572
+              ],
+              "pressure": [
+                -0.24742557287208025,
+                -0.12354212573683528,
+                0.37096769860891554
+              ],
+              "storage": {
+                "denominator": 21267647932558653966460912964485513216,
+                "numerator": 23257938260384368770901615776699810905
+              }
+            }
+          },
+          "dt": {
+            "denominator": 4096,
+            "numerator": 1
+          },
+          "elapsed_structural_clock": {
+            "denominator": 32,
+            "numerator": 1
+          },
+          "elapsed_wall_seconds": 0.36744919999910053,
+          "law": "relational",
+          "maximum_actual_balance_residual": {
+            "denominator": 2658455991569831745807614120560689152,
+            "numerator": 327791085952910647709
+          },
+          "maximum_clock_defect": {
+            "denominator": 1,
+            "numerator": 0
+          },
+          "maximum_euler_storage_defect": {
+            "denominator": 332306998946228968225951765070086144,
+            "numerator": 6901527262540158780952610759
+          },
+          "maximum_extra_work_residual": {
+            "denominator": 1,
+            "numerator": 0
+          },
+          "maximum_pressure_split_residual": {
+            "denominator": 9223372036854775808,
+            "numerator": 663
+          },
+          "maximum_update_defect": {
+            "denominator": 37778931862957161709568,
+            "numerator": 2087253
+          },
+          "minimum_chart_margin": 0.5208041474501353,
+          "minimum_phase_metric": 5.436986597262152,
+          "pressure_paths": [
+            "fused_canonical"
+          ],
+          "steps": 128
+        },
+        "256": {
+          "capacity_case": "baseline",
+          "checkpoints": {
+            "final": {
+              "actual_balance_residual": {
+                "denominator": 664613997892457936451903530140172288,
+                "numerator": -24222709086236875181
+              },
+              "actual_storage_rate": {
+                "denominator": 10384593717069655257060992658440192,
+                "numerator": -4896144476268802169651013865693205
+              },
+              "capacity": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "clock": {
+                "denominator": 32,
+                "numerator": 1
+              },
+              "continuous_loss": {
+                "denominator": 664613997892457936451903530140172288,
+                "numerator": 313353246481203314634955801167489939
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.3256008319823911,
+                -0.003860948540095539,
+                -0.3217398834422957
+              ],
+              "extra_work": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "form_rate": [
+                -0.2448775291420948,
+                -0.12209939008964256,
+                0.36697691923173736
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0028393630580610327,
+                0.5235822061613046,
+                -0.5264097210974704
+              ],
+              "phase_metric": [
+                5.4369869956320755,
+                5.459989418245039,
+                5.459865520657451
+              ],
+              "phase_rate": [
+                0.08982939417842174,
+                -0.001060702204072169,
+                -0.08839225496259658
+              ],
+              "phase_source": [
+                -0.0013538103106028173,
+                -0.2499902029894284,
+                0.2513440133000312
+              ],
+              "pressure": [
+                -0.2448775291420948,
+                -0.12209939008964256,
+                0.36697691923173736
+              ],
+              "storage": {
+                "denominator": 332306998946228968225951765070086144,
+                "numerator": 360920863029244696593396285028768049
+              }
+            },
+            "initial": {
+              "actual_balance_residual": {
+                "denominator": 649037107316853453566312041152512,
+                "numerator": -27612165034032695
+              },
+              "actual_storage_rate": {
+                "denominator": 81129638414606681695789005144064,
+                "numerator": -40564819207303339795815504455623
+              },
+              "capacity": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "clock": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "continuous_loss": {
+                "denominator": 649037107316853453566312041152512,
+                "numerator": 324518553658426690754359001612289
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.3333333333333333,
+                0.0,
+                -0.3333333333333333
+              ],
+              "extra_work": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "form_rate": [
+                -0.25,
+                -0.125,
+                0.375
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0,
+                0.5235987755982988,
+                -0.5235987755982988
+              ],
+              "phase_metric": [
+                5.441398092702654,
+                5.464101615137755,
+                5.464101615137755
+              ],
+              "phase_rate": [
+                0.09188814923696532,
+                0.0,
+                -0.09150635094610965
+              ],
+              "phase_source": [
+                0.0,
+                -0.25,
+                0.25
+              ],
+              "pressure": [
+                -0.25,
+                -0.125,
+                0.375
+              ],
+              "storage": {
+                "denominator": 324518553658426726783156020576256,
+                "numerator": 357386612430380278165321949834925
+              }
+            },
+            "midpoint": {
+              "actual_balance_residual": {
+                "denominator": 10633823966279326983230456482242756608,
+                "numerator": -820828368102293630637
+              },
+              "actual_storage_rate": {
+                "denominator": 5192296858534827628530496329220096,
+                "numerator": -2521106236655477624545793396141853
+              },
+              "capacity": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "clock": {
+                "denominator": 64,
+                "numerator": 1
+              },
+              "continuous_loss": {
+                "denominator": 10633823966279326983230456482242756608,
+                "numerator": 5163225572670417354241416773004884307
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.329447072383724,
+                -0.0019418051355028112,
+                -0.3275052672482214
+              ],
+              "extra_work": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "form_rate": [
+                -0.24742567514516361,
+                -0.12354218442055656,
+                0.3709678595657202
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0014277237812462546,
+                0.5235946343950373,
+                -0.5250164131725903
+              ],
+              "phase_metric": [
+                5.439172272847851,
+                5.462026843975019,
+                5.461964780007624
+              ],
+              "phase_rate": [
+                0.09085400935772299,
+                -0.0005332649923657986,
+                -0.08994160904707377
+              ],
+              "phase_source": [
+                -0.0006807417147410906,
+                -0.24999707654436723,
+                0.25067781825910834
+              ],
+              "pressure": [
+                -0.24742567514516361,
+                -0.12354218442055656,
+                0.3709678595657202
+              ],
+              "storage": {
+                "denominator": 5316911983139663491615228241121378304,
+                "numerator": 5814485735228858101928327884173748337
+              }
+            }
+          },
+          "dt": {
+            "denominator": 8192,
+            "numerator": 1
+          },
+          "elapsed_structural_clock": {
+            "denominator": 32,
+            "numerator": 1
+          },
+          "elapsed_wall_seconds": 0.7225786000053631,
+          "law": "relational",
+          "maximum_actual_balance_residual": {
+            "denominator": 10633823966279326983230456482242756608,
+            "numerator": 1199563870561715368749
+          },
+          "maximum_clock_defect": {
+            "denominator": 1,
+            "numerator": 0
+          },
+          "maximum_euler_storage_defect": {
+            "denominator": 664613997892457936451903530140172288,
+            "numerator": 3450764493037691664639989703
+          },
+          "maximum_extra_work_residual": {
+            "denominator": 1,
+            "numerator": 0
+          },
+          "maximum_pressure_split_residual": {
+            "denominator": 9223372036854775808,
+            "numerator": 687
+          },
+          "maximum_update_defect": {
+            "denominator": 295147905179352825856,
+            "numerator": 16359
+          },
+          "minimum_chart_margin": 0.5208043995361216,
+          "minimum_phase_metric": 5.4369869956320755,
+          "pressure_paths": [
+            "fused_canonical"
+          ],
+          "steps": 256
+        },
+        "512": {
+          "capacity_case": "baseline",
+          "checkpoints": {
+            "final": {
+              "actual_balance_residual": {
+                "denominator": 10384593717069655257060992658440192,
+                "numerator": -13755504684529571
+              },
+              "actual_storage_rate": {
+                "denominator": 5192296858534827628530496329220096,
+                "numerator": -2448075229322781105602249280749239
+              },
+              "capacity": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "clock": {
+                "denominator": 32,
+                "numerator": 1
+              },
+              "continuous_loss": {
+                "denominator": 10384593717069655257060992658440192,
+                "numerator": 4896150458645562197448993876968907
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.32560098672158094,
+                -0.0038608609306956393,
+                -0.32174012579088623
+              ],
+              "extra_work": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "form_rate": [
+                -0.2448776303576871,
+                -0.12209944817206514,
+                0.36697707852975225
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0028393008468798582,
+                0.5235821741687794,
+                -0.5264096270574441
+              ],
+              "phase_metric": [
+                5.436987194800487,
+                5.459989605303986,
+                5.459865710475502
+              ],
+              "phase_rate": [
+                0.08982943357847913,
+                -0.0010606780991702204,
+                -0.08839231847046622
+              ],
+              "phase_source": [
+                -0.0013537806330023241,
+                -0.24999018774017326,
+                0.2513439683731756
+              ],
+              "pressure": [
+                -0.2448776303576871,
+                -0.12209944817206514,
+                0.36697707852975225
+              ],
+              "storage": {
+                "denominator": 5192296858534827628530496329220096,
+                "numerator": 5639389579768788086449786130904153
+              }
+            },
+            "initial": {
+              "actual_balance_residual": {
+                "denominator": 649037107316853453566312041152512,
+                "numerator": -27612165034032695
+              },
+              "actual_storage_rate": {
+                "denominator": 81129638414606681695789005144064,
+                "numerator": -40564819207303339795815504455623
+              },
+              "capacity": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "clock": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "continuous_loss": {
+                "denominator": 649037107316853453566312041152512,
+                "numerator": 324518553658426690754359001612289
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.3333333333333333,
+                0.0,
+                -0.3333333333333333
+              ],
+              "extra_work": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "form_rate": [
+                -0.25,
+                -0.125,
+                0.375
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0,
+                0.5235987755982988,
+                -0.5235987755982988
+              ],
+              "phase_metric": [
+                5.441398092702654,
+                5.464101615137755,
+                5.464101615137755
+              ],
+              "phase_rate": [
+                0.09188814923696532,
+                0.0,
+                -0.09150635094610965
+              ],
+              "phase_source": [
+                0.0,
+                -0.25,
+                0.25
+              ],
+              "pressure": [
+                -0.25,
+                -0.125,
+                0.375
+              ],
+              "storage": {
+                "denominator": 324518553658426726783156020576256,
+                "numerator": 357386612430380278165321949834925
+              }
+            },
+            "midpoint": {
+              "actual_balance_residual": {
+                "denominator": 42535295865117307932921825928971026432,
+                "numerator": 1681795768289443494939
+              },
+              "actual_storage_rate": {
+                "denominator": 41538374868278621028243970633760768,
+                "numerator": -20168862185283713240152538330667639
+              },
+              "capacity": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "clock": {
+                "denominator": 64,
+                "numerator": 1
+              },
+              "continuous_loss": {
+                "denominator": 42535295865117307932921825928971026432,
+                "numerator": 20652914877730524039711967540047157275
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.3294471505481631,
+                -0.0019417608747047128,
+                -0.3275053896734589
+              ],
+              "extra_work": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "form_rate": [
+                -0.24742572627760917,
+                -0.12354221376008875,
+                0.3709679400376979
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0014276923764090243,
+                0.5235946182156873,
+                -0.5250163656696926
+              ],
+              "phase_metric": [
+                5.439172373184532,
+                5.462026938205257,
+                5.461964875614732
+              ],
+              "phase_rate": [
+                0.09085402923770869,
+                -0.0005332528281183965,
+                -0.08994164109392924
+              ],
+              "phase_source": [
+                -0.0006807267329734851,
+                -0.24999706883223433,
+                0.25067779556520775
+              ],
+              "pressure": [
+                -0.24742572627760917,
+                -0.12354221376008875,
+                0.3709679400376979
+              ],
+              "storage": {
+                "denominator": 21267647932558653966460912964485513216,
+                "numerator": 23257945281002793752966801241288443913
+              }
+            }
+          },
+          "dt": {
+            "denominator": 16384,
+            "numerator": 1
+          },
+          "elapsed_structural_clock": {
+            "denominator": 32,
+            "numerator": 1
+          },
+          "elapsed_wall_seconds": 1.4448189999966417,
+          "law": "relational",
+          "maximum_actual_balance_residual": {
+            "denominator": 42535295865117307932921825928971026432,
+            "numerator": 5590358346040154145597
+          },
+          "maximum_clock_defect": {
+            "denominator": 1,
+            "numerator": 0
+          },
+          "maximum_euler_storage_defect": {
+            "denominator": 1329227995784915872903807060280344576,
+            "numerator": 1725382250255644732292859847
+          },
+          "maximum_extra_work_residual": {
+            "denominator": 1,
+            "numerator": 0
+          },
+          "maximum_pressure_split_residual": {
+            "denominator": 9223372036854775808,
+            "numerator": 795
+          },
+          "maximum_update_defect": {
+            "denominator": 75557863725914323419136,
+            "numerator": 4191671
+          },
+          "minimum_chart_margin": 0.5208045255686731,
+          "minimum_phase_metric": 5.436987194800487,
+          "pressure_paths": [
+            "fused_canonical"
+          ],
+          "steps": 512
+        }
+      },
+      "intervened": {
+        "128": {
+          "capacity_case": "intervened",
+          "checkpoints": {
+            "final": {
+              "actual_balance_residual": {
+                "denominator": 5316911983139663491615228241121378304,
+                "numerator": -116748701072839027575
+              },
+              "actual_storage_rate": {
+                "denominator": 83076749736557242056487941267521536,
+                "numerator": -39166128196828612691857571187818089
+              },
+              "capacity": [
+                1.0,
+                0.5,
+                1.0
+              ],
+              "clock": {
+                "denominator": 32,
+                "numerator": 1
+              },
+              "continuous_loss": {
+                "denominator": 5316911983139663491615228241121378304,
+                "numerator": 2506632204597031095530183483181330121
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.3256080070834588,
+                -0.0019380464829165818,
+                -0.32173191411762564
+              ],
+              "extra_work": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "form_rate": [
+                -0.24439733524514606,
+                -0.06152962788823013,
+                0.3674565910216063
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.002836742827938825,
+                0.5235932596783688,
+                -0.5264126494576059
+              ],
+              "phase_metric": [
+                5.4369650312268245,
+                5.459968561515375,
+                5.459844853767088
+              ],
+              "phase_rate": [
+                0.08965350790084828,
+                -0.0003549556121214521,
+                -0.08856788193976863
+              ],
+              "phase_source": [
+                -0.0013516831065622213,
+                -0.2499946045187537,
+                0.25134628762531597
+              ],
+              "pressure": [
+                -0.24439733524514606,
+                -0.12305925577646026,
+                0.3674565910216063
+              ],
+              "storage": {
+                "denominator": 5316911983139663491615228241121378304,
+                "numerator": 5774732740801996302437872258917854921
+              }
+            },
+            "initial": {
+              "actual_balance_residual": {
+                "denominator": 649037107316853453566312041152512,
+                "numerator": -27612165034032695
+              },
+              "actual_storage_rate": {
+                "denominator": 81129638414606681695789005144064,
+                "numerator": -40564819207303339795815504455623
+              },
+              "capacity": [
+                1.0,
+                0.5,
+                1.0
+              ],
+              "clock": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "continuous_loss": {
+                "denominator": 649037107316853453566312041152512,
+                "numerator": 324518553658426690754359001612289
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.3333333333333333,
+                0.0,
+                -0.3333333333333333
+              ],
+              "extra_work": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "form_rate": [
+                -0.25,
+                -0.0625,
+                0.375
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0,
+                0.5235987755982988,
+                -0.5235987755982988
+              ],
+              "phase_metric": [
+                5.441398092702654,
+                5.464101615137755,
+                5.464101615137755
+              ],
+              "phase_rate": [
+                0.09188814923696532,
+                0.0,
+                -0.09150635094610965
+              ],
+              "phase_source": [
+                0.0,
+                -0.25,
+                0.25
+              ],
+              "pressure": [
+                -0.25,
+                -0.125,
+                0.375
+              ],
+              "storage": {
+                "denominator": 324518553658426726783156020576256,
+                "numerator": 357386612430380278165321949834925
+              }
+            },
+            "midpoint": {
+              "actual_balance_residual": {
+                "denominator": 85070591730234615865843651857942052864,
+                "numerator": -622663235685052478663
+              },
+              "actual_storage_rate": {
+                "denominator": 332306998946228968225951765070086144,
+                "numerator": -161347631138743530905516691114709787
+              },
+              "capacity": [
+                1.0,
+                0.5,
+                1.0
+              ],
+              "clock": {
+                "denominator": 64,
+                "numerator": 1
+              },
+              "continuous_loss": {
+                "denominator": 85070591730234615865843651857942052864,
+                "numerator": 41304993571518343289149037240313226809
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.32944878315867915,
+                -0.0009728139470606504,
+                -0.3275031552645579
+              ],
+              "extra_work": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "form_rate": [
+                -0.2471834971720591,
+                -0.06201313833295086,
+                0.37120977383796083
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0014271011067864907,
+                0.5235974042566754,
+                -0.5250171916937852
+              ],
+              "phase_metric": [
+                5.439166698507848,
+                5.462021549878888,
+                5.461959532262324
+              ],
+              "phase_rate": [
+                0.09076514751789531,
+                -0.0001781051096516092,
+                -0.0900301690200714
+              ],
+              "phase_source": [
+                -0.0006802265796297518,
+                -0.2499981812259247,
+                0.2506784078055545
+              ],
+              "pressure": [
+                -0.2471834971720591,
+                -0.12402627666590171,
+                0.37120977383796083
+              ],
+              "storage": {
+                "denominator": 85070591730234615865843651857942052864,
+                "numerator": 93031750675381556249802615014674310713
+              }
+            }
+          },
+          "dt": {
+            "denominator": 4096,
+            "numerator": 1
+          },
+          "elapsed_structural_clock": {
+            "denominator": 32,
+            "numerator": 1
+          },
+          "elapsed_wall_seconds": 0.3536949000117602,
+          "law": "relational",
+          "maximum_actual_balance_residual": {
+            "denominator": 85070591730234615865843651857942052864,
+            "numerator": 8192168152246488973783
+          },
+          "maximum_clock_defect": {
+            "denominator": 1,
+            "numerator": 0
+          },
+          "maximum_euler_storage_defect": {
+            "denominator": 332306998946228968225951765070086144,
+            "numerator": 6514671000263477445046634439
+          },
+          "maximum_extra_work_residual": {
+            "denominator": 1,
+            "numerator": 0
+          },
+          "maximum_pressure_split_residual": {
+            "denominator": 9223372036854775808,
+            "numerator": 801
+          },
+          "maximum_update_defect": {
+            "denominator": 295147905179352825856,
+            "numerator": 16373
+          },
+          "minimum_chart_margin": 0.520790417658922,
+          "minimum_phase_metric": 5.4369650312268245,
+          "pressure_paths": [
+            "fused_canonical"
+          ],
+          "steps": 128
+        },
+        "256": {
+          "capacity_case": "intervened",
+          "checkpoints": {
+            "final": {
+              "actual_balance_residual": {
+                "denominator": 21267647932558653966460912964485513216,
+                "numerator": -137993394185899198071
+              },
+              "actual_storage_rate": {
+                "denominator": 332306998946228968225951765070086144,
+                "numerator": -156664896904022132838418651895932491
+              },
+              "capacity": [
+                1.0,
+                0.5,
+                1.0
+              ],
+              "clock": {
+                "denominator": 32,
+                "numerator": 1
+              },
+              "continuous_loss": {
+                "denominator": 21267647932558653966460912964485513216,
+                "numerator": 10026553401857416363665399535440481353
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.32560834538098493,
+                -0.001937987661091483,
+                -0.321732370058802
+              ],
+              "extra_work": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "form_rate": [
+                -0.24439756977992563,
+                -0.06152965389251278,
+                0.36745687756495116
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.002836607896388162,
+                0.5235932381816091,
+                -0.5264124719016268
+              ],
+              "phase_metric": [
+                5.4369653462962,
+                5.45996885654859,
+                5.45984515507199
+              ],
+              "phase_rate": [
+                0.08965360144754107,
+                -0.00035494481965168793,
+                -0.08856799692744632
+              ],
+              "phase_source": [
+                -0.0013516153189195405,
+                -0.24999459089223408,
+                0.25134620621115367
+              ],
+              "pressure": [
+                -0.24439756977992563,
+                -0.12305930778502557,
+                0.36745687756495116
+              ],
+              "storage": {
+                "denominator": 21267647932558653966460912964485513216,
+                "numerator": 23098941518472026984407210178147150921
+              }
+            },
+            "initial": {
+              "actual_balance_residual": {
+                "denominator": 649037107316853453566312041152512,
+                "numerator": -27612165034032695
+              },
+              "actual_storage_rate": {
+                "denominator": 81129638414606681695789005144064,
+                "numerator": -40564819207303339795815504455623
+              },
+              "capacity": [
+                1.0,
+                0.5,
+                1.0
+              ],
+              "clock": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "continuous_loss": {
+                "denominator": 649037107316853453566312041152512,
+                "numerator": 324518553658426690754359001612289
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.3333333333333333,
+                0.0,
+                -0.3333333333333333
+              ],
+              "extra_work": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "form_rate": [
+                -0.25,
+                -0.0625,
+                0.375
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0,
+                0.5235987755982988,
+                -0.5235987755982988
+              ],
+              "phase_metric": [
+                5.441398092702654,
+                5.464101615137755,
+                5.464101615137755
+              ],
+              "phase_rate": [
+                0.09188814923696532,
+                0.0,
+                -0.09150635094610965
+              ],
+              "phase_source": [
+                0.0,
+                -0.25,
+                0.25
+              ],
+              "pressure": [
+                -0.25,
+                -0.125,
+                0.375
+              ],
+              "storage": {
+                "denominator": 324518553658426726783156020576256,
+                "numerator": 357386612430380278165321949834925
+              }
+            },
+            "midpoint": {
+              "actual_balance_residual": {
+                "denominator": 5316911983139663491615228241121378304,
+                "numerator": 75541143930187239161
+              },
+              "actual_storage_rate": {
+                "denominator": 41538374868278621028243970633760768,
+                "numerator": -20168478517001292915530359012549147
+              },
+              "capacity": [
+                1.0,
+                0.5,
+                1.0
+              ],
+              "clock": {
+                "denominator": 64,
+                "numerator": 1
+              },
+              "continuous_loss": {
+                "denominator": 5316911983139663491615228241121378304,
+                "numerator": 2581565250176165568729029883793529977
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.3294489541496138,
+                -0.0009727843322907223,
+                -0.3275033854850322
+              ],
+              "extra_work": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "form_rate": [
+                -0.247183615695604,
+                -0.062013151424210974,
+                0.37120991854402596
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.001427032928818456,
+                0.5235973934278481,
+                -0.5250171020425507
+              ],
+              "phase_metric": [
+                5.439166856951928,
+                5.462021698216327,
+                5.461959683739358
+              ],
+              "phase_rate": [
+                0.09076519475170763,
+                -0.0001780996828717147,
+                -0.09003022703694483
+              ],
+              "phase_source": [
+                -0.0006801923329327848,
+                -0.24999817436142535,
+                0.25067836669435817
+              ],
+              "pressure": [
+                -0.247183615695604,
+                -0.12402630284842195,
+                0.37120991854402596
+              ],
+              "storage": {
+                "denominator": 5316911983139663491615228241121378304,
+                "numerator": 5814485785495072188504740050102912121
+              }
+            }
+          },
+          "dt": {
+            "denominator": 8192,
+            "numerator": 1
+          },
+          "elapsed_structural_clock": {
+            "denominator": 32,
+            "numerator": 1
+          },
+          "elapsed_wall_seconds": 0.7069508999993559,
+          "law": "relational",
+          "maximum_actual_balance_residual": {
+            "denominator": 21267647932558653966460912964485513216,
+            "numerator": 2171124669209661770521
+          },
+          "maximum_clock_defect": {
+            "denominator": 1,
+            "numerator": 0
+          },
+          "maximum_euler_storage_defect": {
+            "denominator": 664613997892457936451903530140172288,
+            "numerator": 3257336361899350996687001543
+          },
+          "maximum_extra_work_residual": {
+            "denominator": 1,
+            "numerator": 0
+          },
+          "maximum_pressure_split_residual": {
+            "denominator": 9223372036854775808,
+            "numerator": 819
+          },
+          "maximum_update_defect": {
+            "denominator": 37778931862957161709568,
+            "numerator": 2096023
+          },
+          "minimum_chart_margin": 0.5207906167116607,
+          "minimum_phase_metric": 5.4369653462962,
+          "pressure_paths": [
+            "fused_canonical"
+          ],
+          "steps": 256
+        },
+        "512": {
+          "capacity_case": "intervened",
+          "checkpoints": {
+            "final": {
+              "actual_balance_residual": {
+                "denominator": 1329227995784915872903807060280344576,
+                "numerator": -18450911899473402135
+              },
+              "actual_storage_rate": {
+                "denominator": 41538374868278621028243970633760768,
+                "numerator": -19583136118411073807868160480435353
+              },
+              "capacity": [
+                1.0,
+                0.5,
+                1.0
+              ],
+              "clock": {
+                "denominator": 32,
+                "numerator": 1
+              },
+              "continuous_loss": {
+                "denominator": 1329227995784915872903807060280344576,
+                "numerator": 626660355789154343400869235900529161
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.32560851451554707,
+                -0.0019379582517580459,
+                -0.3217325980120302
+              ],
+              "extra_work": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "form_rate": [
+                -0.24439768703765136,
+                -0.06152966689396591,
+                0.36745702082558324
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.002836540436188796,
+                0.5235932274338676,
+                -0.5264123831304867
+              ],
+              "phase_metric": [
+                5.43696550381898,
+                5.459969004054054,
+                5.459845305713039
+              ],
+              "phase_rate": [
+                0.08965364821701659,
+                -0.0003549394237072221,
+                -0.0885680544168407
+              ],
+              "phase_source": [
+                -0.001351581427861554,
+                -0.2499945840793802,
+                0.2513461655072417
+              ],
+              "pressure": [
+                -0.24439768703765136,
+                -0.12305933378793182,
+                0.36745702082558324
+              ],
+              "storage": {
+                "denominator": 1329227995784915872903807060280344576,
+                "numerator": 1443684174730049649058447983176557577
+              }
+            },
+            "initial": {
+              "actual_balance_residual": {
+                "denominator": 649037107316853453566312041152512,
+                "numerator": -27612165034032695
+              },
+              "actual_storage_rate": {
+                "denominator": 81129638414606681695789005144064,
+                "numerator": -40564819207303339795815504455623
+              },
+              "capacity": [
+                1.0,
+                0.5,
+                1.0
+              ],
+              "clock": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "continuous_loss": {
+                "denominator": 649037107316853453566312041152512,
+                "numerator": 324518553658426690754359001612289
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.3333333333333333,
+                0.0,
+                -0.3333333333333333
+              ],
+              "extra_work": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "form_rate": [
+                -0.25,
+                -0.0625,
+                0.375
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0,
+                0.5235987755982988,
+                -0.5235987755982988
+              ],
+              "phase_metric": [
+                5.441398092702654,
+                5.464101615137755,
+                5.464101615137755
+              ],
+              "phase_rate": [
+                0.09188814923696532,
+                0.0,
+                -0.09150635094610965
+              ],
+              "phase_source": [
+                0.0,
+                -0.25,
+                0.25
+              ],
+              "pressure": [
+                -0.25,
+                -0.125,
+                0.375
+              ],
+              "storage": {
+                "denominator": 324518553658426726783156020576256,
+                "numerator": 357386612430380278165321949834925
+              }
+            },
+            "midpoint": {
+              "actual_balance_residual": {
+                "denominator": 332306998946228968225951765070086144,
+                "numerator": -360633857980501967
+              },
+              "actual_storage_rate": {
+                "denominator": 20769187434139310514121985316880384,
+                "numerator": -10084245414176891680563480956732703
+              },
+              "capacity": [
+                1.0,
+                0.5,
+                1.0
+              ],
+              "clock": {
+                "denominator": 64,
+                "numerator": 1
+              },
+              "continuous_loss": {
+                "denominator": 332306998946228968225951765070086144,
+                "numerator": 161347926626830266528381837327221281
+              },
+              "edges": [
+                [
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  2
+                ],
+                [
+                  1,
+                  2
+                ]
+              ],
+              "epi": [
+                0.3294490396378756,
+                -0.0009727695257027696,
+                -0.32750350058647
+              ],
+              "extra_work": {
+                "denominator": 1,
+                "numerator": 0
+              },
+              "form_rate": [
+                -0.2471836749524736,
+                -0.06201315796949371,
+                0.371209990891461
+              ],
+              "nodes": [
+                0,
+                1,
+                2
+              ],
+              "phase": [
+                0.0014269988426617512,
+                0.5235973880137563,
+                -0.5250170572204029
+              ],
+              "phase_metric": [
+                5.439166936167977,
+                5.462021772379441,
+                5.461959759472138
+              ],
+              "phase_rate": [
+                0.09076521836665237,
+                -0.00017809696962797222,
+                -0.0900302560431313
+              ],
+              "phase_source": [
+                -0.0006801752109852156,
+                -0.24999817092938045,
+                0.25067834614036566
+              ],
+              "pressure": [
+                -0.2471836749524736,
+                -0.12402631593898741,
+                0.371209990891461
+              ],
+              "storage": {
+                "denominator": 332306998946228968225951765070086144,
+                "numerator": 363405404348832303322065215786679329
+              }
+            }
+          },
+          "dt": {
+            "denominator": 16384,
+            "numerator": 1
+          },
+          "elapsed_structural_clock": {
+            "denominator": 32,
+            "numerator": 1
+          },
+          "elapsed_wall_seconds": 1.421228200008045,
+          "law": "relational",
+          "maximum_actual_balance_residual": {
+            "denominator": 21267647932558653966460912964485513216,
+            "numerator": 2857208882483347504503
+          },
+          "maximum_clock_defect": {
+            "denominator": 1,
+            "numerator": 0
+          },
+          "maximum_euler_storage_defect": {
+            "denominator": 1329227995784915872903807060280344576,
+            "numerator": 1628668184686474398316365767
+          },
+          "maximum_extra_work_residual": {
+            "denominator": 1,
+            "numerator": 0
+          },
+          "maximum_pressure_split_residual": {
+            "denominator": 147573952589676412928,
+            "numerator": 14883
+          },
+          "maximum_update_defect": {
+            "denominator": 302231454903657293676544,
+            "numerator": 16773585
+          },
+          "minimum_chart_margin": 0.5207907162305423,
+          "minimum_phase_metric": 5.43696550381898,
+          "pressure_paths": [
+            "fused_canonical"
+          ],
+          "steps": 512
+        }
+      }
+    }
+  }
+}

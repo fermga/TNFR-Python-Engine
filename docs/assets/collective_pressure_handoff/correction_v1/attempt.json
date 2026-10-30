@@ -1,0 +1,15 @@
+{
+  "schema":"tnfr.collective-pressure-handoff-attempt.v1",
+  "created_utc":"2026-10-14T17:08:18.708595+00:00",
+  "freeze_sha256":"3ab8a482c63ecb083e86b999806a966f2a1d140dd4be92283b9d90a2645b0cee",
+  "maximum_evaluations":1,
+  "numeric_threads":1,
+  "python":"3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+  "executable":"C:\\TNFR-Python-Engine\\.venv313\\Scripts\\python.exe",
+  "versions":{
+    "numpy":"2.5.3",
+    "networkx":"3.6.1",
+    "mpmath":"1.3.0",
+    "pytest":"9.1.1"
+  }
+}

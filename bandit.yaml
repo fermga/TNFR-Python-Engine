@@ -1,0 +1,6 @@
+# Bandit configuration capturing documented exceptions for TNFR.
+#
+# B610 warns about Django's ``QuerySet.extra`` usage, but ``tnfr.alias.set_attr_and_cache``
+# only accepts internal callables used for telemetry hooks; it never builds SQL strings.
+skips:
+  - B610

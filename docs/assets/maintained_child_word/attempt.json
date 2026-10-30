@@ -1,0 +1,11 @@
+{
+  "schema":"tnfr.maintained-child-word-attempt.v1",
+  "created_utc":"2026-10-15T14:57:44.258466+00:00",
+  "evaluation_status_at_start":"not_evaluated",
+  "attempt_number":1,
+  "freeze":{
+    "path":"freeze.json",
+    "bytes":189469,
+    "sha256":"21f380ec89a26fdd9c8855e676194f45af7d58b2f080ff785cd791e6b8335b6b"
+  }
+}

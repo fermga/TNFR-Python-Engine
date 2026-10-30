@@ -1,0 +1,9 @@
+{
+  "schema":"tnfr.maintained-parent-um-execution-failure.v1",
+  "attempt":{
+    "path":"attempt.json",
+    "bytes":646,
+    "sha256":"da1f435f983d398ad0461375cd5d7c6add4da30d0e32562bf322ff22986fa0d7"
+  },
+  "diagnostic":"Traceback (most recent call last):\n  File \"C:\\Users\\nuevo\\AppData\\Local\\Temp\\tnfr-actual-um-uke9pm_7\\instrument.py\", line 317, in evaluate\n    response = evaluate_um_event(\n        admitted,\n    ...<2 lines>...\n        on_raw=lambda raw: write(\"raw-after.json\", raw),\n    )\n  File \"C:\\TNFR-Python-Engine\\src\\tnfr\\research\\maintained_parent_um_execution.py\", line 564, in evaluate_um_event\n    stage = execute_network_operator_stage(\n        graph,\n    ...<3 lines>...\n        compute_delta_nfr=handoff,\n    )\n  File \"C:\\TNFR-Python-Engine\\src\\tnfr\\operators\\word_execution.py\", line 186, in execute_network_operator_stage\n    return unsupported(execute_coupling_stage(graph, operator, targets, **kwargs))\n                       ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\TNFR-Python-Engine\\src\\tnfr\\operators\\network_stage.py\", line 6328, in execute_coupling_stage\n    compute_delta_nfr(graph)\n    ~~~~~~~~~~~~~~~~~^^^^^^^\n  File \"C:\\TNFR-Python-Engine\\src\\tnfr\\research\\maintained_parent_um_execution.py\", line 558, in handoff\n    _require(\n    ~~~~~~~~^\n        _pressure_preservation_signature(successor, runtime=True) == protected,\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        \"UM handoff changed non-pressure state\",\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    )\n    ^\n  File \"C:\\TNFR-Python-Engine\\src\\tnfr\\research\\maintained_parent_um_execution.py\", line 84, in _require\n    raise ValueError(message)\nValueError: UM handoff changed non-pressure state\n"
+}

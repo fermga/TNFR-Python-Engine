@@ -1,0 +1,749 @@
+{
+  "scope": "Test/example/experiment maintenance and owner-requested manuscript removal; no new scientific result.",
+  "original_source_commit": "6c385cdd9c72f45074013cad77422371d4c490f0",
+  "recovery": "Every original path can be read from original_source_commit using Git. Hashes refer to Git blob bytes, which may differ from CRLF working-copy snapshots.",
+  "retirements": [
+    {
+      "path": "benchmarks/confinement_zones_test.py",
+      "source_blob_sha256": "eef0ca723cd3117a1801c356e428087e79f1c89b55fb7f065fa545ff9247cfb7",
+      "source_blob_bytes": 18773,
+      "reason": [
+        "Four of five default curvature thresholds exceed the current exact wrapped bound pi; those zones are empty by definition.",
+        "Mixes src.tnfr imports with benchmark_utils tnfr imports.",
+        "Declared local seed does not control two global random.random mutation/stabilization decisions.",
+        "No independent callers or tests; current tetrad bounds and curvature-resultant tests own meaningful field-domain controls."
+      ],
+      "retained_owners": [
+        "tests/physics/test_tetrad_bounds.py",
+        "tests/physics/test_phase_curvature_resultant.py",
+        "docs/STRUCTURAL_FIELDS_TETRAD.md",
+        "benchmarks/tetrad_results_aggregate.py"
+      ]
+    },
+    {
+      "path": "benchmarks/universality_clusters.py",
+      "source_blob_sha256": "ac4766dbb51c3bd47fb40e1cf71614bc669829b86ed0b161ac975ef86e7b5376",
+      "source_blob_bytes": 6824,
+      "reason": [
+        "Historical tetrad_scaling_exponents.py input producer absent; no current consumer or test caller.",
+        "Clusters machine wall-clock scaling estimates, not physical universality.",
+        "Sparse feature extraction omits positions: only_potential exponent1 and only_gradient exponent1 both become [1.0], silently conflating different fields.",
+        "Generic timing clustering adds no current TNFR mechanism beyond available passive timing aggregation."
+      ],
+      "retained_owners": [
+        "tests/physics/test_tetrad_bounds.py",
+        "tests/physics/test_phase_curvature_resultant.py",
+        "docs/STRUCTURAL_FIELDS_TETRAD.md",
+        "benchmarks/tetrad_results_aggregate.py"
+      ]
+    },
+    {
+      "path": "examples/01_foundations/02_musical_resonance.py",
+      "source_blob_sha256": "f08a0877a0e995ae898b261cca628a4105ba217bf6aa50e297c0a128b0a52e16",
+      "source_blob_bytes": 10608,
+      "reason": [
+        "Handwritten phase dynamics substituted for the EPI law"
+      ],
+      "retained_owners": [
+        "examples/README.md",
+        "examples/01_foundations/01_hello_world.py",
+        "theory/PHYSICAL_REGIME_CORRESPONDENCES.md"
+      ],
+      "retained_route": "examples/08_emergent_geometry/179_phase_form_driven_response.py"
+    },
+    {
+      "path": "examples/01_foundations/03_network_formation.py",
+      "source_blob_sha256": "dd2f8e4d5105eeaca162544b56073c2089a87efeed49d5fdbb8c7788d9e262ff",
+      "source_blob_bytes": 11394,
+      "reason": [
+        "Private graph-growth rules and coherence proxy"
+      ],
+      "retained_owners": [
+        "examples/README.md",
+        "examples/01_foundations/01_hello_world.py",
+        "theory/PHYSICAL_REGIME_CORRESPONDENCES.md"
+      ],
+      "retained_route": "examples/01_foundations/10_simplified_sdk_showcase.py"
+    },
+    {
+      "path": "examples/01_foundations/05_coherence_evolution.py",
+      "source_blob_sha256": "0b8dc7efd71d15d73b45fd0b2857487050ae6ec2ea28c111baa63a2b29c97499",
+      "source_blob_bytes": 8428,
+      "reason": [
+        "Noncanonical phase update mislabeled as EPI dynamics"
+      ],
+      "retained_owners": [
+        "examples/README.md",
+        "examples/01_foundations/01_hello_world.py",
+        "theory/PHYSICAL_REGIME_CORRESPONDENCES.md"
+      ],
+      "retained_route": "examples/08_emergent_geometry/99_structural_diffusion.py"
+    },
+    {
+      "path": "examples/01_foundations/06_network_topologies.py",
+      "source_blob_sha256": "8bc6d5d5c402dc7e7ea9dfb2ece5e8720cf3b5cb76e4591f0e3a6a6e22b4f9e0",
+      "source_blob_bytes": 13530,
+      "reason": [
+        "Duplicate private pressure and phase evolution"
+      ],
+      "retained_owners": [
+        "examples/README.md",
+        "examples/01_foundations/01_hello_world.py",
+        "theory/PHYSICAL_REGIME_CORRESPONDENCES.md"
+      ],
+      "retained_route": "examples/01_foundations/10_simplified_sdk_showcase.py"
+    },
+    {
+      "path": "examples/01_foundations/08_emergent_phenomena.py",
+      "source_blob_sha256": "706ce07b8a3089d5fd1ccec7f5c89da8ffa1a6fd9e1ef4c39c69f0fb66802da1",
+      "source_blob_bytes": 20090,
+      "reason": [
+        "Private phase/frequency mechanisms and unsupported emergence claims"
+      ],
+      "retained_owners": [
+        "examples/README.md",
+        "examples/01_foundations/01_hello_world.py",
+        "theory/PHYSICAL_REGIME_CORRESPONDENCES.md"
+      ],
+      "retained_route": "examples/01_foundations/07_phase_transitions.py"
+    },
+    {
+      "path": "examples/01_foundations/09_visualization_suite.py",
+      "source_blob_sha256": "21c282a98c1c1c6e2ca7a8e07550ddf76b405358dfe0d998c5bffa81568e721a",
+      "source_blob_bytes": 22264,
+      "reason": [
+        "Plots duplicate substituted dynamics and unsupported collective conclusions"
+      ],
+      "retained_owners": [
+        "examples/README.md",
+        "examples/01_foundations/01_hello_world.py",
+        "theory/PHYSICAL_REGIME_CORRESPONDENCES.md"
+      ],
+      "retained_route": "examples/08_emergent_geometry/179_phase_form_driven_response.py"
+    },
+    {
+      "path": "examples/02_physics_regimes/13_quantum_mechanics_demo.py",
+      "source_blob_sha256": "d1c012172689afdea3f19a0a628a030090aac1012acc225d169c7c5abdb49bf1",
+      "source_blob_bytes": 6169,
+      "reason": [
+        "Handwritten noisy update toward imposed energy targets; not a cavity spectrum"
+      ],
+      "retained_owners": [
+        "examples/README.md",
+        "examples/01_foundations/01_hello_world.py",
+        "theory/PHYSICAL_REGIME_CORRESPONDENCES.md"
+      ],
+      "retained_route": "theory/PHYSICAL_REGIME_CORRESPONDENCES.md#44-validation-boundary"
+    },
+    {
+      "path": "examples/02_physics_regimes/14_uncertainty_and_interference.py",
+      "source_blob_sha256": "5f32eeefc6d72a39cd848919754ebd9045cc80d2ab619b0d6ddd6b581395aeb8",
+      "source_blob_bytes": 8411,
+      "reason": [
+        "Unvalidated truncated magnitude-width calculation and forced raw-array wave model"
+      ],
+      "retained_owners": [
+        "examples/README.md",
+        "examples/01_foundations/01_hello_world.py",
+        "theory/PHYSICAL_REGIME_CORRESPONDENCES.md"
+      ],
+      "retained_route": "theory/PHYSICAL_REGIME_CORRESPONDENCES.md#53-validation-boundary"
+    },
+    {
+      "path": "factorization-lab/scripts/run_false_positive_tests.py",
+      "source_blob_sha256": "f691326b98d32c3ad9d850ad587c217f4175eab77da2b5080eb212adab47f03d",
+      "source_blob_bytes": 1487,
+      "reason": [
+        "Only wraps run_false_positive_tests already defined in the runnable unittest test owner.",
+        "No external source or documentation caller; direct pytest invocation is maintained."
+      ],
+      "retained_owners": [
+        "factorization-lab/tests/test_false_positive_verifier.py",
+        "factorization-lab/tests/test_verification_robustness.py",
+        "factorization-lab/README.md"
+      ]
+    },
+    {
+      "path": "factorization-lab/tests/run_false_positive_test_suite.py",
+      "source_blob_sha256": "817d1284725e7e04060b6f9a14a6787958d82c664f6235922a38a443dda20b59",
+      "source_blob_bytes": 2025,
+      "reason": [
+        "Only sequences two existing unittest suites with promotional print output.",
+        "No external source or documentation caller; direct pytest invocation covers both suites."
+      ],
+      "retained_owners": [
+        "factorization-lab/tests/test_false_positive_verifier.py",
+        "factorization-lab/tests/test_verification_robustness.py",
+        "factorization-lab/README.md"
+      ]
+    },
+    {
+      "path": "factorization-lab/tests/test_false_positive_methodology.py",
+      "source_blob_sha256": "08a696e87cb3dba31d9d2e1b55530609ee8020a9f7711e89b2a7b3464574d554",
+      "source_blob_bytes": 9544,
+      "reason": [
+        "Tests a copied SIMULATED_TNFR_VERIFICATION_CRITERIA dictionary and local toy helper, not production.",
+        "One generation test contains no assertion; arbitrary strictness averaging is labeled framework soundness.",
+        "Existing verifier and robustness tests import actual SpectralPaleyFactorizer and production criteria; keep those owners."
+      ],
+      "retained_owners": [
+        "factorization-lab/tests/test_false_positive_verifier.py",
+        "factorization-lab/tests/test_verification_robustness.py",
+        "factorization-lab/README.md"
+      ]
+    },
+    {
+      "path": "manual/BOOK_PHILOSOPHY.md",
+      "source_blob_sha256": "9526a71383c152036fe8b9bf2b60d58d9f9a6dbe3a189ae58e52fd7239b8f9c5",
+      "source_blob_bytes": 3561,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/CHAPTER_TEMPLATE.md",
+      "source_blob_sha256": "8c620509eb0e7f1be426dc88dbfd3e5f90f3130cae2a99e37a457cde516cd9b1",
+      "source_blob_bytes": 7019,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/INDEX.md",
+      "source_blob_sha256": "c5c36eca309dff11fcb4f3045ad9d30de0ba8aa2e673263ef36a05e557084490",
+      "source_blob_bytes": 5963,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/INTERLUDE_TEMPLATE.md",
+      "source_blob_sha256": "6f93e72331af481e3293bc1f4ceb5427b951927bcdba23805bb8f437e5c2b4d8",
+      "source_blob_bytes": 2319,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/READER_PILOT_CH01_CH04.md",
+      "source_blob_sha256": "d3b77ae39eb35f95f0d8e9916f88bbf2d9adbc079efafd2d51391ef8e5b735bc",
+      "source_blob_bytes": 1015,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/STYLE_GUIDE.md",
+      "source_blob_sha256": "df6693b6107346c9fcfc4d48943d47d831eb5c047b72d0092a800ca18de9163e",
+      "source_blob_bytes": 17532,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/VISUAL_PHILOSOPHY.md",
+      "source_blob_sha256": "6003ec3b3558b69b53b44a994e9e228f3539f4a18f8c261b1d4d5519d67452fe",
+      "source_blob_bytes": 7526,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/archive/EDITORIAL_AUDIT_2026-08-02.txt",
+      "source_blob_sha256": "9f5afeebbaa2f0e76660b260e0ff95bf5e217b8bc26bdd77fb2d0da3219b2734",
+      "source_blob_bytes": 3732,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/chapter-01-what-stays-when-everything-changes.md",
+      "source_blob_sha256": "8a368102a9cfe0b252eaf65144a3b32dfe438b357b63ad3b5ee6a27f4f64517f",
+      "source_blob_bytes": 7367,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/chapter-02-identity-without-fixed-matter.md",
+      "source_blob_sha256": "668ea097baf40d2fdbd781fd18fe769666ed334ce19fe51982c7f0f18548e026",
+      "source_blob_bytes": 7526,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/chapter-03-organization-versus-substance.md",
+      "source_blob_sha256": "cf93c03ebfd0850b91bacbc71e570aae0a2653884e795e94a4b0267b59331154",
+      "source_blob_bytes": 8638,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/chapter-04-tension-between-stability-and-change.md",
+      "source_blob_sha256": "5ee777ba4a98452d5c3ad13c98f63d5ea19289ff1d8997685787a03c7c1ea366",
+      "source_blob_bytes": 8149,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/chapter-05-why-object-based-language-becomes-insufficient.md",
+      "source_blob_sha256": "5f117599e466d15bb5f6a2b84e3f9363a2ae1f5b311595b9b92869560cb3ee11",
+      "source_blob_bytes": 6419,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/chapter-06-from-things-to-processes.md",
+      "source_blob_sha256": "a56d17f79f2606e6b71d7e384d0f00439cea5ad810101006e6ff5814bd91d72b",
+      "source_blob_bytes": 6592,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/chapter-07-from-processes-to-patterns.md",
+      "source_blob_sha256": "941af578fbf922886b1192f9c611fdb8a132e5cb3890b511bd29ccbabf87ed3f",
+      "source_blob_bytes": 5931,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/chapter-08-when-patterns-fail.md",
+      "source_blob_sha256": "8454e08214a511b43f289140ffdb43eda990fea46acfea3e54c7b747dbaa216c",
+      "source_blob_bytes": 5774,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/chapter-09-what-a-theory-must-explain.md",
+      "source_blob_sha256": "a5ec7cfc58506bdcc9f8e00e091ede470944d239818baf5069537600f98e92a5",
+      "source_blob_bytes": 6577,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/chapter-10-the-conceptual-gap.md",
+      "source_blob_sha256": "9ce9930bbff68024d58e9991cbf5d79b0ba8153a418274300ace0cdcf355f7b7",
+      "source_blob_bytes": 4971,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/chapter-11-resonance-in-everyday-phenomena.md",
+      "source_blob_sha256": "a13d75c664a8eb93af3fe1537cafb8c0a709fa3a0754beda90f9030e8db9aac0",
+      "source_blob_bytes": 5725,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/chapter-12-fractal-organization-across-scales.md",
+      "source_blob_sha256": "40eb4e4ced7966daf68ebcf9a6f113f85cc344db9936b7e9eaff67977f2e86c5",
+      "source_blob_bytes": 5088,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/chapter-13-relational-networks-instead-of-isolated-entities.md",
+      "source_blob_sha256": "a736576d9d750efa3c090b10e83d9341340b11119db6a72e5caff32aa912d6e4",
+      "source_blob_bytes": 6195,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/chapter-14-a-minimal-language-for-persistence.md",
+      "source_blob_sha256": "bab26c2bc876f8d6f4e9113c076c2eed5f336e77fa4196f0b013f0ee271bc33e",
+      "source_blob_bytes": 4937,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/chapter-15-failed-explanatory-attempts.md",
+      "source_blob_sha256": "dedeb36fca187c44750b89a0b41da9b28f6e674848fecc608cf42430914ee6b5",
+      "source_blob_bytes": 4203,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/chapter-16-the-point-of-inevitability.md",
+      "source_blob_sha256": "8662cc5e103ef16354be2725615e8e4f7e7bcad62272af28d27308eaf172b6a7",
+      "source_blob_bytes": 3763,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/chapter-17-introducing-tnfr-as-a-natural-continuation.md",
+      "source_blob_sha256": "c2258c765686f7b3f19ac98536cf544947365bfcd3358bd790c726e8602596f6",
+      "source_blob_bytes": 3404,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/chapter-18-the-three-nodal-attributes.md",
+      "source_blob_sha256": "69e42e9e73428d3c44a4e0edfcedde3bc7c6aae7045cb8c000a2a144a2ad2c9b",
+      "source_blob_bytes": 3453,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/chapter-19-graphs-as-interaction-maps.md",
+      "source_blob_sha256": "6ceac17f794db3a63e4f61c194f223937d4ae8a5517e4625a1b739e0a69945fd",
+      "source_blob_bytes": 3525,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/chapter-20-from-intuition-to-structural-pressure.md",
+      "source_blob_sha256": "94b45a3627dd50c24b8d71cf42f7ed9344bbb7a98189f801296bec6ff4ad5192",
+      "source_blob_bytes": 3540,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/chapter-21-the-nodal-equation-in-plain-language.md",
+      "source_blob_sha256": "6e4e028645e40e876a88e8b78a34826a3abcc182b8c604976b56f0afa087c4ab",
+      "source_blob_bytes": 3602,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/chapter-22-reading-the-equation-as-a-story-of-organization.md",
+      "source_blob_sha256": "2b5a9cc4956f349efde15fcb32e84f8170b3e8f56712817552695d1baf50ffc1",
+      "source_blob_bytes": 3816,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/chapter-23-coherence-equilibrium-and-telemetry.md",
+      "source_blob_sha256": "5c053416c2a54ad3bf68c2c1dc3f648aa14bf392b87a317a65f89a46106dd436",
+      "source_blob_bytes": 3904,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/chapter-24-the-13-operators-as-actions-on-organization.md",
+      "source_blob_sha256": "b2aa30fdcf969c050a6ba5404e679b348d465e969f56b92e1bfaaa09a9abba8d",
+      "source_blob_bytes": 4103,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/chapter-25-grammar-u1-u6-as-consistency-dynamics.md",
+      "source_blob_sha256": "fe70e15357de5c03b8fd7f9a8a6f610cac0098813e39ab33ea237fbeeede2f8f",
+      "source_blob_bytes": 4313,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/chapter-26-responsible-interpretation-and-evidence-discipline.md",
+      "source_blob_sha256": "3e53a2610cb0cdc8a0f8cecc460e736852c5540dc4bbca48585cd1bbdd8be575",
+      "source_blob_bytes": 4113,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/manifesto-what-we-know-so-far.md",
+      "source_blob_sha256": "1bb6b5af25b924493083f2f3072ccb59cdeda31b029372a056151baef5cdd618",
+      "source_blob_bytes": 1109,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/miniaturas/01.png",
+      "source_blob_sha256": "a3c897d9f26ec260649c4bd80e04b8dd562875ca93a6e149ac9799c938c5c660",
+      "source_blob_bytes": 2145151,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/miniaturas/02.png",
+      "source_blob_sha256": "3064fd9ee9400d3f64a760679e6908ba3f2a2b86f5a8c57ee4236b0927bd4e7f",
+      "source_blob_bytes": 3069958,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/miniaturas/03.png",
+      "source_blob_sha256": "34274343b465b2c11d47f400666019f9985efc06eea097a7224f1fbf30c3f9e5",
+      "source_blob_bytes": 2851007,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "manual/miniaturas/04.png",
+      "source_blob_sha256": "4de394b316233c29c0b1e238456604fbd7c96a3e2d236eeb07b1e0af705c4a64",
+      "source_blob_bytes": 2755251,
+      "reason": [
+        "The repository owner removed the educational manuscript, including its editorial archive. Active build, navigation and new-release metadata now follow that removal."
+      ],
+      "retained_owners": [
+        "docs/README.md",
+        "theory/README.md",
+        "examples/README.md"
+      ]
+    },
+    {
+      "path": "tests/core_physics/test_emergent_constants_guard.py",
+      "source_blob_sha256": "d46d13a3f68c38c9df48b28e1b886572e2aae75fe0b8fb6f4e7812158a4a2bdb",
+      "source_blob_bytes": 5301,
+      "reason": [
+        "Replaced misleading emergent-constant/isometry labels with configured-default checks. Removed the arbitrary forbidden-decimal blacklist, already implied by the explicit formula checks and not a mathematical physical restriction."
+      ],
+      "retained_owners": [
+        "tests/core_physics/test_configured_constants.py",
+        "tests/operators/test_coherence_jacobi_stage.py",
+        "theory/NODAL_PARAMETER_FOUNDATIONS.md"
+      ]
+    },
+    {
+      "path": "tests/core_physics/test_nodal_equation.py",
+      "source_blob_sha256": "fb259384709ee202391604a26deeddb42fe51facd97bfda9941b18349aff2732",
+      "source_blob_bytes": 8110,
+      "reason": [
+        "Self-contained literal assignments and scalar arithmetic did not test TNFR dynamics; the sole production potential smoke check has stronger existing numerical oracles."
+      ],
+      "retained_owners": [
+        "tests/core_physics/README.md"
+      ]
+    },
+    {
+      "path": "tests/core_physics/test_structural_triad.py",
+      "source_blob_sha256": "533f28afb37da6e76ad0e6fc76f380935aa271910ce5df16dbe2ddcabbf62545",
+      "source_blob_bytes": 10991,
+      "reason": [
+        "Self-contained literal assignments and scalar arithmetic did not test TNFR dynamics; the sole production potential smoke check has stronger existing numerical oracles."
+      ],
+      "retained_owners": [
+        "tests/core_physics/README.md"
+      ]
+    }
+  ],
+  "retained_controls": "Exact scoped certificates, negative controls, actual engine integration and retained research artifacts remain. Default test collection excludes the existing slow selection; collection is not execution.",
+  "consolidations": [
+    "Shared example loader and CLI wiring with retained numerical tests",
+    "Two cold import-order checks replace ten repeated processes",
+    "File-grouped parallel tests reuse module fixtures",
+    "Temporal evaluation owns its window count",
+    "Aggregate test/development extras reference existing smaller groups with unchanged expanded requirements",
+    "Configured pytest selection is the make test entry point",
+    "Only effective process-cache resets remain in conftest; graph-owned state uses fresh graphs",
+    "Diagnostic graph preparation is shared without sharing mutable graph instances"
+  ]
+}

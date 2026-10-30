@@ -1,0 +1,1492 @@
+{
+  "schema": "tnfr.sine-aperture-inference-protocol.v1",
+  "evaluation_kind": "reserved_full_state_finite_aperture_software_inference",
+  "source_base_commit": "035965355a8066622eebabd6fe08eedee9c7aef5",
+  "source_overlay_archive": "aperture-inference-v1.source.zip",
+  "support": {
+    "nodes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17
+    ],
+    "edges": [
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        8
+      ],
+      [
+        0,
+        9
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        1,
+        10
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        9,
+        10
+      ],
+      [
+        9,
+        17
+      ],
+      [
+        10,
+        11
+      ],
+      [
+        11,
+        12
+      ],
+      [
+        12,
+        13
+      ],
+      [
+        13,
+        14
+      ],
+      [
+        14,
+        15
+      ],
+      [
+        15,
+        16
+      ],
+      [
+        16,
+        17
+      ]
+    ],
+    "degrees": [
+      3,
+      3,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    "weights": "unit",
+    "original_periods": [
+      2,
+      1,
+      0
+    ]
+  },
+  "complete_model": {
+    "law": "normalized_sine_reciprocal_exchange",
+    "capacity": [
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      }
+    ],
+    "beta": {
+      "numerator": 1,
+      "denominator": 1
+    },
+    "loss": {
+      "numerator": 1023,
+      "denominator": 1024
+    },
+    "exchange": {
+      "numerator": 1,
+      "denominator": 1024
+    },
+    "gamma": "1/(1023*pi)",
+    "structural_clock": "tau=(1023/1024)*t",
+    "observation_clock": "rho(s)=first_window_mean+slope*(s-H/2); tau'=rho",
+    "structural_rows": "x_tau=-A*x+gamma*f(theta); theta_tau=gamma*A*x",
+    "observed_augmented_rows": "x_s=rho*(-A*x+gamma*f(theta)); theta_s=rho*gamma*A*x; rho_s=slope; z_s=x4-x5",
+    "pressure": "Live complete form and sine terms; no response-fitted pressure",
+    "events": "Phase jumps q/4 at s=0 and q/2 at s=H; no events at H/3 or 2H/3; all forms, rho, z continuous",
+    "instrument": "Passive cumulative integral z(0)=0, no reset, no extra rho factor"
+  },
+  "public_inputs_without_observation": {
+    "bulk_angle_bounds": [
+      {
+        "numerator": 11,
+        "denominator": 8
+      },
+      {
+        "numerator": 3,
+        "denominator": 2
+      }
+    ],
+    "receiver_short_angle_bounds": [
+      {
+        "numerator": 2,
+        "denominator": 3
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      }
+    ],
+    "form_radius": {
+      "numerator": 1,
+      "denominator": 281474976710656
+    },
+    "phase_radius": {
+      "numerator": 1,
+      "denominator": 281474976710656
+    },
+    "phase_increments": [
+      {
+        "numerator": 1,
+        "denominator": 4
+      },
+      {
+        "numerator": 3,
+        "denominator": 4
+      }
+    ],
+    "probe_duration": {
+      "numerator": 1,
+      "denominator": 16777216
+    },
+    "readout_error_bound": {
+      "numerator": 1,
+      "denominator": 1237940039285380274899124224
+    },
+    "readout_gain_bounds": [
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 2,
+        "denominator": 1
+      }
+    ],
+    "clock_rate_bounds": [
+      {
+        "numerator": 1,
+        "denominator": 2
+      },
+      {
+        "numerator": 2,
+        "denominator": 1
+      }
+    ],
+    "clock_rate_derivative_bound": {
+      "numerator": 1,
+      "denominator": 4194304
+    }
+  },
+  "hidden_source": {
+    "bulk_angle": {
+      "numerator": 23,
+      "denominator": 16
+    },
+    "receiver_short_angle": {
+      "numerator": 4,
+      "denominator": 5
+    },
+    "recipe_index": 4,
+    "common_form": {
+      "numerator": 6,
+      "denominator": 11
+    },
+    "common_phase": {
+      "numerator": -6,
+      "denominator": 13
+    },
+    "raw_form_residual": [
+      {
+        "numerator": 3,
+        "denominator": 1152921504606846976
+      },
+      {
+        "numerator": 9,
+        "denominator": 2305843009213693952
+      },
+      {
+        "numerator": 3,
+        "denominator": 576460752303423488
+      },
+      {
+        "numerator": 15,
+        "denominator": 2305843009213693952
+      },
+      {
+        "numerator": 9,
+        "denominator": 1152921504606846976
+      },
+      {
+        "numerator": 21,
+        "denominator": 2305843009213693952
+      },
+      {
+        "numerator": 3,
+        "denominator": 288230376151711744
+      },
+      {
+        "numerator": 27,
+        "denominator": 2305843009213693952
+      },
+      {
+        "numerator": 15,
+        "denominator": 1152921504606846976
+      },
+      {
+        "numerator": 33,
+        "denominator": 2305843009213693952
+      },
+      {
+        "numerator": 9,
+        "denominator": 576460752303423488
+      },
+      {
+        "numerator": 39,
+        "denominator": 2305843009213693952
+      },
+      {
+        "numerator": 21,
+        "denominator": 1152921504606846976
+      },
+      {
+        "numerator": 45,
+        "denominator": 2305843009213693952
+      },
+      {
+        "numerator": 3,
+        "denominator": 144115188075855872
+      },
+      {
+        "numerator": 51,
+        "denominator": 2305843009213693952
+      },
+      {
+        "numerator": 27,
+        "denominator": 1152921504606846976
+      },
+      {
+        "numerator": 57,
+        "denominator": 2305843009213693952
+      }
+    ],
+    "raw_phase_residual": [
+      {
+        "numerator": 13,
+        "denominator": 4611686018427387904
+      },
+      {
+        "numerator": 9,
+        "denominator": 2305843009213693952
+      },
+      {
+        "numerator": 23,
+        "denominator": 4611686018427387904
+      },
+      {
+        "numerator": 5,
+        "denominator": 4611686018427387904
+      },
+      {
+        "numerator": 5,
+        "denominator": 2305843009213693952
+      },
+      {
+        "numerator": 15,
+        "denominator": 4611686018427387904
+      },
+      {
+        "numerator": 5,
+        "denominator": 1152921504606846976
+      },
+      {
+        "numerator": 1,
+        "denominator": 2305843009213693952
+      },
+      {
+        "numerator": 7,
+        "denominator": 4611686018427387904
+      },
+      {
+        "numerator": 3,
+        "denominator": 1152921504606846976
+      },
+      {
+        "numerator": 17,
+        "denominator": 4611686018427387904
+      },
+      {
+        "numerator": 11,
+        "denominator": 2305843009213693952
+      },
+      {
+        "numerator": 1,
+        "denominator": 1152921504606846976
+      },
+      {
+        "numerator": 9,
+        "denominator": 4611686018427387904
+      },
+      {
+        "numerator": 7,
+        "denominator": 2305843009213693952
+      },
+      {
+        "numerator": 19,
+        "denominator": 4611686018427387904
+      },
+      {
+        "numerator": 1,
+        "denominator": 4611686018427387904
+      },
+      {
+        "numerator": 3,
+        "denominator": 2305843009213693952
+      }
+    ],
+    "form_residual": [
+      {
+        "numerator": -489,
+        "denominator": 46116860184273879040
+      },
+      {
+        "numerator": -429,
+        "denominator": 46116860184273879040
+      },
+      {
+        "numerator": -369,
+        "denominator": 46116860184273879040
+      },
+      {
+        "numerator": -309,
+        "denominator": 46116860184273879040
+      },
+      {
+        "numerator": -249,
+        "denominator": 46116860184273879040
+      },
+      {
+        "numerator": -189,
+        "denominator": 46116860184273879040
+      },
+      {
+        "numerator": -129,
+        "denominator": 46116860184273879040
+      },
+      {
+        "numerator": -69,
+        "denominator": 46116860184273879040
+      },
+      {
+        "numerator": -9,
+        "denominator": 46116860184273879040
+      },
+      {
+        "numerator": 51,
+        "denominator": 46116860184273879040
+      },
+      {
+        "numerator": 111,
+        "denominator": 46116860184273879040
+      },
+      {
+        "numerator": 171,
+        "denominator": 46116860184273879040
+      },
+      {
+        "numerator": 231,
+        "denominator": 46116860184273879040
+      },
+      {
+        "numerator": 291,
+        "denominator": 46116860184273879040
+      },
+      {
+        "numerator": 351,
+        "denominator": 46116860184273879040
+      },
+      {
+        "numerator": 411,
+        "denominator": 46116860184273879040
+      },
+      {
+        "numerator": 471,
+        "denominator": 46116860184273879040
+      },
+      {
+        "numerator": 531,
+        "denominator": 46116860184273879040
+      }
+    ],
+    "phase_residual": [
+      {
+        "numerator": 13,
+        "denominator": 92233720368547758080
+      },
+      {
+        "numerator": 113,
+        "denominator": 92233720368547758080
+      },
+      {
+        "numerator": 213,
+        "denominator": 92233720368547758080
+      },
+      {
+        "numerator": -147,
+        "denominator": 92233720368547758080
+      },
+      {
+        "numerator": -47,
+        "denominator": 92233720368547758080
+      },
+      {
+        "numerator": 53,
+        "denominator": 92233720368547758080
+      },
+      {
+        "numerator": 153,
+        "denominator": 92233720368547758080
+      },
+      {
+        "numerator": -207,
+        "denominator": 92233720368547758080
+      },
+      {
+        "numerator": -107,
+        "denominator": 92233720368547758080
+      },
+      {
+        "numerator": -7,
+        "denominator": 92233720368547758080
+      },
+      {
+        "numerator": 93,
+        "denominator": 92233720368547758080
+      },
+      {
+        "numerator": 193,
+        "denominator": 92233720368547758080
+      },
+      {
+        "numerator": -167,
+        "denominator": 92233720368547758080
+      },
+      {
+        "numerator": -67,
+        "denominator": 92233720368547758080
+      },
+      {
+        "numerator": 33,
+        "denominator": 92233720368547758080
+      },
+      {
+        "numerator": 133,
+        "denominator": 92233720368547758080
+      },
+      {
+        "numerator": -227,
+        "denominator": 92233720368547758080
+      },
+      {
+        "numerator": -127,
+        "denominator": 92233720368547758080
+      }
+    ]
+  },
+  "hidden_sensor": {
+    "gain": {
+      "numerator": 7,
+      "denominator": 5
+    },
+    "offset": {
+      "numerator": 5,
+      "denominator": 13
+    },
+    "reading_errors": [
+      {
+        "numerator": -1,
+        "denominator": 2475880078570760549798248448
+      },
+      {
+        "numerator": 1,
+        "denominator": 2475880078570760549798248448
+      },
+      {
+        "numerator": -1,
+        "denominator": 2475880078570760549798248448
+      },
+      {
+        "numerator": 1,
+        "denominator": 2475880078570760549798248448
+      }
+    ]
+  },
+  "actual_clock_profiles": [
+    {
+      "id": "linear-positive",
+      "first_window_mean": {
+        "numerator": 9,
+        "denominator": 8
+      },
+      "slope": {
+        "numerator": 1,
+        "denominator": 8388608
+      }
+    },
+    {
+      "id": "linear-negative",
+      "first_window_mean": {
+        "numerator": 9,
+        "denominator": 8
+      },
+      "slope": {
+        "numerator": -1,
+        "denominator": 8388608
+      }
+    }
+  ],
+  "constant_mean_reference": {
+    "id": "constant-mean-reference",
+    "first_window_mean": {
+      "numerator": 9,
+      "denominator": 8
+    },
+    "slope": {
+      "numerator": 0,
+      "denominator": 1
+    }
+  },
+  "preparation_clock_checks": [
+    {
+      "definition": "rho(s)=first_window_mean+slope*(s-H/2)",
+      "profile_id": "linear-positive",
+      "first_window_mean": {
+        "numerator": 9,
+        "denominator": 8
+      },
+      "initial_clock_rate": {
+        "numerator": 316659348799487,
+        "denominator": 281474976710656
+      },
+      "slope": {
+        "numerator": 1,
+        "denominator": 8388608
+      },
+      "observed_window_boundaries": [
+        {
+          "numerator": 0,
+          "denominator": 1
+        },
+        {
+          "numerator": 1,
+          "denominator": 50331648
+        },
+        {
+          "numerator": 1,
+          "denominator": 25165824
+        },
+        {
+          "numerator": 1,
+          "denominator": 16777216
+        },
+        {
+          "numerator": 1,
+          "denominator": 8388608
+        }
+      ],
+      "aperture_windows": [
+        [
+          {
+            "numerator": 0,
+            "denominator": 1
+          },
+          {
+            "numerator": 1,
+            "denominator": 50331648
+          }
+        ],
+        [
+          {
+            "numerator": 1,
+            "denominator": 50331648
+          },
+          {
+            "numerator": 1,
+            "denominator": 25165824
+          }
+        ],
+        [
+          {
+            "numerator": 1,
+            "denominator": 25165824
+          },
+          {
+            "numerator": 1,
+            "denominator": 16777216
+          }
+        ],
+        [
+          {
+            "numerator": 1,
+            "denominator": 16777216
+          },
+          {
+            "numerator": 1,
+            "denominator": 8388608
+          }
+        ]
+      ],
+      "sampled_rates": [
+        {
+          "numerator": 316659348799487,
+          "denominator": 281474976710656
+        },
+        {
+          "numerator": 949978046398463,
+          "denominator": 844424930131968
+        },
+        {
+          "numerator": 949978046398465,
+          "denominator": 844424930131968
+        },
+        {
+          "numerator": 316659348799489,
+          "denominator": 281474976710656
+        },
+        {
+          "numerator": 316659348799491,
+          "denominator": 281474976710656
+        }
+      ],
+      "global_rate_bounds": [
+        {
+          "numerator": 316659348799487,
+          "denominator": 281474976710656
+        },
+        {
+          "numerator": 316659348799491,
+          "denominator": 281474976710656
+        }
+      ],
+      "derivative_upper_bound": {
+        "numerator": 1,
+        "denominator": 8388608
+      },
+      "cumulative_structural_exposures": [
+        {
+          "numerator": 0,
+          "denominator": 1
+        },
+        {
+          "numerator": 474989023199231,
+          "denominator": 21250649172913403461632
+        },
+        {
+          "numerator": 949978046398463,
+          "denominator": 21250649172913403461632
+        },
+        {
+          "numerator": 9,
+          "denominator": 134217728
+        },
+        {
+          "numerator": 316659348799489,
+          "denominator": 2361183241434822606848
+        }
+      ],
+      "structural_segment_durations": [
+        {
+          "numerator": 474989023199231,
+          "denominator": 21250649172913403461632
+        },
+        {
+          "numerator": 3,
+          "denominator": 134217728
+        },
+        {
+          "numerator": 474989023199233,
+          "denominator": 21250649172913403461632
+        },
+        {
+          "numerator": 158329674399745,
+          "denominator": 2361183241434822606848
+        }
+      ],
+      "signed_averaged_exposure_differences": [
+        {
+          "numerator": -7,
+          "denominator": 255007790074960841539584
+        },
+        {
+          "numerator": -13,
+          "denominator": 255007790074960841539584
+        },
+        {
+          "numerator": -7,
+          "denominator": 255007790074960841539584
+        },
+        {
+          "numerator": 5,
+          "denominator": 28334198897217871282176
+        }
+      ],
+      "admitted": true,
+      "first_window_mean_identity": true
+    },
+    {
+      "definition": "rho(s)=first_window_mean+slope*(s-H/2)",
+      "profile_id": "linear-negative",
+      "first_window_mean": {
+        "numerator": 9,
+        "denominator": 8
+      },
+      "initial_clock_rate": {
+        "numerator": 316659348799489,
+        "denominator": 281474976710656
+      },
+      "slope": {
+        "numerator": -1,
+        "denominator": 8388608
+      },
+      "observed_window_boundaries": [
+        {
+          "numerator": 0,
+          "denominator": 1
+        },
+        {
+          "numerator": 1,
+          "denominator": 50331648
+        },
+        {
+          "numerator": 1,
+          "denominator": 25165824
+        },
+        {
+          "numerator": 1,
+          "denominator": 16777216
+        },
+        {
+          "numerator": 1,
+          "denominator": 8388608
+        }
+      ],
+      "aperture_windows": [
+        [
+          {
+            "numerator": 0,
+            "denominator": 1
+          },
+          {
+            "numerator": 1,
+            "denominator": 50331648
+          }
+        ],
+        [
+          {
+            "numerator": 1,
+            "denominator": 50331648
+          },
+          {
+            "numerator": 1,
+            "denominator": 25165824
+          }
+        ],
+        [
+          {
+            "numerator": 1,
+            "denominator": 25165824
+          },
+          {
+            "numerator": 1,
+            "denominator": 16777216
+          }
+        ],
+        [
+          {
+            "numerator": 1,
+            "denominator": 16777216
+          },
+          {
+            "numerator": 1,
+            "denominator": 8388608
+          }
+        ]
+      ],
+      "sampled_rates": [
+        {
+          "numerator": 316659348799489,
+          "denominator": 281474976710656
+        },
+        {
+          "numerator": 949978046398465,
+          "denominator": 844424930131968
+        },
+        {
+          "numerator": 949978046398463,
+          "denominator": 844424930131968
+        },
+        {
+          "numerator": 316659348799487,
+          "denominator": 281474976710656
+        },
+        {
+          "numerator": 316659348799485,
+          "denominator": 281474976710656
+        }
+      ],
+      "global_rate_bounds": [
+        {
+          "numerator": 316659348799485,
+          "denominator": 281474976710656
+        },
+        {
+          "numerator": 316659348799489,
+          "denominator": 281474976710656
+        }
+      ],
+      "derivative_upper_bound": {
+        "numerator": 1,
+        "denominator": 8388608
+      },
+      "cumulative_structural_exposures": [
+        {
+          "numerator": 0,
+          "denominator": 1
+        },
+        {
+          "numerator": 474989023199233,
+          "denominator": 21250649172913403461632
+        },
+        {
+          "numerator": 949978046398465,
+          "denominator": 21250649172913403461632
+        },
+        {
+          "numerator": 9,
+          "denominator": 134217728
+        },
+        {
+          "numerator": 316659348799487,
+          "denominator": 2361183241434822606848
+        }
+      ],
+      "structural_segment_durations": [
+        {
+          "numerator": 474989023199233,
+          "denominator": 21250649172913403461632
+        },
+        {
+          "numerator": 3,
+          "denominator": 134217728
+        },
+        {
+          "numerator": 474989023199231,
+          "denominator": 21250649172913403461632
+        },
+        {
+          "numerator": 158329674399743,
+          "denominator": 2361183241434822606848
+        }
+      ],
+      "signed_averaged_exposure_differences": [
+        {
+          "numerator": 7,
+          "denominator": 255007790074960841539584
+        },
+        {
+          "numerator": 13,
+          "denominator": 255007790074960841539584
+        },
+        {
+          "numerator": 7,
+          "denominator": 255007790074960841539584
+        },
+        {
+          "numerator": -5,
+          "denominator": 28334198897217871282176
+        }
+      ],
+      "admitted": true,
+      "first_window_mean_identity": true
+    },
+    {
+      "definition": "rho(s)=first_window_mean+slope*(s-H/2)",
+      "profile_id": "constant-mean-reference",
+      "first_window_mean": {
+        "numerator": 9,
+        "denominator": 8
+      },
+      "initial_clock_rate": {
+        "numerator": 9,
+        "denominator": 8
+      },
+      "slope": {
+        "numerator": 0,
+        "denominator": 1
+      },
+      "observed_window_boundaries": [
+        {
+          "numerator": 0,
+          "denominator": 1
+        },
+        {
+          "numerator": 1,
+          "denominator": 50331648
+        },
+        {
+          "numerator": 1,
+          "denominator": 25165824
+        },
+        {
+          "numerator": 1,
+          "denominator": 16777216
+        },
+        {
+          "numerator": 1,
+          "denominator": 8388608
+        }
+      ],
+      "aperture_windows": [
+        [
+          {
+            "numerator": 0,
+            "denominator": 1
+          },
+          {
+            "numerator": 1,
+            "denominator": 50331648
+          }
+        ],
+        [
+          {
+            "numerator": 1,
+            "denominator": 50331648
+          },
+          {
+            "numerator": 1,
+            "denominator": 25165824
+          }
+        ],
+        [
+          {
+            "numerator": 1,
+            "denominator": 25165824
+          },
+          {
+            "numerator": 1,
+            "denominator": 16777216
+          }
+        ],
+        [
+          {
+            "numerator": 1,
+            "denominator": 16777216
+          },
+          {
+            "numerator": 1,
+            "denominator": 8388608
+          }
+        ]
+      ],
+      "sampled_rates": [
+        {
+          "numerator": 9,
+          "denominator": 8
+        },
+        {
+          "numerator": 9,
+          "denominator": 8
+        },
+        {
+          "numerator": 9,
+          "denominator": 8
+        },
+        {
+          "numerator": 9,
+          "denominator": 8
+        },
+        {
+          "numerator": 9,
+          "denominator": 8
+        }
+      ],
+      "global_rate_bounds": [
+        {
+          "numerator": 9,
+          "denominator": 8
+        },
+        {
+          "numerator": 9,
+          "denominator": 8
+        }
+      ],
+      "derivative_upper_bound": {
+        "numerator": 0,
+        "denominator": 1
+      },
+      "cumulative_structural_exposures": [
+        {
+          "numerator": 0,
+          "denominator": 1
+        },
+        {
+          "numerator": 3,
+          "denominator": 134217728
+        },
+        {
+          "numerator": 3,
+          "denominator": 67108864
+        },
+        {
+          "numerator": 9,
+          "denominator": 134217728
+        },
+        {
+          "numerator": 9,
+          "denominator": 67108864
+        }
+      ],
+      "structural_segment_durations": [
+        {
+          "numerator": 3,
+          "denominator": 134217728
+        },
+        {
+          "numerator": 3,
+          "denominator": 134217728
+        },
+        {
+          "numerator": 3,
+          "denominator": 134217728
+        },
+        {
+          "numerator": 9,
+          "denominator": 134217728
+        }
+      ],
+      "signed_averaged_exposure_differences": [
+        {
+          "numerator": 0,
+          "denominator": 1
+        },
+        {
+          "numerator": 0,
+          "denominator": 1
+        },
+        {
+          "numerator": 0,
+          "denominator": 1
+        },
+        {
+          "numerator": 0,
+          "denominator": 1
+        }
+      ],
+      "admitted": true,
+      "first_window_mean_identity": true
+    }
+  ],
+  "source_recipe": "A=4*pi-8*b; d=(2*pi-c)/8; zeta=(A-c)/2; D0=0,Dj=A+(j-1)*b; R0=zeta,Rj=zeta+c+(j-1)*d. Subtract full degree-weighted mean and add common phase plus centered residual. Form=common form+centered residual; mathematical pi outward enclosed. Same complete 36D source for every history.",
+  "observation": {
+    "aperture_windows": [
+      [
+        {
+          "numerator": 0,
+          "denominator": 1
+        },
+        {
+          "numerator": 1,
+          "denominator": 50331648
+        }
+      ],
+      [
+        {
+          "numerator": 1,
+          "denominator": 50331648
+        },
+        {
+          "numerator": 1,
+          "denominator": 25165824
+        }
+      ],
+      [
+        {
+          "numerator": 1,
+          "denominator": 25165824
+        },
+        {
+          "numerator": 1,
+          "denominator": 16777216
+        }
+      ],
+      [
+        {
+          "numerator": 1,
+          "denominator": 16777216
+        },
+        {
+          "numerator": 1,
+          "denominator": 8388608
+        }
+      ]
+    ],
+    "readout": "A_i=G*(1/width_i)*integral_Wi q^T*x(s)ds+O+eta_i",
+    "sensor": "Same held gain, offset and four realized scalar errors in both actual histories and reference",
+    "association": "Four normalized finite boxcar averages, not endpoint, midpoint or structural-exposure averages",
+    "curvature_coefficients": [
+      {
+        "numerator": 9,
+        "denominator": 4
+      },
+      {
+        "numerator": -9,
+        "denominator": 2
+      },
+      {
+        "numerator": 9,
+        "denominator": 4
+      },
+      {
+        "numerator": 0,
+        "denominator": 1
+      }
+    ],
+    "contrast_pairs": [
+      [
+        1,
+        0
+      ],
+      [
+        3,
+        2
+      ]
+    ],
+    "numerical_band": "Shared validated full-state integral increments divided by exact observed window width; never inverse or leading-response target"
+  },
+  "numerics": {
+    "actual_histories": 2,
+    "reference_histories": 1,
+    "producer_call_cap": 3,
+    "windows_per_history": 4,
+    "total_step_cap": 12,
+    "steps_per_window": 1,
+    "order": 4,
+    "picard_iteration_cap": 16,
+    "interval_bits": 128,
+    "dimension": 38,
+    "observed_window_starts": [
+      {
+        "numerator": 0,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 50331648
+      },
+      {
+        "numerator": 1,
+        "denominator": 25165824
+      },
+      {
+        "numerator": 1,
+        "denominator": 16777216
+      }
+    ],
+    "observed_window_durations": [
+      {
+        "numerator": 1,
+        "denominator": 50331648
+      },
+      {
+        "numerator": 1,
+        "denominator": 50331648
+      },
+      {
+        "numerator": 1,
+        "denominator": 50331648
+      },
+      {
+        "numerator": 1,
+        "denominator": 16777216
+      }
+    ],
+    "phase_increments": [
+      {
+        "numerator": 1,
+        "denominator": 4
+      },
+      {
+        "numerator": 0,
+        "denominator": 1
+      },
+      {
+        "numerator": 0,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 2
+      }
+    ],
+    "max_recorded_average_halfwidth": {
+      "numerator": 1,
+      "denominator": 19807040628566084398385987584
+    },
+    "policy": "One new four-window producer call per history, each window one order 4 source-box Taylor step with order 5 whole-tube remainder. Carry all 38 including cumulative z. No time subdivision, clock reset, quadrature approximation, accumulator reset, retry or retuning. Global smooth domain separate from exact affine clock positivity."
+  },
+  "public_packet": {
+    "schema": "tnfr.sine-aperture-public-inference.v1",
+    "inverse_keys": [
+      "bulk_angle_bounds",
+      "receiver_short_angle_bounds",
+      "form_radius",
+      "phase_radius",
+      "phase_increments",
+      "probe_duration",
+      "averaged_reading_bounds",
+      "readout_error_bound",
+      "readout_gain_bounds",
+      "clock_rate_bounds",
+      "clock_rate_derivative_bound"
+    ],
+    "worker": "build/aperture-inference-freeze/invert_public_packet.py",
+    "scope": "Fresh process receives only11 public primitives and fixed controls via stdin. No hidden source, clock profile, rate/exposure, sensor realization, reference averages or producer report. Software information exclusion, not cryptographic blindness."
+  },
+  "controls": {
+    "false_bulk_angle_bounds": [
+      {
+        "numerator": 11,
+        "denominator": 8
+      },
+      {
+        "numerator": 353,
+        "denominator": 256
+      }
+    ],
+    "false_gain_bounds": [
+      {
+        "numerator": 31,
+        "denominator": 16
+      },
+      {
+        "numerator": 2,
+        "denominator": 1
+      }
+    ],
+    "false_clock_bounds": [
+      {
+        "numerator": 25,
+        "denominator": 32
+      },
+      {
+        "numerator": 13,
+        "denominator": 16
+      }
+    ],
+    "equal_phase_increments": [
+      {
+        "numerator": 1,
+        "denominator": 4
+      },
+      {
+        "numerator": 1,
+        "denominator": 4
+      }
+    ]
+  },
+  "thresholds": {
+    "primary_actual_angle_width": {
+      "numerator": 1,
+      "denominator": 1024
+    },
+    "primary_effective_gain_width": {
+      "numerator": 1,
+      "denominator": 2048
+    },
+    "primary_gain_width": {
+      "numerator": 1,
+      "denominator": 16
+    },
+    "primary_mean_clock_width": {
+      "numerator": 1,
+      "denominator": 64
+    }
+  },
+  "phase_blind_alternative": {
+    "structural_rows": "x_tau=-A*x; theta_tau=gamma*A*x",
+    "preparation": "Same complete source, actual clock, phase-only events and held finite-aperture sensor",
+    "recorded_average_contrast_bound": "2*G_plus*X+2*delta for both declared average contrasts, using centered heat contraction and q dual norm1"
+  },
+  "prospective_separation": {
+    "positive_minus_reference_signs": [
+      1,
+      1,
+      1,
+      -1
+    ],
+    "negative_minus_reference_signs": [
+      -1,
+      -1,
+      -1,
+      1
+    ],
+    "true_average_separation_lower_in_delta_units": [
+      {
+        "numerator": 200704,
+        "denominator": 84375
+      },
+      {
+        "numerator": 372736,
+        "denominator": 84375
+      },
+      {
+        "numerator": 200704,
+        "denominator": 84375
+      },
+      {
+        "numerator": 28672,
+        "denominator": 1875
+      }
+    ],
+    "true_negative_minus_positive_curvature_lower_in_delta_units": {
+      "numerator": 229376,
+      "denominator": 15625
+    },
+    "scope": "Prospective analytic strict lower bounds, not evaluated observations; same realized sensor errors cancel between histories"
+  },
+  "prediction": "Both actual primaries cover original nominal/actual angle,J=G*first-window-mean,G and mean clock with fixedstrict widths; false priors exclude, equal inputs abstain and heat contrasts exclude. Positive first three averages>reference>negative; positive last average<reference<negative. Every complete difference interval lies within its rebuilt clock transfer allowance. Composed C_positive<C_negative. H nodal 36 enclosures intersect before/after event as consistency only; clock and cumulativeintegral coordinates are not expected equal.",
+  "stopping_rule": "Complete source/profile/sensor admission; fixed38D window certificates and complete handoffs; phase-only/passive events; observed-time integral increment normalization; numerical recorded average halfwidth<=delta/16; public-only hash; primary availability/coverage/strict widths; fixed false/equal/heat controls; all four signed transfers and whole difference containment; H nodal 36 overlap; paired composed curvature separation. Optional acute flags are not required. No physical or pointwise clock claim.",
+  "first_attempt": "Exclusive attempt ledger before first flow; refuse existing ledger/result. Preserve completed prefix and first failure; stop later acquisition after incomplete history. No retries, overwrite or inverse on reference. At most 3 producer calls and12 reserved steps; unexpected exceptions retain known prefix and declared reserved budget without inventing an internal step count.",
+  "runtime": {
+    "python": "3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows",
+    "seed": null,
+    "backend": "Exact Fraction and shared outward dyadic128 Picard/Taylor",
+    "seed_scope": "Explicit deterministic full source, sensor and clock recipes"
+  },
+  "scope": "Conditional finite software geometry/gain/mean-clock inference with substantial fixed apertures. No point-sensor replacement, actual profile reconstruction, empirical kernel calibration, source formation or unique physical law."
+}

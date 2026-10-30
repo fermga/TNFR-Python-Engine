@@ -1,0 +1,22 @@
+{
+  "schema":"tnfr.sine-class-comparison-freeze.v1",
+  "source_base_commit":"8e40dac013c026c0f198a2f95131512277286bbf",
+  "runtime_overlays":[],
+  "evaluation_status_at_freeze":"not_evaluated",
+  "artifacts":[
+    {
+      "path":"docs/assets/sine_formed_classes/class-comparison-readout-v1.protocol.json",
+      "bytes":121655,
+      "sha256":"c7178e6cbaebfead12a66a020e54d274d9c4c7199d899cea1316239c50ad6dab"
+    },
+    {
+      "path":"docs/assets/sine_formed_classes/class-comparison-readout-v1.source.zip",
+      "bytes":1433580,
+      "sha256":"564642f21fea44929f53463e2391a10e569bfe81b72e1c4e964eb3c5610424f7"
+    }
+  ],
+  "prospective_owner":"theory/nodal/SINE_CLASS_COMPARISON_PROTOCOL.md",
+  "future_evaluator":"build/class-comparison-freeze/evaluate_comparison.py",
+  "scope":"Protocol and source association only; no response, attempt, solver success or physical evaluation.",
+  "provenance_limits":"Digests associate bytes; they do not authenticate execution, chronology or scientific premises."
+}

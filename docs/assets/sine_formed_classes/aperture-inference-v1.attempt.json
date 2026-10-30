@@ -1,0 +1,8 @@
+{
+  "schema": "tnfr.sine-aperture-first-attempt.v1",
+  "started_utc": "2026-10-08T22:42:22.681857+00:00",
+  "source_base_commit": "035965355a8066622eebabd6fe08eedee9c7aef5",
+  "source_archive_sha256": "b8b48ae072411a871063c1db22f22e7e5ed851b4641b9b44dd1a14ddbad1c222",
+  "protocol_sha256": "6895321680a5c3ea0d3fe2c922f1fd0518b1f8a0928ae4ce066f9210876b3b72",
+  "policy": "No second attempt or overwritten result"
+}

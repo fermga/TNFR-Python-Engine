@@ -1,0 +1,352 @@
+{
+  "schema": "tnfr.retirement-manifest.v1",
+  "date": "2026-10-06",
+  "scope": "Retire superseded copies, isolated discarded campaigns and unused compatibility/policy helpers. Keep useful conditional results, negative controls, current research and frozen evidence.",
+  "recovery": "Read git cat-file blob <git_blob> using binary-safe output and verify git_blob_sha256. Checkout newline conversion can change working_sha256. Explicit byte edits preserve the one uncommitted document difference.",
+  "api_migration": "docs/API_CONTRACTS.md#removed-unsupported-helpers",
+  "files": [
+    {
+      "path": "applications/factorization-lab/notebooks/archive/spectral_history_legacy_2026_09_19.ipynb",
+      "reason": "Previously retired notebook depends on removed _fft_engine, supplied synthetic spectra, and notebook-incompatible __file__; production regression tests supersede it.",
+      "replacement": "applications/factorization-lab/README.md#verification-and-historical-evidence",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "95a973a75e825aec1eef4f12312ea8db5db25beb",
+      "git_blob_bytes": 37107,
+      "git_blob_sha256": "1b67bb2a7fdbd9b26fb9a96082f7519111a2287dab974e94436cf2f6dea6dfe5",
+      "working_bytes": 37107,
+      "working_sha256": "1b67bb2a7fdbd9b26fb9a96082f7519111a2287dab974e94436cf2f6dea6dfe5",
+      "working_equals_git": true,
+      "working_equals_git_after_newline_normalization": true,
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/applications/factorization-lab/notebooks/archive/spectral_history_legacy_2026_09_19.ipynb"
+    },
+    {
+      "path": "benchmarks/b0star_alpha_canonical_product_graphs.py",
+      "reason": "Isolated completed B0-star product-graph driver retains obsolete HIGH-priority queue and append-results instructions tied to removed section labels. Shared arithmetic/spectral kernels and retained conditional results remain available.",
+      "replacement": [
+        "theory/TNFR_RIEMANN_RESEARCH_NOTES.md",
+        "theory/research/FIVE_STAGE_EXECUTION_PLAN.md",
+        "src/tnfr/riemann/prime_ladder_hamiltonian.py"
+      ],
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "af6648c37f525958bfb8e7425be3f871c5d8e569",
+      "git_blob_bytes": 20121,
+      "git_blob_sha256": "640df65c2cb6992b730b0b769cfe16dded02ad22d0c54423fe27107866656465",
+      "working_bytes": 20670,
+      "working_sha256": "5628564e07df458eeb0a23d6714b912a07f3ea1510d6c9203b528b3e8af175c5",
+      "working_equals_git": false,
+      "working_equals_git_after_newline_normalization": true,
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/benchmarks/b0star_alpha_canonical_product_graphs.py"
+    },
+    {
+      "path": "benchmarks/boundary_vibration.py",
+      "reason": "Isolated obsolete boundary-vibration campaign equates supplied arithmetic carriers with a nodal derivation and retains superseded G4/canonical-source claims. No maintained caller or frozen published artifact references this driver.",
+      "replacement": [
+        "theory/TNFR_RIEMANN_RESEARCH_NOTES.md#4-finite-pulse-and-analytic-phase-are-different-objects",
+        "src/tnfr/riemann/von_mangoldt.py",
+        "src/tnfr/riemann/prime_ladder_hamiltonian.py"
+      ],
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "ffd9df1308ce480c2e15b22db691eec39666411e",
+      "git_blob_bytes": 19625,
+      "git_blob_sha256": "27ae082ca7d1296292747c72db19d22d33b2f6a66d7912f8cc2044b68bd930d6",
+      "working_bytes": 20098,
+      "working_sha256": "fdfe8af6f45d3abe2d1da208a937b36272a666308efd785f2c05b87f7a6d7001",
+      "working_equals_git": false,
+      "working_equals_git_after_newline_normalization": true,
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/benchmarks/boundary_vibration.py"
+    },
+    {
+      "path": "benchmarks/kuramoto_farey_bridge.py",
+      "reason": "Isolated circle-map campaign identifies a supplied discrete phase map as a reduction of the form-only nodal identity and promotes its arithmetic analogy to emergence. No maintained caller or frozen published artifact references this driver.",
+      "replacement": [
+        "theory/NODAL_PARAMETER_FOUNDATIONS.md",
+        "theory/TNFR_NUMBER_THEORY.md",
+        "src/tnfr/dynamics/phase_evolution.py"
+      ],
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "317277a395710613cfe890344190def307a84405",
+      "git_blob_bytes": 23977,
+      "git_blob_sha256": "fc7e65da3d10f743cf1be95c40ff4ab42ab6aa029a4b31fee9fee8d7831a2cee",
+      "working_bytes": 24589,
+      "working_sha256": "96b6f940f2faa020f736187f983be40d8a3013604f6585e1d2368ff469fe45e7",
+      "working_equals_git": false,
+      "working_equals_git_after_newline_normalization": true,
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/benchmarks/kuramoto_farey_bridge.py"
+    },
+    {
+      "path": "benchmarks/pulse_phase_coherence_budget.py",
+      "reason": "Isolated historical pulse-budget campaign claims a critical-line finite pulse identifies analytic zeta and that its finite RMS checks validate grammar U2/RH content. The current Riemann scope explicitly rejects those identifications.",
+      "replacement": [
+        "theory/TNFR_RIEMANN_RESEARCH_NOTES.md#4-finite-pulse-and-analytic-phase-are-different-objects",
+        "src/tnfr/riemann/pulse_coherence.py"
+      ],
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "e75349b671bcc4c05139c2cab27ecc6da3c816d1",
+      "git_blob_bytes": 7828,
+      "git_blob_sha256": "3c0eb5717b7cb60ad7ebd13c4f02870a59f6d6ae3c89213aae4a1e6ead4d638b",
+      "working_bytes": 8013,
+      "working_sha256": "9ce833b0e055b951fe8cda456b2ee02ff4c39d5e3f379a8f5a5ff1a184a7266d",
+      "working_equals_git": false,
+      "working_equals_git_after_newline_normalization": true,
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/benchmarks/pulse_phase_coherence_budget.py"
+    },
+    {
+      "path": "examples/03_riemann_zeta/157_nodal_pulse_phase_attack.py",
+      "reason": "Isolated historical attack-surface example equates an unregularized critical-line Dirichlet sum with analytic zeta and presents a retired RH campaign as the live frontier. The shared pulse implementation/tests and current analytic-scope owner remain.",
+      "replacement": [
+        "theory/TNFR_RIEMANN_RESEARCH_NOTES.md#4-finite-pulse-and-analytic-phase-are-different-objects",
+        "src/tnfr/riemann/nodal_pulse.py",
+        "src/tnfr/riemann/pulse_coherence.py"
+      ],
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "9ea9d5d3c68130e86304bd10ae041898fb5e425d",
+      "git_blob_bytes": 8094,
+      "git_blob_sha256": "9213c76ee6c2d8060e41a63a23a0f317e19f22289d36749a35d07685821d6825",
+      "working_bytes": 8304,
+      "working_sha256": "676911f95e067743a133f1b5a0226df5ded8651bacd303466c3c1064766e3659",
+      "working_equals_git": false,
+      "working_equals_git_after_newline_normalization": true,
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/examples/03_riemann_zeta/157_nodal_pulse_phase_attack.py"
+    },
+    {
+      "path": "src/tnfr/_compat.py",
+      "reason": "Obsolete compatibility shim or unused dependency stub under supported Python >=3.10; live imports use the standard library.",
+      "replacement": "docs/API_CONTRACTS.md#removed-unsupported-helpers",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "cce55c8a858ae0b6eff5124f3c6635874caec285",
+      "git_blob_bytes": 413,
+      "git_blob_sha256": "ecfba97259f16706a3032a2d705099876a69efa5cb1a488907b7641515fd9389",
+      "working_bytes": 423,
+      "working_sha256": "700aa23f2d93379b60b5c5cb28ac16b737a716a7d00991a5f0d0cf509c5fb9b1",
+      "working_equals_git": false,
+      "working_equals_git_after_newline_normalization": true,
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/src/tnfr/_compat.py"
+    },
+    {
+      "path": "src/tnfr/compat/__init__.py",
+      "reason": "Obsolete compatibility shim or unused dependency stub under supported Python >=3.10; live imports use the standard library.",
+      "replacement": "docs/API_CONTRACTS.md#removed-unsupported-helpers",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "c762a0e1c8528d6b9018feff5392336617a61bfe",
+      "git_blob_bytes": 2089,
+      "git_blob_sha256": "ad2d78c57a356a98e11ef393cd92ddffe0e0a4f288fb73f9e13ac574459b0828",
+      "working_bytes": 2174,
+      "working_sha256": "895bb0f427320be2d8e94830a3626c4b88b4ce486338697a0d86bb09f93dadc3",
+      "working_equals_git": false,
+      "working_equals_git_after_newline_normalization": true,
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/src/tnfr/compat/__init__.py"
+    },
+    {
+      "path": "src/tnfr/compat/dataclass.py",
+      "reason": "Obsolete compatibility shim or unused dependency stub under supported Python >=3.10; live imports use the standard library.",
+      "replacement": "docs/API_CONTRACTS.md#removed-unsupported-helpers",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "bfb209cfd93147d2d155d07054823771e6b95a91",
+      "git_blob_bytes": 3396,
+      "git_blob_sha256": "4442370daa0425737effe7c826219a6fa25c8a91177b82641a0de20715ed8ee1",
+      "working_bytes": 3532,
+      "working_sha256": "e6e1e66f604df592033b7bf61d4570e45d73a84fe2abef15170e675b5a019566",
+      "working_equals_git": false,
+      "working_equals_git_after_newline_normalization": true,
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/src/tnfr/compat/dataclass.py"
+    },
+    {
+      "path": "src/tnfr/compat/jsonschema_stub.py",
+      "reason": "Obsolete compatibility shim or unused dependency stub under supported Python >=3.10; live imports use the standard library.",
+      "replacement": "docs/API_CONTRACTS.md#removed-unsupported-helpers",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "d40f86b643edf4ee8b36beee3f8e3f1196a7bb16",
+      "git_blob_bytes": 1582,
+      "git_blob_sha256": "0606def5f95caae5d153dd0b6cbb44590664ac17c09c185046dd1ed4062afbcc",
+      "working_bytes": 1639,
+      "working_sha256": "ea9bdc047d4eec102362ce9f7b5985b13dc6b64f017aede62d7728d7fcfa8e4d",
+      "working_equals_git": false,
+      "working_equals_git_after_newline_normalization": true,
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/src/tnfr/compat/jsonschema_stub.py"
+    },
+    {
+      "path": "src/tnfr/compat/matplotlib_stub.py",
+      "reason": "Obsolete compatibility shim or unused dependency stub under supported Python >=3.10; live imports use the standard library.",
+      "replacement": "docs/API_CONTRACTS.md#removed-unsupported-helpers",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "0ef2395bc4cb6a0af2eb57e7334f4820cc9df28e",
+      "git_blob_bytes": 1835,
+      "git_blob_sha256": "27067fe8b7503692f82327ee0596f50beb785d9d145a895c33a3e34c50e06c73",
+      "working_bytes": 1908,
+      "working_sha256": "471622eafdd841fef60f033e1048b92ea69b2aa7a35a826fb41992d3837472b7",
+      "working_equals_git": false,
+      "working_equals_git_after_newline_normalization": true,
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/src/tnfr/compat/matplotlib_stub.py"
+    },
+    {
+      "path": "src/tnfr/compat/numpy_stub.py",
+      "reason": "Obsolete compatibility shim or unused dependency stub under supported Python >=3.10; live imports use the standard library.",
+      "replacement": "docs/API_CONTRACTS.md#removed-unsupported-helpers",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "9ce1e23ac484ad46481b6a11089e89108fc498df",
+      "git_blob_bytes": 3342,
+      "git_blob_sha256": "04de38a708f89c276c8efca27c9fe6a5a75726001cb11c5916821a3a8f054a34",
+      "working_bytes": 3486,
+      "working_sha256": "02aa92da75b59228f7cfc5f7fbe1147ecd2cd58c5c89914567cd0a8915554b9d",
+      "working_equals_git": false,
+      "working_equals_git_after_newline_normalization": true,
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/src/tnfr/compat/numpy_stub.py"
+    },
+    {
+      "path": "src/tnfr/dynamics/dynamic_limits.py",
+      "reason": "Unused supplied metric-to-bound policy misrepresented as emergent; invents Si=0.5 when missing.",
+      "replacement": "docs/API_CONTRACTS.md#removed-unsupported-helpers",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "16268c51a7f063f4bd5c53732029ad61645ff91b",
+      "git_blob_bytes": 8127,
+      "git_blob_sha256": "f2354e40b0455fc5869f5e3e8a4bd9e264c8355d94b035f168d26dbb71139af4",
+      "working_bytes": 8369,
+      "working_sha256": "18381a8b2999d0ab0e9037603c3850850ec64c33f7f9ee40b3e83f4cd4b4a9c8",
+      "working_equals_git": false,
+      "working_equals_git_after_newline_normalization": true,
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/src/tnfr/dynamics/dynamic_limits.py"
+    },
+    {
+      "path": "src/tnfr/operators/algebra.py",
+      "reason": "Context comparisons do not establish SHA identity, idempotence, or commutativity under current event contracts.",
+      "replacement": "docs/API_CONTRACTS.md#removed-unsupported-helpers",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "aaba40d0118af5be76bf25e37b4ab7033d71bb11",
+      "git_blob_bytes": 10034,
+      "git_blob_sha256": "d347e7da5bd163782dc34e725133787f94449f38de5c5421c963a21ebba22f85",
+      "working_bytes": 10321,
+      "working_sha256": "1d3d5bec45ed9be22eaf44d3f12015f408d0c745d943384ac0dfbd94e155e19d",
+      "working_equals_git": false,
+      "working_equals_git_after_newline_normalization": true,
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/src/tnfr/operators/algebra.py"
+    },
+    {
+      "path": "src/tnfr/secure_config.py",
+      "reason": "Unused exact re-export; one maintained configuration security owner.",
+      "replacement": "src/tnfr/config/security.py",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "25e97dde5f1a0aad5c61aed6243e39332ae1db47",
+      "git_blob_bytes": 1258,
+      "git_blob_sha256": "3b73797f1e77e9d084fa9628364dae0c92b4a2448ba2d0716b0098a85baa8c83",
+      "working_bytes": 1304,
+      "working_sha256": "dc70df868deae4b80bb0bb233c6efbf3eb8aea496792a53b37f010aeb06785ff",
+      "working_equals_git": false,
+      "working_equals_git_after_newline_normalization": true,
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/src/tnfr/secure_config.py"
+    },
+    {
+      "path": "theory/APPLIED_STRUCTURAL_ANALYSIS.md",
+      "reason": "Duplicate factorization overview. Exact partial-pure-mode, arithmetic fallback, separate divisibility, proxy-field and evaluation premises are retained in the application guide.",
+      "replacement": "applications/factorization-lab/README.md",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "44fd169bdc0382a8d1caa2213541787f7b06b0ec",
+      "git_blob_bytes": 5525,
+      "git_blob_sha256": "c71c49970bd1c856f9301c1c1e82d19220c19907d3394525750a5d123786d45c",
+      "working_bytes": 5525,
+      "working_sha256": "b8787d4c6c609939584836941ac334eb959532c07f76a8deca707654f1f99aa8",
+      "working_equals_git": false,
+      "working_equals_git_after_newline_normalization": false,
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/theory/APPLIED_STRUCTURAL_ANALYSIS.md",
+      "uncommitted_byte_edits_from_git": [
+        {
+          "offset": 4224,
+          "delete_bytes": 4,
+          "insert_utf8": "blob"
+        }
+      ],
+      "recovery_note": "For exact pre-cleanup working bytes, apply these byte edits to the Git blob in descending offset order; verify working_sha256. Useful scope is consolidated in the replacement."
+    },
+    {
+      "path": "theory/NUCLEUS_A_PRIME_LADDER_ATLAS.md",
+      "reason": "Duplicate arithmetic milestone and command inventory. Valid input-provenance, classical-domain and finite-comparison limits are centralized in the current Riemann memo; runnable entry points remain in examples.",
+      "replacement": "theory/TNFR_RIEMANN_RESEARCH_NOTES.md",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "06a3bc2bcaefefd846d25b664708bb1b3c529965",
+      "git_blob_bytes": 10777,
+      "git_blob_sha256": "0afa634d158ff3e60fae4dc194c8a9d16817a4aed45e746a5cd1e23352150e77",
+      "working_bytes": 10964,
+      "working_sha256": "746a7a11ad531a95fc45e7aee9ba842620eaf624684dd26c68e695459da76377",
+      "working_equals_git": false,
+      "working_equals_git_after_newline_normalization": true,
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/theory/NUCLEUS_A_PRIME_LADDER_ATLAS.md"
+    },
+    {
+      "path": "theory/TNFR.pdf",
+      "reason": "Superseded historical manuscript, with incompatible dimensional and model definitions already audited in current foundations. Retain immutable source for quotations rather than another live theory authority.",
+      "replacement": "theory/FUNDAMENTAL_THEORY.md#25-dimensional-consistency-and-structural-activity",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "7768e02c12e0db5395d5a99d0df67d6a4ac59098",
+      "git_blob_bytes": 2803734,
+      "git_blob_sha256": "5ba0f4a2da2d01e550e7004c3c09c6927e6620826052df84cd28babbcbd34fc3",
+      "working_bytes": 2803734,
+      "working_sha256": "5ba0f4a2da2d01e550e7004c3c09c6927e6620826052df84cd28babbcbd34fc3",
+      "working_equals_git": true,
+      "working_equals_git_after_newline_normalization": true,
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/theory/TNFR.pdf"
+    },
+    {
+      "path": "theory/research/archive/EXECUTION_PLAN_PRE_FOUR_FOUNDATIONS_2026-09-26.txt",
+      "reason": "Superseded planning/status capture now committed; duplicates the sole current task queue and supplies no unique proof or frozen response.",
+      "replacement": "theory/research/FIVE_STAGE_EXECUTION_PLAN.md",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "d8001021d5b743e55fcc99e7cc6ade2a3383ff1d",
+      "git_blob_bytes": 75912,
+      "git_blob_sha256": "e33b97ee812a942ceec2aaef5b4516a87d91fd3cceac0101ab1c0ff1fb722526",
+      "working_bytes": 75912,
+      "working_sha256": "e33b97ee812a942ceec2aaef5b4516a87d91fd3cceac0101ab1c0ff1fb722526",
+      "working_equals_git": true,
+      "working_equals_git_after_newline_normalization": true,
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/theory/research/archive/EXECUTION_PLAN_PRE_FOUR_FOUNDATIONS_2026-09-26.txt"
+    },
+    {
+      "path": "theory/research/archive/PORTFOLIO_PRE_FOUR_FOUNDATIONS_2026-09-26.txt",
+      "reason": "Superseded planning/status capture now committed; duplicates current branch classification.",
+      "replacement": "TNFR_lineas_de_investigacion.txt",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "970f43e1b1a818f1d1d5cad31096bc17627df3ac",
+      "git_blob_bytes": 22274,
+      "git_blob_sha256": "840fde3de57d391215216b2ef3a85f144518ea37f6a7fb89317a2c3daa578c16",
+      "working_bytes": 22274,
+      "working_sha256": "840fde3de57d391215216b2ef3a85f144518ea37f6a7fb89317a2c3daa578c16",
+      "working_equals_git": true,
+      "working_equals_git_after_newline_normalization": true,
+      "recovery_url": "https://github.com/fermga/TNFR-Python-Engine/blob/6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7/theory/research/archive/PORTFOLIO_PRE_FOUR_FOUNDATIONS_2026-09-26.txt"
+    }
+  ],
+  "retired_symbols": [
+    {
+      "symbol": "tnfr.math.symbolic.evaluate_bifurcation_risk",
+      "former_public_exports": [
+        "tnfr.evaluate_bifurcation_risk",
+        "tnfr.math.evaluate_bifurcation_risk",
+        "tnfr.mathematics.evaluate_bifurcation_risk"
+      ],
+      "reason": "An arbitrary absolute threshold on the nodal product-rule acceleration establishes neither bifurcation nor stability and cannot admit THOL/IL or certify U4. No source consumer exists except the duplicated module demonstration and public re-exports.",
+      "replacement": [
+        "src/tnfr/math/symbolic.py::compute_second_derivative_symbolic (symbolic product rule only)",
+        "src/tnfr/operators/operator_contracts.py (registered operator contracts)",
+        "src/tnfr/operators/grammar_canon.py (grammar admission)"
+      ],
+      "source_path": "src/tnfr/math/symbolic.py",
+      "recovery_revision": "6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7",
+      "git_blob": "b49ef06a5d347df853bb485508816ac6697a614f",
+      "git_blob_sha256": "6a2c3df6364e9a6fe3cd53b360aaa248d0bf01583c0ddb48a236224b1ee832b7",
+      "scope": "Only the unsupported policy, its facade exports and duplicate module self-demo are removed; the symbolic calculus module remains."
+    }
+  ],
+  "corrections": [
+    {
+      "owner": "src/tnfr/math/symbolic.py",
+      "contract": "docs/API_CONTRACTS.md#removed-unsupported-helpers",
+      "change": "The normalized exponential pressure improper integral converges iff growth_rate < 0. At zero rate, finite increment equals elapsed horizon and the form grows linearly. Finite input admission and unavailable numerical projections are explicit."
+    },
+    {
+      "owner": "src/tnfr/validation/__init__.py",
+      "change": "Required compatibility imports now propagate failures; no empty-table or always-good fallback masks a missing implementation."
+    },
+    {
+      "owner": "theory/GAUGE_SYMMETRY_AND_UNIFICATION.md",
+      "change": "Distinguish real wrapped-edge cycle sum 2*pi*k from its final wrapped closure residual."
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "schema": "tnfr.sine-two-port-compatibility-evidence.v1",
+  "artifacts": [
+    {
+      "file": "two-port-compatibility-v1.protocol.json",
+      "bytes": 7250,
+      "sha256": "91cef4a7cb5ca32cee295ee21162db2db6e8226fad6cf81b555ba13cbe1c44d8"
+    },
+    {
+      "file": "two-port-compatibility-v1.source.zip",
+      "bytes": 23308,
+      "sha256": "6ce65e3155dc41f4c0156f103cdc04fdcc33ddbd294929db050b75e244782eb2"
+    },
+    {
+      "file": "two-port-compatibility-v1.json",
+      "bytes": 477037,
+      "sha256": "55edde9341b1be286d7f5927e09d1bf97d1519bad5d24665b3417a2868ffdba2"
+    }
+  ],
+  "source_base_commit": "3a313196640bfd99d2164d8c2c2e5c89cb504c50",
+  "runtime_overlays": [
+    "src/tnfr/physics/relational_sine_two_port_compatibility.py",
+    "src/tnfr/sdk/relational_reports.py"
+  ],
+  "source_reconstruction": "Checkout the base Git revision and overlay archived src/ files. Complete pre-evaluation proof, protocol and evaluator are included; unchanged dependencies remain at the base revision.",
+  "evaluation": "One fixed-budget primary assessment and one analytic matched-class control after freezing the complete protocol, proof and producing source. No trajectory or preparation handoff was run. Current-source regression tests are separate.",
+  "result_owner": "../../../theory/nodal/SINE_TWO_PORT_COMPATIBILITY.md#sine-two-port-compatibility",
+  "status": "certified_compatible",
+  "matched_control_status": "certified_compatible",
+  "frozen_stopping_rule": {
+    "primary_equilibrium_admitted": true,
+    "matched_equilibrium_admitted": true,
+    "positive_mismatch_current": true,
+    "matched_zero_current": true,
+    "undeformed_mismatch_excluded": true,
+    "strict_local_attraction": true
+  },
+  "frozen_stopping_rule_passed": true,
+  "scope": "Static admission of the existing unequal C9 winding classes to two distinct contacts under their specified positive-loss sine law. Root existence, complete-node balance, acute geometry and local attraction remain separate from acquisition, support occurrence, passive attachment and physical binding. Prior central-port evidence is unchanged.",
+  "provenance_limitations": "Hashes establish content consistency and source recoverability, not independent chronology authentication or physical acquisition."
+}

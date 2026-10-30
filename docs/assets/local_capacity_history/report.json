@@ -1,0 +1,45 @@
+{
+  "schema":"tnfr.local-capacity-history-verdict.v1",
+  "completed_utc":"2026-10-14T22:45:41.823546+00:00",
+  "response":{
+    "path":"response.json",
+    "bytes":898953,
+    "sha256":"7af0bc0fc7a11c79b4539319a0e96bc978433a7cbeae4e091b14740fe6db7230"
+  },
+  "checks":{
+    "local_stage_only":true,
+    "same_law_parent_endpoint_accuracy":true,
+    "certified_represented_trigger":true,
+    "recorded_trigger":true,
+    "recorded_endpoint_matches":true,
+    "explicit_clock_association":true,
+    "fresh_parent_pressure_positive":true,
+    "strict_endpoint_preconditions":true,
+    "actual_target_grammar":true,
+    "prefix_debt_retained":true,
+    "actual_prefix_retained":true,
+    "no_birth_or_support_change":true,
+    "read_only_endpoint_checks":true
+  },
+  "all_checks_passed":true,
+  "observed_acceleration":0.2513427734375,
+  "certified_acceleration_lower":{
+    "numerator":9659711334787220178698051,
+    "denominator":77371252455336267181195264
+  },
+  "parent_endpoint_error_bounds":[
+    {
+      "numerator":0,
+      "denominator":1
+    },
+    {
+      "numerator":2404737360377460575153,
+      "denominator":340282366920938463463374607431768211456
+    },
+    {
+      "numerator":2096240967770396472777,
+      "denominator":170141183460469231731687303715884105728
+    }
+  ],
+  "scope":"One declared represented preparation, actual local VAL and numerical temporal record; no THOL event"
+}

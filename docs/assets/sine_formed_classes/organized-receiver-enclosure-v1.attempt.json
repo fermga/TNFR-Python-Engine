@@ -1,0 +1,20 @@
+{
+  "schema":"tnfr.organized-receiver-enclosure-attempt.v1",
+  "started_utc":"2026-10-10T10:50:37.900126+00:00",
+  "source_base_commit":"3e5f552bc5b8f7e8a73e2469f71bf9305032c7ef",
+  "freeze_sha256":"1a08d0818f4cf89f7193cc0f44f32fdb8e2daba9f6620bf13aa93dded269707a",
+  "runtime_environment":{
+    "python":"3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+    "implementation":"cpython",
+    "platform":"Windows-11-10.0.26300-SP0",
+    "packages":{
+      "numpy":"2.3.3",
+      "scipy":"1.16.3",
+      "networkx":"3.5",
+      "mpmath":"1.3.0"
+    }
+  },
+  "seed":null,
+  "producer":"tnfr.research.organized_receiver_enclosure.run_receiver_enclosure",
+  "attempt_policy":"one_fixed_attempt_no_refinement_retry_or_alternative_route"
+}

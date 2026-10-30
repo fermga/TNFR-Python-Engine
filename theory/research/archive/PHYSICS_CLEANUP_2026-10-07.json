@@ -1,0 +1,79 @@
+{
+  "schema": "tnfr.cleanup-recovery.v1",
+  "date": "2026-10-07",
+  "scope": "Retire unconsumed physics helpers and duplicate mandatory-alias fallbacks; public APIs and mathematical laws remain unchanged.",
+  "recovery_revision": "5967dc3574d1eea91633a26099fd9833c33d8582",
+  "verification": "Private helper names appeared only at their definitions in a repository-wide consumer search; source identities refer to immutable committed bytes, not a copy of the working tree.",
+  "sources": [
+    {
+      "path": "src/tnfr/physics/canonical.py",
+      "git_blob": "273407538a76fba8ab3ce8159319976f2339dc17",
+      "git_blob_sha256": "ad25b2ca3e2ba44f446cf233cc713b79abe45119b32a6f37e59a21be9ae72ccb",
+      "source_unmodified_at_task_start": true,
+      "retired_private_functions": [
+        "_use_gpu_acceleration",
+        "_gpu_distance_matrix",
+        "_compute_phase_gradient_and_curvature"
+      ],
+      "retired_internal_flags": [
+        "_GPU_BACKENDS_AVAILABLE",
+        "_CACHE_AVAILABLE"
+      ],
+      "replacement": "Remove unconsumed private GPU/phase wrappers; retain public phase readers, shared constants.aliases and unconditional shared cache decorators."
+    },
+    {
+      "path": "src/tnfr/physics/_helpers.py",
+      "git_blob": "eb469ebbc12829527ff780523027afdf329e2d28",
+      "git_blob_sha256": "0e1013205c222fe4df6fd28011cd84198e90a8b2c9a0e023f7f601675d9ad95f",
+      "source_unmodified_at_task_start": true,
+      "retired_private_functions": [],
+      "retired_internal_flags": [],
+      "replacement": "Use the mandatory constants.aliases owner instead of a duplicate fallback catalog."
+    },
+    {
+      "path": "src/tnfr/physics/extended.py",
+      "git_blob": "bfb559a4e9cd77a8d27e4cf0fad2fb79daa50a37",
+      "git_blob_sha256": "7e7b0b34e6da4eebdc1ab369e1e9c2fb59cbc810901c69f4b274e86a74b59d20",
+      "source_unmodified_at_task_start": true,
+      "retired_private_functions": [],
+      "retired_internal_flags": [
+        "_CACHE_AVAILABLE"
+      ],
+      "replacement": "Use constants.aliases and shared cache decorators directly; retain live vectorization fallbacks."
+    },
+    {
+      "path": "src/tnfr/physics/fields.py",
+      "git_blob": "45b755adfc82a95a5a15f3503d79e0d38cf3ce5a",
+      "git_blob_sha256": "9b570607db9bba2dfe252e02df74bb3603f56e36cecc6ef319f93793765c7d6f",
+      "source_unmodified_at_task_start": true,
+      "retired_private_functions": [],
+      "retired_internal_flags": [
+        "_CACHE_AVAILABLE"
+      ],
+      "replacement": "Use constants.aliases and shared cache decorators directly; preserve stored-state admission and all field definitions."
+    },
+    {
+      "path": "src/tnfr/physics/spectral_conservation.py",
+      "git_blob": "81c2062b1c2648bfee0ba7ca3a2efff4ad6280d1",
+      "git_blob_sha256": "34d5caa8fd5520efbb29d42e1c07ec2dd1f3d843f62072c39311bd4a1a1fc9c9",
+      "source_unmodified_at_task_start": true,
+      "retired_private_functions": [
+        "_gft_fields"
+      ],
+      "retired_internal_flags": [],
+      "replacement": "Existing live gft calls retain the graph Fourier transform owner."
+    },
+    {
+      "path": "src/tnfr/physics/structural_diffusion.py",
+      "git_blob": "3fd6fd1a57bceeb4215e27f9bcc974591bb5099d",
+      "git_blob_sha256": "7ea77d8dc4a7c8e115b52e90757b28c15a68588d1216c819426efcd615295b39",
+      "source_unmodified_at_task_start": true,
+      "retired_private_functions": [
+        "_weighted_adjacency"
+      ],
+      "retired_internal_flags": [],
+      "replacement": "Existing read_conductance calls retain the authoritative conductance owner."
+    }
+  ],
+  "preserved": "No whole module, conditional proof, frozen protocol, source archive or evaluated response was retired or regenerated. Recent uncommitted pair-state and receiver work was retained in its canonical implementation and compatibility imports."
+}

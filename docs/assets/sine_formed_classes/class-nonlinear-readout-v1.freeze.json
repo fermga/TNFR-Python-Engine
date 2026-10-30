@@ -1,0 +1,23 @@
+{
+  "schema":"tnfr.sine-class-nonlinear-readout-freeze.v1",
+  "evaluation_status_at_freeze":"not_evaluated",
+  "source_base_commit":"fa8e98a9b1bdd755709da481de7fc092b57bfe65",
+  "runtime_overlays":[],
+  "artifacts":[
+    {
+      "path":"docs/assets/sine_formed_classes/class-nonlinear-readout-v1.protocol.json",
+      "bytes":33534,
+      "sha256":"5a2d24df657e07c1bf08e3caffbc5800faf3f1460732e08ba9cce8a43930e776"
+    },
+    {
+      "path":"docs/assets/sine_formed_classes/class-nonlinear-readout-v1.source.zip",
+      "bytes":196955,
+      "sha256":"c8d96bddc169b7de29bdc21412174eb9bacc63d0ed290a61ec242d2c14171826"
+    }
+  ],
+  "prospective_owner":"theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-frozen-evaluation",
+  "future_evaluator":"build/class-nonlinear-readout-freeze/evaluate_readout.py",
+  "immutable_after_evaluation":true,
+  "scope":"Preparation, source association and numerical policy only. No response, attempt, solver success, acquisition or scientific stopping verdict at freeze.",
+  "provenance_limits":"Checksums associate bytes; they do not authenticate chronology, execution, scientific truth or future archive availability."
+}

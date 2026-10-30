@@ -1,0 +1,103 @@
+{
+  "schema": "tnfr.benchmark-retirement.v1",
+  "date": "2026-09-27",
+  "scope": "Retired unsupported or orphan instruments; retained science and frozen evidence are not rerun or rewritten.",
+  "recovery": "Use git cat-file blob <git_blob> and binary-safe output; Git blob hashes differ from checkout newline hashes.",
+  "files": [
+    {
+      "path": "benchmarks/phi_s_confinement_investigation.py",
+      "reason": "Searches obsolete golden-ratio and 0.7711 thresholds; numerical coincidences do not derive current potential or U6 policies. No maintained consumers.",
+      "replacement": "docs/STRUCTURAL_FIELDS_TETRAD.md",
+      "recovery_revision": "07db0271d9d3fdffce198b53f1abeae699db9189",
+      "git_blob": "9710a682d6e93ba962cbf6ed7b08e87e9919197f",
+      "git_blob_bytes": 8333,
+      "git_blob_sha256": "41fcbcac24d6ef1283e9c1777657af98752cb81fddf81fe1c0e2087ff7325eb7",
+      "working_bytes": 8552,
+      "working_sha256": "a2b02ce0443dbed858e4164da0598b5b9a734e24a06f1f4a9c6d3ce1a3aaf043"
+    },
+    {
+      "path": "benchmarks/u2_destabilization_irreversibility.py",
+      "reason": "Treats U2 and finite pressure integral as universal persistence theorems; reported external comparisons lack replay provenance and the surrogate claims exceed their implementation. No maintained consumers.",
+      "replacement": "theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md",
+      "recovery_revision": "07db0271d9d3fdffce198b53f1abeae699db9189",
+      "git_blob": "a08564388b889ac5cdc707c279ef86b50b2585cf",
+      "git_blob_bytes": 8495,
+      "git_blob_sha256": "04eb3cb163cddd9e2387bdf25a5c02dda1ac68ec2efdd7def23768ca1813f4ce",
+      "working_bytes": 8693,
+      "working_sha256": "7f26109f6178b6d167df98e16d3bf433490418e484c419443d07073c00cfb230"
+    },
+    {
+      "path": "benchmarks/tetrad_results_aggregate.py",
+      "reason": "Orphan format-specific aggregator for the retired tetrad_scaling_benchmark producer; no maintained consumers or tests. Historical raw outputs remain untouched.",
+      "replacement": "docs/STRUCTURAL_FIELDS_TETRAD.md",
+      "recovery_revision": "07db0271d9d3fdffce198b53f1abeae699db9189",
+      "git_blob": "d234a6b3f8e1839bfdc747748149f532869d3c5b",
+      "git_blob_bytes": 7823,
+      "git_blob_sha256": "ec8055456a7d8666e2a3e91f02fede0e0bfe4d8d2f38c973e601fafa981284a0",
+      "working_bytes": 8077,
+      "working_sha256": "50d125cb5da8a63112334ee943efcfd5834ace29d3c7bb24231690b9758ccca8"
+    },
+    {
+      "path": "benchmarks/benchmark_optimization_tracks.py",
+      "reason": "Claims a 70 percent optimization gain while comparing identical phase/potential calls, declaring unmeasured cache hit rates and permitting mock timings after obsolete imports fail. No maintained consumers.",
+      "replacement": "benchmarks/stable_node_offset_scaling.py",
+      "recovery_revision": "07db0271d9d3fdffce198b53f1abeae699db9189",
+      "git_blob": "ee51e8e9f48a8782bebbfd52493eca6832262fb8",
+      "git_blob_bytes": 21572,
+      "git_blob_sha256": "71be6c03d7abdaf7c224d0a5f4d25cf2d94d2bff2da92bd5cfbd2ec3ebd775b6",
+      "working_bytes": 22164,
+      "working_sha256": "cb6fe3ab1d50d5f55dd68255ef4e62a5976a39beb92f95ea85fc2bf369b0d1ff"
+    },
+    {
+      "path": "benchmarks/nodal_transport_readouts.py",
+      "reason": "Unowned scratch timing script consumes sys.argv and executes measurements on import; no caller, documented protocol, independent test or frozen source dependency. Current diffusion kernels retain their tests.",
+      "replacement": "tests/physics/test_structural_diffusion.py",
+      "recovery_revision": "07db0271d9d3fdffce198b53f1abeae699db9189",
+      "git_blob": "8d470a14948b432398a1d35fc717d129d844bf34",
+      "git_blob_bytes": 1508,
+      "git_blob_sha256": "eb8be2cb568e7bf371923b2510208c3726fea2fc4efe7b4884be662f2cd4def5",
+      "working_bytes": 1552,
+      "working_sha256": "514deb31dc53eb80ac642675de45dfd41df4e1507c2b2a0060377f8c059850b0"
+    },
+    {
+      "path": "benchmarks/golden_residue_remesh_bridge.py",
+      "reason": "Promotes finite DFT thresholds to exact projector membership, assumes an unproved circle-map reduction and obsolete lattice/constant claims. No maintained consumers; scoped projection kernels and Riemann boundaries remain.",
+      "replacement": "theory/TNFR_RIEMANN_RESEARCH_NOTES.md",
+      "recovery_revision": "07db0271d9d3fdffce198b53f1abeae699db9189",
+      "git_blob": "0d243bcf887f4a559f5b2f252433a7a894644327",
+      "git_blob_bytes": 17437,
+      "git_blob_sha256": "4e8e5e2fd8563139609a44d0fd7ebefcb64081c25078a48be9c5bb804e43c2dc",
+      "working_bytes": 17883,
+      "working_sha256": "abb42b1fbe4d643e7ff3375ccae11da3c417a7f97dbb058a0c37d6b264d4a2d4"
+    },
+    {
+      "path": "benchmarks/nodal_propagator_residue_bridge.py",
+      "reason": "Identifies a supplied prime-spectrum exponential with nodal evolution and infers universal spectral obstructions from permutation-invariant sums. No maintained consumers; conditional spectral controls and kernels remain.",
+      "replacement": "theory/TNFR_RIEMANN_RESEARCH_NOTES.md",
+      "recovery_revision": "07db0271d9d3fdffce198b53f1abeae699db9189",
+      "git_blob": "581e22a206013d675c19ccb455a7852fe2be4e07",
+      "git_blob_bytes": 14435,
+      "git_blob_sha256": "2a79bd810629d3c7614b2efd45b3c25ea69264a806947f881359e9a7059cdef6",
+      "working_bytes": 14783,
+      "working_sha256": "88e9c345858da6801edc46c20706f60bbdc8a1941e87411c0a65e0899edb9568"
+    },
+    {
+      "path": "benchmarks/benchmark_utils.py",
+      "reason": "Single-consumer topology helper with unused alternative branches (including incorrect requested grid sizes); the curvature example now owns its exact supplied WS preparation without an extra benchmark abstraction.",
+      "replacement": "examples/08_emergent_geometry/k_phi_safety_demo.py",
+      "recovery_revision": "07db0271d9d3fdffce198b53f1abeae699db9189",
+      "git_blob": "1088ed392ecebc3c9a09be615c9fa22095c95669",
+      "git_blob_bytes": 3673,
+      "git_blob_sha256": "914735907272f7623ab1b8e501173a84c38c890c33176abb44a960ef01f3c21c",
+      "working_bytes": 3796,
+      "working_sha256": "004baa02196e7139e7abd141c1edf73b0ad3c22fe5fc67eff3e60aaa12193ae8"
+    }
+  ],
+  "migrations": [
+    {
+      "from": "benchmarks/k_phi_safety_demo.py",
+      "to": "examples/08_emergent_geometry/k_phi_safety_demo.py",
+      "scope": "Configured curvature advisory illustration; supplied WS preparation and operator outcomes preserved."
+    }
+  ]
+}

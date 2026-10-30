@@ -1,0 +1,3258 @@
+{
+  "metadata": {
+    "export_timestamp": 1764565211.5922003,
+    "trajectory_length": 5,
+    "modulus_n": 91,
+    "partition_strategy": "spectral_paley_snapshot_demo"
+  },
+  "snapshots": [
+    {
+      "snapshot_id": "snap_731ee0f1de24",
+      "timestamp": 1764565211.1494575,
+      "verification_stage": "initialization",
+      "modulus_n": 91,
+      "candidate_factor": null,
+      "partition_strategy": "spectral_paley_snapshot_demo",
+      "nodal_states": [
+        {
+          "node_id": 0,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.5,
+          "theta": 0.0,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836476,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 1,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.6,
+          "theta": 0.2,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836485,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 2,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.7,
+          "theta": 0.4,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836497,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 3,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.7999999999999999,
+          "theta": 0.6000000000000001,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836504,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 4,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.8999999999999999,
+          "theta": 0.8,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836512,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 5,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.9999999999999999,
+          "theta": 1.0,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836516,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 6,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 1.1,
+          "theta": 1.2000000000000002,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836519,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 7,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 1.2000000000000002,
+          "theta": 1.4000000000000001,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836526,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 8,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 1.3000000000000003,
+          "theta": 1.6,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836528,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 9,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 1.4000000000000004,
+          "theta": 1.8,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836533,
+          "stability_index": 0.95
+        }
+      ],
+      "partition_states": [],
+      "structural_fields": {
+        "phi_s_global": 1.4,
+        "phi_s_distribution": [
+          0.5,
+          0.6,
+          0.7,
+          0.8,
+          0.9,
+          1.0,
+          1.1,
+          1.2000000000000002,
+          1.3,
+          1.4
+        ],
+        "phase_gradient_field": [
+          0.1,
+          0.15000000000000002,
+          0.2,
+          0.25,
+          0.30000000000000004,
+          0.35,
+          0.4,
+          0.45000000000000007,
+          0.5,
+          0.55
+        ],
+        "curvature_field": [
+          0.2,
+          0.23,
+          0.26,
+          0.29000000000000004,
+          0.32,
+          0.35,
+          0.38,
+          0.41000000000000003,
+          0.44,
+          0.47000000000000003
+        ],
+        "coherence_length": 5.0,
+        "coherence_field": [
+          0.8,
+          0.7000000000000001,
+          0.6000000000000001,
+          0.8,
+          0.7000000000000001,
+          0.6000000000000001,
+          0.8,
+          0.7000000000000001,
+          0.6000000000000001,
+          0.8
+        ],
+        "energy_density": 3.625,
+        "topological_charge": 0.4,
+        "symmetry_breaking": 0.2
+      },
+      "network_topology": {
+        "node_count": 10,
+        "edge_count": 10,
+        "adjacency_matrix": [
+          [
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0
+          ]
+        ],
+        "coupling_matrix": [
+          [
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8
+          ],
+          [
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8
+          ],
+          [
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0
+          ]
+        ],
+        "phase_matrix": [
+          [
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1
+          ],
+          [
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1
+          ],
+          [
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0
+          ]
+        ],
+        "clustering_coefficient": 0.25,
+        "characteristic_path_length": 2.5,
+        "algebraic_connectivity": 0.6,
+        "spectral_gap": 0.35,
+        "resonant_components": 2,
+        "fragmented_regions": 0,
+        "critical_coupling_ratio": 0.1
+      },
+      "overall_coherence": 0.65,
+      "sense_index": 0.6,
+      "verification_confidence": 0.5,
+      "dnfr_budget_remaining": 100.0,
+      "convergence_iterations": 1,
+      "elapsed_time_ms": 100.54349899291992,
+      "memory_usage_mb": 35.0,
+      "cpu_usage_percent": 20.0,
+      "state_hash": "eab442d4e2c83b21"
+    },
+    {
+      "snapshot_id": "snap_5aff1f69c084",
+      "timestamp": 1764565211.2600877,
+      "verification_stage": "partitioning",
+      "modulus_n": 91,
+      "candidate_factor": null,
+      "partition_strategy": "spectral_paley_snapshot_demo",
+      "nodal_states": [
+        {
+          "node_id": 0,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.5,
+          "theta": 0.0,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836476,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 1,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.6,
+          "theta": 0.2,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836485,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 2,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.7,
+          "theta": 0.4,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836497,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 3,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.7999999999999999,
+          "theta": 0.6000000000000001,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836504,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 4,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.8999999999999999,
+          "theta": 0.8,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836512,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 5,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.9999999999999999,
+          "theta": 1.0,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836516,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 6,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 1.1,
+          "theta": 1.2000000000000002,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836519,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 7,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 1.2000000000000002,
+          "theta": 1.4000000000000001,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836526,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 8,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 1.3000000000000003,
+          "theta": 1.6,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836528,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 9,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 1.4000000000000004,
+          "theta": 1.8,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836533,
+          "stability_index": 0.95
+        }
+      ],
+      "partition_states": [
+        {
+          "partition_id": "partition_1_91",
+          "boundary_nodes": [
+            4,
+            5
+          ],
+          "internal_nodes": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "coherence_ratio": 0.78,
+          "phase_gradient": 0.15,
+          "curvature_delta": 0.22,
+          "coupling_strength": 0.72,
+          "fragmentation_risk": 0.12,
+          "operator_sequence": [
+            "emission",
+            "coupling",
+            "resonance"
+          ]
+        },
+        {
+          "partition_id": "partition_2_91",
+          "boundary_nodes": [
+            5,
+            6
+          ],
+          "internal_nodes": [
+            6,
+            7,
+            8,
+            9
+          ],
+          "coherence_ratio": 0.74,
+          "phase_gradient": 0.18,
+          "curvature_delta": 0.28,
+          "coupling_strength": 0.68,
+          "fragmentation_risk": 0.15,
+          "operator_sequence": [
+            "reception",
+            "coupling",
+            "coherence"
+          ]
+        }
+      ],
+      "structural_fields": {
+        "phi_s_global": 1.4,
+        "phi_s_distribution": [
+          0.5,
+          0.6,
+          0.7,
+          0.8,
+          0.9,
+          1.0,
+          1.1,
+          1.2000000000000002,
+          1.3,
+          1.4
+        ],
+        "phase_gradient_field": [
+          0.1,
+          0.15000000000000002,
+          0.2,
+          0.25,
+          0.30000000000000004,
+          0.35,
+          0.4,
+          0.45000000000000007,
+          0.5,
+          0.55
+        ],
+        "curvature_field": [
+          0.2,
+          0.23,
+          0.26,
+          0.29000000000000004,
+          0.32,
+          0.35,
+          0.38,
+          0.41000000000000003,
+          0.44,
+          0.47000000000000003
+        ],
+        "coherence_length": 5.0,
+        "coherence_field": [
+          0.8,
+          0.7000000000000001,
+          0.6000000000000001,
+          0.8,
+          0.7000000000000001,
+          0.6000000000000001,
+          0.8,
+          0.7000000000000001,
+          0.6000000000000001,
+          0.8
+        ],
+        "energy_density": 3.625,
+        "topological_charge": 0.4,
+        "symmetry_breaking": 0.2
+      },
+      "network_topology": {
+        "node_count": 10,
+        "edge_count": 10,
+        "adjacency_matrix": [
+          [
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0
+          ]
+        ],
+        "coupling_matrix": [
+          [
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8
+          ],
+          [
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8
+          ],
+          [
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0
+          ]
+        ],
+        "phase_matrix": [
+          [
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1
+          ],
+          [
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1
+          ],
+          [
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0
+          ]
+        ],
+        "clustering_coefficient": 0.25,
+        "characteristic_path_length": 2.5,
+        "algebraic_connectivity": 0.6,
+        "spectral_gap": 0.35,
+        "resonant_components": 2,
+        "fragmented_regions": 0,
+        "critical_coupling_ratio": 0.1
+      },
+      "overall_coherence": 0.72,
+      "sense_index": 0.65,
+      "verification_confidence": 0.5,
+      "dnfr_budget_remaining": 80.0,
+      "convergence_iterations": 2,
+      "elapsed_time_ms": 211.16018295288086,
+      "memory_usage_mb": 40.0,
+      "cpu_usage_percent": 28.0,
+      "state_hash": "9f1e10b0bd518829"
+    },
+    {
+      "snapshot_id": "snap_5123ac92455c",
+      "timestamp": 1764565211.3683758,
+      "verification_stage": "spectral_analysis",
+      "modulus_n": 91,
+      "candidate_factor": null,
+      "partition_strategy": "spectral_paley_snapshot_demo",
+      "nodal_states": [
+        {
+          "node_id": 0,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.5,
+          "theta": 0.0,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836476,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 1,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.6,
+          "theta": 0.2,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836485,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 2,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.7,
+          "theta": 0.4,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836497,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 3,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.7999999999999999,
+          "theta": 0.6000000000000001,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836504,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 4,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.8999999999999999,
+          "theta": 0.8,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836512,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 5,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.9999999999999999,
+          "theta": 1.0,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836516,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 6,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 1.1,
+          "theta": 1.2000000000000002,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836519,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 7,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 1.2000000000000002,
+          "theta": 1.4000000000000001,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836526,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 8,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 1.3000000000000003,
+          "theta": 1.6,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836528,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 9,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 1.4000000000000004,
+          "theta": 1.8,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836533,
+          "stability_index": 0.95
+        }
+      ],
+      "partition_states": [
+        {
+          "partition_id": "partition_1_91",
+          "boundary_nodes": [
+            4,
+            5
+          ],
+          "internal_nodes": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "coherence_ratio": 0.78,
+          "phase_gradient": 0.15,
+          "curvature_delta": 0.22,
+          "coupling_strength": 0.72,
+          "fragmentation_risk": 0.12,
+          "operator_sequence": [
+            "emission",
+            "coupling",
+            "resonance"
+          ]
+        },
+        {
+          "partition_id": "partition_2_91",
+          "boundary_nodes": [
+            5,
+            6
+          ],
+          "internal_nodes": [
+            6,
+            7,
+            8,
+            9
+          ],
+          "coherence_ratio": 0.74,
+          "phase_gradient": 0.18,
+          "curvature_delta": 0.28,
+          "coupling_strength": 0.68,
+          "fragmentation_risk": 0.15,
+          "operator_sequence": [
+            "reception",
+            "coupling",
+            "coherence"
+          ]
+        }
+      ],
+      "structural_fields": {
+        "phi_s_global": 1.4,
+        "phi_s_distribution": [
+          0.5,
+          0.6,
+          0.7,
+          0.8,
+          0.9,
+          1.0,
+          1.1,
+          1.2000000000000002,
+          1.3,
+          1.4
+        ],
+        "phase_gradient_field": [
+          0.1,
+          0.15000000000000002,
+          0.2,
+          0.25,
+          0.30000000000000004,
+          0.35,
+          0.4,
+          0.45000000000000007,
+          0.5,
+          0.55
+        ],
+        "curvature_field": [
+          0.2,
+          0.23,
+          0.26,
+          0.29000000000000004,
+          0.32,
+          0.35,
+          0.38,
+          0.41000000000000003,
+          0.44,
+          0.47000000000000003
+        ],
+        "coherence_length": 5.0,
+        "coherence_field": [
+          0.8,
+          0.7000000000000001,
+          0.6000000000000001,
+          0.8,
+          0.7000000000000001,
+          0.6000000000000001,
+          0.8,
+          0.7000000000000001,
+          0.6000000000000001,
+          0.8
+        ],
+        "energy_density": 3.625,
+        "topological_charge": 0.4,
+        "symmetry_breaking": 0.2
+      },
+      "network_topology": {
+        "node_count": 10,
+        "edge_count": 10,
+        "adjacency_matrix": [
+          [
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0
+          ]
+        ],
+        "coupling_matrix": [
+          [
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8
+          ],
+          [
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8
+          ],
+          [
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0
+          ]
+        ],
+        "phase_matrix": [
+          [
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1
+          ],
+          [
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1
+          ],
+          [
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0
+          ]
+        ],
+        "clustering_coefficient": 0.25,
+        "characteristic_path_length": 2.5,
+        "algebraic_connectivity": 0.6,
+        "spectral_gap": 0.35,
+        "resonant_components": 2,
+        "fragmented_regions": 0,
+        "critical_coupling_ratio": 0.1
+      },
+      "overall_coherence": 0.81,
+      "sense_index": 0.7,
+      "verification_confidence": 0.5,
+      "dnfr_budget_remaining": 60.0,
+      "convergence_iterations": 3,
+      "elapsed_time_ms": 319.4587230682373,
+      "memory_usage_mb": 45.0,
+      "cpu_usage_percent": 36.0,
+      "state_hash": "892ddeb45bbd052e"
+    },
+    {
+      "snapshot_id": "snap_afe1d2fd883d",
+      "timestamp": 1764565211.4760377,
+      "verification_stage": "verification",
+      "modulus_n": 91,
+      "candidate_factor": null,
+      "partition_strategy": "spectral_paley_snapshot_demo",
+      "nodal_states": [
+        {
+          "node_id": 0,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.5,
+          "theta": 0.0,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836476,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 1,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.6,
+          "theta": 0.2,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836485,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 2,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.7,
+          "theta": 0.4,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836497,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 3,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.7999999999999999,
+          "theta": 0.6000000000000001,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836504,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 4,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.8999999999999999,
+          "theta": 0.8,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836512,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 5,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.9999999999999999,
+          "theta": 1.0,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836516,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 6,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 1.1,
+          "theta": 1.2000000000000002,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836519,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 7,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 1.2000000000000002,
+          "theta": 1.4000000000000001,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836526,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 8,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 1.3000000000000003,
+          "theta": 1.6,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836528,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 9,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 1.4000000000000004,
+          "theta": 1.8,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836533,
+          "stability_index": 0.95
+        }
+      ],
+      "partition_states": [
+        {
+          "partition_id": "partition_1_91",
+          "boundary_nodes": [
+            4,
+            5
+          ],
+          "internal_nodes": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "coherence_ratio": 0.78,
+          "phase_gradient": 0.15,
+          "curvature_delta": 0.22,
+          "coupling_strength": 0.72,
+          "fragmentation_risk": 0.12,
+          "operator_sequence": [
+            "emission",
+            "coupling",
+            "resonance"
+          ]
+        },
+        {
+          "partition_id": "partition_2_91",
+          "boundary_nodes": [
+            5,
+            6
+          ],
+          "internal_nodes": [
+            6,
+            7,
+            8,
+            9
+          ],
+          "coherence_ratio": 0.74,
+          "phase_gradient": 0.18,
+          "curvature_delta": 0.28,
+          "coupling_strength": 0.68,
+          "fragmentation_risk": 0.15,
+          "operator_sequence": [
+            "reception",
+            "coupling",
+            "coherence"
+          ]
+        }
+      ],
+      "structural_fields": {
+        "phi_s_global": 1.4,
+        "phi_s_distribution": [
+          0.5,
+          0.6,
+          0.7,
+          0.8,
+          0.9,
+          1.0,
+          1.1,
+          1.2000000000000002,
+          1.3,
+          1.4
+        ],
+        "phase_gradient_field": [
+          0.1,
+          0.15000000000000002,
+          0.2,
+          0.25,
+          0.30000000000000004,
+          0.35,
+          0.4,
+          0.45000000000000007,
+          0.5,
+          0.55
+        ],
+        "curvature_field": [
+          0.2,
+          0.23,
+          0.26,
+          0.29000000000000004,
+          0.32,
+          0.35,
+          0.38,
+          0.41000000000000003,
+          0.44,
+          0.47000000000000003
+        ],
+        "coherence_length": 5.0,
+        "coherence_field": [
+          0.8,
+          0.7000000000000001,
+          0.6000000000000001,
+          0.8,
+          0.7000000000000001,
+          0.6000000000000001,
+          0.8,
+          0.7000000000000001,
+          0.6000000000000001,
+          0.8
+        ],
+        "energy_density": 3.625,
+        "topological_charge": 0.4,
+        "symmetry_breaking": 0.2
+      },
+      "network_topology": {
+        "node_count": 10,
+        "edge_count": 10,
+        "adjacency_matrix": [
+          [
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0
+          ]
+        ],
+        "coupling_matrix": [
+          [
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8
+          ],
+          [
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8
+          ],
+          [
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0
+          ]
+        ],
+        "phase_matrix": [
+          [
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1
+          ],
+          [
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1
+          ],
+          [
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0
+          ]
+        ],
+        "clustering_coefficient": 0.25,
+        "characteristic_path_length": 2.5,
+        "algebraic_connectivity": 0.6,
+        "spectral_gap": 0.35,
+        "resonant_components": 2,
+        "fragmented_regions": 0,
+        "critical_coupling_ratio": 0.1
+      },
+      "overall_coherence": 0.9299999999999999,
+      "sense_index": 0.75,
+      "verification_confidence": 1.0,
+      "dnfr_budget_remaining": 40.0,
+      "convergence_iterations": 4,
+      "elapsed_time_ms": 427.1237850189209,
+      "memory_usage_mb": 50.0,
+      "cpu_usage_percent": 44.0,
+      "state_hash": "5ad44267bd040be2"
+    },
+    {
+      "snapshot_id": "snap_dba5a4f9b1af",
+      "timestamp": 1764565211.5838118,
+      "verification_stage": "completion",
+      "modulus_n": 91,
+      "candidate_factor": 7,
+      "partition_strategy": "spectral_paley_snapshot_demo",
+      "nodal_states": [
+        {
+          "node_id": 0,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.5,
+          "theta": 0.0,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836476,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 1,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.6,
+          "theta": 0.2,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836485,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 2,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.7,
+          "theta": 0.4,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836497,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 3,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.7999999999999999,
+          "theta": 0.6000000000000001,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836504,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 4,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.8999999999999999,
+          "theta": 0.8,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836512,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 5,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 0.9999999999999999,
+          "theta": 1.0,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836516,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 6,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 1.1,
+          "theta": 1.2000000000000002,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836519,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 7,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 1.2000000000000002,
+          "theta": 1.4000000000000001,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836526,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 8,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 1.3000000000000003,
+          "theta": 1.6,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836528,
+          "stability_index": 0.95
+        },
+        {
+          "node_id": 9,
+          "epi_vector": [
+            0.5,
+            0.3,
+            0.7
+          ],
+          "structural_frequency": 1.64,
+          "phase": 1.4000000000000004,
+          "theta": 1.8,
+          "dnfr_magnitude": 0.05,
+          "coupling_count": 3,
+          "last_operator": "coherence",
+          "operator_timestamp": 1764565211.4836533,
+          "stability_index": 0.95
+        }
+      ],
+      "partition_states": [
+        {
+          "partition_id": "partition_1_91",
+          "boundary_nodes": [
+            4,
+            5
+          ],
+          "internal_nodes": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "coherence_ratio": 0.78,
+          "phase_gradient": 0.15,
+          "curvature_delta": 0.22,
+          "coupling_strength": 0.72,
+          "fragmentation_risk": 0.12,
+          "operator_sequence": [
+            "emission",
+            "coupling",
+            "resonance"
+          ]
+        },
+        {
+          "partition_id": "partition_2_91",
+          "boundary_nodes": [
+            5,
+            6
+          ],
+          "internal_nodes": [
+            6,
+            7,
+            8,
+            9
+          ],
+          "coherence_ratio": 0.74,
+          "phase_gradient": 0.18,
+          "curvature_delta": 0.28,
+          "coupling_strength": 0.68,
+          "fragmentation_risk": 0.15,
+          "operator_sequence": [
+            "reception",
+            "coupling",
+            "coherence"
+          ]
+        }
+      ],
+      "structural_fields": {
+        "phi_s_global": 1.4,
+        "phi_s_distribution": [
+          0.5,
+          0.6,
+          0.7,
+          0.8,
+          0.9,
+          1.0,
+          1.1,
+          1.2000000000000002,
+          1.3,
+          1.4
+        ],
+        "phase_gradient_field": [
+          0.1,
+          0.15000000000000002,
+          0.2,
+          0.25,
+          0.30000000000000004,
+          0.35,
+          0.4,
+          0.45000000000000007,
+          0.5,
+          0.55
+        ],
+        "curvature_field": [
+          0.2,
+          0.23,
+          0.26,
+          0.29000000000000004,
+          0.32,
+          0.35,
+          0.38,
+          0.41000000000000003,
+          0.44,
+          0.47000000000000003
+        ],
+        "coherence_length": 5.0,
+        "coherence_field": [
+          0.8,
+          0.7000000000000001,
+          0.6000000000000001,
+          0.8,
+          0.7000000000000001,
+          0.6000000000000001,
+          0.8,
+          0.7000000000000001,
+          0.6000000000000001,
+          0.8
+        ],
+        "energy_density": 3.625,
+        "topological_charge": 0.4,
+        "symmetry_breaking": 0.2
+      },
+      "network_topology": {
+        "node_count": 10,
+        "edge_count": 10,
+        "adjacency_matrix": [
+          [
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            1
+          ],
+          [
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0
+          ]
+        ],
+        "coupling_matrix": [
+          [
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8
+          ],
+          [
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0,
+            0.8
+          ],
+          [
+            0.8,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.8,
+            0.0
+          ]
+        ],
+        "phase_matrix": [
+          [
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1
+          ],
+          [
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0,
+            0.1
+          ],
+          [
+            0.1,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -0.1,
+            0.0
+          ]
+        ],
+        "clustering_coefficient": 0.25,
+        "characteristic_path_length": 2.5,
+        "algebraic_connectivity": 0.6,
+        "spectral_gap": 0.35,
+        "resonant_components": 2,
+        "fragmented_regions": 0,
+        "critical_coupling_ratio": 0.1
+      },
+      "overall_coherence": 0.95,
+      "sense_index": 0.8,
+      "verification_confidence": 1.0,
+      "dnfr_budget_remaining": 20.0,
+      "convergence_iterations": 5,
+      "elapsed_time_ms": 534.8870754241943,
+      "memory_usage_mb": 55.0,
+      "cpu_usage_percent": 52.0,
+      "state_hash": "7738189e6b499d44"
+    }
+  ]
+}
