@@ -1,0 +1,20 @@
+{
+  "passed":false,
+  "post_hoc":true,
+  "exit_code":1,
+  "timed_out":false,
+  "timeout_seconds":30,
+  "wall_seconds":1.541337199996633,
+  "log":{
+    "path":"artifacts/formed-two-port-attempt-20261029/diagnostic.log",
+    "bytes":780,
+    "sha256":"c2bcb6173809302c62d10b9bd89175064306c9d88266e9b464acd759e9f30b7f"
+  },
+  "freeze":{
+    "path":"artifacts/formed-two-port-attempt-20261029/diagnostic-freeze.json",
+    "bytes":891,
+    "sha256":"a67aeca6f7d8d343819bce976fcead28e00d3b4c8baf387e331be22f5c143587"
+  },
+  "scientific_producer_calls":0,
+  "new_reference_steps":0
+}

@@ -13,6 +13,7 @@ from scripts.research_book import (
     Book,
     Chapter,
     documents,
+    read_book,
     write_book,
     write_modular_book,
 )
@@ -213,6 +214,68 @@ def test_modular_catalog_links_to_editable_chapters(catalog_workspace):
     assert (root / book.chapters[0].path).read_bytes() == book.chapters[0].body
 
 
+@pytest.mark.parametrize("newline", (b"\n", b"\r\n"))
+def test_modular_checkout_line_endings_do_not_drift_or_rewrite_chapters(
+    catalog_workspace, newline
+):
+    root, book, index = catalog_workspace
+    write_modular_book(root, book)
+    checker.update_theory_catalog()
+    paths = [
+        root / BOOK_PATH,
+        root / CATALOG_PATH,
+        index,
+        *(root / item.path for item in (*book.chapters, *book.aliases)),
+    ]
+    for path in paths:
+        path.write_bytes(
+            path.read_bytes().replace(b"\r\n", b"\n").replace(b"\n", newline)
+        )
+    before = {path: path.read_bytes() for path in paths}
+
+    checker.check_theory_catalog()
+    loaded = read_book(root)
+    assert loaded.front == book.front.replace("\n", newline.decode("ascii"))
+    for chapter in loaded.chapters:
+        assert chapter.body == before[root / chapter.path]
+        assert documents(root)[chapter.path] == chapter.body
+    assert {path: path.read_bytes() for path in paths} == before
+
+
+@pytest.mark.parametrize("newline", (b"\n", b"\r\n"))
+@pytest.mark.parametrize(
+    "corruption", ("missing", "reversed", "duplicate", "malformed", "trailing")
+)
+def test_modular_program_rejects_bad_boundaries_with_checkout_line_endings(
+    catalog_workspace, newline, corruption
+):
+    root, book, _ = catalog_workspace
+    write_modular_book(root, book)
+    program = root / BOOK_PATH
+    data = program.read_bytes().replace(b"\n", newline)
+    start = b"<!-- BEGIN RESEARCH CHAPTER ROUTES -->"
+    end = b"<!-- END RESEARCH CHAPTER ROUTES -->"
+    if corruption == "missing":
+        data = data.replace(end, b"")
+    elif corruption == "reversed":
+        data = (
+            data.replace(start, b"PLACEHOLDER")
+            .replace(end, start)
+            .replace(b"PLACEHOLDER", end)
+        )
+    elif corruption == "duplicate":
+        data = data.replace(start, start + newline + start)
+    elif corruption == "malformed":
+        data = data.replace(start + newline, start + b"\rUnexpected inline text")
+    else:
+        data += b"Unexpected trailing content."
+    program.write_bytes(data)
+
+    with pytest.raises(ValueError, match="research routes|research routes boundaries"):
+        read_book(root)
+    assert program.read_bytes() == data
+
+
 def test_modular_metadata_edit_refreshes_physical_program_routes(catalog_workspace):
     root, book, index = catalog_workspace
     write_modular_book(root, book)
@@ -235,8 +298,11 @@ def test_modular_metadata_edit_refreshes_physical_program_routes(catalog_workspa
     assert (root / book.chapters[0].path).read_bytes() == chapter_bytes
 
 
-@pytest.mark.parametrize("drift", ("missing", "modified"))
-def test_modular_retired_routes_are_local_generated_views(catalog_workspace, drift):
+@pytest.mark.parametrize("newline", (b"\n", b"\r\n"))
+@pytest.mark.parametrize("drift", ("missing", "modified", "whitespace"))
+def test_modular_retired_routes_are_local_generated_views(
+    catalog_workspace, drift, newline
+):
     root, book, _ = catalog_workspace
     write_modular_book(root, book)
     checker.update_theory_catalog()
@@ -245,8 +311,12 @@ def test_modular_retired_routes_are_local_generated_views(catalog_workspace, dri
     for alias in book.aliases:
         assert (root / alias.path).read_bytes() == expected[alias.path]
     route = root / book.aliases[0].path
+    route.write_bytes(route.read_bytes().replace(b"\n", newline))
+    checker.check_theory_catalog()
     if drift == "missing":
         route.unlink()
+    elif drift == "whitespace":
+        route.write_bytes(route.read_bytes().replace(b"# Retired", b"#  Retired"))
     else:
         route.write_bytes(b"Obsolete independent task instructions.\n")
 

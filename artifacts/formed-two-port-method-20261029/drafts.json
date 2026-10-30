@@ -1,0 +1,48 @@
+{
+  "replacements":[
+    {
+      "old":"with an initial-absence margin and supplied work bound. What remains is a\nsource-aware entry method under the same complete law. No new transit,\ntrajectory or source-to-target result has been evaluated.\n",
+      "new":"with an initial-absence margin and supplied work bound. The\n[source-aware reference method](nodal/SINE_TWO_PORT_CAPTURE.md#sine-formed-two-port-entry-method)\nnow closes the analytical comparison and fixes a prospective numerical policy.\nIts source-specific adapter, bounded supervisor and source freeze remain the\nnext obligation. No new transit or source-to-target result has been evaluated.\n"
+    },
+    {
+      "old":"Source/event/identity admission is closed at the [formed-source contract](nodal/SINE_TWO_PORT_COMPATIBILITY.md#sine-formed-two-port-admission). Select one source-aware entry method and freeze its protocol before transit evaluation.",
+      "new":"The [formed-source contract](nodal/SINE_TWO_PORT_COMPATIBILITY.md#sine-formed-two-port-admission) and [source-aware reference method](nodal/SINE_TWO_PORT_CAPTURE.md#sine-formed-two-port-entry-method) are established within their conditional scopes. Implement and review the selected bounded adapter, then freeze producing source before one reserved transit."
+    },
+    {
+      "old":"Carry the useful intersections into the selected entry-method declaration:",
+      "new":"Carry the useful intersections into the selected method's executable admission:"
+    }
+  ],
+  "sources":[
+    {
+      "path":"artifacts/formed-two-port-method-20261029/before-edit.zip",
+      "bytes":36089,
+      "sha256":"01a3c9f1d715c1e00c29bb8e7262619237911ada2b17aff9ca2552eca39317f3"
+    },
+    {
+      "path":"artifacts/formed-two-port-method-20261029/chapter-append.md",
+      "bytes":12566,
+      "sha256":"4461a80bfd2bbb4b01a5c7e76876aea2cdede90a8c0debe4d5c2fe46c0dddc69"
+    },
+    {
+      "path":"artifacts/formed-two-port-method-20261029/program-current.md",
+      "bytes":3839,
+      "sha256":"40ff85ffc82a7fe5c15e702b2d1ff5ecf1c4c3ec00fdd29e974f1c31c726804a"
+    },
+    {
+      "path":"artifacts/formed-two-port-method-20261029/build_drafts.py",
+      "bytes":3331,
+      "sha256":"413c12194769c942a67ce8c56cc8b5d7d5c8add24a927232d04a21d2824c8922"
+    },
+    {
+      "path":"artifacts/formed-two-port-method-20261029/chapter-proposed.md",
+      "bytes":35528,
+      "sha256":"f81704f436641e915423e6d0a9d4da23d3428acec11632d8ffc945a75e8ca290"
+    },
+    {
+      "path":"artifacts/formed-two-port-method-20261029/program-proposed.md",
+      "bytes":90656,
+      "sha256":"abee58d40fe276d4794ac8adab4d77880e79d976485d9f3a0e1976ee58f89d64"
+    }
+  ]
+}

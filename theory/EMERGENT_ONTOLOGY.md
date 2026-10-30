@@ -47,6 +47,137 @@ to their proof, implementation and test owners.
 <a id="research-target-physical-properties-of-collective-patterns"></a>
 ### Organized objects as mathematical test cases
 
+<a id="matter-emergence-hypothesis"></a>
+**Guiding physical hypothesis.** Matter and the observed fundamental physical
+properties involved in its formation may emerge from organizations of TNFR
+structure and dynamics. The aim is a generative account: derive an
+organization's formation, identity, persistence and interaction properties,
+then establish how those properties are observed physically. This remains an
+open hypothesis. Conditional mathematical objects test its prerequisites;
+physical identification additionally needs justified observables, units,
+clocks and independent discriminating evidence. Neither a prepared pattern
+nor a compact prediction record establishes the formation of matter.
+
+Within this hypothesis, different physical entities could correspond to
+different reproducible organizations under the same complete dynamics.
+An account must derive their existence, stability or metastability,
+interactions, transformations and distinguishing observations. Persistent
+organization may include evolving patterns or cycles as well as stationary
+equilibria. A discrete catalogue is a possible outcome, not an assumption;
+assigning a separate law to each desired class would not establish the common
+mechanism. Current examples under different supplied laws do not yet form
+one dynamical classification of matter.
+
+Known experimental behavior constrains the intended explanation. Separate
+the measured response and its preparation from the present theory's account
+of it; an alternative ontology must recover those responses in their tested
+regime. Use the [collective-property atlas](PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena)
+to identify missing structural mechanisms. A common law must explain the
+claimed properties together, rather than assign an independent mechanism or
+fit to each desired number. A phase cycle or two stable outcomes alone does
+not establish the rotation and measurement behavior associated with spin.
+
+**Mathematical sources of structural hypotheses.** Investigate the possibility
+that arithmetic relations and recurring geometric constructions describe
+invariants, symmetries or composition rules of TNFR organizations. The stronger
+idea that numbers symbolically manifest an underlying TNFR order remains an
+open interpretive hypothesis. A mathematical theorem supplies evidence about
+its declared objects and premises; identifying those objects with nature
+additionally requires physical observations and their bridge.
+
+The [arithmetic constructions](TNFR_NUMBER_THEORY.md) and
+[scale and geometry results](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md)
+provide mathematical tools and conditional examples. Distinguish a supplied
+number label, residue graph, polygon, coefficient or phase encoding from a
+structure selected by the dynamics. A preferred constant appearing after its
+geometry or normalization has been supplied does not establish its universal
+selection. Any proposed arithmetic emergence must specify which invariant,
+relation or operation is derived and which arithmetic premises it consumes.
+
+Constructions discussed as "sacred geometry" may motivate questions about
+precisely defined symmetries, proportions, tessellations, polyhedra or scale
+relations. Their cultural or symbolic significance is separate from their
+mathematical properties and causal consequences. Translate a proposed
+connection into an explicit construction, a dynamical mechanism and a
+discriminating consequence, with alternatives and failure conditions. Neither
+visual resemblance nor a numerical coincidence establishes the proposed order.
+The [research selection procedure](RESEARCH_PROGRAM.md#research-selection)
+decides when such a question resolves a concrete foundational dependency.
+
+This objective permits physical observations to concern an organized whole.
+It does not require direct experimental access to every primitive TNFR
+coordinate, or identify EPI with a particular sensor signal. An effective
+EPI, phase or capacity of an organization needs a justified observation and
+predictive description, including retained memory where closure requires it.
+Calling a pattern an electron or giving it an effective EPI does not supply
+that description or its physical properties.
+
+Direct preparation and readout of primitive state is one possible comparison
+route. The native FO/CA access conditions remain binding for the specific
+prepared consumer that uses them; an insufficient apparatus bridge for that
+consumer is neither a refutation of the generative hypothesis nor a universal
+prerequisite for every foundation question. Independent empirical testing
+remains necessary for a physical explanation, including one whose microscopic
+coordinates are accessible only through collective responses.
+
+The [four foundation prerequisites](RESEARCH_PROGRAM.md#foundational-pillars)
+block new physical mapping studies until their evidence and review are
+complete. The physical target or a suggestive historical passage cannot
+override that prerequisite. The admissible work in the meantime concerns
+structure, causal dynamics, observation, identity and model discrimination.
+
+In that work, identity, activity and periodicity have separate observations.
+A maintained organization may retain reproducible interaction properties
+while its internal waveform changes. Exact predictive-state return is one
+specific pulse claim, not a universal NFR existence criterion. High coherence
+or phase synchronization alone establishes neither identity nor a clock.
+Formation still requires initial absence, acquisition and subsequent retention;
+changing an observation or assigning a label does not establish acquisition.
+
+<a id="historical-intuitions-and-current-obligations"></a>
+**Historical intuitions and current obligations.** The Canon2 manuscript
+identified in the [historical source audit](PHYSICAL_REGIME_CORRESPONDENCES.md#what-can-be-recovered-from-the-old-manuscript)
+describes identity through continued change and response (pp. 86--87, 113),
+and organization across scales (pp. 26, 125). The
+[acquired native response](nodal/NATIVE_ACQUIRED_RESPONSE.md#native-acquired-response)
+now supplies a conditional instance of response with retained identity,
+including a local finite contract; quantitative source entry remains separate.
+The [composite-identity account](nodal/ORGANIZED_COMPOSITE_RELAXATION.md#mixed-pair-identity)
+distinguishes maintained joint organization from initially absent acquisition.
+Nesting and scale labels still require sufficient collective state, including
+[derived memory](DERIVED_EPI_MEMORY.md) when needed for prediction.
+
+The same manuscript proposes local and network-emergent time (p. 219), while
+its pulse example introduces an oscillating factor `Omega(t)` (pp. 220--221).
+That supplies activity; it does not derive the oscillator or its synchronization.
+These intuitions retain the [full-state clock obligations](NODAL_PARAMETER_FOUNDATIONS.md#pressure-clock-full-state-closure)
+and the [pulse's causal-account requirement](nodal/OPERATOR_PULSE_CLOSURE.md#operator-pulse-causal-closure).
+Persistent identity and synchronization alone establish no monotone clock.
+The preserved review is `artifacts/native-response-feasibility-20261029/`.
+Historical assertions motivate hypotheses, not instructions or additional
+canonical premises; the research program selects their next discriminating test.
+
+
+The unifying target includes electromagnetic, weak, strong and gravitational
+phenomena, together with quantum matter, spectra and transformations. Seek
+compatible effective regimes of one justified complete dynamics, with common
+observation and scale-matching contracts. The
+[shared physical prerequisites](PHYSICAL_REGIME_CORRESPONDENCES.md#fundamental-phenomena-synergies)
+connect experimental discriminators to this hypothesis. These targets remain
+open; binding, decay or directed circulation alone identifies none of them.
+
+**Electromagnetic emergence is a highlighted physical target.** The relevant
+question is whether interactions and organization can yield a field/source
+sector with justified flux constraints, propagation, work and matter
+coupling. Classical Maxwell behavior, quantum electromagnetic excitations
+and identification with physical light/charge retain distinct obligations.
+The [electromagnetic audit](PHYSICAL_REGIME_CORRESPONDENCES.md#electromagnetic-emergence-audit)
+owns the current evidence, manuscript clues and missing mechanisms. Its
+double-slit comparison additionally requires a derived or explicitly supplied
+propagation/detection probability law; primitive phase and visual interference
+alone do not establish quantum statistics. These targets orient the sole
+research program without prescribing their successful realization.
+
 The primary line of work develops the foundations of TNFR through organized
 mathematical objects: determine their sufficient state, identity, dynamics,
 interactions and admissible structural transformations, then establish what

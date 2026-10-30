@@ -1,0 +1,54 @@
+{
+  "passed":true,
+  "counts":{
+    "tests":93,
+    "failures":0,
+    "errors":0,
+    "skipped":0
+  },
+  "command":[
+    "C:\\TNFR-Python-Engine\\.venv313\\Scripts\\python.exe",
+    "-E",
+    "-m",
+    "pytest",
+    "-o",
+    "addopts=",
+    "-q",
+    "tests/research/test_formed_two_port_reference.py",
+    "tests/research/test_formed_two_port_run.py",
+    "tests/research/test_bounded_worker.py",
+    "artifacts/formed-two-port-executable-20261029/admission_controls.py",
+    "--junitxml=artifacts/formed-two-port-executable-20261029/controls-junit.xml",
+    "--basetemp=artifacts/formed-two-port-executable-20261029/controls-temp"
+  ],
+  "exit_code":0,
+  "junit_parse_error":null,
+  "runtime":{
+    "version":"3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+    "prefix":"C:\\TNFR-Python-Engine\\.venv313",
+    "flags":"sys.flags(debug=0, inspect=0, interactive=0, optimize=0, dont_write_bytecode=0, no_user_site=0, no_site=0, ignore_environment=1, verbose=0, bytes_warning=0, quiet=0, hash_randomization=1, isolated=0, dev_mode=False, utf8_mode=0, warn_default_encoding=0, safe_path=False, int_max_str_digits=4300)",
+    "package":"C:\\TNFR-Python-Engine\\src\\tnfr\\__init__.py"
+  },
+  "timed_out":false,
+  "timeout_seconds":300,
+  "wall_seconds":17.37554210000235,
+  "freeze":{
+    "path":"artifacts/formed-two-port-executable-20261029/controls-freeze.json",
+    "bytes":169204,
+    "sha256":"1a8e8506dae7dfb49ba898eeacaf7a69f848edaec3faa6493a67e403ab1ee0f5"
+  },
+  "log":{
+    "path":"artifacts/formed-two-port-executable-20261029/controls.log",
+    "bytes":183,
+    "sha256":"5260e78e52b58ff02a486a96ef498dd35904b4b368ff5b915f949e78708be93d"
+  },
+  "reserved_reference_steps":0,
+  "actual_source_transits":0,
+  "root_searches":0,
+  "historical_producer_replays":0,
+  "junit":{
+    "path":"artifacts/formed-two-port-executable-20261029/controls-junit.xml",
+    "bytes":13989,
+    "sha256":"564a88a1f4285ec1c201f7885da3e232b35821853b855b66333f193b23c666b3"
+  }
+}

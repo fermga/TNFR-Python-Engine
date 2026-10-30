@@ -17,7 +17,7 @@ FIXED-BASIS BALANCE IDENTITY:
 ============================
 Given the discrete structural continuity equation:
 
-    Δρ(i)/Δt + div J(i) = S_grammar(i)
+    Δρ(i)/Δt + div J(i) = S_residual(i)
 
 Apply the GFT (projection onto Laplacian eigenvectors ψ_k):
 
@@ -35,9 +35,11 @@ INTERPRETATION:
   Laplacian. Their residual magnitudes are data; U5 or grammar compliance does
   not force a particular spectral band.
 
-- **Parseval conservation**: Energy in the spatial domain equals energy
-  in the spectral domain:  ‖ρ‖² = Σ_k |ρ̂_k|².  Drift in this identity
-  signals numerical or structural inconsistency.
+- **Parseval identity**: At each snapshot, orthonormality gives
+  ‖ρ‖² = Σ_k |ρ̂_k|². The legacy parseval_drift field instead measures
+  the relative change of this density-diagnostic norm between snapshots.
+  Legitimate dynamics can change that norm while Parseval remains exact;
+  this temporal statistic is not a spatial/spectral consistency residual.
 
 SPECTRAL STRUCTURAL ENERGY:
 ===========================
@@ -47,15 +49,15 @@ decomposes mode-by-mode:
 
     E_k = ½(|Φ̂_s_k|² + |∇̂φ_k|² + |K̂_φ_k|² + |Ĵ_φ_k|² + |Ĵ_ΔNFR_k|²)
 
-The implementation reports each finite difference dE_k/dt. No sign follows
-from U2 labels alone.
+The implementation reports interval secants ΔE_k/Δt, not instantaneous
+derivatives. No sign follows from U2 labels alone.
 
 DERIVATION:
 ===========
-This module applies the GFT to conservation.py diagnostics. The Laplacian
-eigenbasis diagonalizes the diffusion operator, making mode-by-mode analysis
-natural. Parseval identities follow from orthonormality; dynamic conservation
-requires additional model hypotheses.
+This module applies the GFT to conservation.py diagnostics. Its eigenbasis
+diagonalizes the declared graph Laplacian. A complete dynamical generator
+need not share that basis. Parseval follows from orthonormality; dynamic
+conservation and relaxation rates require additional model hypotheses.
 
 STATUS: CANONICAL DIAGNOSTIC INTERFACE.
 
@@ -122,11 +124,13 @@ class SpectralConservationBalance:
     mode_sources : np.ndarray
         Per-mode signed source Ŝ_k = Δρ̂_k/Δt + Ĵ_k.  Shape (N,).
     parseval_before : float
-        Spectral energy Σ|ρ̂_k|² at t_0.
+        Density-diagnostic squared norm Σ|ρ̂_k|² at t_0.
     parseval_after : float
-        Spectral energy Σ|ρ̂_k|² at t_1.
+        Density-diagnostic squared norm Σ|ρ̂_k|² at t_1.
     parseval_drift : float
-        Relative Parseval drift |(E_after - E_before)| / max(E_before, ε).
+        Legacy name for relative temporal squared-norm change:
+        |norm_after - norm_before| / max(norm_before, 1e-15).
+        It does not measure failure of the same-snapshot Parseval identity.
     spectral_gap : float
         λ_1 — first non-trivial eigenvalue.
     n_conserved_modes : int
@@ -203,9 +207,9 @@ class SpectralLyapunovResult:
     mode_energies_after : np.ndarray
         Per-mode energy at t_1.
     mode_derivatives : np.ndarray
-        dE_k/dt ≈ (E_k(t_1) - E_k(t_0)) / dt per mode.
+        Interval secant (E_k(t_1) - E_k(t_0)) / dt per mode.
     total_derivative : float
-        Σ dE_k/dt — total spectral energy derivative.
+        Sum of the modal interval secants, not an instantaneous derivative.
     n_unstable_modes : int
         Number of modes where dE_k/dt > stability_threshold.
     stable_fraction : float
@@ -586,7 +590,7 @@ def verify_spectral_conservation_balance(
         mode_sources = finite_real_series(drho_dt + div_hat_mean, "modal source")
     mode_residuals = np.abs(mode_sources)
 
-    # Parseval identity: ‖ρ‖² = Σ|ρ̂_k|²
+    # Snapshot squared norms satisfy Parseval; drift below compares times.
     parseval_0 = _finite_sum(
         _finite_product(rho_hat_0, rho_hat_0, "squared charge before"),
         "charge energy before",
@@ -736,10 +740,12 @@ def compute_spectral_lyapunov(
     Decomposes the structural energy functional E = ½Σ_i[Φ_s² + |∇φ|² + K_φ²
     + J_φ² + J_ΔNFR²] into per-mode contributions, then checks:
 
-        dE_k/dt ≤ 0  (mode-stable)
+        ΔE_k/Δt ≤ stability_threshold
 
-    The total derivative is the sum of the reported modal finite differences.
-    Its sign is trajectory-dependent; U2 validity alone does not determine it.
+    Legacy derivative/stability field names retain their API meaning: finite
+    interval secants and tolerance classifications. They neither evaluate an
+    instantaneous derivative nor prove future stability. U2 validity alone
+    does not determine their signs.
 
     Parameters
     ----------
@@ -804,13 +810,11 @@ def decompose_spectral_sectors(
 ) -> SpectralSectorDecomposition:
     r"""Decompose the two conservation sectors in spectral domain.
 
-    The structural charge ρ = Φ_s + K_φ consists of:
-    - **Potential sector** (Φ_s): Global ΔNFR-driven dynamics
-    - **Geometric sector** (K_φ): Local phase-driven dynamics
-
-    This function computes their GFT spectra and measures how the two sectors
-    couple across frequency modes.  Strong coupling indicates the complex field
-    Ψ = K_φ + i·J_φ is active.
+    The structural density diagnostic ρ = Φ_s + K_φ combines the pressure
+    potential and local phase-discrepancy readouts. This function compares
+    their snapshot spectra and reported correlations. A correlation does
+    not establish dynamical coupling, excitation of another field or an
+    independently evolving physical sector.
 
     Parameters
     ----------
@@ -877,7 +881,7 @@ def decompose_spectral_sectors(
 
 
 # ---------------------------------------------------------------------------
-# Spectral energy conservation (Parseval-based)
+# Legacy-named temporal spectral squared-norm comparison
 # ---------------------------------------------------------------------------
 
 
@@ -886,27 +890,34 @@ def compute_spectral_energy_conservation(
     after: ConservationSnapshot,
     G: Any,
 ) -> dict[str, float]:
-    r"""Measure Parseval energy conservation across all five canonical fields.
+    """Measure temporal squared-norm changes in the five structural readouts.
 
-    For each field f ∈ {Φ_s, |∇φ|, K_φ, J_φ, J_ΔNFR}, the Parseval identity
-    guarantees ‖f‖² = Σ_k |f̂_k|².  This function measures the drift in
-    total spectral energy between two snapshots:
+    At each snapshot, an orthonormal GFT gives ||f||**2 = sum_k |fhat_k|**2
+    for f in {Phi_s, |grad phi|, K_phi, J_phi, J_DeltaNFR}. The function
+    compares these norms between snapshots:
 
-        ΔE_f = |Σ|f̂_k(t1)|² - Σ|f̂_k(t0)|²| / max(Σ|f̂_k(t0)|², ε)
+        drift_f = |norm_f(t1) - norm_f(t0)| / max(norm_f(t0), 1e-15).
 
-    Small ΔE_f indicates structural stability in the spectral domain.
+    A nonzero temporal change does not violate Parseval. A small change
+    measures only agreement of two norms; it proves neither a conservation
+    law nor future structural stability. These diagnostics are not identified
+    with physical energy. Legacy energy-named totals sum the five squared
+    norms without the one-half factor used by the snapshot-energy candidate.
 
     Parameters
     ----------
     before, after : ConservationSnapshot
+        Two supplied snapshots with the same admitted graph support.
     G : TNFRGraph
+        Supplies the shared orthonormal observation basis.
 
     Returns
     -------
     dict[str, float]
-        Keys: 'phi_s_drift', 'grad_phi_drift', 'k_phi_drift',
-        'j_phi_drift', 'j_dnfr_drift', 'total_energy_before',
-        'total_energy_after', 'total_drift'.
+        Per-field temporal norm changes in 'phi_s_drift', 'grad_phi_drift',
+        'k_phi_drift', 'j_phi_drift' and 'j_dnfr_drift'; unhalved norm totals
+        in 'total_energy_before' and 'total_energy_after'; their relative
+        temporal change in 'total_drift'.
     """
     nodes = _observation_nodes(G)
 
@@ -915,7 +926,7 @@ def compute_spectral_energy_conservation(
     vecs_before = _snapshot_to_vectors(before, nodes, _STRUCTURAL_ENERGY_FIELDS)
     vecs_after = _snapshot_to_vectors(after, nodes, _STRUCTURAL_ENERGY_FIELDS)
 
-    # Unified energy computation for all five canonical fields
+    # Shared squared norms for all five fields; temporal changes follow.
     _, _, per_field = _compute_spectral_field_energies(
         vecs_before,
         vecs_after,

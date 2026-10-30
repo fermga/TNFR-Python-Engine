@@ -258,19 +258,35 @@ def _navigation(book: Book) -> str:
 def render_program(book: Book) -> bytes:
     """Render the small program with generated bridges for published anchors."""
     data = book.front.encode("utf-8")
-    if _ROUTES_START in data or _ROUTES_END in data or _ALIASES in data:
+    boundaries = data.replace(b"\r\n", b"\n")
+    if (
+        _ROUTES_START in boundaries
+        or _ROUTES_END in boundaries
+        or _ALIASES in boundaries
+    ):
         raise ValueError("authored program contains reserved research boundaries")
     return data + _ROUTES_START + _navigation(book).encode("utf-8") + _ROUTES_END
 
 
 def _authored_front(data: bytes) -> str:
-    if data.count(_ROUTES_START) != 1 or data.count(_ROUTES_END) != 1:
+    markers = (_ROUTES_START, _ROUTES_END)
+    matches = [
+        list(re.finditer(marker.replace(b"\n", rb"\r?\n"), data)) for marker in markers
+    ]
+    if any(
+        data.count(marker.strip(b"\n")) != 1 or len(found) != 1
+        for marker, found in zip(markers, matches)
+    ):
         raise ValueError("program requires one generated research routes region")
-    start = data.index(_ROUTES_START)
-    end = data.index(_ROUTES_END)
-    if end <= start or end + len(_ROUTES_END) != len(data):
+    start, end = (found[0] for found in matches)
+    if end.start() <= start.start() or end.end() != len(data):
         raise ValueError("invalid generated research routes boundaries")
-    return data[:start].decode("utf-8")
+    return data[: start.start()].decode("utf-8")
+
+
+def generated_view_matches(actual: bytes, expected: bytes) -> bool:
+    """Compare generated views modulo CRLF/LF; never normalize chapter evidence."""
+    return actual.replace(b"\r\n", b"\n") == expected.replace(b"\r\n", b"\n")
 
 
 def is_modular(root: Path) -> bool:
@@ -460,7 +476,7 @@ def compatibility_view_drift(root: Path) -> tuple[str, ...]:
     return tuple(
         name
         for name, target, body in _compatibility_targets(root)
-        if not target.is_file() or target.read_bytes() != body
+        if not target.is_file() or not generated_view_matches(target.read_bytes(), body)
     )
 
 

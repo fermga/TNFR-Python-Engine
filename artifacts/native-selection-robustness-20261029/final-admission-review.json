@@ -1,0 +1,106 @@
+{
+  "schema":"tnfr.native-selection-robustness-final-admission-review.v1",
+  "author":"/root",
+  "reviewer":"/root/robust_controls",
+  "independent":true,
+  "verdict":"approved",
+  "closure_decision":{
+    "path":"artifacts/native-selection-robustness-20261029/closure-decision.json",
+    "bytes":1775,
+    "sha256":"2850ef2dc0af65eadc942bb412572f499ce0988e9f3333c56f01ee97422d2c1f"
+  },
+  "evaluation":{
+    "path":"artifacts/native-selection-robustness-20261029/validation.json",
+    "bytes":5157,
+    "sha256":"0af811be1fee6a4a5b7a288020b174a089f87f7718a706e336eb86a76de10eba"
+  },
+  "analytical_proof":{
+    "path":"artifacts/native-selection-robustness-20261029/robustness-section.md",
+    "bytes":14725,
+    "sha256":"cdade3d189040e0c4ca8657d9c9d6a1e1a29cc8b934d39ce41ab58ff500a31da"
+  },
+  "post_evaluation_review":{
+    "path":"artifacts/native-selection-robustness-20261029/post-evaluation-review.json",
+    "bytes":5188,
+    "sha256":"11f47574cf28627fce78e25cb23bdeb910e17edd0d9253033d06cf9137b50dad"
+  },
+  "pre_evaluation_review":{
+    "path":"artifacts/native-selection-robustness-20261029/pre-evaluation-review.json",
+    "bytes":13088,
+    "sha256":"105af64bc8e06e92ee0fe0a9cd04b5ecc7d0e86298c566a807d8b6a18ef8b574"
+  },
+  "prerequisite_validation":{
+    "path":"artifacts/native-selection-robustness-20261029/prerequisite-validation.json",
+    "bytes":1028,
+    "sha256":"d0e3ba14ce0eb5bb386e2cc6d24ea7ae2d82502a9f5b19fa2db26f13de7cd990"
+  },
+  "sources":[
+    {
+      "path":"theory/RESEARCH_PROGRAM.md",
+      "bytes":81512,
+      "sha256":"5a4566916378187a5599351707766c6d485452930b2215aba26c3614c69ff350"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "bytes":150187,
+      "sha256":"d1e6740e1d12f6d01e91e8efbf0844a1b3e83a59417732134fd4109b8b76b58f"
+    },
+    {
+      "path":"theory/research_prerequisites.json",
+      "bytes":4664,
+      "sha256":"9125e6937eba70a1454dc98e62f2cb99a6a8cfe04bb64e39ce367255590222a1"
+    }
+  ],
+  "prerequisite_reviews":{
+    "operator_causality":{
+      "path":"artifacts/native-selection-robustness-20261029/operator_causality-review.json",
+      "sha256":"82f1f58cd3fcfe6cf6a29aeee4d906617e957a91f8d5d167f9da5cfbcc517b7b"
+    },
+    "state_observation":{
+      "path":"artifacts/native-selection-robustness-20261029/state_observation-review.json",
+      "sha256":"23496a597849cfb86f10b36d1c07c049789d88e013039c59ae080daf548a615d"
+    },
+    "organizational_identity":{
+      "path":"artifacts/native-selection-robustness-20261029/organizational_identity-review.json",
+      "sha256":"d01beedb363e415cb6ecb3b76c3b8a5b52075598bd1284359835ad136492c5b8"
+    },
+    "research_selection":{
+      "path":"artifacts/native-selection-robustness-20261029/research_selection-review.json",
+      "sha256":"f7bb2d87b698ccd1765ef73dc1b62b7462a3b56d6e0919b89fe706a18fc70820"
+    }
+  },
+  "preservation":{
+    "baseline_files":4626,
+    "unchanged_baseline_files":4623,
+    "changed_paths":[
+      "theory/RESEARCH_PROGRAM.md",
+      "theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "theory/research_prerequisites.json"
+    ],
+    "added_or_removed_maintained_paths":[],
+    "head_unchanged":true,
+    "dirty_inventory_unchanged":true,
+    "original_chapter_prefix_bytes":135065,
+    "canonical_append_equals_frozen_proof":true,
+    "program_outside_two_declared_regions_preserved":true
+  },
+  "admission":[
+    "The independently reviewed analytical proof and successful finite-data audit establish the stated symbolic positive full-state radius for the same fixed matched witness and the two complete laws.",
+    "The same perturbed initial state is used in both models; held-capacity parameter directions and both neutral origins are retained. The result extends beyond copied/reflected preparation.",
+    "The program reports the explicit radius and analytic entry bound as highly conservative mathematical guarantees, not practical precision or a computed long-time trajectory.",
+    "The program distinguishes the2003 numerical guards from the additional preparation/source admissions. No new trajectory, candidate or historical producer was run.",
+    "The next task is a substantive joint review of foundational scope. It does not automatically refine this example, install an executor, approve metadata or initiate physical mapping.",
+    "The four renewed prerequisite entries retain the original prepared single-bridge scope. Their source associations match the current canonical chapter; they do not absorb the separate two-bridge results into a broader physical approval."
+  ],
+  "independence_scope":"The disclosed preliminary guard-constant contribution and complementary independent RB6 review remain as recorded in the pre-review. This final admission checks source preservation, scoped interpretation and registry consistency without reevaluating scientific functions.",
+  "physical_mapping_authorized":false,
+  "physical_mapping_readiness_review":null,
+  "guard_result":{
+    "ordinary":0,
+    "physical":1,
+    "physical_failure_reason":"missing final readiness review"
+  },
+  "documentation_validation":"Documentation is being built by the parent; final-state closure must verify all documentation gates and rendered links separately. This review does not preclaim their outcome.",
+  "new_scientific_execution_by_reviewer":false,
+  "trajectory_or_producer_replays":0
+}

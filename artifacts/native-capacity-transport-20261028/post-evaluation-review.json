@@ -1,0 +1,137 @@
+{
+  "schema":"tnfr.scientific-post-evaluation-review.v1",
+  "reviewed_utc":"2026-10-28T18:03:10.645510+00:00",
+  "reviewer":"/root/collective_controls",
+  "verdict":"PASS",
+  "passed":true,
+  "evaluation_complete":true,
+  "attempt":"Single prospectively declared frozen evaluation; attempt 1.",
+  "outcomes":{
+    "tests":6,
+    "passed":6,
+    "failed":0,
+    "errors":0,
+    "skipped":0,
+    "pytest_seconds":1.017,
+    "test_names":[
+      "test_measure_family_and_cycle_equivalence",
+      "test_weighted_balance_variance_and_positive_generator",
+      "test_native_storage_cancellation_on_joined_support",
+      "test_port_contrast_discriminates_means_and_cut_balances",
+      "test_matched_native_acceleration_and_blind_cases",
+      "test_link_change_separates_measure_and_storage_jumps"
+    ]
+  },
+  "evidence":[
+    {
+      "path":"artifacts/native-capacity-transport-20261028/validation.json",
+      "bytes":6778,
+      "sha256":"a7521709cfed00a3fc4efee49ad67c57db6d4174d939e2836603e745ae930b86"
+    },
+    {
+      "path":"artifacts/native-capacity-transport-20261028/validation-plan.json",
+      "bytes":218052,
+      "sha256":"123dce08d173ffea8a71366524076db9f34d8e9036abd0a610a1ebeac1c6c450"
+    },
+    {
+      "path":"artifacts/native-capacity-transport-20261028/control-start.json",
+      "bytes":852,
+      "sha256":"8db74a3774f52cb186825777ce7b37b34211624277f0f7a7d71a1c2207182403"
+    },
+    {
+      "path":"artifacts/native-capacity-transport-20261028/control-results.xml",
+      "bytes":1474,
+      "sha256":"ce9b78ee852ceeacdee93ad245e2289d69846b7ba827f4554ab6a36d3151031e"
+    },
+    {
+      "path":"artifacts/native-capacity-transport-20261028/pytest.stdout.log",
+      "bytes":27,
+      "sha256":"330646bb09c9b1298def1baee36389d741f1ac1c45d01f61b0b9dd308d6c2058"
+    },
+    {
+      "path":"artifacts/native-capacity-transport-20261028/pytest.stderr.log",
+      "bytes":0,
+      "sha256":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path":"artifacts/native-capacity-transport-20261028/worker-result.json",
+      "bytes":269,
+      "sha256":"86eeef95dbceb81d22d3638f19969ab7643749adb7859d821206ecccda05b5be"
+    },
+    {
+      "path":"artifacts/native-capacity-transport-20261028/scope.json",
+      "bytes":3737,
+      "sha256":"275c1172e85ece9d1fec596f49e1054d8280de10921c29dda789665f0b8ea54a"
+    },
+    {
+      "path":"artifacts/native-capacity-transport-20261028/prospective-run.json",
+      "bytes":1818,
+      "sha256":"91ebb0373bfdd2b6eeaae85f2f1b9f4af98aeccb96d93c423de7b2a90ee330fe"
+    },
+    {
+      "path":"artifacts/native-capacity-transport-20261028/pre-evaluation-review.json",
+      "bytes":5621,
+      "sha256":"fb90a222ff0a662c1e19bcc14f69c4b22f268f1718de723a88bab392a87939ac"
+    }
+  ],
+  "frozen_archive":{
+    "path":"artifacts/native-capacity-transport-20261028/evaluated-source.zip",
+    "bytes":5410589,
+    "sha256":"83e5ae52ebf2f5c91552e56d4cc20a75e37766b0f751de74ec959c2bd015d97d"
+  },
+  "frozen_archive_members_verified":980,
+  "frozen_scientific_sources":[
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "bytes":71485,
+      "sha256":"5c338550e1a6db1806714139699e825d09b1612416391303e64df7f10f269457"
+    },
+    {
+      "path":"tests/physics/test_native_capacity_transport.py",
+      "bytes":14629,
+      "sha256":"cc6f009ae22d5336ef01d5c1fdabb607edeaf39ce8ae96a5d529fa50ad1e6107"
+    }
+  ],
+  "final_program":{
+    "path":"theory/RESEARCH_PROGRAM.md",
+    "bytes":80351,
+    "sha256":"f48fa48e717cf22c2531dbb2df15f56e0d33fa04af1655670c197de992cec173"
+  },
+  "current_frozen_source_changes":[
+    "theory/RESEARCH_PROGRAM.md"
+  ],
+  "source_preservation":"Every archived member matches its frozen receipt. All current frozen sources except the prospectively permitted PROGRAM status update are unchanged. Proof/test equal the reviewed sources; the original 59,185-byte chapter prefix remains intact. PROGRAM changed only inside the foundation decision region.",
+  "findings":[
+    "The actual JUnit names, stdout, worker result and validation receipt agree on six passes, zero failures, errors or skips. The reviewed scope and source freeze preceded the sole reserved attempt.",
+    "The equal-node and degree-normalized alternatives share a reciprocal extensive flux but preserve different fixed-measure totals. The exact port-bump discriminator and limiting-mean identities passed without tolerance or parameter fitting.",
+    "The controls retain the actual joined support, positive generator, connected rank, weighted variance, cut balance and native storage-gradient cancellation. The independent analytical argument supplies capacity-subsystem positivity and convergence for all nonnegative times.",
+    "The matched native form/phase acceleration coefficients and the blind preparations passed. These are initial derivatives, not evaluated finite-time propagation or interaction-basin evidence.",
+    "The regional total/port counterexample preserves hidden boundary information. The support comparison separates measure and native-storage jumps without invoking an event or funding mechanism.",
+    "The final PROGRAM accurately closes this bounded transport admission and selects one prospective joint organization/receiver-response question. It keeps the full thirty-state model and twenty-seven transverse coordinates on the fixed ordinary-capacity-total leaf.",
+    "The next question explicitly requires a new joint nonlinear invariant neighborhood, continuation and convergent-origin reconstruction. The held-capacity numerical basin, acquisition, refinement invariance and coarse closure are not transferred."
+  ],
+  "scope_caveats":[
+    "Conditional equal measure plus degree-independent linear edge flux supplies the selected model family; successful controls do not establish a uniquely necessary TNFR law.",
+    "Capacity positivity and storage loss do not establish global full-native regularity or a joint organizational recovery basin.",
+    "The current evidence contains no numerical native trajectory, finite-horizon separation band, parameter scan, public-stage execution, support event or runtime capacity writer.",
+    "The analytical refinement boundary is a limitation on unclaimed equivalence, not an executed replica study or a new universal composition requirement.",
+    "The PROGRAM receiver-recovery task remains prospective. This review does not mark its capability established or authorize an undeclared scientific evaluation.",
+    "All four broader foundation requirements remain open and physical mapping remains unauthorized. This artifact is not readiness approval metadata."
+  ],
+  "resource_review":{
+    "wall_budget_seconds":120,
+    "supervised_wall_seconds":4.466782299990882,
+    "aggregate_rss_ceiling_bytes":2147483648,
+    "peak_aggregate_rss_bytes":168206336,
+    "peak_actual_worker_rss_bytes":142569472,
+    "rss_samples":43,
+    "nominal_poll_seconds":0.1,
+    "hard_allocation_limit":false,
+    "job_membership_and_cleanup_verified":true,
+    "scope":"Windows Job supervision with nominal 100 ms aggregate RSS polling plus actual-worker OS peak check; no hard allocation-limit claim."
+  },
+  "scientific_executions_by_reviewer":0,
+  "historical_producer_replays":0,
+  "foundation_pillars_resolved":0,
+  "physical_mapping_authorized":false
+}

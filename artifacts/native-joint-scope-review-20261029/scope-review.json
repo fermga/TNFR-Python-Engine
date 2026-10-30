@@ -1,0 +1,48 @@
+{
+  "schema":"tnfr.native-joint-scope-review.v1",
+  "author":"/root",
+  "reviewer":"/root/joint_review_controls",
+  "independent":true,
+  "verdict":"PASS",
+  "review_scope":"Independent review of the root-authored joint capability catalog, P1-P4 scope boundary, next dependency selection and finite-observation acceptance criteria. No independent reproof or replay of the historical theorems is asserted.",
+  "contribution_disclosure":"The reviewer previously supplied advisory scope checks and suggested separating common preparation errors from inter-trial mismatch and clock errors. The reviewer did not author or edit the three submitted drafts. This review evaluates their concrete final formulation against the existing proof owners and program.",
+  "sources":[
+    {
+      "path":"artifacts/native-joint-scope-review-20261029/joint-review-section.md",
+      "bytes":8757,
+      "sha256":"0db7d7028f8f4d08b9e74ebc90475841a6e53d37fe634e71df6490a7ba87ea79"
+    },
+    {
+      "path":"artifacts/native-joint-scope-review-20261029/program-introduction.md",
+      "bytes":812,
+      "sha256":"23c2586fda815d5777b54f779215326a43b5c6be78561da132307810e91c063f"
+    },
+    {
+      "path":"artifacts/native-joint-scope-review-20261029/program-decision.md",
+      "bytes":5055,
+      "sha256":"e547053287aa74c5ba9774a2193c8a306b810864273705dbd4f4ea2b69a63d01"
+    }
+  ],
+  "assessments":{
+    "joint_scope":"The capability table retains the one-bridge CT/JO realization and two-bridge DA/CS/W/RB realization separately, along with mean, rate and preparation domains. It does not combine their histories into a single acquiring/transmitting/selecting trajectory. DA initial absence remains separate from CS/W retention versus loss.",
+    "pillars":"P1 retains the supplied complete continuous laws and excludes event occurrence. P2 keeps full nodal state, hidden phase, capacity and port associations while treating y as an observation. P3 distinguishes prepared persistence, acquisition and selection. P4 retains constitutive alternatives and does not infer law uniqueness from successful examples. The four formal approvals are explicitly unchanged in their prepared single-bridge scope.",
+    "robustness":"The explicit radius remains a positive symbolic lower bound in the mean-one leaf, not practical uncertainty admission, actual basin width or robustness to changes of mean, law, coefficients or support. No automatic tolerance-optimization campaign is activated.",
+    "consumer":"JO8 and JO11 support the chosen origin-independent receiver-form readout and the signed cubic dynamic-minus-held coefficient under the same exact JO6 preparation. Common accelerations are correctly excluded as a capacity discriminator. Neither the two-bridge selection outcome nor physical interpretation is transferred to this readout.",
+    "preparation_and_law":"The task must retain full preparation uncertainty, including phase and capacity, and separately account for mismatch between trials. Held capacity retains its actually prepared profile. Maintaining versus releasing capacity is an explicit change of complete law, not an independently established physical intervention.",
+    "finite_separation":"The closure criteria require a regular finite horizon, a uniform full-law remainder or equivalent enclosure, propagated preparation/readout/clock errors and a nonempty justified domain of disjoint admissible output sets. The document does not mistake an unbounded Taylor remainder or a formal detectability inequality for completed admission.",
+    "clock_and_blind_controls":"Common transformations and timing mismatch are separated; origin and scale errors remain explicit. The common quadratic response can dominate the cubic contrast under mismatch. Shortening time is not assumed to absorb fixed noise. Blind limits and absence of uniform amplitude-vanishing margin are retained.",
+    "priority":"The next sole task consumes an already approved realization and an existing exact causal discriminator. It determines a missing internal observation premise without requiring a new geometry, executor or selection-radius campaign. Analytical or computational route selection precedes any new evaluation.",
+    "physical_boundary":"No external dataset, unit assignment, fit, particle label or physical mapping is authorized. The independent preparation/observation/intervention/clock/uncertainty bridge remains absent, and a mathematical contract alone cannot replace it. Physical readiness remains null and the existing gate remains applicable."
+  },
+  "performed":{
+    "read_only_source_review":true,
+    "artifact_bookkeeping_only":true,
+    "new_scientific_evaluations":0,
+    "trajectory_runs":0,
+    "candidate_generations":0,
+    "producer_replays":0,
+    "tests_executed":0,
+    "canonical_edits":0,
+    "prerequisite_receipts_renewed":0
+  }
+}

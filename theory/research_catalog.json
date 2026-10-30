@@ -17,6 +17,11 @@
       "group": "State and laws"
     },
     {
+      "path": "theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "title": "Native C5 foundation account and dynamic capacity",
+      "group": "State and laws"
+    },
+    {
       "path": "theory/nodal/RELATION_FOUNDATIONS.md",
       "title": "Relation foundations",
       "group": "State and laws"
@@ -42,6 +47,11 @@
       "group": "Organized objects and retained identity"
     },
     {
+      "path": "theory/nodal/NATIVE_ACQUIRED_RESPONSE.md",
+      "title": "Acquired native organization and regional response",
+      "group": "Organized objects and retained identity"
+    },
+    {
       "path": "theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md",
       "title": "Scale, geometry and collective-state index",
       "group": "Organized objects and retained identity"
@@ -49,6 +59,16 @@
     {
       "path": "theory/nodal/RESONANCE_FOUNDATIONS.md",
       "title": "Resonance foundations",
+      "group": "Organized objects and retained identity"
+    },
+    {
+      "path": "theory/nodal/GLOBAL_PULSE_HYPOTHESIS.md",
+      "title": "Global pulse, emergence and resonance: hypothesis audit",
+      "group": "Organized objects and retained identity"
+    },
+    {
+      "path": "theory/nodal/OPERATOR_PULSE_CLOSURE.md",
+      "title": "Operators, autonomous occurrence and pulse closure",
       "group": "Organized objects and retained identity"
     },
     {
@@ -73,7 +93,12 @@
     },
     {
       "path": "theory/MINIMAL_STRUCTURAL_DEGREES.md",
-      "title": "Minimal structural degrees",
+      "title": "Structural observation families and reconstruction",
+      "group": "Diagnostics and geometry"
+    },
+    {
+      "path": "theory/COHERENCE_OBSERVATION_FOUNDATIONS.md",
+      "title": "Coherence profiles and observation limits",
       "group": "Diagnostics and geometry"
     },
     {
@@ -427,6 +452,11 @@
       "group": "Transport, memory and clocks"
     },
     {
+      "path": "theory/nodal/SINE_COLLECTIVE_PREDICTION.md",
+      "title": "Collective prediction and temporal error allowances",
+      "group": "Transport, memory and clocks"
+    },
+    {
       "path": "theory/nodal/SINE_PAIR_GROUPING.md",
       "title": "Phase and joint form-phase grouping",
       "group": "Transport, memory and clocks"
@@ -479,6 +509,21 @@
     {
       "path": "theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md",
       "title": "Constitutive inheritance through organized interfaces",
+      "group": "Organized sources and parent dynamics"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_COMPOSITE_RECIPROCITY.md",
+      "title": "Carried prediction through a reciprocal composite interaction",
+      "group": "Organized sources and parent dynamics"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_COMPOSITE_RELAXATION.md",
+      "title": "Composite relaxation, effective interaction and marked-pair identity",
+      "group": "Organized sources and parent dynamics"
+    },
+    {
+      "path": "theory/nodal/ORGANIZED_REGIONAL_TRANSPORT.md",
+      "title": "Regional contact transport and hidden-profile information",
       "group": "Organized sources and parent dynamics"
     },
     {
@@ -704,6 +749,11 @@
     {
       "path": "theory/nodal/ORGANIZED_CONTACT_MAINTENANCE.md",
       "title": "Organized identity under continued external contact",
+      "group": "Collective maintenance and assembly"
+    },
+    {
+      "path": "theory/nodal/SINE_CONTACT_COMPOSITION.md",
+      "title": "Composition error of simultaneous contact responses",
       "group": "Collective maintenance and assembly"
     },
     {
@@ -1032,6 +1082,11 @@
       "group": "Model-specific operator and hierarchy studies"
     },
     {
+      "path": "theory/nodal/SINE_PREPARATION_ROBUSTNESS.md",
+      "title": "Finite preparation families for the held sine law",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
       "path": "theory/nodal/SINE_CHILD_TEMPORAL_READINESS.md",
       "title": "Connected child's temporal capability",
       "group": "Model-specific operator and hierarchy studies"
@@ -1108,7 +1163,7 @@
     },
     {
       "path": "theory/PHYSICAL_REGIME_CORRESPONDENCES.md",
-      "title": "Physical phenomena atlas",
+      "title": "Physical correspondence atlas and emergence boundaries",
       "group": "Auxiliary models and physical comparisons"
     },
     {
@@ -1200,12 +1255,17 @@
       "path": "theory/THEORY_TO_EXECUTION.md",
       "title": "Theory-to-execution map",
       "group": "Research navigation"
+    },
+    {
+      "path": "theory/BIBLIOGRAPHIC_METHODS.md",
+      "title": "Bibliographic methods for TNFR foundations",
+      "group": "Research navigation"
     }
   ],
   "aliases": [
     {
       "path": "theory/NODAL_RESEARCH_STRATEGY.md",
-      "title": "Retired research guide",
+      "title": "Retired nodal research strategy",
       "anchors": [
         "1-scientific-objective",
         "2-information-interaction-and-complete-laws",
@@ -1240,7 +1300,7 @@
     },
     {
       "path": "theory/research/FIVE_STAGE_EXECUTION_PLAN.md",
-      "title": "Retired research guide",
+      "title": "Retired five-stage execution plan",
       "anchors": [
         "2-one-status-board-and-dependency-chain",
         "acquired-mediator-effective-memory",

@@ -2006,3 +2006,1730 @@ state at rest where the original loss vanishes but the auxiliary derivative
 is strictly negative. These arithmetic controls establish neither finite
 trajectory length nor convergence; section 5.19 owns those analytic claims
 and their compactness and gradient-inequality premises.
+
+<a id="organized-contact-coupling-realization"></a>
+## 9. Registered Coupling does not realize the complete retained-rim contact in one stage
+
+The earlier contact results assume an attachment and a complete subsequent
+law. This section audits a different obligation: whether one common
+registered Coupling (UM) stage can create that support while retaining the
+host identity. Keep the marked 54 nodes, six old internal C9 cycles and
+nine old host C5 rims. Initially all 45 same-slot spokes are absent. The
+requested endpoint contains all of them, with every old host rim still
+strictly acute and of principal winding one. The target set and allowed
+phase writes may overlap; proposals share one immutable snapshot and their
+writes are combined before final edge admission.
+
+This is a necessary-condition audit of the actual shared proposal path.
+It executes no committed event and establishes neither grammar admission
+nor an occurrence law. Optional capacity and stored-pressure updates,
+requested edge weights, post-event source association and the complete
+successor law remain distinct obligations.
+
+### 9.1 The existing triangle obstruction applies at the common endpoint
+
+Reuse section 3 at the final phases, with mathematical principal gaps.
+For a fixed slot, orient the host rim cyclically and each spoke toward the
+donor. Away from spoke cuts, equation (6) gives integers
+
+\[
+ n_c=\frac{d_c+\sigma_{c+1}-\sigma_c}{2\pi},\qquad
+ \sum_cn_c=1.
+\]
+
+Some \(n_c\ne0\), and therefore
+
+\[
+ |\sigma_c|+|\sigma_{c+1}|
+ \ge 2\pi-|d_c|>\frac{3\pi}{2}.
+ \tag{27}
+\]
+
+At least one of the two spoke magnitudes is strictly greater than
+\(3\pi/4\). If a spoke lies exactly at a principal cut, its magnitude is
+\(\pi\) and the same conclusion is immediate; no choice between signed
+cut endpoints is needed. This is the old triangle-period argument with
+its strict margin made explicit, not a new geometric theorem. It uses
+all fine phases and imposes no carrier or stationary-state restriction.
+
+An exact final-new-edge gate with effective limit at most \(\pi/2\)
+cannot admit that spoke. Apply the argument separately at all nine slots:
+**an admitted stage retaining the stipulated final rim identity can add
+at most 36 of the 45 required spokes.** This number is an upper bound,
+not an attained maximum or a claim that every other spoke is admissible.
+Other selection, score and stage conditions can exclude more edges or
+reject the stage altogether. The represented implementation requires the
+additional numerical association in section 9.4 below.
+
+The same geometry can be applied to the initial snapshot. If its old rims
+are already acute with winding one, an exact initial candidate gate also
+excludes at least one required spoke per slot. A later phase write cannot
+recover a candidate absent from every target proposal. The endpoint
+argument is nevertheless separate: it rules out the requested retained
+identity at the common final phase state, independently of how an initial
+candidate set was selected.
+
+### 9.2 Where the actual proposal makes these decisions
+
+The [shared Coupling stage owner](../../src/tnfr/operators/_coupling_stage_kernel.py)
+uses [shared U3 admission](../../src/tnfr/operators/_phase_gate.py). The
+hard graph limit belongs to the represented interval from zero to the
+canonical `DELTA_PHI_MAX`. A larger `UM_MAX_PHASE_DIFF` cannot weaken it;
+the effective limit is the smaller value. A hard graph limit above the
+canonical ceiling is invalid configuration, rather than an alternative
+admitted contact policy.
+
+For each target, `propose_coupling_target` first admits its existing
+compatible neighbors. With functional links enabled,
+`_selected_candidate_ids` excludes self-links and existing edges, and
+applies U3 to the **unchanged snapshot target phase** and each candidate.
+Candidate restrictions and any count limit operate on this filtered set.
+The source and target can propose the same undirected edge separately;
+excluding that edge through its initial gap requires covering both
+possible orientations.
+
+`propose_coupling_stage` then combines all phase proposals from the same
+snapshot. It averages their wrapped displacements with `math.fsum` and
+materializes one final phase per affected node. It makes two different
+final decisions:
+
+- A previously selected existing target-neighbor relation outside its
+  effective limit rejects the whole stage. This checks those selected
+  relations; it is not a certificate for every old marked rim edge.
+- A new candidate outside the final limit is omitted. A surviving candidate
+  must also pass its phase/form/sense compatibility score and be absent
+  from the original support before it becomes an edge proposal.
+
+Consequently a returned stage proposal is not evidence that the requested
+45-edge topology was produced. Retaining the rim identity requires its
+own complete final-phase check. Capacity synchronization and pressure
+attenuation neither bypass the edge gate nor add omitted candidates.
+Disabling functional links creates no new contact; changing a score or
+candidate policy cannot remove either necessary phase restriction.
+
+The [registered factor contract](../../src/tnfr/operators/factor_contracts.py)
+requires `0 < UM_theta_push <= 1`. The lower-level pure proposal kernel
+also accepts zero. A zero-push static control therefore tests a kernel
+boundary only; it must not be reported as an admitted registered action.
+Resolving valid factors and inspecting the shared proposal still does not
+execute the surrounding grammar, history, callback or commit contracts.
+
+### 9.3 A fixed excluded spoke for the whole original source family
+
+The acquired host is not the limiting twist used by a constructed carrier
+control. Retain the actual
+[outer acquisition bounds](ORGANIZED_OUTER_WINDING.md#4-fresh-carrier-entry-and-the-complete-reached-storage)
+and the complete
+[observation-history transport](ORGANIZED_EXTERNAL_INTERACTION.md#2-actual-source-and-observation-history-transport).
+For every slot of child zero, write the reached host and independently
+recovered donor phases as
+
+\[
+ \theta_{0,j}=\psi_j-\frac8\pi+e_j,\qquad
+ \theta_{D,j}=\psi_j+\beta+z_{D,j},\qquad
+ |e_j|+|z_{D,j}|<r_s=\frac1{40000}.
+ \tag{28}
+\]
+
+Here the host primitive endpoint is centered at \(-8/\pi\), not at
+\(-4\pi/5\). Equation (10) of the acquisition owner gives
+\(f_\theta<22083/10^9\), the full fine residual obeys \(Z<7q\), and
+\(q=10^{-70}\) bounds the donor residual. The observation word contributes
+\(m=2gB_oT\), with \(g<1/3000\), \(T=1/5000\) and
+\(B_o=1/100+gT<101/10000\). Thus
+
+\[
+ m<\frac{101}{75000000000}<\frac1{742500000},\qquad
+ f_\theta+Z+m+q
+ <\frac{22083}{10^9}+\frac1{742500000}+8q<r_s.
+ \tag{29}
+\]
+
+These bounds keep all twelve original allowances in `[0,1e-10]`, their
+zero-mean correlations, all 96 relative directions at positive ceilings,
+and the acquisition and observation histories. They introduce neither a
+new wait nor a phase reset. The donor origin is supplied at its primitive
+preparation by its isolated rotation symmetry; the legacy source field
+containing an imposed `pi/2` origin is not the residual used in (28).
+
+Take either origin interval
+
+\[
+ B_0=\frac35+[-1/1000,1/1000],\qquad
+ B_1=\frac{2\pi}{5}-\frac35+[-1/1000,1/1000].
+\]
+
+These intervals contain the two original truth origins and conservatively
+allow the width of their preceding inferred-origin guarantees. They do
+not claim that every member produces the same observation record. The
+same-slot carrier cancels in the raw donor-minus-host gap
+\(g_j=\beta+8/\pi+z_{D,j}-e_j\). Using
+\(157/50<\pi<22/7\), its lower margins satisfy
+
+\[
+ g_j-\pi>
+ \begin{cases}
+  1/385-1/1000-r_s,&\beta\in B_0,\\
+  23/385-1/1000-r_s,&\beta\in B_1,
+ \end{cases}
+ \quad >0,
+ \qquad
+ g_j<\frac{23}{35}+\frac{400}{157}+\frac1{1000}+r_s
+       <\frac{13}{4}.
+ \tag{30}
+\]
+
+Both families therefore stay on the same strict side of the cut, and
+\(\pi<g_j<13/4<2\pi\). Their exact principal spoke magnitudes are
+\(2\pi-g_j>303/100>3\pi/4\). Thus the same nine links
+\(\{j,45+j\}\), for \(j=0,\ldots,8\), are excluded by the exact
+snapshot phase gate throughout the original source allowance family.
+This proves a uniform mathematical source witness; it does not certify
+binary64 trigonometry on every real member of that family.
+
+A fresh source-only arithmetic control may rebuild
+`outer_one_host_phase_offset_bounds[0]` from the primitive endpoint, full
+phase error and carried drift, then add the exact donor allowance and
+both origin intervals. That control checks the source bound and its
+association. A constructed point merely lying inside its marginal boxes
+would not authenticate an acquired endpoint or the retained correlations.
+
+### 9.4 Exact geometry and represented calls have different boundaries
+
+The actual [phase-difference implementation](../../src/tnfr/mathematics/unified_numerical.py)
+admits finite represented arguments, subtracts them in binary64 and uses
+NumPy or scalar `atan2(sin(d),cos(d))`. It rejects a nonfinite difference.
+It does not promise a universal libm error bound or exact invariance under
+adding represented full turns. Mathematical \(\pi\), the represented
+canonical ceiling and the result of this calculation are distinct objects.
+
+For a concrete call with represented arguments \(a,b\), form the rational
+difference `Fraction(a)-Fraction(b)` **before** any floating subtraction.
+The existing [regional branch owner](../../src/tnfr/physics/relational_sine_regional.py)
+`_branches` accepts its outward interval, certifies one integer turn offset
+using the shared mathematical-pi enclosure, and subtracts that whole turn.
+It requires the resulting principal interval to lie strictly inside the
+cut endpoints. Thus it encloses the exact circular gap of the represented
+pair without relying on trigonometric runtime outputs. Let
+\([\ell,u]\) enclose its absolute value. For the exact represented magnitude
+\(r\) returned by the actual runtime call,
+
+\[
+ E=\max(|r-\ell|,|r-u|)
+\]
+
+bounds its entire discrepancy from that exact gap, including subtraction
+and transcendental evaluation. No error model for the individual library
+functions is inferred. An unresolved integer turn or an interval meeting
+a principal cut makes this comparison unavailable; it is not rounded into
+a passing branch. A point at a cut remains covered by the exact geometric theorem,
+even when this finite numerical instrument abstains.
+
+The frozen constructed controls use a fixed allowance
+\(\varepsilon_{\rm gap}=2^{-40}\), require \(E\le\varepsilon_{\rm gap}\)
+for every consumed `angle_diff` call they certify, and require
+\(L_{\rm rep}+\varepsilon_{\rm gap}<3\pi/4\). Under this association,
+a final geometric witness with magnitude greater than \(3\pi/4\) must
+also fail the actual represented gate. Applying the association to the
+relevant final candidate comparisons establishes the section 9.1 bound
+for that concrete common stage. An already absent candidate needs no
+final comparison. Snapshot exclusion of an undirected edge separately
+covers both endpoint orientations when either endpoint can propose it.
+
+This is a conditional bridge, not a uniform bound for every finite float,
+every backend or every member of the continuous preparation family.
+The strict geometric margin creates room for a certificate; it does not
+supply an unproved numerical error theorem. The original source-family
+proof (28)--(30) and finite constructed proposal checks retain their own
+domains and cannot substitute for each other.
+
+### 9.5 Prospective controls and the remaining contact obligation
+
+The frozen static protocol uses distinct constructed 54-node snapshots:
+host offsets \(-4\pi/5+2\pi c/5\), slot phases \(2\pi j/9\), the two
+specified represented donor origins, all 99 old unit edges, and all 45
+required spokes initially absent. Common form, sense index, capacity and
+stored pressure are supplied explicitly. These snapshots are neither the
+actual acquired source nor a runtime realization of its history. Their
+candidate policy is exhaustive, their compatibility threshold is zero,
+and their seed, node order, factor cases and numerical allowance are fixed
+before evaluation. Positive default-push cases use the registered factor
+resolver; zero push is labeled as the separate kernel-only boundary.
+
+The controls inspect all old rims at both endpoints of successful
+proposals, and distinguish snapshot exclusion, final-new-edge omission
+and whole-stage rejection. Separate small fixed graphs expose the last
+two paths. An all-equal-phase positive control can request all spokes
+without the winding-one premise; it tests that the negative statement
+concerns the retained identity rather than a blanket prohibition on
+Coupling links. Hard-limit rejection and the inability of an oversized
+`UM_MAX_PHASE_DIFF` to relax U3 retain separate checks.
+
+The frozen validation receipt `control-validation.json` and per-control
+observations `control-results.xml`, retained locally under
+`artifacts/organized-coupling-realization-20261023/`,
+record 14 new controls, 18 selected static regressions and 91 interval
+checks passing, with formatting and lint checks passing. The four
+constructed carrier proposals preserve all nine strict-acute winding-one
+rims and each propose 18 required spokes, with 27 already excluded at the
+snapshot. These finite counts are stronger than the theorem's upper bound
+for these controls only:
+
+| Constructed control | Cases | Required spokes proposed / omitted per case | Factor boundary |
+| --- | --- | --- | --- |
+| Winding-one carrier, resolved default push | 2 origins | 18 / 27 | Registered factor domain; detached proposal only |
+| Winding-one carrier, zero push | 2 origins | 18 / 27 | Lower-level kernel boundary only |
+| Equal phases, winding zero, default push | 1 | 45 / 0 | Registered factor domain; new weights equal one |
+
+The separate four-node control confirms omission after initial candidate
+admission, and the seven-node control confirms whole-stage rejection for
+a final existing-edge violation. Across the instrumented controls, 32,985
+consumed angle calls have certified discrepancies below the frozen
+`2^-40` allowance; the largest bound is approximately `1.08734e-15`.
+The two fresh source-family checks also verify (28)--(30) with both origin
+intervals. Production code is unchanged. No event, trajectory or retained
+producer is executed, and these constructed proposal outcomes do not
+supply an acquired-source event receipt or a uniform libm theorem.
+
+The required complete topology is already incompatible with the stated
+single-stage gate and retained identity under the declared exact or
+certified represented premises. Consequently the supplied weak contact's
+uniform weights, unchanged source correlations and complete continuation
+law have not been realized through this action. The earlier conditional
+contact theorems remain valid under their supplied attachment; they are
+not registered-action receipts. This audit does not exclude multistage
+words with intervening drift, initially existing spokes, a changed
+identity, another support API or an independently justified occurrence
+law. It neither changes U3 to obtain the desired answer nor declares
+that every organized object must realize this contact.
+<a id="organized-contact-marked-coupling-port"></a>
+## 10. A marked port is admissible only with its execution state completed
+
+The complete wheel in section 9 is obstructed. This section asks a smaller
+question on the same acquired source: whether Coupling (UM) can propose
+one link from donor node 45 to host node 18 while preserving the old
+identities. Both nodes are slot zero, with host child index two. Use target
+`(45,)`, supplied candidate visibility `_node_sample=(18,)` and exhaustive
+selection inside that singleton. All 45 potential spokes are initially
+absent. Retain the default positive phase gain, default bidirectional
+phase writes and default compatibility threshold. Disable capacity
+synchronization and stored-pressure attenuation explicitly.
+
+The source alone does not specify all state consumed by this action. The
+positive conclusion below requires an independently declared execution
+completion, including stored sense indices and grammar context. It is a
+conditional admission theorem and a detached pre-commit comparison, not an
+executed event, acquired glyph history or autonomous selection law. No new
+continuation is assumed on the resulting support.
+
+### 10.1 The actual source contains a stronger port-form bound
+
+Keep the full acquired and observed host, the independently recovered
+donor, all twelve original allowances and their full relative directions.
+Put \(q=10^{-70}\). At the beginning of the observation word, compare
+the actual host with its exact unobserved carrier. The original C5 ramp
+has \(X_c(0)=4092(c-2)\) and \(\Phi_c(0)=0\). Its
+[combined reflection and sign symmetry](SINE_PATTERN_DYNAMICS.md#sine-equal-budget-preparation)
+comes from the reflection \(c\mapsto4-c\), the odd sine current and the
+complete two-row law. Uniqueness gives, throughout the nominal acquisition,
+
+\[
+ X_{4-c}=-X_c,\qquad \Phi_{4-c}=-\Phi_c,\qquad
+ X_2=\Phi_2=0.
+ \tag{31}
+\]
+
+The nominal full host has form \(\bar x_{c,j}=X_c\) and phase
+\(\bar\theta_{c,j}=\psi_j+\Phi_c\). Equation (31) is a carrier
+identity; the actual fine preparation need not have this symmetry. Its
+full acquisition error remains
+\(\|x(0)-\bar x\|_\infty<R=4q\) and
+\(\|\theta(0)-\bar\theta\|_\infty<Z=7q\).
+The finite acquisition form bound from equation (10) of the
+[outer-winding owner](ORGANIZED_OUTER_WINDING.md#4-fresh-carrier-entry-and-the-complete-reached-storage)
+also gives \(\|x(0)\|_\infty<B_0=7/5000\), including that fine
+residual. None of these assertions substitutes a midpoint of an endpoint
+interval for the actual carrier or source.
+
+Use the original
+[single-history observation word](ORGANIZED_SEQUENTIAL_OBSERVATION.md#1-one-actual-history-and-the-initial-identity):
+marks \(k=0,\ldots,4\) in their declared order, four windows of length
+\(h=10^{-5}\) per mark, and commanded amplitudes
+\((0,+\epsilon,-\epsilon,0)\), where \(\epsilon=1/10\).
+The cumulative command during a window is
+
+\[
+ a_{c,j}=m\epsilon(\mathbf1_{c=k}-1/5),\qquad
+ m\in(0,1,-1,0),\qquad T=20h=1/5000.
+\]
+
+Freeze the *initial nominal state* only inside the following comparison
+integral. At node 18 its frozen diffusion vanishes by (31), and its two
+internal sine currents cancel. Each of the two old outer edges is affected
+in exactly two of the five marked blocks. Its 20 window offsets therefore
+contain sixteen zeros, two \(+\epsilon\) and two \(-\epsilon\).
+For a frozen gap \(v\), the integrated sine current is
+
+\[
+ h[16\sin v+2\sin(v+\epsilon)+2\sin(v-\epsilon)]
+ =h(16+4\cos\epsilon)\sin v.
+\]
+
+The two base gaps at child two are opposite by (31), so their contributions
+cancel exactly. Writing the complete host form row as
+\(F(x,\theta)=-Lx/4+\gamma S(\theta)/4\), this proves
+
+\[
+ \int_0^T F_{18}(\bar x,\bar\theta+a(t))\,dt=0.
+ \tag{32}
+\]
+
+The real observation word does not preserve reflection at intermediate
+times. It changes forms through continuous evolution, and its final
+inverse phase command does not reverse that evolution. Equation (32)
+is only the zero term of a controlled comparison; the next bound retains
+all order-dependent transport and backaction.
+
+On the old degree-four unit host, \(\|L/4\|_\infty=2\) and
+\(\|S(\theta)-S(\varphi)\|_\infty\le8\|\theta-\varphi\|_\infty\).
+Let \(g\) bound \(\gamma=1/(1023\pi)\), with \(g<1/3000\).
+Heat contraction and the fact that every jump leaves form unchanged give
+
+\[
+ \|x(t)\|_\infty\le B=B_0+gT<1401/10^6,
+ \quad
+ \|x(t)-x(0)\|_\infty\le(2B+g)t,
+ \quad
+ \|\theta(t)-\theta(0)-a(t)\|_\infty\le2gBt.
+ \tag{33}
+\]
+
+Consequently the difference between the actual form row and the frozen
+nominal row in (32) is at most
+\(2R+2gZ+[2(2B+g)+4g^2B]t\) in every coordinate. Integrating,
+including the initial port error, yields the prospectively fixed bound
+
+\[
+ |x_{18}(T)|
+ \le R+(2R+2gZ)T+(2B+g+2g^2B)T^2
+ <2\,10^{-10}.
+ \tag{34}
+\]
+
+The last strict inequality follows already with the rational majorants
+\(g=1/3000\), \(B=1401/10^6\), \(R=4q\) and \(Z=7q\).
+It uses the unchanged source, full observation duration and complete
+quarter-rate rows. It neither waits for more relaxation nor invokes a
+trajectory. The independently recovered donor retains
+\(|x_{45}|<q\). Thus the broad earlier per-node form envelope was not an
+intrinsic information obstruction at this port: a retained source
+symmetry and the complete word sharpen it sufficiently.
+
+### 10.2 The phase reset retains every old cycle
+
+Let \(\alpha=2\pi/9\), let \(\Theta=\psi_0+\beta\) be the
+donor's reference phase at node 45, and let
+\(p=1/(\pi+1)\in(0,1/4)\) denote the ideal default gain.
+Before any new link is created, the target's existing neighbors are 46
+and 53. Their three circular input phases are
+\(\Theta+(0,+\alpha,-\alpha)\), each with its actual residual bounded
+by \(q\). They pass the old-neighbor U3 gate.
+
+The nominal three-phasor resultant has magnitude
+\(1+2\cos\alpha>5/2\), and its perturbation has magnitude at most
+\(3q\). Its direction differs from \(\Theta\) by less than
+\(3q/(5/2-3q)<2q\). This supplies a regular consensus direction; no
+zero-resultant convention is needed. On the common local branches, the
+bidirectional reset has nominal phases
+
+\[
+ \Theta,\qquad \Theta+(1-p)\alpha,\qquad
+ \Theta-(1-p)\alpha
+ \tag{35}
+\]
+
+at 45, 46 and 53 respectively, each with error at most \(2q\).
+Only these three donor phases are proposed for writing. All host phases
+and all forms remain unchanged, and the optional capacity and pressure
+channels are disabled.
+
+The donor's two target-neighbor gaps are
+\((1-p)\alpha\) with errors at most \(4q\). The two adjacent cycle
+gaps are \((1+p)\alpha\) with errors at most \(3q\). The remaining
+five gaps are \(\alpha\) with errors at most \(2q\). Each belongs to
+\((1/2,1)\), strictly inside the acute chart. Their compatible lifted
+increments telescope to the original \(2\pi\), so donor winding one is
+retained. The five host internal cycles and nine old host rims are
+unchanged. This proves retention of all fifteen old identities at the
+jump, not a future retention theorem or preservation of lifted means.
+
+Use either original donor origin, or either enlarged origin interval
+displayed before (30). The actual host offset at node 18 obeys
+\(|H_{18}|<1/40000\),
+by the unchanged primitive entry and observation transport. The candidate
+and final donor-minus-host gaps are therefore positive and less than
+\(7/10\). Both U3 tests pass with a strict margin. The support still
+contains exactly one eligible new pair because candidate visibility is
+the supplied singleton; passing the score remains a separate condition.
+
+### 10.3 Form and sense indices decide the remaining score
+
+For the exact real counterpart of the actual scaled computation, put
+\(r=10^{-9}\) and retain signed forms in
+
+\[
+ E=1-\frac{|x_{45}-x_{18}|}{|x_{45}|+|x_{18}|+r}.
+ \tag{36}
+\]
+
+The implementation scales numerator and denominator before division to
+avoid overflow; this algebraic expression is not a license to replace
+its represented evaluation order. From (34) and donor recovery,
+
+\[
+ E\ge\frac{r}{r+2\,10^{-10}+q}>\frac45.
+\]
+
+Let \(d\) be the final principal gap magnitude and
+\(s=|Si_{45}-Si_{18}|\). The complete compatibility score, also used
+as the new edge conductance, is
+
+\[
+ w=\frac34-\frac{d}{2\pi}+\frac E4-\frac s4,
+ \qquad \kappa=\frac{\pi}{\pi+1}.
+ \tag{37}
+\]
+
+Supply \(Si_{45}=Si_{18}=1\) as an additional execution premise.
+Then \(d<7/10\), \(\pi>3\) and \(E>4/5\) imply
+\(w>5/6>\kappa\). Under the remaining declared context and numerical
+association, the shared proposal therefore contains the single new link
+\(\{45,18\}\), with its calculated conductance. That conductance
+cannot be replaced by the old weak-contact value \(10^{-5}\).
+
+Now keep the identical primary source, observation history, phases,
+factors, candidate and grammar completion, but supply
+\(Si_{45}=0,Si_{18}=1\). Both stored values are allowed nonnegative
+scalars; the source flow does not determine or evolve them. Here \(s=1\)
+and the two remaining similarities are at most one, so
+\(w\le3/4<\kappa\). The candidate passes U3 but the new edge is
+omitted. The phase reset and the old-cycle result in section 10.2 still
+apply. These are two explicit execution-state completions of the same
+primary source, not two fabricated endpoints selected from outer error
+boxes. They establish precisely why a phase record and a source theorem
+alone do not determine link admission. No sense measurement or autonomous
+sense-index law has been inferred.
+
+### 10.4 Live context and strict activity are additional premises
+
+The detached comparison mirrors the actual
+[common-stage preflight](../../src/tnfr/operators/network_stage.py),
+registered factor resolution, recognition-list sink, seed and node-offset
+admission, followed by the unmodified shared Coupling proposal. The
+explicit completion uses seed 17, an admissible list sink and target
+`glyph_history=('AL',)`, `_grammar_u2_debt=0`,
+`_grammar_prior_coherence=False`, `_operator_step=1`, with
+`sequence_context=None` and `GRAMMAR_REJECTION_MODE='raise'`.
+Metrics and nodal-equation validation are disabled and no integrity
+monitor is installed. The selected node, candidate visibility and these
+metadata are supplied inputs, not reconstructed from the mathematical
+source or its fifteen phase-probe jumps. In particular, the displayed
+history is a conditional execution premise, not evidence that this
+preparation actually underwent Emission.
+
+The default `VALIDATE_OPERATOR_PRECONDITIONS=False` does not disable hard
+U3 or incremental grammar admission. With the declared context, the
+positive port conclusion concerns this default policy. Activating strict
+preconditions is a different comparison: the default
+`UM_MIN_EPI=0.05` rejects the donor because \(|x_{45}|<q<0.05\), even
+though its unit capacity and phase relations are suitable. This is a
+policy-dependent activity rejection, distinct from the sense-score
+omission and from loss of an old identity. Missing or inconsistent
+context is not filled by a passing mathematical bound.
+
+No commit, callback, history update, pressure refresh or live integrity
+monitor runs on this detached path. It certifies a proposed transition
+conditional on its admitted inputs, not all secondary effects of a future
+runtime execution. Signed-form, phase and metadata admission remain
+required before numerical materialization; the source theorem does not
+make every real member representable in binary64.
+
+### 10.5 Represented controls and the scientific boundary
+
+The exact-source statements above are uniform on their declared source
+family and execution completions. Concrete implementation checks retain
+the actual represented defaults, regularizer, threshold, normalization
+and score evaluation order. The prospectively fixed allowance is
+`2^-40`, applied separately to consumed wrapped differences, consensus,
+final phase writes and score. Shared rational branch intervals and
+outward sine/cosine/argument enclosures use the exact represented operands.
+A cut or unresolved argument produces an unavailable comparison. Checking
+finite calls does not establish a universal libm bound, nor authenticate
+an unknown recovered endpoint from its marginal bounds.
+
+The frozen static controls separately verify the reflection of the actual
+nominal C5 preparation, the full 20-window coefficient cancellation, both
+complete row bounds and the strict rational inequality (34). A fresh
+source-only rebuild at the original ceilings checks the primitive law,
+endpoint bounds, carried errors and unchanged history. It executes no
+source producer or trajectory.
+
+The numerical proposal controls are explicitly constructed 54-node
+boundary snapshots. Eight cases combine the two represented origin
+choices with host-cell-two forms of either sign at \(2\,10^{-10}\)
+(compensated in cell zero), and donor-node-45 forms of either sign at
+\(q/2\) (compensated at node 46). Their host offsets are
+\(4(c-2)/\pi\), with the declared internal carrier and equal supplied
+sense indices. These values test admission and numerical boundaries;
+they are not claimed acquired endpoints. Separate controls change only
+the sense completion, enable strict preconditions or provide invalid
+consumed state and context. Successful proposals must retain all fifteen
+old cycles, write phases only at 45, 46 and 53, preserve the original
+graph and disabled channels, and contain exactly the predicted new pair.
+The frozen validation passed 24 new controls and 112 unchanged regressions
+(21 static and 91 interval cases), with Black and flake8 also passing.
+All eight positive snapshots proposed exactly the marked edge, with actual
+conductances from approximately 0.8538262991884705 to 0.8628403674781963,
+and retained all fifteen old cycles. Both unequal-sense completions omitted
+the edge while retaining those cycles. Across the ten proposal comparisons,
+170 wrapped differences, ten consensus values, thirty phase writes and ten
+scores had maximum discrepancies below, respectively, `3.56e-16`,
+`7.41e-17`, `1.116e-15` and `6.48e-17`, all below the frozen `2^-40`
+allowance. The exact rational errors and individual outcomes are retained
+in `control-results-2.xml` under the local protocol directory below.
+An initial snapshot-equality instrument stopped sixteen cases before
+proposal because the detached reader omits three runtime cache keys.
+Only that check was corrected to assert those exact omissions and equality
+of every remaining field; the first source, failures, correction plan and
+final validation are preserved alongside `final-control-validation.json`.
+No production code, scientific premise or source history changed.
+
+The protocol is retained locally under
+`artifacts/organized-coupling-port-20261023/`. Closing this gate establishes
+an explicit source-to-action association and an equally explicit missing
+execution-coordinate distinction. It does not select the occurrence of
+Coupling, establish empirical meaning for `Si`, or justify the original
+complete-wheel support. Any later partial-contact response must declare
+its own complete support, conductance, preparation, capacities and clock;
+the old fifth-order registration law and deadlines do not transfer.
+
+<a id="organized-contact-marked-port-response"></a>
+
+## 11. A finite response of the admitted marked port
+
+The single edge from section 10 supports a resolved finite exchange under
+an independently supplied continuation. The comparison holds the acquired
+source and Coupling phase reset fixed, changing only the functional-link
+flag. It retains all twelve source allowances, all 96 relative preparation
+directions, both origin envelopes and the complete acquisition and
+observation histories. Equal supplied sense indices, candidate visibility,
+grammar and the remaining runtime completion are still premises.
+
+### 11.1 Matched primary states and a complete successor law
+
+Let \(G_0\) contain the 99 old unit edges, and let
+\(G_w=G_0+\{18,45\}\), with the generated conductance
+\(5/6<w\le1\). The shared proposal computes its existing-neighbor phase
+reset before the functional-link branch. Disabling only functional links
+therefore leaves the same primary post-reset state: forms, phases and
+capacities agree, and the 99 old edges agree. Only the proposed new edge
+differs. The control has a nontrivial donor phase reset; it is not the
+unmodified source or a second preparation.
+
+For each branch, supply its own weighted Laplacian \(L_b\) and weighted
+sine current
+\(S_{b,i}(\theta)=\sum_j w_{ij}\sin(\theta_j-\theta_i)\).
+Use the fixed original structural clock and both complete rows
+
+\[
+ \begin{split}
+ x_b'&=\frac{-L_bx_b+\gamma S_b(\theta_b)}4,&
+ \theta_b'&=\frac{\gamma L_bx_b}4,\\
+ \gamma&=\frac1{1023\pi},&
+ \tau&=\frac{1023}{1024}t,\qquad 0\le\tau\le h=\frac1{1000}.
+ \end{split}\tag{38}
+\]
+
+Here \(b=0,w\), the capacities are held at one, and every edge weight,
+including the actual generated \(w\), is held fixed. There is no further
+input or event. The common quarter factor is retained even at the two
+vertices whose weighted degrees change. It is not replaced by
+degree normalization.
+
+Equation (38) is an additional constitutive premise. Coupling does not
+select it or a unique successor law. In particular, stored pressure left
+by the event is not silently treated as the refreshed pressure in (38).
+The displayed form row independently specifies that pressure on the held
+unit-capacity domain. Neither the old complete-wheel support nor its
+weak-contact cancellation and fifth-order law is used here.
+
+### 11.2 Constituent balances retain both boundary mechanisms
+
+Write \(D=\{45,\ldots,53\}\), \(H=\{0,\ldots,44\}\), and define
+their arithmetic form means \(m_D,m_H\). For the connected branch put
+\(a=x_{18}-x_{45}\) and choose the continuous local gap
+\(d=\theta_{45}-\theta_{18}\) inherited from the admitted reset.
+Summing the complete rows cancels every internal edge and gives
+
+\[
+ \begin{split}
+ m_D'&=\frac w{36}(a-\gamma\sin d),&
+ m_H'&=-\frac w{180}(a-\gamma\sin d),\\
+ \varphi_D'&=-\frac{\gamma w}{36}a,&
+ \varphi_H'&=\frac{\gamma w}{180}a.
+ \end{split}\tag{39}
+\]
+
+The last two means use continuous phase lifts, not arithmetic means of
+wrapped representatives. Thus \(9m_D'+45m_H'=0\) and
+\(9\varphi_D'+45\varphi_H'=0\). These are reciprocal exchange
+identities, not a closed two-constituent evolution law: \(a\) and \(d\)
+still belong to the complete fine state.
+
+In the control, the donor and host remain disconnected, so each of their
+form and lifted phase means is constant during its continuation. Its
+internal state need not be stationary. Both branches conserve the global
+form and lifted phase means appropriate to their common post-reset state.
+The reset itself was not proved to preserve a lifted phase mean; its small
+residual-dependent change must not be discarded.
+
+### 11.3 Whole-window bounds preserve the marked identities
+
+The forms are unchanged at the reset. The complete observation estimate
+in section 10 gives
+\(\|x_b(0)\|_\infty<B_{\mathrm{start}}=1401/10^6\).
+On either support the maximum weighted degree is at most five. Put
+\(g=1/3000\), so \(1/3300<\gamma<g\). Weighted heat contraction,
+\(\|S_b\|_\infty\le5\), and (38) give the fixed majorants
+
+\[
+ \begin{split}
+ B&=\frac{1402}{10^6}>
+       B_{\mathrm{start}}+\frac54gh,&
+ \|x_b(\tau)\|_\infty&<B,\\
+ A&=\frac52B+\frac54g,&
+ \|x_b'(\tau)\|_\infty&<A,\\
+ P&=\frac52gB,&
+ \|\theta_b'(\tau)\|_\infty&<P,\qquad
+ 2Ph<10^{-8}.
+ \end{split}\tag{40}
+\]
+
+They are bounds on both full 54-node continuations, not an onset
+derivative or an assumed carrier trajectory.
+
+For the source margins, the original acquisition and observation owners
+give each actual host phase offset as \(4(c-2)/\pi\) plus an error
+of magnitude less than \(1/40000\). This follows from the same
+\(f_\theta+Z+m\) enclosure used in section 9; commanded offsets have
+cancelled while the continuous drift remains. Consequently the four
+ordinary host-rim gaps lie in
+\(4/\pi+[-1/20000,1/20000]\), and the closing gap lies in
+\(2\pi-16/\pi+[-1/20000,1/20000]\). All belong to \((1,13/10)\).
+The host internal gaps belong to \((1/2,1)\), as do all post-reset donor
+gaps by section 10.2. Their initial winding numbers are one.
+
+Every edge gap changes by at most \(2P\tau\). Hence all six internal
+C9 cycles and all nine old host C5 cycles remain in the fixed positive
+acute chart \((2/5,7/5)\subset(0,\pi/2)\) throughout \([0,h]\).
+Compatible lifts cannot cross a principal cut, so their marked winding
+numbers remain one. This is finite retention of those fifteen identities;
+it is not an all-future capture or joint-organization theorem.
+
+Both original origin envelopes and \(|H_{18}|<1/40000\) put the
+initial port gap in \((59/100,7/10)\). Equation (40) therefore keeps
+\(d(\tau)\in(1/2,1)\) throughout the window. The sine Taylor bound,
+or monotonicity on this interval, gives \(\sin d>2/5\).
+The form bounds retain both endpoints:
+
+\[
+ \begin{split}
+ |a(\tau)|&<2\,10^{-10}+q+2Ah<10^{-5},\\
+ a(\tau)-\gamma\sin d(\tau)
+   &<\frac1{100000}-\frac{2}{5\cdot3300}
+     <-\frac1{10000},\qquad q=10^{-70}.
+ \end{split}\tag{41}
+\]
+
+Thus a later sign reversal has been excluded on the complete prescribed
+window. No favorable marginal-box corner, numerical trajectory or
+additional waiting is needed.
+
+### 11.4 Four uncertain readings still resolve the exchange
+
+Equation (39), \(w>5/6\), and (41) yield
+\(m_{D,w}'<-1/432000\). The control donor mean is constant.
+For the connected-minus-control increment,
+
+\[
+ \begin{split}
+ J&=[m_{D,w}(h)-m_{D,w}(0)]
+       -[m_{D,0}(h)-m_{D,0}(0)]
+       <-\frac1{432000000},\\
+ \widehat J&=J+e_{w,h}-e_{w,0}-e_{0,h}+e_{0,0},\qquad
+ |e_{b,s}|\le10^{-10},\\
+ \widehat J&<-\frac1{432000000}+4\,10^{-10}<-10^{-9}.
+ \end{split}\tag{42}
+\]
+
+The four errors may be arbitrarily correlated. Identical true initial
+means do not cancel two independently admitted reading errors; the full
+four-reading allowance is retained. The observation model is a supplied
+primitive donor-mean form reading, not an inferred physical sensor.
+
+The strict negative contrast attributes a finite signed exchange to the
+one added edge under (38), with the phase reset matched. It does not
+identify EPI with energy or material mass, establish an autonomous
+attachment mechanism, or eliminate the boundary coordinates from (39).
+
+### 11.5 Reset work, edge work and continuous loss are separate
+
+On either fixed support define
+
+\[
+ \begin{split}
+ H_b(x,\theta)&=\frac12x^TL_bx+
+   \sum_{\{i,j\}\in G_b}w_{ij}[1-\cos(\theta_j-\theta_i)],\\
+ H_b'&=(L_bx)^T\frac{-L_bx+\gamma S_b}4
+          -S_b^T\frac{\gamma L_bx}4
+       =-\frac14\|L_bx\|_2^2.
+ \end{split}\tag{43}
+\]
+
+The weighted support is the same in both rows and in storage. This is why
+the cross terms cancel. It would not justify a degree-normalized flow or
+an omitted weight derivative if conductances were allowed to evolve.
+
+Let \(\theta^-,\theta^+\) be the source and reset phases on \(G_0\).
+Only donor edges \(45\!-\!46\), \(46\!-\!47\),
+\(52\!-\!53\), and \(53\!-\!45\) change their gaps.
+Writing those oriented gaps as \(g_e^-,g_e^+\), the exact reset work and
+the additional edge work are
+
+\[
+ \begin{split}
+ W_{\mathrm{reset}}
+   &=\sum_{\text{four changed edges}}
+        [\cos g_e^- -\cos g_e^+],\\
+ W_*&=4\cos\alpha[1-\cos(p\alpha)],&
+ |W_{\mathrm{reset}}-W_*|&\le22q,\\
+ W_{\mathrm{link}}
+   &=w\left[\frac{a(0)^2}{2}+1-\cos d(0)\right],&
+ \alpha&=\frac{2\pi}9,\qquad p=\frac1{\pi+1}.
+ \end{split}\tag{44}
+\]
+
+Forms do not change at the reset. The nominal two inner gaps become
+\((1-p)\alpha\) and the two adjacent gaps become
+\((1+p)\alpha\), giving \(W_*\). The actual source errors contribute
+at most \(4(2q)+2(4q)+2(3q)=22q\), using the unit Lipschitz constant
+of cosine and the gap bounds in section 10.2. This is the exact-map
+comparison on the full acquired source; \(22q\) is not a bound on
+binary64 rounding. Constructed represented resets retain their actual
+operands and require their own outward work comparison.
+
+Both work contributions are positive. For example,
+\(p>1/5\), \(\alpha>2/3\), \(\cos\alpha>1/2\), and
+\(1-\cos u>u^2/3\) for \(0<u<1\) give
+\(W_*>8/675\), hence \(W_{\mathrm{reset}}>1/100\).
+Also \(d(0)>1/2\) and \(w>5/6\) give
+\(W_{\mathrm{link}}>(5/6)(1/8-1/384)>1/10\).
+These lower bounds do not replace the actual state-dependent work.
+
+If \(H^-\) denotes storage on \(G_0\) immediately before the reset,
+the complete balances are
+\(H_0(h)=H^-+W_{\mathrm{reset}}
+-\tfrac14\int_0^h\|L_0x_0\|_2^2\,d\tau\) and
+\(H_w(h)=H^-+W_{\mathrm{reset}}+W_{\mathrm{link}}
+-\tfrac14\int_0^h\|L_wx_w\|_2^2\,d\tau\).
+Neither earlier dissipation nor the loss during this window is an
+autonomous event reservoir. Earlier preparation and observation costs
+remain separate; no event passivity or ordering of the final branch
+storages has been inferred.
+
+### 11.6 Evidence and scope
+
+The prospective protocol is retained locally under
+artifacts/organized-port-response-20261023/.
+Its static controls re-admit the original source bounds and exact weighted
+identities. Separate constructed snapshots compare the actual detached
+functional-link-on and functional-link-off proposals, their shared primary
+reset, and independently reconstructed weighted rows and work. They do not
+authenticate acquired endpoints. No retained complete-contact response
+field supplies the single-port verdict.
+
+The frozen validation passed all 138 selected cases on its first run:
+18 new controls, 29 static regressions (including the 24 preceding
+marked-port controls), and 91 interval tests. Black and flake8 also passed.
+All eight constructed matched pairs had identical primary resets, their
+actual generated conductance and the expected 99-versus-100 edge supports.
+The independent asymmetric row checks retained reciprocal means, quarter
+mobility and the complete storage loss. Both origin families certified the
+strict four-reading upper bound \(-517/270000000000<-10^{-9}\), with
+the whole-window edge-drift allowance \(701/300000000000<10^{-8}\).
+The represented reset and attachment work checks were separately positive.
+These outcomes verify the analytical inequalities and detached implementation
+associations; they are not sampled finite trajectories or acquired readouts.
+Exact values and case results are retained in control-results.xml, and
+control-validation.json records the frozen sources and commands, under
+the local protocol directory above.
+
+No event, callback or trajectory is executed by this proof or its controls,
+and no represented comparison supplies a universal trigonometric error bound.
+The result closes a finite interaction question while leaving later
+maintenance, constitutive selection and occurrence open.
+
+
+<a id="sine-finite-bridge-interface"></a>
+## 12. A finite single-bridge contract across internal supports
+
+The preceding marked-port result uses one acquired source and its admitted
+Coupling reset. Its finite response mechanism also supplies a conditional
+interface for other internal supports. This section identifies the boundary
+and background information sufficient to certify a signed finite exchange.
+It separately tests whether requested old phase charts are retained.
+Neither conclusion reconstructs a source or an operator occurrence.
+
+### 12.1 Complete model and primitive association
+
+Let finite disjoint donor and host vertex sets be \(D,H\), with
+\(n_D=|D|>0\) and \(n_H=|H|>0\). Their held internal conductances are
+symmetric and nonnegative. A single bridge joins \(u\in D\) to \(v\in H\),
+with held \(w>0\); there are no other cross edges. Write \(G_0\) for the
+disconnected support and \(G_w\) for the support with this bridge.
+On each branch use its own weighted Laplacian and sine current,
+\[
+ (Lx)_i=\sum_jw_{ij}(x_i-x_j),\qquad
+ S_i(\theta)=\sum_jw_{ij}\sin(\theta_j-\theta_i),\qquad
+ x'=\frac{-Lx+\gamma S(\theta)}4,\quad
+ \theta'=\frac{\gamma Lx}4. \tag{45}
+\]
+All capacities are held at one. The same nonnegative conductances occur
+in both rows; \(\gamma\ge0\) is held and the prime denotes one declared
+structural clock. There is no subsequent event, input or support change.
+Both branches start at the **same full form and phase state**, including
+every hidden coordinate. Agreement of the scalar inputs below does not
+establish this matching premise.
+
+Supply ordered finite real endpoint pairs \(A_0,D_0,W,\Gamma\) for
+\[
+ a(0)=x_v(0)-x_u(0),\qquad
+ d(0)=\theta_u(0)-\theta_v(0),\qquad w,\qquad\gamma .
+\]
+The phase pair encloses a continuous real lift; its endpoints are not
+wrapped separately. Require \(W_{\rm lo}>0\) and
+\(\Gamma_{\rm lo}\ge0\). Supply \(B_0\ge0\) with
+\(\max_i|x_i(0)|\le B_0\), a bound \(K\) on the maximum weighted degree
+of the joined support, a horizon \(h\ge0\), \(n_D\), and four nonnegative
+reading-error radii. The numerical interface requires \(K\ge W_{\rm hi}\).
+For a family with correlated primitive data this is a conservative
+admission domain; a larger valid \(K\) can be supplied.
+
+The consistent initial form interval is
+\(A=A_0\cap[-2B_0,2B_0]\). Preserve both \(A_0\) and \(A\); an empty
+intersection contradicts the supplied premises and is rejected. A nonempty
+intersection does not prove that a full graph or state family exists.
+The endpoint, support, partition, degree, count, clock and initial-state
+associations remain external premises. No zero constituent mean is imposed.
+In particular, a relative donor-host form offset remains part of \(a(0)\).
+
+### 12.2 Complete-row motion and reciprocal exchange
+
+Put \(g=\Gamma_{\rm hi}\). The heat semigroup of \(-L/4\) preserves constants
+and contracts the maximum norm, while \(\|S(\theta)\|_\infty\le K\).
+Variation of constants therefore gives, for either branch and
+\(0\le s\le h\),
+\[
+ \begin{aligned}
+ B(s)&=B_0+\frac{Kg}{4}s,\qquad &&\|x(s)\|_\infty\le B(s),\\
+ X(s)&=\left(\frac{KB_0}{2}+\frac{Kg}{4}\right)s
+                         +\frac{K^2g}{16}s^2,
+ &&|x_i(s)-x_i(0)|\le X(s),\\
+ T(s)&=\frac{gKB_0}{2}s+\frac{K^2g^2}{16}s^2,
+ &&|\theta_i(s)-\theta_i(0)|\le T(s).
+ \end{aligned} \tag{46}
+\]
+Indeed \(\|Lx\|_\infty\le2K\|x\|_\infty\), so the complete instantaneous
+bounds are \(KB(s)/2+Kg/4\) for form and \(gKB(s)/2\) for phase.
+Their integrals give (46). These estimates retain the full background
+motion; they do not freeze the non-port coordinates. Smooth sine and the
+linear form row also give global finite-dimensional solutions, with (46)
+excluding finite-time growth of the form coordinates. No acute-chart
+assumption is needed for this response calculation.
+
+Let \(M_D=\sum_{i\in D}x_i\), \(\Phi_D=\sum_{i\in D}\theta_i\), with
+analogous host totals, and let \(m_D=M_D/n_D\).
+Internal edge contributions cancel in the sums. On the joined branch,
+\[
+ \begin{aligned}
+ M_D'&=\frac w4(a-\gamma\sin d),&
+ M_H'&=-M_D',&
+ m_D'&=\frac{w}{4n_D}(a-\gamma\sin d),\\
+ \Phi_D'&=-\frac{\gamma w a}{4},&
+ \Phi_H'&=-\Phi_D'.
+ \end{aligned} \tag{47}
+\]
+On the disconnected branch each constituent total is constant.
+The global form and consistently lifted phase means are consequently
+conserved on both branches, even when their initial values are nonzero.
+Any preparation reset before this shared initial state retains its own
+mean and work accounting.
+
+For the matched donor-mean contrast
+\(J=[m_D^w(h)-m_D^w(0)]-[m_D^0(h)-m_D^0(0)]\),
+the disconnected increment vanishes. The actual host total contrast is
+\(-n_DJ\); its mean contrast is \(-n_DJ/n_H\) only when the independent
+host count is supplied. This reciprocity concerns actual totals. It does
+not supply error bounds for an independently measured host signal.
+
+### 12.3 Integrated response and four-reading decision
+
+Equation (46) gives
+\(|a(s)-a(0)|\le2X(s)\) and \(|d(s)-d(0)|\le2T(s)\).
+Using the global unit Lipschitz bound for sine in (47),
+\[
+ \begin{aligned}
+ |m_D'(s)-m_D'(0)|
+ &\le \frac{W_{\rm hi}}{4n_D}\,[2X(s)+2gT(s)],\\
+ E(h)&=\frac{W_{\rm hi}}{4n_D}
+ \left\{
+ \frac{K[B_0(1+g^2)+g/2]}2h^2
+ +\frac{K^2g(1+g^2)}{24}h^3
+ \right\},\\
+ |J-hm_D'(0)|&\le E(h).
+ \end{aligned} \tag{48}
+\]
+Thus \(E\) is a bound for the integrated complete-law remainder, not a
+formal derivative expansion or a sampled numerical error. No small-time
+condition is required for validity; a large bound may simply fail to
+resolve the sign.
+
+Let interval operations be outward, and let \(\sin D_0\) denote an
+enclosure of every sine over the initial lifted interval. Then
+\[
+ R_0=\frac{W(A-\Gamma\sin D_0)}{4n_D},\qquad
+ \mathcal J=hR_0+[-E(h),E(h)],\qquad
+ \widehat{\mathcal J}
+ =\mathcal J+[-\epsilon_\Sigma,\epsilon_\Sigma],
+ \quad\epsilon_\Sigma=\sum_{k=1}^4\epsilon_k . \tag{49}
+\]
+Here the four readings are the donor means at the start and end of each
+branch, each within its supplied radius of the corresponding actual mean.
+Their signed difference lies in \(\widehat{\mathcal J}\), irrespective
+of correlations among the four errors. Correlations among state, weight
+and coefficient intervals likewise require no independence assumption:
+ordinary interval products are outer enclosures, not probability laws.
+
+A strictly negative upper endpoint of \(\widehat{\mathcal J}\) certifies
+a negative observed contrast; a strictly positive lower endpoint certifies
+a positive one. An interval touching or containing zero is indeterminate.
+This includes an exactly zero increment: it does not have a strict sign.
+Invalid primitive inputs are rejected before this decision and are not
+reported as an unresolved physical response.
+
+For inspection, the same calculation may also return the whole-window
+port boxes \(A+[-2X(h),2X(h)]\) and \(D_0+[-2T(h),2T(h)]\).
+Substitution into (47) yields uniform donor and host total-rate bounds,
+and donor mean-rate bounds after division by \(n_D\). These fields
+describe every time in the window. They are distinct from the initial
+rate \(R_0\) in (49); the implemented primary increment enclosure is
+exactly the initial-rate expression plus its integrated remainder.
+There is no inferred autonomous equation for two constituent means.
+
+### 12.4 Requested old-chart retention is independent
+
+For each requested old edge \(e\), supply a nonnegative lower bound
+\(\mu_e\) on the distance of its initial lifted gap from the boundary of
+its prescribed open chart. The caller must associate that chart with the
+actual edge lift, its initial membership, and any claimed cycle identity.
+Since both endpoint phases move by at most \(T(h)\),
+\[
+             \mu_e-2T(h)>0\quad\hbox{for every requested }e
+             \quad\Longrightarrow\quad
+             \hbox{all requested charts persist on }[0,h].
+             \tag{50}
+\]
+This applies to both branches. If those charts avoid principal-gap cuts,
+a supplied initial winding remains unchanged on a marked cycle all of
+whose edges are covered. Scalars alone do not establish the cycle,
+its winding, or any other notion of identity.
+
+An omitted collar request leaves retention unrequested. A requested zero
+or exhausted residual margin leaves it indeterminate, including equality.
+A failed sufficient margin does not prove a chart exit. A sign decision
+does not imply retention, and a retention certificate does not imply a
+nonzero response. At \(h=0\) the exact increment is zero; at \(\gamma=0\)
+phase motion vanishes while diffusive form exchange may remain nonzero.
+
+### 12.5 Conditional engine interface and evidence boundary
+
+The existing [preparation owner](../../src/tnfr/physics/_sine_preparation.py)
+contains the private frozen result `_PreparedBridgeExchange` and the
+primitive reader `_prepared_bridge_exchange`. It re-admits ordered endpoint
+pairs, background bounds, the horizon, the ordinary positive integer
+donor count and exactly four error radii through the shared exact or
+represented-real scalar rules before interval or trigonometric work.
+An optional requested collar sequence has 1 through 4096 entries; this
+is an instrument work limit, not a maximum graph size. Boolean physical
+scalars, nonfinite values, reversed intervals, negative radii and the
+inconsistent form intersection are rejected. Exact rational inputs are
+preserved, including normalization of fixed-width integer fraction parts.
+
+The reader recomputes (46)--(50) from these primitives. It consumes no
+cached source report, prior passing flag, or inferred law. The shared
+fixed-grid outward sine supplies the interval part of the result; it
+does not convert a scalar premise into authentication of a graph,
+a measured endpoint, or an acquired source. Declared conditional results
+therefore remain distinct from actual operator admission and occurrence.
+
+The [finite bridge controls](../../tests/physics/test_sine_bridge_exchange.py)
+and their frozen source association are retained under
+`artifacts/sine-bridge-interface-20261023/`.
+The first support pairs a donor \(C_5\) with a host \(C_6\); the second pairs
+a donor \(C_5\) with chord \(0\)--\(2\) and a host \(C_7\) with chord
+\(0\)--\(3\). Cycle conductances are \(1/2\), chord conductances \(1/4\).
+They have 11 and 14 internal edges, respectively. The shared exchange
+inputs are
+\[
+ A_0=[-1/100,1/100],\quad D_0=[1/2,3/4],\quad
+ W=[1/2,3/4],\quad\Gamma=[1/4,1/3],\quad
+ B_0=1/2,\quad K=3,\quad h=1/100,\quad n_D=5 .
+\]
+Each of the four reading errors is at most \(10^{-7}\). Every requested
+old cycle collar is \(1/4\); the actual marked populations have 11 and
+12 edges, respectively. The added chords are not required to be acute.
+The supplied cycle phase carriers, donor origin \(3/5\), nonzero form
+centers and hidden perturbations define node boxes of radius \(1/10000\).
+Exact endpoint inequalities and \(\pi>3\) admit these entire initial
+boxes. Static high-precision representatives check the full edge-row
+implementation separately; sampling does not establish the whole-box proof.
+
+The frozen validation passed all 241 selected cases on its first run:
+61 new controls, 89 shared regressions and 91 interval tests. Black and
+flake8 passed. Both support families certified the same observed upper bound
+\[
+ \sup\widehat{\mathcal J}
+ =-\frac{7414198531946680732563068935038413}
+ {340282366920938463463374607431768211456}
+ <-\frac1{50000},
+ \qquad
+ \min_e(\mu_e-2T(h))=\frac{19599}{80000}>0 .
+\]
+Independent controls retained the exact integrated remainder, reciprocal
+totals, donor-count normalization, arbitrary four-reading errors,
+indeterminate-sign and retention boundaries, and primitive rejection.
+The analytical two-node diffusion control has no old edges and leaves
+retention unrequested. No trajectory, acquired-source producer or
+operator event was executed. Exact case properties and source hashes are
+recorded in `control-results.xml` and `control-validation.json`
+under the local protocol directory.
+
+The theorem supplies a finite sufficient response contract. It does not
+select a fundamental pressure law, transfer to heterogeneous capacities
+or degree-normalized mobilities, identify a minimal coarse state, or
+establish long-term maintenance. Exact conservation of totals and this
+finite enclosure do not remove dependence on hidden initialization.
+
+
+<a id="sine-capacity-bridge-interface"></a>
+## 13. Capacity-dependent finite exchange and the chosen reading
+
+Positive held capacities extend the complete continuation already owned by
+the [Silence handoff](ORGANIZED_SOURCE_PORT.md#organized-source-silence-handoff)
+and [post-word means](ORGANIZED_SOURCE_CHILD_ORBIT.md#organized-source-word-phase-memory).
+The new issue is the finite bridge contrast. An arithmetic constituent
+mean can move on the disconnected control, whereas an inverse-capacity
+weighted total has exact internal cancellation. Both observations have
+conditional finite bounds, but they require distinct normalizations and
+reading-error premises.
+
+### 13.1 Shared initial state, complete law and capacity data
+
+Keep section 12's two finite constituents, held symmetric nonnegative
+conductances, single positive bridge, declared structural clock and
+matched full initial state. The capacities are also identical between
+the two branches and held throughout the comparison. On each branch's
+own support prescribe
+\[
+ D=\operatorname{diag}(\nu_i),\quad \nu_i>0,\qquad
+ p=\frac{-Lx+\gamma S(\theta)}4,\quad
+ x'=Dp,\quad \theta'=\frac{\gamma DLx}4,\quad \nu'=0.
+ \tag{51}
+\]
+The same conductances occur in \(L\) and \(S\); \(\gamma\ge0\) is held.
+Pressure is specified independently, not reconstructed from an evaluated
+form increment. These rows are the selected shared-capacity law.
+An operator name or the nodal identity does not determine the phase row.
+
+A capacity reset and any accompanying form or phase reset belong before
+the common initial state. Their actual endpoint, admission and work must
+be established separately. No event occurs during this window. Reuse the
+existing storage balance
+\(H'=-(Lx)^TD(Lx)/4\), with the same weighted form and phase storage as
+section 11. Capacity does not occur explicitly in that storage, but its
+change affects both future rows and the conserved weighted means.
+Neither the old mean leaf nor a zero reset work implies unchanged motion.
+
+In addition to section 12's raw bounds, supply a global range
+\(0<m\le\nu_i\le M\) for **every node**, and a donor-port capacity interval
+\(N_u\subset[m,M]\). This range bounds heterogeneous capacities; it does
+not assert a common unknown capacity. Let
+\[
+ \Lambda_D=\sum_{\{i,j\}\subset D}w_{ij}|\nu_i-\nu_j|,
+ \qquad
+ R_D=\sum_{i\in D}\frac1{\nu_i}.
+\]
+An associated upper bound \(\overline\Lambda\ge\Lambda_D\) may be
+supplied. Otherwise the global degree bound gives the sufficient fallback
+\((M-m)n_DK/2\), because the sum of internal donor conductances is at most
+\(n_DK/2\). If both bounds are supplied, their minimum remains valid.
+Preserve the supplied and effective values; a small supplied bound is
+still an external full-state association, not a fact inferred from its sign.
+
+The inverse-capacity mass has the automatic positive enclosure
+\(\mathcal R=[n_D/M,n_D/m]\). A supplied positive mass interval may be
+intersected with it, preserving the original interval. A disjoint
+intersection is invalid. This is a consistency test, not reconstruction
+of the capacity vector. The actual mass, port capacity, hidden coordinates
+and graph can be correlated throughout the admitted family.
+
+### 13.2 Complete motion and the two balance identities
+
+The generator \(-DL/4\) has nonnegative off-diagonal entries and zero
+row sums. Its semigroup preserves constants and contracts the maximum
+norm even though \(DL\) need not be symmetric. Put \(k=MK\) and
+\(g=\Gamma_{\rm hi}\). On both branches use (46) with \(K\) replaced by
+\(k\), obtaining
+\[
+ \begin{aligned}
+ B(s)&=B_0+\frac{kg}{4}s,\\
+ X(s)&=\left(\frac{kB_0}{2}+\frac{kg}{4}\right)s
+                           +\frac{k^2g}{16}s^2,\\
+ T(s)&=\frac{gkB_0}{2}s+\frac{k^2g^2}{16}s^2,\\
+ F(h)&=\int_0^h[2X(s)+2gT(s)]\,ds\\
+ &=\frac{k[B_0(1+g^2)+g/2]}2h^2
+                       +\frac{k^2g(1+g^2)}{24}h^3 .
+ \end{aligned} \tag{52}
+\]
+Here \(|x_i(s)-x_i(0)|\le X(s)\) and
+\(|\theta_i(s)-\theta_i(0)|\le T(s)\).
+These estimates retain both rows and every hidden node. They are valid
+without an acute assumption or a small-horizon restriction; loose bounds
+can leave the requested sign unresolved.
+
+Orient every internal donor edge \(i\to j\), and define
+\(c_{ij}=x_j-x_i-\gamma\sin(\theta_i-\theta_j)\).
+For the port retain \(a=x_v-x_u\), \(d=\theta_u-\theta_v\).
+The arithmetic donor mean and inverse-capacity form total obey
+\[
+ \begin{aligned}
+ (m_D^{\rm a})'
+ &=\frac1{4n_D}
+   \left[\sum_{\{i,j\}\subset D}w_{ij}(\nu_i-\nu_j)c_{ij}
+                     +\nu_u w(a-\gamma\sin d)\right],\\
+ Q_D&=\sum_{i\in D}\frac{x_i}{\nu_i},&
+ Q_D'&=\frac w4(a-\gamma\sin d),&
+ Q_H'&=-Q_D',\\
+ P_D&=\sum_{i\in D}\frac{\theta_i}{\nu_i},&
+ P_D'&=-\frac{\gamma wa}{4},&
+ P_H'&=-P_D'.
+ \end{aligned} \tag{53}
+\]
+The bridge terms are omitted on the disconnected branch. Reversing an
+internal orientation reverses both factors in its product and changes
+nothing. The internal arithmetic sum generally remains nonzero on the
+control. In contrast, \(Q_D\) and \(P_D\) are constant there. The weighted
+means are \(m_D^\rho=Q_D/R_D\) and \(P_D/R_D\), using fixed weights within
+each member and its declared continuous phase lift.
+
+Ordinary host and donor totals are not generally reciprocal. Even their
+bridge contributions have factors \(\nu_v\) and \(\nu_u\); internal
+capacity variation adds further terms. Reciprocity holds for the actual
+inverse-capacity totals in (53). A host weighted mean additionally
+requires its own inverse-capacity mass. None of these identities supplies
+an error budget for a different measured quantity.
+
+### 13.3 A finite arithmetic contrast that retains the control
+
+Define \(J_{\rm a}\) as the connected-minus-disconnected change of
+\(m_D^{\rm a}\), with four endpoint readings as in section 12.
+At the common initial state the internal terms in (53) cancel between
+branches. The initial matched slope is therefore
+\(\nu_u w[a(0)-\gamma\sin d(0)]/(4n_D)\).
+At later times those internal terms need not cancel.
+
+The joined port current changes from its initial value by at most
+\(2X(s)+2gT(s)\). For an internal edge, each branch starts at the same
+edge state and each endpoint moves by the bounds (52). Hence
+\[
+ |c_{ij}^{w}(s)-c_{ij}^{0}(s)|\le4X(s)+4gT(s).
+\]
+This is where the control's full motion enters the proof. Let
+\(A=A_0\cap[-2B_0,2B_0]\) as before. Outward interval arithmetic gives
+\[
+ \begin{aligned}
+ R_{{\rm a},0}
+  &=\frac{N_uW(A-\Gamma\sin D_0)}{4n_D},\\
+ E_{\rm a}(h)
+  &=\frac{N_{u,\rm hi}W_{\rm hi}+2\overline\Lambda}{4n_D}\,F(h),\\
+ J_{\rm a}&\in hR_{{\rm a},0}+[-E_{\rm a}(h),E_{\rm a}(h)] .
+ \end{aligned} \tag{54}
+\]
+The factor two on \(\overline\Lambda\) retains both evolving branches.
+Dropping the disconnected arithmetic increment would change the
+observable, rather than simplify this proof.
+
+For a whole-window matched derivative bound set
+\(A_h=A+[-2X(h),2X(h)]\) and
+\(D_h=D_0+[-2T(h),2T(h)]\). Then
+\[
+ (m_D^{{\rm a},w}-m_D^{{\rm a},0})'
+ \in\frac{N_uW(A_h-\Gamma\sin D_h)}{4n_D}
+ +\left[-\frac{\overline\Lambda[X(h)+gT(h)]}{n_D},
+         \frac{\overline\Lambda[X(h)+gT(h)]}{n_D}\right].
+\]
+This is a bound for the difference of two derivatives, not the derivative
+of the joined arithmetic mean alone. The primary finite enclosure remains
+(54); no endpoint box is substituted for an integrated remainder.
+
+### 13.4 Separate weighted readings, retention and reductions
+
+For the weighted donor-mean contrast \(J_\rho\), the disconnected
+increment is zero under (51). Its initial slope and finite enclosure are
+\[
+ R_{\rho,0}=\frac{W(A-\Gamma\sin D_0)}{4\mathcal R},\qquad
+ E_\rho(h)=\frac{W_{\rm hi}}{4\mathcal R_{\rm lo}}F(h),\qquad
+ J_\rho\in hR_{\rho,0}+[-E_\rho(h),E_\rho(h)].
+ \tag{55}
+\]
+The weighted whole-window derivative is bounded by replacing \(A,D_0\)
+with \(A_h,D_h\) in the first expression. It needs no internal-variation
+term because the appropriate internal contributions cancel exactly.
+
+Each observed contrast adds the sum of **its own four** absolute
+reading-error radii. For a weighted reading, those radii bound values of
+the actual member's \(Q_D/R_D\). A reading computed with nominal
+capacities requires an additional discrepancy allowance; ordinary mean
+errors cannot be reused without justification. Arbitrary correlations
+remain allowed. When no weighted-reading errors are supplied, the
+conditional true weighted interval remains available, but its observed
+interval and sign are unrequested. Missing errors are not zero errors.
+
+For either observation, strict interval sign decides the corresponding
+claim; touching zero is indeterminate. Independently, every requested
+old-chart margin must satisfy \(\mu_e-2T(h)>0\) for retention throughout
+both windows. Association with actual edges, charts and initial winding
+is unchanged from section 12. Failure of this sufficient margin is not
+evidence of an exit.
+
+With tight common capacity \(\nu_i=c>0\), one has
+\(N_u=\{c\}\), \(\Lambda_D=0\), \(R_D=n_D/c\), and the two means coincide.
+If subscript one denotes the unit-capacity expressions,
+\[
+ X_c(h)=X_1(ch),\qquad T_c(h)=T_1(ch),\qquad
+ F_c(h)=\frac{F_1(ch)}c,\qquad
+ hR_{{\rm a},0}=hR_{\rho,0}=(ch)R_{1,0}.
+ \tag{56}
+\]
+Both finite bounds consequently recover section 12 at elapsed structural
+time \(ch\), with the same declared observation. At \(c=1\) this is the
+unchanged unit-capacity theorem. A loose global capacity ceiling can
+weaken a certificate even when the actual capacities are equal.
+Local capacity differences are not removed by this common-clock identity.
+Zero capacity is outside the inverse-capacity observations and this
+positive-domain consumer; no limiting division supplies an extension.
+
+### 13.5 Exact finite discriminator for internal control motion
+
+Take donor nodes \(0,1\), host node \(2\), old edge \(01\) and bridge
+\(02\), both of conductance one. Set
+\(\nu=(2,1,1)\), \(x(0)=(0,1,1)\), \(\gamma=0\), and all phases zero.
+The connected solution retains \(x_1=x_2\). Its gap
+\(x_1-x_0=e^{-5h/4}\) and its weighted conserved total give
+\(x_0=4(1-e^{-5h/4})/5\),
+\(x_1=x_2=4/5+e^{-5h/4}/5\).
+On the disconnected donor,
+\(x_0=2(1-e^{-3h/4})/3\) and \(x_1=2/3+e^{-3h/4}/3\).
+Thus the exact contrasts are
+\[
+ J_{\rm a}(h)=\frac3{10}(1-e^{-5h/4})
+                      -\frac16(1-e^{-3h/4}),\qquad
+ J_\rho(h)=\frac2{15}(1-e^{-5h/4}).
+ \tag{57}
+\]
+These expressions follow from the complete linear equations and their
+conserved weighted totals; they require no numerical integration.
+
+In particular, \(J_{\rm a}'(0)=1/4\) and
+\(J_{\rm a}''(0)=-3/8\). Differentiating only the joined bridge term gives
+\(-5/16\), omitting the internal contribution \(-1/16\).
+The missing term demonstrates the incorrect balance, not failure of
+every sufficiently loose numerical bound that might omit it.
+With \(B_0=1,K=2,N_u=\{2\},[m,M]=[1,2]\),
+\(\overline\Lambda=1,R_D=3/2\) and zero reading errors, (54) gives
+\(J_{\rm a}\in h/4+[-h^2,h^2]\).
+At \(h=1/100\) this certifies a positive contrast. At \(h=1\) it is
+indeterminate, although the exact contrast (57) is positive.
+No old-chart conclusion is requested by this control.
+
+### 13.6 Primitive consumer and evidence
+
+The private `_prepared_capacity_bridge_exchange` reader and frozen
+`_PreparedCapacityBridgeExchange` result belong to the existing
+[preparation owner](../../src/tnfr/physics/_sine_preparation.py).
+The reader reuses exact primitive admission and the rational motion estimates,
+while preserving the previous unit reader's API and outputs. It admits
+the global and port capacity intervals, optional internal-variation and
+inverse-mass bounds, and separate reading errors before numerical work.
+Mass reciprocals are formed from the exact positive endpoints before
+outward interval construction, so a positive subgrid mass is not replaced
+by an interval containing zero before inversion. The original and
+effective mass and variation bounds remain explicit. A cached report,
+operator label or passing flag cannot supply any missing premise.
+
+The frozen protocol is retained under
+`artifacts/sine-capacity-bridge-interface-20261023/`.
+It reuses section 12's two support families and full nonzero-width initial
+state boxes, now with each global node \(i\) having capacity
+\(1+(-1)^i/20\) plus an independent radius \(1/1000\).
+The associated bounds are
+\[
+ [m,M]=[949/1000,1051/1000],\quad
+ N_u=[1049/1000,1051/1000],\quad
+ \overline\Lambda=411/2000,\quad
+ \mathcal R=
+ \left[\frac{3000}{1051}+\frac{2000}{951},
+       \frac{3000}{1049}+\frac{2000}{949}\right].
+\]
+Each observation has its own four errors \(10^{-7}\), with \(h=1/100\)
+and the original 11 or 12 old-cycle collars \(1/4\).
+For example, \(k<16/5\) and \(\sin(1/2)>23/48\) give
+\(F(h)<116/10^6\) and \(E_{\rm a}(h)<7/10^6\).
+Every actual initial matched arithmetic rate times \(h\) is below
+\(-527/19200000\), leaving a strictly negative observed contrast.
+The bounds \(14/3<\mathcal R_{\rm lo}\le\mathcal R_{\rm hi}<16/3\)
+give a negative weighted contrast as well. These analytical inequalities
+concern the true fields and all admitted members. They do not assert the
+endpoints returned by a particular outward sine implementation, which can
+use a looser enclosure. The frozen numerical controls test the implemented
+interval decisions separately.
+
+At the first nominal donor, the complete disconnected arithmetic mean
+rate is exactly \(-7/400000\), whereas its inverse-capacity mean rate
+is zero. Static complete edge sums and the analytical solutions (57)
+are the discriminators; no simulated response is needed.
+
+The [capacity bridge controls](../../tests/physics/test_sine_capacity_bridge_exchange.py)
+passed all 304 selected cases on the first frozen run: 63 new controls,
+150 shared regressions and 91 interval tests. Black and flake8 passed.
+For the two families the independently reconstructed variation ceilings
+are \(41/200\) and \(411/2000\); both use the shared supplied bound
+\(411/2000\). Their host sizes are six and seven, with 11 and 12
+marked old edges. The implemented observed upper bounds are
+\[
+ \begin{aligned}
+ \sup\widehat{\mathcal J}_{\rm a}
+ &=-\frac{3454920540494513651565032676076569}
+ {170141183460469231731687303715884105728}<-\frac1{50000},\\
+ \sup\widehat{\mathcal J}_{\rho}
+ &=-\frac{3694879957047486286887712410926343}
+ {170141183460469231731687303715884105728}<-\frac1{50000},\\
+ \min_e(\mu_e-2T(h))
+ &=\frac{19578495399}{80000000000}>0 .
+ \end{aligned}
+\]
+The three-node controls retain both exact continuations and the internal
+second-derivative contribution. At \(h=1/4\), the arithmetic interval
+touches zero and is indeterminate while the weighted reading is certified
+positive; at \(h=1\), both sufficient sign tests are indeterminate despite
+the positive exact responses. Common-capacity reductions, separate missing
+or noisy readings, positive subgrid masses, fresh primitive reconstruction
+and strict chart boundaries also passed. These outcomes check conditional
+intervals and static algebra, not numerical trajectories or acquired
+readouts. No operator event or retained source producer was executed.
+The exact case properties and frozen sources are recorded in
+`control-results.xml` and `control-validation.json` under the local
+protocol directory.
+
+The result is a conditional continuation and observation transfer.
+It selects no capacity law, structural action, occurrence schedule,
+laboratory clock or autonomous coarse state. A supplied positive
+successor can enter its domain only after the complete initial-state
+and law associations have been independently established.
+
+
+<a id="sine-matched-bridge-interface"></a>
+## 14. Matched interaction bounds at the disconnected limit
+
+Section 13 bounds the internal motion of the two branches separately.
+Its arithmetic remainder is valid, but its internal allowance need not
+vanish with the bridge conductance. The common full initialization gives
+a stronger comparison: only the added bridge drives the difference of
+the two complete states. This section retains that difference through
+both rows before projecting it onto either constituent observation.
+
+Continuous dependence on coefficients is an established proof method.
+The existing [conductance comparison](SINE_WEIGHTED_STAR_CANONICAL_CONTACT.md#sine-state-conductance-perturbation-bound)
+uses it under a different normalized conservative law. The result here
+concerns the specific held-capacity law (51), its arithmetic mean and
+its separately normalized inverse-capacity mean. No coefficients or
+verdicts are imported from that different law.
+
+### 14.1 Common preparation and the zero-weight boundary
+
+Keep all of section 13's full-state, capacity, internal-support, clock
+and observation premises, extending the bridge domain to \(w\ge0\).
+Let \((x^w,\theta^w)\) and \((x^0,\theta^0)\) be the connected and
+disconnected solutions of (51). Their complete initial forms, lifted
+phases and held capacities are identical, member by member. The initial
+state can vary throughout an admitted family; subtracting independent
+initial boxes would discard this matching premise.
+
+The old weighted support has Laplacian \(L_0\). If
+\(b=e_u-e_v\), then \(L_w=L_0+wbb^T\); the added sine current is
+also proportional to \(w\). At \(w=0\) these two complete vector fields
+coincide. Uniqueness therefore gives identical full solutions throughout
+any finite window. Finite weighted support, bounded sine and the linear
+form/phase terms give global Lipschitz fields in the supplied lifts.
+This conclusion requires no zero constituent mean or synchronized state.
+
+Here a zero-weight relation is dynamically absent from **both** selected
+rows. It does not disappear from every possible graph consumer. In the
+[native bare-neighbor law](RELATION_FOUNDATIONS.md#zero-relation-boundary),
+phase support or degree can survive zero form conductance. Deleting such
+a relation cannot inherit this weighted-law limit. Event admission,
+occurrence and structural identity also remain separate questions.
+
+The following norms are numerical coordinate norms in the fixed form,
+phase and structural-clock normalization of (51). Adding the two norm
+bounds is a comparison device, not a new observable or an identification
+of their physical units. A change of units must transform both complete
+rows and all corresponding coefficients before this calculation is reused.
+
+### 14.2 Both full-state differences are driven by the bridge
+
+Write \(k=MK\), \(g=\Gamma_{\rm hi}\),
+\(B(s)=B_0+kgs/4\), and
+\[
+ u(s)=\|x^w(s)-x^0(s)\|_\infty,\qquad
+ v(s)=\|\theta^w(s)-\theta^0(s)\|_\infty,\qquad
+ \alpha=\frac{gk}{2}.
+\]
+Subtract the form rows using the old generator \(-DL_0/4\), which
+contracts the maximum norm as in section 13. The old sine difference
+has norm at most \(2K v\). The added bridge has form magnitude at most
+\(Mw(2B+g)/4\) at either port. Subtracting the phase rows retains both
+\(\gamma DL_0(x^w-x^0)/4\) and the bridge forcing
+\(\gamma Dwbb^Tx^w/4\). Consequently
+\[
+ \begin{aligned}
+ u(t)&\le\int_0^t\left[\alpha v(s)
+                      +\frac{Mw}{4}(2B(s)+g)\right]ds,\\
+ v(t)&\le\int_0^t\left[\alpha u(s)
+                      +\frac{Mwg}{2}B(s)\right]ds.
+ \end{aligned} \tag{58}
+\]
+Both differences start at zero. The bridge forcing is evaluated on the
+joined branch, whose full form bound is already justified by (52).
+No hidden state, internal donor term or phase feedback has been removed.
+
+Define the nonnegative coefficients
+\[
+ b_0=M\left[\frac{(1+g)B_0}{2}+\frac g4\right],\qquad
+ b_1=\frac{M(1+g)kg}{8}.
+\]
+For \(z=u+v\), (58) gives
+\(z(t)\le\int_0^t[\alpha z(s)+w(b_0+b_1s)]ds\).
+The scalar integral comparison therefore yields
+\[
+ z(t)\le w\int_0^t e^{\alpha(t-s)}(b_0+b_1s)\,ds
+       \le we^{\alpha t}\left(b_0t+\frac{b_1t^2}{2}\right).
+\]
+There is no division by \(\alpha\); the same expression includes
+\(g=0\). Choose any certified \(G_h\ge e^{\alpha h}\). Uniformly
+for \(0\le t\le h\), a family with \(0\le w\le W_{\rm hi}\) has
+\[
+ \begin{aligned}
+ Z_h&=W_{\rm hi}G_h\left(b_0h+\frac{b_1h^2}{2}\right),&
+ u(t),v(t)&\le Z_h,\\
+ H_h&=W_{\rm hi}G_h\left(\frac{b_0h^2}{2}
+                              +\frac{b_1h^3}{6}\right),&
+ \int_0^h[u(s)+v(s)]\,ds&\le H_h.
+ \end{aligned} \tag{59}
+\]
+The integral estimate uses the polynomial at each time, not an endpoint
+rate times the full window. For fixed finite background bounds and horizon,
+both quantities are proportional to \(W_{\rm hi}\). In particular they
+are exactly zero when \(W_{\rm hi}=0\), even if either individual branch
+has substantial internal motion.
+
+### 14.3 Projection onto the original arithmetic observation
+
+For an internal donor edge the unit-Lipschitz sine gives
+\[
+ |c_{ij}^w(s)-c_{ij}^0(s)|\le2u(s)+2g v(s)
+                   \le2q[u(s)+v(s)],\qquad q=\max(1,g).
+\]
+Thus the arithmetic internal derivative contrast is bounded in absolute
+value by \(\overline\Lambda q Z_h/(2n_D)\) throughout the window.
+Its integrated magnitude is at most
+\(\overline\Lambda q H_h/(2n_D)\). The joined port current still
+moves relative to its initial value by at most \(2X(s)+2gT(s)\), with
+the same integral \(F(h)\) from (52). The initial matched slope remains
+exactly the bridge term in (54). Hence define
+\[
+ \begin{aligned}
+ E_{\rm match}(h)&=
+ \frac{N_{u,\rm hi}W_{\rm hi}}{4n_D}F(h)
+                  +\frac{\overline\Lambda q}{2n_D}H_h,\\
+ E_*(h)&=\min\{E_{\rm a}(h),E_{\rm match}(h)\},\\
+ J_{\rm a}&\in hR_{{\rm a},0}+[-E_*(h),E_*(h)].
+ \end{aligned} \tag{60}
+\]
+The minimum retains the earlier valid allowance when a long-time
+exponential estimate is looser. It cannot increase the remainder, and
+\(E_*\le E_{\rm match}\) still tends to zero with the bridge ceiling.
+The same minimum can be taken between the two whole-window internal
+rate allowances. Neither minimum changes the observed arithmetic mean.
+
+The weighted observation retains (55), because its internal currents
+already cancel exactly. Its deterministic remainder is already
+proportional to \(W_{\rm hi}\). Both normalized mean contrasts also
+satisfy the useful full-state consequence
+\[
+ |J_{\rm a}|\le u(h)\le Z_h,\qquad
+ |J_\rho|\le u(h)\le Z_h. \tag{61}
+\]
+For the second inequality the weights \((1/\nu_i)/R_D\) are positive
+and sum to one. These are bounds for projections of the complete
+solutions; they do not supply an autonomous equation for two means.
+
+### 14.4 Exact shrinking bounds, reading errors and chart retention
+
+An outward enclosure for the initial slope coefficient **per unit bridge
+weight** can be computed from \(A,\Gamma,D_0,N_u,\mathcal R\), without
+first materializing the bridge interval. Let its rational endpoints be
+\(C=[c_-,c_+]\). Multiply the exact conductance endpoints last:
+\[
+ \operatorname{prod}_{\mathbb Q}(W,C)=
+ \left[\min_{i,j\in\{-,+\}}w_i c_j,
+       \max_{i,j\in\{-,+\}}w_i c_j\right]. \tag{62}
+\]
+These endpoints enclose the appropriate initial slope. Add the exact
+rational remainder endpoints from (60), or from (55) for the weighted
+reading, after multiplying by \(h\). The resulting rational endpoint
+pairs are certified deterministic enclosures. Their coefficients can
+include fixed numerical overestimation of the sine, but that uncertainty
+is also multiplied by the exact bridge weight. Their widths and absolute
+endpoints therefore tend to zero with \(W_{\rm hi}\). At an exactly
+zero bridge both true pairs are exactly \((0,0)\).
+
+The shared dyadic128 interval type is a separate outward representation.
+It has a fixed grid, so an arbitrarily small positive rational interval
+need not have a display width tending to zero. Retain the exact endpoint
+pairs alongside that representation and decide strict signs from the
+certified exact endpoints. A positive subgrid weight remains positive;
+a zero-width represented display cannot replace primitive admission.
+Neither a grid floor nor a display interval is an observation-error model.
+
+For each reading, add the sum of **its own four** absolute error radii to
+its true pair. At zero bridge conductance the resulting observed interval
+is the corresponding symmetric error interval, not generally \((0,0)\).
+Arbitrary correlations remain allowed; no cancellation between readings
+is presumed. Missing weighted-error data still leave the weighted observed
+interval and sign unrequested. A family containing \(w=0\) cannot have
+a uniform strict true or observed sign. With a fixed positive error sum,
+sufficiently weak bridges are unresolved even when the underlying true
+contrast has a definite sign. No arbitrary weak-contact detectability
+follows from deterministic continuity.
+
+Retain the independent old-chart test \(\mu_e-2T(h)>0\) from section 13.
+The new difference bound does not replace the absolute phase motion of
+either branch: two almost identical trajectories can both leave an old
+chart. A resolved sign, a small response and chart retention remain
+separate properties. Equality in a sufficient bound is indeterminate,
+not a witnessed loss of identity or reversal of the true interaction.
+
+### 14.5 Reductions and an independent analytical discriminator
+
+For tight common capacity \(c>0\),
+\(\alpha_c=c\alpha_1\), \(b_{0,c}=c b_{0,1}\), and
+\(b_{1,c}=c^2b_{1,1}\). With the same growth rule this gives
+\[
+ Z_{h,c}=Z_{ch,1},\qquad H_{h,c}=H_{ch,1}/c. \tag{63}
+\]
+The actual internal capacity variation is zero. The finite arithmetic
+and weighted remainders therefore recover the common-clock reduction
+(56) to section 12; their normalized observations agree. This is a reduction
+of the exact conditional expressions, not a promise that different
+orders of outward display arithmetic have identical endpoints.
+Heterogeneous capacity variation cannot be absorbed into a single clock.
+Zero capacity remains outside the inverse-capacity domain.
+
+For section 13.5's exact three-node example, keep \(w=1\),
+\(B_0=1,K=2,M=2,N_u=\{2\},\overline\Lambda=1,n_D=2\),
+\(R_D=3/2\) and \(g=0\). Then \(\alpha=0,G_h=1,b_0=1,b_1=0\),
+so \(Z_h=h,H_h=h^2/2,F(h)=2h^2\). The new arithmetic allowance is
+\[
+ E_{\rm match}(h)=\frac{5h^2}{8}<E_{\rm a}(h)=h^2
+ \quad(h>0),\qquad
+ J_{\rm a}\in\frac h4+
+               \left[-\frac{5h^2}{8},\frac{5h^2}{8}\right]. \tag{64}
+\]
+At \(h=1/4\), this interval is \([3/128,13/128]\), strictly positive
+with zero reading errors. The old interval \([0,1/8]\) was indeterminate.
+The exact solution (57) and the observable are unchanged; preserving the
+common initialization improves what the sufficient bound can decide.
+At \(h=1\), the new interval remains indeterminate although the exact
+contrast is positive. The refinement supplies no general sign guarantee.
+This analytical comparison uses no numerical trajectory.
+
+### 14.6 Conditional consumer and scope
+
+The private `_prepared_matched_capacity_bridge_exchange` reader and frozen
+`_PreparedMatchedCapacityBridgeExchange` report belong to the shared
+[preparation owner](../../src/tnfr/physics/_sine_preparation.py).
+The new opt-in reader admits nonnegative bridge intervals while the two
+previous positive-bridge readers keep their existing domain and outputs.
+All raw capacity, mass, phase, background, error and chart data are
+re-admitted before interval or exponential work. They still do not
+authenticate a graph, a realized capacity vector or common initial state.
+
+The growth enclosure reuses the exact negative-exponential owner:
+if its exact lower endpoint encloses \(e^{-\alpha h}\) from below,
+its reciprocal supplies \(G_h\). The reciprocal is formed before
+outward dyadic rounding. The implemented exponential domain
+\(0\le\alpha h\le4096\) is a numerical work limit of this consumer,
+not a small-horizon hypothesis of the mathematical result. Inputs beyond
+it are rejected; they are not clipped or declared dynamically unstable.
+
+The protocol, frozen source and independent
+[matched bridge controls](../../tests/physics/test_sine_matched_bridge_exchange.py)
+are retained under `artifacts/sine-matched-bridge-interface-20261023/`.
+All 379 selected cases passed on their first frozen run: 75 new controls,
+213 shared regressions and 91 interval tests. Black and flake8 passed.
+The two previously admitted support/state/capacity families retain both
+observed upper bounds below `-1/50000`, with a strictly smaller arithmetic
+remainder and unchanged old-chart margins. The independent three-node
+control confirms (64), including the new positive decision at `h=1/4`
+and the unresolved decision at `h=1`.
+
+The zero-weight controls retain exact zero true endpoints alongside each
+reading's own noise interval. The fixed zero-containing families shrink
+the exact endpoints through bridge ceilings as small as `2^-200`, without
+a uniform strict sign. A clean positive subgrid bridge has a certified
+negative exact interval although its outward display contains zero;
+the separately noisy reading is indeterminate. Common-capacity clock
+reductions, both positive-gamma row coefficients, strict chart boundaries,
+missing observations, exact subgrid masses and admission before numerical
+work also pass. These finite controls test the implementation of the
+proved bounds; they are not sampled trajectory evidence. The exact case
+properties and frozen dependencies are in `control-results.xml` and
+`control-validation.json` in the protocol directory.
+
+No trajectory, committed event, retained-producer or response replay,
+source acquisition, parameter search or empirical evaluation was executed.
+The result is a conditional statement about finite matched interventions
+under (51). It selects neither that law as fundamental nor an autonomous
+occurrence of the bridge, a measurement bridge or an all-future organized
+identity.

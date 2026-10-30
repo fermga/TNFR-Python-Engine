@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "C:\TNFR-Python-Engine\artifacts\formed-two-port-attempt-20261029\diagnose_stored_tubes.py", line 182, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "C:\TNFR-Python-Engine\artifacts\formed-two-port-attempt-20261029\diagnose_stored_tubes.py", line 153, in main
+    results = [analyze(label, values, bases, edges, pi, rho, radius, projection)
+               ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\TNFR-Python-Engine\artifacts\formed-two-port-attempt-20261029\diagnose_stored_tubes.py", line 80, in analyze
+    'index': index, 'edge': edge, 'label': edge_name(edge),
+                            ^^^^
+NameError: name 'edge' is not defined. Did you mean: 'edges'?

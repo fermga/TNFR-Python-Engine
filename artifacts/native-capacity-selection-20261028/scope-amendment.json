@@ -1,0 +1,15 @@
+{
+  "scope":{
+    "path":"artifacts/native-capacity-selection-20261028/scope.json",
+    "bytes":2180,
+    "sha256":"a1519d8dc093f72923b9b330746716dfdf043a15b1fcb8fd08235a87183e2e22"
+  },
+  "reason":"Independent analytical review identified a full-state continuation argument that can strengthen a reduced matched witness without new evaluation.",
+  "additional_proof_obligation":"Prove full-state recovery of both target organizations under each actual held/dynamic law, enter those neighborhoods at finite regular times from the reduced witness, and intersect the two initial-state pullbacks on the mean-one leaf.",
+  "admission_condition":"A full-state open selection claim is allowed only if that additional argument passes independent review; otherwise retain the reduced scope.",
+  "maintained_changes_unchanged":true,
+  "new_scientific_evaluations":0,
+  "producer_replays":0,
+  "new_tests":0,
+  "physical_readiness_authorized":false
+}

@@ -29,7 +29,7 @@ References
 - src/tnfr/physics/structural_diffusion.py (structural_current)
 - src/tnfr/physics/emergent_particles.py (winding_ring, winding_number)
 - src/tnfr/physics/canonical.py (compute_phase_gradient/curvature)
-- AGENTS.md §"Emergent Symplectic Substrate", §"Transport Content"
+- theory/TNFR_VARIATIONAL_PRINCIPLE.md (auxiliary substrate and nodal-bridge scope)
 """
 
 import math

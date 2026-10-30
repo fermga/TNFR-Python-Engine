@@ -1,0 +1,69 @@
+{
+  "schema":"tnfr.scientific-pre-evaluation-review.v1",
+  "reviewed_utc":"2026-10-28T18:21:00.286287+00:00",
+  "author":"/root",
+  "control_author":"/root/collective_engine",
+  "reviewer":"/root/collective_controls",
+  "verdict":"PASS",
+  "scope":{
+    "path":"artifacts/native-joint-organization-20261028/scope.json",
+    "bytes":4008,
+    "sha256":"4cfcb399d7997afb0d9723db6d78e4bb2663d5e88dfd52e5db81c7564e7f7394"
+  },
+  "sources":[
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "bytes":83410,
+      "sha256":"5924381f66d12073ca7a41d9f7b563f9c33ed82828d7f0e6554208685b1258e1"
+    },
+    {
+      "path":"tests/physics/test_native_joint_organization.py",
+      "bytes":17486,
+      "sha256":"bd6dccab31860d20a9c2f8dc7226663ec49e7abfe3ca898de43fedf7f7b666d8"
+    }
+  ],
+  "source_preservation":{
+    "previous_chapter_prefix_bytes":71485,
+    "previous_chapter_prefix_sha256":"5c338550e1a6db1806714139699e825d09b1612416391303e64df7f10f269457",
+    "prefix_preserved":true
+  },
+  "reviewed_findings":[
+    "Read the complete JO1-JO12 proof, complete final six-group test, immutable scope and actual driver freeze/run boundaries independently; no scientific evaluation was performed.",
+    "The model retains all thirty primary coordinates on the joined unit support. Fixing ordinary mean capacity and quotienting only the two global origins leaves twenty-seven relative coordinates; regional origins are not independent gauges.",
+    "The full native Jacobian has vanishing capacity columns only at the prepared equilibrium where p=q=g=0. The tests derive that Jacobian from actual native relative resultants, local argument pressure and sinc metric before substituting equilibrium.",
+    "The proof uses an orthonormal quotient basis. The controls correctly use a rational contrast basis with its Gram-correct left inverse, retaining actual quotient-to-origin drift rather than treating a transpose as the inverse.",
+    "Positive native storage forms and invertible exchange coupling prove Hurwitz stability on the quotient. Independently checked the exact observability cofactor using the adjugate product: 625*(1+10*cos(2*pi/5))/(128*h squared).",
+    "The actual form and phase origin rows are nonzero on irregular support. The nonlinear proof reconstructs their convergent integrals, establishes an invariant interior neighborhood and excludes finite-time escape without asserting conserved origins.",
+    "The source preserves mean capacity and has relative squared norm 9*a squared/10+2*eta squared. Positivity 0<eta<b is distinct from the additionally required sufficiently small joint perturbation.",
+    "Receiver deformation uses continuous local phase deviations from the prepared shape. Independently derived the common second jet a*b*(b+eta)*(K,-J) and its strictly nonzero coefficients under the declared parameters.",
+    "The third dynamic-minus-held derivative retains all three chain-rule terms. Receiver zeros remove only the receiver F_nu*r-prime term; no global omission of donor phase-metric derivatives is assumed.",
+    "Independently derived the separate third-jet contributions: -2*kappa*eta*a*b*(K,-J) and kappa*eta*a*(b+eta)*(K,-J), summing to kappa*eta*a*(eta-b)*(K,-J). Other receiver node differences vanish.",
+    "The disconnected comparison rebuilds the support, degrees, resultants and metric. Its receiver has no donor dependence and stays at its lock; it is not a joined field with a response term deleted.",
+    "The proof correctly distinguishes quadratic bridge transmission from cubic detection of capacity evolution, with analytical short-time existence of nonzero deformation but no prescribed numerical horizon or error band.",
+    "Static review of symbolic assumptions and exact comparisons found no unresolved representation issue. Form substitutions precede zero-phase substitutions where removable sinc-derivative terms are multiplied by a vanishing q."
+  ],
+  "scope_caveats":[
+    "The nonlinear basin and decay constants are local and parameter dependent. No held-capacity numerical basin, global arbitrary-state attraction or rate uniform as kappa or mean capacity vanishes is transferred.",
+    "The second jet alone does not detect capacity release: it is shared by dynamic and matched held laws. Detection uses the separately derived third-jet difference at the same full initial state and clock.",
+    "Short-time nonzero coefficients do not provide numerical interval bounds, amplitude-uniform separation, physical propagation speed or empirical observation.",
+    "The organization is supplied and recovers after small perturbation. Autonomous acquisition, graph creation, permanent pulse activity, refinement invariance and coarse scalar closure remain outside the claim.",
+    "No runtime capacity writer or joint integrator is installed; the current relational executor retains held capacity.",
+    "The controls are symbolic algebra, not trajectories, numerical eigenvalue fits, parameter scans, public operator invocations or historical producer replays.",
+    "All four broader foundation requirements remain open pending their actual joint evidence and scope review. This receipt is not readiness approval metadata and authorizes no physical mapping."
+  ],
+  "evaluation_budget_reviewed":{
+    "prospective_pytest_attempts":1,
+    "control_groups":6,
+    "wall_seconds":120,
+    "aggregate_rss_ceiling_bytes":2147483648,
+    "nominal_poll_seconds":0.1,
+    "hard_allocation_limit":false,
+    "supervision":"Existing Windows Job wrapper with nominal 100 ms aggregate RSS polling plus actual-worker OS peak check; no hard allocation-limit claim.",
+    "trajectory_runs":0,
+    "parameter_scans":0
+  },
+  "scientific_executions_by_reviewer":0,
+  "historical_producer_replays":0,
+  "foundation_pillars_resolved":0,
+  "physical_mapping_authorized":false
+}

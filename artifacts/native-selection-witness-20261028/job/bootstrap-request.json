@@ -1,0 +1,16 @@
+{
+  "ack_path": "C:\\TNFR-Python-Engine\\artifacts\\native-selection-witness-20261028\\job\\bootstrap-ack.json",
+  "exit_path": "C:\\TNFR-Python-Engine\\artifacts\\native-selection-witness-20261028\\job\\bootstrap-exit.json",
+  "expected_base_executable": "C:\\Program Files\\Python313\\python.exe",
+  "expected_executable": "C:\\TNFR-Python-Engine\\.venv313\\Scripts\\python.exe",
+  "expected_prefix": "C:\\TNFR-Python-Engine\\.venv313",
+  "handshake_timeout_seconds": 30,
+  "nonce": "434237dde5e244d211b847f2a27b4472ca07a2c6c8fcd76ae3147e16473cb499",
+  "ready_path": "C:\\TNFR-Python-Engine\\artifacts\\native-selection-witness-20261028\\job\\bootstrap-ready.json",
+  "schema": "tnfr.bootstrap-request.v1",
+  "supervisor_pid": 30560,
+  "worker": "C:\\TNFR-Python-Engine\\artifacts\\native-selection-witness-20261028\\validate.py",
+  "worker_args": [
+    "--worker"
+  ]
+}

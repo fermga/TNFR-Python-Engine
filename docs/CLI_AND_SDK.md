@@ -120,6 +120,27 @@ product-fit length from the separate spectral fallback. See the
 flags are observations or policies, not authorization to execute an operator
 or a guarantee of future stability.
 
+Request additional observations only for the question being studied:
+
+```python
+diagnostics = diagnose_network(
+    network,
+    include_coherence_profile=True,
+    include_phase_evidence=True,
+    winding_cycles=(ordered_cycle,),
+)
+```
+
+Here `ordered_cycle` is a supplied sequence of graph node IDs in traversal
+order, with the closing edge present. The optional `observations` section
+retains profile fit evidence, represented phase resultants and the declared
+winding cycles with independent availability. Unsupported cycles remain
+explicit. The default call keeps its existing schema and computes no optional
+channels. State projection already retains signed EPI, pressure, phase and
+nonnegative capacity. Choose observations using the
+[reconstruction requirements](../theory/MINIMAL_STRUCTURAL_DEGREES.md), and
+retain each report's scope and estimator provenance when comparing results.
+
 Both SDK interfaces share the circular-mean availability policy: a vanishing
 finite resultant has no mean direction, while an invalid authoritative phase
 raises instead of falling through to another alias. The global mean's numerical

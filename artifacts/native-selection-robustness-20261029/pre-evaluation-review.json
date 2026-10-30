@@ -1,0 +1,231 @@
+{
+  "schema":"tnfr.native-selection-robustness-pre-evaluation-review.v1",
+  "author":"/root",
+  "reviewer":"/root/robust_controls",
+  "independent":true,
+  "verdict":"PASS",
+  "scope":"Pre-evaluation review of the assembled conditional proof, actual static-audit implementation, supervisor and substantive protocol. The selected finite retained-data guards remain unevaluated.",
+  "independence_disclosure":{
+    "preliminary_contribution":"The reviewer suggested the conservative local guard constants used in RB6. That contribution is disclosed rather than represented as independent origination.",
+    "independent_primary_scope":"Independent review of RB1-RB5 and RB7, audit/supervision source and the assembled theorem; those parts were authored by other agents.",
+    "complementary_RB6_review":{
+      "reviewer":"/root/robust_engine",
+      "verdict":"PASS",
+      "record_origin":"Explicit independent collaboration message received before this receipt; no execution, import or source modification.",
+      "findings":"Independently derived lambda2>=2/81, lambda_max<=6, c_r>1/32, local energy coefficient1/2592 and guard1/663552; checked first-exit invariance, the positive capacity hull, LaSalle in the neutral quotient for both laws, and eventual finite origin limits. Later section edits only clarify V as the full graph potential and protect mathematical Markdown formatting."
+    }
+  },
+  "sources":[
+    {
+      "path":"artifacts/native-selection-robustness-20261029/audit.py",
+      "bytes":21401,
+      "sha256":"effdd27bc20ef694e42b678bab18ee6c8c0ac8a8e241d9dd35189ae7765e2a20"
+    },
+    {
+      "path":"artifacts/native-selection-robustness-20261029/validate.py",
+      "bytes":8931,
+      "sha256":"262466d22b51797fc0846cc4d5c5ec6f04f1950a75c062047c610ec89de20e26"
+    },
+    {
+      "path":"artifacts/native-selection-robustness-20261029/robustness-section.md",
+      "bytes":14725,
+      "sha256":"cdade3d189040e0c4ca8657d9c9d6a1e1a29cc8b934d39ce41ab58ff500a31da"
+    },
+    {
+      "path":"artifacts/native-selection-robustness-20261029/scope.json",
+      "bytes":1919,
+      "sha256":"f63ebf9b14044a336c4f6da8b6592c3d9b06fd5f92fe40494e4ab527dffcaa4f"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "bytes":135065,
+      "sha256":"383904d7b77b86a21b64b0970ec0a6dfd209aebe60ffa820833ace31923d40a2"
+    },
+    {
+      "path":"theory/nodal/RELATIONAL_RECOVERY_AND_INTERACTION.md",
+      "bytes":30557,
+      "sha256":"e28b84af254fcd2443d1bb785189143ff715bdaff6c2c50b74fc9d90d24f764a"
+    },
+    {
+      "path":"theory/nodal/RELATIONAL_DOMAIN_AND_CAPTURE.md",
+      "bytes":79242,
+      "sha256":"5a9278ec65ce62df0e174c17cf446c0cbcfadb88678c18866365a9d4b860fbbb"
+    },
+    {
+      "path":"src/tnfr/research/artifact_io.py",
+      "bytes":10924,
+      "sha256":"298708039b86876b1f70de7f8e49db787300850395d77cedccd1cf02fad5f011"
+    },
+    {
+      "path":"src/tnfr/research/native_capacity_selection.py",
+      "bytes":5192,
+      "sha256":"d58a0740676b03319a762705b5c5bad3197c08e21088a6ac04b433f3d4c6ccbf"
+    },
+    {
+      "path":"src/tnfr/physics/relational_transit.py",
+      "bytes":11559,
+      "sha256":"b752c3803c16f2bc7cffb5b58a7ab5eafaf5eda7f858eac72b953f528b924491"
+    },
+    {
+      "path":"src/tnfr/mathematics/_rational_interval.py",
+      "bytes":11345,
+      "sha256":"fa711fdb6405c26f5ab62cae2d72bcf8f803aa970f40827e50b9406f0b50bb00"
+    },
+    {
+      "path":"src/tnfr/mathematics/_phase_midpoint.py",
+      "bytes":9667,
+      "sha256":"aea8e1902f83b7d585c31119f96039816dc607b2bad40200d85264446826d446"
+    },
+    {
+      "path":"src/tnfr/mathematics/_phase_resultant_chamber.py",
+      "bytes":14241,
+      "sha256":"06e06c2577d14f597150dbae44e4b45e1b4510a716323abb4e692d88086a28f3"
+    },
+    {
+      "path":"src/tnfr/_exact_time.py",
+      "bytes":13004,
+      "sha256":"754039dd8460658ef5e426f2fe5ed5b751a66f3abf8929efa3ff21df393064eb"
+    },
+    {
+      "path":"src/tnfr/utils/io.py",
+      "bytes":18891,
+      "sha256":"6fb1bbd787752279cccd2afeb6e0e5cb013a982a755b0fec9f5588bbcdf50eae"
+    },
+    {
+      "path":"artifacts/parent-child-cut-direct-response-20261023/supervision.py",
+      "bytes":46788,
+      "sha256":"1a334d9b6c008a6dee506e2666eb72e6481ac0abcd3ca606f814abc1a0391e22"
+    },
+    {
+      "path":"artifacts/parent-child-cut-direct-response-20261023/bootstrap.py",
+      "bytes":7279,
+      "sha256":"aefd74b62d48f07611dcfeb0589443450954f53ec7736a8923a68e99b5853fcb"
+    }
+  ],
+  "substantive_protocol":{
+    "schema":"tnfr.native-selection-robustness-static-protocol.v1",
+    "scope":{
+      "path":"artifacts/native-selection-robustness-20261029/scope.json",
+      "bytes":1919,
+      "sha256":"f63ebf9b14044a336c4f6da8b6592c3d9b06fd5f92fe40494e4ab527dffcaa4f"
+    },
+    "proof":{
+      "path":"artifacts/native-selection-robustness-20261029/robustness-section.md",
+      "bytes":14725,
+      "sha256":"cdade3d189040e0c4ca8657d9c9d6a1e1a29cc8b934d39ce41ab58ff500a31da"
+    },
+    "activity":"A static exact arithmetic audit of already evaluated evidence, not a reserved prediction or new evolution.",
+    "inputs":[
+      {
+        "path":"artifacts/native-selection-witness-20261028/final-state.json",
+        "bytes":186178,
+        "sha256":"c9698db64d2c9ad2e9b9bbe4c4e1eee9b7eef1c745ee8c1af3849f426aa65f4b"
+      },
+      {
+        "path":"artifacts/native-selection-witness-20261028/validation-plan.json",
+        "bytes":213907,
+        "sha256":"6a5fe5d5f651e52ea009c9def96fdab04c90b3b68d48b8978830be708fb99e6b"
+      },
+      {
+        "path":"artifacts/native-selection-witness-20261028/validation.json",
+        "bytes":5422,
+        "sha256":"2c018e9fda13596f5373f6890e5e5f4650df2019b204d7c88355ccb813cec79e"
+      },
+      {
+        "path":"artifacts/native-selection-witness-20261028/paired-result.json",
+        "bytes":5184,
+        "sha256":"3090b043274294f672dab48beaf50540cc7b33c9c0da86377af110a93222d9d3"
+      },
+      {
+        "path":"artifacts/native-selection-witness-20261028/candidate.json",
+        "bytes":6498,
+        "sha256":"b2fde87eb0772f673798387d2a1781ae9c3dd08d45a4be16e45a0de07fa47b40"
+      },
+      {
+        "path":"artifacts/native-selection-witness-20261028/held-steps.jsonl",
+        "bytes":1322267,
+        "sha256":"34f74438fc2bd4171db46a4c345bfc8db6c5726426c7dde2cf5f411757e8fe74"
+      },
+      {
+        "path":"artifacts/native-selection-witness-20261028/dynamic-steps.jsonl",
+        "bytes":1356818,
+        "sha256":"bed2d33428a3989144a7f32e7ba2ada4783c02ccc0830d96da1ec068fa090c5b"
+      },
+      {
+        "path":"artifacts/native-selection-witness-20261028/held-capture.json",
+        "bytes":9320,
+        "sha256":"a1d8c1a7bdf43cdff3cf64cb5b4223129a8add8dec6e33716484303bde4f4cb6"
+      },
+      {
+        "path":"artifacts/native-selection-witness-20261028/dynamic-capture.json",
+        "bytes":9306,
+        "sha256":"d6462befc1227209c13032cd9954aebf2b875466d39d629e0be321f4332153cc"
+      },
+      {
+        "path":"artifacts/native-selection-witness-20261028/evaluated-source.zip",
+        "bytes":4842630,
+        "sha256":"c7bca937785874c972ab05b74cd79dcfdc1fca8920812f0c7af0ae017bffa961"
+      }
+    ],
+    "selected_guards":[
+      "fixed previous final-state and consumed code/source archive associations",
+      "identical exact preparation and mean-one capacity hull",
+      "498 exact contiguous saved whole-time tubes and endpoint associations",
+      "recompute every real resultant from primitive a,b and require >=2^-33",
+      "require every tube |q|,|r|<1 and embedded |x|<1",
+      "recompute complete9margin domain and compare to retained evidence",
+      "recompute final complete geometry/storage in same reduced exact embedding, sectors held+1/dynamic0 and deficit>=2^-30"
+    ],
+    "analytical_result":"If the reviewed proof and all finite data guards hold, the exact symbolic rho=2^(-2^250) sup-norm ball in the full29Dmean-one leaf preserves both destinations; this is not a practical tolerance.",
+    "budget":{
+      "watchdog_wall_budget_seconds":180,
+      "maximum_rss_bytes":2147483648,
+      "maximum_response_bytes":16777216,
+      "maximum_log_bytes":1048576,
+      "diagnostic_reserve_bytes":1048576,
+      "handshake_timeout_seconds":30,
+      "poll_seconds":0.1
+    },
+    "resource_scope":"One static audit of existing primitive boxes and source associations; 180-second supervised watchdog includes interpreter handshake, verification and audit; root preflight/freeze metadata checks are outside this worker allowance, 2 GiB sampled aggregate RSS (not a hard allocation cap), 16 MiB task outputs excluding baseline/before-edit/evaluated-source/validation-plan. Job log bound1MiB; cleanup separately bounded. No trajectory, candidate generator or historical producer runs.",
+    "new_trajectories":0,
+    "producer_replays":0,
+    "candidate_generations":0,
+    "attempts":1,
+    "failure_policy":"Retain the exact failed guard or resource failure. Do not reduce a threshold, change the seed, replay a source or retry this audit after seeing the result.",
+    "review_binding":"The final review compares this whole substantive protocol excluding independent_review. That sole field is then bound to the immutable review receipt before freeze. Canonical documents stay unchanged during evaluation so the current prerequisite associations remain valid."
+  },
+  "mathematical_findings":[
+    "RB1-RB2 retain the actual complete laws, exact preparation, positive capacity hull, and the finite capture-deficit obligation. The resulting face, real-resultant and metric reserves are valid.",
+    "RB3 correctly differentiates E+epsilon_L grad(V).p with no omitted capacity derivative. The matrix bounds and Young inequality give the stated uniform strict loss.",
+    "RB4 uses C4>1/4 to avoid an erroneous additional delta denominator. Its sine inequalities distinguish the two targets and bound the complete phase deviation.",
+    "RB5 proves an analytic entry bound below2^162 after the saved capture; it does not assert a computed or stored point at that enormous time.",
+    "RB6 supplies a complete-state guard. Its heat-capacity extension uses E_rel+variance only for LaSalle on the compact quotient product, not as a new admission threshold.",
+    "RB7 uses the correct positive-real integral for H inverse and bounds its derivatives. Jacobian row sums include held-capacity columns. The reserves m=2^-34,a0=2^-37 and L=2^82 are conservative.",
+    "The symbolic exponent inequality rho exp(LT)<=2^(-2^250+2^246)<2^-37 and the sup-to-native-Euclidean comparison admit the perturbed endpoints to recovery.",
+    "All30 coordinates enter the ball, with one capacity-mean constraint. The two neutral origins are retained and only destination identity is taken modulo them."
+  ],
+  "implementation_findings":[
+    "The pinned previous final state binds old evaluations, records and archived source. Bounded-byte reads, duplicate-rejecting JSON and exact coordinate admission are reused.",
+    "All498 saved rows are selected, with contiguous clocks and source/endpoint associations. Resultants, complete domains, contrasts and endpoint capture deficits are recomputed from primitive boxes.",
+    "Old continuous enclosures remain consumed frozen evidence. No flow, solver, candidate generator, pytest or historical producer is called by this audit.",
+    "Initial exact capacity hull and its proved all-future maximum principle are distinguished from the looser numerical Picard boxes.",
+    "Freeze compares the entire substantive protocol with this receipt, excluding only the subsequent immutable independent_review binding.",
+    "Canonical sources remain unchanged during evaluation; ordinary prerequisite integrity is rechecked before the audit.",
+    "The180-second worker watchdog,2GiB sampled aggregate RSS and16MiB output allowance cover one static audit. Metadata preflight is explicitly outside that allowance; sampled RSS is not a hard allocation cap.",
+    "Failures remain retained and neither threshold retuning, seed adjustment, producer replay nor retry is admitted."
+  ],
+  "limitations":[
+    "The finite retained-data guards remain pending until the sole supervised audit succeeds.",
+    "The symbolic radius is extraordinarily conservative and is not a practical or binary64 tolerance; its denominator must never be materialized.",
+    "The fixed mathematical laws are not a physical identification, empirical validation, basin-volume result or uniquely necessary TNFR law.",
+    "Prerequisite approvals keep their original prepared scope and physical readiness remains null."
+  ],
+  "scientific_execution_by_reviewer":{
+    "new_trajectories":0,
+    "candidate_generations":0,
+    "flow_or_solver_calls":0,
+    "test_runs":0,
+    "static_guard_evaluations":0
+  },
+  "bookkeeping_only":"Receipt creation hashes source bytes and copies declared metadata. No audit, validator, candidate or field function was imported or executed. An earlier metadata-only emission was abandoned before writing because the author updated the proof hash; no scientific evaluation occurred."
+}

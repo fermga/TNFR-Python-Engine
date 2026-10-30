@@ -1,0 +1,30 @@
+{
+  "kind":"Analytical matched-state organizational-selection comparison; no numerical or symbolic evaluation activated.",
+  "question":"For each fixed kappa>0, can native capacity transport select a different limiting organization from holding the same initial capacity profile near the two-bridge reflected regular saddle?",
+  "state":"Copied reflected x=(A,-A,-B,0,B), theta=(a,-a,-b,0,b); even copied capacities(s,s,t,u,t)>0,2s+2t+u=5; same support, coefficients and clock.",
+  "law":"Native x/phase rows with e=w=1/2,beta=1; compare nu_dot=-kappa Bnu/2 against nu_dot=0 on the actual two-C5 two-bridge graph.",
+  "proof_obligations":[
+    "Exact invariant reduction and capacity balance",
+    "Capture under actual nonuniform held/evolving capacities",
+    "Existence and comparison of local stable/center-stable boundaries",
+    "Nonidentity or explicit obstruction of the boundary comparison",
+    "Connection of departure sides to actual final organizations",
+    "Preserve symmetry and existential scope without claiming a full-state open set"
+  ],
+  "prospective_analytical_route":"If boundaries agreed, tangency of their vector-field difference would make the common boundary invariant under capacity relaxation alone. Test the resulting capacity-independent native stable hyperplane against actual row-scaled saddle Jacobians. This route is not a computed response or a presupposed positive verdict.",
+  "allowed_maintained_changes":[
+    "theory/RESEARCH_PROGRAM.md",
+    "theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+    "theory/research_prerequisites.json"
+  ],
+  "chapter_original_prefix_bytes":109764,
+  "program_regions":[
+    "Continuation introduction before foundational-pillars",
+    "Current decision and active question from The [native foundation account] to foundation-refactoring-plan"
+  ],
+  "registry":"Renew existing prepared-scope reviews after actual append review; final physical readiness remains null.",
+  "new_scientific_evaluations":0,
+  "historical_producer_replays":0,
+  "new_tests":0,
+  "checks":"Independent analytical reviews; archive/source and baseline preservation; prerequisite guard both modes; documentation and rendered links."
+}

@@ -427,6 +427,11 @@ def run_multichannel_benchmark(
     report["n_positive_windows"] = discrimination.n_positive_windows
     report["auc_available"] = discrimination.metadata["auc_available"]
     report["auc_unavailable_reason"] = discrimination.metadata["auc_unavailable_reason"]
+    report["channel_auc_available"] = discrimination.metadata["channel_auc_available"]
+    report["channel_auc_unavailable_reason"] = discrimination.metadata[
+        "channel_auc_unavailable_reason"
+    ]
+    report["xi_c_comparison"] = discrimination.metadata["xi_c_comparison"]
     report["auc"] = {k: round(float(v), 4) for k, v in discrimination.auc.items()}
     report["best_tnfr"] = {
         "channel": discrimination.best_tnfr[0],
@@ -438,7 +443,11 @@ def run_multichannel_benchmark(
     }
     window_labels = _window_labels(labels, series, config.window)
     report["block_means"] = {
-        name: _block_means(getattr(series, name), window_labels)
+        name: (
+            {"label0": None, "label1": None}
+            if name == "xi_c" and not report["xi_c_comparison"]["available"]
+            else _block_means(getattr(series, name), window_labels)
+        )
         for name in (
             "grad_phi",
             "k_phi",

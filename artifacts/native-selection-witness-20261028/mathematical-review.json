@@ -1,0 +1,74 @@
+{
+  "schema":"tnfr.mathematical-review.v1",
+  "reviewed_utc":"2026-10-28T20:09:49.978370+00:00",
+  "author":"/root",
+  "reviewer":"/root/collective_math",
+  "independent":true,
+  "verdict":"PASS",
+  "scope":"Static mathematical and contract review of the new W1-W3 section (equations W1-W10), its actual maintained chapter append, and the new detached interval adapter and six source controls. The full chapter receipt identifies the bytes; this review covers the new append, not a new review of the entire prior chapter. This is prospective, not evidence of a successful candidate or transit.",
+  "independence_boundary":"The reviewer authored seed_recipe.py and contributed analytical derivation. This receipt does not independently certify that recipe or count the reviewer as its independent source reviewer. Independent review of that file is supplied by another agent. The scope here is the root-authored section and independently authored adapter/tests.",
+  "excluded_from_independent_review":[
+    "artifacts/native-selection-witness-20261028/seed_recipe.py"
+  ],
+  "sources":[
+    {
+      "path":"artifacts/native-selection-witness-20261028/witness-section.md",
+      "bytes":8438,
+      "sha256":"070fe3aefa008b9db2cb4ac8826eeac3e2f74a0dcf98af93d24e8ba5adee08db"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "bytes":135065,
+      "sha256":"383904d7b77b86a21b64b0970ec0a6dfd209aebe60ffa820833ace31923d40a2"
+    },
+    {
+      "path":"src/tnfr/research/native_capacity_selection.py",
+      "bytes":5208,
+      "sha256":"ded6a8e6536f8716e633ac917a1d7130566b82738c49426316dbd8ce69376b66"
+    },
+    {
+      "path":"tests/research/test_native_capacity_selection.py",
+      "bytes":7572,
+      "sha256":"7d6ed13831562f0fdf54407a03213c86b72d1720253b8b383a7b1e5145b8bc4d"
+    }
+  ],
+  "scope_declaration":{
+    "path":"artifacts/native-selection-witness-20261028/scope.json",
+    "bytes":2388,
+    "sha256":"5d56f53ddc0c14adc3b5bf738dceff7ddfdbf62f387057367f916da02a067566"
+  },
+  "supporting_source_reads":[
+    {
+      "path":"src/tnfr/physics/relational_transit.py",
+      "bytes":11559,
+      "sha256":"b752c3803c16f2bc7cffb5b58a7ab5eafaf5eda7f858eac72b953f528b924491"
+    },
+    {
+      "path":"src/tnfr/mathematics/_validated_taylor.py",
+      "bytes":19411,
+      "sha256":"404c9914862e03c1e7da69dd60ecffe9e4208a02521a59bb8aac380a59ac1863"
+    },
+    {
+      "path":"src/tnfr/mathematics/_comparison_flow.py",
+      "bytes":19719,
+      "sha256":"0d4dae1bad151b477c81500aa3e0537bcd7446cd0ec1abbdb9334fbcd417077a"
+    }
+  ],
+  "assessments":{
+    "matched_capacity_direction":"PASS. s=t=1+epsilon, u=1-4epsilon is positive for 0<epsilon<1/4 and has mean one. Held native evolution is exactly a positive constant rescaling of the complete reflected four-row field. The dynamic contrast epsilon*sqrt(5)*(exp(-c_minus*t)-exp(-c_plus*t)) has the correct initial derivative 5epsilon/2.",
+    "common_quadratic_graph":"PASS. The pencil, right and left vectors agree with the actual native Jacobian in order(alpha,beta_dev,A,B0). The phasor expansion gives the stated Q2. The invariance equation S^T H+H S-lambda H=K2 has the correct sign and retains the common h20 term. Its Sylvester operator is invertible because the native stable eigenvalues have negative real parts and lambda>0.",
+    "mixed_boundary_and_direction":"PASS after correction. Delta=-(5/2)L[(lambda+c_minus)I-S]^-1[(lambda+c_plus)I-S]^-1 has the correct stable-boundary integral sign; the held mixed term vanishes by exact clock equivalence. Nonzero L follows from invertibility on ker(ell) and the existing cross-group contradiction. The final text now uses delta=Delta R^T Ps, v=Ps delta^T/||Ps delta^T||, eta0=R^T v, and d=Delta eta0=||delta||^2/||Ps delta^T||>0, exactly matching the reviewed preparation definition rather than the earlier different orthogonal direction.",
+    "finite_candidate_boundary":"PASS. The expansions predict opposite sides only for sufficiently small epsilon without a numerical threshold. The fixed epsilon=1/32 is expressly unadmitted until the whole-time paired interval calculation. Approximate root and arithmetic residual checks are not promoted into rigorous spectral or graph-remainder bounds. Exact represented A/B are converted once and q/r are derived rationally.",
+    "complete_adapter_field":"PASS. Independently derived the q/r conjugation from q=3A-B and r=2B-A: the coefficients (6s-t,3(s-t),2(t-s),6t-s)/5 are correct. Phase rows are s*Fa and t*Fb. Dynamic capacity rows are (t-s)/2 and (5-s-4t)/2; held rows are zero. All six coordinates enter jets and comparison derivatives; no capacity refresh or unit-capacity substitution is introduced.",
+    "domain_and_capture":"PASS. The adapter retains the three full relative resultants, including the central row, positive s/t/u, reflected branch margins and the strict shared sinc domain. It reconstructs u from the exact mean-one relation. Capture requires the whole box, strict rectangle margins and storage.hi<7. Sector zero is preserved as an actual successful consensus result, not missing data. The heterogeneous-capacity capture theorem supplies the post-transit consequence; the historical unit-capacity certificate is not reused.",
+    "independent_six_controls":"PASS static source audit. The non-lock phasor point gives Arg=-pi/4, H_port=2(1+sqrt(3)), H_interior=pi*sqrt(3), matching the independently assembled full graph rows. The other controls retain mixed capacity/native jet derivatives, uniform reduction and variance balance, rejected hidden capacity/central-resultant/sinc domains, full-box capture and storage rejection, and one-call delegation with unchanged failed evidence. They are contract controls, not a new proof of the stable-manifold theorem or an evaluated transit.",
+    "shared_numerical_kernel_boundary":"PASS. Actual existing Picard/Taylor/comparison source was read. The adapter passes its entire six-dimensional field and sufficient whole-box domain to the shared kernel, retaining whole-time tubes, normalized Taylor remainders and propagated uncertainty. It adds no numerical fallback, step split, seed repair or graph-state execution.",
+    "paired_success_scope":"PASS. The protocol requires both complete laws to capture in distinct sectors {0,+1}; the predicted orientation is tracked separately. Other sectors, equal outcomes, unavailable enclosures or resource stops do not pass. No physical identification or installed dynamic-capacity executor is claimed."
+  },
+  "resolved_pre_freeze_issue":"The initial section used eta0=Delta^T/||Delta||, which was a valid but different direction from the artifact recipe using the oblique ambient projection. The author changed the text before evaluation to the actual recipe direction and replaced ||Delta|| by d in W8-W9; the corrected actual bytes were reread.",
+  "new_scientific_evaluations":0,
+  "test_imports_or_runs":0,
+  "candidate_imports_or_calls":0,
+  "historical_producer_replays":0,
+  "actions_performed":"Read actual section and adapter/tests, inspect the supporting shared source, check formulas manually and source digests, and create this exclusive metadata receipt with file_receipt/write_json_once. No maintained source edit or scientific execution was performed during this review."
+}

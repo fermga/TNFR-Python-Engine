@@ -1,0 +1,87 @@
+{
+  "schema":"tnfr.mathematical-review.v1",
+  "reviewed_utc":"2026-10-28T19:26:26.162665+00:00",
+  "author":"/root",
+  "reviewer":"/root/collective_math",
+  "independent":true,
+  "verdict":"PASS",
+  "scope":"Independent analytical review of native-dynamic-acquisition DA1-DA3, equations DA1-DA7 and contrasts, plus the final PROGRAM decision. Prepared prerequisite resolutions retain their own scope; no physical-readiness approval.",
+  "sources":[
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "bytes":109764,
+      "sha256":"d882de5ada26a5181934edba5f14ceedb5d5895135d809e6f994e8c86df3b8b4"
+    },
+    {
+      "path":"theory/RESEARCH_PROGRAM.md",
+      "bytes":81289,
+      "sha256":"4703ac85c0e3dde38b021afa6c857f3fc646e68adabdbd7fe1a934d0ef1e986c"
+    }
+  ],
+  "supporting_owners":[
+    {
+      "path":"theory/nodal/RELATIONAL_FORMATION_CONTROLS.md",
+      "bytes":61914,
+      "sha256":"4a2aadc10efb2b1a72689a2fc88b3d40c3df471d1f223efc1606c8885eac1e9f"
+    },
+    {
+      "path":"theory/nodal/RELATIONAL_DOMAIN_AND_CAPTURE.md",
+      "bytes":79242,
+      "sha256":"5a9278ec65ce62df0e174c17cf446c0cbcfadb88678c18866365a9d4b860fbbb"
+    },
+    {
+      "path":"theory/nodal/RELATIONAL_RECOVERY_AND_INTERACTION.md",
+      "bytes":30557,
+      "sha256":"e28b84af254fcd2443d1bb785189143ff715bdaff6c2c50b74fc9d90d24f764a"
+    },
+    {
+      "path":"theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md",
+      "bytes":114484,
+      "sha256":"886e760b38191e3a3528e2e14fb724e12a1b636b1b4840d00638611b65731639"
+    }
+  ],
+  "scope_declaration":{
+    "path":"artifacts/native-dynamic-acquisition-20261028/scope.json",
+    "bytes":1828,
+    "sha256":"4ad4c71d2df982a3886a26c21884e9357988ed250e59e072b146a9ef14b86d81"
+  },
+  "preservation":{
+    "chapter_prior_prefix_bytes":98150,
+    "chapter_prior_prefix_unchanged":true,
+    "comparison":"Actual prior chapter member of before-edit.zip compared byte-for-byte to current prefix."
+  },
+  "criteria_assessment":{
+    "reference_and_model_identity":{
+      "passed":true,
+      "assessment":"DA1 retains the actual two cycles and both bridges (0,5),(1,6), e=w=1/2,beta=1, fixed positive kappa, full nodal state and ordinary mean capacity one. DA2 preserves the exact represented source rather than substituting ideal rational fifths or an ideal-pi phase. B*1=0 makes the unit-capacity slice invariant and its native rows match the retained reference. This review read the maintained proof owners and protocol preparation; the separate reference-source review owns the archived-code and retained-certificate association."
+    },
+    "actual_two_bridge_local_proof":{
+      "passed":true,
+      "assessment":"Independently checked B and K include both bridge Laplacians and H has the four degree-three port values at0,1,5,6. On the29-dimensional mean-one leaf the relative state is27-dimensional. Capacity crosscolumns vanish only at p=q=g=0. The native storage similarity has positive damping and invertible coupling, so it is Hurwitz; the capacity quotient block is negative. The Lyapunov-integral sublevel supplies a new invariant regular neighborhood rather than importing any held-capacity or one-bridge basin."
+    },
+    "nonlinear_continuation_and_origins":{
+      "passed":true,
+      "assessment":"Smoothness and the quadratic remainder yield the stated strict local Lyapunov inequality. The invariant positive-capacity acute relative domain and integrable origin velocities establish unique all-forward full-state continuation and convergence. Common arithmetic origins are not falsely conserved; no uniform kappa-to-zero estimate or numerical basin is claimed."
+    },
+    "finite_transit_pullback":{
+      "passed":true,
+      "assessment":"Reference convergence gives a finite T_kappa>32 with its relative endpoint strictly inside the new joint neighborhood. A compact regular reference segment admits smooth dependence, equivalently a local tube and first-exit Gronwall argument, for the actual30-coordinate dynamic law. The resulting neighborhood enters that target set at T_kappa. The old T=32 reflected endpoint is not promoted to a general dynamic-capacity basin, and nonacute edges are permitted during regular transit."
+    },
+    "initial_absence_and_open_dynamic_capacity_set":{
+      "passed":true,
+      "assessment":"Intersecting the transit pullback with the retained strict initial antipodal-margin neighborhood gives winding zero initially, followed by target entry and retention. The open set is relative to the29-dimensional positive mean-one leaf. Its nonuniform subset is nonempty and open; the reference itself remains in the larger neighborhood. Invertibility of exp(-kappa*B*t/2) and of B on1-perp proves nonzero capacity contrast and nonzero redistribution vector at every finite time, while individual nodal derivatives may vanish."
+    },
+    "counterexamples_and_claim_limits":{
+      "passed":true,
+      "assessment":"Held capacity already supports acquisition, and consensus form/phase remains native-rest under capacity redistribution. These controls correctly exclude necessity, target-selection, basin-improvement and ex-nihilo interpretations. The isolated-cycle geometric obstruction remains untouched. The result does not claim an explicit radius, entry time, probability, runtime installation, reduced regional closure or physical correspondence."
+    },
+    "next_question_and_readiness":{
+      "passed":true,
+      "assessment":"Final PROGRAM accurately records the new analytical acquisition result and retains the prepared scope of the four prerequisite resolutions and absent final physical review. Its sole next question compares organizational destination under dynamic versus held capacity from the same full positive mean-one source. The saddle route is explicitly prospective: it requires admitting the actual symmetry-compatible capacity reduction, comparing the appropriate stable/center-stable boundaries and justifying capture for both laws. A changed tangent, jet or path is not treated as a different final organization; equivalence, obstruction or a precise unresolved term remains admissible."
+    }
+  },
+  "new_scientific_evaluations":0,
+  "historical_producer_replays":0,
+  "test_imports_or_runs":0,
+  "actions_performed":"Read actual maintained proof/program and relevant source owners; independently derive and review mathematics by hand; compare metadata hashes and preserved prefix bytes; create this exclusive receipt using the shared artifact writer."
+}

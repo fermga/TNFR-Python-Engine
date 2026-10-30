@@ -1,0 +1,33 @@
+{
+  "schema":"tnfr.research-prerequisite-review.v1",
+  "requirement":"research_selection",
+  "verdict":"approved",
+  "independent":true,
+  "author":"/root",
+  "reviewer":"/root/access_independent_review",
+  "criteria_assessment":{
+    "closure":"Approved only for the same prepared mathematical domain: the supplied unit C5 pair (0,1,2,3,4) and (5,6,7,8,9) with bridge (0,5), signed scalar form, circular phase, strictly positive capacities, fixed ordinary capacity mean, e=w=1/2, beta=1, a supplied fixed kappa>0, equal constituent measure and one structural clock. The capability is full-state prediction, local all-forward retention and recovery near the aligned winding-one family, and the declared internal receiver response. The native admission, CT comparison and JO response assess P1-P3 in the same complete realization. Joint storage and nodewise work cancellation, equal node measure and fixed reciprocal edge flux are explicit premises with an independent structural interpretation; they are not fitted to the desired receiver signal. CT compares equal-measure and degree-normalized transport under matched graph, state, clock and observables, preserving their distinct conserved measures and blind controls. JO compares dynamic and held capacities from the same initial state and clock: receiver acceleration agrees and its third derivative differs. Passive-loss, nonlinear-passive and capacity-mediated alternatives retain their actual own-capacity, locality, exact-loss and held-capacity boundaries. They show why passivity, equilibria or tangent agreement alone do not select a unique law. Normalized-sine and hybrid results are not transferred to the native model. The complete law is therefore sufficient for the admitted prepared capability without a claim of unique fundamental necessity. This prerequisite approval retains exactly the prepared single-bridge domain above; it does not include acquisition, autonomous support/event creation, an autonomous reduced regional state, a dynamic-capacity graph executor, a universal law or physical mapping. The two-bridge acquisition, selection, concrete witness and quantitative robustness results have separate complete-law proofs and reviews. RB now supplies the symbolic positive radius rho=2^(-2^250) for the same two-bridge matched witness, with all finite premises admitted by one static audit; this is not a practical tolerance or a change to this prepared approval. The first 170846 bytes of the chapter remain identical, preserving the original prepared proof, separate DA, CS, W and RB results, joint scope decision and FO finite-observation theorem. The appended CA causal-access audit and both updated program regions exactly match their final independently reviewed drafts. The reviewer independently checked CA1-CA5: the sufficient access record and symmetry boundary; uniform-capacity preparation and exact-hold obstructions; the fixed finite passive-extension limitation; supplied selective transport and compensating-source prescriptions; stored-reference mismatch; and the quantitative hidden-phase collision at the actual FO endpoint. The CA5 clarification explicitly separates inability of form/phase-only initialization to create capacity contrast from the finite passive extension's inability to hold a nonuniform profile exactly. It does not exclude transient contrast preparation by appropriately initialized auxiliaries. The CA ideal selector and source port are separately stated mathematical access premises, not derived autonomous actuators, physical interventions or extensions of this original event-free P1 approval. The hidden-phase collision lies outside the FO preparation-error budget and does not refute FO, identify complete trajectories or preclude independent calibration and additional observations. Source associations are renewed without changing any evidence anchor, original prepared single-bridge scope or primitive/derived assessment. No practical precision, physical preparation/readout/clock bridge or uniquely selected constitutive law is admitted. The next sole task is an exact-scope foundational admission decision for a possible independent realization-feasibility study. It is not the study itself and does not authorize physical source search, mapping or experimental evaluation. Any subsequent physical task still needs the substantive exact-task readiness review covering all current resolutions and evidence, followed by a passing strict guard. Final physical readiness remains absent. This renewal used source reading, analytical scope review and artifact bookkeeping only, with no scientific computation, test, trajectory, candidate generation or historical producer replay."
+  },
+  "evidence":[
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-foundation-scope-decision",
+      "sha256":"ef28a7c868a161fd289e9939fc7969a418312639b6900b294fe41057008e0c12"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-foundation-admission",
+      "sha256":"ef28a7c868a161fd289e9939fc7969a418312639b6900b294fe41057008e0c12"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-capacity-transport",
+      "sha256":"ef28a7c868a161fd289e9939fc7969a418312639b6900b294fe41057008e0c12"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-joint-organization",
+      "sha256":"ef28a7c868a161fd289e9939fc7969a418312639b6900b294fe41057008e0c12"
+    }
+  ]
+}

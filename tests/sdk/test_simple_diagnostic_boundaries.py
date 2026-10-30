@@ -175,20 +175,22 @@ def test_nonuniform_epi_cannot_be_reported_as_signed_scalar_magnitude(serialized
         network.nodal_state(0)
 
 
-@pytest.mark.parametrize("xi", [float("nan"), float("inf"), -float("inf"), -1.0])
+@pytest.mark.parametrize("xi", [float("nan"), float("inf"), -float("inf"), -1.0, 0.0])
 def test_unavailable_or_invalid_correlation_length_is_not_safe(xi):
-    result = TetradSnapshot(
+    snapshot = TetradSnapshot(
         phi_s={0: 0.0},
         grad_phi={0: 0.0},
         k_phi={0: 0.0},
         xi_c=xi,
-    ).is_safe()
+    )
+    result = snapshot.is_safe()
     assert result["xi_c_safe"] is False
     assert result["overall"] is False
+    assert "xi_C=UNAVAILABLE" in snapshot.summary()
 
 
-@pytest.mark.parametrize("xi", [0.0, 1.0])
-def test_finite_nonnegative_correlation_length_passes_its_advisory_check(xi):
+@pytest.mark.parametrize("xi", [math.ulp(0.0), 1.0])
+def test_finite_positive_correlation_length_passes_its_advisory_check(xi):
     result = TetradSnapshot(xi_c=xi).is_safe()
     assert result["xi_c_safe"] is True
     assert result["overall"] is False  # xi alone supplies no local-field evidence

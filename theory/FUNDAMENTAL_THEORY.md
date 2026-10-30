@@ -160,6 +160,17 @@ such a closed observable. Capacity, phase, support and history remain inputs
 unless their projected evolution also closes. These conditions test a proposed
 representation; they do not supply the missing full law by assuming it.
 
+For the foundational review, declare separately the structural configuration,
+its chosen coordinates and the observation used by a prediction. Calling EPI
+observable does not make the scalar reader a sufficient representation of all
+structure; calling a richer representation structural does not derive its law.
+Primitive, derived and retained-memory roles are relative to the declared
+model and scale. A collective description must earn its sufficiency for the
+claimed response, including boundary and event information, rather than
+inherit a fixed coordinate count from the fine runtime. The
+[foundation prerequisites](RESEARCH_PROGRAM.md#foundational-pillars) use
+these existing distinctions without changing signed-scalar admission.
+
 If a declared group action g satisfies `h composed with g = h`, full
 equivariance `F(gz)=Dg(z)F(z)` is sufficient but stronger than necessary:
 projection only requires `Dh(gz)*(F(gz)-Dg(z)F(z))=0`. A component along
@@ -441,6 +452,16 @@ the prepared internal motion while the collective mean form and phase remain
 fixed. No external periodic drive or additional pulse coordinate is inserted.
 Its existence depends on the complete law, held capacities, support and
 initial state; it does not derive those premises or the substrate's origin.
+The [internal circulation representation](nodal/SINE_REPLICA_PULSE.md#sine-pulse-internal-rotation)
+makes its constituent EPI a projection of a closed curve in retained
+form/relative-phase coordinates. This is not spatial rotation or a common
+primitive-phase turn: the relative phase librates, and the internal angle
+has its own derived nonuniform rate. Equal EPI snapshots can conceal
+opposite next form rates. The broader
+[active-family theorem](nodal/SINE_REPLICA_PULSE.md#sine-replica-joint-persistence)
+already preserves internal turns and collective identity beyond the exact
+periodic preparation, without establishing a common period or acquisition
+from outside its invariant family.
 
 **Initial activity is not a universal sustained pulse.** Positive capacity with zero
 pressure gives zero EPI rate. Nonzero `nu_i*p_i` at an initial state gives

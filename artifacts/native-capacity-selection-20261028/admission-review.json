@@ -1,0 +1,168 @@
+{
+  "schema":"tnfr.native-capacity-selection-admission-review.v1",
+  "reviewed_utc":"2026-10-28T19:49:00.448806+00:00",
+  "verdict":"approved",
+  "independent":true,
+  "author":"/root",
+  "reviewer":"/root/collective_controls",
+  "scope":{
+    "path":"artifacts/native-capacity-selection-20261028/scope.json",
+    "bytes":2180,
+    "sha256":"a1519d8dc093f72923b9b330746716dfdf043a15b1fcb8fd08235a87183e2e22"
+  },
+  "scope_amendment":{
+    "path":"artifacts/native-capacity-selection-20261028/scope-amendment.json",
+    "bytes":941,
+    "sha256":"bb556496d3eca01926a54ab9ad259b560e9758b1883afb13655f9cb3f211a42d"
+  },
+  "baseline":{
+    "path":"artifacts/native-capacity-selection-20261028/baseline.json",
+    "bytes":583998,
+    "sha256":"453c0317fb47127cc6b316f3825ca36330b26f4adc8d1f51ae821c39953c599a"
+  },
+  "before_archive":{
+    "path":"artifacts/native-capacity-selection-20261028/before-edit.zip",
+    "bytes":63888,
+    "sha256":"b304ab8e3da77cce25fc41077c28f322b465d88879718a6877632fbd73ce20a5"
+  },
+  "final_sources":[
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "bytes":126419,
+      "sha256":"91c09e1f68422c8bef5a0399de64882f3a7232d00790482bdf901a1b5a5a62e8"
+    },
+    {
+      "path":"theory/RESEARCH_PROGRAM.md",
+      "bytes":81025,
+      "sha256":"f511d9a79f7b0c4b6afd813f6ad70eeb0f3d41607ceb7b29749dbfb7374f8f3b"
+    },
+    {
+      "path":"theory/research_prerequisites.json",
+      "bytes":4656,
+      "sha256":"736b73b41c056468e6d5907db77bbfbb93830c3c8e2fb075b81c757737c6ef27"
+    }
+  ],
+  "evidence_manifest":{
+    "path":"artifacts/native-capacity-selection-20261028/evidence-source.json",
+    "bytes":6358,
+    "sha256":"9fc89719cb2ad7796bbc6ab1589f6026f7450ec63ef9ba9039e4e1d9a021a5b1"
+  },
+  "reviewed_source_archive":{
+    "path":"artifacts/native-capacity-selection-20261028/reviewed-source.zip",
+    "bytes":271812,
+    "sha256":"d8e13848f154610e550fa38db32951e6c739860df6a1b69521c485a3e7d4ed4a"
+  },
+  "other_independent_reviews":[
+    {
+      "path":"artifacts/native-capacity-selection-20261028/reference-review.json",
+      "bytes":6803,
+      "sha256":"bec9bec746fc390a44ad9042b9a6275cc60fecedcc26263a8c011619552999c2"
+    },
+    {
+      "path":"artifacts/native-capacity-selection-20261028/mathematical-review.json",
+      "bytes":7880,
+      "sha256":"b8d5051dd7f01cf6fbe1b29a25b3c7d391a2250804e5026c061ac7d1f040a636"
+    }
+  ],
+  "review_cohort":[
+    "reference-review.json",
+    "mathematical-review.json",
+    "admission-review.json"
+  ],
+  "prerequisite_reviews":{
+    "operator_causality":{
+      "path":"artifacts/native-capacity-selection-20261028/operator_causality-review.json",
+      "bytes":4606,
+      "sha256":"08457fb88452713495163878a8c4c15928b0c3fcdd3162f26c0ee3cc9aa6a97b"
+    },
+    "state_observation":{
+      "path":"artifacts/native-capacity-selection-20261028/state_observation-review.json",
+      "bytes":4536,
+      "sha256":"c653255a8c8c1305649d63df0088fa0c928b624862686afd118c1a25d19981a3"
+    },
+    "organizational_identity":{
+      "path":"artifacts/native-capacity-selection-20261028/organizational_identity-review.json",
+      "bytes":3622,
+      "sha256":"f17c703ceb6849c99cef6d0bd920eb0f2d7ac5a23aaa0013cb85a8ea382f479e"
+    },
+    "research_selection":{
+      "path":"artifacts/native-capacity-selection-20261028/research_selection-review.json",
+      "bytes":4635,
+      "sha256":"f2b1f4c6642dd7e4eb737d99e61e99bacf7659e95cfa8ff751e3f82dc50b072b"
+    }
+  },
+  "prerequisite_validation":{
+    "path":"artifacts/native-capacity-selection-20261028/prerequisite-validation.json",
+    "bytes":1024,
+    "sha256":"f2a92ac0dcde80222bb25a7344211579d401117bc758336df8141e310f7ac03f"
+  },
+  "prerequisite_logs":[
+    {
+      "path":"artifacts/native-capacity-selection-20261028/foundations.log",
+      "bytes":77,
+      "sha256":"119accc3a927b5a786fa6418ff085bbe7aa3b1a3743838eb66d7225ef27c45b1"
+    },
+    {
+      "path":"artifacts/native-capacity-selection-20261028/physical-mapping-block.log",
+      "bytes":94,
+      "sha256":"67778c6009a6e2b1509fef2456fd33aa1ee865becf774603a3fc4692af1c4556"
+    }
+  ],
+  "source_preservation":{
+    "head":"0d3813fe7dd977968140d8ac05d54ba8685aae7b",
+    "head_unchanged":true,
+    "dirty_path_inventory_unchanged":true,
+    "baseline_files":4624,
+    "unchanged_baseline_files":4621,
+    "changed_existing_paths":[
+      "theory/RESEARCH_PROGRAM.md",
+      "theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "theory/research_prerequisites.json"
+    ],
+    "added_maintained_paths":[],
+    "removed_maintained_paths":[],
+    "chapter_previous_prefix_bytes":109764,
+    "chapter_previous_prefix_sha256":"d882de5ada26a5181934edba5f14ceedb5d5895135d809e6f994e8c86df3b8b4",
+    "chapter_previous_prefix_preserved":true,
+    "program_outside_two_declared_regions_preserved":true,
+    "previous_registry_preserved_in_archive":true,
+    "prerequisite_statuses_and_evidence_anchors_unchanged":true,
+    "manifest_entries_checked":30,
+    "all_manifest_live_and_archive_receipts_match":true,
+    "agent_instruction_mirror_identical":true,
+    "prerequisite_checker_unchanged":true
+  },
+  "independent_analytical_assessment":{
+    "actual_reduced_laws":"Read the entire CS1-CS6 proof, CS1-CS9 equations and final PROGRAM. Independently checked the copy/reflection symmetry, even capacity profile, full two-bridge degree factors and the identical initial-state comparison. The reduced capacity row preserves2s+2t+u=5 and the positive hull. Its stable2x2 matrix and weighted variance provide an invariant ellipsoid without assuming contraction in Euclidean norm.",
+    "capture_under_each_law":"The actual native storage derivative has the s,t factors and no omitted capacity chain-rule term. The R+/S barriers and strict E<7beta confine the native state in the regular domain under either law. Positive capacity hulls make the product compact. Held zero-loss invariance selects the corresponding native target; adding the capacity variance for the dynamic LaSalle argument also forces the mean-one uniform capacity limit. The capture boundary is imposed on E alone, not on the stronger sum.",
+    "germ_contradiction":"The held boundary is explicitly the union of native stable fibers, not an arbitrary center manifold. Both boundary graphs have the same tangent and uniform-capacity slice. If their germs agreed, tangency of the pure capacity difference would give Dzeta h Ckappa zeta=0. A product graph chart with a small invariant capacity ellipsoid permits forward relaxation at fixed native coordinates, hence h(v,zeta)=h(v,0). The resulting fixed native stable hyperplane would force its nonzero normal covector to lie in one row-scaling group. Independently checked the actual b/B0 and a/A column contradictions in J0, which exclude both groups. Thus their germs differ for every fixed positive kappa, without a computed signed displacement.",
+    "local_exit_to_final_geometry":"Both uniform unstable branches enter strict R+/S capture sets with energy below the saddle value. The dynamic unstable manifold lies exactly on the uniform-capacity slice; held branches vary smoothly with their profile. Simultaneous straightening and an adapted stable norm yield sign-preserving unstable growth and decay of stable coordinates while local. Initial states approaching the saddle therefore exit arbitrarily close to the corresponding fixed branch sections. Smooth held parameter charts retain a uniform local gap. A common state between the two graphs has opposite exit signs and is then captured in opposite geometries by the actual-law argument. This closes the local-to-global obligation; merely differing jets or paths would not.",
+    "full_state_extension":"The explicit scope amendment is discharged. At the twist the full matrices are the actual DA4 two-bridge matrices; at consensus K=B_G and H=pi D. Full held-capacity recovery applies with positive capacity retained as a parameter. Dynamic recovery at either target adds the strictly stable capacity quotient with zero native capacity crosscolumns at the lock, and reconstructs common origins. Each reduced matched witness reaches its own full-state attracting neighborhood after a compact regular finite segment. Intersecting the two initial-state pullbacks on the mean-one29-dimensional leaf gives a nonempty open matched set with distinct destinations, even when the two entry times differ. Symmetry is a witness-construction device, not silently imposed on that final open set.",
+    "controls_and_observation":"The distinguishing observation is final phase geometry: twist with ring windings(1,1) versus consensus(0,0), not merely different capacity limits. Initial states near the saddle already have winding(1,1), so this is selection/retention versus loss rather than winding-zero acquisition. Uniform capacity, the exact native saddle, native consensus and kappa=0 remain null controls. No displacement sign, particular witness, basin-volume increase, uniform small-kappa separation or preferred orientation is inferred.",
+    "next_claim_and_readiness":"The next task fixes kappa=1 and seeks one quantitatively admitted matched source. PROGRAM correctly requires the common nonlinear boundary terms, the distinct capacity laws and a justified remainder or finite regular-transit capture certificate. A truncated mixed term, old receiver jet or held executor is not accepted as the finite witness. The four prerequisite receipts retain the original prepared scope and anchors; acquisition and selection have separate proofs and reviews. The current registry and actual logs preserve the absent final physical review and physical block, with no checker modification or exception."
+  },
+  "external_standard_theorem_review":{
+    "url":"https://www.math.utah.edu/~feldman/ODE-slides4.pdf",
+    "author":"Will Feldman, University of Utah",
+    "slides_read":[
+      7,
+      40
+    ],
+    "assessment":"Opened the cited primary notes directly and checked the smooth stable-manifold graph statement and its parameter dependence. Only these standard existence/regularity statements are drawn from that reference; the TNFR boundary contradiction, capture and full-state selection conclusion are established by the actual model-specific proof."
+  },
+  "scope_limits":[
+    "This is an existential analytical theorem on supplied native laws, support and clock. No numerical witness, finite error budget, radius, transition time, optimal rate, maximal basin or constitutive uniqueness is supplied.",
+    "The historical validated acquisition transit is not consumed by this selection proof. No source archive producer or interval calculation was replayed, and no new symbolic or numerical control was executed.",
+    "The source manifest is a verified integrity inventory, not a claim that every inventoried line was re-proved. The new proof and its consumed source arguments were reviewed directly.",
+    "The future concrete-pair certificate remains pending and requires its own prospective source, preparation, observation, precision, horizon and resource declaration before scientific evaluation.",
+    "Documentation and rendered-link checks are recorded separately; this receipt does not prematurely assert their completion."
+  ],
+  "scoped_prerequisites_resolved":4,
+  "prerequisite_scope":"Original prepared single-bridge capability only; acquisition and capacity-selection theorems have separate analytical reviews.",
+  "physical_mapping_readiness_review":null,
+  "physical_mapping_authorized":false,
+  "is_physical_readiness_review":false,
+  "scientific_executions_by_reviewer":0,
+  "historical_producer_replays_by_reviewer":0,
+  "new_scientific_tests":0
+}

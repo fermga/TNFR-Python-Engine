@@ -15,7 +15,7 @@ The substrate model assigns two canonical coordinate pairs per node:
     Geometric sector:  (K_φ,  J_φ)       curvature ↔ phase current
     Potential  sector: (Φ_s,  J_ΔNFR)    potential ↔ ΔNFR flux
 
-so the emergent phase space is P = ℝ^{4N} with symplectic 2-form
+so the specified ambient phase space is P = ℝ^{4N} with symplectic 2-form
 
     ω = Σ_i [ dK_φ(i) ∧ dJ_φ(i) + dΦ_s(i) ∧ dJ_ΔNFR(i) ].
 
@@ -48,7 +48,7 @@ References
 - src/tnfr/physics/variational.py (symplectic 2-form ω, Hamiltonian)
 - src/tnfr/physics/conservation.py (conjugate pairs, energy functional)
 - theory/TNFR_VARIATIONAL_PRINCIPLE.md (full derivation)
-- AGENTS.md §"Minimal Structural Degrees of Freedom"
+- theory/MINIMAL_STRUCTURAL_DEGREES.md (state and observation scope)
 """
 
 import math
@@ -227,7 +227,7 @@ def experiment_4_noether_charges():
     print()
     print("Each continuous symmetry of H_sub generates a conserved charge:")
     print("  time translation → H_sub  (total energy)")
-    print("  geometric U(1) (Ψ→e^{iα}Ψ, the gauge symmetry) → ½Σ|Ψ|²")
+    print("  global geometric-sector U(1) rotation (Ψ→e^{iα}Ψ) → ½Σ|Ψ|²")
     print("  potential U(1) → ½Σ(Φ_s²+J_ΔNFR²)")
     print()
 

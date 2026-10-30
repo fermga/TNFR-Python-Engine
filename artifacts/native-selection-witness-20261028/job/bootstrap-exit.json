@@ -1,0 +1,9 @@
+{
+  "error": null,
+  "exit_code": 0,
+  "nonce": "434237dde5e244d211b847f2a27b4472ca07a2c6c8fcd76ae3147e16473cb499",
+  "schema": "tnfr.bootstrap-exit.v1",
+  "target_authorized": true,
+  "worker": "C:\\TNFR-Python-Engine\\artifacts\\native-selection-witness-20261028\\validate.py",
+  "worker_pid": 32704
+}

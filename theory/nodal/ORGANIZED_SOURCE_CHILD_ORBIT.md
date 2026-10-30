@@ -820,3 +820,538 @@ At that time the allowance is below `1.402e-11`, against
 the initial projected form-rate defect is strictly negative. These numbers
 are conservative proof bounds in structural units, not measured settling
 times. No historical continuation supplies evidence for this comparison.
+
+<a id="organized-source-word-phase-memory"></a>
+## 9. A structural word converts hidden phase into persistent mean error
+
+The zero-limit raw tracking conclusion of section 8 does not transfer
+through the marked word. On the existing off-carrier preparation, the
+ideal Reception--Coherence--Silence word creates a nonzero projected phase
+error from an initially exact projected match. A component of that error
+is conserved by both complete post-word flows. Hidden differences may
+relax while this collective memory remains.
+
+This is a conditional obstruction for the supplied mathematical source
+and ideal primary maps. It strengthens the
+[immediate word comparison](ORGANIZED_SOURCE_CHILD_QUOTIENT.md#organized-source-child-word-error)
+by following a conserved error component, without calculating a trajectory
+or asserting the full asymptotic error. The earlier no-event tracking and
+exact orbit-state results retain their original premises.
+
+### 9.1 Matched incoming states and the admitted action
+
+Use the actual ninety-edge support of section 1. For child `c=0,...,4`
+and slot `j=0,...,8`, keep the exact real carrier
+`psi_(9*c+j)=alpha*(j-4)`, `alpha=2*pi/9`. The incoming fine preparation is
+
+\[
+ x=0,\qquad \nu_i=1,\qquad
+ \delta_9=\phi+b,\quad\delta_{18}=\phi-b,\quad
+ \delta_i=0\ (i\ne9,18),\qquad
+ \phi=2^{-7},\quad b=2^{-20}.
+\]
+
+The comparison state is the independently continued symmetric core
+`w=Pi z`, with both offsets at nodes 9 and 18 equal to phi. Both initial
+form and phase projections match exactly, including their ordinary means.
+No unequal common phase offset is inserted. These are the previously
+constructed static off-carrier inputs, not claimed states at either
+unknown first guard crossing. Their irrational carrier is kept exact;
+binary64 carrier midpoints would specify different preparations.
+
+Apply one supplied word at a common time. Every ideal stage uses one
+incoming snapshot for both targets 0 and 1; no continuous time elapses
+between Reception, Coherence and Silence. Use the registered default
+Reception mix beta, Coherence pressure retention, phase coefficient lambda
+and Silence factor kappa, interpreting represented coefficients as exact
+real parameters. In particular `0<beta<=1`, `0<lambda<1` and `0<kappa<1`.
+The inherited five-neighbor counts remain those of the fine support.
+
+The [word domain](ORGANIZED_SOURCE_PORT.md#organized-source-word-reuse)
+requires the stipulated `AL,IL` histories, ordinal two, prior Coherence,
+zero debt, common kind, initialized core grammar, rejection mode `raise`,
+and explicit IL `event_domain` admission. Keep the existing Reception
+ceilings, unit rails and inclusive Silence pre-call capacity floor.
+These are supplied contextual premises, not information reconstructed
+from the physical coordinates. The default signed-positive IL policy
+would reject zero target form; it is not the policy used here.
+
+Both exact inputs lie in the fixed winding-one acute cell. Actual edge
+accounting gives `E_f=4*(1+cos(alpha))*(1-cos(phi)*cos(b))` and
+`E_c=4*(1+cos(alpha))*(1-cos(phi))`. Hence their excess obeys
+`0<=E<=4*(phi^2+b^2)<1/100`, and both form means vanish. The shared
+source barrier and one-word reuse budget therefore provide the required
+mathematical domain and scalar margins. Reception has zero form proposals.
+Its target-0 fresh pressure is `gamma*sin(phi)*cos(b)/2` on the fine input
+and `gamma*sin(phi)/2` on the core; target-1 fresh pressure is zero. These
+obey the retained Reception ceilings, and the unit pre-Silence capacities
+exceed the declared floor. A raw-phase reader requiring represented centers
+and a positive radius cannot be called on rounded carrier values and used
+as proof of this exact preparation's admission. Exact offset geometry,
+the barrier and shared factor/budget owners suffice here.
+
+### 9.2 The complete ideal word and its work
+
+Reception changes no physical coordinate on either zero-form input.
+At target zero, the common-snapshot Coherence resultants are
+
+\[
+ Z_f=r+2e^{i\phi}\cos b,\qquad Z_c=r+2e^{i\phi},\qquad
+ r=1+2\cos\alpha>0.
+\]
+
+Both are in the right half-plane, with arguments `0<a_f,a_c<phi`.
+Moreover
+
+\[
+ \Im(Z_f\overline{Z_c})=2r(\cos b-1)\sin\phi<0,
+ \qquad
+ \eta=\lambda(a_f-a_c)<0.
+\]
+
+The argument difference lies in `(-phi,phi)`, so this sign identifies
+the actual continuous phase branch. Target one sees neighbors
+`{0,2,10,19,37}`, all with zero incoming offsets. Its resultant is the
+same positive real `3+2*cos(alpha)` on both inputs, and its phase increment
+is exactly zero. Reading target zero after its update would change that
+resultant; such serial execution is outside the simultaneous word.
+
+Thus Coherence gives `delta_0,f^+=lambda*a_f` and
+`delta_0,c^+=lambda*a_c`, holding every other phase and all forms.
+Its stored-pressure contraction does not supply the subsequent constitutive
+law. Silence holds these physical coordinates and gives the same capacities
+on both branches:
+
+\[
+ D=\operatorname{diag}(\kappa,\kappa,1,\ldots,1),\qquad
+ \Pi x_f^+-x_c^+=0,\qquad
+ \Pi\delta_f^+-\delta_c^+=\eta e_0.
+\]
+
+The hidden vector remains `a=0,b=b*e_0` in the nine-slot notation;
+none of these marked maps changes it. The core remains exactly symmetric.
+This accounts for every primary coordinate, not only the target observation.
+
+For either branch, only target zero changes phase. With `a=Arg Z_0`,
+its exact storage jump is
+
+\[
+ \Delta H_{\rm EN}=0,\qquad
+ \Delta H_{\rm IL}=|Z_0|[\cos a-\cos((1-\lambda)a)]<0,
+ \qquad\Delta H_{\rm SHA}=0.
+\]
+
+There is no capacity term in H and no target-1 phase increment. The actual
+shared edge is included in Z_0, so no joint work is omitted. The established
+word passivity argument keeps the whole phase-reset comparison path inside
+the acute sublevel. Both successors therefore retain all five windings
+and `E<1/100`. The creation of predictive error is compatible with passive
+work and structural retention.
+
+### 9.3 A conserved error of the full post-word laws
+
+Independently refresh each branch's complete dissipative law in the same
+elapsed structural time `s>=0`, with the displayed D held and no further
+events or external input:
+
+\[
+ x'=\tfrac14D[-Lx+\gamma S(\psi+\delta)],\qquad
+ \delta'=\tfrac\gamma4DLx,\qquad \gamma=(1023\pi)^{-1}.
+\]
+
+All forms and phases continue to evolve. These globally Lipschitz rows
+give global solutions. Their own balance `H'=-(Lx)^TD(Lx)/4<=0` and the
+same barrier retain the acute energy domain. No frozen pressure or
+constant projected environment replaces either row.
+
+Let `rho_i=1/nu_i` and `R=sum_i rho_i=43+2/kappa`. Because L has zero
+column sums and reciprocal sine edge currents cancel,
+
+\[
+ {d\over ds}\sum_i\rho_i x_i=0,\qquad
+ {d\over ds}\sum_i\rho_i\delta_i=0.
+\]
+
+These are inverse-capacity weights, without a degree factor: this source's
+rows use D/4, unlike the separate degree-normalized sine comparison.
+The common fixed carrier has zero time derivative; both continuations
+retain the same declared real offsets rather than rewrapping or centering
+them at each reading.
+
+Whole-child exchange preserves D, so `rho^T Pi=rho^T`. For the actual
+error `e_theta(s)=Pi delta_f(s)-delta_c(s)` this proves
+
+\[
+ \sum_i\rho_i e_{\theta,i}(s)={\eta\over\kappa},\qquad
+ \mu_D(e_\theta(s))
+ := {\sum_i\rho_i e_{\theta,i}(s)\over R}
+ ={\eta\over43\kappa+2}=:m_*\ne0.
+\]
+
+The individual post-word means are
+`(2*kappa*phi+lambda*a_f)/(43*kappa+2)` and
+`(2*kappa*phi+lambda*a_c)/(43*kappa+2)`. Forms have zero conserved
+weighted means in both branches. Coherence creates the phase discrepancy;
+Silence changes its averaging weights. No conservation across the reset
+is assumed to obtain conservation along the continuations.
+
+A positive weighted mean cannot exceed the maximum absolute component.
+Consequently, for every common continuation time,
+
+\[
+ \boxed{\displaystyle
+ \|\Pi\delta_f(s)-\delta_c(s)\|_\infty
+ \ge {|\eta|\over43\kappa+2}>0,\qquad s\ge0.}
+\]
+
+In particular the raw projected tracking error cannot converge to zero.
+The proof follows the full fine state and the separately evolved core;
+it does not assume that projecting the fine nonlinear dynamics closes.
+It needs neither a finite-time expansion nor a computed long trajectory.
+
+A simple analytic floor makes the nonzero size explicit. Put
+`zeta=a_c-a_f` in `(0,phi)`. The exact cross-resultant identity gives
+`sin(zeta)=2*r*(1-cos(b))*sin(phi)/(|Z_f|*|Z_c|)`. Here `r>2`, both
+moduli are below five, `1-cos(b)>b^2/4` and `sin(phi)>phi/2`.
+Consequently `zeta>phi*b^2/50`. The actual default `lambda>1/4` and
+`kappa<1` then yield
+
+\[
+ |m_*|>{\phi b^2\over9000}={2^{-47}\over9000}>2^{-61}.
+\]
+
+This floor follows from elementary inequalities and the fixed parameters,
+not subtraction of binary64 arguments or fitting an observed discrepancy.
+It is in declared ideal phase units, without a represented-runtime or
+laboratory-resolution claim.
+
+### 9.4 What a predictor must remember, and what remains open
+
+The hidden relaxation theorem of section 7 remains applicable: the word
+holds hidden coordinates and their unit capacities, while both successors
+retain the required energy domain. Hidden phase differences therefore
+decay under that theorem even though the displayed mean error cannot.
+A decaying instantaneous projection defect is insufficient to erase
+an error already transferred into a conserved collective coordinate.
+
+For raw lifted-phase prediction, a reference must account for this scalar
+event-induced mean displacement, either through its state/reset law or
+through an explicit offset record. The exact orbit representation already
+retains the hidden phase used by the resultant. A symmetric description
+that discarded it cannot recover eta from the shared projection alone.
+This is a necessity statement, not a proof that adding one scalar makes
+all nonlinear or hybrid predictions sufficient.
+
+Writing `e_theta=m_*1+q` with `mu_D(q)=0` separates the conserved part.
+An observation invariant under a common phase shift does not see `m_*1`.
+The lower bound therefore excludes zero-limit raw tracking, not relative
+phase tracking modulo that shift. The mean calculation alone gives no
+decay estimate for q. Qualitative asymptotic conclusions must be checked
+against the existing positive-capacity convergence theorem in the
+[source owner](ORGANIZED_SOURCE_PORT.md#21-silence-suffix-and-positive-capacity-continuation);
+they would not by themselves give a finite-time tracking allowance. A
+quantitative repaired prediction needs its own post-word capacity, stability,
+initial-error and forcing bounds. No loss of winding, autonomous occurrence,
+physical validation or
+failure of the original unit-capacity no-event theorem follows.
+
+### 9.5 Static controls and evidence boundary
+
+The [phase-memory controls](../../tests/research/test_organized_word_phase_memory.py)
+rebuild the actual support, projection, exact offset domain, registered
+factors and both complete resultants. They check the simultaneous ideal
+successors, work, strict nonzero argument defect, capacity-weighted
+conservation and projection identity. Shared outward rational arithmetic
+resolves the sign without discarding the small quadratic contribution.
+Independent existing static word controls retain their original scope.
+
+The frozen preparation, controls, reviews and preservation records are in
+`artifacts/organized-word-phase-memory-20261023/`. No runtime word,
+first-hit search, trajectory integration or retained response producer
+is executed. Supplied history and event-domain context remain hypotheses
+of the ideal action, rather than a claimed runtime receipt.
+
+<a id="organized-source-postword-tracking"></a>
+## 10. Quantitative prediction after the word with conserved means retained
+
+After the ideal word, a symmetric reference can predict the fine state
+with an explicitly bounded decaying error if its conserved mean offsets
+are accounted for. The bound includes both the initial word defect and
+the subsequent forcing from the hidden children. It uses the actual
+nonuniform Silence capacities. This supplies a finite prediction allowance
+beyond qualitative convergence, while retaining section 9's obstruction
+to zero-limit raw tracking without the mean correction.
+
+### 10.1 Actual post-word domain and the weighted error space
+
+Keep the support, exact carrier, simultaneous ideal word and supplied
+admission context of section 9. More generally, the argument below applies
+to two independently admitted ideal successors on that same acute sublevel,
+one full state z_f and one symmetric state z_c, with the same capacities
+
+\[
+ D=\operatorname{diag}(\kappa,\kappa,1,\ldots,1),\qquad 0<\kappa<1.
+\]
+
+Both must have `E<1/100` in the same winding-one lifted cell. Their complete
+continuations are the section 9 shared-capacity dissipative rows, in the
+same elapsed structural time, with D held and no further events or input.
+Word occurrence and represented roundoff are outside these ideal premises.
+For the fixed witness, all these properties follow from its exact
+successors and passive work, rather than from a rounded phase preparation.
+
+Set `M=D^-1`, `rho=M*1` and `R=1^T M*1=43+2/kappa`. Let
+
+\[
+ e_x=\Pi x_f-x_c,\quad e_\theta=\Pi\delta_f-\delta_c,\qquad
+ m_x={\rho^Te_x\over R},\quad m_\theta={\rho^Te_\theta\over R},
+ \qquad p=e_x-m_x\mathbf1,\quad q=e_\theta-m_\theta\mathbf1.
+\]
+
+The two means are constant by the actual full-row cancellation and
+`rho^T Pi=rho^T`. Consequently `rho^T p=rho^T q=0`. These are weighted
+zero-mean conditions; the ordinary sums of p and q need not vanish.
+Adding the constant pair `(m_x*1,m_theta*1)` to the symmetric reference
+also gives a solution of the same law: L annihilates a common form shift
+and the sine field ignores a common phase shift. Thus p and q compare
+the projected fine state with a well-defined corrected reference.
+
+Every norm below uses the fine 45-node lift. In the 36-coordinate chart,
+`||u||_M^2` has weights `orbit_mass/nu`; replacing them by unweighted
+chart coordinates would change the statement.
+
+### 10.2 Complete error rows and the retained hidden forcing
+
+Each continuation retains its acute sublevel by the shared storage loss
+and boundary barrier. Convexity and the global child symmetry place
+`Pi z_f` in the same sublevel. The actual edge deviations from the carrier
+are less than 1/5 in absolute value. The segment between projected fine
+and core phases therefore stays in the section 7 collar, also after the
+common-phase correction, which changes no edge angle. The sine secant
+matrix obeys `L/2 <= K(t) <= L` as quadratic forms and `K(t)*1=0`.
+
+Orient the ninety actual edges as in section 8 and write `L=B B^T`.
+The projected-current defect has the exact form `Pi S_f-S(Pi Theta_f)=B j`.
+On the two exchanged child-cycle copies its edge value is
+`sin(bar theta_e)*(cos(b_k-b_l)-1)`; on their four matching-edge copies
+per slot it is `sin(bar theta_e)*(cos(b_l)-1)`. Other edges contribute zero.
+The actual edge multiplicities give
+
+\[
+ \|j(t)\|^2\le\tfrac12\sum_{C_9}(b_k-b_l)^4+\sum_l b_l^4
+ \le5\|b(t)\|^4.
+\]
+
+This identity concerns the moving fine background. The changed target
+capacities do not change those edge currents or their multiplicities.
+Since D commutes with Pi and L commutes with Pi, the complete centered
+error rows are
+
+\[
+ p'={D\over4}[-Lp-\gamma K(t)q+\gamma B j(t)],\qquad
+ q'={\gamma D\over4}Lp.
+\]
+
+No derivative of an evolving projection is introduced, and no lossy
+autonomous closure is assumed. Both constant mean components disappear
+from these rows by the exact shift symmetries.
+
+### 10.3 Weighted coercivity and the forced common metric
+
+For any `rho^T u=0`, the minimizer of `sum rho_i*(u_i-c)^2` is c=0.
+With `bar u` the ordinary mean, the actual full-support spectral gap
+therefore gives
+
+\[
+ \|u\|_M^2
+ =\min_c\sum_i\rho_i(u_i-c)^2
+ \le{1\over\kappa}\|u-\bar u\mathbf1\|^2
+ \le{15\over4\kappa}u^TLu.
+\]
+
+Thus `u^T L u >= (4*kappa/15)*||u||_M^2` on the correct weighted leaf.
+The hidden nine-slot gap and the unmodified ordinary-mean estimate cannot
+replace this proof.
+
+Use the positive metric
+
+\[
+ W=p^TMp+q^TMq+2\gamma p^TMq,\qquad
+ (1-\gamma)(\|p\|_M^2+\|q\|_M^2)
+ \le W\le(1+\gamma)(\|p\|_M^2+\|q\|_M^2).
+\]
+
+D cancels against M when both complete rows are differentiated:
+
+\[
+ W'=-{1-\gamma^2\over2}p^TLp
+     -{\gamma\over2}p^TKq-{\gamma^2\over2}q^TKq
+     +{\gamma\over2}(p+\gamma q)^TBj.
+\]
+
+On the ordinary common-phase quotient, `K L^dagger K <= K`; L^dagger
+denotes the Moore--Penrose inverse. L and K kill all constant parts, so
+this quadratic-form inequality also applies to the weighted-centered
+p and q. Young's inequality gives the homogeneous bound
+`-p^T Lp/8-gamma^2*q^T Lq/8`, using `0<gamma<1/2` and `K>=L/2`.
+For the forcing, separately bound
+
+\[
+ {\gamma\over2}|p^TBj|\le{p^TLp\over16}+\gamma^2\|j\|^2,
+ \qquad
+ {\gamma^2\over2}|q^TBj|\le{\gamma^2q^TLq\over16}
+                              +\gamma^2\|j\|^2.
+\]
+
+The resulting inequality and weighted coercivity prove
+
+\[
+ W'\le-rW+10\gamma^2\|b(t)\|^4,\qquad
+ r={\kappa\gamma^2\over60(1+\gamma)}>0.
+\]
+
+Neither D with L or K, nor the two stiffnesses with each other, must
+commute. No stiffness derivative is needed. The capacity dependence
+remains explicit; this rate is not uniform as kappa tends to zero.
+
+### 10.4 Initial word error, finite decay and exact separation
+
+The hidden children still have unit capacities. Their section 7 metric
+W_h and the retained post-word domain therefore give
+
+\[
+ N(t)=\|a(t)\|^2+\|b(t)\|^2\le C_0e^{-r_ht},\qquad
+ C_0={W_h(0)\over1-\gamma},\qquad
+ r_h={\gamma^2\over4(1+\gamma)}.
+\]
+
+Starting with the actual post-word `W_0=W(0)`, integration of the forced
+scalar inequality yields, for all t>=0,
+
+\[
+ W(t)\le W_0e^{-rt}
+  +{10\gamma^2 C_0^2\over2r_h-r}
+       (e^{-rt}-e^{-2r_ht}),\qquad 2r_h-r>0.
+\]
+
+The homogeneous term cannot be discarded: the word did not leave a
+matched projected state. For the unchanged section 9 witness,
+
+\[
+ m_x=0,\quad m_\theta={\eta\over43\kappa+2},\quad
+ p(0)=0,\quad
+ q(0)=\eta\left(e_0-{\mathbf1\over43\kappa+2}\right),\qquad
+ W_0={\eta^2(43\kappa+1)\over\kappa(43\kappa+2)}>0,
+ \quad C_0={b^2\over1-\gamma}.
+\]
+
+Accordingly the forcing coefficient is
+`600*(1+gamma)*b^4/((30-kappa)*(1-gamma)^2)` in this case. The weighted
+relative joint squared error is at most `W(t)/(1-gamma)`; because the
+maximum capacity is one, it also bounds the ordinary joint squared norm.
+
+Weighted orthogonality gives exact, separate accounts of prediction and
+reconstruction:
+
+\[
+ \begin{split}
+ \|\Pi z_f-z_c\|_M^2
+ &=\|p\|_M^2+\|q\|_M^2+R(m_x^2+m_\theta^2),\\
+ \|z_f-z_c\|_M^2
+ &=2N+\|p\|_M^2+\|q\|_M^2+R(m_x^2+m_\theta^2).
+ \end{split}
+\]
+
+Joint norms here sum the form and phase-offset squared norms. The second
+line uses the unit capacities on the paired children; their two fine
+copies supply the factor two. These decompositions use M. An ordinary
+Euclidean decomposition with `45*m_theta^2` would generally have a missing
+cross term, since weighted centering need not give zero ordinary mean.
+For the mean-corrected core the last term is absent, leaving the separate
+relative allowance and hidden reconstruction contribution. For the raw
+core section 9 still gives `||e_theta(t)||_infinity>2^-61` at all times.
+
+### 10.5 Prospectively fixed finite discriminator
+
+Use the same exact incoming source and actual ideal successors, without
+new parameters or a trajectory. Let shared outward arithmetic give
+`0<g_lo<=gamma<=g_hi<1/2`. Define exact rational comparison quantities
+
+\[
+ \begin{gathered}
+ r_c={\kappa g_{\rm lo}^2\over60(1+g_{\rm hi})},\quad
+ h_c={15r_c\over\kappa},\quad a_c=2h_c,\quad T={40\over r_c},\\
+ C={b^2\over1-g_{\rm hi}},\quad F=10g_{\rm hi}^2C^2,\quad
+ U_0=\eta_{\max}^2{43\kappa+1\over\kappa(43\kappa+2)}.
+ \end{gathered}
+\]
+
+Here eta_max is an independently rebuilt outward upper bound on `|eta|`
+from both actual resultants. It is not a fitted error tolerance. The
+declared checks are
+
+\[
+ \begin{split}
+ B_{\rm rel}(T)&=
+ {U_0 e^{-r_cT}_{\rm upper}
+   +F\,\mathcal C_{\rm upper}(r_c,a_c,T)\over1-g_{\rm hi}}<2^{-124},\\
+ B_{\rm hidden}(T)&=2C e^{-h_cT}_{\rm upper}<2^{-124},\qquad
+ B_{\rm corrected\ fine}(T)=B_{\rm rel}(T)+B_{\rm hidden}(T)<2^{-123}.
+ \end{split}
+\]
+
+`C_upper(r_c,a_c,T)` bounds the integral of
+`exp(-r_c*(T-s))*exp(-a_c*s)` over `[0,T]` using the
+[shared decay convolution](../../src/tnfr/mathematics/_comparison_flow.py).
+The shared rational negative-exponential owner supplies the associated
+exponential enclosures. The actual factor has `kappa>1/2`, so the exponents
+are `40`, `600/kappa` and `1200/kappa`, all below its work cap 4096.
+That computational cap does not restrict the analytical theorem's time domain.
+
+These targets were fixed before the new arithmetic control. A loose
+independent budget explains them: `g_hi/g_lo<2`, `eta_max<b^2/4` and
+`kappa>1/2` imply
+`[U_0+F/(a_c-r_c)]/(1-g_hi)<1024*b^4=2^-70`. The positive Taylor
+terms through degree eight give `exp(5)>128`, hence
+`exp(-40)<2^-56`. Even this loose relative bound is below `2^-126`.
+The hidden exponent exceeds 600 and easily gives its separate threshold.
+No acceptance threshold is chosen from an evaluated discrepancy.
+
+Scalar products, powers, exponentials and convolution budgets remain exact
+Fractions after the needed outward transcendental endpoints are established.
+Rounding all later products onto a fixed 128-bit absolute interval grid
+would unnecessarily obscure allowances near or below that grid. No float
+underflow or zero substituted for unavailable arithmetic supplies a result.
+
+The finite joint relative norm is consequently below `2^-62`, less than
+half the already proved raw phase-mean floor `2^-61`. This distinguishes
+an accurately mean-corrected prediction from an uncorrected raw one on the
+same admitted source. T is a conservative mathematical deadline in the
+declared structural clock, not a measured or physically calibrated settling
+time. The corrected fine bound additionally includes the hidden coordinates.
+
+### 10.6 Controls, reuse and the remaining information obligation
+
+The [post-word tracking controls](../../tests/research/test_organized_postword_tracking.py)
+rebuild the exact ideal images and collars, weighted centering and orbit
+masses, full-support coercivity, complete error/metric identities, edge
+forcing and the nonzero initial metric. They evaluate both finite budgets
+with shared pure arithmetic and retain the raw mean term separately.
+The earlier phase-memory controls retain the word's admission and work
+premises. The old unit-capacity matched-state tracking reader is unchanged;
+it does not certify these nonunit-capacity, nonzero-error successors.
+
+This is a conditional predictive contract with a specified hidden-state
+envelope and mean jump. The shared projected incoming state alone still
+cannot determine eta, as section 9 proves. A bound on error does not
+acquire missing information, authenticate context, choose an event or
+guarantee a discontinuous structural decision. Finite error and mean
+availability remain separate obligations for any consuming predictor.
+The result supplies neither a universal reduced TNFR state nor physical
+validation or a represented-runtime roundoff guarantee.
+
+The prospective discriminator, static controls, independent reviews and
+preservation records belong to `artifacts/organized-postword-tracking-20261023/`.
+No runtime word, first-hit search, flow integration, source search or retained
+response producer is evaluated. Existing shared proof/arithmetic owners
+suffice; no new production helper or execution path is introduced.

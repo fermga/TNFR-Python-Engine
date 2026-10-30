@@ -1,0 +1,33 @@
+{
+  "schema":"tnfr.research-prerequisite-review.v1",
+  "requirement":"research_selection",
+  "verdict":"approved",
+  "independent":true,
+  "author":"/root",
+  "reviewer":"/root/joint_review_controls",
+  "criteria_assessment":{
+    "closure":"Approved only for the same prepared mathematical domain: the supplied unit C5 pair (0,1,2,3,4) and (5,6,7,8,9) with bridge (0,5), signed scalar form, circular phase, strictly positive capacities, fixed ordinary capacity mean, e=w=1/2, beta=1, a supplied fixed kappa>0, equal constituent measure and one structural clock. The capability is full-state prediction, local all-forward retention and recovery near the aligned winding-one family, and the declared internal receiver response. The native admission, CT comparison and JO response assess P1-P3 in the same complete realization. Joint storage and nodewise work cancellation, equal node measure and fixed reciprocal edge flux are explicit premises with an independent structural interpretation; they are not fitted to the desired receiver signal. CT compares equal-measure and degree-normalized transport under matched graph, state, clock and observables, preserving their distinct conserved measures and blind controls. JO compares dynamic and held capacities from the same initial state and clock: receiver acceleration agrees and its third derivative differs. Passive-loss, nonlinear-passive and capacity-mediated alternatives retain their actual own-capacity, locality, exact-loss and held-capacity boundaries. They show why passivity, equilibria or tangent agreement alone do not select a unique law. Normalized-sine and hybrid results are not transferred to the native model. The complete law is therefore sufficient for the admitted prepared capability without a claim of unique fundamental necessity. This prerequisite approval retains exactly the prepared single-bridge domain above; it does not include acquisition, autonomous support/event creation, an autonomous reduced regional state, a dynamic-capacity graph executor, a universal law or physical mapping. The two-bridge acquisition, selection, concrete witness and quantitative robustness results have separate complete-law proofs and reviews. RB now supplies the symbolic positive radius rho=2^(-2^250) for the same two-bridge matched witness, with all finite premises admitted by one static audit; this is not a practical tolerance or a change to this prepared approval. The first 150187 bytes of the chapter remain identical, including the established prepared proof and the separately reviewed DA, CS, W and RB results. The appended joint scope decision is exactly the independently reviewed draft; both revised program regions also match their reviewed drafts. The joint review of the established foundation is now complete as a conditional mathematical capability catalog, preserving each support and preparation domain. Source associations are renewed without changing any evidence anchor or the prepared single-bridge prerequisite scope. The sole next task is finite observation admission for the one-bridge JO receiver-form response under shared preparation, with regularity, remainder, preparation/mismatch, readout and clock uncertainty explicitly retained. No finite separation margin or uncertainty tolerance is asserted by this renewal. The exact cubic jet remains a qualitative short-time discriminator, not a completed finite observation contract. This task does not transfer two-bridge organizational selection or promote the scalar readout to autonomous state. The independent physical preparation/measurement/intervention/clock bridge and final exact-task readiness review remain absent; physical mapping is not authorized. This reviewer performed static source and scope review plus artifact bookkeeping only, with no scientific evaluation, trajectory, candidate generation or producer replay during renewal."
+  },
+  "evidence":[
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-foundation-scope-decision",
+      "sha256":"ec81642d6cfe7b6082425578ddd7f9a57c802ed90542bf6a2ce8b27e07b65772"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-foundation-admission",
+      "sha256":"ec81642d6cfe7b6082425578ddd7f9a57c802ed90542bf6a2ce8b27e07b65772"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-capacity-transport",
+      "sha256":"ec81642d6cfe7b6082425578ddd7f9a57c802ed90542bf6a2ce8b27e07b65772"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-joint-organization",
+      "sha256":"ec81642d6cfe7b6082425578ddd7f9a57c802ed90542bf6a2ce8b27e07b65772"
+    }
+  ]
+}

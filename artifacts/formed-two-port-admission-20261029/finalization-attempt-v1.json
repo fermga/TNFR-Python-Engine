@@ -1,0 +1,20 @@
+{
+  "passed":false,
+  "exit_code":1,
+  "script":{
+    "path":"artifacts/formed-two-port-admission-20261029/finalize.py",
+    "bytes":8244,
+    "sha256":"a065d18b8d88e4d13fe6830baeb170bf36801e6e03817016703d6d02f6d213d9"
+  },
+  "failed_assertion":"dirty == baseline['dirty_paths_before']",
+  "line":49,
+  "added_status_lines":[
+    " M theory/nodal/SINE_TWO_PORT_COMPATIBILITY.md"
+  ],
+  "removed_status_lines":[],
+  "source_files_checked_before_failure":4635,
+  "only_declared_two_owners_changed":true,
+  "final_outputs_written":false,
+  "cause":"Bookkeeping incorrectly required unchanged dirty-path inventory even though the declared compatibility owner was initially clean.",
+  "boundary":"No scientific execution failed or is repeated. Preserve original finalizer; narrow v2 permits exactly the intended new dirty owner."
+}

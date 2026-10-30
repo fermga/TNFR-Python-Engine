@@ -1,0 +1,12 @@
+{
+  "base_executable": "C:\\Program Files\\Python313\\python.exe",
+  "base_prefix": "C:\\Program Files\\Python313",
+  "executable": "C:\\TNFR-Python-Engine\\.venv313\\Scripts\\python.exe",
+  "nonce": "434237dde5e244d211b847f2a27b4472ca07a2c6c8fcd76ae3147e16473cb499",
+  "pid": 32704,
+  "ppid": 30448,
+  "prefix": "C:\\TNFR-Python-Engine\\.venv313",
+  "schema": "tnfr.bootstrap-ready.v1",
+  "tnfr_imported": false,
+  "version": "3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]"
+}

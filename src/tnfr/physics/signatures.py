@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import math
 from copy import deepcopy
+from dataclasses import asdict
 from typing import Any
 
 import networkx as nx
@@ -22,11 +23,13 @@ from ..constants.canonical import (
     PI,
     U6_STRUCTURAL_POTENTIAL_LIMIT,
 )
+from ..metrics.common import finite_mean
+from ._edge_semantics import structural_distance_rows
 from .fields import (
     compute_phase_curvature,
     compute_phase_gradient,
     compute_structural_potential,
-    estimate_coherence_length,
+    estimate_coherence_length_with_provenance,
 )
 
 
@@ -83,7 +86,7 @@ def compute_element_signature(
         Graph with expected node attributes:
         - phase/theta: float in [0, 2π)
         - delta_nfr/dnfr: float (structural pressure)
-        - Optional: coherence (defaults to 1/(1+|ΔNFR|))
+        Stored coherence is not consumed; pressure supplies the static product fit.
     apply_synthetic_step : bool
         If True, evolve a detached graph copy through the valid probe word
         [Emission, Coherence, Silence] and report the resulting Φ_s drift.
@@ -103,8 +106,13 @@ def compute_element_signature(
         - phi_s_mean_abs_drift: mean_i |Δ Φ_s(i)| between snapshots
         - phase_gradient_ok: bool, |∇φ| < 0.196 (π/16 threshold)
         - curvature_hotspots_ok: bool, max |K_φ| < 0.9×π ≈ 2.8274 (canonical threshold)
-        - coherence_length_category: str in {localized, medium, extended}
-        - signature_class: str, one of {stable, marginal, unstable}
+        - xi_c_available, xi_c_provenance: estimator availability and method/units
+        - coherence_length_category: localized/medium/extended for a fit,
+          not_comparable for a spectral scale, or unavailable
+        - coherence_length_reference_diameter: maximum positive reachable path
+          distance in the fit geometry, or None without a comparable fit
+        - signature_class: stable/marginal/unstable, or unavailable when the
+          complete diagnostic classification cannot be assessed
         - signature_scope: finite probe response or unperturbed snapshot
         - potential_drift_assessed: whether the declared probe tested U6 drift
 
@@ -113,37 +121,38 @@ def compute_element_signature(
     ``signature_class`` summarizes only this snapshot or the finite response to
     ``synthetic_probe_word``. It does not establish asymptotic stability,
     chemical identity, or behavior under a different word.
+    Length categories compare a fitted length to the same-geometry reachable
+    diameter using selected 0.3/1.2 cuts. The dimensionless spectral fallback
+    is retained as evidence but cannot supply that geometric classification.
     """
     # Compute base tetrad metrics. The canonical estimate_coherence_length
     # computes per-node coherence C = 1/(1+|ΔNFR|) internally from ΔNFR (the
     # structural_coherence kernel), so no coherence pre-seeding is required.
     # The spectral fallback replaces a graph-owned cache entry. A shallow copy
     # isolates that write while preserving opaque runtime handles without copying.
-    xi_c = float(estimate_coherence_length(G.copy()))
+    estimate = estimate_coherence_length_with_provenance(G.copy())
+    xi_c = float(estimate.value)
+    xi_c_available = math.isfinite(xi_c) and xi_c > 0.0
 
     grad_dict = compute_phase_gradient(G)
     grad_values = list(grad_dict.values())
-    mean_grad = float(sum(grad_values) / len(grad_values)) if grad_values else 0.0
+    mean_grad = finite_mean(grad_values) if grad_values else math.nan
 
     curv_dict = compute_phase_curvature(G)
     curv_abs_values = [abs(v) for v in curv_dict.values()]
-    mean_curv_abs = (
-        float(sum(curv_abs_values) / len(curv_abs_values)) if curv_abs_values else 0.0
-    )
-    max_curv_abs = float(max(curv_abs_values)) if curv_abs_values else 0.0
+    mean_curv_abs = finite_mean(curv_abs_values) if curv_abs_values else math.nan
+    max_curv_abs = float(max(curv_abs_values)) if curv_abs_values else math.nan
 
     # Structural potential before and after synthetic step (for drift)
     phi_s_before = compute_structural_potential(G)
-    phi_s_before_mean = (
-        sum(phi_s_before.values()) / len(phi_s_before) if phi_s_before else 0.0
-    )
+    phi_s_before_mean = finite_mean(phi_s_before.values()) if phi_s_before else math.nan
 
     phi_s_after_mean = phi_s_before_mean  # default: no change
     phi_s_drift = 0.0
     phi_s_mean_abs_drift = 0.0
 
     synthetic_step_applied = False
-    if apply_synthetic_step:
+    if apply_synthetic_step and G:
         from ..operators.word_execution import run_network_sequence
 
         probe = _detached_probe_graph(G)
@@ -155,16 +164,14 @@ def compute_element_signature(
         )
         phi_s_after = compute_structural_potential(probe)
         phi_s_after_mean = (
-            sum(phi_s_after.values()) / len(phi_s_after) if phi_s_after else 0.0
+            finite_mean(phi_s_after.values()) if phi_s_after else math.nan
         )
         drift_values = tuple(
             abs(float(phi_s_after.get(node, 0.0)) - float(value))
             for node, value in phi_s_before.items()
         )
         phi_s_drift = max(drift_values, default=0.0)
-        phi_s_mean_abs_drift = (
-            sum(drift_values) / len(drift_values) if drift_values else 0.0
-        )
+        phi_s_mean_abs_drift = finite_mean(drift_values) if drift_values else 0.0
         synthetic_step_applied = True
 
     # Threshold checks (audit 2026: the |∇φ| early-warning level is a heuristic,
@@ -179,21 +186,48 @@ def compute_element_signature(
     if synthetic_step_applied:
         potential_drift_ok = phi_s_drift < U6_STRUCTURAL_POTENTIAL_LIMIT
 
-    # Selected size-relative coherence-length categories (heuristic).
-    n_nodes = len(G.nodes())
-    typical_diameter = math.sqrt(n_nodes) if n_nodes > 0 else 1.0
-
-    if xi_c < typical_diameter * 0.3:
-        xi_c_category = "localized"
-    elif xi_c > typical_diameter * 1.2:
-        xi_c_category = "extended"
+    # A fitted length and a normalized-generator scale have different units.
+    # Only the fit can be compared to its declared path geometry. No assumed
+    # lattice dimension or sqrt(node_count) surrogate defines this diameter.
+    reference_diameter = None
+    if not xi_c_available:
+        xi_c_category = "unavailable"
+    elif estimate.method != "autocorrelation_fit":
+        xi_c_category = "not_comparable"
     else:
-        xi_c_category = "medium"
+        diameter = max(
+            (
+                distance
+                for source, row in structural_distance_rows(G, tuple(G))
+                for target, distance in row.items()
+                if source != target and distance > 0.0
+            ),
+            default=0.0,
+        )
+        if diameter > 0.0:
+            reference_diameter = diameter
+            relative_length = xi_c / diameter
+            if relative_length < 0.3:
+                xi_c_category = "localized"
+            elif relative_length > 1.2:
+                xi_c_category = "extended"
+            else:
+                xi_c_category = "medium"
+        else:
+            xi_c_category = "unavailable"
+
+    signature_available = bool(G) and xi_c_category in {
+        "localized",
+        "medium",
+        "extended",
+    }
 
     # A failed U6 probe is a hard failure of this finite response. The other
     # labels remain heuristic summaries of the declared snapshot/probe only.
     if potential_drift_ok is False:
         signature_class = "unstable"
+    elif not signature_available:
+        signature_class = "unavailable"
     elif phase_grad_ok and curv_hotspots_ok:
         signature_class = "stable"
     elif phase_grad_ok or curv_hotspots_ok or xi_c > 0:
@@ -203,6 +237,13 @@ def compute_element_signature(
 
     return {
         "xi_c": xi_c,
+        "xi_c_available": xi_c_available,
+        "xi_c_provenance": asdict(estimate),
+        "coherence_length_reference_diameter": reference_diameter,
+        "coherence_length_category_scope": (
+            "selected 0.3/1.2 fitted-length to maximum positive reachable "
+            "path-distance ratio; no correlation-transition inference"
+        ),
         "mean_phase_gradient": mean_grad,
         "mean_phase_curvature_abs": mean_curv_abs,
         "max_phase_curvature_abs": max_curv_abs,
@@ -225,6 +266,7 @@ def compute_element_signature(
         "potential_drift_ok": potential_drift_ok,
         "coherence_length_category": xi_c_category,
         "signature_class": signature_class,
+        "signature_available": signature_available,
     }
 
 
@@ -232,7 +274,7 @@ def compute_au_like_signature(G: "nx.Graph") -> dict[str, Any]:
     """Compute the legacy ``Au-like`` graph-field signature.
 
     This compatibility API applies a selected set of graph-field thresholds:
-    - Extended coherence length (ξ_C >> typical diameter)
+    - Extended fitted coherence length relative to reachable path diameter
     - Low phase gradients (synchronized phases)
     - Stable under synthetic evolution (low ΔΦ_s drift)
     - Moderate curvature without hotspots
@@ -257,7 +299,8 @@ def compute_au_like_signature(G: "nx.Graph") -> dict[str, Any]:
     )  # 0.95·π ≈ 2.985 (permissive |K_φ|)
 
     signature["is_au_like"] = (
-        is_extended_or_complex
+        signature["signature_available"]
+        and is_extended_or_complex
         and is_phase_synchronized
         and is_probe_response_bounded
         and is_curvature_mild

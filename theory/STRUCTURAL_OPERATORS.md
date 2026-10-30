@@ -1022,8 +1022,10 @@ That score threshold is not a phase angle or an autonomous attachment law.
 | $\Delta\text{NFR}$ reduction | $1/(2\pi)\approx0.1592$ | Default phase-alignment pressure-relief gain |
 
 **Properties**:
-- **Phase verification mandatory**: Circular separation above the configured
-  U3 limit rejects coupling. This gate alone supplies no wave-amplitude or
+- **Phase verification mandatory**: An existing compatible neighbor is required.
+  Snapshot-incompatible new candidates are excluded; a new candidate outside
+  final U3 is omitted, while a selected old neighbor outside final U3 rejects
+  the common stage. These gates supply no wave-amplitude or
   destructive-interference calculation.
 - **EPI identity preserving**: Form is not modified; phase alignment, optional
   capacity synchronization, pressure relief and functional-link proposals
@@ -1056,6 +1058,76 @@ admits a unit internal edge with rederived degree-five dynamics. A separately
 admitted conservative conductance/support completion accepts the generated
 weights and retains identity on the declared source. Its complete law and
 held-weight premise are explicit; UM is not changed to fit the old restriction.
+
+The [complete retained-rim contact audit](nodal/ORGANIZED_CONTACT_MAINTENANCE.md#organized-contact-coupling-realization)
+gives a complementary obstruction: retaining nine strict-acute winding-one
+C5 rims forces at least nine of 45 requested spokes beyond the exact U3
+limit. This applies at the common final phases. Concrete represented proposals
+require their own numerical association; the detached controls certify those
+calls without asserting a universal trigonometric error bound. A supplied
+attachment theorem therefore need not be realizable by this registered action.
+
+The [marked-port admission](nodal/ORGANIZED_CONTACT_MAINTENANCE.md#organized-contact-marked-coupling-port)
+instead retains one visible candidate on that acquired source. Its complete
+observation history supplies a sharper form bound. With explicitly equal
+stored sense indices and admitted runtime context, the exact map proposes
+one link while retaining all old cycles; a different sense-index completion
+of the same primary source omits it. Strict activity validation rejects the
+small-form donor separately. Detached finite controls check their actual
+represented proposals. These are conditional admission results, not an
+occurrence law or admission to a subsequent continuous flow.
+
+An explicitly supplied weighted continuation then gives a
+[finite matched-port exchange](nodal/ORGANIZED_CONTACT_MAINTENANCE.md#organized-contact-marked-port-response).
+Comparing the same phase reset with and without the actual new edge separates
+the connection's donor-mean response from the reset itself. The declared
+whole-window bounds retain the old cycles and resolve the sign after four
+reading errors. Both reset and attachment inject storage; their work stays
+separate from subsequent continuous loss. This successor-law result does
+not turn the operator into an autonomous occurrence or maintenance mechanism.
+
+The [general finite bridge interface](nodal/ORGANIZED_CONTACT_MAINTENANCE.md#sine-finite-bridge-interface)
+extends the response calculation across finite internal supports under that
+same held unit-capacity law. Raw port intervals, global form and weighted-degree
+bounds, donor count, horizon and four reading-error radii supply a sufficient
+signed contrast; associated old-chart margins supply a separate retention
+decision. The [shared preparation reader](../src/tnfr/physics/_sine_preparation.py)
+rebuilds the bounds without authenticating a source, graph or operator event.
+The [positive-capacity extension](nodal/ORGANIZED_CONTACT_MAINTENANCE.md#sine-capacity-bridge-interface)
+admits a separately declared shared-capacity successor law, including endpoints
+that may follow SHA, NUL or VAL. Its arithmetic contrast retains internal motion
+in both matched branches; the inverse-capacity observation has its own mass
+normalization and reading errors. This predicts a conditional continuation
+after an independently admitted endpoint. It does not select a capacity law,
+execute those actions or carry unit-capacity mean cancellation over unchanged.
+The [matched-state refinement](nodal/ORGANIZED_CONTACT_MAINTENANCE.md#sine-matched-bridge-interface)
+retains common initialization to bound the interaction itself. Its exact
+deterministic response enclosure vanishes with bridge conductance in this
+weighted-both-rows law; each reading keeps its own observation-error floor.
+This continuity does not transfer to native bare-neighbor phase support,
+select a Coupling occurrence or establish a new joint identity.
+For [two simultaneous contacts](nodal/SINE_CONTACT_COMPOSITION.md#sine-contact-composition),
+a full-state mixed sensitivity bounds the error of adding their separate
+responses by a conductance-product allowance. Exact linear controls show
+that shared and separate endpoints can give different joint responses despite
+identical separate finite readings. Old internal paths can also couple distinct
+ports. This is a conditional prediction contract;
+the contacts' admission, occurrence and resulting joint identity remain
+separate obligations. A nonzero composition error does not identify a nonlinear
+constitutive law, because changing contacts also changes a linear generator.
+The [support-associated refinement](nodal/SINE_CONTACT_COMPOSITION.md#sine-contact-influence)
+retains actual conductances, positive capacities, marked endpoints and the
+observed constituent. Separate invariant contact blocks have exactly zero
+composition error; a connecting path enters the finite allowance with its
+actual weights. A positive allowance alone establishes neither a nonzero
+response nor an autonomous law for the constituent.
+The [retained-boundary predictor](nodal/SINE_CONTACT_COMPOSITION.md#sine-retained-boundary-prediction)
+evolves a proper subset of the form and phase coordinates while bounding
+omitted initialization, hidden drift and later boundary feedback. The same
+constituent observation must lie inside the retained region. This is an
+approximate continuous prediction with a stated error, not an admission
+state for Coupling or another registered action. Event occurrence, consumed
+history and successor-law obligations still require their own retained data.
 
 For [two separately maintained organizations](nodal/SINE_ORGANIZATION_CONTACT.md),
 the same unrestricted candidate policy creates a multi-edge contact, including
@@ -1849,6 +1921,34 @@ Request provenance describes the software/model boundary, not an independently
 established physical cause. An additional intentional actor is not required.
 These distinctions preserve
 the [NFR formation contract](EMERGENT_ONTOLOGY.md#11-nfr-formation-definition-birth-and-collective-dynamics).
+
+<a id="operator-causal-role"></a>
+#### Constitutive role and implementation role
+
+The foundational investigation must declare which claim is being made about
+each consumed transformation:
+
+| Role in a proposed model | Additional obligation |
+| --- | --- |
+| Basic constitutive mechanism, continuous or discrete | Declare its independent state, local dependence, complete evolution or occurrence law, units and balances. Its primitive status is a stated hypothesis. |
+| Effective action realized by an organization | Derive the observed transformation from that organization's admitted interaction, with domains, timing, error if approximate, and the reaction of the remaining state. |
+| Supplied intervention or execution policy | Retain the actual request source, parameters, target and admission; do not infer endogenous occurrence from execution. |
+
+The same named action can be studied in more than one role, but a claim must
+not switch roles during its argument. Fundamental discrete events are a
+legitimate model choice; an infinitesimal generator is another, requiring its
+own law or limit. A finite registered map supplies neither by its name alone.
+Conversely, the engine's separation of continuous rows and jumps does not
+exclude a structural realization in which an organized interaction produces
+an effective event.
+
+The [operator-pulse audit](nodal/OPERATOR_PULSE_CLOSURE.md#operator-pulse-causal-closure)
+constrains its declared maps and retained channels. It does not select which
+role is fundamental, nor prove that all thirteen actions are necessary or
+sufficient at every scale. A scoped causal account must include abstention,
+admission, consumed history and any replenishment, without explaining pulse
+and operator timing solely by referring to each other. Research priority and
+closure criteria belong to the [four pillars](RESEARCH_PROGRAM.md#foundational-pillars).
 
 The identified [May manuscript](UNIFIED_GRAMMAR_RULES.md#source-grammar-and-notation)
 supports this structural reading, while retaining unproved activation proposals:

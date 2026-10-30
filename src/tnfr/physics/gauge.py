@@ -1040,7 +1040,7 @@ def classify_network_regimes(G: Any) -> dict[str, Any]:
 def compute_yang_mills_action(G: Any) -> float:
     r"""Compute the legacy quadratic cycle-closure diagnostic.
 
-    The Yang-Mills action on a graph with plaquettes {C} is:
+    The legacy-named diagnostic sums squared closure residuals over cycles:
 
         S_YM = (1/2) Σ_C F_C²
 
@@ -1057,7 +1057,7 @@ def compute_yang_mills_action(G: Any) -> float:
     Returns
     -------
     float
-        Yang-Mills action (non-negative).
+        Nonnegative squared cycle-closure residual.
     """
     curvature = compute_gauge_curvature(G)
     if not curvature:
@@ -1561,10 +1561,12 @@ def verify_bianchi_identity(
 def compute_gauss_law_residual(G: Any) -> dict[Any, float]:
     r"""Compute divergence magnitude of the legacy link current.
 
-    The discrete Gauss law states that the divergence of the matter current
-    at each node vanishes (current conservation):
+    The diagnostic sums the derived link current at each node:
 
-        Σ_{j ∈ N(i)} J_matter(i, j) = 0
+        residual_i = |Σ_{j ∈ N(i)} J_matter(i, j)|
+
+    This is a current-divergence readout, not the electromagnetic Gauss
+    constraint relating electric flux to charge density.
 
     For the derived pure-gauge link this current is analytically zero.  The
     result therefore measures numerical cancellation only; it is not a Ward

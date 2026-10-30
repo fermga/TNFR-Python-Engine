@@ -1,0 +1,19 @@
+{
+  "task":"Substantive joint P1-P4 claim admission using existing evidence and independently reviewed proofs; select one next capability and its actual missing dependency.",
+  "kind":"Conceptual and mathematical source review; no new scientific evaluation.",
+  "allowed_maintained_changes":[
+    "theory/RESEARCH_PROGRAM.md",
+    "theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md"
+  ],
+  "required_outputs":[
+    "Explicit satisfied/open clauses for the same prepared-capability domain",
+    "Independent-premise and retained-alternative account",
+    "Distinguish mathematical closure, runtime capability and physical readiness",
+    "Select one next claim by impact, discrimination and feasibility using actual existing evidence"
+  ],
+  "new_scientific_evaluations":0,
+  "producer_replays":0,
+  "new_tests":0,
+  "checks":"Source preservation, reference/integrity checks, strict site build and rendered links.",
+  "readiness":"No physical mapping study; do not invent pillar approval metadata from a narrow prepared-object result."
+}

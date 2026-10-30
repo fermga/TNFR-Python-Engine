@@ -26,6 +26,25 @@ studies test whether a state description retains the information needed for
 response, which consequences follow from a law, and which operator actions
 are defined on the organized target.
 
+The long-term [physical-emergence hypothesis](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/EMERGENT_ONTOLOGY.md#matter-emergence-hypothesis)
+asks whether different persistent organizations under one complete dynamics
+can account for matter and its observed properties. The
+[shared physical targets](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/PHYSICAL_REGIME_CORRESPONDENCES.md#fundamental-phenomena-synergies)
+include electromagnetic, weak, strong and gravitational phenomena and quantum
+matter. Electromagnetism is a highlighted route; a possible double-slit
+comparison has its own measurement requirements. The [physical assessment](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/PHYSICAL_REGIME_CORRESPONDENCES.md#electromagnetic-emergence-audit)
+connects existing organization and transport results to the field, source and
+observation conditions still to be derived. Physical identification remains open.
+
+Research currently requires four foundations to be resolved before physical
+mapping: operator causality, sufficient state versus observation, persistent
+organizational identity, and justified research/model selection. Their
+[acceptance criteria and active task](theory/RESEARCH_PROGRAM.md#foundational-pillars)
+govern further work. A
+[checked prerequisite](theory/research_prerequisites.json) keeps physical
+mapping closed until the four evidence-backed resolutions and readiness
+review are admitted. Earlier physical studies remain contextual material.
+
 <a id="what-a-tnfr-network-contains"></a>
 ### From nodal state to an organized object
 
@@ -210,23 +229,31 @@ owns usage and directs collective studies to their scoped instruments.
 <a id="observe-the-network"></a>
 ## Observe state and response
 
-The **structural tetrad** is a shared set of diagnostics. Like a dashboard,
-it reveals selected features without describing the complete internal state
-or predicting its future by itself. Use it alongside the object's identity
-criterion and response records; a diagnostic score cannot replace either.
+Structural observations are selected for the question being studied. The
+**structural tetrad** remains the shared four-channel diagnostic view. It
+reveals selected features; reconstructing state or predicting a response
+requires a sufficient observation under the chosen complete law. The SDK
+also retains admitted EPI, pressure, phase and capacity, with optional spatial
+profiles, phase-resultant evidence and explicitly oriented cycle winding.
 
 | Tetrad field | What it measures | Interpretation |
 | --- | --- | --- |
 | `Phi_s` | Nonlocal aggregation of structural pressure | Pressure contributions weighted by inverse squared path distance |
 | `abs(grad phi)` | Local phase separation | Mean absolute wrapped difference from neighboring phases; bounded by `pi` |
 | `K_phi` | Circular phase curvature | Displacement relative to a neighbor phase resultant; bounded by `pi` where defined |
-| `xi_C` | Static coherence correlation range | Coherence-product fit, with an explicitly identified spectral fallback |
+| `xi_C` | Static coherence-product decay scale | Selected fit policy, with a separately identified spectral fallback |
 
 Field path geometry reads edge `length`, falling back to `weight`; diffusion
 uses `weight` as conductance. Undefined curvature, absent temporal evidence and
 unavailable estimates remain explicit. Warning thresholds are configured
 policies. The [structural field guide](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/STRUCTURAL_FIELDS_TETRAD.md) owns
 definitions, interpretation and numerical limits.
+
+More output channels need not mean more independent structural coordinates.
+The [observation requirements](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/MINIMAL_STRUCTURAL_DEGREES.md)
+give constructive sufficiency results and counterexamples. A spatial profile
+can also use an explicitly supplied observation width; that width is a
+resolution choice, not a new fundamental TNFR parameter.
 
 ## Read the research
 
@@ -247,6 +274,7 @@ explains focused extraction and editing.
 | Find a definition, proof or model | [Research reading route](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/RESEARCH_PROGRAM.md#reading-the-research-as-one-program) and [chapter index](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md) |
 | Locate its implementation and tests | [Theory-to-execution map](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/RESEARCH_PROGRAM.md#theory-to-execution) |
 | Distinguish premises, results, diagnostics and hypotheses | [Glossary](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/GLOSSARY.md) |
+| Assess possible physical emergence | [Hypothesis and scope](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/EMERGENT_ONTOLOGY.md#matter-emergence-hypothesis), [electromagnetic prerequisites](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/PHYSICAL_REGIME_CORRESPONDENCES.md#electromagnetic-emergence-audit) |
 | Understand priorities and select a question | [Selection criteria](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/RESEARCH_PROGRAM.md#research-selection) |
 | Resume the active task | [Current task and documentation prerequisites](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/RESEARCH_PROGRAM.md#research-current-question) |
 
@@ -254,6 +282,9 @@ Auxiliary Hamiltonian, graph-wave, geometric and arithmetic studies keep their
 own premises. The catalog identifies their scope; their presence does not
 make them part of the same generative model. Evaluated evidence, negative
 results and retirement provenance remain in the [research archive](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/research/archive/README.md).
+The [selected raw evidence](https://github.com/fermga/TNFR-Python-Engine/blob/main/artifacts/github-consolidation-20261030/PUBLIC_EVIDENCE_README.md)
+includes source archives, reviews and retained outcomes with an explicit
+publication manifest. User-supplied reference books remain local.
 
 <a id="how-pulse-resonance-and-fractality-fit-together"></a>
 <a id="the-research-direction"></a>
@@ -267,9 +298,8 @@ what a larger node must retain to inherit its constituents' dynamics and
 admissible actions. Grouping nodes alone does not establish that inheritance
 or autonomous formation across scales.
 
-The research program owns the sole task queue. The old execution plan,
-strategy and portfolio are retired compatibility routes. Comparisons with independent observations
-require preparation, measurement, clock and uncertainty models, separate
+The research program owns the sole task queue. Comparisons with independent
+observations require preparation, measurement, clock and uncertainty models, separate
 calibration and reserved evaluation, and suitable alternatives. EPI need not
 equal a sensor reading. The conditional results do not select a unique
 fundamental law.

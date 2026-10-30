@@ -20,9 +20,12 @@ it evaluates no exponential and imposes no new exponent-work budget.
 from __future__ import annotations
 
 from collections.abc import Mapping, Set
+from dataclasses import dataclass
 from fractions import Fraction as Q
+from itertools import islice
 
 from .._exact_time import exact_or_represented_real, exp_unit_bounds
+from ._exact_linear_algebra import exact_matrix_inverse, exact_square_matrix_product
 from ._rational_interval import I
 
 __all__ = (
@@ -31,11 +34,16 @@ __all__ = (
     "scalar_affine_upper",
     "COMPARISON_FLOW_METHOD",
     "MAX_COMPARISON_DIMENSION",
+    "nonnegative_exponential_upper",
+    "NonnegativeExponentialUpper",
+    "NONNEGATIVE_EXPONENTIAL_METHOD",
+    "MAX_NONNEGATIVE_EXPONENTIAL_STEP",
 )
 
 COMPARISON_FLOW_METHOD = "metzler_shift_nonnegative_series32_dyadic128_norm_tail_v1"
 _TERMS = 32
 MAX_COMPARISON_DIMENSION = 24
+MAX_NONNEGATIVE_EXPONENTIAL_STEP = _TERMS
 
 
 def _convolution_fraction(value, label):
@@ -231,3 +239,197 @@ def comparison_flow_upper(matrix, radii, duration) -> tuple[Q, ...]:
     positive_exp_lower, _ = exp_unit_bounds(alpha * h)
     decay_upper = I(1 / positive_exp_lower).hi
     return tuple(I((value + tail) * decay_upper).hi for value in partial)
+
+
+NONNEGATIVE_EXPONENTIAL_METHOD = "exact_nonnegative_series32_resolvent_tail_v1"
+
+
+@dataclass(frozen=True)
+class NonnegativeExponentialUpper:
+    """Exact entrywise upper matrix, with its polynomial and positive tail."""
+
+    matrix: tuple[tuple[Q, ...], ...]
+    duration: Q
+    scaled_row_sum_upper_bound: Q
+    partial_sum: tuple[tuple[Q, ...], ...]
+    tail_upper_bound: tuple[tuple[Q, ...], ...]
+    upper: tuple[tuple[Q, ...], ...]
+    method: str = NONNEGATIVE_EXPONENTIAL_METHOD
+
+
+def _bounded_comparison_row(values, label, limit):
+    """Read only the declared work budget and one excess ordered item."""
+    if isinstance(values, (str, bytes, bytearray, Mapping, Set)):
+        raise TypeError(f"{label} must be an ordered iterable")
+    try:
+        return tuple(islice(iter(values), limit + 1))
+    except TypeError as exc:
+        raise TypeError(f"{label} must be an ordered iterable") from exc
+
+
+def nonnegative_exponential_upper(matrix, duration) -> NonnegativeExponentialUpper:
+    """Bound a nonnegative matrix exponential without losing support paths.
+
+    Entries and duration must be exact Fractions or integers. Admit dimension
+    1..24, nonnegative entries and time, and ``h*max_row_sum(matrix)<=32``
+    before matrix arithmetic. These are numerical resource policies; the
+    underlying positive-series inequality holds for larger domains with a
+    suitable truncation order. Ordered iterables consume at most one excess
+    item beyond their admitted dimensions.
+
+    For B=h*matrix and N=32, return the polynomial through degree N plus
+    ``B**(N+1)/(N+1)! * (Id-B/(N+2))**(-1)``. The inverse is the positive
+    Neumann series since its scaled row norm is at most 32/34. Its kth
+    coefficient bounds the remaining factorial coefficient from above.
+    Exact products retain invariant-block zeros and arbitrarily small path
+    weights. There is no scalar tail placed at unreachable entries, no
+    floating matrix exponential, and no dyadic display rounding.
+    """
+    raw = _bounded_comparison_row(matrix, "matrix", MAX_COMPARISON_DIMENSION)
+    size = len(raw)
+    if not 1 <= size <= MAX_COMPARISON_DIMENSION:
+        raise ValueError(
+            f"comparison matrix dimension must lie between 1 and {MAX_COMPARISON_DIMENSION}"
+        )
+    raw = tuple(_bounded_comparison_row(row, "matrix row", size) for row in raw)
+    if any(len(row) != size for row in raw):
+        raise ValueError("comparison matrix must be square")
+    rows = tuple(tuple(_exact(value) for value in row) for row in raw)
+    h = _exact(duration)
+    if h < 0 or any(value < 0 for row in rows for value in row):
+        raise ValueError("nonnegative exponential requires nonnegative matrix and time")
+    norm_step = h * max(sum(row, Q(0)) for row in rows)
+    if norm_step > MAX_NONNEGATIVE_EXPONENTIAL_STEP:
+        raise ValueError("nonnegative exponential requires h*norm(matrix)<=32")
+
+    identity = tuple(tuple(Q(i == j) for j in range(size)) for i in range(size))
+    scaled = tuple(tuple(h * value for value in row) for row in rows)
+    term = partial = identity
+    for order in range(1, _TERMS + 1):
+        product = exact_square_matrix_product(term, scaled)
+        term = tuple(tuple(value / order for value in row) for row in product)
+        partial = tuple(
+            tuple(a + b for a, b in zip(left, right))
+            for left, right in zip(partial, term)
+        )
+    product = exact_square_matrix_product(term, scaled)
+    first_omitted = tuple(
+        tuple(value / (_TERMS + 1) for value in row) for row in product
+    )
+    resolvent = exact_matrix_inverse(
+        tuple(
+            tuple(identity[i][j] - value / (_TERMS + 2) for j, value in enumerate(row))
+            for i, row in enumerate(scaled)
+        )
+    )
+    tail = exact_square_matrix_product(first_omitted, resolvent)
+    upper = tuple(
+        tuple(a + b for a, b in zip(left, right)) for left, right in zip(partial, tail)
+    )
+    return NonnegativeExponentialUpper(rows, h, norm_step, partial, tail, upper)
+
+
+METZLER_EXPONENTIAL_METHOD = "exact_metzler_shift_series32_resolvent_enclosure_v1"
+
+
+@dataclass(frozen=True)
+class MetzlerExponentialBounds:
+    """Entrywise rational enclosure of one supplied Metzler exponential.
+
+    The exact rational matrix is the model being enclosed. This arithmetic
+    establishes neither its physical law nor an observation or state bound.
+    """
+
+    matrix: tuple[tuple[Q, ...], ...]
+    duration: Q
+    diagonal_shift: Q
+    shifted_matrix: tuple[tuple[Q, ...], ...]
+    positive_kernel: NonnegativeExponentialUpper
+    decay_bounds: tuple[Q, Q]
+    lower: tuple[tuple[Q, ...], ...]
+    upper: tuple[tuple[Q, ...], ...]
+    method: str = METZLER_EXPONENTIAL_METHOD
+
+
+def _admit_metzler_exponential(matrix, duration):
+    """Admit every coefficient and both work limits without numerical kernels."""
+    raw = _bounded_comparison_row(matrix, "matrix", MAX_COMPARISON_DIMENSION)
+    size = len(raw)
+    if not 1 <= size <= MAX_COMPARISON_DIMENSION:
+        raise ValueError(
+            f"comparison matrix dimension must lie between 1 and {MAX_COMPARISON_DIMENSION}"
+        )
+    raw = tuple(_bounded_comparison_row(row, "matrix row", size) for row in raw)
+    if any(len(row) != size for row in raw):
+        raise ValueError("comparison matrix must be square")
+    rows = tuple(tuple(_exact(value) for value in row) for row in raw)
+    h = _exact(duration)
+    if h < 0:
+        raise ValueError("Metzler exponential duration must be nonnegative")
+    if any(
+        value < 0 for i, row in enumerate(rows) for j, value in enumerate(row) if i != j
+    ):
+        raise ValueError("exponential matrix must be Metzler")
+    shift = max(Q(0), -min(rows[i][i] for i in range(size)))
+    shifted = tuple(
+        tuple(value + (shift if i == j else 0) for j, value in enumerate(row))
+        for i, row in enumerate(rows)
+    )
+    if shift * h > 1:
+        raise ValueError("Metzler exponential requires diagonal_shift*h<=1")
+    if h * max(sum(row, Q(0)) for row in shifted) > MAX_NONNEGATIVE_EXPONENTIAL_STEP:
+        raise ValueError("Metzler exponential requires h*norm(shifted_matrix)<=32")
+    return rows, h, shift, shifted
+
+
+def metzler_exponential_bounds(matrix, duration) -> MetzlerExponentialBounds:
+    """Enclose exp(h*M) entrywise with exact rational lower and upper matrices.
+
+    Admit exact Fraction/integer entries, a Metzler matrix of dimension 1..24,
+    and h>=0. With alpha=max(0,-min(diag(M))) and N=M+alpha*Id, the numerical
+    resource policies alpha*h<=1 and h*norm_infinity(N)<=32 are checked before
+    exponential or inverse work. Ordered input reads are bounded.
+
+    The shared nonnegative kernel gives P<=exp(h*N)<=U. The shared scalar
+    enclosure l<=exp(alpha*h)<=u then gives P/u<=exp(h*M)<=U/l. Rational
+    products preserve structural zeros and small entries without a dyadic
+    display grid. No numerical matrix exponential or new series is used.
+    """
+    rows, h, shift, shifted = _admit_metzler_exponential(matrix, duration)
+    positive = nonnegative_exponential_upper(shifted, h)
+    scalar_lower, scalar_upper = exp_unit_bounds(shift * h)
+    decay = (1 / scalar_upper, 1 / scalar_lower)
+    lower = tuple(
+        tuple(value * decay[0] for value in row) for row in positive.partial_sum
+    )
+    upper = tuple(tuple(value * decay[1] for value in row) for row in positive.upper)
+    return MetzlerExponentialBounds(
+        rows, h, shift, shifted, positive, decay, lower, upper
+    )
+
+
+__all__ += (
+    "MetzlerExponentialBounds",
+    "metzler_exponential_bounds",
+    "METZLER_EXPONENTIAL_METHOD",
+)
+
+
+def _prepared_exponential_series_tail_upper(exponent, degree):
+    """Bound the positive scalar exponential tail after a finite degree.
+
+    Admit an exact exponent in [0,1] and an ordinary integer degree in
+    [0,32]. For x=exponent the first omitted term is x**(degree+1)/(degree+1)!,
+    and every later term ratio is at most x/(degree+2). These explicit work
+    limits are numerical policies. No exponential, matrix or trajectory is
+    evaluated, and the returned rational is zero exactly at x=0.
+    """
+    exponent = _exact(exponent)
+    if not 0 <= exponent <= 1:
+        raise ValueError("exponential tail requires an exact exponent in [0,1]")
+    if type(degree) is not int or not 0 <= degree <= _TERMS:
+        raise ValueError("exponential tail degree must be an integer in [0,32]")
+    term = Q(1)
+    for order in range(1, degree + 2):
+        term = term * exponent / order
+    return term / (1 - exponent / (degree + 2))

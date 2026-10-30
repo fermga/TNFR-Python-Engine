@@ -1,0 +1,33 @@
+{
+  "schema":"tnfr.research-prerequisite-review.v1",
+  "requirement":"research_selection",
+  "verdict":"approved",
+  "independent":true,
+  "author":"/root",
+  "reviewer":"/root/collective_controls",
+  "criteria_assessment":{
+    "closure":"Approved only for the same prepared mathematical domain: the supplied unit C5 pair (0,1,2,3,4) and (5,6,7,8,9) with bridge (0,5), signed scalar form, circular phase, strictly positive capacities, fixed ordinary capacity mean, e=w=1/2, beta=1, a supplied fixed kappa>0, equal constituent measure and one structural clock. The capability is full-state prediction, local all-forward retention and recovery near the aligned winding-one family, and the declared internal receiver response. The native admission, CT comparison and JO response assess P1-P3 in the same complete realization. Joint storage and nodewise work cancellation, equal node measure and fixed reciprocal edge flux are explicit premises with an independent structural interpretation; they are not fitted to the desired receiver signal. CT compares equal-measure and degree-normalized transport under matched graph, state, clock and observables, preserving their distinct conserved measures and blind controls. JO compares dynamic and held capacities from the same initial state and clock: receiver acceleration agrees and its third derivative differs. Passive-loss, nonlinear-passive and capacity-mediated alternatives retain their actual own-capacity, locality, exact-loss and held-capacity boundaries. They show why passivity, equilibria or tangent agreement alone do not select a unique law. Normalized-sine and hybrid results are not transferred to the native model. The complete law is therefore sufficient for the admitted prepared capability without a claim of unique fundamental necessity. The prepared admission justified investigating acquisition by reusing the retained two-bridge unit-capacity reference on an invariant uniform-capacity slice. The subsequent analytical acquisition proof supplies its own support-matched continuation and capture argument and does not enlarge this prerequisite approval. The current program selects a matched organizational-outcome comparison, explicitly distinguishing rates, geometric paths and final organization. It permits a zero boundary displacement or unresolved continuation obligation and claims no result in advance. Neither selection approves physical readiness. This is not approval of acquisition, spontaneous support or event creation, a reduced autonomous regional state, a numerical executor or finite-horizon error guarantee, a universal TNFR law, or physical mapping. The appended two-bridge acquisition theorem has its own complete-law proof and independent review; its result is not included in this prepared-scope prerequisite approval. The new matched organizational-selection question remains unevaluated. Held-capacity transit and single-bridge neighborhoods cannot be transferred to broader claims without their actual domain arguments. The separate final physical-readiness review remains absent. This independent source review performed zero scientific evaluations or producer replays. Source associations are renewed after independent review of the complete DA1-DA3 append and the final program; the original 98,150-byte chapter prefix is preserved. The approved prerequisite scope and evidence anchors remain the prepared single-bridge capability, not the new acquisition theorem."
+  },
+  "evidence":[
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-foundation-scope-decision",
+      "sha256":"d882de5ada26a5181934edba5f14ceedb5d5895135d809e6f994e8c86df3b8b4"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-foundation-admission",
+      "sha256":"d882de5ada26a5181934edba5f14ceedb5d5895135d809e6f994e8c86df3b8b4"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-capacity-transport",
+      "sha256":"d882de5ada26a5181934edba5f14ceedb5d5895135d809e6f994e8c86df3b8b4"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-joint-organization",
+      "sha256":"d882de5ada26a5181934edba5f14ceedb5d5895135d809e6f994e8c86df3b8b4"
+    }
+  ]
+}

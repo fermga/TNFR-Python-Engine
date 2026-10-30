@@ -1,0 +1,9 @@
+{
+  "error": null,
+  "exit_code": 0,
+  "nonce": "a4c5ac53f0685ecc7dae2d1f1323fe4f8404dedeb2c8e85cfe7835ea58007c6d",
+  "schema": "tnfr.bootstrap-exit.v1",
+  "target_authorized": true,
+  "worker": "C:\\TNFR-Python-Engine\\artifacts\\native-capacity-transport-20261028\\validate.py",
+  "worker_pid": 26060
+}

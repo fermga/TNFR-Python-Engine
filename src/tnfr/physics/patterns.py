@@ -1,14 +1,14 @@
-"""
-TNFR structural pattern constructors for particle-like emergent modes.
-Each constructor initializes node attributes
-(theta/phase, delta_nfr/dnfr, coherence)
-consistent with TNFR semantics:
-- Phases wrapped to [0, 2π)
-- ΔNFR controls local structural pressure; the shared coherence kernel uses dEPI=0.
-- No dynamics here; these are static initializations to study field signatures.
+"""Supplied phase and pressure profiles for static diagnostic examples.
 
-Note: These are TNFR-native patterns, not SM postulates. They provide
-coherent-form prototypes to compare tetrad metrics and topological invariants.
+These constructors assign node phase, pressure and coherence attributes.
+Phases are wrapped to [0, 2*pi); static coherence uses the shared kernel
+with dEPI=0. They do not evolve a complete law, acquire an organized source,
+certify winding or stability, or establish propagation and confinement.
+
+Historical particle-named functions remain importable for compatibility.
+Their names and prescribed geometry do not identify physical particles or
+same-law emergent families. Use winding_certificates for an admitted cycle
+observation and the physical-emergence atlas for identification obligations.
 """
 
 from __future__ import annotations
@@ -42,15 +42,20 @@ def _set_baseline(G: nx.Graph, base_dnfr: float = 0.05) -> None:
 
 
 def reset_baseline(G: nx.Graph, base_dnfr: float = 0.05) -> nx.Graph:
-    """Reset all per-node telemetry to a mild baseline.
-    Returns the graph for chaining.
+    """Set phase to zero and pressure/coherence to the supplied baseline.
+
+    Other node attributes are retained. Return the graph for chaining.
     """
     _set_baseline(G, base_dnfr=base_dnfr)
     return G
 
 
 def apply_plane_wave(G: nx.Graph, kx: float = 0.25, ky: float = 0.0) -> None:
-    """Photon-like: coherent propagating phase front (Q≈0, K_φ≈0)."""
+    """Assign a linear phase ramp on supplied grid coordinates.
+
+    This is a static phase profile, not a propagating wave or photon state.
+    Non-grid labels use the existing index-based fallback.
+    """
     for n in G.nodes():
         if isinstance(n, tuple) and len(n) == 2:
             i, j = n
@@ -68,7 +73,12 @@ def apply_vortex(
     dnfr_core: float = 0.2,
     decay: float = 4.0,
 ) -> tuple[int, int]:
-    """Electron-like: localized vortex with winding Q=±1."""
+    """Assign an atan2 phase profile and a decaying pressure bump.
+
+    Return the selected center. Winding depends on an explicitly admitted
+    oriented cycle and its phase branches; this initializer certifies neither
+    an integer winding nor a physical electron.
+    """
     # infer center for grid graphs
     if center is None:
         try:
@@ -105,10 +115,10 @@ def apply_helical_packet(
     twist: float = 0.3,
     sigma: float = 8.0,
 ) -> tuple[int, int]:
-    """Massive gauge-like packet: traveling phase with gentle
-    helical twist around a center.
-    Q≈0, with chirality (sign of twist) and local confinement by
-    envelope.
+    """Assign a phase ramp with a localized angular offset and pressure bump.
+
+    The Gaussian envelope is supplied spatial data. No packet motion, mass,
+    gauge-field dynamics or sustained confinement is established.
     """
     if center is None:
         try:
@@ -140,8 +150,10 @@ def apply_helical_packet(
 
 
 def apply_global_curvature(G: nx.Graph, a: float = 1e-3) -> None:
-    """Graviton-like: very weak global curvature
-    (small K_φ, large ξ_C).
+    """Assign a quadratic phase profile on the supplied coordinates.
+
+    The coefficient sets the profile; it does not certify a curvature or
+    coherence-length bound, or identify a gravitational excitation.
     """
     for n in G.nodes():
         if isinstance(n, tuple) and len(n) == 2:
@@ -159,8 +171,9 @@ def apply_scalar_bump(
     amp: float = 0.25,
     sigma: float = 6.0,
 ) -> tuple[int, int]:
-    """Higgs-like: local scalar field that elevates ΔNFR around the
-    center with nearly constant phase.
+    """Assign a Gaussian pressure bump and a small proportional phase offset.
+
+    The supplied profile is not a Higgs field or a derived mass mechanism.
     """
     if center is None:
         try:
@@ -196,10 +209,12 @@ def apply_quark_triplet_cluster(
     dnfr_core: float = 0.18,
     decay: float = 3.5,
 ) -> list[tuple[int, int]]:
-    """Quark-like cluster: three localized defects that only
-    show coherent stability as an ensemble.
-    Implementation: three Q=+1 vortices with nearby cores;
-    their large loop has Q≈3.
+    """Apply the legacy sequential vortex initializer at the supplied centers.
+
+    Each call to apply_vortex overwrites the whole graph's phase, pressure
+    and coherence attributes. For nonempty centers, the last call supplies
+    the final profile; the function does not superpose three vortices.
+    The returned centers record the requests, not a stable three-body state.
     """
     if centers is None:
         # pick an equilateral-ish triangle around center
@@ -218,8 +233,9 @@ def apply_quark_triplet_cluster(
 
 
 def apply_neutrino_like(G: nx.Graph, eps: float = 0.03) -> None:
-    """Neutrino-like: faint mode (very low |∇φ|, Q≈0) with weak
-    footprint in K_φ.
+    """Assign the legacy small linear phase ramp on supplied coordinates.
+
+    No weak interaction, particle identity or diagnostic bound is inferred.
     """
     for n in G.nodes():
         if isinstance(n, tuple) and len(n) == 2:
@@ -237,9 +253,10 @@ def apply_color_domain_lattice(
     dphi: float = DELTA_PHI_MAX,
     wall_dnfr: float = 0.15,
 ) -> None:
-    """Gluon-like surrogate: network of phase domains with walls
-    (domain walls) where K_φ concentrates. Alternates phase offsets by
-    periodic cells; increases ΔNFR at walls.
+    """Assign checkerboard phase offsets and elevated pressure at cell walls.
+
+    These are prescribed domains. The historical color label establishes
+    neither gauge color nor a gluon interaction.
     """
     for n in G.nodes():
         if isinstance(n, tuple) and len(n) == 2:
@@ -276,23 +293,16 @@ __all__ = [
 
 
 def build_element_radial_pattern(Z: int, *, seed: int = 42) -> nx.Graph:
-    """Build a simple TNFR element-like radial graph for atomic number Z.
+    """Build a supplied radial graph with seeded phase and pressure attributes.
 
-    Canonical, telemetry-only initializer placed in the physics module to
-    centralize element-like pattern construction. This mirrors the examples
-    helper while keeping physics-first semantics.
+    The legacy parameter Z controls heuristic ring sizes; it is not an
+    inferred atomic number. The stored nucleus/shell role labels describe
+    construction only, without a chemical, electronic or physical law.
 
-    Topology (heuristic for demo; not prescriptive chemistry):
-    - One nucleus node connected to all inner-ring nodes (shell1)
-    - Inner ring as a cycle (angular coupling)
-    - If Z >= 3, add a second ring (shell2) as a cycle and add spokes
-      from shell1 to shell2 every s nodes.
-
-    Attributes seeded reproducibly:
-    - 'phase' ∈ [0, 2π)
-    - 'delta_nfr' in [0.2, 0.8)
-    - 'role' in {nucleus, shell1, shell2}
-    - 'coherence' implied by ΔNFR can be derived by callers as 1/(1+|ΔNFR|)
+    One central node connects to an inner cycle. For Z >= 3, a second cycle
+    and selected spokes are added. Values below one use Z=1. Seeded phase
+    lies in [0, 2*pi), and pressure lies in [0.2, 0.8). No dynamics, source
+    acquisition, stability or element classification is evaluated.
     """
     if Z < 1:
         Z = 1

@@ -320,15 +320,35 @@ def validate_phase_gate_u3(G: "TNFRGraph", node: "NodeId", operator: str) -> Non
         raise OperatorPreconditionError(operator, f"U3 phase gate: {exc}") from exc
 
 
-def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
-    """UM - Coupling requires active nodes with compatible phases.
+def _coupling_activity_policy(graph_attributes) -> tuple[float, float]:
+    """Admit the selected UM activity minima without applying any event.
 
-    Validates comprehensive canonical preconditions for the UM (Coupling) operator
-    according to TNFR theory:
+    This reader owns the existing defaults, not the public switch that selects
+    their validation. Both minima are finite nonnegative real magnitudes;
+    equality and a supplied zero minimum remain admitted.
+    """
+    from .._argument_validation import finite_real
+
+    return tuple(
+        finite_real(
+            graph_attributes.get(key, default),
+            operator="Coupling",
+            label=key,
+            lower=0.0,
+        )
+        for key, default in (("UM_MIN_EPI", 0.05), ("UM_MIN_VF", 0.01))
+    )
+
+
+def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
+    """Apply the selected activity policy and mandatory U3 phase gate.
+
+    Activity thresholds are configured admission, not criteria establishing
+    NFR existence or formation. This validator checks:
 
     1. **Graph connectivity**: At least one other node exists for coupling
-    2. **Active EPI**: Node has sufficient structural form (EPI > threshold)
-    3. **Structural frequency**: Node has capacity for synchronization (νf > threshold)
+    2. **EPI magnitude**: Absolute signed form reaches the selected minimum
+    3. **Structural frequency**: Nonnegative capacity reaches its selected minimum
     4. **Phase compatibility** (MANDATORY per Invariant #2): At least one neighbor within phase range
 
     Configuration Parameters
@@ -362,6 +382,9 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
     Notes
     -----
     Phase compatibility is mandatory and cannot be disabled by legacy flags.
+    The selected numerical policy and both consumed coordinates are admitted
+    before threshold comparisons. Invalid authoritative aliases cannot fall
+    through to another alias or become a diagnostic magnitude projection.
 
     Examples
     --------
@@ -393,9 +416,30 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
             "Coupling", "Graph has no other nodes to couple with"
         )
 
-    # Node must be active (non-zero EPI)
-    epi = _get_node_attr(G, node, ALIAS_EPI)
-    min_epi = float(G.graph.get("UM_MIN_EPI", 0.05))
+    from ...alias import get_attr
+    from ...types import require_finite_real_scalar_epi
+    from .._argument_validation import finite_node_real
+
+    min_epi, min_vf = _coupling_activity_policy(G.graph)
+    try:
+        epi = require_finite_real_scalar_epi(
+            get_attr(
+                G.nodes[node], ALIAS_EPI, 0.0, strict=True, conv=lambda value: value
+            ),
+            "UM stored EPI",
+        )
+    except (OverflowError, TypeError, ValueError) as exc:
+        raise OperatorPreconditionError("Coupling", str(exc)) from exc
+    vf = finite_node_real(
+        G.nodes[node],
+        ALIAS_VF,
+        0.0,
+        operator="Coupling",
+        label="UM stored nu_f",
+        lower=0.0,
+    )
+
+    # Inclusive magnitude policy; no form-origin or activity convention changes.
     if abs(epi) < min_epi:
         raise OperatorPreconditionError(
             "Coupling",
@@ -403,8 +447,6 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
         )
 
     # Node must have structural frequency capacity
-    vf = _get_node_attr(G, node, ALIAS_VF)
-    min_vf = float(G.graph.get("UM_MIN_VF", 0.01))
     if vf < min_vf:
         raise OperatorPreconditionError(
             "Coupling", f"Structural frequency too low (νf={vf:.3f} < {min_vf:.3f})"

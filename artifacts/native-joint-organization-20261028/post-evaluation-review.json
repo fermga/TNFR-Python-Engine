@@ -1,0 +1,136 @@
+{
+  "schema":"tnfr.scientific-post-evaluation-review.v1",
+  "reviewed_utc":"2026-10-28T18:26:16.220679+00:00",
+  "reviewer":"/root/collective_controls",
+  "verdict":"PASS",
+  "passed":true,
+  "evaluation_complete":true,
+  "attempt":"Single prospectively declared frozen evaluation; attempt 1.",
+  "outcomes":{
+    "tests":6,
+    "passed":6,
+    "failed":0,
+    "errors":0,
+    "skipped":0,
+    "pytest_seconds":21.159,
+    "test_names":[
+      "test_full_thirty_state_tangent_from_native_resultants",
+      "test_quotient_stability_structure_and_origin_drift",
+      "test_mean_preserving_capacity_source",
+      "test_receiver_second_jet_under_joint_law",
+      "test_receiver_third_jet_distinguishes_capacity_release",
+      "test_blind_preparations_and_disconnected_receiver"
+    ]
+  },
+  "evidence":[
+    {
+      "path":"artifacts/native-joint-organization-20261028/validation.json",
+      "bytes":6337,
+      "sha256":"cc98284eba539f42995a129f22659b82da51229d14c4d3a0cfddcb0af1edaa39"
+    },
+    {
+      "path":"artifacts/native-joint-organization-20261028/validation-plan.json",
+      "bytes":218201,
+      "sha256":"40e2390cbdaa91b56f80a348cdcdc704ab4d05864348e7356ceb7dde8ff19ea5"
+    },
+    {
+      "path":"artifacts/native-joint-organization-20261028/control-start.json",
+      "bytes":852,
+      "sha256":"b83bf7687f7facf569cad4f8e286b9a391a2a1c552b1c028087c0d21139aef7d"
+    },
+    {
+      "path":"artifacts/native-joint-organization-20261028/control-results.xml",
+      "bytes":1459,
+      "sha256":"42c8433eb827325275c195aa473db83e199d039249d975f4fe6aea2caa392f37"
+    },
+    {
+      "path":"artifacts/native-joint-organization-20261028/pytest.stdout.log",
+      "bytes":28,
+      "sha256":"63f1ac14b4c32b1431e714502deb130163c11a7705d4ddfe205b93775a693ef1"
+    },
+    {
+      "path":"artifacts/native-joint-organization-20261028/pytest.stderr.log",
+      "bytes":0,
+      "sha256":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path":"artifacts/native-joint-organization-20261028/worker-result.json",
+      "bytes":269,
+      "sha256":"61b5e55220df1d25d363efd845a6c25e72dae9e2c92a657b04cacd29b8c084e3"
+    },
+    {
+      "path":"artifacts/native-joint-organization-20261028/scope.json",
+      "bytes":4008,
+      "sha256":"4cfcb399d7997afb0d9723db6d78e4bb2663d5e88dfd52e5db81c7564e7f7394"
+    },
+    {
+      "path":"artifacts/native-joint-organization-20261028/prospective-run.json",
+      "bytes":1801,
+      "sha256":"069a9b616c009fb6421a0a289094fab39daa03b9ca33383dae89affc1b0b5cef"
+    },
+    {
+      "path":"artifacts/native-joint-organization-20261028/pre-evaluation-review.json",
+      "bytes":5845,
+      "sha256":"d12d1ff5e7151ad2f4856168cf4e36944f0cecac6979a932e9e4339abf52c7f7"
+    }
+  ],
+  "frozen_archive":{
+    "path":"artifacts/native-joint-organization-20261028/evaluated-source.zip",
+    "bytes":5423403,
+    "sha256":"98a024b105f179223533470f4f60abac46e821559e3ace374fa08e2a19df318c"
+  },
+  "frozen_archive_members_verified":981,
+  "frozen_scientific_sources":[
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "bytes":83410,
+      "sha256":"5924381f66d12073ca7a41d9f7b563f9c33ed82828d7f0e6554208685b1258e1"
+    },
+    {
+      "path":"tests/physics/test_native_joint_organization.py",
+      "bytes":17486,
+      "sha256":"bd6dccab31860d20a9c2f8dc7226663ec49e7abfe3ca898de43fedf7f7b666d8"
+    }
+  ],
+  "final_program":{
+    "path":"theory/RESEARCH_PROGRAM.md",
+    "bytes":82007,
+    "sha256":"a7c4beabf936a22d5333f8143cd81b59885e1f9bbab813509b9ca47e3405b045"
+  },
+  "current_frozen_source_changes":[
+    "theory/RESEARCH_PROGRAM.md"
+  ],
+  "source_preservation":"Every archived member matches its frozen byte length and SHA256 receipt. Current proof and test match the reviewed frozen sources. The original 71,485-byte chapter prefix is intact. Only the permitted PROGRAM status/next-task region changed; content outside that region is byte-identical.",
+  "findings":[
+    "Actual JUnit, stdout, worker result and validation receipts report exactly the six prospectively named controls, with no failure, error or skip. The independent source review and freeze preceded the sole reserved attempt.",
+    "The controls verify the actual thirty-coordinate native tangent, joined metrics and phase Hessian, positive work and rank structure, Gram-correct quotient, nonconserved origin rows and capacity block.",
+    "The independent nonlinear proof establishes a sufficiently small invariant relative neighborhood, all-forward continuation, exponential recovery and reconstructed convergent origins for fixed positive parameters. Tests alone do not establish that nonlinear theorem.",
+    "The mean-preserving positive-capacity source and the exact receiver second and third derivatives passed. The disconnected receiver is independently rebuilt with its own degrees and metric and remains insensitive to the donor.",
+    "Quadratic receiver deformation establishes transmission through the supplied bridge. The receiver form/phase dynamic-versus-held difference begins at cubic order; full capacity state already differs at first order, and this result makes no broader derivative-order equivalence claim.",
+    "The final PROGRAM was clarified to identify the receiver form/phase response explicitly. It accurately records a prepared recoverable transient, without a numerical basin, chosen horizon, permanent pulse or acquisition claim.",
+    "The next task is a joint P1-P4 evidence and scope review, not an automatic new experiment. Runtime installation, acquisition or other extra capabilities become priorities only if the actual next claim consumes them."
+  ],
+  "scope_caveats":[
+    "Recovery is local, with parameter-dependent constants. No prior held-capacity basin, amplitude-uniform separation bound or rate uniform near zero capacity/transport is transferred.",
+    "The nonzero initial jets imply some sufficiently short response interval analytically; they do not certify a numerical finite-horizon band or physical propagation speed.",
+    "No trajectory, eigenvalue fit, parameter scan, historical producer replay, public action or dynamic-capacity executor was run or installed.",
+    "The identity and joined support are supplied. Graph occurrence, autonomous formation, refinement equivalence and reduced regional closure remain separate obligations.",
+    "The pending joint foundation audit must assess the next claim against remaining constitutive freedom. The passing result neither closes any broader pillar nor authorizes physical mapping."
+  ],
+  "resource_review":{
+    "wall_budget_seconds":120,
+    "supervised_wall_seconds":24.588768899993738,
+    "aggregate_rss_ceiling_bytes":2147483648,
+    "peak_aggregate_rss_bytes":160493568,
+    "peak_actual_worker_rss_bytes":148615168,
+    "rss_samples":227,
+    "nominal_poll_seconds":0.1,
+    "hard_allocation_limit":false,
+    "job_membership_and_cleanup_verified":true,
+    "scope":"Windows Job supervision with nominal 100 ms aggregate RSS polling plus actual-worker OS peak check; no hard allocation-limit claim."
+  },
+  "scientific_executions_by_reviewer":0,
+  "historical_producer_replays":0,
+  "foundation_pillars_resolved":0,
+  "physical_mapping_authorized":false
+}

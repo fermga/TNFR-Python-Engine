@@ -1,0 +1,20 @@
+{
+  "budget": {
+    "diagnostic_reserve_bytes": 1048576,
+    "handshake_timeout_seconds": 30,
+    "maximum_log_bytes": 1048576,
+    "maximum_response_bytes": 16777216,
+    "maximum_rss_bytes": 2147483648,
+    "poll_seconds": 0.1,
+    "watchdog_wall_budget_seconds": 180
+  },
+  "interpreter": "C:\\TNFR-Python-Engine\\.venv313\\Scripts\\python.exe",
+  "job_name": "Local\\TNFR-9816-fee26cd5ea6e01b3",
+  "maximum_job_processes": 64,
+  "nonce": "fee26cd5ea6e01b3d95539306934efb17ffbd4ec46c5525a062b61305aa8f91e",
+  "schema": "tnfr.windows-job-supervision-start.v1",
+  "scope": "One venv launch and actual-interpreter handshake; no TNFR target before ACK; no retry.",
+  "started_utc": "2026-10-29T02:50:58.528498+00:00",
+  "supervisor_pid": 9816,
+  "worker": "C:\\TNFR-Python-Engine\\artifacts\\native-selection-robustness-20261029\\validate.py"
+}

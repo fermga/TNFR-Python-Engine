@@ -34,6 +34,7 @@ from scripts.research_book import (
     compatibility_view_drift,
     documents,
     front,
+    generated_view_matches,
     is_modular,
     read_book,
     read_document,
@@ -458,8 +459,10 @@ def check_theory_catalog() -> None:
     if (REPO_ROOT / RESEARCH_BOOK).is_file():
         if is_modular(REPO_ROOT):
             require(
-                (REPO_ROOT / RESEARCH_BOOK).read_bytes()
-                == render_program(read_book(REPO_ROOT)),
+                generated_view_matches(
+                    (REPO_ROOT / RESEARCH_BOOK).read_bytes(),
+                    render_program(read_book(REPO_ROOT)),
+                ),
                 "program chapter routes drifted; run "
                 "scripts/check_documentation.py --write-generated",
             )
@@ -804,6 +807,13 @@ def check_build_inputs() -> None:
         )
 
 
+def check_research_prerequisites() -> None:
+    """Keep the declared research activity within its reviewed prerequisites."""
+    from scripts.check_research_prerequisites import validate_prerequisites
+
+    validate_prerequisites(REPO_ROOT)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -812,6 +822,9 @@ def main() -> int:
         help="Refresh operator contracts, grammar roles, book catalog, theory/docs navigation and the concept-card index",
     )
     args = parser.parse_args()
+    # Deny premature physical work before generated writes or example execution.
+    check_research_prerequisites()
+    print("OK check_research_prerequisites")
     if args.write_generated:
         update_glossary_index()
         update_contract_view()

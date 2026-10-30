@@ -1,0 +1,39 @@
+{
+  "files":[
+    {
+      "path":"theory/RESEARCH_PROGRAM.md",
+      "bytes":94061,
+      "sha256":"a3e6ac7289fab2f5c630e5a8c05d91c9a04a5039a114694b7db34d90fa293592"
+    },
+    {
+      "path":"theory/nodal/SINE_TWO_PORT_CAPTURE.md",
+      "bytes":58635,
+      "sha256":"d9e5476aa8699d43540fe3a13d3c110a03d27961563240ae50d9de5b5fb7cda8"
+    }
+  ],
+  "reviews":[
+    {
+      "path":"artifacts/formed-two-port-domain-20261029/foundation-integration-review.md",
+      "bytes":8464,
+      "sha256":"cf61286012acb6974afc1a97a34e0b63087b48377c22ff6bae2bd97aafc9f1ec"
+    },
+    {
+      "path":"artifacts/formed-two-port-domain-20261029/independent-domain-review-final.md",
+      "bytes":2108,
+      "sha256":"f8c966d093cc944f06c1b14b2675ae721df7193d93b5bdda2386a9d87026f26c"
+    }
+  ],
+  "changes":{
+    "path":"artifacts/formed-two-port-domain-20261029/document-changes.json",
+    "bytes":5775,
+    "sha256":"8472349d14fe5f8ef41d73ae8f0eadab98c143c599806f822da5438edde40bd7"
+  },
+  "next_question":"Specify and assess a source-compatible comparison corridor with full-graph curvature and whole-time clearance; preserve the full-state target handoff before any new numerical policy.",
+  "analytical_results":[
+    "Buffered acute source-energy sublevel is not forward invariant under M2, including its nominal-source component.",
+    "The unchanged potential floor extends to donor gaps [-pi,5pi/9] and receiver gaps [-pi,7pi/9] with the original affine cycle sums.",
+    "Conditional M3--M7 transfer requires a common convex floor/PSD domain and complete reference clearance; no such corridor is established here."
+  ],
+  "engine_changes":0,
+  "new_numerical_evaluations":0
+}

@@ -533,6 +533,7 @@ def run_temporal_benchmark(
     report["transition_index"] = transition_index
     report["n_windows"] = comparison.metadata["n_windows"]
     report["n_pre_transition_windows"] = comparison.n_pre_transition_windows
+    report["xi_c_comparison"] = comparison.metadata.get("xi_c_comparison")
     report["trends"] = {
         k: (None if math.isnan(v) else round(float(v), 4))
         for k, v in comparison.trends.items()

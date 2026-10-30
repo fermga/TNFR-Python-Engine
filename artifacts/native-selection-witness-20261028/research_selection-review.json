@@ -1,0 +1,33 @@
+{
+  "schema":"tnfr.research-prerequisite-review.v1",
+  "requirement":"research_selection",
+  "verdict":"approved",
+  "independent":true,
+  "author":"/root",
+  "reviewer":"/root/collective_controls",
+  "criteria_assessment":{
+    "closure":"Approved only for the same prepared mathematical domain: the supplied unit C5 pair (0,1,2,3,4) and (5,6,7,8,9) with bridge (0,5), signed scalar form, circular phase, strictly positive capacities, fixed ordinary capacity mean, e=w=1/2, beta=1, a supplied fixed kappa>0, equal constituent measure and one structural clock. The capability is full-state prediction, local all-forward retention and recovery near the aligned winding-one family, and the declared internal receiver response. The native admission, CT comparison and JO response assess P1-P3 in the same complete realization. Joint storage and nodewise work cancellation, equal node measure and fixed reciprocal edge flux are explicit premises with an independent structural interpretation; they are not fitted to the desired receiver signal. CT compares equal-measure and degree-normalized transport under matched graph, state, clock and observables, preserving their distinct conserved measures and blind controls. JO compares dynamic and held capacities from the same initial state and clock: receiver acceleration agrees and its third derivative differs. Passive-loss, nonlinear-passive and capacity-mediated alternatives retain their actual own-capacity, locality, exact-loss and held-capacity boundaries. They show why passivity, equilibria or tangent agreement alone do not select a unique law. Normalized-sine and hybrid results are not transferred to the native model. The complete law is therefore sufficient for the admitted prepared capability without a claim of unique fundamental necessity. The completed matched candidate and its predeclared protocol now discriminate final organizations under the two complete laws without outcome-dependent model fitting. The current next claim is one explicit jointly valid radius in the full 29-dimensional mean-one leaf. Actual full-state recovery admission at the retained endpoints and a finite-flow perturbation bound are necessary; a reduced rectangle with E<7 alone does not supply that radius. The unchanged candidate, graph, clock and rates prevent this from becoming a scan. No new evaluation is admitted by selecting that dependency. This prerequisite approval does not include acquisition, spontaneous support or event creation, an autonomous reduced regional state, a numerical executor or finite-horizon error guarantee, a universal TNFR law, or physical mapping. The two-bridge acquisition and selection proofs and the newly positive matched-pair certificate have separate complete-law arguments and reviews; they do not enlarge this prepared single-bridge approval. The one declared exact candidate is now certified to enter consensus capture under dynamic capacity and positive-twist capture under held capacity, confirming its predicted orientation. The initial winding is one, so this is retention-versus-loss selection, not winding-zero acquisition. An explicit nonsymmetric full-state perturbation radius remains unproved. Broader domain claims cannot inherit held transits or single-bridge neighborhoods without their own arguments. The separate final physical-readiness review remains absent. This independent renewal performed zero scientific evaluations or producer replays. Source associations are renewed after the W1-W10 witness contract, unchanged frozen scientific sources, all 498 retained step records, both capture records and the final program were reviewed. The prior 126,419-byte chapter prefix is preserved. Evidence anchors and approved prerequisite scope remain exactly the prepared single-bridge capability."
+  },
+  "evidence":[
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-foundation-scope-decision",
+      "sha256":"383904d7b77b86a21b64b0970ec0a6dfd209aebe60ffa820833ace31923d40a2"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-foundation-admission",
+      "sha256":"383904d7b77b86a21b64b0970ec0a6dfd209aebe60ffa820833ace31923d40a2"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-capacity-transport",
+      "sha256":"383904d7b77b86a21b64b0970ec0a6dfd209aebe60ffa820833ace31923d40a2"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-joint-organization",
+      "sha256":"383904d7b77b86a21b64b0970ec0a6dfd209aebe60ffa820833ace31923d40a2"
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "schema":"tnfr.mathematical-review.v1",
+  "reviewed_utc":"2026-10-28T19:46:38.750836+00:00",
+  "author":"/root",
+  "reviewer":"/root/collective_math",
+  "independent":true,
+  "verdict":"PASS",
+  "scope":"Adversarial analytical review of the complete native-capacity-selection append, CS1-CS6 and equations CS1-CS9, including the amended full-state openness claim and final PROGRAM. This is not physical-readiness approval.",
+  "sources":[
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "bytes":126419,
+      "sha256":"91c09e1f68422c8bef5a0399de64882f3a7232d00790482bdf901a1b5a5a62e8"
+    },
+    {
+      "path":"theory/RESEARCH_PROGRAM.md",
+      "bytes":81025,
+      "sha256":"f511d9a79f7b0c4b6afd813f6ad70eeb0f3d41607ceb7b29749dbfb7374f8f3b"
+    }
+  ],
+  "supporting_owners":[
+    {
+      "path":"theory/nodal/RELATIONAL_DOMAIN_AND_CAPTURE.md",
+      "bytes":79242,
+      "sha256":"5a9278ec65ce62df0e174c17cf446c0cbcfadb88678c18866365a9d4b860fbbb"
+    },
+    {
+      "path":"theory/nodal/RELATIONAL_RECOVERY_AND_INTERACTION.md",
+      "bytes":30557,
+      "sha256":"e28b84af254fcd2443d1bb785189143ff715bdaff6c2c50b74fc9d90d24f764a"
+    },
+    {
+      "path":"theory/nodal/RELATIONAL_EXCHANGE_ADMISSION.md",
+      "bytes":114484,
+      "sha256":"886e760b38191e3a3528e2e14fb724e12a1b636b1b4840d00638611b65731639"
+    }
+  ],
+  "scope_declaration":{
+    "path":"artifacts/native-capacity-selection-20261028/scope.json",
+    "bytes":2180,
+    "sha256":"a1519d8dc093f72923b9b330746716dfdf043a15b1fcb8fd08235a87183e2e22"
+  },
+  "scope_amendment":{
+    "path":"artifacts/native-capacity-selection-20261028/scope-amendment.json",
+    "bytes":941,
+    "sha256":"bb556496d3eca01926a54ab9ad259b560e9758b1883afb13655f9cb3f211a42d"
+  },
+  "preservation":{
+    "chapter_prior_prefix_bytes":109764,
+    "chapter_prior_prefix_unchanged":true,
+    "comparison":"Actual prior chapter member of before-edit.zip compared byte-for-byte to current prefix."
+  },
+  "external_theorem_review":{
+    "url":"https://www.math.utah.edu/~feldman/ODE-slides4.pdf",
+    "author":"Will Feldman, University of Utah",
+    "slides_read":[
+      7,
+      40
+    ],
+    "assessment":"Opened the cited primary university notes directly. Slide7 states the smooth hyperbolic stable/unstable graph theorem; slide40 states smooth parameter dependence. These support the uses in CS3. Model-specific boundary nonidentity, capture and openness are established by the appendix, not attributed to those notes."
+  },
+  "criteria_assessment":{
+    "matched_reduction_and_capacity_balance":{
+      "passed":true,
+      "assessment":"The copied even capacities (s,s,t,u,t) preserve the reflection/sign native subspace on the actual two-bridge graph. Independently checked the three transport rows, the constraint2s+2t+u=5, the stable2x2 capacity matrix and its positive variance. Both laws consume the same full initial form, phase and positive mean-one capacity profile; holding a heterogeneous profile is not replaced by unit capacity."
+    },
+    "actual_capture_under_both_laws":{
+      "passed":true,
+      "assessment":"The storage derivative retains the actual s,t factors and has no missing capacity derivative. Geometric R+/S boundaries are confined by E<7beta while the positive capacity hull is compact. Held zero-loss invariance gives the appropriate unique native target. For dynamic capacity E+Vnu gives the full target after confinement by E alone; the proof does not impose the unnecessary stronger boundary E+Vnu<7beta."
+    },
+    "saddle_and_boundary_regularities":{
+      "passed":true,
+      "assessment":"Independently checked the positive-sign native source derivatives and all entries of J0 in the actual coordinate order(a,b,A,B0). J(s,t)=diag(s,t,s,t)J0, hyperbolicity persists nearby, and the dynamic block adds two stable capacity directions. The held boundary is explicitly the union of the stable fibers of the equilibrium family, avoiding nonuniqueness of arbitrary center manifolds. Smooth stable-manifold and parameter hypotheses are satisfied."
+    },
+    "exact_germ_nonidentity":{
+      "passed":true,
+      "assessment":"If the boundary graphs agreed, tangency of the difference field would imply Dzeta h Ckappa zeta=0. A small invariant capacity ellipsoid permits integrating this identity to zeta=0 while staying in the common graph chart. Capacity-independent held stable tangents would force one fixed nonzero left unstable covector to be an eigenvector of every diagonal(s,t,s,t). Independent s,t variations restrict its support to one group, and the actual crosscoupling columns rule out both groups. The contradiction establishes distinct germs for every fixed positive kappa without a numerical curvature estimate."
+    },
+    "opposite_exits_and_final_destinations":{
+      "passed":true,
+      "assessment":"The dynamic unstable manifold lies exactly in the uniform slice and retains the reference capture branches. Simultaneous stable/unstable straightening gives a sign-preserving scalar unstable row and Lyapunov contraction of stable coordinates in a small product neighborhood. Smoothness bounds the unstable coefficient above and below; approaching initial states therefore exit arbitrarily near fixed branch sections inside strict capture sets. The held parameter-dependent charts have a uniform local gap near the uniform saddle. Shared points between the distinct graphs reach opposite capture sets, so the conclusion concerns twist versus consensus rather than exit timing or local path alone."
+    },
+    "amended_full_state_openness":{
+      "passed":true,
+      "assessment":"CS6 supplies the additional obligation in the scope amendment. Both targets are acute; the twist uses actual DA4 two-bridge matrices and consensus uses K=B_G,H=pi D. The dynamic27D quotient is Hurwitz at both and has the actual nonlinear invariant neighborhoods. Held recovery is valid for nearby positive profiles with parameter dependence; the native geometry-based energy neighborhood also supplies an open profile-family domain. Each reduced trajectory reaches its own full-state basin after a regular finite segment. Intersecting both pullbacks on the29D mean-one source leaf gives shared full-state perturbations with opposite destinations, without retaining reflection or silently changing held capacity."
+    },
+    "initial_identity_controls_and_limits":{
+      "passed":true,
+      "assessment":"Initial winding near the saddle is(1,1), so this is selection/retention versus loss and not winding-zero acquisition. Uniform capacity, the exact native saddle, consensus and kappa=0 are correctly retained as null controls. The result asserts existence and openness, not a computed witness, displacement sign, basin volume, rate advantage, uniform zero-kappa separation, substrate creation or physical mapping."
+    },
+    "final_program_and_next_task":{
+      "passed":true,
+      "assessment":"Final PROGRAM accurately records the existential theorem and the prepared scope of readiness approvals. The next task fixes kappa=1 prospectively and asks for one explicit quantitatively admitted matched source. It requires common nonlinear boundary terms, the different capacity laws, a justified remainder and either rigorous boundary admission or actual regular transit into both capture regions. It does not treat a truncated series, old receiver jet or unreviewed held executor as a finite witness, and it activates no scan or scientific evaluation."
+    }
+  },
+  "new_scientific_evaluations":0,
+  "historical_producer_replays":0,
+  "test_imports_or_runs":0,
+  "actions_performed":"Read actual maintained proof, final program and declared scopes; independently derive and audit the mathematics by hand; read the cited stable-manifold source; compare metadata hashes and preserved prefix bytes; create this exclusive receipt with the shared artifact writer."
+}

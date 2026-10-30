@@ -1961,3 +1961,357 @@ asserting a numerical recurrence sequence. The
 and [outward bounds](../../tests/physics/test_relational_joint_boundary_bounds.py)
 check the local mechanism reused here. Finite tests validate these premises
 and their implementation, not the infinite recurrence sequence itself.
+
+<a id="sine-replica-nonacute-escape"></a>
+
+## 28. A nonacute critical geometry with internal degeneracies
+
+This local classification uses the same doubled cycle as Section 15,
+now with `e=0,w=beta=nu=1`, the original structural clock and no input,
+loss or event. Its twenty unit edges join every member of pair `i` to
+every member of pair `i+1`, cyclically. Both complete evolution rows
+remain active. The question is whether internal variations change the
+critical geometry suggested by a synchronized nonacute configuration;
+it is not a global barrier or formation calculation.
+
+### 28.1. Complete storage and equilibrium admission
+
+Let `B` be the forward incidence of the five-cycle, so
+`(B h)_i=h_(i+1)-h_i`, and put `L=B^T B`. In the existing pair chart,
+
+\[
+x_{i,\pm}=X_i\pm u_i,\qquad
+\theta_{i,\pm}=\Theta_i\pm\delta_i,\qquad R_i=\cos\delta_i.
+\]
+
+Write `g_i` for the continuous forward midpoint gap, with a full turn
+added to the closing gap when needed. Sine and cosine do not depend on
+that addition. Directly summing the four fine edges above each base edge
+in the shared conservative storage gives
+
+\[
+E=2X^TLX+4\sum_i u_i^2+V(\Theta,\delta),\qquad
+V=4\sum_i[1-R_iR_{i+1}\cos g_i].
+\]
+
+The fine equations are `xdot=-grad_theta(V)/(4*pi)` and
+`thetadot=L_f*x/(4*pi)`. The invertible pair change gives Poisson factor
+`1/(8*pi)` for each conjugate pair `(X,Theta)` and `(u,delta)`. Thus
+
+\[
+\begin{aligned}
+\dot X&=-\frac1{2\pi}B^T(R_iR_{i+1}\sin g_i),&
+\dot\Theta&=\frac1{2\pi}LX,\\
+\dot u_i&=-\frac{\sin\delta_i}{2\pi}
+ \sum_{j=i\pm1}R_j\cos(\Theta_j-\Theta_i),&
+\dot\delta_i&=\frac{u_i}{\pi}.
+\end{aligned}
+\]
+
+Consider the supplied candidate
+
+\[
+X_i=m,\quad u_i=\delta_i=0,\quad
+\Theta_i^*=c+i\pi/3,\qquad i=0,\ldots,4.
+\]
+
+Its forward principal gaps are `(pi/3,pi/3,pi/3,pi/3,2*pi/3)`.
+Set
+
+\[
+s=\frac{\sqrt3}{2},\qquad
+c_i=\cos g_i^*=(1/2,1/2,1/2,1/2,-1/2),\qquad
+k_i=c_{i-1}+c_i=(0,1,1,1,0).
+\]
+
+All five forward sines equal `s`; consequently `B^T(s*1)=0`.
+Uniform form makes the phase row zero, and both internal rows vanish.
+This is a full equilibrium, with `E_*=14`, independently of the common
+origins `m,c`. It is outside the fully acute sector because the closing
+edge has negative cosine. No capacity or phase equation was suppressed.
+
+### 28.2. Full storage Hessian and its inertia
+
+Define the signed Laplacian `L_c=B^T diag(c) B`. In the coordinate order
+`(X,u,Theta,delta)`, the Hessian at the candidate is
+
+\[
+D^2E_*=
+\operatorname{diag}(4L,\ 8I_5,\ 4L_c,\ 4\operatorname{diag}(k)).
+\]
+
+Every mixed block vanishes. To determine the signed block without a
+floating eigenvalue test, put `q=B h`, so `sum(q)=0`. With
+`r=(q_0,q_1,q_2,q_3)` and `q_4=-sum(r)`,
+
+\[
+h^TL_ch=\frac12[\|r\|^2-(\mathbf1^Tr)^2].
+\]
+
+The four-dimensional quadratic form has three positive and one negative
+direction. Its pullback adds the common-phase zero. Therefore `L_c` has
+inertia `(3 positive,1 negative,1 zero)`. The internal phase block has
+three positive and two zero directions, at pairs `0` and `4`.
+
+For comparison directly in fine coordinates, the orthonormal pair
+sum/difference basis gives
+
+\[
+L_f\sim (2L)\oplus4I_5,\qquad
+D^2_{\theta\theta}V\sim(2L_c)\oplus2\operatorname{diag}(k).
+\]
+
+Hence the full twenty-dimensional storage Hessian has inertia
+
+\[
+\boxed{(15\text{ positive},\ 1\text{ negative},\ 4\text{ zero}).}
+\]
+
+Removing the common form and phase origins leaves inertia `(15,1,2)`
+in eighteen coordinates. Internal splitting has added two genuine
+null phase directions to the synchronized saddle; it has not removed
+its negative direction. In particular the full critical point is not
+nondegenerate modulo those two origin symmetries.
+
+### 28.3. Both-row tangent and the two internal Jordan blocks
+
+Let `(xi,h,v,d)` denote variations of `(X,Theta,u,delta)`. Differentiating
+the complete equations, including the phase row, gives
+
+\[
+\dot\xi=-\frac1{2\pi}L_c h,\qquad
+\dot h=\frac1{2\pi}L\xi,\qquad
+\dot v=-\frac1{2\pi}\operatorname{diag}(k)d,\qquad
+\dot d=\frac1\pi v.
+\]
+
+The common form and phase variations give two semisimple zero modes.
+At each of pairs `1,2,3`, `d_ddot=-d/(2*pi^2)`: these are three
+oscillatory pairs with angular frequency `1/(sqrt(2)*pi)`. At pairs
+`0,4`, instead,
+
+\[
+\dot v_i=0,\qquad \dot d_i=v_i/\pi.
+\]
+
+Each contributes a size-two nilpotent Jordan block. A pure internal
+phase variation lies in the tangent kernel; its conjugate form
+variation causes linear drift. These are not two further common-origin
+symmetries, and zero eigenvalues do not imply nonlinear stability.
+
+On the collective mean-free space, `h_ddot=-L L_c h/(4*pi^2)`.
+The product `L L_c` is similar there to the symmetric matrix
+`L^(1/2) L_c L^(1/2)`. Its four nonzero eigenvalues are
+
+\[
+\mu\in\left\{
+\frac{15+5\sqrt5}{4},\frac{15-5\sqrt5}{4},
+\frac{3+\sqrt{69}}4,\frac{3-\sqrt{69}}4\right\}.
+\]
+
+One direct exact check uses reflection `0<->4,1<->3`. On the odd
+subspace `h=(a,b,0,-b,-a)`, the matrices are
+
+\[
+L=\begin{pmatrix}3&-1\\-1&2\end{pmatrix},\qquad
+L_c=\begin{pmatrix}-1/2&-1/2\\-1/2&1\end{pmatrix}.
+\]
+
+Their product has characteristic polynomial
+`lambda^2-(3/2)*lambda-15/4`. On the even subspace `L_c=L/2`, yielding
+the other two nonzero values. Thus the complete tangent has one real
+hyperbolic pair, three collective oscillatory pairs, three internal
+oscillatory pairs, two size-two zero Jordan blocks and the two common
+origin zeros. The twenty-state tangent has rank `16`, its square rank
+`14`, and a four-dimensional kernel. The nonzero real pair proves local
+instability of this equilibrium; it does not prove a heteroclinic
+connection, an escape time or a global transition route.
+
+### 28.4. Frozen means expose coupling but miss exact critical branches
+
+First hold `Theta=Theta*`, set `delta_0=a,delta_4=b`, and set the other
+internal splits and all form deviations to zero. With `R=cos(a)` and
+`S=cos(b)`, summation gives the exact identity
+
+\[
+\boxed{V(\Theta^*,\delta)-14=2(1-R)(1-S).}
+\]
+
+Its leading term is `a^2*b^2/2`, and each coordinate axis is exactly
+flat. This is only a phase slice. The complete mean force on it is
+
+\[
+\dot X=-\frac{s}{2\pi}B^T(R,1,1,S,RS),
+\]
+
+and its endpoint internal forces are
+
+\[
+\dot u_0=-\frac{\sin a(1-S)}{4\pi},\qquad
+\dot u_4=-\frac{\sin b(1-R)}{4\pi}.
+\]
+
+For instance, at `b=0,a!=0` sufficiently near zero,
+`Xdot=s*(1-cos(a))*(0,1,0,0,-1)/(2*pi)` is nonzero. The flat axis is
+not an equilibrium family with frozen means, nor is this slice invariant.
+The collective response starts at quadratic order in the internal split.
+
+Allowing the means to adjust gives two exact critical branches. Define
+
+\[
+f(a)=\arcsin\!\left(\frac{s}{\cos a}\right),\qquad |a|<\pi/6,
+\]
+
+using the acute inverse-sine branch. One critical branch is
+
+\[
+\delta=(a,0,0,0,0),\qquad
+ g=(f(a),\pi/3,\pi/3,\pi/3,\pi-f(a)),
+\]
+
+and the other is
+
+\[
+\delta=(0,0,0,0,b),\qquad
+ g=(\pi/3,\pi/3,\pi/3,f(b),\pi-f(b)).
+\]
+
+Both have uniform fine form and arbitrary common phase origin. Each
+forward weighted sine equals `s`; the two cosines incident to the split
+pair cancel. Both complete rows therefore vanish, and their storage is
+exactly `14`. These are stationary internal phase differences, not
+active internal oscillations. The parameter domain makes the formula
+real and smooth; local exhaustiveness below only concerns a sufficiently
+small neighborhood of the original candidate.
+
+To prove that no other local critical branch was omitted, the fine phase
+row first forces uniform form because the support is connected. Near
+the candidate, the coefficients
+`sum_{j=i+-1} cos(delta_j)*cos(Theta_j-Theta_i)` stay nonzero for
+`i=1,2,3`. Their internal equations force `delta_1=delta_2=delta_3=0`.
+For `delta_0!=0`, its internal equation and mean sine balance together
+force the complex neighbor resultant to vanish:
+
+\[
+\cos\delta_4\,e^{i\Theta_4}+e^{i\Theta_1}=0.
+\]
+
+In the local chart `cos(delta_4)>0`, equality of moduli forces
+`cos(delta_4)=1`, hence `delta_4=0`. The three middle gaps have identical
+sines and stay on the same acute branch. Their sum is `pi` by the
+resultant cancellation, so each equals `pi/3`. The displayed first
+branch follows; the other follows by reflection. If both endpoint
+splits vanish, invertibility of `L_c` on mean-free phases gives just the
+original critical point locally. Consequently, modulo both common
+origins, the full local critical set is exactly two smooth curves
+crossing at that point. Restoring the origins gives two three-dimensional
+sheets intersecting in a two-dimensional sheet, not a smooth critical
+manifold with the dimension of the Hessian kernel at the crossing.
+
+### 28.5. Stationary elimination and a controlled mixed quartic
+
+This step eliminates stationary variables, not dynamical ones. The
+collective phase Hessian is invertible on the mean-free subspace but
+indefinite; solving its stationary equation is not minimization or a
+construction of an invariant center manifold. The other three internal
+phase coordinates at any nearby stationary solution are exactly zero.
+
+Keep `delta_0=a,delta_4=b`, and let the mean-free collective phases solve
+their stationary equations. Put `R=cos(a),S=cos(b)`. Their common
+forward sine flux `J` satisfies
+
+\[
+F(J,R,S):=\arcsin(J/R)+2\arcsin J+\arcsin(J/S)
+             -\arcsin(J/(RS))-\pi=0.
+\]
+
+At `(J,R,S)=(s,1,1)`, `F_J=6`. The analytic implicit-function theorem
+therefore gives a unique local stationary mean configuration with gaps
+
+\[
+g=\bigl(\arcsin(J/R),\arcsin J,\arcsin J,\arcsin(J/S),
+                    \pi-\arcsin(J/(RS))\bigr).
+\]
+
+All radicands below are positive in a sufficiently small neighborhood.
+The resulting stationary potential is exactly
+
+\[
+W(a,b)=20-4\left[
+\sqrt{R^2-J^2}+2\sqrt{1-J^2}+\sqrt{S^2-J^2}
+                  -\sqrt{R^2S^2-J^2}\right].
+\]
+
+This function is real analytic and independently even in `a,b`.
+The exact branches imply `W(a,0)=W(0,b)=14`. Expanding the stationary
+gap corrections `q=g-g*` gives
+
+\[
+q=s(a^2,0,0,b^2,-a^2-b^2)+O((a^2+b^2)^2).
+\]
+
+The terms of total degree four in the potential are the frozen-mean
+term `a^2*b^2/2`, the collective quadratic term `2*sum(c_i*q_i^2)`,
+and the coupling `-2*s*sum(t_i*q_i)`, where
+`t=(a^2,0,0,b^2,a^2+b^2)`. On the displayed stationary correction,
+the latter two terms are respectively `-3*a^2*b^2/2` and
+`3*a^2*b^2`. Consequently
+
+\[
+\boxed{W(a,b)=14+2a^2b^2+\mathcal R(a,b).}
+\]
+
+The remainder can be controlled without a numerical radius. Analyticity,
+independent parity and the two exact constant axes factor the result as
+`W-14=a^2*b^2*G(a^2,b^2)`, for an analytic `G` with `G(0,0)=2`.
+On a sufficiently small compact square define `C` as a common upper
+bound for the absolute values of both first partial derivatives of `G`.
+The mean-value theorem then proves
+
+\[
+|\mathcal R(a,b)|\le C a^2b^2(a^2+b^2).
+\]
+
+Choosing a smaller neighborhood with `C*(a^2+b^2)<1` makes `W>14`
+whenever `a*b!=0`; the two axes remain exactly at `14`. This is a
+rigorous local existence bound, not an evaluated radius or a uniform
+estimate throughout `|a|,|b|<pi/6`. It resolves the leading stationary
+interaction of the two degenerate internal directions while retaining
+the collective negative direction and the exact critical branches.
+It establishes no autonomous flow for `(a,b)`, nonlinear central
+stability, attraction or accessibility from a prescribed preparation.
+
+### 28.6. Winding boundary, finite controls and the next dependency
+
+At the candidate the largest absolute fine-edge principal gap is
+`2*pi/3`, leaving distance `pi/3` to the principal cut. If every fine
+phase perturbation in the selected lifts has absolute value below
+`pi/12`, each edge gap changes by less than `pi/6` and stays away from
+that cut. Every forward-oriented five-edge cycle selecting one constituent from each
+pair consequently retains winding one. The midpoint cycle does also.
+The negative collective direction and the two internal critical
+branches therefore describe local nonacute geometry inside that
+winding sector. The candidate is not a winding-change seam.
+
+The declared finite scope in `artifacts/replica-escape-geometry-20261027/scope.json`
+fixes eight constructed mathematical controls in the
+[dedicated tests](../../tests/physics/test_sine_replica_escape_geometry.py):
+fine-row criticality; Hessian and both-row tangent; coordinate
+congruence and similarity; inertia, rank and Jordan structure;
+nonlinear frozen-mean coupling; exact critical branches and domain;
+stationary elimination and the mixed quartic; and symmetry, coordinate
+covariance and winding margin. Symbolic algebra supplies an independent
+oracle alongside existing phase, complete-tangent and sine-law owners.
+The evaluation record associates the selected controls with separately
+frozen source; validation status belongs to retained receipts and the
+research program.
+
+This classification is conditional on the stated complete conservative
+law and support. It gives an unstable, internally degenerate critical
+geometry and its full local stationary branches. It does not identify
+a globally minimal barrier, a route to another winding, a heteroclinic
+connection or a source that acquires an organization. Those need their
+own discriminator under the same law; a physical interpretation also
+needs an independently justified measurement bridge. No trajectory,
+source search, event, loss, external force or new runtime API is needed
+for this analytic result.

@@ -317,14 +317,14 @@ class TetradSnapshot:
             return f"{value:.4f}"
 
         xi = _available_readout_scalar(self.xi_c, "xi_C")
-        xi_text = f"{xi:.4f}" if xi is not None and xi >= 0.0 else "UNAVAILABLE"
+        xi_text = f"{xi:.4f}" if xi is not None and xi > 0.0 else "UNAVAILABLE"
         return (
             f"Phi_s={field_mean(self.phi_s)}, |grad_phi|={field_mean(self.grad_phi)}, "
             f"|K_phi|={field_mean(self.k_phi, magnitude=True)}, xi_C={xi_text} (N={n})"
         )
 
     def is_safe(self) -> dict[str, bool]:
-        """Check the declared diagnostic cuts and finite correlation length.
+        """Check the declared diagnostic cuts and finite positive length.
 
         Returns dict with keys: phi_s_safe, grad_phi_safe, k_phi_safe,
         xi_c_safe, and overall. Unavailable correlation length fails this
@@ -357,7 +357,7 @@ class TetradSnapshot:
         )
         k_safe = field_within(self.k_phi, K_PHI_CANONICAL_THRESHOLD)
         xi = _available_readout_scalar(self.xi_c, "xi_C")
-        xi_safe = xi is not None and xi >= 0.0
+        xi_safe = xi is not None and xi > 0.0
         matching_support = bool(self.phi_s) and set(self.phi_s) == set(
             self.grad_phi
         ) == set(self.k_phi)

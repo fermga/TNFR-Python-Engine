@@ -1,0 +1,23 @@
+{
+  "schema":"tnfr.research-prerequisite-review.v1",
+  "requirement":"organizational_identity",
+  "verdict":"approved",
+  "independent":true,
+  "author":"/root",
+  "reviewer":"/root/collective_controls",
+  "criteria_assessment":{
+    "closure":"Approved only for the same prepared mathematical domain: the supplied unit C5 pair (0,1,2,3,4) and (5,6,7,8,9) with bridge (0,5), signed scalar form, circular phase, strictly positive capacities, fixed ordinary capacity mean, e=w=1/2, beta=1, a supplied fixed kappa>0, equal constituent measure and one structural clock. The capability is full-state prediction, local all-forward retention and recovery near the aligned winding-one family, and the declared internal receiver response. JO defines the full relative organization around an independently specified aligned winding-one equilibrium family. Identity is not merely winding or a diagnostic maximum. The joint tangent retains capacity perturbations and actual origin drift; positive work forms and invertible exchange coupling establish relative Hurwitz stability. The smooth nonlinear Lyapunov argument supplies a sufficiently small invariant neighborhood, all-forward retention, convergence of relative state and finite limiting common origins. The accepted perturbation domain includes nonuniform evolving capacity. The declared donor preparation produces nonzero receiver form/phase deformation on some sufficiently short interval, and the matched third-derivative contrast detects capacity release. Transmission is shared at second order with the matched held-capacity law. This establishes a retained organization that can respond while recovering; it does not require or establish a permanent pulse, repeated oscillation or an independently generated clock. The organization is initially present, so formation is not retrospectively imposed as a missing premise of this claim. The local radius and decay constants remain unquantified and parameter dependent. This is not approval of acquisition, spontaneous support or event creation, a reduced autonomous regional state, a numerical executor or finite-horizon error guarantee, a universal TNFR law, or physical mapping. The next two-bridge acquisition claim requires its own regular-transit and joint-capture proof for nonuniform evolving capacity; the held-capacity transit and single-bridge neighborhood are not silently transferred. The separate final physical-readiness review remains absent. This independent source review performed zero scientific evaluations or producer replays."
+  },
+  "evidence":[
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-foundation-scope-decision",
+      "sha256":"3e3a6fbb438bfe13b9c5b9078d0524a67a715fdcd1d1fa88de42c79f1be766e1"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "anchor":"native-joint-organization",
+      "sha256":"3e3a6fbb438bfe13b9c5b9078d0524a67a715fdcd1d1fa88de42c79f1be766e1"
+    }
+  ]
+}

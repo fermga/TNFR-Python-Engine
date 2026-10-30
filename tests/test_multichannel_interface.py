@@ -517,6 +517,10 @@ def test_reused_series_keeps_public_scores_and_both_class_orientations(
     assert result.metadata["n_channels"] == 3
     assert result.metadata["auc_available"] is True
     assert result.metadata["auc_unavailable_reason"] is None
+    metadata = series.as_dict()["xi_c_provenance"]
+    assert len(metadata) == series.xi_c.size
+    assert all(item["method"] == "spectral_gap" for item in metadata)
+    assert all(item["units"] == "dimensionless" for item in metadata)
 
 
 @pytest.mark.parametrize(
@@ -589,6 +593,50 @@ def test_block_means_missing_class_is_json_null():
     means = BENCH._block_means(np.array([1.0, 2.0, np.nan]), np.zeros(3))
     assert means == {"label0": 1.5, "label1": None}
     assert json.loads(BENCH.json_dumps(means, allow_nan=False)) == means
+
+
+@pytest.mark.parametrize("legacy", [False, True])
+def test_xi_auc_and_export_do_not_pool_different_estimators(
+    two_phase_classes, monkeypatch, legacy
+):
+    import networkx as nx
+
+    from tnfr.physics.canonical import estimate_coherence_length_with_provenance
+
+    signals, labels, config, series = two_phase_classes
+    graph = nx.path_graph(8)
+    nx.set_node_attributes(
+        graph, {node: np.exp(node / 3) - 1 for node in graph}, "delta_nfr"
+    )
+    fitted = estimate_coherence_length_with_provenance(graph)
+    assert fitted.method == "autocorrelation_fit"
+    evidence = (fitted, *series.xi_c_provenance[1:])
+    values = np.array([item.value for item in evidence])
+    series = replace(series, xi_c=values, xi_c_provenance=() if legacy else evidence)
+    result = multichannel._evaluate_synchrony_series(
+        series, labels, config=config, n_channels=3, n_samples=signals.shape[1]
+    )
+    assert result.metadata["auc_available"] is True
+    assert result.metadata["channel_auc_available"]["xi_c"] is False
+    assert result.auc["xi_c"] == 0.5
+    assert result.best_tnfr[0] != "xi_c"
+    assert "unavailable placeholder" in result.interpretation
+    expected_reason = (
+        "missing_or_misaligned_estimator_provenance"
+        if legacy
+        else "mixed_estimators_or_distance_conventions"
+    )
+    assert result.metadata["channel_auc_unavailable_reason"]["xi_c"] == expected_reason
+    monkeypatch.setattr(BENCH, "multichannel_window_series", lambda *a, **k: series)
+    monkeypatch.setattr(
+        BENCH, "synthetic_kuramoto_regime_switch", lambda **k: (signals, labels)
+    )
+    report = BENCH.run_multichannel_benchmark(source="synthetic", config=config)
+    assert report["block_means"]["xi_c"] == {"label0": None, "label1": None}
+    assert report["xi_c_comparison"]["reason"] == expected_reason
+    assert report["channel_auc_available"]["xi_c"] is False
+    np.testing.assert_array_equal(series.xi_c, values)
+    assert json.loads(BENCH.json_dumps(report, allow_nan=False))["auc"]["xi_c"] == 0.5
 
 
 def test_cli_strict_json_rejects_nonfinite_before_replacing_report(

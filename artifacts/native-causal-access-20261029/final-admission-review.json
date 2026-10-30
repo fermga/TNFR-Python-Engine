@@ -1,0 +1,132 @@
+{
+  "schema":"tnfr.native-causal-access-final-maintenance-review.v1",
+  "author":"/root",
+  "reviewer":"/root/joint_review_controls",
+  "independent":true,
+  "verdict":"PASS",
+  "reviewed_files":[
+    {
+      "path":"artifacts/native-causal-access-20261029/applied-decision.json",
+      "bytes":1677,
+      "sha256":"d4460d901a2b995347b679355fa5dc8813a5f315829187270f5dcbe9a04319ff"
+    },
+    {
+      "path":"artifacts/native-causal-access-20261029/documentation-validation.json",
+      "bytes":3055,
+      "sha256":"c41476b2a2570884c58bc48d278c12b134e3389e169b478797f026553ec1b37c"
+    },
+    {
+      "path":"artifacts/native-causal-access-20261029/field-and-contract-review-final.json",
+      "bytes":8038,
+      "sha256":"134f694e9d259e2c0124bdfdf9d3553b0d47a8367d5b397fd79217f920c5fe13"
+    },
+    {
+      "path":"artifacts/native-causal-access-20261029/finalize.py",
+      "bytes":10802,
+      "sha256":"7e329444c4e893194909acbc176a8201e79d9f375a6e186b5f515b415742a94f"
+    },
+    {
+      "path":"artifacts/native-causal-access-20261029/independent-review.json",
+      "bytes":8030,
+      "sha256":"b12349dc31b4ad3e3a371ad2ce5e5482c73d8016ee6624f07a13fad387226eee"
+    },
+    {
+      "path":"artifacts/native-causal-access-20261029/mathematical-review-final.json",
+      "bytes":7123,
+      "sha256":"5381064e54f9169c1cf184416732ae1624545d39806647e8b0080f79e3471cac"
+    },
+    {
+      "path":"artifacts/native-causal-access-20261029/operator_causality-review.json",
+      "bytes":6280,
+      "sha256":"88800276947b885b318b581d9fcc6c1fd9aeac3e34bb4ff88305793accc3086c"
+    },
+    {
+      "path":"artifacts/native-causal-access-20261029/organizational_identity-review.json",
+      "bytes":5296,
+      "sha256":"03b7656535b626b3b9e921b1ebedc2bc6bb62fdfca5ddf29417d9446eff02f10"
+    },
+    {
+      "path":"artifacts/native-causal-access-20261029/prerequisite-validation.json",
+      "bytes":1014,
+      "sha256":"730891ab371c9dac753459e7f5c045c6be3cfa8d2f500601542efb114b1e016e"
+    },
+    {
+      "path":"artifacts/native-causal-access-20261029/rendered-links.json",
+      "bytes":67,
+      "sha256":"fee9fb5f527376451703f69815fa81da8aa04d1b657607cac49d87dab0103453"
+    },
+    {
+      "path":"artifacts/native-causal-access-20261029/research_selection-review.json",
+      "bytes":5531,
+      "sha256":"b69be3b86a9e92792c755572f6a814a25859d2a72a58b0a8824bbeff2e40982e"
+    },
+    {
+      "path":"artifacts/native-causal-access-20261029/state_observation-review.json",
+      "bytes":6210,
+      "sha256":"425175c556fbf0e94efdc307081b195a1e0c12c8fdd390756d57227d72e132f5"
+    },
+    {
+      "path":"theory/RESEARCH_PROGRAM.md",
+      "bytes":79951,
+      "sha256":"a30a1a3b8e175033e83c57f1bf01b0ce9722535387fc7c40295e2d38235e8781"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "bytes":183408,
+      "sha256":"ef28a7c868a161fd289e9939fc7969a418312639b6900b294fe41057008e0c12"
+    },
+    {
+      "path":"theory/research_prerequisites.json",
+      "bytes":4636,
+      "sha256":"4b7d1fd108d64a5b64f3ecf0a20097ad6eff391618189f1bb656a1b111e447af"
+    }
+  ],
+  "scope":"Independent final maintenance, preservation, evidence-association and claim-scope review. This receipt is not an independent reproof or numerical evaluation of CA1-CA5.",
+  "contribution_disclosure":"The reviewer audited earlier joint-scope and finite-observation maintenance stages, but did not derive, author or edit the causal-access proof or its program fragments. Mathematical assessment is supplied by independent-review.json and the separately delimited contributing reviews. This review checks their source association and the maintained claim boundaries.",
+  "assessments":{
+    "preservation":"The baseline agrees with the preceding final-state source inventory. All 4626 maintained paths remain present, exactly three authorized files changed and 4623 source files remain identical. HEAD and the dirty-path inventory are preserved. The prior historical artifact receipts and pre-edit archive verify.",
+    "canonical_application":"All 170846 original chapter bytes remain intact before the exact reviewed CA append. PROGRAM contains precisely the two reviewed replacement fragments, with its remaining bytes preserved. All three final reviews bind the same current draft bytes; historical consulted canonical versions match the pre-edit archive.",
+    "editorial_correction":"The archived earlier drafts and superseded review receipts verify. Both program fragments are unchanged by the clarification. The sole CA5 replacement separates the form/phase-only preparation obstruction from finite passive exact-hold obstruction; it no longer implies that nonuniform auxiliary preparations cannot create transient contrasts. Earlier evidence remains immutable and the corrected source has final reviews.",
+    "review_independence":"The control contributor discloses the contributed CA2-CA3 analysis, the scope reviewer discloses advisory input, and the separate access_independent_review reports a complete review without derivation or draft authorship. This maintenance receipt does not present their mathematical evidence as an additional reproof.",
+    "prerequisite_scope":"Registry changes are limited to current evidence hashes and review associations. Four statuses, evidence paths, anchors and the original prepared-scope assessment prefixes remain unchanged. Primitive/derived assessments remain identical. CA does not enlarge prepared event-free approval into an autonomous preparation or controller law, and final physical readiness stays null.",
+    "causal_and_observation_limits":"The ideal selector and compensating port remain supplied access models. Exact nonuniform holding, form/phase-only preparation and the finite passive extension each retain their stated class. Zero total capacity input is not a resource claim. The phase collision concerns terminal readings outside FO's admitted phase error, not a refutation of FO or equivalence of complete traces.",
+    "next_decision":"The sole next task is an exact-scope admission decision for a possible bounded realization-feasibility study. It is not the study itself and authorizes no physical source search, fit, unit assignment, controller installation or empirical correspondence. Any later physical work still requires substantive exact-task readiness and the strict gate.",
+    "validation":"The ordinary prerequisite check passes and the strict physical gate fails for missing final readiness. Five documentation checks exit zero; current source and log receipts verify, and rendered links report no failures. The finalizer was inspected, including its exact fifteen-file review set and source preservation checks, but was not executed by this reviewer."
+  },
+  "verified_counts":{
+    "maintained_files":4626,
+    "unchanged_files":4623,
+    "changed_paths":[
+      "theory/RESEARCH_PROGRAM.md",
+      "theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "theory/research_prerequisites.json"
+    ],
+    "historical_artifact_receipts":14,
+    "reviewed_files":15,
+    "documentation_checks":5,
+    "rendered_pages":318,
+    "rendered_fragment_links":22720
+  },
+  "physical_mapping_authorized":false,
+  "physical_mapping_readiness_review":null,
+  "performed":{
+    "metadata_and_source_audit":true,
+    "new_scientific_evaluations":0,
+    "scientific_tests":0,
+    "trajectory_runs":0,
+    "historical_producer_replays":0,
+    "documentation_checks_rerun":0,
+    "canonical_edits":0,
+    "finalizer_runs":0
+  },
+  "limitations":[
+    "Hashes and metadata checks establish source association and preservation, not mathematical truth or empirical validation.",
+    "The complete mathematical audit is associated with independent-review.json; this reviewer performed no fresh proof or scientific evaluation.",
+    "Prepared prerequisite scopes remain unchanged and physical mapping remains blocked."
+  ],
+  "receipt_writer":{
+    "path":"artifacts/native-causal-access-20261029/write-final-maintenance-review.py",
+    "bytes":15622,
+    "sha256":"051916293218e7180f971069f8bfb03515d5175381685b4b169c41a79f7dcd7b"
+  }
+}

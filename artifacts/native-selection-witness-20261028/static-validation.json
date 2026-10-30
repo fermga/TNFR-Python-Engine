@@ -1,0 +1,31 @@
+{
+  "passed":true,
+  "scope":"Static formatting/lint only; no scientific module import or execution.",
+  "checks":[
+    {
+      "command":"python -m black --check <two new paths>",
+      "exit_code":1,
+      "resolution":"Black formatted both paths before final review and source freeze."
+    },
+    {
+      "command":"python -m black <two new paths>",
+      "exit_code":0
+    },
+    {
+      "command":"python -m flake8 <two new paths>",
+      "exit_code":0
+    }
+  ],
+  "sources":[
+    {
+      "path":"src/tnfr/research/native_capacity_selection.py",
+      "bytes":5192,
+      "sha256":"d58a0740676b03319a762705b5c5bad3197c08e21088a6ac04b433f3d4c6ccbf"
+    },
+    {
+      "path":"tests/research/test_native_capacity_selection.py",
+      "bytes":7540,
+      "sha256":"cbeed48f86904776c5d7257cb74fe965f95a494e7c622c6884d41c0658fcca02"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "exit_code":0,
+  "stdout":"Research prerequisites: foundations; 4/4 resolved; physical mapping blocked\n",
+  "stderr":"",
+  "registry":{
+    "path":"theory/research_prerequisites.json",
+    "bytes":4652,
+    "sha256":"df4cf0b615cfa9980c9eadc965073050e85441108f0dc4269d418ec7c6e48927"
+  }
+}

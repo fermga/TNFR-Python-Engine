@@ -22,6 +22,15 @@ cards, reuse and evidence boundaries. The
 alone selects work and its order. The atlas does not replace the generative
 objective or establish that physical entities emerge from TNFR.
 
+**Research prerequisite:** this atlas is contextual while the
+[four foundational pillars](RESEARCH_PROGRAM.md#foundational-pillars) remain
+unresolved. Do not start or extend a physical mapping, particle analogy,
+field/force identification or experimental fit from any route below until
+`python scripts/check_research_prerequisites.py --require-physical-mapping`
+passes with the required evidence and independent readiness review. Existing
+results and open targets are preserved; their presence does not authorize
+new physical work. Foundation questions are selected only by the program.
+
 <a id="vacuum-and-substrate-scope"></a>
 ### Vacuum, ether and a relational substrate
 
@@ -410,7 +419,7 @@ units. It must predict the force or field behavior of the claimed regime;
 see the [electromagnetic force and field relations](https://www.feynmanlectures.caltech.edu/II_01.html).
 Supplying those physical laws as extra equations is a constitutive model,
 not their emergence from TNFR. These obligations refine the common research
-target; the execution plan alone activates a charge or magnetism comparison.
+target; the research program alone selects a charge or magnetism comparison.
 
 <a id="quantum-emergence-obligations"></a>
 
@@ -1019,6 +1028,425 @@ state and dynamical observables; the [BEC reference](https://journals.aps.org/rm
 does not make a classical phase reader a quantum condensate. Retain these as
 deferred entries under the same evidence contract.
 
+<a id="fundamental-phenomena-synergies"></a>
+## Fundamental phenomena: shared emergence requirements
+
+The [guiding hypothesis](EMERGENT_ONTOLOGY.md#matter-emergence-hypothesis)
+includes electromagnetic, weak, strong and gravitational phenomena, together
+with quantum matter, spectra, transformations and measurement statistics.
+Its intended explanatory target is mutually compatible regimes of one
+justified complete dynamics. Electromagnetism remains a highlighted route,
+not the only destination. No fundamental interaction has been physically
+identified with the present TNFR constructions.
+
+Observed distributions, rates and uncertainties must be distinguished from
+the theoretical structures used to explain them. The Standard Model's
+electroweak SU(2) x U(1) and color SU(3) sectors are reference descriptions
+with specific matter representations and couplings; they are not consequences
+of naming a TNFR diagnostic. A proposed common origin must recover the claimed
+effective structure or an empirically equivalent account over a declared
+domain. These structures need not occur literally at the finest TNFR scale.
+See the [electroweak reference](https://pdg.lbl.gov/2025/reviews/rpp2025-rev-standard-model.pdf)
+and [QCD reference](https://pdg.lbl.gov/2025/reviews/rpp2025-rev-qcd.pdf).
+
+### Representative experimental discriminators
+
+These examples organize obligations; they are not an exhaustive inventory,
+reserved validation data or newly admitted experiments. Additional phenomena,
+precision limits and null results enter through the same observation and
+comparison contract. A successful account must respect other relevant
+constraints, not only the feature used to construct it.
+
+| Phenomenon | Observed discriminator and primary source | Required bridge / insufficient shortcut |
+| --- | --- | --- |
+| Electromagnetic and atomic response | The existing [charge, spin and magnetic-response discussion](#charge-and-magnetic-response-boundary) includes the single-electron moment; [NIST spectral data](https://physics.nist.gov/PhysRefData/ASD/Html/lineshelp.html) distinguish observed and energy-level-derived wavelengths | Consistent charge, spin, sources, transitions, units and detector model. A fitted frequency or supplied circuit equation does not derive the whole sector. |
+| Weak parity asymmetry | [Wu et al. (1957)](https://journals.aps.org/pr/pdf/10.1103/PhysRev.105.1413) measured the beta-electron angular asymmetry relative to polarized cobalt-60 nuclear spin | Define polarization, momentum, spatial reflection and outcome distributions. A geometric handedness diagnostic or winding sign is not the measured weak asymmetry. |
+| Weak charged and neutral channels | [Hasert et al. (1973)](https://doi.org/10.1016/0370-2693(73)90499-1) compared neutrino-induced hadronic events without observed charged leptons against charged-current events, with background controls | Identify incident/final states, charge exchange and rates with selection/background models. Neither a neutral nodal sum nor generic decay establishes these channels. |
+| Strong-interaction scattering | [PLUTO (1979)](https://www-library.desy.de/preparch/desy/postpr/1979/desy79-057.pdf) used event shapes and three-jet configurations in electron-positron collisions to discriminate descriptions with gluon radiation | Derive the claimed scattering states, energy-momentum and detected hadron distributions. Three graph clusters, generic binding or one successful jet observable would not establish QCD, confinement and scale dependence together. |
+| Flavor transformation | [Daya Bay (2012)](https://arxiv.org/abs/1203.1669) measured reactor electron-antineutrino disappearance using near/far detector comparisons | Relate preparation, propagation distance/energy and detection probability. Ordinary coupled-oscillator beats are not an identified neutrino flavor measurement. |
+| Quantum correlations and detection | The existing [quantum-obligation owner](#quantum-emergence-obligations) includes Bell correlations and detector statistics | Retain settings, causal premises and joint outcome probabilities. Shared memory, synchronization and an interference image do not supply those statistics. |
+| Terrestrial gravitational response | [Schlamminger et al. (2008)](https://arxiv.org/abs/0712.0607) tested composition-dependent differential acceleration; [Lee et al. (2020)](https://link.aps.org/accepted/10.1103/PhysRevLett.124.101101) tested separation-dependent torsion-balance torques | Admit inertial/gravitational response, sources, geometry, length, time and nuisance forces. Attraction alone establishes neither equivalence nor relativistic gravity; a finite-distance test is not an all-scale result. |
+
+The strong interaction between quarks and gluons must be distinguished from
+effective residual forces between nucleons. A proposed nuclear binding model
+is a narrower claim than a common origin of QCD and nuclei; the
+[nuclear effective-theory framework](https://arxiv.org/abs/0811.1338) makes the
+separate resolution and matching obligations explicit. Similarly, a weak
+transformation analogy does not recover the coupled electromagnetic,
+charged-current and neutral-current electroweak structure.
+
+### Shared prerequisites and useful connections
+
+The following are reasons to prioritize a question, not parallel task queues.
+Reuse methods only after matching complete laws and source assumptions.
+
+| Shared prerequisite | Reuse in TNFR and connection across phenomena |
+| --- | --- |
+| Organized state and predictive composition | Identity, sufficient constituent/boundary information, controlled memory and source-associated forecasts can serve several interactions. The [regional-contact result](nodal/ORGANIZED_REGIONAL_TRANSPORT.md) shows exactly what mean/magnitude observations can lose; it does not supply general object closure. |
+| Effective symmetries, constraints and propagation | Derive transformations, representations, physical degrees, dispersion and source coupling on a justified collective sector. Scalar continuity, phase covariance or circulation does not alone establish Abelian or non-Abelian gauge dynamics. |
+| Quantum matter and chirality | Spin, statistics, composition of states, transformations and detector probabilities must be mutually consistent where claimed. Geometric chirality and a complex phasor remain distinct from chiral weak couplings and quantum states. |
+| Compatible regimes across scales | One underlying law may have different effective couplings and modes at different scales. Their variation needs justified matching or flow; independent retuning for each phenomenon does not establish a common mechanism. |
+| Energy, inertia and source coupling | Reuse storage/loss, boundary work and source accounting while admitting physical momentum, mass and units separately. Conserved EPI and positive structural storage are not automatically mass or stress-energy. |
+| Joint empirical discrimination | A common preparation/clock/unit/parameter contract should predict correlated observables. Keep calibration separate from reserved tests, compare equally informed alternatives, and retain failures and null constraints. |
+
+Potential connections include electromagnetic response of strongly bound
+composites, weak transitions between nuclear states, and the gravitational
+response of composite internal energy. These are questions about compatibility
+of a common account, not mechanisms already produced by TNFR. Known
+experimental results constrain that account; no universal unification or
+unique microscopic law follows from their placement in this table.
+
+### Consequence for the current research gate
+
+The [current continuity/circulation question](RESEARCH_PROGRAM.md#deferred-composition-question)
+remains the sole selected gate. It addresses an actual inventory, current and
+the predictive information in specified cycle readings under one complete law.
+That is reusable across physical targets, but establishes no electric/color/
+weak charge, quantum matter, force carrier or gravitational source.
+
+The [electromagnetic audit](#electromagnetic-emergence-audit) retains its
+detailed requirements; the present matrix connects them to the broader
+objective. Further work should favor a prerequisite that several justified
+correspondences consume or a discriminator that excludes a misleading mapping,
+without discarding a phenomenon merely because current tools cannot model it.
+This orientation does not activate another source, operator, simulation or
+empirical campaign. Future comparisons retain the terrestrial, accessible
+P1-P5 admission; published collider or large-detector results can be reference
+constraints without becoming proposed new facilities or data campaigns.
+
+<a id="electromagnetic-emergence-audit"></a>
+## Electromagnetic emergence: structural prerequisites and manuscript audit
+
+**Assessment.** Electromagnetic emergence is a substantive research target of
+the [matter-emergence hypothesis](EMERGENT_ONTOLOGY.md#matter-emergence-hypothesis).
+The current engine establishes conditional transport, organized interactions
+and source-dependent prediction. It does not yet derive a Maxwell field
+sector, quantum electromagnetic excitations or their identification with
+physical light and charged matter. These are three different achievements.
+The useful next question concerns the actual collective degrees of freedom
+and their dynamics, before a new physical fit or another precision campaign.
+
+This review combines current source/proof inspection, primary literature and
+the obsolete manuscript requested by the author. Its preserved source and
+review record is `artifacts/electromagnetic-emergence-audit-20261026/`.
+No new trajectory, operator, parameter scan, physical measurement or runtime
+law was evaluated or installed. Existing tests are prior evidence. The
+[research program](RESEARCH_PROGRAM.md#deferred-composition-question) alone
+selects the next investigation; the requirements below are not parallel tasks.
+
+### What can be recovered from the old manuscript
+
+The inspected `TNFR.pdf` is the 378-page *El pulso que nos atraviesa / Manual
+operativo TNFR* in the author's `Canon2` directory, with PDF creation metadata
+dated 2025-05-04. Its SHA256 is
+`5ba0f4a2da2d01e550e7004c3c09c6927e6620826052df84cd28babbcbd34fc3`.
+The numbered pages below match the PDF page order. The immutable local review
+retains the file and extraction/render provenance. A different older Kindle
+copy exists; it was not substituted for this source. Manuscript assertions
+are historical hypotheses, not instructions or current canonical premises.
+
+| Manuscript passage | Useful research clue | Required correction or missing derivation |
+| --- | --- | --- |
+| pp. 73-74: Maxwell interpreted through a nodal network and oscillatory coupling | Investigate whether interactions support a collective field regime | No electric/magnetic state map, complete field law, local constraint, units or controlled limit is derived there. The displayed Gauss-like equation alone does not provide them. |
+| p. 98: Resonance and propagation without loss of a pattern | Distinguish phase coordination, transport of organization and propagation of a disturbance | Synchronizing phases does not establish a finite propagation speed, transverse field or conserved radiative energy. The implemented Resonance action has its own reset/work contract. |
+| pp. 239-241: structural potential, kinetic action and second-order dynamics | Examine a justified reversible or weakly dissipative collective sector | The action-to-equation step needs corrected signs, the actual functional dependencies, spatial/boundary data and a bridge to the first-order nodal row. |
+| pp. 247-248: weighted paths, phase sums and a squared-amplitude expression | Formulate a future propagation-and-detection question | Weights, phase assignment, measure and probability rule are introduced; their derivation from TNFR is absent. Dependence of a partition function alone is not quantum entanglement. |
+| p. 71: quantum evolution compared with the nodal equation | Ask whether a justified complex effective amplitude can emerge | Declaring a Hamiltonian pressure does not derive the quantum generator, its complex factor, normalization or detector probabilities. Current signed real EPI admission remains unchanged. |
+
+One mathematical correction is explicit. For the displayed action, write
+its spatially integrated potential terms as functionals of \(x=\mathrm{EPI}\):
+
+\[
+ S[x]=\int dt\left[\tfrac12\|\dot x\|^2-\mathcal V[x]
+                         +\mathcal L_{\Xi}[x]\right].
+\]
+
+With the displayed kinetic term, no hidden velocity dependence and boundary
+variations that remove the integration-by-parts terms, stationary action gives
+
+\[
+ \ddot x=-\frac{\delta\mathcal V}{\delta x}
+                 +\frac{\delta\mathcal L_{\Xi}}{\delta x}.
+\]
+
+The p. 241 displayed chain-rule equation reverses these two signs.
+For held ν and Φ=x, a specified spatial energy
+\(\mathcal V=\nu^2\int|\nabla x|^2/2\) gives \(+\nu^2\Delta x\)
+on the right with the corresponding boundary convention. The manuscript
+instead describes Φ through structural observables, so Φ=x is an additional
+specialization, not an inherited identification. Similarly, a term
+\(\mathcal L_{\Xi}=\int\epsilon\Xi[x]^2/2\) contributes
+\(\epsilon(D\Xi)^*\Xi\), not generally Ξ. If Ξ is treated as a prescribed
+independent source it contributes zero to the x variation. Its indicated
+state/operator dependence therefore requires an actual derivative; a linear
+source coupling would be a different supplied model. Finally, δS=0 establishes
+stationarity, not minimization, and a second-order equation requires a second
+initial datum or an independently specified pressure evolution compatible
+with \(\dot x=\nu_f p\). The current
+[variational owner](TNFR_VARIATIONAL_PRINCIPLE.md#1-main-result) retains these
+model/diagnostic distinctions.
+
+The p. 247 positive path weight and p. 248 complex amplitude prescription
+also need an explicit relationship. In a single-path specialization, the
+latter's modulus square produces \(e^{-2S/\hbar_{\rm sym}}\), whereas the former
+uses \(e^{-S/\hbar_{\rm sym}}\). They may define different objects, but their
+normalization and interpretation cannot be silently identified. Neither
+positivity nor the presence of complex phases supplies a Born-rule derivation.
+These passages motivate questions; the asserted inclusion of all known
+physics as a limiting case remains unproved.
+
+### Existing mechanisms and their actual scope
+
+| Current owner | Established contribution | Electromagnetic obligation still open |
+| --- | --- | --- |
+| [Restricted diffusion](TNFR_VARIATIONAL_PRINCIPLE.md#35-exact-restricted-dirichlet-balance), `physics/structural_diffusion.py` | Symmetric held conductance and positive capacity give a local weighted continuity equation and exact Dirichlet loss | Identification of that inventory with electric charge and with a Gauss-constrained dynamical flux |
+| [Maintained interacting pair](nodal/ORGANIZED_COMPOSITE_RELAXATION.md#mixed-pair-identity) | Actual constituent relations, source-conditioned identity, oriented ports and a controlled effective exchange | A spatial field sector, its independent physical degrees and a scalable geometry/clock bridge |
+| [Gauge owner](GAUGE_SYMMETRY_AND_UNIFICATION.md#23-cycle-closure-residual), `physics/gauge.py` | Auxiliary rotations and an exact phase-derived connection; analytic identity holonomy | Nontrivial dynamical curvature and a coupling to the actual source law |
+| `physics/conservation_gauge_unification.py` | Snapshot decompositions and a constant global oscillator-rotation compatibility check | Local dynamical gauge constraints; its checked flow reports that local gauge was not assessed |
+| [Graph-wave and harmonic models](TNFR_VARIATIONAL_PRINCIPLE.md#34-overdamped-graph-diffusion-and-the-missing-bridge) | Useful separately specified wave/oscillator comparators | Derivation of those reversible rows and their retained state from the selected TNFR law |
+| [Electrical realization](nodal/ORGANIZED_ELECTRICAL_REALIZATION.md), [feasibility review](research/ORGANIZED_ELECTRICAL_FEASIBILITY.md) | Conditional circuit realization, source-error/readout analysis and explicit apparatus limitations | Emergence of electromagnetism: Josephson/circuit laws are supplied physical references in that study |
+
+The local pure-EPI balance is a genuine starting mechanism. With frozen
+symmetric \(W\), positive \(d_i,\nu_i\) and its declared pressure channel,
+
+\[
+ J_{ij}=W_{ij}(x_i-x_j),\qquad
+ \frac{d_i}{\nu_i}\dot x_i+\sum_jJ_{ij}=0.
+\]
+
+This does not automatically apply to changing capacities, support or the
+complete multichannel/operator dynamics. Other reciprocal laws may have their
+own local balances. The missing electromagnetic inference is the association
+between such a conserved inventory, electric flux and matter response; local
+continuity need not itself be absent.
+
+The legacy gauge names require particular care. Its reconstructed link is
+\(A_{ij}=\arg\Psi_j-\arg\Psi_i\) modulo \(2\pi\). Thus
+
+\[
+ \prod_{(i,j)\in C}e^{iA_{ij}}=1
+\]
+
+on every admitted closed cycle. On a regular cell description,
+\(A=d_0\theta\) likewise gives \(d_1A=d_1d_0\theta=0\).
+Wrapped integer winding and numerical closure residuals are different from
+independent local magnetic flux. The implemented aligned matter current is
+analytically zero, and its Yang-Mills-named routine evaluates snapshot
+consistency, not evolution. These are already established contracts, not
+new evidence to obtain by repeating their tests. They exclude this direct
+mapping as a generic field realization; richer collective maps remain open.
+
+### A restriction of the present dissipative pair
+
+For the unchanged pair, write \(L=L_+\). Its complete rows and storage satisfy
+
+\[
+ \dot x=-\frac{Lx+\gamma\nabla U_+(\theta)}9,
+ \qquad \dot\theta=\frac{\gamma Lx}9,
+ \qquad \dot E_+=-\frac{\|Lx\|^2}9.
+\]
+
+On its finite connected zero-total-form leaf, a periodic complete trajectory
+would return to the same storage. Integrating the last identity forces
+\(Lx=0\) at all times. Connectedness and zero total then give \(x=0\), hence
+\(\dot\theta=0\). There is no nonconstant periodic complete trajectory in
+this autonomous model. This restricts a direct interpretation as a persistent
+lossless field oscillator; it does not exclude transient or dissipative
+electromagnetic apparatus, nor another justified collective regime.
+
+At a fixed equilibrium with phase Hessian \(K_*\), eliminating the form
+perturbation gives the tangent equation
+
+\[
+ \ddot y+\frac{L}{9}\dot y+
+               \frac{\gamma^2}{81}LK_*y=0.
+\]
+
+For a common eigenvector of L and \(K_*\), with eigenvalues ℓ and κ, its
+characteristic polynomial is
+\(r^2+(\ell/9)r+\gamma^2\ell\kappa/81\). A complete reduction to such scalar
+branches requires a common eigenbasis; commutation is an additional sufficient
+premise here, not a property assumed for arbitrary weights.
+For the specific aligned winding template of the retained pair, the
+[complete local-mode theorem](nodal/ORGANIZED_REGIONAL_TRANSPORT.md#mixed-local-modes)
+now treats every admitted unequal held-weight member without that
+commutation assumption. A positive Hermitian quadratic-pencil argument
+gives two conserved common coordinates and seventy semisimple negative
+real poles, split into thirty-five fast and thirty-five slow modes.
+This classifies the infinitesimal temporal response at that equilibrium;
+it does not imply monotone observed signals, exclude transient transport,
+or establish a continuum dispersion. The stationary cycle current has zero
+first-order sensitivity there and cannot be used as a generic linear-mode
+readout.
+
+The existing independent Q/ψ model gives
+
+\[
+ \ddot\psi+2\dot\psi+4\gamma^2\sin\psi=0,
+\]
+
+with actual projected forcing \(-2\gamma^2R/9\). At ψ=0 its tangent roots
+are \(-1\pm\sqrt{1-4\gamma^2}\), real negative in the admitted small-γ range.
+It describes damped phase relaxation, without deriving transverse radiation.
+
+A conditional scaling test is also informative. If a future admitted local
+family has commuting long-wavelength branches
+\(\ell(k)\sim a|k|^2\), \(\kappa(k)\sim b|k|^2\), \(a,b>0\), with these same
+held coefficients, its rates scale as \(|k|^2\). Even the corresponding
+undamped frequency scales as \(|k|^2\), rather than the linear \(|k|\) vacuum
+Maxwell dispersion. Different collective sectors or stiffness scaling require
+their own derivation. The current finite 36-node example supplies no physical
+wavevector or continuum family, so this is a diagnostic for a declared future
+family, not a computed dispersion or a TNFR-wide impossibility theorem.
+
+### What a classical field sector would have to retain
+
+The target must specify its regime. For a three-dimensional vacuum-like
+Maxwell sector, local constraints, electric/magnetic exchange, transverse
+propagation, source coupling and energy balance must belong to one effective
+law. Electrostatics, a lossy medium and a finite circuit have different
+restricted contracts. The conventional force/field relations are summarized
+in [Feynman II-1](https://www.feynmanlectures.caltech.edu/II_01.html);
+[Stern et al.](https://arxiv.org/abs/0803.2070) provides a primary discrete
+field/source formulation. These are reference models, not TNFR premises.
+
+An explicit algebraic audit template makes the distinction concrete. Let
+
+\[
+ d_0:C^0\to C^1,\quad d_1:C^1\to C^2,\quad d_2:C^2\to C^3,
+ \qquad d_1d_0=0,\quad d_2d_1=0
+\]
+
+be incidence maps of a specified oriented complex. Give edges electric
+variables \(e\), faces magnetic variables \(b\), and symmetric positive-definite
+constitutive matrices \(M_e,M_b\). With one signed incidence convention, closed boundaries
+and held matrices, the comparison system is
+
+\[
+ M_e\dot e=d_1^TM_b b-j,\qquad \dot b=-d_1e,
+ \qquad d_0^TM_e e=\rho,\quad d_2b=0.
+\]
+
+Its constraints are preserved if
+\(\dot\rho+d_0^Tj=0\): this follows from \(d_0^Td_1^T=0\) and \(d_2d_1=0\).
+Its storage obeys
+
+\[
+ \frac{d}{dt}\left(\tfrac12 e^TM_e e+\tfrac12 b^TM_b b\right)=-e^Tj.
+\]
+
+Boundary ports add their explicit power term. The incidence identities,
+constitutive metric, matter current and storage exchange have separate jobs.
+Adding these variables and equations would implement a supplied Maxwell
+model. To establish emergence, an actual-state map \(H\) from one TNFR law
+F must instead satisfy \(DH(z)F(z)=F_{\rm eff}(H(z))\), or a controlled error
+or memory relation, on an admitted source sector. The incidence, metric and
+spatial interpretation must also be justified. Graph cycles alone neither
+select faces nor establish a three-dimensional physical continuum.
+
+The potential formulation is optional: gauge-invariant electric/magnetic
+variables can carry the constraint structure directly. Conversely, a local
+change of description must not be confused with physically rotating only one
+constituent. A derivation must count physical degrees after constraints and
+redundancies; in the declared vacuum continuum regime the two transverse
+polarizations and their response must be recovered. A single spectral peak
+or a scalar wave equation does not settle that count.
+
+### Lessons from explicit emergence constructions
+
+| Primary construction | Mechanism demonstrated in its model | Transferable question for TNFR |
+| --- | --- | --- |
+| [Hermele, Fisher and Balents (2004)](https://arxiv.org/abs/cond-mat/0305401) | A specified quantum spin model has a constrained low-energy U(1) sector, emergent charges and a linearly dispersing photon mode with a Maxwell description | Can one derive an invariant or controlled collective sector and its constraints from the actual fine law? Exact microscopic gauge symmetry need not be present for effective gauge structure to emerge. |
+| [Levin and Wen (2005)](https://arxiv.org/abs/cond-mat/0404617) | Quantum string-net Hamiltonians organize topological phases; the higher-dimensional construction admits gauge and fermionic excitations | Collective organization can change excitation properties, but its quantum state space and Hamiltonian are substantive premises. Two-dimensional exactly soluble topological models are not automatically three-dimensional Maxwell radiation. |
+| [Benton, Sikora and Shannon (2012)](https://arxiv.org/abs/1204.1325) | A quantum-spin-ice field theory predicts dynamical neutron-scattering structure factors and is compared with quantum Monte Carlo | A response tensor with polarization, frequency and preparation is a stronger discriminator than a visual pattern. The reported comparison is with simulation, not direct validation of TNFR or a vacuum photon experiment. |
+
+These examples support the feasibility of *some* emergent gauge mechanisms.
+They do not establish the TNFR mechanism or that their emergent fields are the
+fundamental electromagnetic field. A material's effective propagation speed
+and charge units need not equal vacuum c or elementary electric charge.
+For TNFR, absence of a microscopic vector potential is therefore not a
+universal no-go; the constructive burden is a derived effective sector with
+the required dynamics and independently identified observations.
+
+### Organized matter, double slits and the next discriminating prerequisite
+
+The same-law family hypothesis becomes useful here: candidate matter-like
+organizations should have reproducible response and transformation classes
+under one complete dynamics. Their coupling to a candidate field should
+account consistently for source conservation, work and force/transport
+response. It must distinguish properties inherited from a prepared node or
+contact from properties derived from the organization. A discrete catalogue,
+electric-charge spectrum, particle identity or periodic table is not assumed.
+
+The double slit is a related but distinct benchmark. The single-electron
+build-up and one/two-aperture distributions in
+[Bach et al. (2013)](https://arxiv.org/abs/1210.6243) are known experimental
+constraints. The measurement model of
+[Kincaid et al. (2016)](https://www.nist.gov/publications/measurement-induced-decoherence-and-information-double-slit-interference)
+separately relates path-information acquisition to interference loss.
+A TNFR comparison would require propagation, aperture interaction, localized
+detection and normalized probabilities under one model, with independently
+admitted readout. Classical electromagnetic interference, a photon
+description and quantum matter-wave detection are distinct claims. The
+[quantum obligations](#quantum-emergence-obligations) retain the additional
+probability and correlation requirements.
+
+The first useful new discrimination is **whether the actual interaction's
+contact phases factor through one phase per region, or require additional
+profile information for the declared response**. Begin with existing complete-law and constituent/interface
+owners. Specify the state map, domain, path-composition rule and the response
+it predicts before selecting another support or acquisition.
+
+One concrete candidate uses the four nine-cycle regions already present in
+the pair, with no third object. In a regional decomposition
+\(\theta_i=\varphi_a+\eta_i\), consider the interaction coefficient
+
+\[
+ C_{ab}(\eta)=\sum_{i\in a,\ j\in b}
+                   \sigma_{ij}e^{i(\eta_j-\eta_i)}.
+\]
+
+Here \(\sigma_{ij}\) must be the actual sine-potential coefficient, not the
+possibly different form conductance. The corresponding cross-region sine
+sum is exactly \(\operatorname{Im}[e^{i(\varphi_b-\varphi_a)}C_{ab}]\).
+Symmetric coefficients give \(C_{ba}=\overline{C_{ab}}\). Changing only the
+regional frame split, \(\varphi_a\mapsto\varphi_a+\chi_a\), gives
+\(C_{ab}\mapsto e^{i(\chi_a-\chi_b)}C_{ab}\). This is a redundancy of the
+description, not a new physical local symmetry. A prospective unit-link
+product around \(D_A\to D_B\to R_B\to R_A\to D_A\) is meaningful only
+where all four coefficients are nonzero. Establishing that domain, its
+factorization and the source-supported response significance is the next
+study, not a result claimed by this review.
+
+On a connected coarse support, such unit links factor through vertex phases
+if and only if every independent cycle product is one: choose vertex phases
+along a spanning tree, then test its remaining chords. For this four-region
+rectangle there is one independent cycle. A nontrivial product would certify
+nonfactorizable coarse contact phases, but may still be completely determined
+by hidden profiles or their retained memory. The complete microscopic law
+already produces the response; the comparison concerns sufficiency of the
+declared coarse data, not outperforming that microscopic law.
+Retain coefficient magnitudes and their source uncertainties separately:
+unit-link products do not encode coupling strengths.
+
+If a U(1) transport representation is proposed, its reverse-edge rule,
+local-frame covariance and nonvanishing domain must first be justified.
+The phase of a generic complex frequency-response entry is insufficient:
+reciprocal delayed or dissipative systems can acquire such phases without
+unitary transport or magnetic curvature. Compare with an equally informed
+scalar-gradient model retaining the same source history and memory. Admit
+exact factorization, a counterexample showing needed hidden information,
+or a controlled nontrivial transport channel as distinct outcomes.
+
+A positive loop result would still need preserved local flux constraints,
+transverse dynamical response, compatible storage/source coupling and a
+spatial scaling limit before a Maxwell claim. A negative result delimits the
+specified map and law. This ordering uses the maintained organizations and
+their interfaces without importing a desired field law or repeatedly testing
+the already known pure-gauge zero. It gives the next study a falsifiable
+mathematical target while keeping physical calibration and quantum detection
+as explicit later obligations.
+
 ## 2. Classical Adapter and Overdamped Limit
 
 ### 2.1 Regime Conditions
@@ -1359,3 +1787,141 @@ does not override those observational dependencies or provide a force law.
 - [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) — Conservation laws
 - [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md) — Lagrangian formulation
 - [GLOSSARY.md](GLOSSARY.md) — Operational definitions
+
+<a id="native-access-literature-result"></a>
+## Native one-bridge consumer: bounded apparatus access review
+
+**Decision, 2026-10-29:** none of the three inspected apparatus routes yet
+justifies a realization/measurement bridge to the prepared one-bridge JO/FO
+consumer. All three receive **insufficient or not-yet-comparable evidence**.
+This is an access assessment, not an empirical test or a platform-wide
+impossibility theorem. The [exact admission](nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md#native-feasibility-admission)
+authorized this source inquiry only; the four prepared foundations and their
+conditional results retain their original scope.
+
+### Source ledger and limits
+
+The closed ledger and source captures are preserved in
+`artifacts/native-access-literature-20261029/source-ledger.json`.
+Five documents and two locating queries were used, below the six/six ceilings.
+The family order was electronic, mechanical, then electrochemical, with one
+apparatus per family. The mechanical case is restricted to the reported
+3630/3790 Hz pair; other pairs mentioned in its documentation are not cases.
+All sources were accessed on 2026-10-29. Each selection and access-based reason
+was recorded before detailed assessment. Query excerpts located publications;
+they were not used to establish capabilities.
+
+| ID | Primary document and fixed identity | Inspected locations / provenance |
+| --- | --- | --- |
+| D1 | [Vera-Avila et al., electronic oscillator methods](https://pmc.ncbi.nlm.nih.gov/articles/PMC6961064/), DOI `10.1016/j.dib.2019.105012` | Specifications Table; Sections 2.1-2.3, equations (1)-(3), Table 1 and Figures 5-7. Published article retrieved as Europe PMC XML after the web view failed. |
+| D2 | [Author MEMS acquisition description](https://zenodo.org/records/18336535), DOI `10.5281/zenodo.18336535`, v2, 2026-02-18 | Description and Sections 1-3; text only, without the listed archives or scripts. |
+| D3 | [Ved et al., MEMS article](https://publikationen.bibliothek.kit.edu/1000191307/176812217), DOI `10.1088/2634-4386/ae45c9`, published 2026-02-25 | Sections 2-3 and 7; Appendices A-C, printed pp.12-13 (PDF pp.13-14), including visual equation/table inspection. Same apparatus as D2. |
+| D4 | [Nijholt et al., electrochemical article](https://pmc.ncbi.nlm.nih.gov/articles/PMC9385626/), DOI `10.1038/s41467-022-32282-4`, version of record 2022-08-17 | Experimental Results, Figure 1, equations (1)-(5), Data availability; PMC/Europe PMC representations after publisher redirect failure. Separate supplementary notes were not inspected. |
+| D5 | [Author acquisition README](https://github.com/jloespindola/Hypernetwork_data/blob/fe79902503e59f8fba1c635b5e01518d13b904dc/README.md) | Entire short README at the explicitly historical commit `fe79902503e59f8fba1c635b5e01518d13b904dc`, modified 2021-11-18; current HEAD is not asserted. |
+
+Q1 located D3 by its title; Q2 located another public representation of D4
+by DOI. Failed representations remain in the ledger; they were not replaced
+by different documents. Printed appendices belong to D3, whereas separately
+linked supplements, raw signals and reconstruction code were not retrieved.
+The acquisition closed once these cases could be classified. No signal
+archive, response array, audio or plotting script was read or executed.
+
+### Electronic circuits: explicit coupling, incomplete state access
+
+**Documented facts (D1).** The apparatus uses 28 three-voltage Rossler-like
+circuits with configurable diffusive connections. Only the second voltage
+is recorded per circuit. A digital potentiometer changes coupling globally
+after an initial uncoupled settling interval. The paper supplies circuit
+equations and nominal components, and reports multichannel acquisition,
+30 kS/s, 16-bit conversion and a third-order 1500 Hz Butterworth filter.
+Its repetition labels do not describe independently matched complete resets.
+
+| Required access | Assessment against the fixed native consumer |
+| --- | --- |
+| Support, state and full law | A circuit network and its supplied local terms are documented. Neither its support nor its three voltage coordinates establishes the native two-C5, one-bridge law. |
+| Preparation and observation | One recorded voltage does not certify the two hidden voltages, primitive phase or an independently prepared capacity profile. Filter initialization and matched reset errors remain unestablished. |
+| Capacity policy and companion rows | Adjusting edge coupling is not a documented switch between held and diffusing native capacity with unchanged form/phase laws. Fixed circuit capacitors are not native capacity by their name. |
+| Reactions, readout and clock | Active electronics and acquisition are reported, but selective-control reaction/resource accounting, channel timing and calibrated total uncertainty required here remain open. Nominal ADC specifications do not supply them. |
+| Exact law or controlled reduction | The earlier [voltage-closure result](research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#rossler-phase-information-admission) retains its original model scope. No new reduction to JO/FO is derived from it here. |
+
+**Outcome:** insufficient evidence for the complete consumer. The published
+voltage record cannot be treated directly as the native initial state.
+This does not exclude a different, independently justified circuit realization.
+
+### Mechanical pair: a useful complete model, different intervention
+
+**Documented facts (D3).** The first-mode model retains deflection, velocity,
+temperature difference and a filtered signal per resonator. Its actuation
+combines self-feedback, cross-feedback and bias; heating depends on squared
+actuation voltage. The setup uses piezoresistive sensing and FPGA control.
+Appendix C describes simultaneous electrical/laser-deflection calibration.
+Section 7 discusses limitations of truncating the mechanical/thermal model.
+**Acquisition facts (D2):** the paired records have a stated 125 kHz sampling
+rate and channel order; control settings are documented. D3's 125 MHz ADC/DAC
+specification concerns converter hardware. These different rates alone imply
+neither a contradiction nor a bound on interchannel timing.
+
+| Required access | Assessment against the fixed native consumer |
+| --- | --- |
+| Support, state and full law | The supplied pair has a four-state-per-resonator model. A measured pair is not the native ten-node support; no uninspected replication or state embedding is assumed. |
+| Preparation and observation | Calibration is a real documented strength. It does not establish simultaneous preparation/readout of every mechanical, thermal and filter state, or a native phase/capacity initialization. |
+| Capacity policy and companion rows | Feedback enters thermal actuation and changes the coupled response. Frequency tuning does not establish an independently accessible native capacity or the CA selective hold. |
+| Reactions, readout and clock | The model includes heating and ambient relaxation. A complete actuator/observer balance and reset, gain, offset and timing uncertainty for JO/FO remain unestablished by this review. |
+| Exact law or controlled reduction | The explicit law makes missing premises inspectable. It supplies no exact native correspondence or controlled error bound transferring the prepared consumer; the source's modal approximation retains its own limitations. |
+
+**Outcome:** insufficient or not-yet-comparable evidence. This is the most
+explicit state/control description among these three cases, not a positive
+admission as a native realization. The source's reported calibration is not
+erased by the unresolved bridge.
+
+### Electrochemical ring: accessible signals with retained memory
+
+**Documented facts (D4).** Four nickel electrodes are controlled through a
+potentiostat and computer feedback. Individual potentials are rescaled and
+offset corrected; nonlinear ring feedback uses stored delayed values.
+Resistors/capacitors tune the uncoupled frequencies. The reported experiment
+uses a 1.65 s delay; its frequency analysis applies a 45 s Savitzky-Golay
+filter and fits phase-interaction coefficients. **D5** identifies time in
+seconds, four potentials, four phases and coupled/uncoupled files; it does
+not describe matched resets or their uncertainties.
+
+| Required access | Assessment against the fixed native consumer |
+| --- | --- |
+| Support, state and full law | The physical ring and programmed feedback are explicit, including history. They do not establish the memoryless native support/law or a complete chemical/controller state reduction. |
+| Preparation and observation | Potential channels and derived phases are documented. Neither supplies independent primitive-phase preparation, hidden chemical state or a native capacity profile. |
+| Capacity policy and companion rows | Frequency tuning and switching coupling are distinct from switching the native capacity row. An uncoupled record is not the held-capacity reference on the same coupled support. |
+| Reactions, readout and clock | Applied potentials drive a chemical process; feedback and sensing belong in its causal account. Gain/offset processing is described, but a calibrated JO/FO clock/error budget and selective actuator balance remain open. |
+| Exact law or controlled reduction | Delayed feedback and filtered observations retain memory obligations. A reduced or fitted phase description is not independent evidence of the native complete law. |
+
+**Outcome:** insufficient or not-yet-comparable evidence. Removing memory,
+assigning the extracted phase to native phase, or calling frequency capacity
+would change the question rather than close its access requirements.
+
+### Consequence for the next foundation question
+
+The shared obstruction is an **unestablished intervention and observation
+bridge**, not a demonstrated shortage of instrument precision. A configurable
+system can change several causal rows at once; a recorded scalar need not
+certify the state that controls its future response. These are the audit's
+inferences from the source facts and the existing
+[CA access requirements](nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md#native-causal-access).
+They do not deny other realizations or the existence of undocumented access.
+
+The [FO budget](nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md#native-finite-observation)
+`2^-166` remains sufficient in native units, not necessary physical precision.
+No laboratory conversion, fit, response calculation or experimental verdict
+was attempted. An engineered equation emulator would test implementation
+under supplied laws, not independently establish their natural realization.
+
+The single recommended dependency is to resolve the **native information
+boundary between independently supplied preparation and a causal EPI record**.
+CA supplies a sufficient access record and a concrete terminal-reading
+collision, but does not settle whether a finite record can resolve that
+particular phase ambiguity between its held/dynamic policies. Restrict this
+question to the selective policies in equation (CA2) and the hidden-phase
+family in section CA4, equations (CA5)-(CA9), still supplying the actual capacity
+profile, support, clock and gains. This targets a precise missing premise
+before demanding another apparatus search or optimizing the small FO bound.
+It is not a claim of global observability, a new physical coordinate assignment
+or authorization of a candidate bridge. The [research program](RESEARCH_PROGRAM.md#research-current-question)
+owns the prospective scope and the next step; no new theorem is evaluated here.

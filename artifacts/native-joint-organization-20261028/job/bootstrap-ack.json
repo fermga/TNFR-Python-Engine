@@ -1,0 +1,12 @@
+{
+  "executable": "C:\\TNFR-Python-Engine\\.venv313\\Scripts\\python.exe",
+  "job_name": "Local\\TNFR-22764-2106ac0acf44e2ce",
+  "job_verified": true,
+  "nonce": "2106ac0acf44e2ce98876611e5c0246f20e44548f1e5956e6711860a2e8592a3",
+  "prefix": "C:\\TNFR-Python-Engine\\.venv313",
+  "schema": "tnfr.bootstrap-ack.v1",
+  "supervisor_pid": 22764,
+  "worker": "C:\\TNFR-Python-Engine\\artifacts\\native-joint-organization-20261028\\validate.py",
+  "worker_creation_time": 134376853214418228,
+  "worker_pid": 28644
+}

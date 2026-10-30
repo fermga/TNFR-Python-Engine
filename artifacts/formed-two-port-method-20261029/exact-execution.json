@@ -1,0 +1,28 @@
+{
+  "passed":true,
+  "command":[
+    "C:\\TNFR-Python-Engine\\.venv313\\Scripts\\python.exe",
+    "-E",
+    "C:\\TNFR-Python-Engine\\artifacts\\formed-two-port-method-20261029\\check_method.py"
+  ],
+  "timeout_seconds":60,
+  "timed_out":false,
+  "exit_code":0,
+  "wall_seconds":1.5784122999975807,
+  "assertions":"enabled: -E, no -O",
+  "source_freeze":{
+    "path":"artifacts/formed-two-port-method-20261029/source-freeze.json",
+    "bytes":6890,
+    "sha256":"ec15297bdc318e30d9d71be4f4c72781e7ef2ad0508cf15f71fa721ee1355eb9"
+  },
+  "log":{
+    "path":"artifacts/formed-two-port-method-20261029/exact-controls.log",
+    "bytes":62,
+    "sha256":"d32ab32e24216c4d119fd9ae37459d180ba958512f91469edf7322c603e55fd5"
+  },
+  "wrapper":{
+    "path":"artifacts/formed-two-port-method-20261029/run_exact_controls.py",
+    "bytes":1715,
+    "sha256":"ebfbc6897a9341533af3c70e5bd582ec61f4f1f4795104e3926c6ca49836c466"
+  }
+}

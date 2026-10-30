@@ -1,0 +1,125 @@
+{
+  "schema":"tnfr.native-joint-scope-final-admission-review.v1",
+  "verdict":"PASS",
+  "independent":true,
+  "author":"/root",
+  "reviewer":"/root/joint_review_observation",
+  "reviewed_files":[
+    {
+      "path":"artifacts/native-joint-scope-review-20261029/applied-decision.json",
+      "bytes":1653,
+      "sha256":"1822a70961058448d235e0c5737f72c1f1f501b0dde3e1ac6553a7a1e0c4e26f"
+    },
+    {
+      "path":"artifacts/native-joint-scope-review-20261029/documentation-validation.json",
+      "bytes":3084,
+      "sha256":"a62dc64d2f83829ee830f8e9937bbf1864c34f5ba3e097fa2e037fdcf75d3fc4"
+    },
+    {
+      "path":"artifacts/native-joint-scope-review-20261029/finalize.py",
+      "bytes":10594,
+      "sha256":"27d523e58168e4b63f5c89ef5e917e6a587361c6ab7be3d73703c1a340befa07"
+    },
+    {
+      "path":"artifacts/native-joint-scope-review-20261029/mathematical-review.json",
+      "bytes":5779,
+      "sha256":"e98bebc6d455cecaadc78f87a93d5e98c12344f380857f45aa2e8563c2ff993b"
+    },
+    {
+      "path":"artifacts/native-joint-scope-review-20261029/observation-review.json",
+      "bytes":5424,
+      "sha256":"58ce06d09ac8d34672adee1332d820fa515edb04557f16232c64b781329fd497"
+    },
+    {
+      "path":"artifacts/native-joint-scope-review-20261029/operator_causality-review.json",
+      "bytes":5471,
+      "sha256":"82ba0de8a16a7d9baeab2c624a285ad96eda836748881edcec648a6ff62e81ae"
+    },
+    {
+      "path":"artifacts/native-joint-scope-review-20261029/organizational_identity-review.json",
+      "bytes":4487,
+      "sha256":"ce88c8314748192c48f034d8f8c4108d88a496dcfc4030a32e489514600e3cf6"
+    },
+    {
+      "path":"artifacts/native-joint-scope-review-20261029/prerequisite-validation.json",
+      "bytes":1024,
+      "sha256":"14e4d7b9955fdb45be7c7d82c1308d522445f153609e557301d7387dbfe8c344"
+    },
+    {
+      "path":"artifacts/native-joint-scope-review-20261029/rendered-links.json",
+      "bytes":67,
+      "sha256":"705db2dcf4ce6e8a316e8e0cb54b8e02df3c52a287506668e0c1b28bedf0fca4"
+    },
+    {
+      "path":"artifacts/native-joint-scope-review-20261029/research_selection-review.json",
+      "bytes":4722,
+      "sha256":"98b1ed0c31edc595e64e667721bd9c6ccd1808870c9cd6e5a8cd6e87eb0f1c51"
+    },
+    {
+      "path":"artifacts/native-joint-scope-review-20261029/scope-review.json",
+      "bytes":4850,
+      "sha256":"0994fee4595f3623bd4313388e01efca8b62587e38d1582d032d4cc91fb24cad"
+    },
+    {
+      "path":"artifacts/native-joint-scope-review-20261029/state_observation-review.json",
+      "bytes":5401,
+      "sha256":"182285cdc0fcd772a7674020d382292535fdd5921431ccd0b6207d8dbe77a7ca"
+    },
+    {
+      "path":"theory/RESEARCH_PROGRAM.md",
+      "bytes":80398,
+      "sha256":"025e63c74642921e5bac88a26e7844bcf8e340e2d1e3157aaa7a12002ac165ac"
+    },
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "bytes":159069,
+      "sha256":"ec81642d6cfe7b6082425578ddd7f9a57c802ed90542bf6a2ce8b27e07b65772"
+    },
+    {
+      "path":"theory/research_prerequisites.json",
+      "bytes":4656,
+      "sha256":"2e67fad4eedbc95df78b9b84784a897d8a3e6b8bd879327967683004cc5a6ad6"
+    }
+  ],
+  "independence_scope":"The reviewer did not author or edit the canonical changes, three drafts, finalize.py, application, prerequisite renewals or documentation checks. The reviewer supplied prior scoping advice and authored observation-review.json; its inclusion is a source-association check, not a new independent approval of the reviewer's own earlier verdict. The final admission independently assesses the root-authored applied change, controls renewals and finalizer.",
+  "assessment":{
+    "application":"The complete 150187-byte prior chapter is preserved and the append exactly equals the reviewed draft under declared CRLF normalization. PROGRAM exactly reconstructs from its two reviewed replacement regions; all other bytes remain unchanged.",
+    "source_preservation":"The maintained inventory remains 4626 files, the existing dirty-path inventory and HEAD are unchanged, and exactly the three authorized maintained files differ. No other baseline file was altered.",
+    "prepared_scopes":"The four registry contracts are structurally unchanged after removing only evidence hashes and independent-review associations. The renewed independent reviews retain the prepared single-bridge domain and original evidence anchors. Two-bridge acquisition, selection and symbolic robustness do not enlarge that scope.",
+    "observation":"The scalar JO receiver readout is an observation of the retained full state. A cubic jet is not presented as an already completed finite-noise discriminator. The next task must admit horizon, uniform remainder, full-state preparation and mismatch, clock and readout errors, plus a nonempty separation domain or precise abstention.",
+    "identification_and_bridge":"Existing held-capacity consensus identification is reused only for principles. The selected consumer does not transfer its model-specific bounds, identify EPI with a physical measurement, or supply the independent external preparation/measurement/intervention/clock bridge.",
+    "reviews":"The three draft reviews associate the actual unchanged final drafts and carry distinct author/reviewer scope statements. Four prepared prerequisite reviews associate the final canonical chapter and unchanged evidence anchors.",
+    "documentation":"All five recorded documentation checks exit zero, associate the current maintained bytes and immutable logs, and the rendered-link record reports no failures. No documentation check or renderer was rerun by this reviewer.",
+    "physical_gate":"Ordinary foundations validation exits zero for the four scoped approvals; physical validation exits one specifically because the final readiness review is absent. No physical mapping is authorized.",
+    "finalizer":"Static source review finds that finalize.py checks the exact application, inventory, historical receipts, reviews, registry preservation, documentation receipts and 15-file final review before writing its exclusive final archive/state. Its three maintained changes are the authorized set. The reviewer did not execute or import it.",
+    "historical_evidence":"The previous final-state receipt, original maintained-source associations and all nested artifact receipts are verified against existing bytes without producer replay. This verifies association and preservation, not execution authenticity."
+  },
+  "verification_counts":{
+    "maintained_files":4626,
+    "unchanged_maintained_files":4623,
+    "required_final_receipts":15,
+    "documentation_checks":5,
+    "historical_receipts_checked_with_duplicates":86,
+    "rendered_pages":318,
+    "rendered_local_fragment_links":22681
+  },
+  "performed":{
+    "static_source_review":true,
+    "metadata_and_byte_checks":true,
+    "new_scientific_evaluations":0,
+    "scientific_imports":0,
+    "new_trajectories":0,
+    "candidate_generations":0,
+    "historical_producer_replays":0,
+    "documentation_replays":0,
+    "finalizer_executions":0,
+    "canonical_edits":0
+  },
+  "limitations":[
+    "This admits the documentation-only joint scope decision and next mathematical dependency; no new finite observation bound, practical tolerance or physical result is established.",
+    "Review is static and byte-associated; it does not reprove or replay historical scientific evidence, certify all possible TNFR laws, or authenticate external acquisition.",
+    "The later final archive/state writer has been reviewed but not executed by this reviewer; its completion remains the author's finalization step."
+  ],
+  "physical_mapping_authorized":false,
+  "physical_mapping_readiness_review":null
+}

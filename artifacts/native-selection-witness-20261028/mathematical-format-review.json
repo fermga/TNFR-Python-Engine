@@ -1,0 +1,45 @@
+{
+  "schema":"tnfr.mathematical-review-format-supplement.v1",
+  "reviewed_utc":"2026-10-28T20:11:50.259661+00:00",
+  "author":"/root",
+  "reviewer":"/root/collective_math",
+  "independent":true,
+  "verdict":"PASS",
+  "scope":"Static reread of final formatted adapter and six controls. This supplement updates their source associations in the prior mathematical review; it preserves the prior record and its substantive assessments and exclusions.",
+  "supersedes_source_associations_in":{
+    "path":"artifacts/native-selection-witness-20261028/mathematical-review.json",
+    "bytes":7294,
+    "sha256":"4b9739cb6be6bb1ad2fef224235feb2cc7c1d543b5f473550665b289009be04c"
+  },
+  "sources":[
+    {
+      "path":"src/tnfr/research/native_capacity_selection.py",
+      "bytes":5192,
+      "sha256":"d58a0740676b03319a762705b5c5bad3197c08e21088a6ac04b433f3d4c6ccbf"
+    },
+    {
+      "path":"tests/research/test_native_capacity_selection.py",
+      "bytes":7540,
+      "sha256":"cbeed48f86904776c5d7257cb74fe965f95a494e7c622c6884d41c0658fcca02"
+    }
+  ],
+  "unchanged_reviewed_proof":[
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "bytes":135065,
+      "sha256":"383904d7b77b86a21b64b0970ec0a6dfd209aebe60ffa820833ace31923d40a2"
+    },
+    {
+      "path":"artifacts/native-selection-witness-20261028/witness-section.md",
+      "bytes":8438,
+      "sha256":"070fe3aefa008b9db2cb4ac8826eeac3e2f74a0dcf98af93d24e8ba5adee08db"
+    }
+  ],
+  "assessment":"Read both complete final source files. Their formulas, domain and capture predicates, exact arithmetic preparation, six control assertions and single-call delegation are unchanged in meaning. The visible modifications collapse line wrapping in the capture predicate and test comprehensions. The complete six-row native/capacity field, joint jet inputs, central resultant and capacity admission, strict whole-box capture and evidence-preserving unavailable-step behavior remain consistent with W1-W3 and the prior review. No numerical expectation, tolerance, source coordinate or outcome criterion changed.",
+  "independence_boundary":"As in the prior receipt, the reviewer authored seed_recipe.py. Neither this supplement nor the prior mathematical review certifies an independent review of that recipe. Independent review is limited to the root-authored section and independently authored adapter/tests.",
+  "new_scientific_evaluations":0,
+  "test_imports_or_runs":0,
+  "candidate_imports_or_calls":0,
+  "source_edits_by_reviewer":0,
+  "actions_performed":"Read final adapter/tests and metadata hashes, verify associations of the unchanged proof and preserved prior receipt, then exclusively create this supplement using the shared artifact writer. No execution or import of the scientific sources."
+}

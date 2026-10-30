@@ -1,0 +1,196 @@
+{
+  "schema":"tnfr.scientific-pre-evaluation-review.v1",
+  "reviewed_utc":"2026-10-28T20:14:09.521196+00:00",
+  "verdict":"PASS",
+  "independent":true,
+  "author":"/root",
+  "reviewer":"/root/collective_controls",
+  "control_author":"/root/collective_engine",
+  "candidate_recipe_author":"/root/collective_math",
+  "scope":{
+    "path":"artifacts/native-selection-witness-20261028/scope.json",
+    "bytes":2388,
+    "sha256":"5d56f53ddc0c14adc3b5bf738dceff7ddfdbf62f387057367f916da02a067566"
+  },
+  "sources":[
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "bytes":135065,
+      "sha256":"383904d7b77b86a21b64b0970ec0a6dfd209aebe60ffa820833ace31923d40a2"
+    },
+    {
+      "path":"src/tnfr/research/native_capacity_selection.py",
+      "bytes":5192,
+      "sha256":"d58a0740676b03319a762705b5c5bad3197c08e21088a6ac04b433f3d4c6ccbf"
+    },
+    {
+      "path":"tests/research/test_native_capacity_selection.py",
+      "bytes":7540,
+      "sha256":"cbeed48f86904776c5d7257cb74fe965f95a494e7c622c6884d41c0658fcca02"
+    },
+    {
+      "path":"artifacts/native-selection-witness-20261028/seed_recipe.py",
+      "bytes":12711,
+      "sha256":"06f5695d1be123f786b267f963a927eb961248aaaf72dad070c49eadbc1c2379"
+    },
+    {
+      "path":"artifacts/native-selection-witness-20261028/validate.py",
+      "bytes":15530,
+      "sha256":"f1946659757164122f3b993a0e41a537d4dbeeebd034cb9c34c7a4a3e2f80a88"
+    },
+    {
+      "path":"artifacts/native-selection-witness-20261028/scope.json",
+      "bytes":2388,
+      "sha256":"5d56f53ddc0c14adc3b5bf738dceff7ddfdbf62f387057367f916da02a067566"
+    },
+    {
+      "path":"src/tnfr/physics/relational_transit.py",
+      "bytes":11559,
+      "sha256":"b752c3803c16f2bc7cffb5b58a7ab5eafaf5eda7f858eac72b953f528b924491"
+    },
+    {
+      "path":"src/tnfr/physics/relational_capture.py",
+      "bytes":71258,
+      "sha256":"355d489334c940cf052b2ad816ce05b70eb9de9ea25be183390a9dd566441292"
+    },
+    {
+      "path":"src/tnfr/mathematics/_validated_taylor.py",
+      "bytes":19411,
+      "sha256":"404c9914862e03c1e7da69dd60ecffe9e4208a02521a59bb8aac380a59ac1863"
+    },
+    {
+      "path":"src/tnfr/mathematics/_comparison_flow.py",
+      "bytes":19719,
+      "sha256":"0d4dae1bad151b477c81500aa3e0537bcd7446cd0ec1abbdb9334fbcd417077a"
+    },
+    {
+      "path":"src/tnfr/mathematics/_interval_taylor.py",
+      "bytes":13643,
+      "sha256":"51f565bbd328ecf80afb23724f42d3d7f4fceed47ad8cefd7c7248d72f90a048"
+    },
+    {
+      "path":"src/tnfr/mathematics/_rational_interval.py",
+      "bytes":11345,
+      "sha256":"fa711fdb6405c26f5ab62cae2d72bcf8f803aa970f40827e50b9406f0b50bb00"
+    },
+    {
+      "path":"artifacts/parent-child-cut-direct-response-20261023/supervision.py",
+      "bytes":46788,
+      "sha256":"1a334d9b6c008a6dee506e2666eb72e6481ac0abcd3ca606f814abc1a0391e22"
+    },
+    {
+      "path":"artifacts/parent-child-cut-direct-response-20261023/bootstrap.py",
+      "bytes":7279,
+      "sha256":"aefd74b62d48f07611dcfeb0589443450954f53ec7736a8923a68e99b5853fcb"
+    }
+  ],
+  "substantive_protocol":{
+    "schema":"tnfr.native-selection-witness-protocol.v1",
+    "scope":{
+      "path":"artifacts/native-selection-witness-20261028/scope.json",
+      "bytes":2388,
+      "sha256":"5d56f53ddc0c14adc3b5bf738dceff7ddfdbf62f387057367f916da02a067566"
+    },
+    "question":"Can the same exact represented native preparation be certified to enter sectors 0 and +1 under the held and dynamic capacity rows?",
+    "candidate":"One fixed epsilon=1/32 midpoint including common native quadratic curvature; stable direction from delta=Delta R^T Ps, v=Ps delta^T/||Ps delta^T||. Binary64 proposes A,B,a,b once; their exact represented rationals define both IVPs; q/r derived exactly.",
+    "law":"e=w=1/2,beta=kappa=1; two C5 cycles with two bridges, copied reflection; (q,r,a,b,s,t),u=5-2s-2t. Only final capacity evolution rows differ.",
+    "numerics":{
+      "time_step":"1/8",
+      "Taylor_order":14,
+      "maximum_steps_per_model":512,
+      "maximum_horizon":64,
+      "interval_precision_bits":128,
+      "interleaved_models":[
+        "held",
+        "dynamic"
+      ]
+    },
+    "acceptance":"Both complete interval transits must capture the whole box in protected rectangles with storage.hi<7 and positive full domain; unordered sectors exactly {0,+1}. Predicted orientation held +1/dynamic 0 recorded separately.",
+    "stopping":"First capture or unavailable step per model; horizon/resource stop inconclusive. Preserve every accepted step and failed enclosure. No retry, parameter change or second candidate.",
+    "budget":{
+      "watchdog_wall_budget_seconds":1200,
+      "maximum_rss_bytes":2147483648,
+      "maximum_response_bytes":67108864,
+      "maximum_log_bytes":1048576,
+      "diagnostic_reserve_bytes":1048576,
+      "handshake_timeout_seconds":30,
+      "poll_seconds":0.1
+    },
+    "resource_scope":"Total 1200-second watchdog includes handshake, setup, controls, seed generation and both interleaved transits; Windows kill-on-close job, sampled aggregate RSS and actual-worker OS peak, not a hard RSS allocation limit. All task-folder outputs except baseline/before-edit/source archive/validation plan count toward 64 MiB; job log has its own 1 MiB bound. Cleanup is separately bounded.",
+    "excluded_response_files":[
+      "evaluated-source.zip",
+      "baseline.json",
+      "before-edit.zip",
+      "validation-plan.json"
+    ],
+    "test_names":[
+      "test_interval_field_matches_independent_full_native_rows",
+      "test_jet_field_keeps_capacity_native_mixed_derivatives",
+      "test_uniform_capacity_reduction_and_transport_balance",
+      "test_domain_rejects_hidden_capacity_and_phase_boundary",
+      "test_capture_requires_whole_box_storage_and_geometry",
+      "test_step_delegates_once_and_retains_failed_evidence"
+    ],
+    "new_candidate_limit":1,
+    "parameter_scans":0,
+    "prior_producer_replays":0,
+    "physical_identification":false,
+    "review_binding":"The independent reviewer checks this substantive protocol and source receipts. Only independent_review is then replaced with that immutable review receipt to avoid a circular hash; freeze captures the final protocol and review together."
+  },
+  "protocol_binding":"The complete protocol dictionary except independent_review is reviewed here and compared exactly by freeze(). Only the final independent_review receipt is supplied afterward; freeze archives the final protocol and this review together. The circular protocol/review receipts are not included in sources.",
+  "source_preservation":{
+    "previous_chapter_prefix_bytes":126419,
+    "previous_chapter_prefix_sha256":"91c09e1f68422c8bef5a0399de64882f3a7232d00790482bdf901a1b5a5a62e8",
+    "previous_chapter_prefix_preserved":true,
+    "canonical_append_matches_reviewed_witness_section":true
+  },
+  "reviewed_findings":[
+    "Read the complete W1-W3 canonical proof, full candidate recipe, adapter, six test groups, runner and substantive protocol before any candidate generation or scientific control. Read the relevant shared Taylor/comparison flow and supervision boundaries; existing generic arithmetic owners remain reused rather than replaced.",
+    "Independently checked the capacity direction s=t=1+epsilon,u=1-4epsilon. The held native field is exactly a common positive scaling, whereas the dynamic contrast equals epsilon*sqrt(5)*(exp(-c_minus*t)-exp(-c_plus*t)). Its initial slope is5*epsilon/2. The recipe fixes epsilon=1/32 and kappa=1 without an outcome-dependent choice.",
+    "Independently derived the homogeneous quadratic native field: the port inverse metric contributes -sqrt(3)*(alpha+beta_dev)*q/(4*pi), the interior phase row contributes sqrt(3)*alpha*r/(4*pi), the form-A row contributes -sqrt(3)*alpha*(alpha+beta_dev)/(2*pi), and form-B has no quadratic contribution. The implemented symmetric contraction matrix matches these terms.",
+    "Checked the saddle pencil, fixed positive-root bracket and orientation, right/left vectors and normalization. The Sylvester equation retains the common native quadratic term with the correct sign. The resolvent difference gives the negative5/2 dynamic mixed coefficient; the held mixed term is zero for this capacity direction.",
+    "The candidate uses the oblique stable projection before normalizing the ambient separation direction. The identity Delta(eta0)=norm(delta)^2/norm(Ps*delta.T)>0 fixes the quadratic prediction without depending on arbitrary eigensolver signs. Residual guards are approximate arithmetic checks only, not rigorous manifold bounds or finite-epsilon admission.",
+    "A,B,a,b are materialized as binary64 once and converted to their exact represented rationals. q=3*A-B and r=2*B-A are then formed exactly without another floating conversion. The same six-coordinate initial tuple is used by both models, with exact capacities33/32,33/32,7/8. No trajectory outcome enters candidate construction.",
+    "The six-dimensional adapter correctly conjugates the unchanged native A/B row scaling back to q/r. The capacity factors multiply all four native rows before Taylor and Jacobian differentiation; the two models differ only in their capacity rows. The reconstruction u=5-2s-2t enforces the declared mean identically rather than resetting numerical state.",
+    "The sufficient whole-box domain retains all three resultants, including the central row hidden by symmetry, all three positive capacity values, the reflected phase branch and the shared strict sinc domain. Failure of this sufficient domain is recorded as unavailable evidence, not a physical singularity or refutation.",
+    "The six independent controls include a non-equilibrium full-graph phasor reference, mixed capacity/native jet terms, the unit-capacity specialization and exact variance balance, hidden-capacity/central-resultant/branch failures, whole-box capture versus midpoint-only acceptance, and one-call delegation preserving failure evidence. None of these controls advances a paired trajectory.",
+    "The shared validated step admits a strict Picard whole-time tube, uses order+1 derivative bounds on that tube, propagates initial uncertainty with the signed-diagonal Metzler comparison, and intersects only independently valid endpoint/tube enclosures. Its fixed16 Picard inflations are the inherited bounded tube-construction policy, not a seed retry or step-size adaptation.",
+    "The runner executes exactly the six AST-selected tests before one candidate construction. Nonpassing, skipped, erroneous or unexpected control inventories abort. Both models use the same initial box and interleave fixed steps1/8 at order14, at most512 steps each. Initial whole-box capture is checked at time zero and every accepted endpoint is checked thereafter.",
+    "Success requires both whole-box capture certificates and unordered sectors exactly{0,+1}; the held+1/dynamic0 orientation is recorded separately. Same sectors, another sector pair, a failed enclosure, horizon exhaustion or resource interruption do not pass. The worker-completed flag is kept distinct from paired-certificate success.",
+    "The updated freeze now compares the complete substantive protocol to this review, eliminating the earlier unbound-protocol-field gap. It freezes sources, native inventory, conftests, environment, supervisor and final protocol/review receipts. A run-start record and exclusive outputs prohibit a second attempt; the supervised bootstrap prevents an unsupervised worker path.",
+    "The total watchdog covers handshake, worker setup, controls, seed construction and both interleaved transits. The inherited supervisor samples aggregate RSS, also checks the actual worker peak, bounds log/response sizes with a diagnostic reserve and verifies owned-process cleanup. This is not a hard memory-allocation cap."
+  ],
+  "evaluation_limits":{
+    "candidate_count":1,
+    "paired_models":2,
+    "test_groups":6,
+    "epsilon":"1/32",
+    "kappa":1,
+    "time_step":"1/8",
+    "Taylor_order":14,
+    "maximum_steps_per_model":512,
+    "maximum_horizon":64,
+    "interval_precision_bits":128,
+    "total_wall_seconds":1200,
+    "sampled_aggregate_rss_bytes":2147483648,
+    "response_bytes":67108864,
+    "job_log_bytes":1048576,
+    "diagnostic_reserve_bytes":1048576,
+    "nominal_memory_poll_seconds":0.1,
+    "hard_allocation_limit":false,
+    "attempts":1,
+    "parameter_scans":0,
+    "prior_producer_replays":0
+  },
+  "scope_caveats":[
+    "This is permission to perform the frozen bounded scientific attempt, not a positive result. No candidate, control outcome, accepted tube or destination has been evaluated by this reviewer.",
+    "The midpoint series has no finite-epsilon remainder guarantee. Only the subsequent regular interval transits and strict actual-law capture inequalities can certify this exact represented seed.",
+    "The detached certificate concerns the ideal complete ODE from exact represented initial values. It installs no dynamic graph executor and does not certify arbitrary later floating-point integration steps.",
+    "On unavailable or resource-limited execution the accepted prefix and failure context must be retained. The existence theorem remains separate; no epsilon, horizon, precision, direction or model may be changed within this attempt.",
+    "The original prepared prerequisite scope remains distinct from this quantitative gate. No physical-readiness review, laboratory identification, basin-volume advantage or universal constitutive selection is authorized."
+  ],
+  "scientific_executions_by_reviewer":0,
+  "candidate_generations_by_reviewer":0,
+  "test_imports_or_runs_by_reviewer":0,
+  "physical_mapping_authorized":false
+}

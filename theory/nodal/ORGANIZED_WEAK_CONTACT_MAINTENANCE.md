@@ -1644,3 +1644,648 @@ fine relaxation and its collective error bound, stationary normal
 rigidity, the exact collective fold, the all-origin attractive-selection
 obstruction and the source-basin comparison retaining the fine transient
 under the actual positive weighted law.
+
+
+<a id="weak-contact-uncertain-source-decision"></a>
+## 10. A collective decision with the source uncertainty retained
+
+A supplied interval of donor origins can select one relative registration
+uniformly over the original acquired and observed source family. The
+certificate below retains the full transient, rather than replacing the
+reached source by its eventual stationary shape. It also distinguishes two
+different failures of a unique prediction: an interval containing two
+proved destinations, and an interval for which the available inequalities
+do not decide the destination.
+
+The model remains section 8's 54-node complete law at `eta=1/100000`.
+The five host sources and the independent donor retain all twelve original
+allowances in `[0,1e-10]`, all 96 relative directions when those allowances
+are positive, their separate zero-sum correlations, the actual acquisition
+and observation histories, and the unchanged contact coordinates. Both
+rows use the same 45 weak spokes, held unit capacities and the declared
+structural clock. Source inclusion, retention, fine relaxation, convergence
+and the complete limit classification are the premises from sections 5--8.
+No parameter or stability estimate from the separate 45-node postword
+tracking model is transferred here.
+
+### 10.1 Source-dependent comparison quantities
+
+Let `Ebar` and `Fbar` be certified upper bounds for the *actual* initial
+moving-shape norm `mathcal E(0)` and fine Lyapunov function `mathcal F(0)`.
+These two scalars alone do not establish the source, retained cell or
+complete law. With those premises and the exact source correlations
+`chi(0)=0`, `y(0)=t(0)=-beta`, equations (43)--(44) give
+
+\[
+ \begin{split}
+ D_0&=\overline E+160\overline F,& P&=1200000\eta^6,\\
+ \mathcal E(\tau)&\le D_0e^{-\lambda\tau}+P,&
+ |\chi(\tau)|&\le\Gamma,\\
+ \Gamma&=\overline\gamma^2
+       [D_0+P+200\eta^4+(4/15)\overline F],&
+ J&=300\eta D_0+\frac{320}{19}\eta\overline F,
+ \end{split}
+\]
+
+where `gamma<=gamma_bar=1/3000`, `lambda=gamma^2/200` and
+`rho=19*gamma^2/800`. The permanent part of the torque disturbance is at
+most `delta_infinity=5*eta*P`. The nonnegative decaying disturbance has
+total adverse displacement at most J after multiplication by the actual
+mean-row coefficient `3*gamma^2/10`. Its integration uses both decay rates;
+it is not a pointwise torque bound or a fitted settling time.
+
+The existing source estimates admit `Ebar=1/5` and `Fbar=1e-8`
+uniformly, including at the original allowance ceilings. In particular,
+`Gamma<1e-6` and `J<1/1000`. Keeping these conservative bounds avoids
+shrinking any of the twelve original uncertainties. An independently
+supplied norm bound must retain its own association with the reached
+source; the executable source consumer rebuilds its bounds from the
+primitive preparation allowances and the existing source owners.
+
+### 10.2 A general inward-strip decision theorem
+
+Specify a single real lift of the connected donor-origin interval I.
+Let `c=2*k*pi/5+2*pi*n`, where k and n are integers, and choose positive
+radii a<b. Suppose
+
+\[
+ \begin{gathered}
+ I\subset[c-a,c+a],\qquad a>\Gamma,\qquad b+\Gamma<\pi/5,\\
+ J<b-a,\qquad
+ 0<\sigma\le\inf_{s\in[a-\Gamma,b+\Gamma]}\sin(5s),\qquad
+ 400\eta^5\sigma>\delta_\infty.
+ \end{gathered}
+\]
+
+Then every admitted preparation with beta in I converges to the strict
+relative minimum labeled `k mod 5`, meaning
+
+\[
+ t(\infty)=-c\pmod{2\pi}.
+\]
+
+The minus sign follows from the actual host-minus-donor coordinate
+`t(0)=-beta`. A registration label is neither a new species nor a claim
+about the remaining common phase rotation, which its conserved mean fixes.
+
+To prove the claim, put `Y=y+c`. Initially `|Y(0)|<=a`. Suppose Y first
+reaches b. Since Y is continuous, take its last preceding crossing of a.
+Between those times, `a<=Y<=b` and `t+c=Y-chi` lies in
+`[a-Gamma,b+Gamma]`. The period `2*pi/5` and section 6.5's strictly
+positive torque quotient imply `T(t,eta)>400*eta^5*sigma`.
+The permanent disturbance cannot reverse its inward direction. Only the
+decaying part can move Y outward there, so the complete mean row gives
+`b-a<=J`, contradicting the strict displacement margin. Oddness gives
+the same argument at the lower strip. Thus `|Y(tau)|<b` for all future
+times and `|t(tau)+c|<b+Gamma<pi/5`.
+
+The complete flow converges, its fine coordinates vanish, and every limit
+in the admitted energy sector is classified. The only permitted limit in
+this strict sector is `t=-c`, a minimum. This last step is essential:
+a bound on finite displacement alone would not determine a destination.
+The strip hypotheses are sufficient. A failed margin does not prove a
+crossing, an alternative destination or a saddle at any specified origin.
+
+### 10.3 Two prospectively fixed discriminators
+
+Before evaluation, fix
+
+\[
+ a=\frac58,\qquad b=\frac{627}{1000},\qquad
+ \beta_0=\frac58,\qquad
+ I_*=[5/8,79/125].
+\]
+
+The source, conductance, original allowances and clock are unchanged.
+These choices and the exact/outward arithmetic budget are retained in
+`artifacts/organized-weak-contact-decision-20261023/scope.json`.
+
+The positive strip admits a loose independent rational proof. With
+`Gamma<1e-6`, write `v=pi-5s` on its positive side. The old bounds
+`157/50<pi<22/7` imply
+
+\[
+ \frac{999}{200000}<v<1,\qquad
+ \sin(5s)=\sin v\ge\frac56v>\frac{333}{80000}.
+\]
+
+Consequently its restoring coefficient exceeds
+`400*(333/80000)=333/200`, while
+`delta_infinity/eta^5=3/5000`. Also `b-a=1/500>J` and
+`b+1e-6<157/250<pi/5`. The theorem therefore certifies label zero
+at beta_0, beyond section 8's previous radius `3/5`. This follows from
+the full-source transient bounds, without a trajectory or an exactly
+stationary preparation.
+
+For the second control, retain the exact affine-in-pi origin
+
+\[
+ \beta_1=\frac{2\pi}{5}-\frac58.
+\]
+
+It lies at distance a from center `2*pi/5`, so the same uniform proof
+certifies label one. The shared outward pi enclosure establishes
+`25/8<pi<1257/400`, hence
+`5/8<beta_1<79/125`. It is an interior witness, not the upper endpoint
+of I_*. Thus I_* contains admitted preparations with two different
+certified destinations. No single registration can be correct uniformly
+on that interval. The source-error family can be the same for both
+witnesses; the supplied donor origin changes.
+
+This is an uncertainty obstruction. It neither locates the intervening
+saddle-converging origin nor constructs two states with identical
+retained observations and different hidden causes. A narrower uncertified
+interval does not inherit this mixed-destination conclusion without its
+own two witnesses.
+
+### 10.4 Detached engine contract and representation boundary
+
+The existing [contact-maintenance owner](../../src/tnfr/physics/_organized_contact_maintenance.py)
+contains the model-specific strip calculation and its source-consuming
+`_assess_organized_weak_contact_basin` decision. The latter accepts only
+six form allowances, six phase allowances and an ordered pair
+`donor_origin_bounds`. The conductance and the two radii are the frozen
+values above. It takes no incoming source report, fitted norm budget or
+supplied passing flag. Primitive scalar/vector admission and outward pi
+and sine arithmetic use the existing shared owners.
+
+Fresh source rebuilding retains acquisition, independent donor recovery
+and the complete observation word. Only the source premises from the
+external-interaction owner are consumed; its old pi/2 response verdict,
+unit-contact work and finite-contact identity estimates do not establish
+the present weak-contact decision. The weak-contact cell, storage and
+transient margins are rebuilt in their own law. The private strip helper
+is conditional arithmetic; it does not authenticate a source or history.
+
+The first reader uses one declared principal real lift `(-pi,pi)`.
+It never wraps endpoints independently or repairs reversed endpoints by
+sorting. Its five centers use k=-2,...,2 and labels `k mod 5`; each
+returned label refers to `t(infinity)=-2*k*pi/5`. An interval crossing
+zero is supported as `[-epsilon,+epsilon]`. A valid interval whose chart
+cannot be certified remains unavailable; there is no approximate modulo
+or general large-angle normalization. The theorem itself is circular and
+allows any separately established lift.
+
+A unique label requires the *entire* supplied interval to lie in one
+certified radius-a region. To certify mixed destinations the reader checks
+the finite declared witness family `2*k*pi/5+d`, where
+`d in {-a,0,a}`. Each witness retains its exact center index and rational
+offset; an outward enclosure must lie wholly inside the supplied interval.
+Two such admitted witnesses with distinct certified labels justify the
+mixed result. This bounded arithmetic enumeration selects no event and
+integrates no source. Absence of such witnesses leaves the claim
+unresolved. Both mixed and unresolved decisions retain `label=None`.
+
+Malformed primitives are rejected separately from valid but insufficient
+evidence. In particular, a Boolean, nonfinite scalar, malformed allowance
+row or reversed interval cannot become a favorable bound by conversion.
+Source admission, chart availability, strict strip margins and outcome
+classification remain separate evidence in the returned report.
+
+The [decision controls](../../tests/physics/test_organized_weak_contact_basin.py)
+exercise the two fixed discriminators, the original allowance ceilings,
+source failures, strict margins, circular-chart handling and explicit
+unavailability. Independent retained static tests check the actual mean
+rows, source bounds and moving-shape identities. No source producer,
+flow integration, runtime word, strength sweep, exact saddle search or
+physical measurement is part of this result.
+
+
+<a id="weak-contact-relational-record"></a>
+## 11. A relational record that predicts collective registration
+
+One marked cross-component phase reading supplies information missing from
+the isolated constituents' internal records. Under the same acquired and
+observed source family, it yields a conditional prediction of the eventual
+relative registration. The inverse below consumes two noisy real
+quadratures, rather than a supplied donor origin. Both the source envelope
+and the readout error remain in the prediction.
+
+The complete model remains the 54-node law of sections 8--10, with the
+same 99 old unit edges, 45 weak spokes at `eta=1/100000`, held unit
+capacities, both evolution rows and structural quarter clock. All twelve
+preparation allowances remain in `[0,1e-10]`, with the original 96 relative
+directions, separate zero-sum correlations and acquisition/observation
+histories. The observation is detached at the unchanged post-observation,
+pre-contact endpoint. It adds no event, elapsed interval or source reset.
+
+### 11.1 Observation, source prior and inverse
+
+Mark donor slot zero, node 45, and host child two's slot zero, node 18.
+Their identical internal carriers cancel. Write H18 for the actual host
+endpoint offset from that carrier, and z_D0 for the recovered donor's
+residual, whose absolute value is at most `q=1e-70`. Then
+
+\[
+ Z=\exp(i(\theta_{45}-\theta_{18}))=\exp(ig),\qquad
+ g=\beta+z_{D0}-H_{18}.
+\]
+
+The two primitive readings are `Y_R=Re(Z)+e_R` and
+`Y_I=Im(Z)+e_I`, where `|e_R|,|e_I|<=epsilon=1/10000`.
+Errors may be correlated with each other and with the source. No
+probability distribution or independence assumption is used. This is an
+explicit mathematical observation model; it does not calibrate a sensor.
+
+Rebuild an enclosure \(\mathcal H\) for H18 from the primitive host
+entry, its full admitted phase error and the phase drift over the complete
+observation word. This is exactly the external-interaction owner's
+`outer_one_host_phase_offset_bounds[2]`. The child-two primitive carrier
+offset is zero, but its reached offset is not assumed to vanish. The
+donor residual enclosure is \(\mathcal D=[-q,q]\); the old donor field
+containing an imposed `pi/2` origin is not used.
+
+For the raw rectangle
+
+\[
+ R=[Y_R-\epsilon,Y_R+\epsilon]
+       \times[Y_I-\epsilon,Y_I+\epsilon],
+ \qquad
+ B=\operatorname{Arg}(R)+\mathcal H-\mathcal D,
+\]
+
+use a shared outward principal-argument enclosure only on an admitted
+regular rectangle. Intersecting the component intervals with `[-1,1]`
+is allowed because a unit phasor has both coordinates in that range.
+The inverse retains its own full outward interval; it is not a point
+angle plus a fitted error bar. Source-prior width and readout width
+remain separately visible.
+
+For an actual member of the declared source/readout model, B contains a
+representative of beta modulo `2*pi`. If all of B lies in `(-pi,pi)`,
+that representative is principal. This recovers a circular origin, not
+the unwrapped donor mean or its winding history. A full-turn donor shift
+does not change the circular destination. If the computed B lacks the
+strict principal lift, the reader abstains; it never wraps its endpoints
+independently to manufacture a connected interval.
+
+### 11.2 Compatibility and the scope of a unique prediction
+
+Before any dyadic conversion, test the exact rational raw rectangle for
+intersection with the unit circle. For each component interval take the
+minimum square (zero if it contains zero) and the maximum square. Their
+sums are the exact squared-norm extrema m and M. The rectangle is
+connected and the squared norm continuous, so it meets the circle
+exactly when `m<=1<=M`. This handles tangent records without a numerical
+tolerance. The control with lower corner `(3/5,4/5)` is compatible;
+raising only its first coordinate by `2^-600` makes it incompatible.
+Outward conversion to a 128-bit grid would erase that distinction.
+
+Circle compatibility establishes only the necessary local phasor
+condition. It neither authenticates a live source history nor proves
+that every point of the inverse interval is realized by this record.
+The source owners independently rebuild their conditional premises.
+Malformed primitives raise an admission error. Finite but impossible
+records, unavailable arguments, unavailable origin lifts, failed source
+premises and unresolved basin decisions remain distinct outcomes.
+
+Apply section 10's decision only after rebuilding those premises. If the
+*whole* B lies in one certified basin, every admitted source that can
+produce the record has that registration. This is the observation-level
+claim. A mixed result for the outer interval B cannot be promoted to a
+mixed observed outcome: its two origin witnesses might not produce the
+same quadratures. Such a result therefore leaves the observed
+registration unavailable, with no asserted pair of record-compatible
+destinations. This distinction also prevents a wide inverse enclosure
+from being mistaken for evidence of genuine non-identifiability.
+
+### 11.3 Uniform discrimination at the original uncertainty ceilings
+
+Freeze two truth families before evaluating their controls:
+
+\[
+ \beta_0=\frac35,\qquad \beta_1=\frac{2\pi}{5}-\frac35.
+\]
+
+All twelve preparation allowances are at their original ceilings and
+both quadrature errors retain the full fixed radius. Truth values are
+used only in the proof and controls; the decoder receives neither.
+The uniform conclusion is
+
+\[
+ B\subset(\beta_j-1/1000,\,\beta_j+1/1000),\qquad j=0,1,
+\]
+
+for every source and reading error in each family. Hence B has distance
+less than `601/1000<5/8` from the corresponding basin center. Section
+10's unchanged inward-strip theorem certifies labels zero and one,
+respectively, with limiting host-minus-donor origins zero and `-2*pi/5`
+modulo `2*pi`. This selects an asymptotic registration; it provides no
+finite acquisition deadline.
+
+An independent loose budget explains the margin. The actual source
+bounds imply `|H18|<1/40000`. Before arithmetic rounding, each decoder
+rectangle point is within `2*sqrt(2)*epsilon<1/2500` of the true unit
+phasor: one error allowance goes from truth to reading and another
+from reading to the decoder rectangle. Its angular difference is less
+than `1/2499<1/2000`, using the line segment from the unit phasor,
+whose radius stays above `1-1/2500`. The full host interval diameter is
+less than `1/20000`, and the donor diameter is `2*q`. These terms leave
+strict room below `1/1000`; they must still include implementation
+rounding in a uniform executable control.
+
+For that control, enclose all true gaps by
+`G=truth_interval-H+D`, use the shared cosine and sine enclosures of G,
+and enlarge each component by **two** readout radii. This superrectangle
+contains every individual decoder rectangle. Both frozen families admit
+a common right-half-plane chart, and its outward ratio `imaginary/real`
+lies in `[0,1]`. Trigonometric enclosures need only contain every true
+value; numerical inclusion monotonicity of midpoint trigonometry is not
+assumed.
+
+There is a separate rounding issue for the argument. Soundness of a
+rounded endpoint series does not imply numerical endpoint monotonicity.
+The shared kernel uses grid `h=2^-128` and 64 alternating arctangent
+terms. For exact `x in [0,1/2]`, the squared input has endpoint error
+less than `3*h` and upper bound less than `1/3`. Induction over its
+rounded term recurrence gives term error below `6*h`, divided-term
+error below `5*h`, and partial-sum error below `384*h`. The computed
+remainder is bounded by `(3^-64+h)/129`, with its outward allowance;
+the true alternating remainder is at most `h/129`. Since `3^64>2^101`,
+the returned ratio endpoint error is below `388*h+2^-108<2^-107`.
+The final multiplication gives arctangent endpoint error below
+`2^-106`. On `(1/2,1]`, the exact reduction `(x-1)/(x+1)` and the
+shared Machin pi enclosure give the conservative bound `2^-105`.
+Thus the prospective allowance `delta=2^-100` dominates every endpoint
+error needed here without changing the shared kernel.
+
+Basic outward ratio arithmetic preserves inclusion. Mathematical atan
+monotonicity and this uniform error bound therefore put every computed
+individual argument inside `arg(superrectangle)+[-delta,delta]`.
+Add the same host and donor enclosures in the same order as the decoder;
+outward addition preserves the inclusion. Exact/outward controls then
+certify that this uniform output differs from its truth interval by less
+than `1/1000`. This establishes all permitted reading errors, rather
+than sampling a few noisy readings. The source, truth families, error
+radius, numerical lemma and acceptance threshold are frozen under
+`artifacts/organized-weak-contact-record-20261023/` before evaluation.
+
+### 11.4 Information loss without the relational channel
+
+Before contact, rigidly translating the independent donor's common phase
+leaves every host reading unchanged. It also leaves the donor's form
+and all intrinsic relative-phase history unchanged. Choose the same
+source residuals and permitted local reading errors for both truth
+families. Those local-only records agree exactly, whereas the two future
+marked registrations just proved differ. No deterministic prediction
+from only those records can be uniformly correct on both families.
+
+The added marked channel breaks precisely that independent-component
+phase ambiguity. Its two quadratures are an admitted sufficient channel
+for these two families and this response. The result does not prove
+globally minimal sensing, distinguish every origin, or make the marked
+labels invariant under an unrecorded cyclic relabeling. Source identity,
+boundary association and the supplied contact law remain premises.
+
+### 11.5 Engine boundary and retained controls
+
+The existing [contact-maintenance owner](../../src/tnfr/physics/_organized_contact_maintenance.py)
+now exposes the private detached consumer
+`_assess_organized_weak_contact_record`. It accepts exactly six primitive
+form allowances, six phase allowances and the two primitive quadratures.
+All fourteen scalars are admitted before source rebuilding. The readout
+radius is fixed; no beta, source report, passing flag or replacement
+noise budget is accepted. Its source is rebuilt once and shared with an
+internal admitted-source basin calculation. The old supplied-origin
+consumer keeps its interface and classification behavior.
+
+The [record controls](../../tests/physics/test_organized_weak_contact_record.py)
+cover the uniform families, local-only ambiguity, exact circle boundary,
+malformed primitives, principal argument and lift boundaries, source
+failures, fresh-source wiring and the unique-only observation claim.
+Selected unchanged basin and argument controls check the shared behavior.
+The result uses static exact/outward arithmetic and fresh analytical
+source rebuilding. It executes no source producer, trajectory, contact
+selection, runtime observation word or retained response replay.
+
+
+<a id="weak-contact-registration-time"></a>
+## 12. Finite acquisition time and permanent registration tolerance
+
+The same relational record can support a time forecast, in addition to
+an eventual destination. Under the original source and contact law,
+the two families from section 11 remain outside a declared registration
+tolerance through one finite deadline, and stay inside it after another.
+The intervening interval brackets acquisition; it does not identify the
+exact first arrival or settling time.
+
+Keep the unchanged 54-node source, all twelve preparation allowances,
+96 relative directions, acquired and observed histories, both complete
+rows, held unit capacities, `eta=1/100000` and structural quarter clock.
+Elapsed contact time tau starts at the original attachment endpoint.
+The new response is the circular distance from the collective
+host-minus-donor origin t(tau) to its certified target `-2*k*pi/5`.
+The fixed tolerance is `r=1/1000`. This is a collective phase criterion;
+it asserts neither full-state equilibrium nor exact arrival in finite
+time. The existing old-cycle identity guarantee is a separate result.
+
+### 12.1 The record supplies the initial distance and retained chart
+
+Let B be section 11's freshly inferred principal origin interval. A
+unique basin certificate supplies its signed center `c=2*k*pi/5`,
+where `k in {-2,-1,0,1,2}` and the registration label is `k mod 5`.
+Use this signed center, not an independently wrapped integer label.
+Choose the equivalent initial donor lift whose circular origin lies in B;
+a full-turn shift of that whole component preserves the law and residuals.
+Define
+
+\[
+ Y=y+c=t+c+\chi,\qquad
+ d_0=\inf_{\beta\in B}|\beta-c|.
+\]
+
+Section 10's whole-interval certificate gives `|Y(tau)|<b=627/1000`
+and `|t(tau)+c|<b+Gamma<pi/5` for all future tau. Thus the absolute
+distance on this retained lift equals the circular distance to the
+target throughout. An eventual label alone would not establish that
+chart. Also `Y(0)=c-beta` exactly, because the actual source has
+`chi(0)=0`; no unknown initial form offset is discarded.
+
+The source bounds remain
+
+\[
+ \begin{split}
+ D_0&=\overline E+160\overline F,&
+ P&=1200000\eta^6,& \delta_\infty&=5\eta P,\\
+ |\delta(\tau)|&\le\delta_\infty+d(\tau),&
+ d(\tau)&=5\eta D_0e^{-\lambda\tau}
+               +(4/3)\eta\overline F e^{-\rho\tau},\\
+ \lambda&=\gamma^2/200,& \rho&=19\gamma^2/800,&
+ |\chi(\tau)|&\le\Gamma<10^{-6}.
+ \end{split}
+\]
+
+Here `Ebar=1/5`, `Fbar=1e-8`, and section 10 defines Gamma and the
+integrated transient displacement J, with `J<1/1000`. These are
+uniform upper bounds for the reached source. In particular, Gamma is
+retained as a persistent comparison allowance; its decay is not assumed.
+The complete corrected mean row is still
+`Y'=-(3*gamma^2/10)*(T(t,eta)+delta)`.
+
+### 12.2 Early exclusion follows from bounded displacement
+
+Section 8 supplies `|T|<1000*eta^5`. Integrating the actual mean row
+and using the same J yields
+
+\[
+ |Y(\tau)-Y(0)|
+ \le \frac{3\gamma^2}{10}(1000\eta^5+\delta_\infty)\tau+J.
+\]
+
+Let `g_lo<=gamma<=g_hi` be the shared outward gamma enclosure, whose
+strictly positive endpoints are exact rationals. Freeze
+
+\[
+ T_{\rm early}=\frac1{1000g_{\rm hi}^2\eta^5}.
+\]
+
+Every admitted origin in B stays strictly outside tolerance r throughout
+`0<=tau<=T_early` whenever
+
+\[
+ M_{\rm early}:=d_0-r-\Gamma-J
+  -\frac{3g_{\rm hi}^2}{10}
+        (1000\eta^5+\delta_\infty)T_{\rm early}>0.
+\]
+
+Indeed, reverse triangle inequalities restore the actual observation:
+`|t+c|>=|Y(0)|-|Y-Y(0)|-|chi|`. All terms in this margin derive from
+the inferred interval and rebuilt source/law. No hidden beta or family
+identifier enters the consumer. A zero or negative margin leaves early
+exclusion unavailable; it does not prove actual early acquisition.
+
+### 12.3 A later inward comparison proves entrance and retention
+
+Set the corrected-coordinate radius `h=1/2000`, and freeze
+
+\[
+ T_b=\frac1{g_{\rm lo}^2\eta},\qquad
+ T_{\rm late}=\frac4{g_{\rm lo}^2\eta^5}.
+\]
+
+Since `lambda*T_b>=1/(200*eta)=500` and `rho>=lambda`, the transient
+after T_b has the fixed rational upper bound
+
+\[
+ d(\tau)<d_b:=
+  [5\eta D_0+(4/3)\eta\overline F]\frac{20!}{500^{20}}
+  <\frac{\eta^5}{10},\qquad \tau\ge T_b.
+\]
+
+The exponential estimate uses a single positive Taylor term:
+`exp(500)>500^20/20!`. There is no evaluation of an exponential at
+T_late, floating underflow or numerically fitted settling time.
+For an independent loose check, `5*D0+(4/3)*Fbar<2` and
+`20!/500^20<25^-20`; the latter follows by bounding each factor of
+`20!` by 20. These exact inequalities already imply the stated strict
+transient margin at the fixed eta.
+
+On the annulus `h<=|Y|<b`, one has the same sign for Y and `t+c`, and
+
+\[
+ h-\Gamma\le |t+c|<b+\Gamma<\pi/5.
+\]
+
+Sine is concave on `[0,pi]`, so its minimum over
+`[5*(h-Gamma),5*(b+Gamma)]` occurs at an endpoint. Shared outward sine
+bounds at those two endpoints certify the fixed lower bound
+`sigma=1/500`. It would be invalid to infer that lower bound from a
+midpoint-Lipschitz enclosure of the entire wide annulus if that enclosure
+were insufficient. An elementary check uses `Gamma<1e-6`: the lower
+argument exceeds `499/200000`, with sine greater than five sixths of
+that value; at the upper endpoint, `pi-5*(b+Gamma)>999/200000`, also
+with sine greater than five sixths of that value. Both exceed `1/500`.
+
+The torque quotient from section 6.5, its period and oddness then give
+an inward torque greater than `400*eta^5*sigma`. Its adverse terms
+include both d_b and the permanent `delta_infinity=(3/5000)*eta^5`.
+Consequently, for tau at least T_b and h at most `|Y|` less than b,
+
+\[
+ D^+|Y|
+ <-\frac{3g_{\rm lo}^2}{10}
+       (400\eta^5\sigma-\delta_\infty-d_b)
+ <-\frac{g_{\rm lo}^2\eta^5}{5}.
+\]
+
+The last inequality follows from
+`(3/10)*(4/5-3/5000-1/10)>1/5`. Both boundaries of the inner tube
+point strictly inward after T_b, so once entered the tube is retained.
+If the state is still outside it at T_b, the uniform speed proves entry
+before
+
+\[
+ T_b+\frac{5b}{g_{\rm lo}^2\eta^5}
+ <T_{\rm late},
+ \qquad\text{since }\eta^4+5b<4.
+\]
+
+After that entry, restoring the hidden correction gives
+`|t+c|<=h+Gamma<501/10^6<1/1000`. Thus every admitted source in any
+uniquely certified basin satisfies the tolerance for **every**
+`tau>=T_late`. This proof uses a quantitative inward comparison and
+retention, not a conversion of asymptotic convergence into a finite
+deadline. It permits earlier entrances, exits before the certified
+retention interval, and a much earlier actual settling time.
+
+### 12.4 The two noisy record families satisfy both claims
+
+Section 11's unchanged uniform record enclosures, including both readout
+enlargements and the arctangent rounding allowance, put B within
+`1/1000` of `beta=3/5` or `beta=2*pi/5-3/5`. For the corresponding
+center this implies `d0>599/1000`, while the entire B remains inside
+radius `5/8`. The two independent timing claims therefore apply to
+every source and readout error in both families at the original
+preparation ceilings.
+
+For the early margin, the exact drift coefficient is
+`(300+9/50000)*gamma^2*eta^5<301*gamma^2*eta^5`. Hence the lower
+distance through T_early exceeds
+
+\[
+ \frac{599}{1000}-\frac{301}{1000}
+       -\frac1{1000}-\frac1{10^6}
+ =\frac{296999}{10^6}>\frac1{1000}.
+\]
+
+The late proof depends only on the certified basin and source bounds,
+not this initial separation. A near-center record can therefore support
+late retention while supplying no early exclusion. These are separate
+availability flags, not one all-or-nothing conclusion. The truths above
+establish coverage of the frozen families in the controls; the consumer
+uses only its own inferred interval.
+
+The scale is consequential: the deadlines are proportional to
+`1/(gamma^2*eta^5)`. Here `gamma=1/(1023*pi)` and `eta=1e-5` put them
+at roughly `10^29` and `4*10^32` structural time units. These very large,
+conservative certificate deadlines reveal the latency of this weak-contact
+law; they are not measured acquisition times or an optimal estimate.
+The clock remains structural. No physical clock calibration is supplied,
+and no other strength has
+been scanned to obtain a more favorable result.
+
+### 12.5 Detached timing consumer and evidence boundary
+
+The [existing owner](../../src/tnfr/physics/_organized_contact_maintenance.py)
+adds `_assess_organized_weak_contact_timing` with the same fourteen
+primitive inputs as the record reader. It invokes that reader once,
+then derives timing from its fresh source, whole inverse interval and
+signed target. No externally supplied report, family label, replacement
+tolerance or deadline is admitted. The raw record and basin interfaces
+retain their existing behavior.
+
+The returned evidence separates the upstream observation decision,
+initial-distance bound, persistent correction, early displacement,
+late transient/inward/travel margins and the two timing claims.
+Unavailable source, argument, lift or registration evidence cannot
+become a timing certificate. Strict margin failures remain insufficient
+evidence, rather than a claimed trajectory outside the late tube.
+
+The [timing controls](../../tests/physics/test_organized_weak_contact_timing.py)
+check the uniform families, actual source association and clock, signed
+centers, independent availability, exact boundary margins and the fixed
+input policy. They retain the actual mean-row coefficients and check
+the rational decay and travel inequalities. The prospective protocol,
+selected regressions, reviews and results are preserved under
+`artifacts/organized-weak-contact-timing-20261023/`. No flow, event,
+source producer, runtime word or retained response was replayed.

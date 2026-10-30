@@ -1,0 +1,156 @@
+{
+  "schema":"tnfr.native-foundation-scope-admission-review.v1",
+  "reviewed_utc":"2026-10-28T18:54:26.473011+00:00",
+  "verdict":"approved",
+  "independent":true,
+  "author":"/root",
+  "reviewer":"/root/collective_controls",
+  "scope":{
+    "path":"artifacts/native-foundation-scope-review-20261028/scope.json",
+    "bytes":1031,
+    "sha256":"c7ebfb1dd1c291fa61ac41123de4054659e9468386f35bfdaed04289d523a099"
+  },
+  "scope_amendment":{
+    "path":"artifacts/native-foundation-scope-review-20261028/scope-amendment.json",
+    "bytes":1297,
+    "sha256":"b2140546cfc0741f73033290419a76042001d504dc1eb812ac9c2659eca7bfaf"
+  },
+  "editorial_correction":{
+    "path":"artifacts/native-foundation-scope-review-20261028/editorial-correction.json",
+    "bytes":659,
+    "sha256":"8a211f468fe888c106b0b01288c2cef67e862f22187b47160fc0656aa08e4004"
+  },
+  "baseline":{
+    "path":"artifacts/native-foundation-scope-review-20261028/baseline.json",
+    "bytes":584157,
+    "sha256":"ff6415ede18dd9b9f69f7e840acff38d0caa85fe643b230578882193b0859ee9"
+  },
+  "before_archives":[
+    {
+      "path":"artifacts/native-foundation-scope-review-20261028/before-edit.zip",
+      "bytes":54754,
+      "sha256":"697eb3ff6d21814a0687a08b5937218ed4bc34f767e131fe4fcee8ec2f9782b8"
+    },
+    {
+      "path":"artifacts/native-foundation-scope-review-20261028/readiness-before-edit.zip",
+      "bytes":355,
+      "sha256":"4448d06769a5507ca5d8651bc5a37014c392b2d05d5040e079e49d63099497f9"
+    }
+  ],
+  "final_sources":[
+    {
+      "path":"theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "bytes":98150,
+      "sha256":"3e3a6fbb438bfe13b9c5b9078d0524a67a715fdcd1d1fa88de42c79f1be766e1"
+    },
+    {
+      "path":"theory/RESEARCH_PROGRAM.md",
+      "bytes":80104,
+      "sha256":"0e5f65d93672500fe952a93333fefb88f70072980048abd4052901eae51984dc"
+    },
+    {
+      "path":"theory/research_prerequisites.json",
+      "bytes":4676,
+      "sha256":"7ffac8d9c2105cdbb8a67f0a2d96a8b3b740133ee12d251df17c11c9c5c7c304"
+    }
+  ],
+  "evidence_manifest":{
+    "path":"artifacts/native-foundation-scope-review-20261028/evidence-source.json",
+    "bytes":7523,
+    "sha256":"c316545f8b950374b493f7bb6b01be46c9ca87bd7f41aaf6e2b452912a2756ed"
+  },
+  "reviewed_source_archive":{
+    "path":"artifacts/native-foundation-scope-review-20261028/reviewed-source.zip",
+    "bytes":3436534,
+    "sha256":"90fd77eb86c1d7c3872ba19bfaa8c6726251327b8b63fe0afde585ea761d7031"
+  },
+  "prerequisite_reviews":{
+    "operator_causality":{
+      "path":"artifacts/native-foundation-scope-review-20261028/operator_causality-review.json",
+      "bytes":3962,
+      "sha256":"dba7cd5a9c0a19df8bacd35f901dcfaf909ad0bbf9a12d22da611a6c7b5932cc"
+    },
+    "state_observation":{
+      "path":"artifacts/native-foundation-scope-review-20261028/state_observation-review.json",
+      "bytes":3892,
+      "sha256":"b56e338265e29e3984c7c51f2fb81e069d192853bce8c35fd7e79c7513145d21"
+    },
+    "organizational_identity":{
+      "path":"artifacts/native-foundation-scope-review-20261028/organizational_identity-review.json",
+      "bytes":2978,
+      "sha256":"2907a9002597800ee166cec49e08b0a4ba994c9328f9cb21ddeb9cdbb0354605"
+    },
+    "research_selection":{
+      "path":"artifacts/native-foundation-scope-review-20261028/research_selection-review.json",
+      "bytes":3648,
+      "sha256":"86d743a3042f6f47d64f0805025a593d689e49fdd8b477df591d7a81dfcfd286"
+    }
+  },
+  "prerequisite_validation":{
+    "path":"artifacts/native-foundation-scope-review-20261028/prerequisite-validation.json",
+    "bytes":1034,
+    "sha256":"f12f6aa8fa683c51a4eb031e182484c55a4d6762f75abde71872f712f896acf8"
+  },
+  "prerequisite_logs":[
+    {
+      "path":"artifacts/native-foundation-scope-review-20261028/foundations.log",
+      "bytes":77,
+      "sha256":"119accc3a927b5a786fa6418ff085bbe7aa3b1a3743838eb66d7225ef27c45b1"
+    },
+    {
+      "path":"artifacts/native-foundation-scope-review-20261028/physical-mapping-block.log",
+      "bytes":94,
+      "sha256":"67778c6009a6e2b1509fef2456fd33aa1ee865becf774603a3fc4692af1c4556"
+    }
+  ],
+  "source_preservation":{
+    "head":"0d3813fe7dd977968140d8ac05d54ba8685aae7b",
+    "head_unchanged":true,
+    "baseline_files":4624,
+    "unchanged_baseline_files":4621,
+    "changed_existing_paths":[
+      "theory/RESEARCH_PROGRAM.md",
+      "theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md",
+      "theory/research_prerequisites.json"
+    ],
+    "added_maintained_paths":[],
+    "removed_maintained_paths":[],
+    "dirty_path_inventory_unchanged":true,
+    "chapter_previous_prefix_bytes":83410,
+    "chapter_previous_prefix_sha256":"5924381f66d12073ca7a41d9f7b563f9c33ed82828d7f0e6554208685b1258e1",
+    "chapter_previous_prefix_preserved":true,
+    "program_outside_two_declared_regions_preserved":true,
+    "registry_before_state_preserved_in_archive":true,
+    "manifest_entries_checked":38,
+    "all_manifest_live_and_archive_receipts_match":true,
+    "agent_instructions_mirror_identical":true,
+    "prerequisite_checker_unchanged":true
+  },
+  "reviewed_findings":[
+    "Independently read the complete new scope-decision section and final active program, including the corrected introduction. Reviewed the consumed native, transport, organization and alternative-law evidence in this and the preceding gates; the manifest is a verified source inventory, not a claim that every inventoried line was re-proved in this review.",
+    "The four formal resolutions apply to the same single-bridge prepared organization, full thirty-state model, equal node measure, specified native rows, positive fixed kappa, fixed mean-capacity leaf and structural clock. They establish a conditional mathematical capability rather than a universal law.",
+    "P1 has a complete event-free three-row causal law. Primitive data, independent storage/work/transport premises and derived pressure, phase row, conservation and response remain distinct. Registered actions and their occurrence are outside the consumed mechanisms, and finite UM is not identified with continuous transport.",
+    "P2 retains all predictive state and associations, with exact relative quotient plus origin reconstruction and proved regular all-forward continuation locally. Receiver readings and regional totals are not substituted for state, and the held-capacity runtime executor is not represented as an implementation of the joint law.",
+    "P3 defines a prepared identity independently of diagnostic extrema and proves local retention, recovery and transient internal receiver response under joint perturbations. It neither requires nor asserts acquisition, permanent periodic activity or a numerical basin for this accepted claim.",
+    "P4 compares matched held/dynamic capacity and equal/degree-weighted transport while preserving passive, capacity-mediated, sine and hybrid alternative domains. Shared recovery, storage signs or tangents do not select a unique constitutive law.",
+    "The receiver form/phase response, not the entire state, first distinguishes dynamic from matched held capacity at third order. Transmission is already present at second order, while the full capacity state can differ at first order.",
+    "The selected next claim is acquisition and retention with nonuniform evolving capacities on the actual two-bridge native-transit support. The uniform-capacity reference embeds exactly because B*1=0, but its held-capacity robustness and the one-bridge JO neighborhood are not transferred without a new joint-domain proof.",
+    "The certified T=32 endpoint lies in the reflected capture domain and is not silently declared to be a full-state dynamic-capacity neighborhood. Future admission must establish regular transit, actual target recovery/capture and an initial-absence margin; no quantitative radius or new trajectory is consumed by the present selection.",
+    "Readiness registry evidence and review hashes match all four independently authored scoped approvals. The normal checker log reports four resolved requirements with physical mapping blocked; the physical-mapping invocation fails specifically because the final readiness review is missing.",
+    "The old evaluated chapter prefix, prior registry and both declared PROGRAM replacement boundaries are preserved and auditable. All 38 archived manifest sources match current bytes, and only the three explicitly allowed maintained paths differ from baseline."
+  ],
+  "scope_limits":[
+    "Four scoped prerequisite resolutions are not a final physical-readiness approval. A proposed physical task still requires a separately reviewed observation bridge, consumed dependencies and a final review bound to its actual program.",
+    "Acquisition is the next mathematical question, not a theorem established by this admission review. It does not retrospectively invalidate the prepared capability.",
+    "A future modification to the bound chapter invalidates its receipt hashes until renewed review, without erasing unchanged conditional mathematics.",
+    "No new scientific evaluation, test, trajectory, parameter scan, implementation claim or historical producer replay supports this conceptual admission. Documentation pipeline validation is recorded separately by its owner and is not claimed complete by this receipt."
+  ],
+  "foundation_pillars_resolved":4,
+  "resolution_scope":"Prepared single-bridge native organization under the admitted CT/JO full-state law only.",
+  "physical_mapping_readiness_review":null,
+  "physical_mapping_authorized":false,
+  "is_physical_readiness_review":false,
+  "scientific_executions_by_reviewer":0,
+  "historical_producer_replays_by_reviewer":0,
+  "new_scientific_tests":0
+}

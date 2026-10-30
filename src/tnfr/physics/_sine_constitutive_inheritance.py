@@ -17,6 +17,7 @@ from ._sine_class_constitutive_comparison import _deformation, _edge_law
 from ._sine_constitutive_recovery import (
     _assess_constitutive_recovery,
     _ConstitutiveRecovery,
+    _target_winding,
 )
 from .phase_response import _admit_relative_phasors
 from .relational_observations import _ordered
@@ -71,6 +72,7 @@ class _ConstitutiveInheritance:
     nodes: tuple[int, ...] = tuple(range(18))
     internal_edges: tuple[tuple[int, int], ...] = _INTERNAL
     target_phase_turns: tuple[Q, ...] = tuple(Q(j % 9 - 4, 9) for j in range(18))
+    target_winding: int = 1
     fine_clock: str = "tau=(1023/1024)*t"
     collective_clock: str = "sigma=(cross_degree/degree)*tau"
     form_chart: str = "Z=X/sqrt(r); phase origins retain their registered circles"
@@ -86,14 +88,15 @@ class _ConstitutiveInheritance:
     )
 
 
-def _derive_constitutive_inheritance(*, interface, deformation):
+def _derive_constitutive_inheritance(*, interface, deformation, target_winding=1):
     """Admit one of the two fixed interfaces and its nonnegative fine law."""
+    winding = _target_winding(target_winding)
     name, coefficient = _interface(interface), _deformation(deformation)
     offsets = _OFFSETS[name]
     q, d = len(offsets), 2 + len(offsets)
     cross = tuple((j, 9 + (j + offset) % 9) for j in range(9) for offset in offsets)
     pi = pi_interval()
-    cosine = cos(2 * pi / 9)
+    cosine = cos(2 * winding * pi / 9)
     r = I(1) if name == "matching" else (1 + 2 * cosine) / 3
     scale = sqrt(r)
     gamma = Q(1, 1023) / pi
@@ -123,6 +126,8 @@ def _derive_constitutive_inheritance(*, interface, deformation):
         normalized_pair_storage_factor_bounds=9 * q * r,
         form_input_pushforward_bounds=1 / (Q(q, d) * scale),
         phase_input_pushforward=Q(d, q),
+        target_phase_turns=tuple(Q(winding * (j % 9 - 4), 9) for j in range(18)),
+        target_winding=winding,
     )
 
 
@@ -153,9 +158,10 @@ class _InheritedPairObservation:
 
 
 def _observe_inherited_constitutive_pair(
-    *, interface, deformation, form, relative_phase_phasor
+    *, interface, deformation, form, relative_phase_phasor, target_winding=1
 ):
     """Compute both collective rows after all primitive coordinates admit."""
+    winding = _target_winding(target_winding)
     name, coefficient = _interface(interface), _deformation(deformation)
     raw = _ordered(form, "form", limit=3)
     if len(raw) != 2:
@@ -164,7 +170,9 @@ def _observe_inherited_constitutive_pair(
     phase = _admit_relative_phasors((relative_phase_phasor,), "relative_phase_phasor")[
         0
     ]
-    law = _derive_constitutive_inheritance(interface=name, deformation=coefficient)
+    law = _derive_constitutive_inheritance(
+        interface=name, deformation=coefficient, target_winding=winding
+    )
     r, gamma = law.first_harmonic_multiplier_bounds, law.gamma_bounds
     potential, jet = _edge_law(*phase, coefficient)
     current = jet[0] + (r - 1) * phase[1]

@@ -1,0 +1,9 @@
+{
+  "finished_utc":"2026-10-28T18:22:25.719491+00:00",
+  "exit_code":0,
+  "plan":{
+    "path":"artifacts/native-joint-organization-20261028/validation-plan.json",
+    "bytes":218201,
+    "sha256":"40e2390cbdaa91b56f80a348cdcdc704ab4d05864348e7356ceb7dde8ff19ea5"
+  }
+}

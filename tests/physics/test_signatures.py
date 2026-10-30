@@ -10,6 +10,7 @@ reappear.
 
 from __future__ import annotations
 
+import math
 import threading
 from copy import deepcopy
 
@@ -186,3 +187,85 @@ def test_signature_cannot_be_stable_after_u6_drift_violation():
     assert signature["phi_s_drift"] > 0.5 * 3.141592653589793
     assert signature["potential_drift_ok"] is False
     assert signature["signature_class"] == "unstable"
+
+
+@pytest.mark.parametrize("graph", [nx.Graph(), nx.DiGraph([(0, 1)])])
+def test_unavailable_coherence_is_not_a_medium_or_stable_signature(graph):
+    signature = compute_element_signature(graph, apply_synthetic_step=False)
+    assert math.isnan(signature["xi_c"])
+    assert signature["xi_c_available"] is False
+    assert signature["xi_c_provenance"]["method"] == "unavailable"
+    assert signature["coherence_length_category"] == "unavailable"
+    assert signature["coherence_length_reference_diameter"] is None
+    assert signature["signature_available"] is False
+    assert signature["signature_class"] == "unavailable"
+    if not graph:
+        assert math.isnan(signature["mean_phase_gradient"])
+        assert math.isnan(signature["max_phase_curvature_abs"])
+        assert signature["phase_gradient_ok"] is False
+        assert signature["curvature_hotspots_ok"] is False
+
+
+def test_empty_graph_cannot_claim_a_completed_probe():
+    signature = compute_element_signature(nx.Graph(), apply_synthetic_step=True)
+    assert signature["synthetic_step_applied"] is False
+    assert signature["potential_drift_assessed"] is False
+    assert signature["potential_drift_ok"] is None
+    assert signature["signature_class"] == "unavailable"
+
+
+def test_spectral_scale_retains_evidence_without_a_path_length_category():
+    graph = _ring()
+    signature = compute_element_signature(graph, apply_synthetic_step=False)
+    assert signature["xi_c_available"] is True
+    assert signature["xi_c_provenance"]["method"] == "spectral_gap"
+    assert "dimensionless" in signature["xi_c_provenance"]["distance_weighting"]
+    assert signature["coherence_length_category"] == "not_comparable"
+    assert signature["coherence_length_reference_diameter"] is None
+    assert signature["signature_available"] is False
+    assert signature["signature_class"] == "unavailable"
+
+
+@pytest.mark.parametrize("directed", [False, True])
+def test_signature_fit_categories_respect_actual_distance_geometry_and_units(directed):
+    # C(center)=1 and C(leaf)=exp(-radius/2), giving exactly the
+    # exponential product exp(-distance/2) in this star geometry.
+    graph = nx.DiGraph() if directed else nx.Graph()
+    graph.add_node("center", delta_nfr=0.0)
+    for leaf in range(12):
+        radius = 1.0 + leaf % 4
+        graph.add_edge("center", leaf, length=radius, weight=1.0)
+        graph.nodes[leaf]["delta_nfr"] = math.expm1(radius / 2.0)
+    first = compute_element_signature(graph, apply_synthetic_step=False)
+    for _, _, data in graph.edges(data=True):
+        data["length"] *= 3.0
+    scaled = compute_element_signature(graph, apply_synthetic_step=False)
+    expected_diameter = 4.0 if directed else 8.0
+    assert first["xi_c_provenance"]["method"] == "autocorrelation_fit"
+    assert first["xi_c"] == pytest.approx(2.0)
+    assert scaled["xi_c"] == pytest.approx(6.0)
+    assert first["coherence_length_reference_diameter"] == expected_diameter
+    assert scaled["coherence_length_reference_diameter"] == 3 * expected_diameter
+    assert first["coherence_length_category"] == ("medium" if directed else "localized")
+    assert scaled["coherence_length_category"] == first["coherence_length_category"]
+    assert first["signature_available"] is True
+    assert first["signature_class"] == "stable"
+
+
+def test_large_graph_size_does_not_override_unavailable_au_length(monkeypatch):
+    from tnfr.operators import word_execution
+
+    graph = nx.DiGraph((node, node + 1) for node in range(51))
+    monkeypatch.setattr(word_execution, "run_network_sequence", lambda *a, **k: None)
+    signature = compute_au_like_signature(graph)
+    assert signature["xi_c_available"] is False
+    assert signature["signature_available"] is False
+    assert signature["is_au_like"] is False
+
+
+def test_signature_mean_retains_representable_large_potential():
+    graph = nx.path_graph(2)
+    nx.set_node_attributes(graph, 1e308, "delta_nfr")
+    signature = compute_element_signature(graph, apply_synthetic_step=False)
+    assert signature["phi_s_before"] == 1e308
+    assert signature["phi_s_after"] == 1e308

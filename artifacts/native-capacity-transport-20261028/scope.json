@@ -1,0 +1,50 @@
+{
+  "question":"Which additive measure and capacity law extend JC1 from isolated unit cycles to supplied irregular connected support?",
+  "status":"prospective analytical derivation and six symbolic controls; not evaluated",
+  "source":"Two labeled unit C5 cycles 0..4 and 5..9 with bridge(0,5); fixed support, complete thirty-coordinate native state and fixed positive node measure M.",
+  "reference":"Native xdot=N[-(1/2)D^-1Bx+(1/2)g], thetadot=(1/2)H^-1NBx; kappa>0, regular chart, same structural clock; capacity/topology pressure absent.",
+  "capacity_alternatives":"M nudot=-(kappa/2)Bnu; M=I versus M=D/2. Same reciprocal extensive edge flux, different node measures.",
+  "constitutive_decision":"Provisionally retain equal support-independent constituent measure and uniform degree-independent linear edge coefficient; remaining rate freedom and alternatives explicit.",
+  "preparation":"Capacity contrast nu=nu_base*1+eta*e0, nu_base,eta>0. Native derivative witness x=a*e0 with a>0, winding-one cycles theta_i=theta_(i+5)=2*pi*i/5 and aligned bridge. Blind controls: uniform capacity, separate unit C5, regional-uniform capacities for ordinary-total drift and uniform-form exact native lock for native response.",
+  "observations":"Full nodal rates, exact conserved linear totals, weighted variance and boundary fluxes, initial native second derivatives; no coarse closure imposed.",
+  "horizon":"Exact initial differential identities and capacity-only semigroup theorem for all t>=0; no finite-horizon numerical native response or full-law global continuation claim.",
+  "method":"Independent neighbor sums versus incidence matrices, exact rational/symbolic arithmetic and analytic proofs. No random seed, integration backend, tolerance or sampled parameter search.",
+  "claims_to_check":[
+    "Cycle agreement and irregular-support discrimination",
+    "Correct left invariant measure, weighted dissipation and Metzler generator",
+    "Native storage gradients and cross-row cancellation on joined support",
+    "Port-bump signed rates, distinct limiting means and regional boundary balances",
+    "Matched native velocities but different accelerations; blind domains",
+    "Support-change measure versus storage accounting, without executing events"
+  ],
+  "expected_test_names":[
+    "test_measure_family_and_cycle_equivalence",
+    "test_weighted_balance_variance_and_positive_generator",
+    "test_native_storage_cancellation_on_joined_support",
+    "test_port_contrast_discriminates_means_and_cut_balances",
+    "test_matched_native_acceleration_and_blind_cases",
+    "test_link_change_separates_measure_and_storage_jumps"
+  ],
+  "control_group_count":6,
+  "evaluation_budget":{
+    "pytest_attempts":1,
+    "wall_seconds":120,
+    "memory_bytes":2147483648,
+    "trajectory_runs":0,
+    "parameter_scans":0
+  },
+  "memory_supervision":"Existing Windows Job watchdog, nominal100ms aggregate RSS polling plus worker OS peak; no hard allocation bound.",
+  "scope_limits":[
+    "Fixed simple connected unit support; measures positive and fixed.",
+    "Conditional equal-measure model selection, not a uniquely necessary law.",
+    "No runtime installation, registered event, empirical observation, formation claim or physical mapping.",
+    "No inherited nonlinear basin or refinement invariance.",
+    "No resolved broader foundation pillar."
+  ],
+  "failure_policy":"Preserve frozen sources and all results; no retry under this declaration. Any correction needs separate declaration, source freeze and independent review.",
+  "prior_result":{
+    "path":"artifacts/native-model-admission-20261028/final-state.json",
+    "bytes":9090,
+    "sha256":"1f1272a92ef99bb3d51a107da6c1a9c4cdb4ed469f1d759ca6cd1b8c60855762"
+  }
+}

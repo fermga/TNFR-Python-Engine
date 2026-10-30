@@ -1,20 +1,57 @@
-# TNFR Structural Field Tetrad
+<a id="tnfr-structural-field-tetrad"></a>
+# TNFR Structural Observations and Field Tetrad
 
-**Status:** Canonical read-only telemetry. This guide defines the fields,
+**Status:** Shared read-only observations. This guide defines the fields,
 current API behavior, and numerical safety policies. The distinction between
 kinematic bounds, selected thresholds, and open reconstruction claims is
 centralized in
 [Mathematical Scope of Structural Diagnostics and Grammar](../theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md).
 
-The four channels are structural potential Φ_s, phase-gradient magnitude
+The historical four-channel view contains structural potential Φ_s, phase-gradient magnitude
 |∇φ|, circular curvature K_φ, and coherence length ξ_C. They complement the
 structural triad and global C(t)/Si measurements. They do not by themselves
-reconstruct every graph state or determine its evolution. The
+reconstruct every graph state or determine its evolution. Three channels are
+nodewise fields and the fourth is a global estimate; four channel names do not
+specify four independent scalar state coordinates. Their
+[dependency and reconstruction scope](../theory/MINIMAL_STRUCTURAL_DEGREES.md)
+retains that distinction. The
 [same-tetrad future witness](../theory/TNFR_VARIATIONAL_PRINCIPLE.md#cotangent-tetrad-future-witness)
 fixes one conditional joint law and exhibits identical snapshot fields with
 different field derivatives and later relative form. It tests state loss,
 not just uncertainty about the chosen law; temporal observability is a
 separate question.
+
+The broader interface selects observations for a stated task. Primitive EPI,
+signed pressure and nonnegative capacity already belong to the nodal model;
+retaining them is not the introduction of new fundamental fields. Profiles,
+phase resultants and oriented winding expose specific information lost by the
+four-channel view. The [observation requirements](../theory/MINIMAL_STRUCTURAL_DEGREES.md)
+give constructive reconstruction conditions and counterexamples. No universal
+minimal channel count follows from this interface.
+
+`diagnose_network(network, include_coherence_profile=True,
+include_phase_evidence=True, winding_cycles=(ordered_cycle,))` adds an optional
+`observations` block to its existing report. The default report stays compatible.
+One detached graph supplies the primitive projection, tetrad and requested
+observations; the shared phase evidence and coherence fit are reused. Each
+requested channel retains its own availability, error and interpretation.
+An unavailable fitted length does not make a measured profile unavailable.
+Phase-resultant evidence preserves exact rational sums of represented
+trigonometric components; its scope remains distinct from exact trigonometry.
+Winding cycles are supplied ordered node sequences, with explicit branch
+status and orientation. Winding availability does not certify runtime U3
+admission. Opaque node labels become snapshot indices in the JSON report.
+
+For finite pair comparisons, `observation_signature(..., include_form=True)`
+adds signed scalar EPI to the existing optional pressure/capacity/history
+channels and binds ξ_C to its estimator provenance. Requested primitives must
+be present and admitted; missing capacity is not measured zero capacity.
+`minimal_distinguishing_channels` requires matching representations, selected
+channels and estimator policies. It compares exact represented values, skips
+an unavailable tetrad and rejects stale/unattributed coherence values. An empty
+result proves no complete-state equivalence. Categorical glyph history supplies
+no timestamped growth or event-admission certificate. Use the SDK report when
+independent partial availability is needed.
 
 `metrics.collect_tetrad_snapshot` reuses the unified field-summary owner for
 finite means and population spreads. An invalid node value makes that whole
@@ -113,6 +150,11 @@ deviation and extrema remain available. SDK summaries describe each field on
 its own support. Their overall safety advisory requires matching nonempty
 potential/gradient/curvature support and an available coherence length, in
 addition to the configured checks. Missing observations cannot certify safety.
+The SDK requires a finite strictly positive ξ_C for its availability advisory;
+zero is not an accepted estimate. This check alone establishes neither a
+spatial extent nor a stability result. Global observability summaries reuse
+the same stable mean reduction, including finite fields whose unscaled sum
+would overflow; empty samples remain unavailable.
 
 ## 2. Canonical field definitions
 
@@ -304,6 +346,51 @@ in both backends. Node/source order is part of the fit cache key; the outer
 telemetry cache also binds neighbor order and the numerical path. Pressure,
 both edge channels and precision mode participate in cache invalidation.
 
+`observe_coherence_profile(G)` returns an optional immutable report on exactly
+that pair sample. It retains node/source order, pressure-derived coherence,
+global mean/variance, every positive-distance bin and its pair count, omitted
+zero-distance/unreachable counts, endpoint moments, globally centered products,
+endpoint-role covariance and semivariogram. Directed roles distinguish source
+and target; undirected endpoints are symmetrized. Bin `fit_included` records
+local count/floor eligibility; the separate global `fit.status` may still
+reject the fit. The fit report includes slope, intercept, log residuals, R²
+and numerical rank, with no new quality threshold or spectral substitution.
+
+For use, import from the shared field facade:
+
+```python
+from tnfr.physics.fields import observe_coherence_profile
+
+profile = observe_coherence_profile(G)
+fit = profile.fit
+if fit.available:
+    print(fit.value, fit.r_squared, fit.log_residuals)
+```
+
+These moments describe a finite prepared field. Pair counts are not independent
+replicate counts, and residuals do not establish a stochastic model. On an
+irregular graph, subtracting the global mean squared from a bin product need
+not give its globally centered product; retain bin endpoint means. A perfect
+radial exponential can be prepared without dynamics, whereas an oscillatory
+profile with R² = 1/5 still passes the historical slope policy. Small metric
+perturbations can split every exact-distance bin and remove an otherwise
+exponential fit. The [coherence observation foundations](../theory/COHERENCE_OBSERVATION_FOUNDATIONS.md)
+derive these witnesses and the dependencies among proposed extra observations.
+This report is recomputed from live admitted inputs and changes no state or law.
+
+`observe_coherence_resolution(G, radii=..., bandwidth=...)` adds a separate
+spatial observation at an explicit resolution. It uses triangular pair weights
+`max(0, 1-abs(distance-radius)/bandwidth)` and retains the original live profile,
+weighted mass, contributing-pair count and endpoint moments. Radii are finite
+nonnegative distances; bandwidth is finite and strictly positive in the same
+unit. Singleton and below-fit-floor bins still contribute. Empty kernel support
+has unavailable normalized moments, with zero mass. Scale the radii and width
+with the metric when changing units. These are supplied observation settings,
+not additional fundamental TNFR parameters or a replacement ξ_C estimator.
+The [resolution theorem](../theory/COHERENCE_OBSERVATION_FOUNDATIONS.md#82-equivariance-perturbation-and-availability)
+states exact-real perturbation conditions on a fixed pair population; the
+floating report is descriptive and claims no certified robustness threshold.
+
 Negative or nonfinite effective edge lengths and overflowing reachable path
 distances now raise `ValueError`; invalid geometry is not a failed fit and
 does not trigger spectral fallback. The vector helper's optional distance
@@ -317,15 +404,51 @@ When valid inputs supply no usable fit, the separate fallback is
 The implementation selects the smallest eigenvalue above `1e-9`, a numerical
 mode-selection policy. On an admitted connected symmetric graph with a
 resolved positive gap this corresponds to λ₂. Disconnected graphs do not
-thereby acquire cross-component correlation, directed graphs cannot use this
-symmetric fallback, and unavailable estimates remain NaN. A fitted ξ_C has
+thereby acquire cross-component correlation. The fallback requires symmetric
+effective conductance; a directed graph with reciprocal equal conductances
+can satisfy that condition, whereas asymmetric adjacency cannot. Unavailable
+estimates remain NaN. A fitted ξ_C has
 the declared path-length units; the normalized-generator fallback is
 dimensionless and does not scale with an independent explicit length.
+The shared spectral reader admits each raw conductance before aggregation or
+cache reuse. Boolean, textual, nonfinite and unrepresentable nonzero sources
+cannot supply a valid fallback. Its existing signed parallel-edge convention
+requires the effective sum to be nonnegative; this is separate from the
+nonnegative per-edge metric-length contract. An explicitly declared metric
+fit does not consume an otherwise unused conductance channel.
 
 Grammar telemetry compares a fitted length only with a mean reachable distance
 computed using that same geometry and units. A spectral fallback is explicitly
 `not_comparable` to that path-length baseline; missing or nonfinite estimates
 remain unavailable rather than passing a safety cut.
+
+The aggregate validation report uses the same structural paths for its diameter
+and mean eccentricity policies. Its compatibility key `mean_node_distance`
+means mean node eccentricity, not mean pair distance; `geometry_provenance`
+identifies both statistics. A spectral fallback remains available evidence but
+cannot pass either length comparison or supply a complete low-risk verdict.
+Uniformly changing the metric's length unit rescales the fitted length and
+both references together.
+
+The legacy element-signature classifier likewise retains `xi_c_provenance`
+and availability. Its selected 0.3/1.2 length categories compare an actual fit
+with the maximum positive reachable distance in the same geometry. Spectral
+scales have category `not_comparable`; missing estimates have `unavailable`.
+An incomplete whole-tetrad classification cannot be called stable or receive
+the historical Au-like label merely from node count. A measured probe-drift
+violation remains a violation even when another observation is unavailable.
+These labels are policies for supplied observations, not chemical identities
+or future-stability theorems.
+
+Temporal and multichannel window series retain the canonical estimator record
+for each raw ξ_C value. Trend and discrimination comparisons require aligned
+values and provenance with one estimator and compatible distance/fit/mode
+policies over the selected windows. Missing windows are counted; mixed methods
+and legacy series without provenance make the ξ_C comparison unavailable.
+Prospective evaluation also retains the calibration's estimator policies.
+Unavailable ξ_C cannot win channel selection. Historical numeric placeholders
+remain identifiable as unavailable, rather than evidence of chance performance;
+raw series and frozen responses are preserved.
 
 Use `estimate_coherence_length_with_provenance(G)` to retain the method,
 distance/units, source selection, fit policy and graph regime.

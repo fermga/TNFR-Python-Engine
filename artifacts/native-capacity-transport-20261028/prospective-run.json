@@ -1,0 +1,40 @@
+{
+  "schema":"tnfr.native-capacity-transport-prospective-run.v1",
+  "scope":{
+    "path":"artifacts/native-capacity-transport-20261028/scope.json",
+    "bytes":3737,
+    "sha256":"275c1172e85ece9d1fec596f49e1054d8280de10921c29dda789665f0b8ea54a"
+  },
+  "independent_review":{
+    "path":"artifacts/native-capacity-transport-20261028/pre-evaluation-review.json",
+    "bytes":5621,
+    "sha256":"fb90a222ff0a662c1e19bcc14f69c4b22f268f1718de723a88bab392a87939ac"
+  },
+  "expected_test_names":[
+    "test_measure_family_and_cycle_equivalence",
+    "test_weighted_balance_variance_and_positive_generator",
+    "test_native_storage_cancellation_on_joined_support",
+    "test_port_contrast_discriminates_means_and_cut_balances",
+    "test_matched_native_acceleration_and_blind_cases",
+    "test_link_change_separates_measure_and_storage_jumps"
+  ],
+  "expected_test_count":6,
+  "pytest_attempts":1,
+  "budget":{
+    "watchdog_wall_budget_seconds":120,
+    "maximum_rss_bytes":2147483648,
+    "maximum_response_bytes":33554432,
+    "maximum_log_bytes":1048576,
+    "diagnostic_reserve_bytes":1048576,
+    "handshake_timeout_seconds":30,
+    "poll_seconds":0.1
+  },
+  "resource_scope":"Windows kill-on-close job; aggregate RSS sampled with a nominal 100 ms polling interval, with actual-worker OS peak additionally checked; no hard allocation limit. The 120-second watchdog includes the interpreter handshake and worker setup; owned-process cleanup has its separate bounded allowance.",
+  "allowed_post_evaluation_status_edits":[
+    "theory/RESEARCH_PROGRAM.md"
+  ],
+  "trajectory_runs":0,
+  "parameter_scans":0,
+  "historical_producer_replays":0,
+  "failure_policy":"Preserve frozen sources and all results; no retry under this declaration. Any correction needs separate declaration, source freeze and independent review."
+}

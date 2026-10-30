@@ -40,6 +40,7 @@ owns these mathematical obligations.
 | Concern | Source of truth |
 | --- | --- |
 | Contributor and agent instructions; six invariant identifiers | [AGENTS.md](AGENTS.md) |
+| Foundation prerequisites before physical mapping | [Research program](theory/RESEARCH_PROGRAM.md#foundational-pillars) owns criteria/activity; [readiness record](theory/research_prerequisites.json) owns evidence associations; [checker](scripts/check_research_prerequisites.py) enforces their integrity and admission in documentation CI. This is a workflow prerequisite, not a physical theorem or runtime law. |
 | Mathematical definitions, derivations and scientific scope | [Theory catalog](theory/README.md) |
 | Operator channel, scale and postcondition | [`operator_contracts.py`](src/tnfr/operators/operator_contracts.py) |
 | Operator-role derivation | [`physics_derivation.py`](src/tnfr/config/physics_derivation.py) |
@@ -432,17 +433,32 @@ reports do not execute operator words or establish an optimization result.
 
 ## Structural fields and scope
 
-`physics/fields.py` owns the tetrad `(Phi_s, |grad phi|, K_phi, xi_C)`;
+`physics/fields.py` owns the tetrad `(Phi_s, |grad phi|, K_phi, xi_C)` and shared
+spatial-profile observations; the tetrad is one selected diagnostic view.
 `metrics/common.py` owns coherence reductions. Consumers preserve undefined
 curvature and distinguish a fitted coherence length from its spectral fallback.
 The [field specification](docs/STRUCTURAL_FIELDS_TETRAD.md) owns formulas,
 geometry channels, thresholds and availability; this architecture guide does
 not maintain another parameter table.
 
+`sdk.study.diagnose_network` composes the admitted primitive projection and
+optional coherence-profile, phase-resultant and supplied winding-cycle evidence
+on one detached graph. Shared owners retain their individual domains; optional
+observations are computed only when requested. The resolution-aware coherence
+reader reuses the live exact-bin profile and an explicit width/radius policy.
+It neither replaces the scalar estimator nor adds an evolution law.
+
 Derived fields and diagnostic reductions are observations of the admitted
 state. They do not reconstruct arbitrary full nodal states or predict future
 evolution. Restricted sufficient descriptions need their own closure proof;
 see [state-information scope](theory/MINIMAL_STRUCTURAL_DEGREES.md).
+
+The [physical-emergence atlas](theory/PHYSICAL_REGIME_CORRESPONDENCES.md#electromagnetic-emergence-audit)
+separates actual transport and organized-object laws from auxiliary gauge,
+wave and harmonic models. Legacy particle-named profile constructors and
+interaction-named convenience words do not establish physical species or
+forces. Their supplied state, operator execution and diagnostic readouts
+retain their own owners; no shared physics label makes their laws equivalent.
 
 ## Operator registry and grammar
 

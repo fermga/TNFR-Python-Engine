@@ -5,12 +5,26 @@ organization, and what information is needed to predict its interactions.
 Its mathematical models make those questions precise. The engine implements
 particular laws and actions with explicit domains; the research asks which
 conclusions follow and which additional premises remain necessary.
+The [ontology](EMERGENT_ONTOLOGY.md#matter-emergence-hypothesis) owns
+the same-law organization and matter-emergence hypothesis; the
+[physical atlas](PHYSICAL_REGIME_CORRESPONDENCES.md#electromagnetic-emergence-audit)
+distinguishes its electromagnetic targets and current prerequisites.
 
 This chapter is a reading guide to existing foundations, not another definition
 registry or a replacement for their proofs. **Canonical** means maintained
 with a stated scope; it does not mean uniquely derived or empirically confirmed.
 The [glossary](GLOSSARY.md) owns concept cards and their classification. The
 [research program](RESEARCH_PROGRAM.md#research-current-question) owns tasks.
+
+The foundational review separates four questions: what makes a transformation
+occur, which structural state predicts an observation, what maintains an
+organization's identity, and which evidence justifies selecting a model or
+the next study. These questions connect the historical intuition to a
+testable realization; the software's scalar chart, finite event maps and
+configured selectors do not settle them by themselves. Their
+[four prerequisite pillars](RESEARCH_PROGRAM.md#foundational-pillars) must
+be resolved before physical mapping research can resume. The criteria and
+readiness record belong to that program, not to this reading guide.
 
 ## 1. Structure, state and identity
 
@@ -223,8 +237,9 @@ it. An unavailable pre-birth observation cannot count as measured absence.
 The later isolated descendant illustrates a further boundary: genealogy does
 not give it acquired history or contact. A full-state description might support
 an organized identity even when no smaller autonomous description works.
-The [retained candidate](RESEARCH_PROGRAM.md#deferred-composition-question)
-keeps this scientific question available without making it an active evaluation.
+The [formation and maintenance contract](EMERGENT_ONTOLOGY.md#generative-bound-organization)
+owns this distinction. The [research program](RESEARCH_PROGRAM.md#research-current-question)
+selects the active question; this example does not select a candidate.
 
 ## 6. From understanding to a bounded research question
 

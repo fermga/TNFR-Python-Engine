@@ -1,0 +1,36 @@
+{
+  "files":[
+    {
+      "path":"theory/RESEARCH_PROGRAM.md",
+      "bytes":92570,
+      "sha256":"5d30da78647fb5ec1c53f00970e5e93c45fbdd0ba3e36e37766d7889f9885665"
+    },
+    {
+      "path":"theory/nodal/SINE_TWO_PORT_CAPTURE.md",
+      "bytes":47760,
+      "sha256":"6502c13c716e89630b242236c273ac36f992e3995aa6ea9587167510802489d4"
+    }
+  ],
+  "review":{
+    "path":"artifacts/formed-two-port-attempt-20261029/document-integration-review.md",
+    "bytes":4806,
+    "sha256":"ab661c94d98b5fdf351c504ed39eb6f98eff10e8bd00c5f17e2ff72cfae89224"
+  },
+  "changes":{
+    "path":"artifacts/formed-two-port-attempt-20261029/document-changes.json",
+    "bytes":10932,
+    "sha256":"7208194a4a6db2ef412614acba9cdbca13af2ab68ae6d8278c272f7e2b2d757f"
+  },
+  "audit":{
+    "path":"artifacts/formed-two-port-attempt-20261029/audit.json",
+    "bytes":2706,
+    "sha256":"73457c3783ec9fcc8620d8b2eb23cc7d8c3a5e09b932cfc16e76db8a1eeb9010"
+  },
+  "diagnostic_execution":{
+    "path":"artifacts/formed-two-port-attempt-20261029/diagnostic-execution.json",
+    "bytes":577,
+    "sha256":"8f981aa11d420eae8208b15495851a0873fbf97f1bc482fe9751aadc08fa780b"
+  },
+  "next_question":"Justify the source-compatible transient domain and M1--M9 comparison before another numerical attempt; actual-source two-port entry remains open.",
+  "scientific_calls":0
+}

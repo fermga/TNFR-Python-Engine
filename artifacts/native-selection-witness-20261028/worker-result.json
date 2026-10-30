@@ -1,0 +1,10 @@
+{
+  "finished_utc":"2026-10-28T20:30:07.720921+00:00",
+  "exit_code":0,
+  "paired_certificate_passed":true,
+  "plan":{
+    "path":"artifacts/native-selection-witness-20261028/validation-plan.json",
+    "bytes":213907,
+    "sha256":"6a5fe5d5f651e52ea009c9def96fdab04c90b3b68d48b8978830be708fb99e6b"
+  }
+}

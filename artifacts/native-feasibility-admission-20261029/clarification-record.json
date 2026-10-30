@@ -1,0 +1,21 @@
+{
+  "reason":"Add precise source/version/location provenance; budget stops new acquisition while classification of already admitted material may finish. No larger document or query budget.",
+  "archive":{
+    "path":"artifacts/native-feasibility-admission-20261029/draft-before-clarification.zip",
+    "bytes":6490,
+    "sha256":"97569171d3c48a806f992289317edec30c456fcb4d286b6f93286485ff4b65e5"
+  },
+  "superseded_reviews":[
+    {
+      "path":"artifacts/native-feasibility-admission-20261029/foundation-review.json",
+      "bytes":6969,
+      "sha256":"c882cfe6bbeb361124bcaea75b9ff25acf1e5ded69429353d1ca61c44231e7c5"
+    },
+    {
+      "path":"artifacts/native-feasibility-admission-20261029/scope-review.json",
+      "bytes":7993,
+      "sha256":"4410d80ef08b12c839fc849a5fa1c91b560355f8030b6d7811ce2f4d8bfe5d83"
+    }
+  ],
+  "new_scientific_evaluations":0
+}

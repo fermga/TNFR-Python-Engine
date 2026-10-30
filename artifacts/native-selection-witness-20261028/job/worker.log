@@ -1,0 +1,35 @@
+{'status': 'candidate_frozen', 'initial_float': [-0.0030132616079649606, 0.009275693092910693, 2.1051839176286458, 1.0183084361673431, 1.03125, 1.03125]}
+{'time': 1.0, 'models': {'held': {'status': 'running', 'steps': 8}, 'dynamic': {'status': 'running', 'steps': 8}}}
+{'time': 2.0, 'models': {'held': {'status': 'running', 'steps': 16}, 'dynamic': {'status': 'running', 'steps': 16}}}
+{'time': 3.0, 'models': {'held': {'status': 'running', 'steps': 24}, 'dynamic': {'status': 'running', 'steps': 24}}}
+{'time': 4.0, 'models': {'held': {'status': 'running', 'steps': 32}, 'dynamic': {'status': 'running', 'steps': 32}}}
+{'time': 5.0, 'models': {'held': {'status': 'running', 'steps': 40}, 'dynamic': {'status': 'running', 'steps': 40}}}
+{'time': 6.0, 'models': {'held': {'status': 'running', 'steps': 48}, 'dynamic': {'status': 'running', 'steps': 48}}}
+{'time': 7.0, 'models': {'held': {'status': 'running', 'steps': 56}, 'dynamic': {'status': 'running', 'steps': 56}}}
+{'time': 8.0, 'models': {'held': {'status': 'running', 'steps': 64}, 'dynamic': {'status': 'running', 'steps': 64}}}
+{'time': 9.0, 'models': {'held': {'status': 'running', 'steps': 72}, 'dynamic': {'status': 'running', 'steps': 72}}}
+{'time': 10.0, 'models': {'held': {'status': 'running', 'steps': 80}, 'dynamic': {'status': 'running', 'steps': 80}}}
+{'time': 11.0, 'models': {'held': {'status': 'running', 'steps': 88}, 'dynamic': {'status': 'running', 'steps': 88}}}
+{'time': 12.0, 'models': {'held': {'status': 'running', 'steps': 96}, 'dynamic': {'status': 'running', 'steps': 96}}}
+{'time': 13.0, 'models': {'held': {'status': 'running', 'steps': 104}, 'dynamic': {'status': 'running', 'steps': 104}}}
+{'time': 14.0, 'models': {'held': {'status': 'running', 'steps': 112}, 'dynamic': {'status': 'running', 'steps': 112}}}
+{'time': 15.0, 'models': {'held': {'status': 'running', 'steps': 120}, 'dynamic': {'status': 'running', 'steps': 120}}}
+{'time': 16.0, 'models': {'held': {'status': 'running', 'steps': 128}, 'dynamic': {'status': 'running', 'steps': 128}}}
+{'time': 17.0, 'models': {'held': {'status': 'running', 'steps': 136}, 'dynamic': {'status': 'running', 'steps': 136}}}
+{'time': 18.0, 'models': {'held': {'status': 'running', 'steps': 144}, 'dynamic': {'status': 'running', 'steps': 144}}}
+{'time': 19.0, 'models': {'held': {'status': 'running', 'steps': 152}, 'dynamic': {'status': 'running', 'steps': 152}}}
+{'time': 20.0, 'models': {'held': {'status': 'running', 'steps': 160}, 'dynamic': {'status': 'running', 'steps': 160}}}
+{'time': 21.0, 'models': {'held': {'status': 'running', 'steps': 168}, 'dynamic': {'status': 'running', 'steps': 168}}}
+{'time': 22.0, 'models': {'held': {'status': 'running', 'steps': 176}, 'dynamic': {'status': 'running', 'steps': 176}}}
+{'time': 23.0, 'models': {'held': {'status': 'running', 'steps': 184}, 'dynamic': {'status': 'running', 'steps': 184}}}
+{'time': 24.0, 'models': {'held': {'status': 'running', 'steps': 192}, 'dynamic': {'status': 'running', 'steps': 192}}}
+{'time': 25.0, 'models': {'held': {'status': 'running', 'steps': 200}, 'dynamic': {'status': 'running', 'steps': 200}}}
+{'time': 26.0, 'models': {'held': {'status': 'running', 'steps': 208}, 'dynamic': {'status': 'running', 'steps': 208}}}
+{'time': 27.0, 'models': {'held': {'status': 'running', 'steps': 216}, 'dynamic': {'status': 'running', 'steps': 216}}}
+{'time': 28.0, 'models': {'held': {'status': 'running', 'steps': 224}, 'dynamic': {'status': 'running', 'steps': 224}}}
+{'time': 29.0, 'models': {'held': {'status': 'running', 'steps': 232}, 'dynamic': {'status': 'running', 'steps': 232}}}
+{'time': 30.0, 'models': {'held': {'status': 'running', 'steps': 240}, 'dynamic': {'status': 'running', 'steps': 240}}}
+{'model': 'dynamic', 'status': 'captured', 'sector': 0, 'time': 30.75}
+{'time': 31.0, 'models': {'held': {'status': 'running', 'steps': 248}, 'dynamic': {'status': 'captured', 'steps': 246}}}
+{'model': 'held', 'status': 'captured', 'sector': 1, 'time': 31.5}
+{'status': 'paired_evaluation_complete', 'passed': True, 'orientation_matched': True}

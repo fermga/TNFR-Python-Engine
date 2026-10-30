@@ -1502,6 +1502,7 @@ def test_write_generated_updates_both_registry_contracts_and_catalog_navigation(
         document[:start] + "\nobsolete\n" + document[end:], encoding="utf-8"
     )
     for check in (
+        "check_research_prerequisites",
         "check_versions_and_retired_claims",
         "check_publication_metadata",
         "check_documented_examples",
