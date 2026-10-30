@@ -30,7 +30,13 @@ particle profile into a derived physical identification.
 [foundation prerequisites] must be
 resolved with scoped evidence and review before starting or extending a
 fundamental-physics mapping, analogy campaign, particle identification or
-experimental fit. Read `theory/research_prerequisites.json` and run
+experimental fit. A separate independent final readiness review must bind
+all four current resolutions and the current program, and cover the proposed
+physical task. A pillar marked `resolved` admits only its reviewed mathematical
+scope; it does not by itself establish universal foundations or authorize a later acquisition, interaction or
+physical claim. All four resolutions can be valid while physical mapping
+remains blocked by a missing final review.
+Read `theory/research_prerequisites.json` and run
 `python scripts/check_research_prerequisites.py --require-physical-mapping`
 before such work. A nonzero result prohibits that work; continue the active
 foundation question instead. Do not bypass the prerequisite by calling a
@@ -205,7 +211,12 @@ sole active question. Its technical chapters retain definitions, proofs and
 counterexamples in their original contexts. The old plan, strategy and portfolio
 routes are generated compatibility views, not active instructions.
 Before resuming research, read the program's current task and complete any
-open documentation prerequisite there. Its current gate is the persistent
+open documentation prerequisite there. Run
+`python scripts/check_research_prerequisites.py` with the verified isolated
+interpreter. This ordinary check validates the record and its evidence
+associations; it permits only the work admitted by the live program and does
+not replace the stricter physical-readiness check or substantive review.
+Its current gate is the persistent
 continuation record; do not rely on conversation memory or create another queue.
 After the gate closes, reassess the next scientific question against the global
 objective instead of automatically continuing the most recent example. Existing
@@ -264,6 +275,23 @@ Preserve frozen protocols, source archives, responses and verdicts. Corrections
 need separate evidence: do not rewrite evaluated predictions or regenerate
 frozen producers for unrelated changes.
 
+The [published evidence selection] declares which local records are available
+in a fresh checkout and which dependencies remain omitted. Resolve a historical
+source by its recorded path and digest in the associated archive; current
+maintained bytes need not match a past freeze. Preserve the raw-byte rules in
+`.gitattributes`, including bound chapter files and evidence archives. Do not
+normalize, reformat or rewrite frozen files to repair a digest mismatch.
+A failed sufficient certificate leaves its claim unavailable; it does not
+establish failure of the modeled trajectory. A consumed attempt or failed
+diagnostic does not authorize a retry, repair/replay or enlarged budget.
+
+User-supplied books in `bibliografia/` remain local and Git-ignored. Preserve
+them during cleanup or refactoring. Keep the books, extracted text and rendered
+pages out of commits and publication archives; use
+`theory/BIBLIOGRAPHIC_METHODS.md` for source locators, reading limits and
+method integration. Missing local material
+must be reported explicitly, not silently replaced or treated as a result.
+
 ## 6. Documentation and implementation owners
 
 | Need | Owner |
@@ -306,7 +334,12 @@ counterexamples, frozen protocols and evaluated responses.
 ## 7. Development and verification workflow
 
 Inspect instructions, local changes, relevant source and tests before editing;
-preserve unrelated work. Start from the mathematical question and consumer.
+preserve unrelated work. Use the user's selected source repository, not a
+plugin directory, old ZIP or installed release. Verify the repository root,
+HEAD and working-tree status. Before Python execution, verify the isolated
+interpreter and the imported `tnfr` path against that checkout; a matching
+version string alone does not establish source identity.
+Start from the mathematical question and consumer.
 Use the owner map to locate the definition, selected law, implementation and
 tests before proposing a change. Prefer shared kernels, retain useful adapters
 and keep APIs stable or document and test an explicit migration. Update
@@ -374,8 +407,9 @@ Detailed admission and verification belong to the linked contracts.
 [pressure contract]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NODAL_PARAMETER_FOUNDATIONS.md
 [structural field guide]: https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/STRUCTURAL_FIELDS_TETRAD.md
 [research program]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/RESEARCH_PROGRAM.md#research-current-question
+[published evidence selection]: https://github.com/fermga/TNFR-Python-Engine/blob/main/artifacts/github-consolidation-20261030/PUBLIC_EVIDENCE_README.md
 [foundation prerequisites]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/RESEARCH_PROGRAM.md#foundational-pillars
-[theory-to-execution map]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/RESEARCH_PROGRAM.md#theory-to-execution
+[theory-to-execution map]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/THEORY_TO_EXECUTION.md
 [Glossary]: https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/GLOSSARY.md
 [Architecture]: https://github.com/fermga/TNFR-Python-Engine/blob/main/ARCHITECTURE.md
 [Documentation map]: https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/README.md

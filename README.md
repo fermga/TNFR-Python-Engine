@@ -36,14 +36,16 @@ comparison has its own measurement requirements. The [physical assessment](https
 connects existing organization and transport results to the field, source and
 observation conditions still to be derived. Physical identification remains open.
 
-Research currently requires four foundations to be resolved before physical
-mapping: operator causality, sufficient state versus observation, persistent
-organizational identity, and justified research/model selection. Their
-[acceptance criteria and active task](theory/RESEARCH_PROGRAM.md#foundational-pillars)
-govern further work. A
-[checked prerequisite](theory/research_prerequisites.json) keeps physical
-mapping closed until the four evidence-backed resolutions and readiness
-review are admitted. Earlier physical studies remain contextual material.
+The four foundational pillars are operator causality, sufficient state versus
+observation, persistent organizational identity, and justified research/model
+selection. All four have [reviewed resolutions](theory/research_prerequisites.json)
+for a [prepared native organization](theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md#native-foundation-scope-decision):
+two five-node rings joined by one supplied bridge, with evolving capacity,
+local recovery and transmitted response under the declared complete law.
+These resolutions retain that mathematical scope. **Physical mapping remains
+blocked:** the separate final readiness review is absent. The
+[acceptance criteria](theory/RESEARCH_PROGRAM.md#foundational-pillars) govern
+any extension; earlier physical studies remain contextual material.
 
 <a id="what-a-tnfr-network-contains"></a>
 ### From nodal state to an organized object
@@ -77,7 +79,15 @@ owns their domains, units and unresolved choices.
 ## Installation
 
 Requires Python 3.10 or later. The examples on this page target the current
-checkout. From its repository root, install that source:
+checkout. From its repository root, create an isolated environment if one is
+not already available:
+
+```bash
+python -m venv .venv
+```
+
+Activate it with `.venv\Scripts\Activate.ps1` in PowerShell or
+`source .venv/bin/activate` in a POSIX shell, then install that checkout:
 
 ```bash
 python -m pip install -e .
@@ -170,6 +180,8 @@ different claims:
 | Capability | Established scope | Mathematical owner |
 | --- | --- | --- |
 | Native winding-pattern recovery | A prepared five-node unit ring (C5) and its ideal continuation under admitted capacity, phase and storage premises | [Native recovery](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/RELATIONAL_EFFECTIVE_CONNECTIONS.md) |
+| Native organization with evolving capacity | Prepared joined C5 rings retain their identity, recover locally and transmit a perturbation under one complete law | [Joint foundation account](theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md#native-foundation-scope-decision) |
+| Acquired native organizations and response | Formation/selection evidence and conditional regional response under a two-bridge dynamic-capacity law; quantitative entry of the actual sources into the response domains remains open | [Acquired native response](theory/nodal/NATIVE_ACQUIRED_RESPONSE.md) |
 | Formation, retention and recovery | Prepared families under specified laws, with source, stability and uncertainty conditions | [Pattern dynamics](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/SINE_PATTERN_DYNAMICS.md) |
 | Collective state, interaction and memory | Exact reductions or bounded descriptions that retain required constituent and boundary information | [Emergent ontology](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/EMERGENT_ONTOLOGY.md) |
 | Localized motion | Finite transport of a prepared full-state identity on supplied support | [Identity transport](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/LOCALIZED_IDENTITY_TRANSPORT.md) |
@@ -180,6 +192,18 @@ preparation agree. Proofs establish consequences of premises, tests check
 implementation, and numerical experiments describe their cases and error
 controls. Empirical validation requires independent measurements; mathematical
 storage is not identified with measured energy by its name.
+
+The [current foundation question](theory/RESEARCH_PROGRAM.md#research-current-question)
+connects already formed constituents to a maintained organization through
+two contacts. In the normalized-sine model, compatibility and capture from a
+separately supplied preparation are established under their premises; entry
+from the retained formed source remains uncertified. The
+[single retained attempt](theory/nodal/SINE_TWO_PORT_CAPTURE.md#sine-formed-two-port-attempt-result)
+certified four initial steps before the next tube failed domain admission.
+That outcome proves neither entry nor non-entry. The subsequent
+[domain analysis](theory/nodal/SINE_TWO_PORT_CAPTURE.md#sine-formed-two-port-domain-decision)
+separates energy bounds from the curvature and whole-time clearance still
+needed for comparison. The program owns the next analytical obligation.
 
 ## Choose an execution path
 
@@ -272,7 +296,7 @@ explains focused extraction and editing.
 | --- | --- |
 | Start with the foundations | [Conceptual core, dependencies and worked examples](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/CONCEPTUAL_CORE.md) |
 | Find a definition, proof or model | [Research reading route](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/RESEARCH_PROGRAM.md#reading-the-research-as-one-program) and [chapter index](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/README.md) |
-| Locate its implementation and tests | [Theory-to-execution map](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/RESEARCH_PROGRAM.md#theory-to-execution) |
+| Locate its implementation and tests | [Theory-to-execution map](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/THEORY_TO_EXECUTION.md) |
 | Distinguish premises, results, diagnostics and hypotheses | [Glossary](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/GLOSSARY.md) |
 | Assess possible physical emergence | [Hypothesis and scope](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/EMERGENT_ONTOLOGY.md#matter-emergence-hypothesis), [electromagnetic prerequisites](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/PHYSICAL_REGIME_CORRESPONDENCES.md#electromagnetic-emergence-audit) |
 | Understand priorities and select a question | [Selection criteria](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/RESEARCH_PROGRAM.md#research-selection) |
@@ -285,6 +309,10 @@ results and retirement provenance remain in the [research archive](https://githu
 The [selected raw evidence](https://github.com/fermga/TNFR-Python-Engine/blob/main/artifacts/github-consolidation-20261030/PUBLIC_EVIDENCE_README.md)
 includes source archives, reviews and retained outcomes with an explicit
 publication manifest. User-supplied reference books remain local.
+The ignored `bibliografia/` directory is not included in GitHub or required
+for installation and the routine checks. Bibliographic notes identify the
+consulted sources and reading limits; the published evidence is a selection,
+not a complete copy of local research records.
 
 <a id="how-pulse-resonance-and-fractality-fit-together"></a>
 <a id="the-research-direction"></a>
@@ -319,10 +347,12 @@ explain when internal motion, memory and collective response can be combined.
 | --- | --- |
 | `src/tnfr/` | Shared dynamics, operators, observations, numerical tools, CLI and SDK; boundaries in [Architecture](https://github.com/fermga/TNFR-Python-Engine/blob/main/ARCHITECTURE.md) |
 | `theory/RESEARCH_PROGRAM.md` | Research objective, sole current question and technical chapters; the theory index is generated navigation |
+| `theory/research_prerequisites.json` | Scoped foundation resolutions and the separate physical-readiness review; checked by `scripts/check_research_prerequisites.py` |
 | `docs/` | Usage and execution contracts, organized by the [documentation map](https://github.com/fermga/TNFR-Python-Engine/blob/main/docs/README.md) |
 | `tests/` | Contract checks and explicitly selected research tests; selection in [Testing](https://github.com/fermga/TNFR-Python-Engine/blob/main/TESTING.md) |
 | `examples/`, `benchmarks/` | [Runnable illustrations](https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/README.md) and [scoped instruments](https://github.com/fermga/TNFR-Python-Engine/blob/main/benchmarks/README.md) |
 | `docs/assets/`, `artifacts/` | Published evidence and local protocols, source archives and responses; missing local evidence remains unavailable |
+| `bibliografia/` (local only) | User-supplied reference books, ignored by Git and preserved separately from publishable evidence |
 | [applications/](https://github.com/fermga/TNFR-Python-Engine/blob/main/applications/README.md) | Basic arithmetic utility and retired application scope |
 
 ## Contribute and verify
@@ -336,6 +366,7 @@ contract and checks.
 With the test and documentation extras installed:
 
 ```bash
+python scripts/check_research_prerequisites.py
 python -m pytest
 python scripts/check_documentation.py
 python scripts/verify_internal_references.py --ci
@@ -348,6 +379,13 @@ research owner explicitly when changing its model or claim; the routine gate
 does not replay every retained campaign. Edit maintained documents, not
 generated `build/docs-source/` or `site/` files. Documentation catalogs supply
 the checked menus of the [published site](https://fermga.github.io/TNFR-Python-Engine/).
+
+The ordinary prerequisite check validates the current evidence associations
+and permits only the foundation work admitted by the program. Before a
+physical study, the additional `--require-physical-mapping` check must pass;
+its failure is currently expected because the final readiness review is absent.
+Published source archives and consumed protocols remain evidence, not a
+standing instruction to rerun their producers.
 
 ## Citation and license
 
