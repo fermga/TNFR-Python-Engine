@@ -12,7 +12,7 @@ from fractions import Fraction as Q
 
 from .._exact_time import exp_unit_bounds
 from ._comparison_flow import MAX_COMPARISON_DIMENSION, _exact, _ordered
-from ._interval_taylor import Jet, MAX_ORDER
+from ._interval_taylor import MAX_ORDER, Jet
 from ._rational_interval import I
 from ._validated_metric import (
     ValidatedMetricTaylorStep,
@@ -22,7 +22,6 @@ from ._validated_metric import (
     validated_metric_taylor_step,
 )
 from ._validated_taylor import picard_tube
-
 
 METRIC_INCLUSION_METHOD = "retained_spd_ball_bounded_disturbance_taylor_v1"
 _PREMISES = (
@@ -124,7 +123,9 @@ def validated_metric_inclusion_step(
         _exact, (radius, duration, time, forcing_bound)
     )
     if min(radius, time, forcing_bound) < 0 or duration <= 0:
-        raise ValueError("require nonnegative radius/time/forcing and positive duration")
+        raise ValueError(
+            "require nonnegative radius/time/forcing and positive duration"
+        )
     if type(order) is not int or not 1 <= order <= MAX_ORDER:
         raise ValueError("Taylor order outside the shared jet domain")
     if not callable(flow) or not callable(domain):
@@ -133,14 +134,19 @@ def validated_metric_inclusion_step(
         raise TypeError("forcing refinement must be callable")
     if growth_certifier is not None and not callable(growth_certifier):
         raise TypeError("growth certifier must be callable")
-    if sum(x is not None for x in (growth_rate, growth_rate_bounds, growth_certifier)) != 1:
+    if (
+        sum(x is not None for x in (growth_rate, growth_rate_bounds, growth_certifier))
+        != 1
+    ):
         raise ValueError("supply exactly one growth rate, bracket or certifier")
     if type(growth_bisections) is not int or not 0 <= growth_bisections <= 16:
-        raise ValueError("growth bisections must be an integer between zero and sixteen")
+        raise ValueError(
+            "growth bisections must be an integer between zero and sixteen"
+        )
     metric = _admit_metric(metric, size)
     projections = _metric_coordinate_projection_factors(metric)
-    disturbance = tuple(I(-forcing_bound*p, forcing_bound*p) for p in projections)
-    clock = I(time, time+duration) if time_dependent else None
+    disturbance = tuple(I(-forcing_bound * p, forcing_bound * p) for p in projections)
+    clock = I(time, time + duration) if time_dependent else None
 
     def enclosure_flow(*arguments):
         state = arguments[-1]
@@ -154,26 +160,38 @@ def validated_metric_inclusion_step(
             raise ValueError("field dimension differs from state")
         # This is a widened interval extension of the SAME smooth nominal
         # drift. Jet calls above retain only that drift and its derivatives.
-        return tuple(I.coerce(x)+d for x, d in zip(values, disturbance, strict=True))
+        return tuple(I.coerce(x) + d for x, d in zip(values, disturbance, strict=True))
 
     proof_tube = None
     external = None
     if growth_certifier is not None:
-        box = tuple(I(x-p*radius, x+p*radius) for x, p in zip(center, projections))
+        box = tuple(
+            I(x - p * radius, x + p * radius) for x, p in zip(center, projections)
+        )
         admission, failed, reason = picard_tube(
-            box, duration, enclosure_flow, domain,
-            domain_failure=domain_failure, prescribed_time=clock,
+            box,
+            duration,
+            enclosure_flow,
+            domain,
+            domain_failure=domain_failure,
+            prescribed_time=clock,
         )
         if admission is None:
             return None, failed, reason
         proof_tube = admission[0]
         try:
-            external = (growth_certifier(proof_tube) if clock is None
-                        else growth_certifier(clock, proof_tube))
+            external = (
+                growth_certifier(proof_tube)
+                if clock is None
+                else growth_certifier(clock, proof_tube)
+            )
             if type(getattr(external, "certified", None)) is not bool:
-                raise ValueError("growth certificate requires an explicit Boolean verdict")
-            if (type(external.tube) is not tuple
-                    or not all(type(x) is I for x in external.tube)):
+                raise ValueError(
+                    "growth certificate requires an explicit Boolean verdict"
+                )
+            if type(external.tube) is not tuple or not all(
+                type(x) is I for x in external.tube
+            ):
                 raise ValueError("growth certificate requires an exact interval tuple")
             admitted_external_metric = _admit_metric(external.metric, size)
             if external.tube != proof_tube or admitted_external_metric != metric:
@@ -181,18 +199,39 @@ def validated_metric_inclusion_step(
             if getattr(external, "prescribed_time_interval", None) != clock:
                 raise ValueError("external growth certificate clock mismatch")
             if not external.certified:
-                return None, proof_tube, (getattr(external, "reason", None)
-                                          or "external_growth_bound_not_certified")
+                return (
+                    None,
+                    proof_tube,
+                    (
+                        getattr(external, "reason", None)
+                        or "external_growth_bound_not_certified"
+                    ),
+                )
             growth_rate = _exact(external.growth_rate_upper_bound)
             metric_forcing_gain_upper(growth_rate, duration)
-        except (AttributeError, TypeError, ValueError, ZeroDivisionError, ArithmeticError) as exc:
+        except (
+            AttributeError,
+            TypeError,
+            ValueError,
+            ZeroDivisionError,
+            ArithmeticError,
+        ) as exc:
             return None, proof_tube, f"external_growth_unavailable: {exc}"
 
     nominal, failed, reason = validated_metric_taylor_step(
-        center, radius, metric, duration, enclosure_flow, domain,
-        growth_rate=growth_rate, growth_rate_bounds=growth_rate_bounds,
-        growth_bisections=growth_bisections, order=order, time=time,
-        time_dependent=time_dependent, domain_failure=domain_failure,
+        center,
+        radius,
+        metric,
+        duration,
+        enclosure_flow,
+        domain,
+        growth_rate=growth_rate,
+        growth_rate_bounds=growth_rate_bounds,
+        growth_bisections=growth_bisections,
+        order=order,
+        time=time,
+        time_dependent=time_dependent,
+        domain_failure=domain_failure,
     )
     if nominal is None:
         return None, failed, reason
@@ -201,15 +240,20 @@ def validated_metric_inclusion_step(
     effective = forcing_bound
     try:
         if forcing_refinement is not None:
-            effective = _exact(forcing_refinement(nominal.tube) if clock is None
-                               else forcing_refinement(clock, nominal.tube))
+            effective = _exact(
+                forcing_refinement(nominal.tube)
+                if clock is None
+                else forcing_refinement(clock, nominal.tube)
+            )
             if not 0 <= effective <= forcing_bound:
-                raise ValueError("refined forcing must lie between zero and the robust bound")
+                raise ValueError(
+                    "refined forcing must lie between zero and the robust bound"
+                )
         gain = metric_forcing_gain_upper(nominal.growth_rate_upper_bound, duration)
-        added = I(effective*gain).hi
-        endpoint_radius = I(nominal.endpoint_radius+added).hi
+        added = I(effective * gain).hi
+        endpoint_radius = I(nominal.endpoint_radius + added).hi
         endpoint = tuple(
-            I(x-p*endpoint_radius, x+p*endpoint_radius)
+            I(x - p * endpoint_radius, x + p * endpoint_radius)
             for x, p in zip(nominal.endpoint_center, projections, strict=True)
         )
     except (TypeError, ValueError, ZeroDivisionError, ArithmeticError) as exc:
@@ -251,11 +295,18 @@ def metric_inclusion_observation_boxes(step, flow, *, bin_count=1):
     projections = _metric_coordinate_projection_factors(nominal.metric)
     result = []
     for lower, upper, box in boxes:
-        added = I(effective*metric_forcing_gain_upper(
-            nominal.growth_rate_upper_bound, upper
-        )).hi
-        result.append((lower, upper, tuple(
-            value+I(-p*added, p*added)
-            for value, p in zip(box, projections, strict=True)
-        )))
+        added = I(
+            effective
+            * metric_forcing_gain_upper(nominal.growth_rate_upper_bound, upper)
+        ).hi
+        result.append(
+            (
+                lower,
+                upper,
+                tuple(
+                    value + I(-p * added, p * added)
+                    for value, p in zip(box, projections, strict=True)
+                ),
+            )
+        )
     return tuple(result)

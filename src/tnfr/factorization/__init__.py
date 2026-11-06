@@ -5,9 +5,9 @@ acceptance reports. These are not a general factorization theorem or evidence
 that factors emerge autonomously from the nodal equation. Grammar validation
 of a proposed word does not verify its execution or arithmetic divisibility.
 
-The in-repository lab is archived and is never discovered or imported by this
-bridge. A separately supplied ``tnfr_factorization`` package may still serve
-legacy callers, with a deprecation warning. Its results retain that package's
+The former in-repository lab is never discovered or imported by this bridge.
+A separately supplied ``tnfr_factorization`` package may still serve legacy
+callers, with a deprecation warning. Its results retain that package's
 heuristic contracts and are not maintained engine certificates."""
 
 from __future__ import annotations
@@ -21,19 +21,23 @@ from typing import Any
 __all__ = ["factorize", "SpectralAnalysisResult", "SpectralPaleyFactorizer"]
 
 _RETIREMENT_GUIDANCE = (
-    "The in-repository factorization lab is archived and is no longer "
-    "loaded by the engine. Core arithmetic and spectral instruments are "
-    "documented in theory/TNFR_NUMBER_THEORY.md. This deprecated bridge "
+    "The former in-repository factorization lab is archived in Git history and "
+    "is no longer loaded by the engine. Core arithmetic and spectral instruments "
+    "are documented in theory/TNFR_NUMBER_THEORY.md. This deprecated bridge "
     "requires a separately supplied 'tnfr_factorization' package."
 )
+
+
+def _archive_root() -> Path:
+    """Return the former lab location, which a local restore could repopulate."""
+    return Path(__file__).resolve().parents[3] / "applications" / "factorization-lab"
 
 
 def _reject_archived_checkout() -> None:
     """Reject the archived source even when another consumer exposed its path."""
     from ..errors import TNFRUserError
 
-    repository = Path(__file__).resolve().parents[3]
-    archive = repository / "applications" / "factorization-lab"
+    archive = _archive_root()
     if not archive.is_dir():
         return
     loaded = sys.modules.get("tnfr_factorization")
@@ -134,12 +138,12 @@ def factorize(
 
     Notes
     -----
-    The repository lab is archived; this function does not load it. The
+    The former repository lab was retired and this function does not load it;
+    it is recoverable from Git history through the research recovery index. The
     compatibility wrapper reuses one external factorizer with its default node cap. It has
     ``trace_certificates`` rather than the lab wrapper's ``trace`` argument and
     no ``pure`` argument. ``TNFR_PURE_MODE`` selects a partial heuristic policy,
-    not an arithmetic-free execution. See ``applications/factorization-lab/README.md``
-    for the retirement boundary and known limitations of the archived source.
+    not an arithmetic-free execution.
     """
 
     factorizer = _get_factorizer()

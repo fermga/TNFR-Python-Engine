@@ -5,7 +5,6 @@ from __future__ import annotations
 import builtins
 import importlib
 import sys
-from pathlib import Path
 
 import pytest
 
@@ -45,9 +44,25 @@ def test_missing_external_package_does_not_discover_archived_checkout(monkeypatc
     assert not any(name.startswith("tnfr_factorization") for name in sys.modules)
 
 
-def test_archived_source_on_search_path_is_rejected_before_import(monkeypatch):
-    archive = Path(__file__).resolve().parents[1] / "applications/factorization-lab"
-    monkeypatch.syspath_prepend(str(archive))
+@pytest.fixture
+def archive_root(tmp_path, monkeypatch):
+    """A restored copy of the former lab, independent of the local checkout."""
+    root = tmp_path / "restored" / "applications" / "factorization-lab"
+    package = root / "tnfr_factorization"
+    package.mkdir(parents=True)
+    (package / "__init__.py").write_text("", encoding="utf-8")
+    (package / "spectral_paley.py").write_text(
+        "raise RuntimeError('archived source was imported')\n", encoding="utf-8"
+    )
+    monkeypatch.setattr(bridge, "_archive_root", lambda: root)
+    return root
+
+
+def test_archived_source_on_search_path_is_rejected_before_import(
+    monkeypatch, archive_root
+):
+    monkeypatch.syspath_prepend(str(archive_root))
+    importlib.invalidate_caches()
     with pytest.raises(TNFRUserError, match="archived.*no longer"):
         bridge.factorize(35)
     assert not any(name.startswith("tnfr_factorization") for name in sys.modules)
@@ -112,17 +127,25 @@ def test_lazy_type_exports_keep_external_identity(external_package):
 
 
 def test_cached_archived_submodule_is_rejected_with_external_parent(
-    external_package, monkeypatch
+    external_package, archive_root, monkeypatch
 ):
-    archive = Path(__file__).resolve().parents[1] / "applications/factorization-lab"
     monkeypatch.setattr(
         external_package,
         "__file__",
-        str(archive / "tnfr_factorization" / "spectral_paley.py"),
+        str(archive_root / "tnfr_factorization" / "spectral_paley.py"),
     )
     with pytest.raises(TNFRUserError, match="archived.*no longer"):
         bridge.factorize(35)
     assert external_package.SpectralPaleyFactorizer.instances == 0
+
+
+def test_absent_former_lab_does_not_block_an_external_package(
+    external_package, tmp_path, monkeypatch
+):
+    monkeypatch.setattr(bridge, "_archive_root", lambda: tmp_path / "absent-lab")
+    with pytest.warns(DeprecationWarning, match="external legacy lab"):
+        result = bridge.factorize(35)
+    assert result.n == 35
 
 
 def test_external_internal_dependency_failure_is_not_reported_as_retirement(

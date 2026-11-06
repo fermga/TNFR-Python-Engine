@@ -167,7 +167,9 @@ def test_large_quota_does_not_request_a_large_buffer_for_tiny_content(monkeypatc
 
 @pytest.mark.parametrize("limit", (0, 1, 64 * 1024 - 1, 64 * 1024, 64 * 1024 + 1))
 @pytest.mark.parametrize("extra", (0, 1))
-def test_chunked_read_keeps_exact_limit_and_one_byte_sentinel(monkeypatch, limit, extra):
+def test_chunked_read_keeps_exact_limit_and_one_byte_sentinel(
+    monkeypatch, limit, extra
+):
     content = b"x" * (limit + extra)
     stream = ObservedReader(content)
     _install_observed_reader(monkeypatch, stream)
@@ -192,7 +194,9 @@ def test_short_reads_are_accumulated_until_actual_eof(monkeypatch):
 
 
 @pytest.mark.parametrize("limit,expected", ((6, b"abcdef"), (3, None)))
-def test_growth_after_first_read_is_counted_on_same_stream(monkeypatch, limit, expected):
+def test_growth_after_first_read_is_counted_on_same_stream(
+    monkeypatch, limit, expected
+):
     stream = ObservedReader(b"abc", growth=b"def")
     _install_observed_reader(monkeypatch, stream)
     if expected is None:
@@ -207,6 +211,7 @@ def test_growth_after_first_read_is_counted_on_same_stream(monkeypatch, limit, e
 def test_read_limit_rejected_before_opening_or_allocating(monkeypatch):
     def forbidden(*args, **kwargs):
         pytest.fail("invalid byte quota reached a file operation")
+
     monkeypatch.setattr(Path, "open", forbidden)
     for limit in (True, -1, Q(10), 10.0, None):
         with pytest.raises(ValueError):
