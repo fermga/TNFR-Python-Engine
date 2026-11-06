@@ -5,7 +5,7 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Python Engine 0.0.3.9** — organized mathematical objects, nodal dynamics and
+**Python Engine 0.0.4** — organized mathematical objects, nodal dynamics and
 reproducible computational research.
 
 ## Summary

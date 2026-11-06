@@ -1,6 +1,6 @@
 # TNFR: contributor and agent instructions
 
-**TNFR Python Engine 0.0.3.9.** Rules for changing the repository and evaluating
+**TNFR Python Engine 0.0.4.** Rules for changing the repository and evaluating
 its claims. Keep `.github/agents/my-agent.md` byte-identical to this file.
 The [README] introduces TNFR; the [owner map](#6-documentation-and-implementation-owners)
 routes definitions, contracts and implementation work.

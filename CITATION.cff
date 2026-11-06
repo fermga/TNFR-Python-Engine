@@ -2,14 +2,14 @@ cff-version: 1.2.0
 title: "TNFR-Python-Engine: Resonant Fractal Nature Theory Implementation"
 message: "If you use this software, please cite it as below."
 type: software
-version: "0.0.3.9"
-date-released: "2026-10-20"
+version: "0.0.4"
+date-released: "2026-11-06"
 authors:
   - given-names: "F. F."
     family-names: "Martinez Gamo"
     orcid: "https://orcid.org/0009-0007-6116-0613"
 repository-code: "https://github.com/fermga/TNFR-Python-Engine"
-url: "https://github.com/fermga/TNFR-Python-Engine/releases/tag/v0.0.3.9"
+url: "https://github.com/fermga/TNFR-Python-Engine/releases/tag/v0.0.4"
 # Project concept DOI (all versions); the URL above identifies this release.
 doi: "10.5281/zenodo.17602860"
 license: "MIT"
@@ -27,16 +27,17 @@ keywords:
   - "phase synchronization"
 abstract: >-
   Python framework for investigating organized mathematical objects under
-  declared nodal laws. Objects retain the form, capacity, phase, support,
-  constituent information and context needed for their identity and response.
-  The engine integrates registered structural operators, grammar admission,
-  atomic execution stages, continuous and relational dynamics, and detached
-  observations and conditional certificates. Mathematical results address
-  formation, recovery, interaction, memory and collective actions under their
-  specific models. Identity, state sufficiency, supplied intervention and
-  autonomous occurrence remain distinct claims. Shared numerical admission,
-  report contracts and reproducible instruments support this investigation.
-  The basic primality utility remains separate; unsupported advanced arithmetic
-  integrations and the factorization lab are retired from active research.
-  Exact identities, conditional proofs and finite computational evidence do not
-  constitute empirical validation or select a unique fundamental law.
+  declared nodal laws. It treats the thirteen registered structural operators,
+  their grammar and atomic execution stages as the constitutive mechanisms
+  under study; continuous, native relational and collective descriptions must
+  be grounded in actual operator execution or a proved realization. This
+  release integrates operator-level results on maintenance and ordered return,
+  synthesis, coupling, Emission, Mutation and recursive participation with
+  shared kernels and tests, and resolves four foundation prerequisites within
+  reviewed mathematical scopes; physical mapping remains gated behind a final
+  readiness review. The research program is modular and the repository keeps
+  the material that serves active questions; retired secondary evidence is
+  linked to its recovery commit. Each release ships a lightweight development
+  bundle. Exact identities, conditional proofs and finite computational
+  evidence do not constitute empirical validation or select a unique
+  fundamental law.

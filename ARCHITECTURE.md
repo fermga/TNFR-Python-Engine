@@ -1,6 +1,6 @@
 # TNFR Python Engine Architecture
 
-**Python Engine 0.0.3.9**
+**Python Engine 0.0.4**
 
 This reference maps implementation responsibilities and execution boundaries.
 Start with the object's [state and execution boundary](#objects-state-and-execution),
