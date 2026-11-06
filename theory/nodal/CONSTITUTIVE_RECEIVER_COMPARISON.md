@@ -400,7 +400,7 @@ complete-state argument retaining form, contacts and own-law dissipation;
 neither this finite comparison nor a donor endpoint label supplies it.
 
 The internal research entry point
-[`compare_constitutive_receiver_prefix(root)`](../../src/tnfr/research/constitutive_receiver_comparison.py)
+[`compare_constitutive_receiver_prefix(root)`](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/constitutive_receiver_comparison.py)
 re-admits the fixed source, reads the pinned archive and applies the shared
 [`_compare_constitutive_receiver_step`](../../src/tnfr/physics/_constitutive_receiver_comparison.py)
 kernel. Its report retains the numerical premises and makes the unavailable

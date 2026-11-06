@@ -609,7 +609,7 @@ microscopic formation, or validate a physical correspondence.
 
 #### Frozen known-source control
 
-The [declaration](../../docs/assets/return_path_geometry_response/declaration.json)
+The [declaration](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/return_path_geometry_response/declaration.json)
 fixes coefficient `1` for a mathematical source, a `10^-6` turn observation
 grid, the mediator form direction, all eleven response coordinates and
 95-decimal independent arithmetic. The source coefficient is excluded from
@@ -618,9 +618,9 @@ the predictor's inputs. The independently quantized special angle is
 certify that this interval contains its exact equilibrium angle.
 
 Separate producer invocations retained the
-[source protocol](../../docs/assets/return_path_geometry_response/response-v1.protocol.json),
-[prediction](../../docs/assets/return_path_geometry_response/response-v1.prediction.json)
-and [response](../../docs/assets/return_path_geometry_response/response-v1.json).
+[source protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/return_path_geometry_response/response-v1.protocol.json),
+[prediction](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/return_path_geometry_response/response-v1.prediction.json)
+and [response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/return_path_geometry_response/response-v1.json).
 The exact predicted coefficient bounds are contained in the conservative
 decimal display `[0.99999715,1.00005518]`. Thus geometry excludes the sine
 baseline within this family. All eleven independently differentiated nodal
@@ -629,9 +629,9 @@ is approximately `-2.1142183971`, inside the predicted interval, whose outward
 decimal display is `[-2.11428951,-2.11420582]` in form per `tau` squared.
 The coefficient was not refitted after evaluating that response.
 
-The [producer](../../benchmarks/return_path_geometry_response.py) reuses the
+The [producer](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/benchmarks/return_path_geometry_response.py) reuses the
 existing write-once evidence transport and retains a
-[source archive](../../docs/assets/return_path_geometry_response/response-v1.source.zip).
+[source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/return_path_geometry_response/response-v1.source.zip).
 It re-admits the frozen geometric premises before consuming the prediction;
 hashes alone do not authenticate its mathematical content or chronology.
 The independent high-precision response is a finite cross-check, not an
@@ -816,7 +816,7 @@ a local higher-order remainder; no numerical remainder bound is certified here.
 The [collective-pulse instrument](../../benchmarks/relational_collective_pulse.py)
 uses the shared uniform-form tangent and the same forty-bisection rational
 midpoint as Section 11. Its
-[static record](../../docs/assets/relational_collective_pulse/result.json)
+[static record](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/relational_collective_pulse/result.json)
 retains the complete state, matrices, declared observations, initial direction,
 all poles and residues, controls, root enclosure and ideal trace certificate.
 There is no finite-amplitude evolution or fitted frequency in this calculation.

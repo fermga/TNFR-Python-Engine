@@ -268,7 +268,7 @@ The conditional compression theorem and its general counterexamples remain
 valid; the five-statistic representation is useful only when a selected
 source and prediction actually require that information.
 
-The [static controls](../../tests/physics/test_organized_memory_initialization.py)
+The [static controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_organized_memory_initialization.py)
 reuse the modified-energy, heat-error and exact-arithmetic owners. They
 check the recovery constants, anisotropic transport, mean initialization,
 joint error inequalities and record-overlap obstruction without source

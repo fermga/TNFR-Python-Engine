@@ -293,7 +293,7 @@ A successful case establishes one operational conditional forecast, not
 optimizer convergence for every admissible record, source-class membership
 for arbitrary data, or a uniquely justified evolution law.
 
-Run [the single fixed instrument](../../benchmarks/organized_observed_forecast.py)
+Run [the single fixed instrument](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/benchmarks/organized_observed_forecast.py)
 only after committing this declaration and all consumed source. Its shared
 exclusive assessment lifecycle records the source inventory and attempt
 before extraction; exact record, proposal and validated response follow in
@@ -307,9 +307,9 @@ the result. Archive those bytes and receipt for read-only verification.
 The single evaluation of declaration/source
 `53917ac7d05c4fd9c79c8ce37ed1c95c25587f50` returned
 `conditional_record_only_forecast_certified`. Its
-[attempt](../../docs/assets/organized_observed_forecast/attempt.json),
-[exact response archive](../../docs/assets/organized_observed_forecast/response.zip)
-and [receipt](../../docs/assets/organized_observed_forecast/receipt.json)
+[attempt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_observed_forecast/attempt.json),
+[exact response archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_observed_forecast/response.zip)
+and [receipt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_observed_forecast/receipt.json)
 retain the extracted record, input associations, represented candidate,
 proposal backend and all 143 validated steps. No old producer was replayed.
 
@@ -340,7 +340,7 @@ or an independently observed prediction: the record is extracted from an
 already published synthetic trajectory. The assumed law, source class,
 input and ideal clock still carry the scientific interpretation.
 
-The [read-only evidence audit](../../tests/physics/test_organized_observed_forecast_evidence.py)
+The [read-only evidence audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_organized_observed_forecast_evidence.py)
 rebuilds source/gain inputs, candidate/sample associations, compact radius
 propagation and the forecast bounds without fitting or integrating another
 trajectory. Retained Picard/Taylor witnesses keep their source proof premises.

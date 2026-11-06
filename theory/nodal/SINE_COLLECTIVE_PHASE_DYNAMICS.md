@@ -2176,16 +2176,16 @@ whether acute receiver winding `+1` or `-1` holds for an original-clock
 duration of at least `1/2`, with strict positive acute margin; the
 configured margin threshold is zero.
 
-The [declaration](../../docs/assets/collective_pulse_organization/declaration.json)
-and [frozen protocol](../../docs/assets/collective_pulse_organization/response-v1.protocol.json)
+The [declaration](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/collective_pulse_organization/declaration.json)
+and [frozen protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/collective_pulse_organization/response-v1.protocol.json)
 preceded evaluation. Outward dyadic intervals contain the declared exact
 rational preparation; their centers do not replace it. The
-[retained response](../../docs/assets/collective_pulse_organization/response-v1.json)
+[retained response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/collective_pulse_organization/response-v1.json)
 completed all `256` steps without an evaluation error, covering the full
 original-clock interval `[0,24]`. Every whole-time tube certifies receiver
 winding zero. The verdict is therefore
 `acute_winding_excluded_on_horizon`, not incomplete or unresolved evidence.
-The [source archive](../../docs/assets/collective_pulse_organization/response-v1.source.zip)
+The [source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/collective_pulse_organization/response-v1.source.zip)
 retains the evaluated implementation and preparation.
 
 Initial regional storage is `3/400=0.0075`; its final enclosure is contained

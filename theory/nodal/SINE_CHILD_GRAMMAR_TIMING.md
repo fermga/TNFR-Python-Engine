@@ -29,7 +29,7 @@ parent history is borrowed. Sections 2-5 admit the event and observation
 analytically, without executing them. Sections 6-7 separately specify and
 retain one frozen numerical acquisition and OZ; no second birth is executed.
 
-The [fixed-cell reader](../../src/tnfr/research/maintained_child_joint_source.py)
+The [fixed-cell reader](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/maintained_child_joint_source.py)
 re-admits the six joint-observation artifacts, their source associations and
 the complete retained SHA certificate once. It rebuilds only original cell
 12 from its primitive tube and actual law. The earlier first-cell selection
@@ -195,7 +195,7 @@ domains; it does not fabricate samples or certify their producer.
 
 ## 5. Scope and implementation controls
 
-The [analytical consumer](../../src/tnfr/research/maintained_child_oz_timing.py)
+The [analytical consumer](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/maintained_child_oz_timing.py)
 admits this event/timing composition from fresh primitive evidence. It leaves
 the retained source and all frozen artifacts unchanged. At that original SHA
 source, executed OZ and measured history remain missing; the future word
@@ -215,9 +215,9 @@ debt and guarded constitutive refresh. Independent manufactured polynomial
 histories test the reader and strict THOL gate without representing them as
 the child's response. The [reader tests](../../tests/physics/test_sample_reader_budget.py)
 compare the runtime arithmetic to exact rational stencils, including signs,
-error corners and unsupported domains. The [source controls](../../tests/research/test_maintained_child_joint_source.py)
+error corners and unsupported domains. The [source controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_child_joint_source.py)
 reject altered primitive bounds and associations; the
-[composition controls](../../tests/research/test_maintained_child_oz_timing.py)
+[composition controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_child_oz_timing.py)
 verify this actual source's conditional margins and present abstentions.
 
 This result closes analytical compatibility of one child OZ/refresh/history
@@ -253,7 +253,7 @@ preserves the source at zero, agrees with the endpoint at `H`, and rejects
 extrapolation. It does not independently rederive stored jets or prove the
 upstream Picard/regularity premises.
 
-The [sample certificate](../../src/tnfr/research/maintained_child_sample_certificate.py)
+The [sample certificate](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/maintained_child_sample_certificate.py)
 re-admits the actual source and rebuilds all three full-state enclosures.
 For an independently acquired represented value `v` and an exact-flow
 enclosure `[a,b]`, it uses `max(|v-a|,|v-b|)` as a sufficient error bound.
@@ -265,7 +265,7 @@ writer's `2^-46` evaluation-error budget at the represented point. Original
 principal branches are checked for both the true enclosure and the acquired
 state. Bounds and cached verdicts never supply acquired observations.
 
-The [acquisition adapter](../../src/tnfr/research/maintained_child_history_acquisition.py)
+The [acquisition adapter](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/maintained_child_history_acquisition.py)
 uses the shared complete-state RK4 kernel with refreshed full rows at all
 four stages. It integrates independently from the actual SHA point; it never
 initializes from a retained box midpoint. Source reconstruction preserves
@@ -283,7 +283,7 @@ its form evolves. After three boundaries the child's final timestamp and
 EPI must equal live state. Read-only strict THOL and grammar probes do not
 execute their proposed event or complete the word.
 
-The [frozen protocol](../../docs/assets/maintained_child_history/protocol.json)
+The [frozen protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_child_history/protocol.json)
 selects step `2^-14`, segment counts `(384,16,16)`, 416 total steps and
 1664 field evaluations. Its 600-second cooperative execution budget excludes
 source re-admission. Raw state, four-stage rows, represented quadrature
@@ -296,22 +296,22 @@ independent physical measurement or a new exact-flow source family.
 <a id="child-history-acquisition-result"></a>
 ## 7. Retained result: executed OZ and the child's own three samples
 
-The [protocol](../../docs/assets/maintained_child_history/protocol.json),
-[source archive](../../docs/assets/maintained_child_history/source-manifest.json)
-and [freeze](../../docs/assets/maintained_child_history/freeze.json) preceded
-one [attempt](../../docs/assets/maintained_child_history/attempt.json). Its
-[result](../../docs/assets/maintained_child_history/result.json) is `acquired`:
+The [protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_child_history/protocol.json),
+[source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_child_history/source-manifest.json)
+and [freeze](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_child_history/freeze.json) preceded
+one [attempt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_child_history/attempt.json). Its
+[result](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_child_history/result.json) is `acquired`:
 416 RK4 steps, 1664 full-field evaluations and exactly one child-target OZ.
 No parameter, threshold, step size or horizon was adjusted after evaluation.
 The complete original SHA trajectory and all earlier artifacts remain unchanged.
 
-The [raw event](../../docs/assets/maintained_child_history/event_raw.json)
+The [raw event](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_child_history/event_raw.json)
 amplifies the child's stored pressure from approximately `0.0345998575022`
 to `0.0456133342057`. The graph records one propagation summary with no
 affected neighbors; no parent pressure increment is committed. Form, phase,
 capacities, support and structural time stay unchanged across the event,
 giving exact zero storage work. The
-[guarded refresh](../../docs/assets/maintained_child_history/event_after.json)
+[guarded refresh](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_child_history/event_after.json)
 restores the selected constitutive pressure before subsequent evolution.
 
 The child's own retained samples, taken after that committed refresh, are:
@@ -322,7 +322,7 @@ The child's own retained samples, taken after that committed refresh, are:
 | `25/1024` | `0.2061135276419602` | `3.005e-14` |
 | `13/512` | `0.21039599029387335` | `3.211e-14` |
 
-The [response](../../docs/assets/maintained_child_history/response.json)
+The [response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_child_history/response.json)
 retains the full 42-coordinate state and 21 pressures at each boundary,
 not only these displayed child values. Maximum state errors are below
 `3.22e-14`; exact-flow pressure errors are below `7.46e-15`, against the
@@ -349,13 +349,13 @@ identification follows from these observations. This closes acquisition of
 the previously missing child-owned evidence, not every obligation for the
 next operator or for recursive generation.
 
-The [independent retained-response controls](../../tests/research/test_maintained_child_history_evidence.py)
+The [independent retained-response controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_child_history_evidence.py)
 verify byte associations, primitive event effects, recorded four-stage
 arithmetic and full-state carry without replaying the response. They rebuild
 the certificate and actual reader from primitive records; favorable cached
 verdicts are not premises. Source-validation calculations and original
 Taylor-jet provenance retain the limits stated above.
 
-The separate [child THOL admission](SINE_CHILD_THOL_ADMISSION.md) consumes
+The separate [child THOL admission](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/SINE_CHILD_THOL_ADMISSION.md) consumes
 this acquired endpoint to derive a conditional nested reset and complete
 successor law. It does not change this acquisition or evaluate a second birth.

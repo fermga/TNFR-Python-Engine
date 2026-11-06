@@ -382,7 +382,7 @@ and [shared contrast decisions](../../tests/physics/test_sine_class_contrast.py)
 keep coefficient calculation, source admission and observation decisions
 separate.
 
-The [byte-preserving evidence bundle](../../docs/assets/sine_formed_classes/class-cubic-response-v1.evidence.zip)
+The [byte-preserving evidence bundle](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-cubic-response-v1.evidence.zip)
 retains the declared policy, first attempt ledger, exact outcome,
 evaluated source and driver. A source-packaging operation initially used
 an incorrect dependency path and stopped before creating the attempt
@@ -401,7 +401,7 @@ The relevant SHA-256 identities are:
 | Exact outcome | `a56348c90862d0acecbedb610c6599b2de956dba11b7524f005989eb655dbe12` |
 | Evidence bundle | `991d771464d84f65a25c0a82c9b08f7e5a579e450885141b32fef1a1ed8239cb` |
 
-The [read-only evidence audit](../../tests/physics/test_sine_class_cubic_evidence.py)
+The [read-only evidence audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_sine_class_cubic_evidence.py)
 rebuilds consumed downstream interval arithmetic and decisions from
 retained primitives. Generating the stored coefficient enclosures remains
 an explicit execution premise, supported by the derivation and independent

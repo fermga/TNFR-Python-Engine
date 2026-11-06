@@ -6,6 +6,13 @@ in `public-evidence-paths-final.json` beside this document. The selection contai
 477 files totaling 57,918,042 bytes (about 55.2 MiB). It is not a complete
 publication of the local `artifacts/` directory or its preservation history.
 
+**Retirement of 2026-11-06.** Under the retention policy in `AGENTS.md`, the
+formed two-port attempt, method, admission, executable and domain records
+listed below are no longer in the checkout; they are recoverable from commit
+`279054b8694a9bf5fd3a7e67da65847a3e36d749` (tag `pre-retirement-2026-11-06`).
+The four reviews consumed by `theory/research_prerequisites.json`, the native
+foundation evidence and the bibliographic notes remain.
+
 The published material includes:
 
 - The four independent reviews currently consumed by

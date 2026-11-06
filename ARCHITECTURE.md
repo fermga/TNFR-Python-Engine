@@ -427,7 +427,7 @@ The [standalone primality utility](applications/primality-test/README.md)
 retains basic arithmetic descriptors and a numerical predicate.
 `tnfr.factorization` is a deprecated bridge to a separately supplied legacy
 package, not a core spectral implementation. It cannot activate the
-[archived lab](applications/factorization-lab/README.md) from this checkout.
+[archived lab](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/applications/factorization-lab/README.md) from this checkout.
 SDK manifest orchestration is independent of both applications; its dry-run
 reports do not execute operator words or establish an optimization result.
 

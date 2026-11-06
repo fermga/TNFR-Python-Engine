@@ -334,9 +334,9 @@ new hierarchy of closure moments.
 ## 7. Retained finite factorization obstruction
 
 The declaration and complete consumer were committed at `9548b8e1` before
-the single assessment. The [attempt](../../docs/assets/organized_interface_factorization/attempt.json)
+the single assessment. The [attempt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_interface_factorization/attempt.json)
 retains the committed source inventory, declaration and arithmetic. The
-[first result](../../docs/assets/organized_interface_factorization/result.json)
+[first result](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_interface_factorization/result.json)
 is **`finite_scalar_factorization_excluded`**. Both complete supports and
 all acquisition, observation, work, storage and finite-identity prerequisites
 pass. The true and error-rectification determinant intervals both exclude

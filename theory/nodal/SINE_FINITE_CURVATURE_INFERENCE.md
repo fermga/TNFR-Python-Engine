@@ -629,11 +629,11 @@ pre-evaluation wording, including the historical active-gate reference.
 The first reserved evaluation completed with
 `certified_reserved_curvature_inference`: all **109 fixed conditions** passed
 (35 for each of the three cases, plus four paired-source conditions).
-The [attempt record](../../docs/assets/sine_formed_classes/curvature-inference-v1.attempt.json),
-[protocol](../../docs/assets/sine_formed_classes/curvature-inference-v1.protocol.json),
-[source archive](../../docs/assets/sine_formed_classes/curvature-inference-v1.source.zip),
-[response](../../docs/assets/sine_formed_classes/curvature-inference-v1.json)
-and [manifest](../../docs/assets/sine_formed_classes/curvature-inference-v1.manifest.json)
+The [attempt record](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/curvature-inference-v1.attempt.json),
+[protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/curvature-inference-v1.protocol.json),
+[source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/curvature-inference-v1.source.zip),
+[response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/curvature-inference-v1.json)
+and [manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/curvature-inference-v1.manifest.json)
 retain that outcome. No retry, budget change, state reset or earlier frozen
 producer replay was used.
 
@@ -709,7 +709,7 @@ Its prospective proof has **27,353 bytes** and SHA-256
 that content is preserved above. Archived bytes define the receipt despite
 routine checkout newline conversions. Hashes associate retained records;
 they do not independently authenticate execution chronology or acquisition.
-The [read-only evidence audit](../../tests/physics/test_sine_curvature_evidence.py)
+The [read-only evidence audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_sine_curvature_evidence.py)
 checks retained primitives and certificate arithmetic without rerunning the
 producer or inverse. The [retained first evaluation](#sine-curvature-inference-result)
 owns this result; the [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)

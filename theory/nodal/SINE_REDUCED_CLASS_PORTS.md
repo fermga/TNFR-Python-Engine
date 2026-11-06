@@ -513,12 +513,12 @@ rows and contrast coefficient, and consumes freshly derived formation
 and contact bounds. It accepts no incoming report as evidence and
 does not integrate a reduced or full trajectory.
 The [contract](../../docs/contracts/relational/SINE_PATTERNS.md#sine-reduced-class-ports)
-and [independent controls](../../tests/physics/test_sine_reduced_class_ports.py)
+and [independent controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_sine_reduced_class_ports.py)
 retain admission, error-budget and usage boundaries.
 
 ## Retained evaluation of the unchanged transfer protocol
 
-The [complete saved report](../../docs/assets/sine_formed_classes/reduced-ports-v1.json)
+The [complete saved report](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/reduced-ports-v1.json)
 returns **certified_reduced_class_ports** with no unavailable reasons.
 The frozen stopping rule passes: the held-out receiver-two contrast
 exceeds \(10^{-25}\), and the total error is strictly below one
@@ -560,9 +560,9 @@ The complete actual winding pairs \((1,2)\) and \((2,2)\) retain
 their full-law identity and recovery certificates; those certificates
 do not follow from the reduced output interval alone.
 
-The [frozen protocol](../../docs/assets/sine_formed_classes/reduced-ports-v1.protocol.json),
-[producing source archive](../../docs/assets/sine_formed_classes/reduced-ports-v1.source.zip)
-and [evidence manifest](../../docs/assets/sine_formed_classes/reduced-ports-v1.manifest.json)
+The [frozen protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/reduced-ports-v1.protocol.json),
+[producing source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/reduced-ports-v1.source.zip)
+and [evidence manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/reduced-ports-v1.manifest.json)
 retain the source and pre-evaluation declaration. The archive contains
 this owner's protocol and complete derivation before the first
 reserved evaluation. That prefix remains byte-identical; only this

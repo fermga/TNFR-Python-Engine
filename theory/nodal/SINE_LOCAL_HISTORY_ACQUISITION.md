@@ -10,13 +10,13 @@ it establishes no autonomous occurrence or physical identification.
 
 The [local-admission theorem](SINE_LOCAL_CAPACITY_ADMISSION.md) owns the open
 source domain and whole-window proof. The [research program](../RESEARCH_PROGRAM.md#research-current-question)
-owns status. The frozen [protocol](../../docs/assets/local_capacity_history/protocol.json),
-[source](../../docs/assets/local_capacity_history/source.json),
-[freeze](../../docs/assets/local_capacity_history/freeze.json),
-[response](../../docs/assets/local_capacity_history/response.json) and
-[verdict](../../docs/assets/local_capacity_history/report.json) retain this
-single evaluated case. The [source archive](../../docs/assets/local_capacity_history/source.zip)
-and [manifest](../../docs/assets/local_capacity_history/source-manifest.json)
+owns status. The frozen [protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/local_capacity_history/protocol.json),
+[source](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/local_capacity_history/source.json),
+[freeze](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/local_capacity_history/freeze.json),
+[response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/local_capacity_history/response.json) and
+[verdict](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/local_capacity_history/report.json) retain this
+single evaluated case. The [source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/local_capacity_history/source.zip)
+and [manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/local_capacity_history/source-manifest.json)
 associate its implementation bytes; they do not authenticate ancestry.
 
 ## 1. Admitted represented preparation and actual VAL
@@ -178,7 +178,7 @@ continuing law, subsequent contact or enlarged-system maintenance. The old
 identity barrier continues to apply only while its admitted support and laws
 remain in force. An admissible future event is not an autonomous occurrence.
 
-Verification uses the [retained-evidence controls](../../tests/research/test_local_capacity_history_evidence.py),
+Verification uses the [retained-evidence controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_local_capacity_history_evidence.py),
 [source and certificate controls](../../tests/research/test_local_capacity_history_certificate.py),
 [detached wiring controls](../../tests/research/test_local_capacity_history_wiring.py)
 and [coupled numerical-kernel controls](../../tests/test_coupled_rk4_step.py).

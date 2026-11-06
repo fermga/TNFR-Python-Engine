@@ -367,9 +367,9 @@ and observation bridges remain necessary for a fundamental-physics test.
 ## 4. Retained corner decision
 
 The declaration and complete source were committed at `0ca8630d` before
-the single assessment. The [attempt record](../../docs/assets/organized_joint_resources/attempt.json)
+the single assessment. The [attempt record](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_joint_resources/attempt.json)
 retains exact parameters, clock, support, arithmetic and the Git source
-inventory. The [first result](../../docs/assets/organized_joint_resources/result.json)
+inventory. The [first result](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_joint_resources/result.json)
 is **`joint_resource_box_admitted`**: all six source recoveries and every
 coupled acquisition, observation, work, storage, response and finite-identity
 condition pass. No trajectory, source producer, parameter sweep or second

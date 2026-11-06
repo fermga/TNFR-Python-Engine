@@ -249,7 +249,7 @@ preparation or indefinite maintenance. Direct schema
 `tnfr.sine-conservative-source-geometry.v1` and the generic SDK exporter
 retain the exact map and its scope. See the
 [map controls](../../../tests/physics/test_sine_conservative_source_geometry.py),
-[analytic protocol](../../../tests/physics/test_conservative_source_geometry_protocol.py)
+[analytic protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_conservative_source_geometry_protocol.py)
 and [usage](../../guides/relational/SINE_REGIONAL_DYNAMICS.md#conservative-source-geometry).
 
 <a id="sine-conservative-handoff"></a>

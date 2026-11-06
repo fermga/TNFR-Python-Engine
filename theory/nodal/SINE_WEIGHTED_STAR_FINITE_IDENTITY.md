@@ -888,16 +888,16 @@ turn registration into a complete collective NFR identity.
 <a id="weighted-star-finite-episode-result"></a>
 ## 7. Frozen central-source finite-horizon exclusion
 
-The [protocol](../../docs/assets/weighted_star_registration_episode/protocol.json),
-[preparation](../../docs/assets/weighted_star_registration_episode/preparation.json)
-and [source freeze](../../docs/assets/weighted_star_registration_episode/freeze.json)
+The [protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/weighted_star_registration_episode/protocol.json),
+[preparation](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/weighted_star_registration_episode/preparation.json)
+and [source freeze](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/weighted_star_registration_episode/freeze.json)
 were retained before either continuation was evaluated. The single
-[attempt](../../docs/assets/weighted_star_registration_episode/attempt.json)
+[attempt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/weighted_star_registration_episode/attempt.json)
 completed both branches without a solver, domain or resource failure. The
-[raw response](../../docs/assets/weighted_star_registration_episode/response.json)
-and [result receipt](../../docs/assets/weighted_star_registration_episode/result.json)
+[raw response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/weighted_star_registration_episode/response.json)
+and [result receipt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/weighted_star_registration_episode/result.json)
 retain exact rational bounds and the separately continued numerical endpoints.
-The [source archive](../../docs/assets/weighted_star_registration_episode/source.zip)
+The [source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/weighted_star_registration_episode/source.zip)
 contains the pre-evaluation proof and implementation, rather than this later
 interpretation. Content receipts associate bytes; they do not independently
 authenticate execution or establish a mathematical premise.
@@ -1211,12 +1211,12 @@ the frozen finite no-entry result remain separate observations of its scope.
 <a id="weighted-star-quadratic-reachability-implementation"></a>
 ### 8.4. Reusable certificate and verification boundary
 
-The [research reader](../../src/tnfr/research/weighted_star_reachability.py)
+The [research reader](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/weighted_star_reachability.py)
 re-admits the fixed tagged preparation through the existing handoff owner,
 rebuilds the fine-to-block state and exact matrices, and verifies the
 invariant and observation inequalities using shared rational kernels.
 It adds no evolution law or integrator. Its
-[controls](../../tests/research/test_weighted_star_reachability.py) independently
+[controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_weighted_star_reachability.py) independently
 check fine rows, weighted-mean reconstruction, arithmetic Q, invariant-space
 rank, strict PSD, source separation and the nonzero sine derivative.
 Invalid primitive associations and unsupported candidate certificates are
@@ -1447,13 +1447,13 @@ configuration path. A smaller reachable set would need its own proof.
 <a id="weighted-star-quartic-transfer-implementation"></a>
 ### 9.5. Implementation, independent checks and stopping boundary
 
-The [quartic owner](../../src/tnfr/research/weighted_star_quartic.py)
+The [quartic owner](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/weighted_star_quartic.py)
 re-admits the frozen primitive preparation through Section 8's reader,
 assembles (9.1)-(9.3) and checks rank and kernel products exactly.
 Its optional SymPy elimination proposes coefficients; separately differentiated
 rational identities and the fixed gauge decide admission. A supplied candidate
 undergoes those same checks. Missing backend support is not nonexistence.
-The [independent controls](../../tests/research/test_weighted_star_quartic.py)
+The [independent controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_weighted_star_quartic.py)
 check fine-row cubic assembly, the modular determinant, a known energy
 correction, the actual full sine derivative, storage and edge bounds,
 the same-H target, invalid candidates and absence of producer replay.

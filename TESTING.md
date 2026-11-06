@@ -97,7 +97,7 @@ For changes to their shared owners, select exact-record, archive and restoration
 controls separately from scientific producers:
 
 ```sh
-python -m pytest tests/research/test_artifact_io.py tests/research/test_frozen_source.py tests/scripts/test_restore_frozen_source.py tests/mathematics/test_validated_taylor_arithmetic.py tests/mathematics/test_validated_box_taylor.py tests/physics/test_sine_flow_kernel.py -q
+python -m pytest tests/research/test_artifact_io.py tests/scripts/test_restore_frozen_source.py tests/mathematics/test_validated_taylor_arithmetic.py tests/mathematics/test_validated_box_taylor.py tests/physics/test_sine_flow_kernel.py -q
 ```
 
 Exercise duplicate/nonfinite JSON, exact tags before scalar comparison, unsafe or
@@ -234,12 +234,12 @@ records with declared code; they do not authenticate chronology or independently
 revalidate omitted numerical steps. Follow the particular result owner's
 retained-execution premises.
 
-For example, the [formed C9 bundle audit](tests/physics/test_sine_formed_evidence.py)
-checks committed records without replaying their producers. Its shared synthetic
+For example, the [collective pressure-handoff audit](tests/research/test_collective_pressure_handoff_evidence.py)
+checks committed records without replaying their producers. Shared synthetic
 helper controls are selected separately:
 
 ```sh
-python -m pytest tests/physics/test_sine_formed_evidence.py tests/research/test_sine_evidence_helpers.py -q
+python -m pytest tests/research/test_collective_pressure_handoff_evidence.py tests/research/test_sine_evidence_helpers.py -q
 ```
 
 The [evidence helpers](tests/sine_evidence_helpers.py) supply reusable test
@@ -309,7 +309,7 @@ python -m pytest applications/primality-test/tests -q
 Run it separately because its local import root differs from the core suite.
 The root default selection does not include it. The
 [primality guide](applications/primality-test/README.md) owns setup and scope.
-The [factorization lab](applications/factorization-lab/README.md) and advanced
+The [factorization lab](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/applications/factorization-lab/README.md) and advanced
 primality adapters are archived, outside the maintained test surface and
 automatic regression mappings. Their retained tests are recovery material,
 not release gates. Core arithmetic/Paley proofs and tests remain maintained.

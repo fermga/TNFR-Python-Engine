@@ -1281,7 +1281,7 @@ Return only for this corollary to the original six-coordinate source,
 `F<=4`, `beta=1`, `delta=1/2` and the proved ratio domain `0<w/e<3/2`.
 Each of the four attracting states with both ring windings nonzero has
 uniform form, `q=S=0`, and `V=2V_5`, regardless of either handedness.
-The [same monotone functional](SINE_RECEIVER_FORMATION_BOUNDS.md#sine-maintained-target-obstruction)
+The [same monotone functional](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-maintained-target-obstruction)
 therefore gives the unchanged gap
 
 \[

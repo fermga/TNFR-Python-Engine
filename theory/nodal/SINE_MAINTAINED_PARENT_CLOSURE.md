@@ -16,7 +16,7 @@ admission. No unique, preferred or universal closing operator is derived.
 
 ## 1. Source, identity and execution boundary
 
-The [source reader](../../src/tnfr/research/maintained_parent_sha_source.py)
+The [source reader](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/maintained_parent_sha_source.py)
 verifies the retained UM transaction, its original 25/27 assessment and the
 separate 27/27 review. It re-admits the actual THOL source and rebuilds the
 UM prediction and endpoint checks from primitive records. Archive receipts
@@ -61,7 +61,7 @@ complete continuation contract, without advancing either continuous row.
 
 ## 2. Default reset and exact arithmetic
 
-The [prediction owner](../../src/tnfr/research/maintained_parent_sha.py) resolves
+The [prediction owner](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/maintained_parent_sha.py) resolves
 the actual runtime factor through the shared factor registry. The source has
 no SHA override. Its represented default is
 
@@ -151,18 +151,18 @@ required by admission alone.
 <a id="maintained-parent-sha-result"></a>
 ## 4. Reserved closure result
 
-The [protocol](../../docs/assets/maintained_parent_sha/protocol.json) and
-[primitive source with prediction](../../docs/assets/maintained_parent_sha/source.json)
-were [frozen](../../docs/assets/maintained_parent_sha/freeze.json) before one
-[attempt](../../docs/assets/maintained_parent_sha/attempt.json), with 823
+The [protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_sha/protocol.json) and
+[primitive source with prediction](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_sha/source.json)
+were [frozen](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_sha/freeze.json) before one
+[attempt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_sha/attempt.json), with 823
 Python/configuration/instrument source members and receipts for all 702
 prior artifacts. The full source archive includes uncommitted implementation.
 The target is parent 2, with actual seed 17, unchanged defaults and structural
 time `7+2^-19`. The latency timestamp `2030-01-02T03:04:08+00:00` is declared
 event metadata. The budget is one event, one attempt and zero trajectories.
 
-The [primitive response](../../docs/assets/maintained_parent_sha/response.json)
-and [assessment](../../docs/assets/maintained_parent_sha/report.json) retain
+The [primitive response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_sha/response.json)
+and [assessment](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_sha/report.json) retain
 one completed canonical atomic SHA with **19/19** checks. The raw record is
 durable before pressure refresh, and the response precedes assessment. The
 source used by the checker is freshly re-admitted UM evidence, not the
@@ -192,16 +192,16 @@ assessment. The separate continuation below supplies its own finite proof.
 
 ## 5. Verification boundary
 
-The [source controls](../../tests/research/test_maintained_parent_sha_source.py)
+The [source controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_parent_sha_source.py)
 reject altered primitive histories, endpoint state and archive associations.
-[Scalar and law controls](../../tests/research/test_maintained_parent_sha.py)
+[Scalar and law controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_parent_sha.py)
 independently check the exact product, representation boundaries, both rows,
 reciprocal-capacity means and exclusion from the old certificate family.
-[Executor controls](../../tests/research/test_maintained_parent_sha_execution.py)
+[Executor controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_parent_sha_execution.py)
 use an unrelated graph to check actual atomic-stage semantics, declared
 latency and history, support preservation and pressure-only handoff. They
 do not evaluate the reserved source. The
-[retained-response reader](../../tests/research/test_maintained_parent_sha_evidence.py)
+[retained-response reader](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_parent_sha_evidence.py)
 independently reconstructs the actual product, complete rows, means and
 zero-work arguments while forbidding operator, refresh and trajectory replay.
 
@@ -217,9 +217,9 @@ measurement bridge.
 
 The continuation question fixes the actual represented endpoint, all 42
 coordinates and 53 original branches, with elapsed structural horizon `T=1/2`.
-The [committed-SHA reader](../../src/tnfr/research/maintained_sha_motion_source.py)
+The [committed-SHA reader](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/maintained_sha_motion_source.py)
 rebuilds all nineteen event checks through the actual UM source. The
-[motion adapter](../../src/tnfr/research/maintained_sha_motion.py) then rebuilds
+[motion adapter](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/maintained_sha_motion.py) then rebuilds
 the full held field and static bounds from those freshly admitted primitives.
 Cached predictions, reports or mutable live graphs cannot supply this admission.
 The source is a point in represented coordinates and parameters; it does not
@@ -276,14 +276,14 @@ No velocity reversal, turning time, new event or IL intervention is a target.
 <a id="maintained-sha-retention-result"></a>
 ### 6.1 Reserved retention result
 
-The [protocol](../../docs/assets/maintained_sha_retention/protocol.json) and
-[actual source with rebuilt prediction](../../docs/assets/maintained_sha_retention/source.json)
-were [frozen](../../docs/assets/maintained_sha_retention/freeze.json) before
-one [attempt](../../docs/assets/maintained_sha_retention/attempt.json).
+The [protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_sha_retention/protocol.json) and
+[actual source with rebuilt prediction](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_sha_retention/source.json)
+were [frozen](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_sha_retention/freeze.json) before
+one [attempt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_sha_retention/attempt.json).
 The archive retains 826 source/configuration/instrument members and receipts
 for 711 unchanged earlier artifacts. No reserved producer was replayed.
 
-The [result](../../docs/assets/maintained_sha_retention/result.json) accepts
+The [result](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_sha_retention/result.json) accepts
 **256/256** steps and certifies **all 53 original principal branches**
 throughout elapsed structural `[0,1/2]`. The minimum certified margin is
 the exact dyadic lower bound
@@ -300,7 +300,7 @@ bounds. No mesh, threshold, capacity or target was changed after evaluation.
 This result closes finite retention under the actual capacity-changed law;
 it is not an application of the older UM certificate to new parameters.
 
-The [retained-evidence audit](../../tests/research/test_maintained_sha_retention_evidence.py)
+The [retained-evidence audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_sha_retention_evidence.py)
 re-admits the actual source, checks every strict Picard inclusion under its
 field, reconstructs Taylor endpoint arithmetic and every branch margin, and
 rebuilds the accepted prefix and summary. Altered primitives, endpoint carry,
@@ -988,7 +988,7 @@ width or source-wide work estimate is selected by this identity alone.
 <a id="post-sha-source-budget-result"></a>
 ### 8.5 Frozen static source result
 
-The [static budget consumer](../../src/tnfr/research/maintained_sha_motion.py)
+The [static budget consumer](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/maintained_sha_motion.py)
 re-admitted the actual represented post-SHA source and its **19/19** retained
 event checks, then evaluated one snapshot of the connected and matched-cut
 laws. It preserved the original clock `7+2^-19` and the persistent source
@@ -1041,7 +1041,7 @@ its positive-degree component uses its own weighted means. The unchanged
 initial observation does not give the two laws the same later response;
 no cut trajectory or control-rotation claim was evaluated.
 
-The [manufactured static controls](../../tests/research/test_maintained_sha_pair_budget.py)
+The [manufactured static controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_sha_pair_budget.py)
 check independent pair rows, storage, means, degree rebuilding, unavailable
 angles and invalid consumed state. The
 [symbolic controls](../../tests/research/test_parent_child_identity_contract.py)
@@ -1659,9 +1659,9 @@ upper bounds do not show that the actual environmental work or reference
 motion is large. They demonstrate that this all-state envelope loses too much
 information to connect the relative storage to the original observation.
 
-The [static consumer](../../src/tnfr/research/maintained_sha_reference.py)
+The [static consumer](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/maintained_sha_reference.py)
 reuses the fresh primitive budget admission and shared interval arithmetic.
-Its [controls on constructed states](../../tests/research/test_maintained_sha_reference.py)
+Its [controls on constructed states](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_sha_reference.py)
 and [independent feasibility identities](../../tests/research/test_parent_child_reference_feasibility.py)
 were included with the existing pair and moving-reference controls in the
 74 passing bounded tests. The protocol, frozen instrument, test record and
@@ -2264,10 +2264,10 @@ The obstruction identifies information lost by absolute coordinate-variation
 bounds; it does not prove that the true signed environmental exchange is
 large. No new dynamics, identity, attraction or formation follows from it.
 
-The [static consumer](../../src/tnfr/research/maintained_sha_box_budget.py)
+The [static consumer](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/maintained_sha_box_budget.py)
 reuses primitive reference admission and preserves the exact signed
 coefficient rows before interval bounding. Its
-[constructed-state controls](../../tests/research/test_maintained_sha_box_budget.py)
+[constructed-state controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_sha_box_budget.py)
 and [independent obstruction identities](../../tests/research/test_parent_child_box_obstruction.py)
 are retained with the frozen instruments. Validation covered 79 selected
 controls, including the separately frozen historical-admission guard controls;
@@ -2658,7 +2658,7 @@ of prior evidence, not a reserved response of the original producer.
 ### 14.1 Admission and fixed estimator
 
 The shared
-[`load_sha_retention`](../../src/tnfr/research/maintained_sha_retention_evidence.py)
+[`load_sha_retention`](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/maintained_sha_retention_evidence.py)
 re-admitted source association, every complete Picard inclusion, chronological
 endpoint carry and recorded Taylor arithmetic. All 256 cells were accepted.
 The reader does not independently rederive the old derivative jets or their
@@ -2667,7 +2667,7 @@ The conclusions remain conditional on that retained evidence. Byte receipts
 establish content association, not independent acquisition authenticity.
 
 The new
-[signed-transport consumer](../../src/tnfr/research/maintained_sha_signed_transport.py)
+[signed-transport consumer](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/maintained_sha_signed_transport.py)
 uses one fresh admission and the existing initial-reference owner. Its initial
 smooth divided differences use the shared zero-safe `sinc` kernel on the fixed
 `[-1,1]` chart. It evaluates the complete signed environmental rows before
@@ -2729,7 +2729,7 @@ calls, separately from the 256 retained-cell flow checks and 256 recorded
 Taylor-arithmetic reconstructions. It then records one initial reference and
 256 signed cell observations. There are zero new post-Silence solver steps,
 events or pressure refreshes. The
-[constructed consumer controls](../../tests/research/test_maintained_sha_signed_transport.py),
+[constructed consumer controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_sha_signed_transport.py),
 existing reference/symbolic controls and synthetic instrumentation controls
 pass all 85 tests.
 
@@ -2835,10 +2835,10 @@ different question. Local clockwise orientation is checked separately.
 ### 15.2 Fixed interval calculation and admission
 
 The shared
-[retention reader](../../src/tnfr/research/maintained_sha_retention_evidence.py)
+[retention reader](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/maintained_sha_retention_evidence.py)
 re-admits the source, full Picard inclusion, recorded Taylor arithmetic and
 exact chronological endpoint carry once. The
-[direct consumer](../../src/tnfr/research/maintained_sha_direct_response.py)
+[direct consumer](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/maintained_sha_direct_response.py)
 then captures the admitted primitive rows once and observes all 256 unchanged
 whole-time boxes. Both conserved weighted means must remain enclosed in each
 box. It neither projects boxes onto mean constraints nor wraps their phases.
@@ -2894,7 +2894,7 @@ The instrumentation records 12 historical prebirth recertifications, their
 The new consumer makes one primitive capture and 256 direct observations,
 with no extra flow calls or regenerated derivative jets. The source remains unchanged.
 All 75 selected tests pass: the
-[constructed direct controls](../../tests/research/test_maintained_sha_direct_response.py),
+[constructed direct controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_sha_direct_response.py),
 existing signed-transport controls and synthetic admission-guard controls.
 These include unequal capacities, environmental contributions that reverse the
 instantaneous angle, zero-radius abstention, exact stationary angle and
@@ -3225,7 +3225,7 @@ trajectory or parameter search.
 
 ### 17.1 Fresh primitives, cut law and fixed arithmetic
 
-The [source-specific consumer](../../src/tnfr/research/maintained_sha_cut_separator.py)
+The [source-specific consumer](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/maintained_sha_cut_separator.py)
 re-admits the original 21-node, 53-edge post-Silence preparation at structural
 time `7+2^-19`. Its detached comparison removes only the marked edge from
 parent `2` to child `2_sub_0`. The parent degree changes from 12 to 11; both isolated
@@ -3290,7 +3290,7 @@ and its mean-dependent criterion.
 
 ### 17.3 Verification and scientific consequence
 
-The [constructed controls](../../tests/research/test_maintained_sha_cut_separator.py)
+The [constructed controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_sha_cut_separator.py)
 include unequal cut capacities and degrees, independently solved rational
 grounded systems, full residuals, common shifts and source immutability.
 They also exercise form admission without a phase chart, joint-only admission,
@@ -3467,7 +3467,7 @@ cut certificate. The original protocol and failure remain unchanged under
 
 ### 19.1 Prospective method and constructed controls
 
-The [full-cut consumer](../../src/tnfr/research/maintained_sha_cut_response.py)
+The [full-cut consumer](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/maintained_sha_cut_response.py)
 implements §18's exact constant-coordinate elimination. It reuses the shared
 held sine field and source-box validated Taylor kernel, with the cut's
 actual degrees and capacities. The prospective plan has 256 cells of length
@@ -3488,7 +3488,7 @@ nor an admission of the operating-system process association.
 
 The implementation, protocol, analytical draft and controls were frozen in
 a 2,492-file instrument archive before testing. The
-[constructed controls](../../tests/research/test_maintained_sha_cut_response.py)
+[constructed controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_sha_cut_response.py)
 exercise complete host dynamics, nonuniform coefficients, exact reinsertion,
 independent low-dimensional Taylor coefficients, corrupted proof records,
 source isolation, mean/radius availability, prefixes and budget stops.
@@ -3727,5 +3727,5 @@ observation premise admitted. No family or width was evaluated here. The
 [research program](../RESEARCH_PROGRAM.md#deferred-composition-question)
 owns that next decision.
 
-The subsequent [preparation-family chapter](SINE_PREPARATION_ROBUSTNESS.md)
+The subsequent [preparation-family chapter](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/SINE_PREPARATION_ROBUSTNESS.md)
 owns the finite resolution policy and its nonlinear perturbation bounds.

@@ -120,7 +120,7 @@ changing `u` changes `y_1`. Holding both `v,u` fixed while changing `w`
 changes `y_2` by `(q-u)*Delta w/epsilon_u`. On regular positive states,
 neither a snapshot nor the pair `(y_0,y_1)` is a closed predictive state.
 This reuses the [general closure criterion](../FUNDAMENTAL_THEORY.md#24-physical-concepts-mathematical-types-and-implementation)
-and the earlier [circuit observation method](PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#rossler-phase-information-admission),
+and the earlier [circuit observation method](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#rossler-phase-information-admission),
 with the chemical model's own nonlinear coefficient and singular domain.
 
 <a id="chemical-singular-observation"></a>

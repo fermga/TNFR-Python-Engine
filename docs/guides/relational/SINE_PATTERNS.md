@@ -203,7 +203,7 @@ print(len(saved["frozen_stopping_rule"]))  # 139
 ```
 
 This snippet reads the retained declaration. The
-[dedicated audit](../../../tests/physics/test_sine_aperture_evidence.py)
+[dedicated audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_sine_aperture_evidence.py)
 independently rebuilds the full-history, observation and necessary-inference
 arithmetic instead of treating success flags as premises. The result remains
 conditional software evidence, with no physical sensor calibration or
@@ -519,7 +519,7 @@ for case in saved["cases"]:
 ```
 
 This displays retained outputs; the
-[evidence audit](../../../tests/physics/test_sine_formed_evidence.py)
+[evidence audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_sine_formed_evidence.py)
 checks their primitive state, event, observation and numerical associations.
 An absent optional whole-window acute certificate does not invalidate the
 global inverse, and provides no maintenance or recovery claim. The
@@ -629,16 +629,16 @@ The inverse worker receives only its JSON public packet; hidden geometry,
 source coordinates and realized reading errors remain in the posterior audit.
 This boundary supplies neither physical calibration nor cryptographic blindness.
 
-Inspect the [saved record](../../assets/sine_formed_classes/two-port-inference-v1.json)
+Inspect the [saved record](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-inference-v1.json)
 without rerunning the producer. Each `cases` entry retains `response`,
 `readings`, `public_packet`, `inverse_outputs`, `source_audit` and
 `stopping_rule`. The three inverse outputs are `primary`, `broad_gain` and
 `false_prior`; the complete phase-blind comparison has its own recorded
 bound. Keep exact fractional endpoints when subtracting readings: a large
 common offset and a tiny increment can lose the signal in rounded displays.
-The [protocol](../../assets/sine_formed_classes/two-port-inference-v1.protocol.json),
-[source archive](../../assets/sine_formed_classes/two-port-inference-v1.source.zip)
-and [manifest](../../assets/sine_formed_classes/two-port-inference-v1.manifest.json)
+The [protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-inference-v1.protocol.json),
+[source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-inference-v1.source.zip)
+and [manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-inference-v1.manifest.json)
 preserve source, budgets and verdicts. The
 [execution plan](../../../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 owns subsequent admission.
@@ -726,11 +726,11 @@ print(dipole["status"], len(saved["frozen_stopping_rule"]))
 ```
 
 These checks read the
-[retained response](../../assets/sine_formed_classes/two-port-dipole-v1.json)
+[retained response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-dipole-v1.json)
 without invoking any assessor or trajectory. The
-[protocol](../../assets/sine_formed_classes/two-port-dipole-v1.protocol.json),
-[source archive](../../assets/sine_formed_classes/two-port-dipole-v1.source.zip)
-and [manifest](../../assets/sine_formed_classes/two-port-dipole-v1.manifest.json)
+[protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-dipole-v1.protocol.json),
+[source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-dipole-v1.source.zip)
+and [manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-dipole-v1.manifest.json)
 preserve its first execution. The earlier capture's numerical execution
 remains an explicit premise of its rebuilt source handoff; the new warmup
 does not independently authenticate that execution. Earlier uniform-probe
@@ -833,18 +833,18 @@ print(probe["status"], history["retained_assessment_kind"])
 ```
 
 These are read-only checks of the
-[saved response](../../assets/sine_formed_classes/two-port-probe-v1.json).
-The original [protocol](../../assets/sine_formed_classes/two-port-probe-v1.protocol.json),
-[source archive](../../assets/sine_formed_classes/two-port-probe-v1.source.zip)
-and [failure record](../../assets/sine_formed_classes/two-port-probe-v1.first-attempt.json)
+[saved response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-probe-v1.json).
+The original [protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-probe-v1.protocol.json),
+[source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-probe-v1.source.zip)
+and [failure record](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-probe-v1.first-attempt.json)
 remain separate from the
-[export-recovery wrapper](../../assets/sine_formed_classes/two-port-probe-v1.export-recovery.py.txt).
-The [manifest](../../assets/sine_formed_classes/two-port-probe-v1.manifest.json)
+[export-recovery wrapper](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-probe-v1.export-recovery.py.txt).
+The [manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-probe-v1.manifest.json)
 retains their associations. No producer is invoked by this example.
 
 To admit the retained finite source, use the separate research reader
 `audit_sine_two_port_capture_handoff` on
-`docs/assets/sine_formed_classes`. It rebuilds the consumed source, target
+[`docs/assets/sine_formed_classes`](https://github.com/fermga/TNFR-Python-Engine/tree/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes). It rebuilds the consumed source, target
 and endpoint bounds and checks archive associations. Its direct
 `SineTwoPortHandoffAudit.to_dict()` uses schema
 `tnfr.sine-two-port-handoff-audit.v1`; it is not a generic SDK relational
@@ -874,7 +874,7 @@ trapping region and converges to the joint equilibrium. All original form
 and phase errors remain admitted. The first preserved assessment passed
 every numerical and full-state handoff premise of the
 [theorem](../../../theory/nodal/SINE_TWO_PORT_CAPTURE.md#sine-two-port-capture).
-The [declared protocol](../../assets/sine_formed_classes/two-port-capture-v1.protocol.json)
+The [declared protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-capture-v1.protocol.json)
 fixes the six primitives consumed by `assess_sine_two_port_capture` and
 schema `tnfr.sine-two-port-capture.v1` for its report. Neither a protocol
 alone nor a successful static target report would establish this result.
@@ -912,10 +912,10 @@ print(capture["status"], capture["unavailable_reasons"])
 ```
 
 These are read-only checks of the retained record, not a new assessment.
-The [saved response](../../assets/sine_formed_classes/two-port-capture-v1.json)
+The [saved response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-capture-v1.json)
 includes every compact reference-step certificate. The
-[source archive](../../assets/sine_formed_classes/two-port-capture-v1.source.zip)
-and [manifest](../../assets/sine_formed_classes/two-port-capture-v1.manifest.json)
+[source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-capture-v1.source.zip)
+and [manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-capture-v1.manifest.json)
 retain its producing implementation and content hashes; the
 [evidence audit](../../../TESTING.md#current-checks-and-retained-evidence)
 checks those associations without rerunning the producer.
@@ -1207,7 +1207,7 @@ uniform bounds, while `unavailable` names unmet prerequisites. A failed
 sufficient resolution test is not a measurement of a large actual error.
 `exact_error_bounds` retains the rational upper bounds, or `None` when absent.
 
-The [retained assessment](../../assets/sine_formed_classes/port-relaxation-v1.json)
+The [retained assessment](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/port-relaxation-v1.json)
 is `phase_only`: it supplies both all-time envelopes and resolves the frozen
 phase allowance, while its form bound does not certify the frozen form
 allowance. The joint stopping criterion remains false. This qualified result
@@ -1293,9 +1293,9 @@ response. Keep the original acquired-family proof separate from the
 Cartesian cover, and retain both forward mixed constructions. The
 forward interval must remain unmodified by the analytic prediction.
 
-The [protocol](../../assets/sine_formed_classes/class-nonlinear-readout-v1.protocol.json),
-[source archive](../../assets/sine_formed_classes/class-nonlinear-readout-v1.source.zip)
-and [freeze receipt](../../assets/sine_formed_classes/class-nonlinear-readout-v1.freeze.json)
+The [protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-nonlinear-readout-v1.protocol.json),
+[source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-nonlinear-readout-v1.source.zip)
+and [freeze receipt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-nonlinear-readout-v1.freeze.json)
 can be inspected from the repository root without importing a scientific
 producer or an archived helper:
 
@@ -1323,8 +1323,8 @@ record; it is not a query about a later outcome. This inspection creates
 neither an attempt nor a response. The
 [first retained outcome](../../../theory/nodal/SINE_CLASS_NONLINEAR_PROTOCOL.md#sine-nonlinear-protocol-reserved-result)
 has a separate
-[attempt ledger](../../assets/sine_formed_classes/class-nonlinear-readout-v1.attempt.json)
-and [response ZIP](../../assets/sine_formed_classes/class-nonlinear-readout-v1.response.zip).
+[attempt ledger](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-nonlinear-readout-v1.attempt.json)
+and [response ZIP](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-nonlinear-readout-v1.response.zip).
 The ZIP preserves the complete original JSON as one member; do not rerun
 the producer to inspect this outcome. Its transport can be inspected
 without materializing the large JSON:
@@ -1842,7 +1842,7 @@ and [protocol/result owner](../../../theory/nodal/SINE_REDUCED_PORT_COMPOSITION.
 before a new assessment. Neither reader executes contact in a live graph or
 establishes autonomous hierarchy selection or a physical measurement bridge.
 
-The [saved three-component certificate](../../assets/sine_formed_classes/port-composition-v1.json)
+The [saved three-component certificate](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/port-composition-v1.json)
 can be inspected without running another assessment. Its report has
 `status="certified_sine_port_composition"`; the outer `algebraic_control`
 records the exact normalization/storage control, and
@@ -2410,7 +2410,7 @@ acute entry; it predicts neither entry nor capture. The timed report separately
 proves that dissipation exhausts the joint-entry budget before that entry can
 occur. Both reports use analytic bounds without evolving a trajectory.
 
-The [whole-class proof](../../../theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-maintained-target-obstruction)
+The [whole-class proof](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-maintained-target-obstruction)
 excludes the maintained target for all five donor forms and intermediary form
 with initial form storage at most four, under the fixed capacity and storage
 premises and the sufficient ratio domain `0<w/e<3/2`. The example calls are
@@ -2488,7 +2488,7 @@ decrease as useful receiver work.
 Reversing only the odd source retains its energy and tangent receiver response
 but changes nonlinear receiver work. Keep both components when studying the
 actual law. The [contract](../../contracts/relational/SINE_PATTERNS.md#source-geometry-and-the-necessary-nonlinear-receiver-correction)
-defines unavailable bounds and the [proof](../../../theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-source-receiver-excitation)
+defines unavailable bounds and the [proof](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-source-receiver-excitation)
 states the exact distinction; neither selects this example for a new response.
 
 ### Certify receiver consensus without selecting the donor endpoint
@@ -2526,7 +2526,7 @@ limit, not a donor limit or a time to recovery. Transient receiver excursions
 remain possible; no all-time barrier verdict follows. A `not_certified` result
 above the threshold leaves acquisition unresolved. The
 [contract](../../contracts/relational/SINE_PATTERNS.md#nonlinear-receiver-localization-from-regional-storage)
-and [proof](../../../theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-weighted-receiver-exclusion)
+and [proof](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-weighted-receiver-exclusion)
 own the exact admission and scope.
 
 ### Certify recovery of the prepared donor

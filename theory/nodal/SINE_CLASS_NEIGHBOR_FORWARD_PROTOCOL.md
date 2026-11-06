@@ -243,9 +243,9 @@ policy. Any correction requires separately identified evidence.
 
 The completed admission is pinned to complete source commit
 `8af5b1932308b81e5fbb4e519de0162b8e82ccfc`, with no runtime overlays.
-The [protocol](../../docs/assets/sine_formed_classes/class-neighbor-forward-v1.protocol.json),
-[source archive](../../docs/assets/sine_formed_classes/class-neighbor-forward-v1.source.zip)
-and [receipt](../../docs/assets/sine_formed_classes/class-neighbor-forward-v1.freeze.json)
+The [protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-neighbor-forward-v1.protocol.json),
+[source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-neighbor-forward-v1.source.zip)
+and [receipt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-neighbor-forward-v1.freeze.json)
 retain the policy above and 30 archived files plus their manifest.
 The protocol has 152589 bytes and SHA-256
 `bcdc0160bc91e628bb1259139f5451772d2af61298f88e068d55232fef498179`;
@@ -260,17 +260,17 @@ restorer can recover its full pinned runtime and archived supplements.
 No prior observed response is consumed; the original source remains the
 stated conditional acquisition premise. At freezing there was no attempt,
 response or export-error artifact. The
-[read-only freeze audit](../../tests/research/test_sine_class_neighbor_forward_freeze.py)
+[read-only freeze audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_sine_class_neighbor_forward_freeze.py)
 checks this association and the sealed prospective text without importing
 the archived worker or regenerating scientific evidence. The
-[synthetic evaluator controls](../../tests/research/test_sine_class_neighbor_forward_evaluator.py)
+[synthetic evaluator controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_sine_class_neighbor_forward_evaluator.py)
 separately check preflight, attempt and export behavior with unrelated records.
 
 <a id="sine-neighbor-forward-reserved-result"></a>
 ## First reserved full-law result
 
-The [exclusive attempt](../../docs/assets/sine_formed_classes/class-neighbor-forward-v1.attempt.json)
-and [retained response](../../docs/assets/sine_formed_classes/class-neighbor-forward-v1.response.zip)
+The [exclusive attempt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-neighbor-forward-v1.attempt.json)
+and [retained response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-neighbor-forward-v1.response.zip)
 record the one execution in a restored workspace at the pinned source base.
 The complete runtime, environment, evaluator bytes and primitive inputs
 matched the frozen declaration. No source, observer, horizon, step, order or
@@ -280,7 +280,7 @@ segments and no failed or unattempted branch. The recorded calculation and
 assessment took approximately 125.504 seconds of wall time; the structural
 horizon remains \(1/8\). No retry or export-error artifact was produced.
 
-The [read-only response audit](../../tests/research/test_sine_class_neighbor_forward_evidence.py)
+The [read-only response audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_sine_class_neighbor_forward_evidence.py)
 admits exact artifact and member bytes before decoding. It reconstructs every
 54-coordinate event carry, retained Taylor increment and endpoint before
 rebuilding the observation. Original derivative/Picard generation remains

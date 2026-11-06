@@ -17,12 +17,10 @@ not establish current GitHub run health, branch protection or enabled secrets.
 | [lint-workflows.yml](workflows/lint-workflows.yml) | Filtered workflow/script changes on PRs and pushes to main. Searches for unsupported Bandit SARIF invocation; this is not a general Actions schema linter. |
 | [copilot-setup-steps.yml](workflows/copilot-setup-steps.yml) | Manual invocation or edits to its own workflow. Installs a Python 3.11 development/test environment and verifies importability. |
 
-Black and isort hooks exclude `docs/assets/`, `build/`, the archived
-`applications/factorization-lab/` and `applications/primality-test/archive/`.
-These retain frozen programs or historical source outside the maintained
-execution surface. Their bytes must remain available for provenance and
-recovery checks; formatting maintained sources does not authorize rewriting
-those copies.
+Black and isort hooks exclude `docs/assets/`, `artifacts/` and `build/`, which
+retain frozen evidence and preparations outside the maintained execution
+surface. Their bytes must remain available for provenance and recovery checks;
+formatting maintained sources does not authorize rewriting those copies.
 
 The default pytest selection is the routine engine/API gate and excludes slow
 tests as configured in [pyproject.toml](../pyproject.toml). The full retained

@@ -319,7 +319,7 @@ reconstructs the consumed endpoint arithmetic. Stored derivative and
 strict Picard generation remain execution premises; this reader does
 not regenerate them or authenticate acquisition.
 
-The [forward policy and prediction reader](../../src/tnfr/research/sine_class_collective_forward.py)
+The [forward policy and prediction reader](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/sine_class_collective_forward.py)
 own the canonical references, separate source transport and comparison
 criteria. The [producer and evidence controls](../../tests/physics/test_sine_class_port_readout.py)
 exercise independent complete-row behavior, event carry, admission,
@@ -342,9 +342,9 @@ chronology, execution or physical preparation.
 <a id="sine-collective-forward-frozen-association"></a>
 ## Retained producer and protocol admission
 
-The [protocol](../../docs/assets/sine_formed_classes/class-collective-forward-v1.protocol.json),
-[source snapshot](../../docs/assets/sine_formed_classes/class-collective-forward-v1.source.zip)
-and [freeze receipt](../../docs/assets/sine_formed_classes/class-collective-forward-v1.freeze.json)
+The [protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-collective-forward-v1.protocol.json),
+[source snapshot](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-collective-forward-v1.source.zip)
+and [freeze receipt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-collective-forward-v1.freeze.json)
 associate this prospective policy with the complete Git base
 `362124d03f34940e23b5d84ca29c6c839d6471a1`, without runtime overlays.
 The archive retains 24 files, including the complete producer, evidence reader,
@@ -376,9 +376,9 @@ its exact live bytes, the complete `src` tree, the declared environment and
 reconstructed input/prediction associations before writing an exclusive attempt.
 Only the seven primitive inputs reach the complete-law producer.
 
-The [freeze audit](../../tests/research/test_sine_class_collective_forward_freeze.py)
+The [freeze audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_sine_class_collective_forward_freeze.py)
 re-admits the retained protocol and source association without response execution.
-The [synthetic evaluator controls](../../tests/research/test_sine_class_collective_forward_evaluator.py)
+The [synthetic evaluator controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_sine_class_collective_forward_evaluator.py)
 exercise refusal, single-attempt wiring, incomplete/error outcomes and failed
 serialization using unrelated inputs and mocked scientific entry points.
 An export failure retains the attempt, any partial output and failure metadata;
@@ -394,8 +394,8 @@ has its [separate retained result](#sine-collective-forward-reserved-result).
 <a id="sine-collective-forward-reserved-result"></a>
 ## First reserved complete-law comparison
 
-The [exclusive attempt](../../docs/assets/sine_formed_classes/class-collective-forward-v1.attempt.json)
-and [retained response](../../docs/assets/sine_formed_classes/class-collective-forward-v1.response.zip)
+The [exclusive attempt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-collective-forward-v1.attempt.json)
+and [retained response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-collective-forward-v1.response.zip)
 record the single execution of the archived evaluator in a restored full-base
 workspace. Its interpreter, dependency versions, complete `src` tree and exact
 evaluator bytes matched the frozen declaration. No input, source, time step,
@@ -408,7 +408,7 @@ reported 43.953 seconds for the calculation and assessment; this wall-clock
 duration is not the model's structural clock. There was no failed step, retry
 or export-error outcome.
 
-The [read-only response audit](../../tests/physics/test_sine_class_port_readout_evidence.py)
+The [read-only response audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_sine_class_port_readout_evidence.py)
 re-admits the primitive sources, absolute target lifts, complete law, support,
 event, schedule and original observation policy. It reconstructs each retained
 Taylor increment and endpoint before rebuilding the consumed readings. Saved

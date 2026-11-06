@@ -1038,7 +1038,7 @@ law selector.
 
 The [physical comparison atlas](PHYSICAL_REGIME_CORRESPONDENCES.md#collective-properties-and-fundamental-phenomena)
 contains no completely admitted physical identification. Its retained
-[electrical review](research/ORGANIZED_ELECTRICAL_FEASIBILITY.md#organized-electrical-physical-admission)
+[electrical review](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/ORGANIZED_ELECTRICAL_FEASIBILITY.md#organized-electrical-physical-admission)
 and [recovery-area review](research/ORGANIZED_RECOVERY_OBSERVATION.md#recovery-operational-admission)
 expose preparation, observation and complete-law gaps. They concern different
 laws and protocols from the new harmonic record theorem: their apparatus
@@ -1460,7 +1460,7 @@ The remaining distinction is between an unresolved proof and an absent premise:
   Gain and exposure allowances presume those inputs. The
   [recovery preparation counterexample](research/ORGANIZED_RECOVERY_OBSERVATION.md#recovery-operational-admission)
   shows why voltage precision alone cannot certify unobserved relative phases.
-  The [electrical review](research/ORGANIZED_ELECTRICAL_FEASIBILITY.md#organized-electrical-physical-admission)
+  The [electrical review](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/ORGANIZED_ELECTRICAL_FEASIBILITY.md#organized-electrical-physical-admission)
   separately retains complete-law and preparation mismatches. Those older
   models supply no bridge for the eighteen-node comparison; their numerical
   apparatus limits do not transfer to it either. A collective sensor map is

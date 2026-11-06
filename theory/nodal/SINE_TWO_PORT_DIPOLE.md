@@ -544,10 +544,10 @@ centers remains explicit. This gate ran no new capture trajectory or
 probe trajectory, and did not rerun the original capture producer.
 
 The retained
-[protocol](../../docs/assets/sine_formed_classes/two-port-dipole-v1.protocol.json),
-[producing source archive](../../docs/assets/sine_formed_classes/two-port-dipole-v1.source.zip),
-[exact report](../../docs/assets/sine_formed_classes/two-port-dipole-v1.json)
-and [manifest](../../docs/assets/sine_formed_classes/two-port-dipole-v1.manifest.json)
+[protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-dipole-v1.protocol.json),
+[producing source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-dipole-v1.source.zip),
+[exact report](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-dipole-v1.json)
+and [manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-dipole-v1.manifest.json)
 preserve this first assessment and its thirteen stopping conditions.
 The source archive SHA-256 is
 `68ea24ad6301a53fa492fa6b8f53409cb910e700f7d0b9ec7e12e4b59285fb50`,

@@ -408,7 +408,7 @@ physical identification.
 
 The first reserved analytic assessment completed under the frozen protocol
 and passed all nine declared stopping conditions. The
-[saved report](../../docs/assets/sine_formed_classes/class-mediation-v1.json)
+[saved report](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-mediation-v1.json)
 returns `certified_class_mediation`, with no unavailable reasons or
 evaluation error. This is a complete-family conditional bound calculation;
 no trajectory was simulated or measured and no response was fitted.
@@ -446,9 +446,9 @@ structural dwell and an extremely small mathematical readout allowance.
 It establishes neither an autonomous interaction selector nor laboratory
 resolution, a unique physical law or a mass, charge or spin identification.
 
-The [protocol](../../docs/assets/sine_formed_classes/class-mediation-v1.protocol.json),
-[source archive](../../docs/assets/sine_formed_classes/class-mediation-v1.source.zip)
-and [manifest](../../docs/assets/sine_formed_classes/class-mediation-v1.manifest.json)
+The [protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-mediation-v1.protocol.json),
+[source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-mediation-v1.source.zip)
+and [manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-mediation-v1.manifest.json)
 retain the first outcome and its reconstruction boundary. The base revision
 is `ca4350535c9ef4014e96695136e0edecbe38a573`, supplemented by the two
 listed runtime overlays. The archived prospective proof has 18,460 bytes

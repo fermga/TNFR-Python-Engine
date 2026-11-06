@@ -78,7 +78,7 @@ modulation and its boundary cannot be removed by invoking this reduction.
 <a id="cycle-local-storage-balance"></a>
 ## 2. What can accumulate locally under this law?
 
-The [regional balance owner](FORCED_REGIONAL_RESPONSE.md#7-a-region-and-its-environment-on-the-same-nodal-support)
+The [regional balance owner](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#7-a-region-and-its-environment-on-the-same-nodal-support)
 requires boundary exchange. Here an exact cycle-specific expression makes
 the consumed phase information explicit. Orient cycle edges consistently,
 put `y=Dx`, `u=Dtheta`, and let edge indices j and k be neighbors on the edge
@@ -2256,15 +2256,15 @@ assessment, not a prediction that later panels will pass.
 
 ### Retained local result and cost boundary
 
-The [frozen protocol](../../docs/assets/localized_variational_panel/protocol.json)
+The [frozen protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/localized_variational_panel/protocol.json)
 declares this single evaluation before its response. The
-[freeze](../../docs/assets/localized_variational_panel/freeze.json),
-[source manifest](../../docs/assets/localized_variational_panel/source-manifest.json)
-and [source archive](../../docs/assets/localized_variational_panel/source.zip)
+[freeze](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/localized_variational_panel/freeze.json),
+[source manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/localized_variational_panel/source-manifest.json)
+and [source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/localized_variational_panel/source.zip)
 associate the evaluator, runtime and pre-evaluation proof bytes. They do not
 authenticate chronology or execution. The first attempt is preserved with
-its [primitive response](../../docs/assets/localized_variational_panel/response.zip)
-and [result](../../docs/assets/localized_variational_panel/report.json).
+its [primitive response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/localized_variational_panel/response.zip)
+and [result](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/localized_variational_panel/report.json).
 
 The numerical policy passes on this panel. Rounded-up decimal bounds are:
 
@@ -2303,7 +2303,7 @@ check canonical preparation, clocks, interpolation and separate error channels.
 The [candidate controls](../../tests/physics/test_localized_variational_candidate.py)
 compare independent dense small-cycle equations, retain all spatial modes
 and reject equating a projected fixed point with zero continuous defect.
-The [evidence audit](../../tests/physics/test_localized_variational_panel_evidence.py)
+The [evidence audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_localized_variational_panel_evidence.py)
 checks archive associations and re-admits primitive coefficients to rebuild
 the signed defect and verdict without running any canonical producer.
 It does not independently regenerate the retained sample enclosures.
@@ -2370,13 +2370,13 @@ and simultaneous allocation of the whole coefficient history are not
 required by (91); a future storage design must retain auditable primitives
 and checkpoints within a declared budget.
 
-The [separate protocol](../../docs/assets/localized_variational_reuse/protocol.json),
-[freeze](../../docs/assets/localized_variational_reuse/freeze.json),
-[source manifest](../../docs/assets/localized_variational_reuse/source-manifest.json)
-and [source archive](../../docs/assets/localized_variational_reuse/source.zip)
+The [separate protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/localized_variational_reuse/protocol.json),
+[freeze](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/localized_variational_reuse/freeze.json),
+[source manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/localized_variational_reuse/source-manifest.json)
+and [source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/localized_variational_reuse/source.zip)
 retain this implementation and associate all eight previous evidence files.
-Its first [response](../../docs/assets/localized_variational_reuse/response.zip)
-and [report](../../docs/assets/localized_variational_reuse/report.json)
+Its first [response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/localized_variational_reuse/response.zip)
+and [report](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/localized_variational_reuse/report.json)
 pass every local numerical and resource check. The same retained candidate
 still has finite-input correction error below `2.462e-17` on `[0,16]`.
 This is a revalidation of its existing polynomial, not a newly generated
@@ -2403,7 +2403,7 @@ their stated 24-hour and 8-GiB engineering policies. The new archive omits
 the reused candidate and must not be used as a complete per-panel storage
 estimate. Input sampling remains material; transformation, validation and
 evidence storage also need explicit treatment before a full run. The
-[read-only audit](../../tests/physics/test_localized_variational_reuse_evidence.py)
+[read-only audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_localized_variational_reuse_evidence.py)
 checks the two evidence associations and rebuilds the complete signed
 defect and policy assessments from retained primitive coefficients. It
 does not regenerate inputs, candidates or old responses.

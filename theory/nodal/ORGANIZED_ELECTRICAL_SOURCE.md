@@ -252,7 +252,7 @@ freshly reconstructs primitive resources, requires six recoveries and every
 nonresponse history margin, and checks the product support, complete contact
 law and observation word. It does not reuse the former response verdict or
 take an incoming cached certificate. The
-[instrument](../../benchmarks/organized_electrical_source.py) uses the shared
+[instrument](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/benchmarks/organized_electrical_source.py) uses the shared
 exclusive analytical lifecycle, preserving source inventory and exact results.
 
 The [transport and admission controls](../../tests/physics/test_organized_electrical_source.py)
@@ -274,9 +274,9 @@ preparation and physical constitutive evidence remain separate obligations.
 
 Declaration and consuming source were committed at
 `10bf3e1003d2bb864d8bbbb9f2e2900957923c39` before the exclusive assessment.
-The [attempt](../../docs/assets/organized_electrical_source/attempt.json)
+The [attempt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_electrical_source/attempt.json)
 records that source inventory and budget; the
-[result](../../docs/assets/organized_electrical_source/result.json) retains
+[result](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_electrical_source/result.json) retains
 the exact report. Its verdict is `finite_collective_electrical_source_admitted`.
 All eleven prerequisite flags and twenty-five history margins pass. This
 is one analytical assessment, without a trajectory or physical experiment.
@@ -307,7 +307,7 @@ This closes the finite source-departure obligation: internal deviations do
 not obstruct this particular conditional collective electrical description.
 The hidden term remains present, and exact aggregate passivity, all-future
 maintenance, source switching and empirical identification remain unproved.
-The [read-only evidence controls](../../tests/physics/test_organized_electrical_source_evidence.py)
+The [read-only evidence controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_organized_electrical_source_evidence.py)
 reconstruct the arithmetic and source associations without rerunning the
 assessment. The [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 owns the next dependency.

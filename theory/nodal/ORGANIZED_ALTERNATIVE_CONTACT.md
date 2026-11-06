@@ -392,7 +392,7 @@ recovered-state allowance; it accepts no cached verdict or incoming report.
 Only the actual assessor admits the original twelve allowances and acquires
 the five-child host and independent donor under their own law.
 
-The [single assessment instrument](../../benchmarks/organized_alternative_contact.py)
+The [single assessment instrument](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/benchmarks/organized_alternative_contact.py)
 uses the shared exclusive evidence lifecycle. It requires committed source,
 fixes every original allowance at its declared maximum and writes an attempt
 before evaluating the complete source/history/contact claim. The result
@@ -402,9 +402,9 @@ remains evidence; it is not permission to retry or retune this protocol.
 
 The [static and synthetic controls](../../tests/physics/test_organized_alternative_contact.py)
 use independent edge sums and distinct synthetic error allowances. The
-[instrument controls](../../tests/research/test_organized_alternative_contact_evaluator.py)
+[instrument controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_organized_alternative_contact_evaluator.py)
 replace the scientific assessor. The
-[read-only evidence audit](../../tests/physics/test_organized_alternative_contact_evidence.py)
+[read-only evidence audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_organized_alternative_contact_evidence.py)
 checks the retained source receipts, primitive premises, finite remainders,
 event/storage costs and response margins without regenerating any source
 or response. A receipt associates bytes with a source revision; it does not
@@ -414,9 +414,9 @@ authenticate an experiment or replace the conditional proof above.
 ## 8. Retained complete-source decision
 
 The method and complete source were committed as `b544ad0a` before the one
-assessment. The [attempt](../../docs/assets/organized_alternative_contact/attempt.json)
+assessment. The [attempt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_alternative_contact/attempt.json)
 records that source inventory and the fixed arithmetic protocol. The
-[exact result](../../docs/assets/organized_alternative_contact/result.json)
+[exact result](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_alternative_contact/result.json)
 is **`alternative_contact_certified`**, with no unresolved condition.
 All source, intervention, work, identity and response conditions pass jointly.
 

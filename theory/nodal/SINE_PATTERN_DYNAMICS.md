@@ -2311,9 +2311,9 @@ is not a relabeling of opposite orientations of one pattern.
 
 ### Retained class-admission result and execution boundary
 
-The [complete saved report](../../docs/assets/sine_formed_classes/pair-v1.json)
+The [complete saved report](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/pair-v1.json)
 is retained byte-for-byte alongside an
-[evidence manifest](../../docs/assets/sine_formed_classes/evidence.manifest.json).
+[evidence manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/evidence.manifest.json).
 The manifest distinguishes preserved evaluation output from subsequently
 versioned implementation; it does not authenticate evaluation-time source or
 chronology.
@@ -2661,9 +2661,9 @@ resumed continuous law.
 
 ### Retained common-probe response and recovery certificate
 
-The [complete saved report](../../docs/assets/sine_formed_classes/response-v1.json)
+The [complete saved report](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/response-v1.json)
 is retained byte-for-byte under the same
-[evidence manifest](../../docs/assets/sine_formed_classes/evidence.manifest.json).
+[evidence manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/evidence.manifest.json).
 This consolidation copies the existing evaluated output without rerunning its
 assessor or changing the frozen protocol.
 

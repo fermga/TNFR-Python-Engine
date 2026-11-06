@@ -1228,7 +1228,7 @@ alpha_O. The factor two retains the doubled absolute ramp weights in the
 series and its admitted tail. Kernel arithmetic admission alone supplies no
 bound on the actual-history departure from these frozen coefficients.
 
-`benchmarks/organized_law_contrast_kernels.py` uses the existing exclusive
+[`benchmarks/organized_law_contrast_kernels.py`](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/benchmarks/organized_law_contrast_kernels.py) uses the existing exclusive
 analytical runner: it requires a committed source/declaration, writes the
 source inventory, configuration, backend and pre-evaluation attempt, then
 writes the exact rational interval report. The reported scope is
@@ -1414,13 +1414,13 @@ disjointness of the two complete finite noisy record sets under the declared
 premises, not physical identification or uniqueness of the family.
 
 The input is the immutable mode-two kernel evidence declared at `0b21a040`,
-in `docs/assets/organized_law_contrast_kernels/`. The read-only input owner
+in [`docs/assets/organized_law_contrast_kernels/`](https://github.com/fermga/TNFR-Python-Engine/tree/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_law_contrast_kernels). The read-only input owner
 checks its byte receipts; the theorem consumes primitive C,D intervals,
 not cached coefficients, margins or verdicts. Arithmetic remains outward
 dyadic128. Exponentials use the shared exact-time rational series, with
 sixteen equal argument subdivisions for decay on `[0,16]`. There is one
-assessment through `benchmarks/organized_law_record_separation.py`, archived
-in a fresh `docs/assets/organized_law_record_separation/` directory after
+assessment through [`benchmarks/organized_law_record_separation.py`](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/benchmarks/organized_law_record_separation.py), archived
+in a fresh [`docs/assets/organized_law_record_separation/`](https://github.com/fermga/TNFR-Python-Engine/tree/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_law_record_separation) directory after
 this declaration and all consumed source are committed. No precision
 escalation, source replay or additional response calculation is admitted.
 
@@ -1644,8 +1644,8 @@ certify separation. Both hidden source errors are already included in
 
 The single final assessment, declared at
 `b9b2e49a8146d6544407eed55a395377d91504c4`, passed the strict squared
-comparison. Its [attempt](../../docs/assets/organized_law_record_separation/attempt.json)
-and [exact result](../../docs/assets/organized_law_record_separation/result.json)
+comparison. Its [attempt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_law_record_separation/attempt.json)
+and [exact result](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_law_record_separation/result.json)
 retain the source, input receipts, primitive moment intervals and rebuilt
 history/error bounds. Conservative outward summaries are
 
@@ -1691,7 +1691,7 @@ rebuilds the necessary shared-record conditions from the same source and
 plateau premises. The
 [complete certificate](../../src/tnfr/physics/_organized_law_record_separation.py)
 re-admits primitive moments and rebuilds the late grid, decay, contrast and
-strict exclusion. The [read-only input owner](../../src/tnfr/research/_organized_law_record_inputs.py)
+strict exclusion. The [read-only input owner](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/_organized_law_record_inputs.py)
 binds those moments to the retained kernel assessment without consuming its
 cached contrasts or verdict. The current consumer additionally rejects
 incorrect plateau levels; the evaluated source and original result remain
@@ -1719,9 +1719,9 @@ check the trapezoid, cycle and phasor arguments.
 [Complete theorem controls](../../tests/physics/test_organized_law_record_separation.py)
 independently check C5 projector/dual norms, exponential bounds, three-ramp
 parities and primitive admission. The
-[evidence controls](../../tests/physics/test_organized_law_record_separation_evidence.py)
+[evidence controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_organized_law_record_separation_evidence.py)
 rebuild the strict inequality and source associations without producer replay;
-[input controls](../../tests/research/test_organized_law_record_inputs.py)
+[input controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_organized_law_record_inputs.py)
 separate fixed-byte admission from scientific inference.
 These controls exercise proof premises; the proofs establish their stated
 mathematical conclusions.

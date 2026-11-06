@@ -204,7 +204,7 @@ record, supplying a capacity boost or inserting stabilization.
 
 ## 5. Implementation and verification boundary
 
-The [actual-child adapter](../../src/tnfr/research/maintained_child_history.py)
+The [actual-child adapter](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/maintained_child_history.py)
 re-admits the source, reconstructs primitive branches, applies the shared
 window bounds and independently reads current temporal and grammatical
 state. All calculations are detached. Cached reports, changed live primitives
@@ -212,7 +212,7 @@ or fabricated history associations cannot replace the retained source.
 
 [Kernel controls](../../tests/research/test_maintained_temporal_window.py)
 use independent small weighted systems, differentiated fields and invalid
-domains; [actual-source controls](../../tests/research/test_maintained_child_history.py)
+domains; [actual-source controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_child_history.py)
 verify the strict rational margins, sample budget and distinct obstructions
 without replaying events or flow. The
 [shared policy controls](../../tests/operators/test_thol_form_policy.py)
@@ -229,7 +229,7 @@ short window. A separate retrospective observation uses the already evaluated
 to ask whether form, fresh pressure and acceleration become jointly admissible
 later. It changes neither that certificate's target nor its original verdict.
 
-The [retained reader](../../src/tnfr/research/maintained_sha_retention_evidence.py)
+The [retained reader](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/maintained_sha_retention_evidence.py)
 re-admits the actual SHA source, complete field, original branches and fixed
 256-cell chronology. It checks the frozen artifact associations, source
 primitives, strict Picard inclusion, recorded Taylor arithmetic, endpoint carry
@@ -273,11 +273,11 @@ continuous domain for future observation; it does not supply samples, live
 execution state or U4b context. Form equality passes the configured gate,
 whereas pressure and acceleration inequalities are strict.
 
-The [observer](../../src/tnfr/research/maintained_child_joint_window.py) checks
+The [observer](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/maintained_child_joint_window.py) checks
 cells in chronological order and stops at the first complete certificate.
 Earlier inconclusive boxes do not exclude a smaller valid window or determine
 the first actual threshold crossing. The
-[fixed observation definition](../../docs/assets/maintained_child_joint_window/protocol.json)
+[fixed observation definition](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_child_joint_window/protocol.json)
 forbids cell refinement, longer horizons, policy changes, new trajectories and
 events. Its result is a new observation of existing evidence, not a reserved
 prospective prediction.
@@ -285,14 +285,14 @@ prospective prediction.
 <a id="child-joint-window-result"></a>
 ## 7. Retained result: a joint continuous window
 
-The [definition](../../docs/assets/maintained_child_joint_window/protocol.json),
-[archived observation source](../../docs/assets/maintained_child_joint_window/source-manifest.json)
-and [byte associations](../../docs/assets/maintained_child_joint_window/freeze.json)
-precede one [observation attempt](../../docs/assets/maintained_child_joint_window/attempt.json).
+The [definition](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_child_joint_window/protocol.json),
+[archived observation source](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_child_joint_window/source-manifest.json)
+and [byte associations](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_child_joint_window/freeze.json)
+precede one [observation attempt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_child_joint_window/attempt.json).
 The original trajectory was already evaluated; this ordering does not turn
 the new observation into a prospective prediction or independent acquisition.
 
-The [result](../../docs/assets/maintained_child_joint_window/result.json)
+The [result](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_child_joint_window/result.json)
 selects cell index **12**, after inspecting the first **13 of 256** original
 cells. Its elapsed structural interval is
 
@@ -332,7 +332,7 @@ selection. The event-free continuation leaves its own glyph history empty:
 U4b still requires an actually executed destabilizer. Mathematical tubes do
 not supply a runtime state, timestamped samples or numerical reader accuracy.
 
-The [retained-result controls](../../tests/research/test_maintained_child_joint_window_evidence.py)
+The [retained-result controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_child_joint_window_evidence.py)
 reconstruct the inspected prefix using the independent degree-one pressure
 and acceleration formulas on the re-admitted complete tubes, and verify the
 fixed criterion and source associations. No event, trajectory, jet producer

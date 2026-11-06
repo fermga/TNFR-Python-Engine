@@ -21,7 +21,7 @@ The [ontology](../EMERGENT_ONTOLOGY.md#research-target-physical-properties-of-co
 allows collective physical observations; it does not identify electronic
 phase, control voltage or an oscillation frequency with a TNFR coordinate
 by name. The earlier
-[Rössler source obstruction](PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#rossler-phase-information-admission)
+[Rössler source obstruction](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#rossler-phase-information-admission)
 remains unchanged and is not evidence about this different circuit law.
 
 <a id="dpll-source-evidence"></a>
@@ -55,7 +55,7 @@ specifications, not a calibration certificate for the experimental setup.
 They provide neither a transformed TNFR noise bound nor a validated source
 or clock map. No instrument acquisition is proposed here.
 
-The [source receipt](../../docs/assets/dpll_physical_admission/method-sources-v1.json)
+The [source receipt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/dpll_physical_admission/method-sources-v1.json)
 records the selected primary URLs and retrieved-byte hashes. It is a
 methods provenance record, not a reserved response, an authentication
 certificate or independent validation of the published specifications.

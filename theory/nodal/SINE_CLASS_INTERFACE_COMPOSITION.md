@@ -525,7 +525,7 @@ compare recomposition with complete edge equations, check charges and
 storage supply, reject degree-two and form-only substitutions, retain
 hidden initialization, and exercise exact residual arithmetic and
 representation boundaries. The
-[retained forward-evidence audit](../../tests/physics/test_sine_class_port_readout_evidence.py)
+[retained forward-evidence audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_sine_class_port_readout_evidence.py)
 reconstructs the existing nominal endpoints and comparison allowances
 without regenerating the response. Applying the new bound to those
 retained intervals is a compatibility consequence, not another

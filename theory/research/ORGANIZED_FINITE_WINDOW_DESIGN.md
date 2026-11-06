@@ -334,7 +334,7 @@ bandwidth and settling (2.6.4), finite integration (3.2.8), and distinct
 accuracy/uncertainty/noise considerations (1.4.2-1.4.4). These support modeling
 sensor state and averaging. They do not certify this exact one-pole law,
 the full C5 preparation or the joint deterministic error bound.
-The [source receipt](../../docs/assets/organized_finite_window_design/method-sources-v1.json)
+The [source receipt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_finite_window_design/method-sources-v1.json)
 records reviewed sections and limits. It claims web-text review, not archived
 source bytes, measured arrays, admitted apparatus or an evaluated response.
 
@@ -347,7 +347,7 @@ for the pulse and preparation primitives, sensor energy, forced growth and
 identity bound.
 It separately admits the observation error and short-window norm denominator,
 then rebuilds the response bounds in (3)-(13). Its
-[independent controls](../../tests/physics/test_organized_window_observation.py)
+[independent controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_organized_window_observation.py)
 check matrix gain, sensor storage, convolution coefficients, arithmetic
 domains, preparation obstruction and the physical scaling. This private
 proof consumer installs no runtime law or SDK pathway. Earlier frozen

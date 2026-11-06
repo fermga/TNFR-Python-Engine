@@ -32,16 +32,16 @@ lower bound remains above `0.12484884`, and the unchanged default threshold
 is represented `0.1`. No VAL, numerical integration or old source producer is
 replayed. The original source and response bytes remain preserved.
 
-The [protocol](../../docs/assets/maintained_parent_thol/protocol.json) and
-[prediction](../../docs/assets/maintained_parent_thol/prediction.json) were
-[frozen](../../docs/assets/maintained_parent_thol/freeze.json) before any THOL
-proposal on this state. The [archive](../../docs/assets/maintained_parent_thol/source.zip)
-and [manifest](../../docs/assets/maintained_parent_thol/source-manifest.json)
+The [protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_thol/protocol.json) and
+[prediction](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_thol/prediction.json) were
+[frozen](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_thol/freeze.json) before any THOL
+proposal on this state. The [archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_thol/source.zip)
+and [manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_thol/source-manifest.json)
 retain the implementation used for the one
-[attempt](../../docs/assets/maintained_parent_thol/attempt.json). Hashes
+[attempt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_thol/attempt.json). Hashes
 associate bytes; they do not authenticate acquisition or chronology.
 
-The [independent predictor](../../src/tnfr/research/maintained_parent_thol_prediction.py)
+The [independent predictor](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/maintained_parent_thol_prediction.py)
 uses primitive neighbor forms and real phase lifts, rational interval sine,
 cosine and square root. It invokes neither THOL's proposal nor its metabolic
 implementation. The runtime's represented coefficients are treated as exact
@@ -80,8 +80,8 @@ structural clock and the archived execution receipt.
 
 ## 2. Actual child, hierarchy and pressure handoff
 
-The [retained response](../../docs/assets/maintained_parent_thol/response.json)
-and [verdict](../../docs/assets/maintained_parent_thol/report.json) record:
+The [retained response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_thol/response.json)
+and [verdict](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_thol/report.json) record:
 
 | Quantity | Actual represented result |
 | --- | --- |
@@ -164,10 +164,10 @@ integer captures and all archived evidence remain unchanged. A maintained
 old-evidence test permits this explicit compatible reader migration while
 still verifying every archived producer byte.
 
-Verification combines [admission controls](../../tests/research/test_maintained_parent_thol_admission.py),
-[independent prediction controls](../../tests/research/test_maintained_parent_thol_prediction.py),
+Verification combines [admission controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_parent_thol_admission.py),
+[independent prediction controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_parent_thol_prediction.py),
 [synthetic wiring](../../tests/research/test_maintained_parent_thol_execution.py)
-and [retained-evidence checks](../../tests/research/test_maintained_parent_thol_evidence.py).
+and [retained-evidence checks](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_parent_thol_evidence.py).
 The latter reconstruct primitives and independently compare the numerical
 records without executing the producer or any operator. Existing atomic
 THOL, grammar and frozen-isolate controls retain their own responsibilities.

@@ -224,11 +224,11 @@ sharing a scalar storage bound and two means.
 <a id="directional-maintenance-result"></a>
 ## 5. Frozen complete-word result: finite departure
 
-The [protocol](../../docs/assets/collective_form_capacity/maintenance_v1/protocol.json),
-[source freeze](../../docs/assets/collective_form_capacity/maintenance_v1/freeze.json)
+The [protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/collective_form_capacity/maintenance_v1/protocol.json),
+[source freeze](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/collective_form_capacity/maintenance_v1/freeze.json)
 and archived implementation preceded the single evaluation. Its
-[response](../../docs/assets/collective_form_capacity/maintenance_v1/response.json)
-and [verdict](../../docs/assets/collective_form_capacity/maintenance_v1/report.json)
+[response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/collective_form_capacity/maintenance_v1/response.json)
+and [verdict](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/collective_form_capacity/maintenance_v1/report.json)
 retain all three executed stages and 57 certified continuation steps. The
 prospective stop rule ended the calculation at elapsed time 57/4, before the
 maximum forty-unit horizon, because the endpoint was provably outside the
@@ -266,7 +266,7 @@ and passing finite U6 observations do not imply preservation of this finer
 geometric identity under the chosen subsequent law. Conversely, an isolated
 NUL reset or a different complete word cannot inherit this trajectory verdict.
 
-The [read-only evidence tests](../../tests/research/test_collective_form_capacity_maintenance_evidence.py)
+The [read-only evidence tests](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_collective_form_capacity_maintenance_evidence.py)
 verify the frozen source associations, reconstruct primitive event states,
 recheck live grammar/debt and U6, rebuild the exact reduction/metric and
 recompute endpoint identity bounds from retained centers and error radii.

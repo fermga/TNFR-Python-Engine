@@ -312,7 +312,7 @@ this inherited balance or silently count the same interaction twice.
 
 ## Verification and remaining boundary
 
-The [static controls](../../tests/physics/test_organized_constituent_memory.py)
+The [static controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_organized_constituent_memory.py)
 reconstruct fine edges, projections, fields and chain-rule derivatives.
 They check the heat-integral normalization, tangent blocks, quadratic
 correction and cubic remainder, storage/work, input obstruction and the

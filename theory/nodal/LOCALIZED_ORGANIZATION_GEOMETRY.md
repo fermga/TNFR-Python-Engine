@@ -29,7 +29,7 @@ Three distinct geometries must be retained:
 
 These distinctions reuse the [relation foundation](RELATION_FOUNDATIONS.md),
 [collective phase-offset conditions](SINE_COLLECTIVE_PHASE_DYNAMICS.md#sine-phase-offset-partition)
-and [regional work accounting](FORCED_REGIONAL_RESPONSE.md#7-a-region-and-its-environment-on-the-same-nodal-support).
+and [regional work accounting](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#7-a-region-and-its-environment-on-the-same-nodal-support).
 They do not introduce an extra geometric force or select a new law.
 
 The moving centers in the prepared-transport proof are comparison references,

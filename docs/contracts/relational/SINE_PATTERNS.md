@@ -149,7 +149,7 @@ illustrates an independent stationary control.
 
 The [retained finite-aperture evaluation](../../../theory/nodal/SINE_APERTURE_INFERENCE.md#sine-aperture-result)
 keeps its separately frozen preparation, sensor and first outcome. Its
-[read-only audit](../../../tests/physics/test_sine_aperture_evidence.py)
+[read-only audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_sine_aperture_evidence.py)
 reconstructs consumed arithmetic without invoking this producer or the inverse.
 
 <a id="sine-aperture-inference"></a>
@@ -878,7 +878,7 @@ matching hashes and a consistent chain are not independent numerical
 revalidation. The earlier producer and artifacts remain unchanged.
 
 The shared research owner
-[`sine_two_port_handoff.py`](../../../src/tnfr/research/sine_two_port_handoff.py)
+[`sine_two_port_handoff.py`](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/sine_two_port_handoff.py)
 provides `audit_sine_two_port_capture_record(record, *, protocol)` for the
 fixed capture-v1 mapping and
 `audit_sine_two_port_capture_handoff(evidence_directory)` for its retained
@@ -2963,7 +2963,7 @@ detection threshold, numerical time step or laboratory duration.
 Invalid domains raise. Phases are retained as exact rational turns; a
 materialized radian approximation is not substituted for the preparation.
 
-The [proof](../../../theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-formation-eligibility)
+The [proof](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-formation-eligibility)
 distinguishes three obligations:
 
 - Exact symmetry and equilibrium controls: zero contrast preserves receiver
@@ -3000,7 +3000,7 @@ clip at zero before integrating. `early_loss_lower_bound` retains the
 intermediary-only bound for compatibility; `full_early_loss_lower_bound`
 sums disjoint nodal contributions. The balanced intermediary contribution
 is zero, although the full loss is positive for nonzero amplitude.
-The [directional proof](../../../theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-balanced-formation)
+The [directional proof](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-balanced-formation)
 additionally retains exact weighted-Laplacian moments of the initial
 gradient. `directional_loss_bound` exposes those moments, its polynomial
 norm bound and explicit availability. A missing horizon, zero gradient,
@@ -3015,7 +3015,7 @@ takes the maximum of the nodal and directional bounds, never their sum:
 both bound the same total dissipation.
 
 The separate `maintained_target_obstruction` applies the
-[global auxiliary-function theorem](../../../theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-maintained-target-obstruction).
+[global auxiliary-function theorem](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-maintained-target-obstruction).
 It requires the exact effective ratio `0<w/e<3/2`, storage scale one and
 positive capacity contrast `1/2` on the existing eleven-node preparation. Its
 `form_storage_coefficient=4/5` and mobility spectrum enclosure `[1/44,3]`
@@ -3072,8 +3072,8 @@ The report retains the complete preparation, law coefficients, exact and
 outward bounded quantities, proof time and reasons. Shared JSON projection
 supports SDK export without authenticating provenance.
 
-The [formation bounds](../../../theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-formation-eligibility)
-and [internal-form analysis](../../../theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-internal-form-geometry)
+The [formation bounds](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-formation-eligibility)
+and [internal-form analysis](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-internal-form-geometry)
 own the profile exclusions, constant-donor corollary and nonuniform example.
 These source-specific obstructions do not establish a general impossibility
 of pattern formation. Timed entry exclusion and maintained-target exclusion
@@ -3089,7 +3089,7 @@ parts. Both eleven-coordinate vectors are retained; their storage and
 dissipative norms use the actual support, degrees and capacities.
 `source_coordinates` has order
 `(H, D0-H, s1, s2, a1, a2)`, as defined in the
-[source theorem](../../../theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-source-receiver-excitation).
+[source theorem](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-source-receiver-excitation).
 The decomposition remains available for valid preparations outside the more
 restricted tangent theorem.
 
@@ -3136,7 +3136,7 @@ It reuses source admission and the original half-weight sine law, unit storage
 scale and positive-half capacity contrast. The auxiliary function
 `U=F+V_D+7*V_R/5+7*V_bridges/6-q.T*K*S/3` is globally decreasing along that
 complete nonlinear law. Its coefficients are proof weights, not configured
-evolution parameters. The [regional proof](../../../theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-weighted-receiver-exclusion)
+evolution parameters. The [regional proof](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-weighted-receiver-exclusion)
 uses exact positive-definite matrices and full-state asymptotic convergence.
 
 For total initial form storage `F<=(5-sqrt(5))/2`, every nonflat receiver

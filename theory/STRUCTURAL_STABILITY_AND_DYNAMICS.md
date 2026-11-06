@@ -961,5 +961,5 @@ catalog = net.audit_operators()               # dict; 13 controlled probes
 - Grammar U2 (stabilizer/debt policy): [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md)
 - Hamiltonian/Lagrangian formulation: [TNFR_VARIATIONAL_PRINCIPLE.md](TNFR_VARIATIONAL_PRINCIPLE.md)
 - Order parameter $\mathcal{S}$: [EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md](EXTENDED_FIELDS_AND_DERIVED_QUANTITIES.md) §3.2
-- Dissipative extensions: [DISSIPATIVE_AND_OPEN_SYSTEMS.md](DISSIPATIVE_AND_OPEN_SYSTEMS.md)
+- Dissipative extensions: [DISSIPATIVE_AND_OPEN_SYSTEMS.md](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/DISSIPATIVE_AND_OPEN_SYSTEMS.md)
 - Gauge structure: [GAUGE_SYMMETRY_AND_UNIFICATION.md](GAUGE_SYMMETRY_AND_UNIFICATION.md)

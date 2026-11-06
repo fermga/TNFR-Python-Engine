@@ -596,7 +596,7 @@ pair, account for event work, or certify subsequent maintenance.
 <a id="sine-two-pulse-inference-result"></a>
 ## Retained first evaluation and claim boundary
 
-The [saved response](../../docs/assets/sine_formed_classes/two-pulse-inference-v1.json)
+The [saved response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-pulse-inference-v1.json)
 has status `certified_reserved_joint_inference`. All sixty-six fixed
 conditions passed in the first reserved attempt across the three cases.
 Both complete-flow windows, their full-state handoff and phase-only events,
@@ -630,16 +630,16 @@ inverse, which refers to the original pre-probe geometric statistic.
 The absent acute certificate is not a failed stopping condition and supplies
 no post-input identity, recovery or maintenance claim.
 
-The [protocol](../../docs/assets/sine_formed_classes/two-pulse-inference-v1.protocol.json),
-[source archive](../../docs/assets/sine_formed_classes/two-pulse-inference-v1.source.zip)
-and [manifest](../../docs/assets/sine_formed_classes/two-pulse-inference-v1.manifest.json)
+The [protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-pulse-inference-v1.protocol.json),
+[source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-pulse-inference-v1.source.zip)
+and [manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-pulse-inference-v1.manifest.json)
 retain the complete source recipe, producing code, first responses and
 fixed verdicts. The archived prospective proof has 26,821 bytes and SHA-256
 `2cae8b0d9257edf9ce7b78b9ca6d3feb0c11c331341ae517636a22da3ec5b285`;
 its content is preserved above, independently of routine checkout newline
 conversion. The source archive SHA-256 is
 `5abff67d487287ad3d4949d970f5c6a448bd4e62dec8a212e817008ede031e38`.
-The [retained evidence audit](../../tests/physics/test_sine_formed_evidence.py)
+The [retained evidence audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_sine_formed_evidence.py)
 checks the saved primitives and numerical evidence without regenerating
 these reserved responses or calling the inverse again.
 

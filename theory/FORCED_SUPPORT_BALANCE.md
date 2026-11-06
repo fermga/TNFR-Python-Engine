@@ -6,12 +6,12 @@ Fixed-support form balance is the common starting point. Regional response, phas
 
 | Chapter | Responsibility |
 | --- | --- |
-| [Retained forced-support regional observations](research/archive/support/REGIONAL_OBSERVATIONS.md) | Frozen finite regional comparisons and their original preparation and numerical limitations. |
-| [Forced regional response and environmental readouts](nodal/FORCED_REGIONAL_RESPONSE.md) | Regional balances, represented phase reduction and environmental-input geometry. |
+| [Retained forced-support regional observations](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/support/REGIONAL_OBSERVATIONS.md) | Frozen finite regional comparisons and their original preparation and numerical limitations. |
+| [Forced regional response and environmental readouts](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md) | Regional balances, represented phase reduction and environmental-input geometry. |
 | [Forced-source closure and phase clocks](nodal/FORCED_SOURCE_AND_CLOCK.md) | Phase/capacity tangency, source constraints and the limits of synchronization as a clock. |
 | [Conditional phase locking and circulation geometry](nodal/FORCED_PHASE_LOCKING.md) | P2 and network locking, capacity adaptation, circulation and cycle periods. |
 | [Winding generation and native writer boundaries](nodal/FORCED_WINDING_AND_WRITERS.md) | Acute winding retention, chart escape and native Mutation/capacity writer obstructions. |
-| [Geometric identity and capacity-feedback bounds](nodal/FORCED_GEOMETRIC_IDENTITY.md) | Local restoring response, geometric identity and prospective capacity tubes. |
+| [Geometric identity and capacity-feedback bounds](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md) | Local restoring response, geometric identity and prospective capacity tubes. |
 
 Section numbers remain stable across this collection. The [research program](RESEARCH_PROGRAM.md#research-current-question) alone assigns research work.
 
@@ -316,77 +316,77 @@ These aliases route existing citations to their substantive owner.
 
 - <a id="relative-form-and-mean-drift-on-a-held-canonical-support"></a>[Relative form and mean drift on a held canonical support](#relative-form-and-mean-drift-on-a-held-canonical-support)
 
-- <a id="6-bounded-executed-comparison"></a>[6. Bounded executed comparison](research/archive/support/REGIONAL_OBSERVATIONS.md#6-bounded-executed-comparison)
+- <a id="6-bounded-executed-comparison"></a>[6. Bounded executed comparison](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/support/REGIONAL_OBSERVATIONS.md#6-bounded-executed-comparison)
 
-- <a id="7-a-region-and-its-environment-on-the-same-nodal-support"></a>[7. A region and its environment on the same nodal support](nodal/FORCED_REGIONAL_RESPONSE.md#7-a-region-and-its-environment-on-the-same-nodal-support)
+- <a id="7-a-region-and-its-environment-on-the-same-nodal-support"></a>[7. A region and its environment on the same nodal support](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#7-a-region-and-its-environment-on-the-same-nodal-support)
 
-- <a id="conditional-child-response-is-not-an-autonomous-child-region"></a>[Conditional child response is not an autonomous child region](nodal/FORCED_REGIONAL_RESPONSE.md#conditional-child-response-is-not-an-autonomous-child-region)
+- <a id="conditional-child-response-is-not-an-autonomous-child-region"></a>[Conditional child response is not an autonomous child region](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#conditional-child-response-is-not-an-autonomous-child-region)
 
-- <a id="8-retained-thol-regional-audit"></a>[8. Retained THOL regional audit](research/archive/support/REGIONAL_OBSERVATIONS.md#8-retained-thol-regional-audit)
+- <a id="8-retained-thol-regional-audit"></a>[8. Retained THOL regional audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/support/REGIONAL_OBSERVATIONS.md#8-retained-thol-regional-audit)
 
-- <a id="9-finite-regional-observation-with-a-held-nodal-rate"></a>[9. Finite regional observation with a held nodal rate](nodal/FORCED_REGIONAL_RESPONSE.md#9-finite-regional-observation-with-a-held-nodal-rate)
+- <a id="9-finite-regional-observation-with-a-held-nodal-rate"></a>[9. Finite regional observation with a held nodal rate](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#9-finite-regional-observation-with-a-held-nodal-rate)
 
-- <a id="regional-contrast-is-not-a-universal-coherence-score"></a>[Regional contrast is not a universal coherence score](nodal/FORCED_REGIONAL_RESPONSE.md#regional-contrast-is-not-a-universal-coherence-score)
+- <a id="regional-contrast-is-not-a-universal-coherence-score"></a>[Regional contrast is not a universal coherence score](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#regional-contrast-is-not-a-universal-coherence-score)
 
-- <a id="10-retained-temporal-regional-identity-audit"></a>[10. Retained temporal regional identity audit](research/archive/support/REGIONAL_OBSERVATIONS.md#10-retained-temporal-regional-identity-audit)
+- <a id="10-retained-temporal-regional-identity-audit"></a>[10. Retained temporal regional identity audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/support/REGIONAL_OBSERVATIONS.md#10-retained-temporal-regional-identity-audit)
 
-- <a id="11-phase-source-relevance-at-a-fixed-regional-state"></a>[11. Phase-source relevance at a fixed regional state](nodal/FORCED_REGIONAL_RESPONSE.md#11-phase-source-relevance-at-a-fixed-regional-state)
+- <a id="11-phase-source-relevance-at-a-fixed-regional-state"></a>[11. Phase-source relevance at a fixed regional state](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#11-phase-source-relevance-at-a-fixed-regional-state)
 
-- <a id="retained-two-phase-comparison"></a>[Retained two-phase comparison](nodal/FORCED_REGIONAL_RESPONSE.md#retained-two-phase-comparison)
+- <a id="retained-two-phase-comparison"></a>[Retained two-phase comparison](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#retained-two-phase-comparison)
 
-- <a id="12-exact-reduction-of-represented-phase-components"></a>[12. Exact reduction of represented phase components](nodal/FORCED_REGIONAL_RESPONSE.md#12-exact-reduction-of-represented-phase-components)
+- <a id="12-exact-reduction-of-represented-phase-components"></a>[12. Exact reduction of represented phase components](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#12-exact-reduction-of-represented-phase-components)
 
-- <a id="caller-policies-remain-separate-from-arithmetic"></a>[Caller policies remain separate from arithmetic](nodal/FORCED_REGIONAL_RESPONSE.md#caller-policies-remain-separate-from-arithmetic)
+- <a id="caller-policies-remain-separate-from-arithmetic"></a>[Caller policies remain separate from arithmetic](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#caller-policies-remain-separate-from-arithmetic)
 
-- <a id="versioned-global-coordination-integration"></a>[Versioned global-coordination integration](nodal/FORCED_REGIONAL_RESPONSE.md#versioned-global-coordination-integration)
+- <a id="versioned-global-coordination-integration"></a>[Versioned global-coordination integration](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#versioned-global-coordination-integration)
 
-- <a id="13-versioned-phase-correction-at-the-retained-regional-state"></a>[13. Versioned phase correction at the retained regional state](research/archive/support/REGIONAL_OBSERVATIONS.md#13-versioned-phase-correction-at-the-retained-regional-state)
+- <a id="13-versioned-phase-correction-at-the-retained-regional-state"></a>[13. Versioned phase correction at the retained regional state](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/support/REGIONAL_OBSERVATIONS.md#13-versioned-phase-correction-at-the-retained-regional-state)
 
-- <a id="14-regional-recovery-versus-loss-of-form-in-the-retained-paired-window"></a>[14. Regional recovery versus loss of form in the retained paired window](research/archive/support/REGIONAL_OBSERVATIONS.md#14-regional-recovery-versus-loss-of-form-in-the-retained-paired-window)
+- <a id="14-regional-recovery-versus-loss-of-form-in-the-retained-paired-window"></a>[14. Regional recovery versus loss of form in the retained paired window](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/support/REGIONAL_OBSERVATIONS.md#14-regional-recovery-versus-loss-of-form-in-the-retained-paired-window)
 
-- <a id="15-child-cohort-distortion-and-regional-mean-to-shape-transfer"></a>[15. Child-cohort distortion and regional mean-to-shape transfer](nodal/FORCED_REGIONAL_RESPONSE.md#15-child-cohort-distortion-and-regional-mean-to-shape-transfer)
+- <a id="15-child-cohort-distortion-and-regional-mean-to-shape-transfer"></a>[15. Child-cohort distortion and regional mean-to-shape transfer](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#15-child-cohort-distortion-and-regional-mean-to-shape-transfer)
 
-- <a id="staged-nodal-accounting"></a>[Staged nodal accounting](nodal/FORCED_REGIONAL_RESPONSE.md#staged-nodal-accounting)
+- <a id="staged-nodal-accounting"></a>[Staged nodal accounting](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#staged-nodal-accounting)
 
-- <a id="a-connection-to-regional-identity"></a>[A connection to regional identity](nodal/FORCED_REGIONAL_RESPONSE.md#a-connection-to-regional-identity)
+- <a id="a-connection-to-regional-identity"></a>[A connection to regional identity](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#a-connection-to-regional-identity)
 
-- <a id="retained-result-and-maintenance-boundary"></a>[Retained result and maintenance boundary](nodal/FORCED_REGIONAL_RESPONSE.md#retained-result-and-maintenance-boundary)
+- <a id="retained-result-and-maintenance-boundary"></a>[Retained result and maintenance boundary](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#retained-result-and-maintenance-boundary)
 
-- <a id="16-localized-regional-form-damage-and-finite-configured-restoration"></a>[16. Localized regional form damage and finite configured restoration](nodal/FORCED_REGIONAL_RESPONSE.md#16-localized-regional-form-damage-and-finite-configured-restoration)
+- <a id="16-localized-regional-form-damage-and-finite-configured-restoration"></a>[16. Localized regional form damage and finite configured restoration](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#16-localized-regional-form-damage-and-finite-configured-restoration)
 
-- <a id="shared-accounting-and-decision-scope"></a>[Shared accounting and decision scope](nodal/FORCED_REGIONAL_RESPONSE.md#shared-accounting-and-decision-scope)
+- <a id="shared-accounting-and-decision-scope"></a>[Shared accounting and decision scope](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#shared-accounting-and-decision-scope)
 
-- <a id="measured-result"></a>[Measured result](nodal/FORCED_REGIONAL_RESPONSE.md#measured-result)
+- <a id="measured-result"></a>[Measured result](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#measured-result)
 
-- <a id="17-conditional-regional-response-and-environmental-input"></a>[17. Conditional regional response and environmental input](nodal/FORCED_REGIONAL_RESPONSE.md#17-conditional-regional-response-and-environmental-input)
+- <a id="17-conditional-regional-response-and-environmental-input"></a>[17. Conditional regional response and environmental input](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#17-conditional-regional-response-and-environmental-input)
 
-- <a id="a-condition-derived-from-the-admitted-nodal-map"></a>[A condition derived from the admitted nodal map](nodal/FORCED_REGIONAL_RESPONSE.md#a-condition-derived-from-the-admitted-nodal-map)
+- <a id="a-condition-derived-from-the-admitted-nodal-map"></a>[A condition derived from the admitted nodal map](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#a-condition-derived-from-the-admitted-nodal-map)
 
-- <a id="existing-shape-versus-incoming-mean-and-parent-differences"></a>[Existing shape versus incoming mean and parent differences](nodal/FORCED_REGIONAL_RESPONSE.md#existing-shape-versus-incoming-mean-and-parent-differences)
+- <a id="existing-shape-versus-incoming-mean-and-parent-differences"></a>[Existing shape versus incoming mean and parent differences](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#existing-shape-versus-incoming-mean-and-parent-differences)
 
-- <a id="why-a-region-only-gain-can-fail"></a>[Why a region-only gain can fail](nodal/FORCED_REGIONAL_RESPONSE.md#why-a-region-only-gain-can-fail)
+- <a id="why-a-region-only-gain-can-fail"></a>[Why a region-only gain can fail](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#why-a-region-only-gain-can-fail)
 
-- <a id="matched-retained-witnesses"></a>[Matched retained witnesses](nodal/FORCED_REGIONAL_RESPONSE.md#matched-retained-witnesses)
+- <a id="matched-retained-witnesses"></a>[Matched retained witnesses](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#matched-retained-witnesses)
 
-- <a id="18-environmental-input-geometry-and-protected-read-outs"></a>[18. Environmental-input geometry and protected read-outs](nodal/FORCED_REGIONAL_RESPONSE.md#18-environmental-input-geometry-and-protected-read-outs)
+- <a id="18-environmental-input-geometry-and-protected-read-outs"></a>[18. Environmental-input geometry and protected read-outs](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#18-environmental-input-geometry-and-protected-read-outs)
 
-- <a id="image-and-annihilator-in-the-original-metric"></a>[Image and annihilator in the original metric](nodal/FORCED_REGIONAL_RESPONSE.md#image-and-annihilator-in-the-original-metric)
+- <a id="image-and-annihilator-in-the-original-metric"></a>[Image and annihilator in the original metric](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#image-and-annihilator-in-the-original-metric)
 
-- <a id="exact-classification-of-the-retained-child-cohort"></a>[Exact classification of the retained child cohort](nodal/FORCED_REGIONAL_RESPONSE.md#exact-classification-of-the-retained-child-cohort)
+- <a id="exact-classification-of-the-retained-child-cohort"></a>[Exact classification of the retained child cohort](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#exact-classification-of-the-retained-child-cohort)
 
-- <a id="19-support-symmetry-versus-the-admitted-nodal-and-reset-maps"></a>[19. Support symmetry versus the admitted nodal and reset maps](nodal/FORCED_REGIONAL_RESPONSE.md#19-support-symmetry-versus-the-admitted-nodal-and-reset-maps)
+- <a id="19-support-symmetry-versus-the-admitted-nodal-and-reset-maps"></a>[19. Support symmetry versus the admitted nodal and reset maps](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#19-support-symmetry-versus-the-admitted-nodal-and-reset-maps)
 
-- <a id="separate-mathematical-objects"></a>[Separate mathematical objects](nodal/FORCED_REGIONAL_RESPONSE.md#separate-mathematical-objects)
+- <a id="separate-mathematical-objects"></a>[Separate mathematical objects](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#separate-mathematical-objects)
 
-- <a id="complete-retained-classification"></a>[Complete retained classification](nodal/FORCED_REGIONAL_RESPONSE.md#complete-retained-classification)
+- <a id="complete-retained-classification"></a>[Complete retained classification](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#complete-retained-classification)
 
-- <a id="20-same-snapshot-reception-and-the-limit-of-geometric-protection"></a>[20. Same-snapshot Reception and the limit of geometric protection](nodal/FORCED_REGIONAL_RESPONSE.md#20-same-snapshot-reception-and-the-limit-of-geometric-protection)
+- <a id="20-same-snapshot-reception-and-the-limit-of-geometric-protection"></a>[20. Same-snapshot Reception and the limit of geometric protection](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#20-same-snapshot-reception-and-the-limit-of-geometric-protection)
 
-- <a id="comparison-using-the-existing-coefficient-kernel"></a>[Comparison using the existing coefficient kernel](nodal/FORCED_REGIONAL_RESPONSE.md#comparison-using-the-existing-coefficient-kernel)
+- <a id="comparison-using-the-existing-coefficient-kernel"></a>[Comparison using the existing coefficient kernel](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#comparison-using-the-existing-coefficient-kernel)
 
-- <a id="exact-result-and-the-unmet-input-condition"></a>[Exact result and the unmet input condition](nodal/FORCED_REGIONAL_RESPONSE.md#exact-result-and-the-unmet-input-condition)
+- <a id="exact-result-and-the-unmet-input-condition"></a>[Exact result and the unmet input condition](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#exact-result-and-the-unmet-input-condition)
 
-- <a id="runtime-boundary-and-disposition"></a>[Runtime boundary and disposition](nodal/FORCED_REGIONAL_RESPONSE.md#runtime-boundary-and-disposition)
+- <a id="runtime-boundary-and-disposition"></a>[Runtime boundary and disposition](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#runtime-boundary-and-disposition)
 
 - <a id="21-closing-the-relaxed-phase-capacity-source"></a>[21. Closing the relaxed phase-capacity source](nodal/FORCED_SOURCE_AND_CLOCK.md#21-closing-the-relaxed-phase-capacity-source)
 
@@ -622,74 +622,74 @@ These aliases route existing citations to their substantive owner.
 
 - <a id="an-exact-invariant-source-class-closes-this-native-p3-route"></a>[An exact invariant source class closes this native P3 route](nodal/FORCED_WINDING_AND_WRITERS.md#an-exact-invariant-source-class-closes-this-native-p3-route)
 
-- <a id="41-geometric-identity-and-the-undefined-global-phase-target"></a>[41. Geometric identity and the undefined global phase target](nodal/FORCED_GEOMETRIC_IDENTITY.md#41-geometric-identity-and-the-undefined-global-phase-target)
+- <a id="41-geometric-identity-and-the-undefined-global-phase-target"></a>[41. Geometric identity and the undefined global phase target](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#41-geometric-identity-and-the-undefined-global-phase-target)
 
-- <a id="local-coherent-geometry-can-have-zero-global-phase-order"></a>[Local coherent geometry can have zero global phase order](nodal/FORCED_GEOMETRIC_IDENTITY.md#local-coherent-geometry-can-have-zero-global-phase-order)
+- <a id="local-coherent-geometry-can-have-zero-global-phase-order"></a>[Local coherent geometry can have zero global phase order](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#local-coherent-geometry-can-have-zero-global-phase-order)
 
-- <a id="a-symmetric-phase-multiset-cannot-select-one-covariant-direction"></a>[A symmetric phase multiset cannot select one covariant direction](nodal/FORCED_GEOMETRIC_IDENTITY.md#a-symmetric-phase-multiset-cannot-select-one-covariant-direction)
+- <a id="a-symmetric-phase-multiset-cannot-select-one-covariant-direction"></a>[A symmetric phase multiset cannot select one covariant direction](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#a-symmetric-phase-multiset-cannot-select-one-covariant-direction)
 
-- <a id="any-selected-global-target-changes-the-uniform-twist-orbit"></a>[Any selected global target changes the uniform-twist orbit](nodal/FORCED_GEOMETRIC_IDENTITY.md#any-selected-global-target-changes-the-uniform-twist-orbit)
+- <a id="any-selected-global-target-changes-the-uniform-twist-orbit"></a>[Any selected global target changes the uniform-twist orbit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#any-selected-global-target-changes-the-uniform-twist-orbit)
 
-- <a id="native-policy-and-represented-arithmetic-have-separate-scope"></a>[Native policy and represented arithmetic have separate scope](nodal/FORCED_GEOMETRIC_IDENTITY.md#native-policy-and-represented-arithmetic-have-separate-scope)
+- <a id="native-policy-and-represented-arithmetic-have-separate-scope"></a>[Native policy and represented arithmetic have separate scope](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#native-policy-and-represented-arithmetic-have-separate-scope)
 
-- <a id="42-a-geometric-identity-contract-for-the-retained-weighted-c5"></a>[42. A geometric-identity contract for the retained weighted C5](nodal/FORCED_GEOMETRIC_IDENTITY.md#42-a-geometric-identity-contract-for-the-retained-weighted-c5)
+- <a id="42-a-geometric-identity-contract-for-the-retained-weighted-c5"></a>[42. A geometric-identity contract for the retained weighted C5](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#42-a-geometric-identity-contract-for-the-retained-weighted-c5)
 
-- <a id="declared-state-law-and-identity-family"></a>[Declared state, law and identity family](nodal/FORCED_GEOMETRIC_IDENTITY.md#declared-state-law-and-identity-family)
+- <a id="declared-state-law-and-identity-family"></a>[Declared state, law and identity family](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#declared-state-law-and-identity-family)
 
-- <a id="a-lifted-shape-coordinate-separates-rotation-from-deformation"></a>[A lifted shape coordinate separates rotation from deformation](nodal/FORCED_GEOMETRIC_IDENTITY.md#a-lifted-shape-coordinate-separates-rotation-from-deformation)
+- <a id="a-lifted-shape-coordinate-separates-rotation-from-deformation"></a>[A lifted shape coordinate separates rotation from deformation](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#a-lifted-shape-coordinate-separates-rotation-from-deformation)
 
-- <a id="form-mean-and-the-strength-of-the-persistence-claim"></a>[Form mean and the strength of the persistence claim](nodal/FORCED_GEOMETRIC_IDENTITY.md#form-mean-and-the-strength-of-the-persistence-claim)
+- <a id="form-mean-and-the-strength-of-the-persistence-claim"></a>[Form mean and the strength of the persistence claim](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#form-mean-and-the-strength-of-the-persistence-claim)
 
-- <a id="evidence-and-remaining-premises"></a>[Evidence and remaining premises](nodal/FORCED_GEOMETRIC_IDENTITY.md#evidence-and-remaining-premises)
+- <a id="evidence-and-remaining-premises"></a>[Evidence and remaining premises](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#evidence-and-remaining-premises)
 
-- <a id="43-a-positive-local-response-supplies-the-cycle-restoring-mechanism"></a>[43. A positive local response supplies the cycle restoring mechanism](nodal/FORCED_GEOMETRIC_IDENTITY.md#43-a-positive-local-response-supplies-the-cycle-restoring-mechanism)
+- <a id="43-a-positive-local-response-supplies-the-cycle-restoring-mechanism"></a>[43. A positive local response supplies the cycle restoring mechanism](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#43-a-positive-local-response-supplies-the-cycle-restoring-mechanism)
 
-- <a id="admitted-class-and-the-role-of-each-assumption"></a>[Admitted class and the role of each assumption](nodal/FORCED_GEOMETRIC_IDENTITY.md#admitted-class-and-the-role-of-each-assumption)
+- <a id="admitted-class-and-the-role-of-each-assumption"></a>[Admitted class and the role of each assumption](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#admitted-class-and-the-role-of-each-assumption)
 
-- <a id="acute-domain-preservation-and-an-exact-dissipation-identity"></a>[Acute-domain preservation and an exact dissipation identity](nodal/FORCED_GEOMETRIC_IDENTITY.md#acute-domain-preservation-and-an-exact-dissipation-identity)
+- <a id="acute-domain-preservation-and-an-exact-dissipation-identity"></a>[Acute-domain preservation and an exact dissipation identity](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#acute-domain-preservation-and-an-exact-dissipation-identity)
 
-- <a id="a-restored-shape-need-not-keep-the-same-phase-offset"></a>[A restored shape need not keep the same phase offset](nodal/FORCED_GEOMETRIC_IDENTITY.md#a-restored-shape-need-not-keep-the-same-phase-offset)
+- <a id="a-restored-shape-need-not-keep-the-same-phase-offset"></a>[A restored shape need not keep the same phase offset](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#a-restored-shape-need-not-keep-the-same-phase-offset)
 
-- <a id="existing-current-and-argument-pressure-belong-to-the-class"></a>[Existing current and argument pressure belong to the class](nodal/FORCED_GEOMETRIC_IDENTITY.md#existing-current-and-argument-pressure-belong-to-the-class)
+- <a id="existing-current-and-argument-pressure-belong-to-the-class"></a>[Existing current and argument pressure belong to the class](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#existing-current-and-argument-pressure-belong-to-the-class)
 
-- <a id="executable-comparison-controls-and-failure-boundaries"></a>[Executable comparison, controls and failure boundaries](nodal/FORCED_GEOMETRIC_IDENTITY.md#executable-comparison-controls-and-failure-boundaries)
+- <a id="executable-comparison-controls-and-failure-boundaries"></a>[Executable comparison, controls and failure boundaries](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#executable-comparison-controls-and-failure-boundaries)
 
-- <a id="44-reusing-phase-geometry-and-capacity-energy-without-adding-a-law"></a>[44. Reusing phase geometry and capacity energy without adding a law](nodal/FORCED_GEOMETRIC_IDENTITY.md#44-reusing-phase-geometry-and-capacity-energy-without-adding-a-law)
+- <a id="44-reusing-phase-geometry-and-capacity-energy-without-adding-a-law"></a>[44. Reusing phase geometry and capacity energy without adding a law](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#44-reusing-phase-geometry-and-capacity-energy-without-adding-a-law)
 
-- <a id="curvature-reconstructs-the-centered-phase-shape-on-the-admitted-cycle"></a>[Curvature reconstructs the centered phase shape on the admitted cycle](nodal/FORCED_GEOMETRIC_IDENTITY.md#curvature-reconstructs-the-centered-phase-shape-on-the-admitted-cycle)
+- <a id="curvature-reconstructs-the-centered-phase-shape-on-the-admitted-cycle"></a>[Curvature reconstructs the centered phase shape on the admitted cycle](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#curvature-reconstructs-the-centered-phase-shape-on-the-admitted-cycle)
 
-- <a id="an-augmented-conserved-mean-distinguishes-the-pressure-response-candidate"></a>[An augmented conserved mean distinguishes the pressure-response candidate](nodal/FORCED_GEOMETRIC_IDENTITY.md#an-augmented-conserved-mean-distinguishes-the-pressure-response-candidate)
+- <a id="an-augmented-conserved-mean-distinguishes-the-pressure-response-candidate"></a>[An augmented conserved mean distinguishes the pressure-response candidate](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#an-augmented-conserved-mean-distinguishes-the-pressure-response-candidate)
 
-- <a id="one-capacity-roughness-controls-two-forcing-channels"></a>[One capacity roughness controls two forcing channels](nodal/FORCED_GEOMETRIC_IDENTITY.md#one-capacity-roughness-controls-two-forcing-channels)
+- <a id="one-capacity-roughness-controls-two-forcing-channels"></a>[One capacity roughness controls two forcing channels](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#one-capacity-roughness-controls-two-forcing-channels)
 
-- <a id="the-runtime-and-clock-boundaries-are-observable"></a>[The runtime and clock boundaries are observable](nodal/FORCED_GEOMETRIC_IDENTITY.md#the-runtime-and-clock-boundaries-are-observable)
+- <a id="the-runtime-and-clock-boundaries-are-observable"></a>[The runtime and clock boundaries are observable](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#the-runtime-and-clock-boundaries-are-observable)
 
-- <a id="45-a-capacity-interval-gives-a-prospective-winding-retention-tube"></a>[45. A capacity interval gives a prospective winding-retention tube](nodal/FORCED_GEOMETRIC_IDENTITY.md#45-a-capacity-interval-gives-a-prospective-winding-retention-tube)
+- <a id="45-a-capacity-interval-gives-a-prospective-winding-retention-tube"></a>[45. A capacity interval gives a prospective winding-retention tube](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#45-a-capacity-interval-gives-a-prospective-winding-retention-tube)
 
-- <a id="scope-and-the-bootstrap-from-the-actual-event-endpoint"></a>[Scope and the bootstrap from the actual event endpoint](nodal/FORCED_GEOMETRIC_IDENTITY.md#scope-and-the-bootstrap-from-the-actual-event-endpoint)
+- <a id="scope-and-the-bootstrap-from-the-actual-event-endpoint"></a>[Scope and the bootstrap from the actual event endpoint](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#scope-and-the-bootstrap-from-the-actual-event-endpoint)
 
-- <a id="phase-deformation-source-and-form-contrast-bounds"></a>[Phase deformation, source and form-contrast bounds](nodal/FORCED_GEOMETRIC_IDENTITY.md#phase-deformation-source-and-form-contrast-bounds)
+- <a id="phase-deformation-source-and-form-contrast-bounds"></a>[Phase deformation, source and form-contrast bounds](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#phase-deformation-source-and-form-contrast-bounds)
 
-- <a id="one-frozen-execution-with-the-actual-default-gate"></a>[One frozen execution with the actual default gate](nodal/FORCED_GEOMETRIC_IDENTITY.md#one-frozen-execution-with-the-actual-default-gate)
+- <a id="one-frozen-execution-with-the-actual-default-gate"></a>[One frozen execution with the actual default gate](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#one-frozen-execution-with-the-actual-default-gate)
 
-- <a id="46-absolute-form-a-finite-bound-and-an-interval-law-obstruction"></a>[46. Absolute form: a finite bound and an interval-law obstruction](nodal/FORCED_GEOMETRIC_IDENTITY.md#46-absolute-form-a-finite-bound-and-an-interval-law-obstruction)
+- <a id="46-absolute-form-a-finite-bound-and-an-interval-law-obstruction"></a>[46. Absolute form: a finite bound and an interval-law obstruction](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#46-absolute-form-a-finite-bound-and-an-interval-law-obstruction)
 
-- <a id="fixed-observation-weights-separate-mean-drift-from-coordinate-changes"></a>[Fixed observation weights separate mean drift from coordinate changes](nodal/FORCED_GEOMETRIC_IDENTITY.md#fixed-observation-weights-separate-mean-drift-from-coordinate-changes)
+- <a id="fixed-observation-weights-separate-mean-drift-from-coordinate-changes"></a>[Fixed observation weights separate mean drift from coordinate changes](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#fixed-observation-weights-separate-mean-drift-from-coordinate-changes)
 
-- <a id="prescribed-capacity-and-event-mean-balance"></a>[prescribed-capacity-and-event-mean-balance](nodal/FORCED_GEOMETRIC_IDENTITY.md#prescribed-capacity-and-event-mean-balance)
+- <a id="prescribed-capacity-and-event-mean-balance"></a>[prescribed-capacity-and-event-mean-balance](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#prescribed-capacity-and-event-mean-balance)
 
-- <a id="prescribed-capacity-changes-distinguish-form-charge-from-its-mean"></a>[Prescribed capacity changes distinguish form charge from its mean](nodal/FORCED_GEOMETRIC_IDENTITY.md#prescribed-capacity-changes-distinguish-form-charge-from-its-mean)
+- <a id="prescribed-capacity-changes-distinguish-form-charge-from-its-mean"></a>[Prescribed capacity changes distinguish form charge from its mean](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#prescribed-capacity-changes-distinguish-form-charge-from-its-mean)
 
-- <a id="a-no-reset-support-event-must-retain-its-changed-weights"></a>[A no-reset support event must retain its changed weights](nodal/FORCED_GEOMETRIC_IDENTITY.md#a-no-reset-support-event-must-retain-its-changed-weights)
+- <a id="a-no-reset-support-event-must-retain-its-changed-weights"></a>[A no-reset support event must retain its changed weights](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#a-no-reset-support-event-must-retain-its-changed-weights)
 
-- <a id="the-complete-scalar-field-has-a-finite-prefix-enclosure"></a>[The complete scalar field has a finite-prefix enclosure](nodal/FORCED_GEOMETRIC_IDENTITY.md#the-complete-scalar-field-has-a-finite-prefix-enclosure)
+- <a id="the-complete-scalar-field-has-a-finite-prefix-enclosure"></a>[The complete scalar field has a finite-prefix enclosure](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#the-complete-scalar-field-has-a-finite-prefix-enclosure)
 
-- <a id="a-locked-phase-can-still-drive-the-uniform-epi-mode"></a>[A locked phase can still drive the uniform EPI mode](nodal/FORCED_GEOMETRIC_IDENTITY.md#a-locked-phase-can-still-drive-the-uniform-epi-mode)
+- <a id="a-locked-phase-can-still-drive-the-uniform-epi-mode"></a>[A locked phase can still drive the uniform EPI mode](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#a-locked-phase-can-still-drive-the-uniform-epi-mode)
 
-- <a id="47-actual-capacity-feedback-reduces-the-locked-source-without-cancelling-it"></a>[47. Actual capacity feedback reduces the locked source without cancelling it](nodal/FORCED_GEOMETRIC_IDENTITY.md#47-actual-capacity-feedback-reduces-the-locked-source-without-cancelling-it)
+- <a id="47-actual-capacity-feedback-reduces-the-locked-source-without-cancelling-it"></a>[47. Actual capacity feedback reduces the locked source without cancelling it](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#47-actual-capacity-feedback-reduces-the-locked-source-without-cancelling-it)
 
-- <a id="one-signed-balance-connects-capacity-averaging-to-phase-readjustment"></a>[One signed balance connects capacity averaging to phase readjustment](nodal/FORCED_GEOMETRIC_IDENTITY.md#one-signed-balance-connects-capacity-averaging-to-phase-readjustment)
+- <a id="one-signed-balance-connects-capacity-averaging-to-phase-readjustment"></a>[One signed balance connects capacity averaging to phase readjustment](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#one-signed-balance-connects-capacity-averaging-to-phase-readjustment)
 
-- <a id="fresh-default-admission-gives-a-nontrivial-first-write"></a>[Fresh default admission gives a nontrivial first write](nodal/FORCED_GEOMETRIC_IDENTITY.md#fresh-default-admission-gives-a-nontrivial-first-write)
+- <a id="fresh-default-admission-gives-a-nontrivial-first-write"></a>[Fresh default admission gives a nontrivial first write](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#fresh-default-admission-gives-a-nontrivial-first-write)
 
-- <a id="a-smaller-capacity-contrast-is-not-a-source-compatibility-lyapunov-law"></a>[A smaller capacity contrast is not a source-compatibility Lyapunov law](nodal/FORCED_GEOMETRIC_IDENTITY.md#a-smaller-capacity-contrast-is-not-a-source-compatibility-lyapunov-law)
+- <a id="a-smaller-capacity-contrast-is-not-a-source-compatibility-lyapunov-law"></a>[A smaller capacity contrast is not a source-compatibility Lyapunov law](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#a-smaller-capacity-contrast-is-not-a-source-compatibility-lyapunov-law)

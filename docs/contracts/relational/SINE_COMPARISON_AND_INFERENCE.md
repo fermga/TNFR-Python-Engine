@@ -182,7 +182,7 @@ excludes trapping based only on total storage and the two means. Actual
 all-time nonstationary confinement remains open; this stationary result is
 not a temporal dispatcher, an executed event or a predicted cut crossing.
 
-The [actual UM transaction reader](../../../src/tnfr/research/maintained_parent_um_execution.py)
+The [actual UM transaction reader](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/maintained_parent_um_execution.py)
 separates the durable raw reset, pressure-only refresh, final stage metadata
 and detached endpoint checks. Its [retained first attempt](../../../theory/nodal/SINE_MAINTAINED_PARENT_UM.md#maintained-um-transaction-result)
 rolled back after a diagnosed guard false rejection; raw inclusion does not
@@ -759,7 +759,7 @@ The [retained endpoint result](../../../theory/nodal/LOCALIZED_MOBILE_RESPONSE.m
 passes the numerical budget and certifies a nonzero complete-flow nominal
 defect while retaining both prepared band identities. The original
 shared-source-family bound remains unresolved. The
-[read-only evidence controls](../../../tests/physics/test_localized_mobile_response_evidence.py)
+[read-only evidence controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_localized_mobile_response_evidence.py)
 rebuild budgets and verdicts from primitive inputs and retained spectral boxes
 without replaying the producer; byte associations do not authenticate execution.
 Nonadditivity establishes no common composite NFR identity or capture. That

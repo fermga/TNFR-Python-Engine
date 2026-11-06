@@ -114,7 +114,7 @@ The former advanced adapters and CLI are retired. `tnfr-primality-advanced`,
 `tnfr-primality-legacy` and the `full`, `benchmark` and `docs` extras are no
 longer installation targets. Use `tnfr-primality` or the basic module command
 for supported arithmetic output; advanced-only options are rejected.
-[Archive recovery](archive/README.md) preserves their source identities and
+[Archive recovery](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/applications/primality-test/archive/README.md) preserves their source identities and
 unique working-tree examples/tests outside runtime discovery and package
 payloads.
 

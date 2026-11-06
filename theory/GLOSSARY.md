@@ -441,7 +441,7 @@ IDs and update the definition/proof owner before changing its summary.
 - **Owner:** [Derived form phase](nodal/DERIVED_FORM_PHASE.md).
 - **Evidence:** [Inherited observations](nodal/DERIVED_FORM_PHASE.md#regional-form-engine-integration), [source-relative response](nodal/DERIVED_FORM_PHASE.md#source-relative-future-response).
 - **Implementation:** [Form geometry](../src/tnfr/physics/form_geometry.py), [source-relative form](../src/tnfr/physics/source_relative_form.py).
-- **Tests:** [Form geometry](../tests/physics/test_form_geometry.py), [source response](../tests/physics/test_source_relative_form_response.py).
+- **Tests:** [Form geometry](../tests/physics/test_form_geometry.py).
 - **Limits:** The derived angle is unavailable at zero contrast and is not automatically the primitive phase consumed by pressure.
 
 <a id="scale-inheritance"></a>
@@ -833,7 +833,7 @@ IDs and update the definition/proof owner before changing its summary.
 - **Domain:** A named terrestrial system with declared data/instruments, uncertainty, calibration and reserved evaluation.
 - **Premises:** Specify observables and pressure inputs before observing the response; latent primitive coordinates need not each have a direct sensor.
 - **Dependencies:** epi, capacity, phase, clock, pressure
-- **Owner:** [Measurement admission](research/PASSIVE_TRANSPORT_PROTOCOL.md#state-clock-and-measurement-admission).
+- **Owner:** [Physical atlas status](PHYSICAL_REGIME_CORRESPONDENCES.md#verification-status).
 - **Evidence:** [Physical atlas status](PHYSICAL_REGIME_CORRESPONDENCES.md#verification-status).
 - **Implementation:** none: protocol-specific evaluators do not establish an admitted general physical bridge.
 - **Tests:** none: no general physical identification has passed independent measurement admission.

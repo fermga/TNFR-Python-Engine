@@ -391,10 +391,10 @@ Residual intervals containing zero are retained only as consistency checks.
 No rounded point from the marginal phase intervals replaces the correlated
 implicit equilibrium.
 
-The retained [protocol](../../docs/assets/sine_formed_classes/two-port-compatibility-v1.protocol.json),
-[source archive](../../docs/assets/sine_formed_classes/two-port-compatibility-v1.source.zip),
-[primary and matched reports](../../docs/assets/sine_formed_classes/two-port-compatibility-v1.json)
-and [evidence manifest](../../docs/assets/sine_formed_classes/two-port-compatibility-v1.manifest.json)
+The retained [protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-compatibility-v1.protocol.json),
+[source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-compatibility-v1.source.zip),
+[primary and matched reports](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-compatibility-v1.json)
+and [evidence manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-compatibility-v1.manifest.json)
 preserve the first assessment. The archive SHA-256 is
 `6ce65e3155dc41f4c0156f103cdc04fdcc33ddbd294929db050b75e244782eb2`.
 The archive retains the pre-evaluation status, while the protocol and
@@ -402,7 +402,7 @@ mathematical derivation preceding it are unchanged in this owner.
 
 The [contract](../../docs/contracts/relational/SINE_PATTERNS.md#sine-two-port-compatibility),
 [guide](../../docs/guides/relational/SINE_PATTERNS.md#sine-two-port-compatibility)
-and [independent controls](../../tests/physics/test_sine_two_port_compatibility.py)
+and [independent controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_sine_two_port_compatibility.py)
 cover exact reconstruction, integer cycle admission, fine-node balance,
 independent coupled-equation checks, the full Hessian, class exchange and
 explicit abstention when a required sign is unresolved.

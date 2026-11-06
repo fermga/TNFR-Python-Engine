@@ -16,7 +16,7 @@ does not introduce another research plan.
 | What are the state, complete laws and levels of evidence? | [Conceptual core](CONCEPTUAL_CORE.md), with the [glossary](GLOSSARY.md) for definitions and dependencies |
 | What makes a collection an organized object? | [Emergence and ontology](EMERGENT_ONTOLOGY.md): formation, identity, maintenance and collective prediction |
 | What would justify a physical interpretation? | [Physical correspondence atlas](PHYSICAL_REGIME_CORRESPONDENCES.md), including the [electromagnetic prerequisite audit](PHYSICAL_REGIME_CORRESPONDENCES.md#electromagnetic-emergence-audit) |
-| How do these distinctions apply to an interacting pair? | [Marked-pair identity](nodal/ORGANIZED_COMPOSITE_RELAXATION.md#mixed-pair-identity) and its [source-associated prediction](nodal/ORGANIZED_COMPOSITE_RELAXATION.md#mixed-collective-sensitivity); follow the linked premises for the complete construction |
+| How do these distinctions apply to an interacting pair? | [Marked-pair identity](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/ORGANIZED_COMPOSITE_RELAXATION.md#mixed-pair-identity) and its [source-associated prediction](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/ORGANIZED_COMPOSITE_RELAXATION.md#mixed-collective-sensitivity); follow the linked premises for the complete construction |
 | Where are a result's implementation, contract and checks? | [Theory-to-execution map](THEORY_TO_EXECUTION.md) and [technical documentation](../docs/README.md) |
 
 Each complete law retains its own source, state and observation contract.
@@ -166,15 +166,12 @@ ownership. The catalog and compatibility routes below are generated.
 | [Cycle support dynamics](CYCLE_SUPPORT_DYNAMICS.md) | Maintained technical chapter |
 | [Cycle memory relaxation](CYCLE_MEMORY_RELAXATION.md) | Maintained technical chapter |
 | [Forced support balance](FORCED_SUPPORT_BALANCE.md) | Maintained technical chapter |
-| [Forced regional response and environmental readouts](nodal/FORCED_REGIONAL_RESPONSE.md) | Maintained technical chapter |
 | [Forced-source closure and phase clocks](nodal/FORCED_SOURCE_AND_CLOCK.md) | Maintained technical chapter |
 | [Conditional phase locking and circulation geometry](nodal/FORCED_PHASE_LOCKING.md) | Maintained technical chapter |
 | [Winding generation and native writer boundaries](nodal/FORCED_WINDING_AND_WRITERS.md) | Maintained technical chapter |
-| [Geometric identity and capacity-feedback bounds](nodal/FORCED_GEOMETRIC_IDENTITY.md) | Maintained technical chapter |
 | [REMESH fixed-delay models](REMESH_INFINITY_DERIVATION.md) | Maintained technical chapter |
 | [Sufficient unordered pair state](nodal/SINE_PAIR_STATE.md) | Maintained technical chapter |
 | [Internal replica pulses and their perturbations](nodal/SINE_REPLICA_PULSE.md) | Maintained technical chapter |
-| [Collective prediction and temporal error allowances](nodal/SINE_COLLECTIVE_PREDICTION.md) | Maintained technical chapter |
 | [Phase and joint form-phase grouping](nodal/SINE_PAIR_GROUPING.md) | Maintained technical chapter |
 | [Pair geometry under alternative reciprocal mobility](nodal/SINE_PAIR_MOBILITY.md) | Maintained technical chapter |
 | [Pair actions, regional exchange and cancellation](nodal/SINE_PAIR_INTERACTION.md) | Maintained technical chapter |
@@ -191,8 +188,6 @@ ownership. The catalog and compatibility routes below are generated.
 | --- | --- |
 | [Constitutive freedom of organized patterns](nodal/ORGANIZED_PATTERN_CONSTITUTIVE_FREEDOM.md) | Maintained technical chapter |
 | [Constitutive inheritance through organized interfaces](nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md) | Maintained technical chapter |
-| [Carried prediction through a reciprocal composite interaction](nodal/ORGANIZED_COMPOSITE_RECIPROCITY.md) | Maintained technical chapter |
-| [Composite relaxation, effective interaction and marked-pair identity](nodal/ORGANIZED_COMPOSITE_RELAXATION.md) | Maintained technical chapter |
 | [Regional contact transport and hidden-profile information](nodal/ORGANIZED_REGIONAL_TRANSPORT.md) | Maintained technical chapter |
 | [Predictive repeated organized composition](nodal/REPEATED_ORGANIZED_COMPOSITION.md) | Maintained technical chapter |
 | [Parent registration acquired from organized children](nodal/ORGANIZED_PARENT_ACQUISITION.md) | Maintained technical chapter |
@@ -244,7 +239,6 @@ ownership. The catalog and compatibility routes below are generated.
 | [Admission of an observation-based forecast](nodal/ORGANIZED_OBSERVED_FORECAST.md) | Maintained technical chapter |
 | [Constitutive law and unknown initialization](nodal/ORGANIZED_LAW_OBSERVATION.md) | Maintained technical chapter |
 | [Current discrimination under uncertainty](nodal/ORGANIZED_ROBUST_CURRENT.md) | Maintained technical chapter |
-| [Physical feasibility of organized current observation](research/ORGANIZED_ELECTRICAL_FEASIBILITY.md) | Maintained technical chapter |
 | [Collective state and matrix response](nodal/ORGANIZED_EFFECTIVE_LAW.md) | Maintained technical chapter |
 | [Loaded finite-window collective observation](research/ORGANIZED_FINITE_WINDOW_DESIGN.md) | Maintained technical chapter |
 | [Integrated sensor response during recovery](research/ORGANIZED_RECOVERY_OBSERVATION.md) | Maintained technical chapter |
@@ -254,7 +248,6 @@ ownership. The catalog and compatibility routes below are generated.
 | Chapter | Source |
 | --- | --- |
 | [Organized identity under continued external contact](nodal/ORGANIZED_CONTACT_MAINTENANCE.md) | Maintained technical chapter |
-| [Composition error of simultaneous contact responses](nodal/SINE_CONTACT_COMPOSITION.md) | Maintained technical chapter |
 | [Organized identity under weak external contact](nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md) | Maintained technical chapter |
 | [Alternative-law weak-contact registration and capture](nodal/ORGANIZED_ALTERNATIVE_WEAK_CONTACT.md) | Maintained technical chapter |
 | [Constitutive transition of collective registration](nodal/ORGANIZED_CONSTITUTIVE_TRANSITION.md) | Maintained technical chapter |
@@ -341,10 +334,8 @@ ownership. The catalog and compatibility routes below are generated.
 | [THOL birth on a certified maintained parent](nodal/SINE_MAINTAINED_PARENT_THOL.md) | Maintained technical chapter |
 | [Default UM on the retained THOL successor](nodal/SINE_MAINTAINED_PARENT_UM.md) | Maintained technical chapter |
 | [Maintained-parent SHA closure and changed law](nodal/SINE_MAINTAINED_PARENT_CLOSURE.md) | Maintained technical chapter |
-| [Finite preparation families for the held sine law](nodal/SINE_PREPARATION_ROBUSTNESS.md) | Maintained technical chapter |
 | [Connected child's temporal capability](nodal/SINE_CHILD_TEMPORAL_READINESS.md) | Maintained technical chapter |
 | [Child OZ and observation timing](nodal/SINE_CHILD_GRAMMAR_TIMING.md) | Maintained technical chapter |
-| [Acquired-child THOL and word completion](nodal/SINE_CHILD_THOL_ADMISSION.md) | Maintained technical chapter |
 | [Stationary geometry of the proposed UM successor](nodal/SINE_SUCCESSOR_STATIONARY_GEOMETRY.md) | Maintained technical chapter |
 | [Principal-chamber minimum exclusion](nodal/SINE_SUCCESSOR_PRINCIPAL_REDUCTION.md) | Maintained technical chapter |
 | [Successor motion and sufficient state](nodal/SINE_SUCCESSOR_NONSTATIONARY.md) | Maintained technical chapter |
@@ -360,7 +351,6 @@ ownership. The catalog and compatibility routes below are generated.
 | Chapter | Source |
 | --- | --- |
 | [Variational and exchange models](TNFR_VARIATIONAL_PRINCIPLE.md) | Maintained technical chapter |
-| [Dissipative/open-system models](DISSIPATIVE_AND_OPEN_SYSTEMS.md) | Maintained technical chapter |
 | [Gauge and polarization constructions](GAUGE_SYMMETRY_AND_UNIFICATION.md) | Maintained technical chapter |
 | [Physical correspondence atlas and emergence boundaries](PHYSICAL_REGIME_CORRESPONDENCES.md) | Maintained technical chapter |
 
@@ -370,26 +360,14 @@ ownership. The catalog and compatibility routes below are generated.
 | --- | --- |
 | [Number theory](TNFR_NUMBER_THEORY.md) | Maintained technical chapter |
 | [Structural observability — R1](TNFR_STRUCTURAL_OBSERVABILITY.md) | Maintained technical chapter |
-| [Arithmetic dynamics — R2](TNFR_ARITHMETIC_DYNAMICS.md) | Maintained technical chapter |
-| [CRT composition — R3](TNFR_CRT_FRACTALITY.md) | Maintained technical chapter |
-| [p-adic dynamics — R4](TNFR_PADIC_DYNAMICS.md) | Maintained technical chapter |
-| [Algebraic number fields — R5](TNFR_ALGEBRAIC_NUMBER_FIELDS.md) | Maintained technical chapter |
-| [Additive dynamics — R6](TNFR_ADDITIVE_DYNAMICS.md) | Maintained technical chapter |
-| [Arithmetic pressure — R7](TNFR_ARITHMETIC_PRESSURE.md) | Maintained technical chapter |
-| [Arithmetic operators — R8](TNFR_ARITHMETIC_OPERATORS.md) | Maintained technical chapter |
 | [Riemann scope](TNFR_RIEMANN_RESEARCH_NOTES.md) | Maintained technical chapter |
 
 ## Research, measurement and parked evidence
 
 | Chapter | Source |
 | --- | --- |
-| [Passive transport protocol](research/PASSIVE_TRANSPORT_PROTOCOL.md) | Maintained technical chapter |
-| [Regional phase/amplitude protocol](research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md) | Maintained technical chapter |
 | [Chemical observation and predictive information](research/CHEMICAL_OBSERVATION_ADMISSION.md) | Maintained technical chapter |
 | [Physical admission of the delayed digital-PLL realization](research/DPLL_PHYSICAL_ADMISSION.md) | Maintained technical chapter |
-| [TCLab comparison boundary](research/TCLAB_EXPLORATORY_PROTOCOL.md) | Maintained technical chapter |
-| [Parked C6 evidence boundary](C6_RESEARCH_MECHANISM_AUDIT.md) | Maintained technical chapter |
-| [Relative-coupling observation admission](research/RELATIVE_COUPLING_PROBE.md) | Maintained technical chapter |
 
 ## Research navigation
 

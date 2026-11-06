@@ -552,11 +552,11 @@ The first reserved evaluation returned
 passed. The count comprises sixteen reference-history conditions,
 forty-three for each variable-clock history, one shared-source condition,
 one paired-curvature condition and eight companion-clock conditions.
-The [protocol](../../docs/assets/sine_formed_classes/clock-drift-inference-v1.protocol.json),
-[source archive](../../docs/assets/sine_formed_classes/clock-drift-inference-v1.source.zip),
-[attempt](../../docs/assets/sine_formed_classes/clock-drift-inference-v1.attempt.json),
-[response](../../docs/assets/sine_formed_classes/clock-drift-inference-v1.json)
-and [manifest](../../docs/assets/sine_formed_classes/clock-drift-inference-v1.manifest.json)
+The [protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/clock-drift-inference-v1.protocol.json),
+[source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/clock-drift-inference-v1.source.zip),
+[attempt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/clock-drift-inference-v1.attempt.json),
+[response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/clock-drift-inference-v1.json)
+and [manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/clock-drift-inference-v1.manifest.json)
 preserve that first outcome. The prospective statements above retain their
 pre-evaluation wording; no retry, altered budget or older producer replay
 was used.
@@ -630,7 +630,7 @@ The archived prospective owner contains **25,898 bytes**, with SHA-256
 Those bytes remain the unchanged prefix of this owner, modulo checkout
 newline conversion. Hashes associate retained records; they do not
 independently authenticate chronology, execution or physical acquisition.
-The [read-only evidence audit](../../tests/physics/test_sine_clock_drift_evidence.py)
+The [read-only evidence audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_sine_clock_drift_evidence.py)
 rebuilds the exposure, transfer, certificate and inverse arithmetic without
 rerunning any producer, inverse or archived worker. The
 [execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)

@@ -4,25 +4,16 @@
 # Their manifests authenticate raw bytes, including recorded line endings.
 docs/assets/** -text -whitespace
 theory/research/archive/** -text -whitespace
-applications/factorization-lab/** -text -whitespace
-applications/primality-test/archive/** -text -whitespace
 # Foundation readiness receipts bind these exact bytes across platforms.
 theory/nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-theory/research/ORGANIZED_ELECTRICAL_FEASIBILITY.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-theory/research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 artifacts/** -text -whitespace
 # These maintained producer files still match their pinned raw-source receipts.
 src/tnfr/research/local_capacity_history.py -text
 src/tnfr/research/local_capacity_history_certificate.py -text
-build/organized-receiver-enclosure-freeze/evaluate_receiver.py -text
-build/organized-receiver-enclosure-freeze/freeze_receiver.py -text
 docs/assets/organized_alternative_contact/*.json -text
 docs/assets/organized_alternative_outer_acquisition/*.json -text
 docs/assets/organized_joint_resources/*.json -text
 docs/assets/organized_interface_factorization/*.json -text
-docs/assets/source_relative_form_response/producer.v1.py.txt -text -whitespace
-docs/assets/source_relative_form_response/result.prediction.json -text
-docs/assets/source_relative_form_response/result.json -text
 docs/assets/phase_form_exchange_comparison/result.prediction.json -text
 docs/assets/phase_form_exchange_comparison/result.json -text
 docs/assets/relational_capacity_response/result.prediction.json -text
@@ -42,101 +33,8 @@ docs/assets/relational_zero_form_response/result.json -text
 docs/assets/relational_zero_form_response/result.protocol.json -text
 docs/assets/relational_reversed_form_response/result.json -text
 docs/assets/relational_reversed_form_response/result.protocol.json -text
-docs/assets/relational_memory_response/result.prediction.json -text
-docs/assets/relational_memory_response/result.json -text
-docs/assets/relational_memory_response/result.sources.zip binary
 # This unchanged report uses CRLF; retain the bytes and ordinary space checks.
-docs/assets/sine_formed_classes/pair-v1.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/response-v1.json -text
-docs/assets/sine_formed_classes/maintenance-v1.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/maintenance-v1.protocol.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/maintenance-v1.source.zip binary
-docs/assets/sine_formed_classes/contact-v1.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/contact-v1.protocol.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/contact-v1.source.zip binary
-docs/assets/sine_formed_classes/reduced-ports-v1.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/reduced-ports-v1.protocol.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/reduced-ports-v1.source.zip binary
-docs/assets/sine_formed_classes/port-composition-v1.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/port-composition-v1.protocol.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/port-composition-v1.source.zip binary
-docs/assets/sine_formed_classes/port-relaxation-v1.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/port-relaxation-v1.protocol.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/port-relaxation-v1.source.zip binary
-docs/assets/sine_formed_classes/port-form-tracking-v1.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/port-form-tracking-v1.protocol.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/port-form-tracking-v1.source.zip binary
-docs/assets/sine_formed_classes/two-port-compatibility-v1.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/two-port-compatibility-v1.protocol.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/two-port-compatibility-v1.source.zip binary
-docs/assets/sine_formed_classes/two-port-capture-v1.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/two-port-capture-v1.protocol.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/two-port-capture-v1.source.zip binary
-docs/assets/sine_formed_classes/two-port-capture-v1.manifest.json -text
-docs/assets/sine_formed_classes/two-port-probe-v1.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/two-port-probe-v1.protocol.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/two-port-probe-v1.source.zip binary
-docs/assets/sine_formed_classes/two-port-probe-v1.first-attempt.json -text
-docs/assets/sine_formed_classes/two-port-probe-v1.manifest.json -text
-docs/assets/sine_formed_classes/two-port-probe-v1.export-recovery.py.txt -text
-docs/assets/sine_formed_classes/two-port-dipole-v1.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/two-port-dipole-v1.protocol.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/two-port-dipole-v1.manifest.json -text
-docs/assets/sine_formed_classes/two-port-dipole-v1.source.zip binary
-docs/assets/sine_formed_classes/two-port-inference-v1.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/two-port-inference-v1.protocol.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/two-port-inference-v1.manifest.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/two-port-inference-v1.source.zip binary
-docs/assets/sine_formed_classes/two-pulse-inference-v1.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/two-pulse-inference-v1.protocol.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/two-pulse-inference-v1.manifest.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/two-pulse-inference-v1.source.zip binary
-docs/assets/sine_formed_classes/curvature-inference-v1.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/curvature-inference-v1.protocol.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/curvature-inference-v1.manifest.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/curvature-inference-v1.attempt.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/curvature-inference-v1.source.zip binary
-docs/assets/sine_formed_classes/clock-drift-inference-v1.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/clock-drift-inference-v1.protocol.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/clock-drift-inference-v1.manifest.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/clock-drift-inference-v1.attempt.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/clock-drift-inference-v1.source.zip binary
-docs/assets/sine_formed_classes/aperture-inference-v1.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/aperture-inference-v1.protocol.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/aperture-inference-v1.manifest.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/aperture-inference-v1.attempt.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/aperture-inference-v1.source.zip binary
-docs/assets/sine_formed_classes/class-mediation-v1.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/class-mediation-v1.protocol.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/class-mediation-v1.manifest.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/class-mediation-v1.source.zip binary
-docs/assets/sine_formed_classes/class-nonlinear-readout-v1.protocol.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/class-nonlinear-readout-v1.freeze.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/class-nonlinear-readout-v1.source.zip binary
-docs/assets/sine_formed_classes/class-nonlinear-readout-v1.attempt.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/class-nonlinear-readout-v1.response.zip binary
-docs/assets/sine_formed_classes/class-cubic-response-v1.evidence.zip binary
-docs/assets/sine_formed_classes/class-spatial-observation-v1.evidence.zip binary
-docs/assets/sine_formed_classes/class-comparison-readout-v1.protocol.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/class-comparison-readout-v1.freeze.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/class-comparison-readout-v1.source.zip binary
-docs/assets/sine_formed_classes/class-comparison-readout-v1.attempt.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
-docs/assets/sine_formed_classes/class-comparison-readout-v1.response.zip binary
-docs/assets/sine_formed_classes/class-collective-prediction-v1.design.json -text
-docs/assets/sine_formed_classes/class-collective-prediction-v1.evidence.zip binary
-docs/assets/sine_formed_classes/class-collective-forward-v1.protocol.json -text
-docs/assets/sine_formed_classes/class-collective-forward-v1.freeze.json -text
-docs/assets/sine_formed_classes/class-collective-forward-v1.source.zip binary
-docs/assets/sine_formed_classes/class-collective-forward-v1.attempt.json -text
-docs/assets/sine_formed_classes/class-collective-forward-v1.response.zip binary
-docs/assets/sine_formed_classes/class-neighbor-forward-v1.protocol.json -text
-docs/assets/sine_formed_classes/class-neighbor-forward-v1.freeze.json -text
-docs/assets/sine_formed_classes/class-neighbor-forward-v1.source.zip binary
-docs/assets/sine_formed_classes/class-neighbor-forward-v1.attempt.json -text
-docs/assets/sine_formed_classes/class-neighbor-forward-v1.response.zip binary
 docs/assets/sine_formed_classes/organized-receiver-enclosure-v1*.json -text
-docs/assets/sine_formed_classes/organized-receiver-enclosure-v1.source.zip binary
-docs/assets/sine_formed_classes/organized-receiver-enclosure-v1.response.zip binary
 docs/assets/sine_formed_classes/organized-receiver-enclosure-v1.steps/*.json -text
 theory/research/archive/EXECUTION_PLAN_PRE_FOUR_FOUNDATIONS_2026-09-26.txt -text -whitespace
 theory/research/archive/PORTFOLIO_PRE_FOUR_FOUNDATIONS_2026-09-26.txt -text -whitespace
@@ -151,7 +49,6 @@ theory/research/archive/AGENT_SYNTHESIS_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt
 theory/research/archive/NUCLEUS_B_PROPOSAL_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt -text -whitespace
 theory/research/archive/README_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt -text -whitespace
 theory/research/archive/APPLIED_ANALYSIS_PRE_DOCUMENTATION_CLEANUP_2026-09-19.txt -text -whitespace
-applications/factorization-lab/notebooks/archive/spectral_history_legacy_2026_09_19.ipynb -text -whitespace
 docs/assets/organized_electrical_source/*.json -text
 docs/assets/organized_electrical_actuation/*.json -text
 docs/assets/organized_finite_observation/*.json -text
@@ -165,6 +62,4 @@ docs/assets/organized_robust_current/*.json -text
 docs/assets/organized_law_contrast_kernels/*.json -text
 docs/assets/organized_law_record_separation/*.json -text
 docs/assets/localized_mobile_interaction/*.json -text
-docs/assets/localized_mobile_interaction/protocol-proof.md -text
-docs/assets/localized_mobile_interaction/source.zip binary
 theory/research/archive/DEVELOPMENT_LOG_PRE_0.0.3.6_2026-09-19.txt -text -whitespace

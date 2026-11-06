@@ -3,7 +3,7 @@
 <a id="mixed-regional-loop"></a>
 ## 1. One unchanged pair and a new observation question
 
-The [conditional pair identity](ORGANIZED_COMPOSITE_RELAXATION.md#mixed-pair-identity)
+The [conditional pair identity](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/ORGANIZED_COMPOSITE_RELAXATION.md#mixed-pair-identity)
 retains four nine-cycle regions, their marked relations and the original
 source association under a supplied dissipative law. This chapter asks
 whether the phases of their actual contact coefficients factor through one
@@ -15,7 +15,7 @@ No new preparation, topology, contact, source replay or trajectory is supplied.
 The two acquired preparations, all held unequal conductances, unit capacities,
 phase lifts, source-correlated initialization and previously paid attachment
 work remain those of the linked source. Time is the retained structural clock
-\(\tau=(1023/1024)t\). The [phase-sensitive interface](ORGANIZED_COMPOSITE_RELAXATION.md#mixed-phase-sensitive-interface)
+\(\tau=(1023/1024)t\). The [phase-sensitive interface](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/ORGANIZED_COMPOSITE_RELAXATION.md#mixed-phase-sensitive-interface)
 owns the full seventy-two rows and the attachment accounting.
 
 Write the regions as \(D_A,D_B,R_A,R_B\), each of size nine. Let \(H\) be the
@@ -162,7 +162,7 @@ The matching linear term also vanishes by regional centering. No claim that
 the internal imaginary remainder is cubic is needed: its quadratic
 cross-profile term can be nonzero, as section 6 demonstrates.
 
-The [marked-identity comparison](ORGANIZED_COMPOSITE_RELAXATION.md#mixed-marked-identity)
+The [marked-identity comparison](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/ORGANIZED_COMPOSITE_RELAXATION.md#mixed-marked-identity)
 retains an analytical regional reference driven by the same actual
 \(\psi(\tau)\). Its original-source estimate is
 \(\sqrt{\|e_x\|^2+4\|e_y\|^2}\le B_{\rm diff}\) for all postattachment ages.

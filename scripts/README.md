@@ -73,7 +73,6 @@ retained; the parent directory is not a disposable output.
 | --- | --- |
 | `rebuild_failure_manifest.py` | Recover the latest failure record per integer input from an explicitly selected artifact directory; validate inputs before replacing the index. |
 | `replay/register_manifest.py` | Register replay metadata for a stored run. |
-| `run_localized_mobile_response.py` | Inspect the declared mobile-pair response lifecycle; freezing and evaluation belong to its [single reserved protocol](../theory/nodal/LOCALIZED_MOBILE_RESPONSE.md), not routine verification. |
 | `restore_frozen_source.py` | Inspect a supported freeze against its complete Git base; optionally restore verified supplements in a new detached worktree, without executing archived code. |
 | `run_self_optimization.py` | Execute the manifest-driven self-optimization workflow. |
 | `run_self_opt_validation.py` | Run current-code regression suites selected by recommendation operation type; it does not apply or evaluate the recommendations. |

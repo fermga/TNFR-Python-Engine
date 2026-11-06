@@ -450,7 +450,7 @@ JSON data without reconstructing a live execution.
 
 For experimental interpretation, the
 [research plan](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md) and
-[measurement protocol](../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md) remain
+[measurement protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/PASSIVE_TRANSPORT_PROTOCOL.md) remain
 the owners of hypothesis selection, calibration and reserved evaluation.
 Exporting a study does not by itself satisfy those scientific admission gates.
 

@@ -747,11 +747,11 @@ The first reserved evaluation returned
 `certified_reserved_aperture_inference`: all **139 fixed conditions**
 passed. These comprise twenty-five reference-history conditions, fifty-six
 for each actual clock, the shared source admission and the paired curvature
-ordering. The [protocol](../../docs/assets/sine_formed_classes/aperture-inference-v1.protocol.json),
-[source archive](../../docs/assets/sine_formed_classes/aperture-inference-v1.source.zip),
-[attempt](../../docs/assets/sine_formed_classes/aperture-inference-v1.attempt.json),
-[response](../../docs/assets/sine_formed_classes/aperture-inference-v1.json)
-and [manifest](../../docs/assets/sine_formed_classes/aperture-inference-v1.manifest.json)
+ordering. The [protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/aperture-inference-v1.protocol.json),
+[source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/aperture-inference-v1.source.zip),
+[attempt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/aperture-inference-v1.attempt.json),
+[response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/aperture-inference-v1.json)
+and [manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/aperture-inference-v1.manifest.json)
 retain the first outcome. The prospective statements above remain unchanged.
 
 Exactly three forward calls completed all twelve prescribed
@@ -807,7 +807,7 @@ Its prospective theorem contains **34,149 bytes**, with SHA-256
 Those bytes remain this owner's unchanged prefix, modulo checkout newline
 conversion. Hashes associate retained bytes and declared execution; they
 do not independently authenticate chronology or physical acquisition.
-The [read-only audit](../../tests/physics/test_sine_aperture_evidence.py)
+The [read-only audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_sine_aperture_evidence.py)
 rebuilds retained arithmetic and associations without another forward or
 inverse evaluation.
 

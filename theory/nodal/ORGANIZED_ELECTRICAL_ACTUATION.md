@@ -246,7 +246,7 @@ The [pulse and admission owner](../../src/tnfr/physics/_organized_electrical_act
 admits represented-real primitives before arithmetic, evaluates the neutral
 waveform and bounds the full source. It reuses the original recovery,
 outer-acquisition and hidden-transport owners without changing frozen
-producers. The [single-assessment driver](../../benchmarks/organized_electrical_actuation.py)
+producers. The [single-assessment driver](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/benchmarks/organized_electrical_actuation.py)
 uses the shared exclusive source/configuration receipt lifecycle.
 The [independent controls](../../tests/physics/test_organized_electrical_actuation.py)
 exercise algebra, full balances, invalid domains and synthetic source failures;
@@ -269,12 +269,12 @@ the very state evolution established here.
 
 Declaration, consuming source and driver were committed at
 `9488f528226679b649724634ff950a917c57fb5f` before the single assessment.
-The preserved [attempt](../../docs/assets/organized_electrical_actuation/attempt.json)
-and [result](../../docs/assets/organized_electrical_actuation/result.json)
+The preserved [attempt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_electrical_actuation/attempt.json)
+and [result](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_electrical_actuation/result.json)
 record one evaluation and verdict `finite_organized_electrical_actuation_admitted`.
 All twelve prerequisite flags, six source margins and ten decision margins
 pass. No source trajectory or physical experiment was evaluated.
-The [read-only evidence controls](../../tests/physics/test_organized_electrical_actuation_evidence.py)
+The [read-only evidence controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_organized_electrical_actuation_evidence.py)
 reconstruct source receipts, support, primitive bounds and the decision
 without executing the assessor again.
 

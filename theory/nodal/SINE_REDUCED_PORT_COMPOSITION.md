@@ -485,10 +485,10 @@ rate is \(-17/3\). Reusing denominator three gives middle rate
 evaluation. The control rejects incorrect contact normalization without
 claiming a new receiver-response observation.
 
-Retain the [frozen protocol](../../docs/assets/sine_formed_classes/port-composition-v1.protocol.json),
-[complete report](../../docs/assets/sine_formed_classes/port-composition-v1.json),
-[producing source archive](../../docs/assets/sine_formed_classes/port-composition-v1.source.zip)
-and [evidence manifest](../../docs/assets/sine_formed_classes/port-composition-v1.manifest.json).
+Retain the [frozen protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/port-composition-v1.protocol.json),
+[complete report](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/port-composition-v1.json),
+[producing source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/port-composition-v1.source.zip)
+and [evidence manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/port-composition-v1.manifest.json).
 The archive preserves this owner's pre-evaluation protocol and derivation;
 this retained-result section was added afterward. Exact arithmetic checks
 against the saved report confirmed primitive-input equality, the stated
@@ -501,7 +501,7 @@ The shared implementation exposes `evaluate_sine_port_composition` and
 The [contract](../../docs/contracts/relational/SINE_PATTERNS.md#sine-reduced-port-composition)
 and [usage guide](../../docs/guides/relational/SINE_PATTERNS.md#sine-reduced-port-composition)
 retain admission, availability and coordinate conventions. The independent
-[composition controls](../../tests/physics/test_sine_port_composition.py)
+[composition controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_sine_port_composition.py)
 check fine-node projection, mobility, storage/supply, origins, actual-family
 bounds and strict numerical boundaries; they do not replace the all-time
 proof or execute a trajectory.

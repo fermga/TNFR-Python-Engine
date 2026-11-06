@@ -64,7 +64,7 @@ ledger](NODAL_PARAMETER_FOUNDATIONS.md#2-parameter-and-dependency-ledger).
 |-------|-------------|--------|
 | **Arithmetic pressure** | Exact prime zero set for positive weights and genuine divisor/factor terms; numerical predicates retain their tolerance and representation limits | `src/tnfr/mathematics/arithmetic_pressure.py`, `src/tnfr/mathematics/number_theory.py`, `applications/primality-test/` |
 | **Residue-graph diagnostics** | Conditional Paley, CRT and cyclotomy results for the prescribed graph/operator; distinct from the lab pipeline | §§9.5–9.13 and their linked instruments |
-| **Archived factorization lab** | Historical spectral heuristics with arithmetic telemetry and fallbacks; known acceptance/completeness defects exclude its labels as factor certificates | [Archive scope](../applications/factorization-lab/README.md) |
+| **Archived factorization lab** | Historical spectral heuristics with arithmetic telemetry and fallbacks; known acceptance/completeness defects exclude its labels as factor certificates | [Archive scope](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/applications/factorization-lab/README.md) |
 | **Riemann program** | Declared arithmetic traces and finite pulse comparisons; historical prime-path prototype superseded | `src/tnfr/riemann/` |
 
 These layers reuse selected arithmetic functions, graph diagnostics and
@@ -240,7 +240,7 @@ compute the arithmetic statistics needed by the descriptor.
 | Standalone `sieve_primes(N)` | Classical sieve marking followed by pressure recomputation for each prime candidate. The sieve's $O(N\log\log N)$ marking bound alone does not bound the complete method. |
 | Core arithmetic network | Prime-factor table and assigned arithmetic coordinates (§2.2), plus the cost of constructing the supplied graph and any requested fields. |
 | Numerical decisions | API-specific tolerances and cuts (§5.5); changing them can change classification without changing the exact theorem. Float conversion, range and arithmetic representability retain separate obligations. |
-| Maintained controls | The standalone [installation checks](../applications/primality-test/test_installation.py) include `validate_tnfr_theory(100)` and selected cases. The [exact arithmetic owner](TNFR_ARITHMETIC_PRESSURE.md) supplies rational identities and independent channel controls. Finite passes do not establish universal software accuracy. |
+| Maintained controls | The standalone [installation checks](../applications/primality-test/test_installation.py) include `validate_tnfr_theory(100)` and selected cases. The [exact arithmetic owner](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/TNFR_ARITHMETIC_PRESSURE.md) supplies rational identities and independent channel controls. Finite passes do not establish universal software accuracy. |
 
 ---
 
@@ -316,7 +316,7 @@ positive weights and genuine arithmetic terms; the parameter dataclass does
 not enforce those premises. Unit defaults do not make the chosen scalar
 aggregation necessary or complete. Each channel already characterizes primes;
 their separate functional independence and redundancy for primality are proved
-in the [arithmetic-pressure owner](TNFR_ARITHMETIC_PRESSURE.md).
+in the [arithmetic-pressure owner](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/TNFR_ARITHMETIC_PRESSURE.md).
 
 `ArithmeticTNFRFormalism.prime_certificate` evaluates supplied terms under its
 tolerance. It does not independently establish that those terms belong to the
@@ -370,7 +370,7 @@ Measures the **deviation of the divisor sum ratio from the prime pattern**. This
 
 ### 6.2 Component Independence
 
-The three pressure channels are **functionally linearly independent** — no linear (or affine) combination reproduces a third for all $n$. This is proved **exactly over $\mathbb{Q}$** from the witness points $p^2 \mapsto (1, 1, 1/p)$ and $pq \mapsto (1, 2, 1/p + 1/q)$ (`prove_functional_independence`; the $3\times 3$ witness matrix has exact rank 3). They therefore form a **linearly-independent diagnostic profile** of compositeness through $\Omega$, $\tau$, $\sigma$ — **not** a minimal or complete basis: the set is *redundant* for primality (each channel alone is zero iff $n$ is prime, so one channel already suffices), and structural completeness (that no fourth independent pressure degree is relevant) is **unproven**. See [TNFR_ARITHMETIC_PRESSURE.md](TNFR_ARITHMETIC_PRESSURE.md) (R7, NT-P07) for the independence proof, the redundancy result, and the closed fourth-channel gate.
+The three pressure channels are **functionally linearly independent** — no linear (or affine) combination reproduces a third for all $n$. This is proved **exactly over $\mathbb{Q}$** from the witness points $p^2 \mapsto (1, 1, 1/p)$ and $pq \mapsto (1, 2, 1/p + 1/q)$ (`prove_functional_independence`; the $3\times 3$ witness matrix has exact rank 3). They therefore form a **linearly-independent diagnostic profile** of compositeness through $\Omega$, $\tau$, $\sigma$ — **not** a minimal or complete basis: the set is *redundant* for primality (each channel alone is zero iff $n$ is prime, so one channel already suffices), and structural completeness (that no fourth independent pressure degree is relevant) is **unproven**. See [TNFR_ARITHMETIC_PRESSURE.md](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/TNFR_ARITHMETIC_PRESSURE.md) (R7, NT-P07) for the independence proof, the redundancy result, and the closed fourth-channel gate.
 
 ### 6.3 Structural Pressure Landscape
 
@@ -567,7 +567,7 @@ Every claimed proper factor needs `1 < d < n` and `n % d == 0`.
 <a id="92-spectral-paley-jacobi-method"></a>
 ### 9.2 Spectral Paley-Jacobi scope
 
-The [archive scope](../applications/factorization-lab/README.md)
+The [archive scope](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/applications/factorization-lab/README.md)
 owns graph/modulus selection, combinatorial versus normalized spectra,
 capacity/time conversion, noncanonical field proxies and the partition
 attenuation surrogate. Its recorded operator labels are not a graph-owned
@@ -578,7 +578,7 @@ per-node information.
 <a id="93-structural-verification-criteria"></a>
 ### 9.3 Configured verification
 
-The [archived result boundary](../applications/factorization-lab/README.md#results-and-verification)
+The [archived result boundary](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/applications/factorization-lab/README.md#results-and-verification)
 distinguishes heuristic acceptance from arithmetic divisibility. Thresholds,
 coverage and endorsement cuts are configured filters, not mathematical factor
 certificates or constants derived from the nodal identity. Concrete acceptance
@@ -588,7 +588,7 @@ record; the source is outside maintained application verification.
 <a id="94-pure-mode"></a>
 ### 9.4 Partial pure-mode policy
 
-The [candidate policy](../applications/factorization-lab/README.md#candidate-policy-and-configuration)
+The [candidate policy](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/applications/factorization-lab/README.md#candidate-policy-and-configuration)
 states which arithmetic inputs and fallbacks remain active. Pure mode is not
 an arithmetic-free pipeline. Comparisons must retain those dependencies,
 actual operator execution and reserved-evaluation provenance.
@@ -863,7 +863,7 @@ The pure-EPI heat response is
 $h(t)=e_o^*e^{-\nu_f L t}e_o$. On pointed circulants its visible recurrence
 order equals the number of distinct eigenvalues because every spectral
 projector has weight $m_\lambda/n$. This exact scope is developed in
-[TNFR_ARITHMETIC_DYNAMICS.md](TNFR_ARITHMETIC_DYNAMICS.md).
+[TNFR_ARITHMETIC_DYNAMICS.md](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/TNFR_ARITHMETIC_DYNAMICS.md).
 
 The separately chosen conservative graph wave uses $\omega_k=\sqrt{\lambda_k}$
 only on its nonnegative self-adjoint domain. Its second-order law is not
@@ -984,8 +984,8 @@ Structural triad: $\mathrm{EPI}(30) \approx 7.48$, $\nu_f(30) \approx 2.15$, $C_
 | **Prime-ladder Hamiltonian** | `src/tnfr/riemann/prime_ladder_hamiltonian.py` | Canonical $\nu_f$ prime-ladder (P14) |
 | **Canonical constants (repo)** | `src/tnfr/constants/canonical.py` | Repository-wide canonical constant definitions |
 
-The [factorization archive](../applications/factorization-lab/README.md) and
-[advanced primality recovery](../applications/primality-test/archive/README.md)
+The [factorization archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/applications/factorization-lab/README.md) and
+[advanced primality recovery](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/applications/primality-test/archive/README.md)
 preserve retired implementation scope. They are not alternative core owners.
 
 The primitive-root, Dirichlet-character, Gauss-sum and `AdelicOperator`
@@ -1089,7 +1089,7 @@ residue-graph/CRT proofs do not provide that evidence for the archived pipeline.
 - [UNIFIED_GRAMMAR_RULES.md](UNIFIED_GRAMMAR_RULES.md) — U1-U6 grammar derivations
 - [STRUCTURAL_OPERATORS.md](STRUCTURAL_OPERATORS.md) — 13 canonical operators with tetrad synergies
 - [STRUCTURAL_CONSERVATION_THEOREM.md](STRUCTURAL_CONSERVATION_THEOREM.md) — Conservation laws
-- [Factorization archive](../applications/factorization-lab/README.md) — Retired candidate policies, known counterexamples and evidence recovery
+- [Factorization archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/applications/factorization-lab/README.md) — Retired candidate policies, known counterexamples and evidence recovery
 - [TNFR_RIEMANN_RESEARCH_NOTES.md](TNFR_RIEMANN_RESEARCH_NOTES.md) — Current arithmetic comparison scope and unresolved RH/Hilbert–Pólya boundary
 - [STRUCTURAL_FIELDS_TETRAD.md](../docs/STRUCTURAL_FIELDS_TETRAD.md) — Structural-field definitions, scale conventions and estimator provenance
 - [GLOSSARY.md](GLOSSARY.md) — Operational definitions

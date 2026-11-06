@@ -5,7 +5,7 @@
 ## Status and responsibility
 
 This owner specifies one complete collective comparison for the foundational
-question raised by the [physical feasibility review](../research/ORGANIZED_ELECTRICAL_FEASIBILITY.md).
+question raised by the [physical feasibility review](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/ORGANIZED_ELECTRICAL_FEASIBILITY.md).
 The law below is a supplied constitutive choice. Its balance and coordinate
 identities are conditional algebra. The [prepared-reference theorem](#prepared-matrix-response-result)
 adds own-law identity retention, a finite response separation and a precise
@@ -71,7 +71,7 @@ only the form row in these coordinates. This differs from the
 [phase-dependent diagonal reciprocal mobility](SINE_PAIR_MOBILITY.md), which
 changes both rows and keeps another storage. Its proofs do not transfer.
 
-The [electrical audit](../research/ORGANIZED_ELECTRICAL_FEASIBILITY.md#organized-electrical-physical-admission)
+The [electrical audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/ORGANIZED_ELECTRICAL_FEASIBILITY.md#organized-electrical-physical-admission)
 motivates (1) through an additional positive ring capacitance, with
 r=c_J/c. That motivation does not force this law on arbitrary NFRs or
 provide a fine-node electrical realization. In particular, replacing L
@@ -188,7 +188,7 @@ boundary information. Events additionally require the existing
 [operator descent criterion](../STRUCTURAL_OPERATORS.md#collective-operator-descent).
 
 This comparison installs no execution law, SDK method or operator.
-The [independent algebra controls](../../tests/physics/test_organized_effective_law.py)
+The [independent algebra controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_organized_effective_law.py)
 check (1)-(5), the r=0 boundary and deliberate wrong-chart/input controls.
 They evaluate no reserved response. Exact matrix calculations reuse
 [shared linear algebra](../../src/tnfr/mathematics/_exact_linear_algebra.py).
@@ -429,7 +429,7 @@ The [shared C5 preparation owner](../../src/tnfr/physics/_organized_c5_preparati
 evaluates (8) and supplies this collar's radius and barrier to the unloaded,
 loaded-sensor and recovery consumers. It admits primitive budgets without
 inferring that a supplied state belongs to the preparation.
-The [independent controls](../../tests/physics/test_organized_effective_law.py)
+The [independent controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_organized_effective_law.py)
 use edge-built matrices, symbolic polynomial identities, direct sine sums,
 boundary coercivity and deliberate loss of admission. They preserve the
 existing frozen evidence and execute no reserved response.

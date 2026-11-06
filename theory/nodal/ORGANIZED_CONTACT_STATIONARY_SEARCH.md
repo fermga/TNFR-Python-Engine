@@ -202,10 +202,10 @@ representative can be translated to any retained common phase mean.
 
 The declaration and instrument were frozen in
 `75497035c5e0840b164897119ce5a50dcf6bda91` before their single execution.
-The [attempt record](../../docs/assets/organized_contact_stationary/search-v1/attempt.json)
+The [attempt record](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_contact_stationary/search-v1/attempt.json)
 retains source revision/blobs, numeric backend, the ordered support and branch
 vector. The same directory preserves all 24 exact binary64 starts and
-endpoints. The [outcome](../../docs/assets/organized_contact_stationary/search-v1/outcome.json)
+endpoints. The [outcome](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_contact_stationary/search-v1/outcome.json)
 is `finite_search_without_certificate`.
 
 All 24 SLSQP calls returned a success label for their constrained

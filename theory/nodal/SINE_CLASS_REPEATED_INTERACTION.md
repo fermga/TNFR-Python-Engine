@@ -443,7 +443,7 @@ The [independent controls](../../tests/physics/test_sine_class_repeated_interact
 check the actual graph and metric, carried event work, return arithmetic,
 mean counterexample and exact error margins. Their retained-response
 association uses the existing
-[read-only comparison audit](../../tests/physics/test_sine_class_comparison_evidence.py)
+[read-only comparison audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_sine_class_comparison_evidence.py)
 to reconstruct (21) from frozen complete histories. Stored derivative
 and Picard generation remain explicit numerical premises; this
 arithmetic audit neither regenerates them nor evaluates a new response.

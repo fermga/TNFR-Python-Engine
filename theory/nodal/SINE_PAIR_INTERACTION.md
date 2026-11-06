@@ -256,7 +256,7 @@ It does not assert internal waveform stability or a return deadline.
 Capacity changes also reweight the conserved form coordinate. For fine
 degrees `d_i` and post-AL form `x`, put `rho_i=d_i/nu_i`, `W=sum rho_i`
 and `M=rho^T*x/W`. Across SHA, the existing
-[moving-weight identity](FORCED_GEOMETRIC_IDENTITY.md#prescribed-capacity-and-event-mean-balance)
+[moving-weight identity](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#prescribed-capacity-and-event-mean-balance)
 gives
 
 \[
@@ -2688,7 +2688,7 @@ The [contract](../../docs/contracts/relational/SINE_PAIR_DYNAMICS.md#sine-pair-r
 and [independent controls](../../tests/physics/test_sine_pair_receiver_defect.py)
 own scalar admission, export, executable usage and checks. This is detached
 conditional robustness evidence; it installs no runtime source or controller.
-The [source-matching boundary](../research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#primitive-phase-information-boundary)
+The [source-matching boundary](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#primitive-phase-information-boundary)
 still requires independently established mappings, hidden-state treatment,
 residual bounds, preparation, sensor and clock models. The declared numerical
 budgets supply none of those physical identifications. Arbitrary coefficient

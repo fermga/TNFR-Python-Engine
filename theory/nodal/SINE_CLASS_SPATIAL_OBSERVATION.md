@@ -399,15 +399,15 @@ and [independent algebra controls](../../tests/physics/test_sine_class_spatial_o
 check full-state parity, receiver isolation, the class-blind heat limit,
 the first surviving time coefficient and the correlated error bound.
 
-The [compact evidence bundle](../../docs/assets/sine_formed_classes/class-spatial-observation-v1.evidence.zip)
+The [compact evidence bundle](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-spatial-observation-v1.evidence.zip)
 retains the prospective projection policy, first attempt, evaluated
 source, driver and exact 45,004-byte outcome. It references the
-[earlier full-coordinate coefficient evidence](../../docs/assets/sine_formed_classes/class-cubic-response-v1.evidence.zip)
+[earlier full-coordinate coefficient evidence](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-cubic-response-v1.evidence.zip)
 by exact member and bundle hashes rather than duplicating the large
 series. Both coefficient arrays were verified identical; the record
 does not treat their reuse as independent or previously unseen data.
 No new nonlinear trajectory or formation assessment was evaluated.
-The [read-only evidence audit](../../tests/physics/test_sine_class_spatial_evidence.py)
+The [read-only evidence audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_sine_class_spatial_evidence.py)
 reuses the original carried-coefficient reconstruction and rebuilds the
 spatial projection, source/remainder allowances and recording decisions.
 

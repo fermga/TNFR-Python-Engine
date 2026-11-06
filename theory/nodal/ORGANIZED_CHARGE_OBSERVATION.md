@@ -456,7 +456,7 @@ electrostatic law. Matching that static readout would give no independent
 discriminator; omitting phase from the full transport still fails (20).
 Physical charge, non-Ohmic materials, polarization state, memory, other laws
 and prepared subdomains remain open. The earlier
-[P2 and Volts decisions](../research/PASSIVE_TRANSPORT_PROTOCOL.md) retain
+[P2 and Volts decisions](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/PASSIVE_TRANSPORT_PROTOCOL.md) retain
 their distinct pure-EPI laws and failed source admissions. No archived
 response was replayed and no empirical dataset was admitted here.
 

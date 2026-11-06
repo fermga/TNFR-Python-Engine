@@ -84,7 +84,7 @@ The [retained May 2025 manuscript][grammar-source] has 378 physical pages,
 Its printed and physical page numbers coincide in the sections below.
 The recovery revision is `6e1ffb8ffbadb667b11230c6af9f670d5f9d48b7`, blob
 `7768e02c12e0db5395d5a99d0df67d6a4ac59098`. The
-[retirement record](research/archive/DEEP_CLEANUP_2026-10-06.json) preserves
+[retirement record](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/DEEP_CLEANUP_2026-10-06.json) preserves
 that source; retirement from the live theory tree does not discard its useful
 proposals. Current mathematical corrections retain their own owners.
 
@@ -112,7 +112,7 @@ proved invariants, executable contracts or observed physical effects.
 
 ### What the retained dynamical result does establish
 
-The [relative probe](research/RELATIVE_COUPLING_PROBE.md) executes
+The [relative probe](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/RELATIVE_COUPLING_PROBE.md) executes
 `AL → SHA` under explicitly declared `core` admission. It fails the literal
 required-development slot on page 135 and blanket stabilizer rule on page 137;
 the explicitly selected `legacy` adjacency policy also rejects that pair. Its original

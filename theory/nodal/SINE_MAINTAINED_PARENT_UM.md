@@ -21,7 +21,7 @@ and maintenance coefficients do not transfer here.
 
 ## 1. Admitted source and analytical scope
 
-The [source consumer](../../src/tnfr/research/maintained_parent_um_source.py)
+The [source consumer](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/maintained_parent_um_source.py)
 verifies the existing THOL archive and response associations, reconstructs
 the original temporal certificate and re-admits the birth reset from
 primitive graphs. It retains node order, neighbor order, aliases, all 45
@@ -214,10 +214,10 @@ the stationary problem; it proves neither existence nor capture of the
 predicted source. Full edge branches, not just selected winding summaries,
 must define any successor chamber.
 
-Verification uses [source controls](../../tests/research/test_maintained_parent_um_source.py),
-[selection controls](../../tests/research/test_maintained_parent_um.py),
+Verification uses [source controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_parent_um_source.py),
+[selection controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_parent_um.py),
 [work/identity controls](../../tests/research/test_maintained_parent_um_work.py)
-and an [independent high-precision comparison](../../tests/research/test_maintained_parent_um_evidence.py).
+and an [independent high-precision comparison](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_parent_um_evidence.py).
 The latter checks all candidates, the complete reset, all old/new edge work,
 fresh rows and marked geometry while forbidding proposals, execution and
 numerical flow. The retained THOL and history artifacts remain unchanged.
@@ -227,16 +227,16 @@ by these analytical controls.
 <a id="maintained-um-transaction-result"></a>
 ## 5. Single runtime attempt, rollback and guard correction
 
-The [protocol](../../docs/assets/maintained_parent_um_execution/protocol.json)
-and [primitive source with predictions](../../docs/assets/maintained_parent_um_execution/source.json)
-were [frozen](../../docs/assets/maintained_parent_um_execution/freeze.json)
+The [protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_um_execution/protocol.json)
+and [primitive source with predictions](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_um_execution/source.json)
+were [frozen](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_um_execution/freeze.json)
 with all 820 Python/configuration/instrument source members before one
-[attempt](../../docs/assets/maintained_parent_um_execution/attempt.json).
+[attempt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_um_execution/attempt.json).
 It requested one canonical parent-2 stage in the unchanged core context,
 with seed 17, default all-candidate selection and structural time `7+2^-19`.
 No SHA, IL or continuous step was requested.
 
-The [raw callback record](../../docs/assets/maintained_parent_um_execution/raw-after.json)
+The [raw callback record](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_um_execution/raw-after.json)
 contains the predicted eight added edges and full represented reset. Its
 changed phase, capacity and conductance values satisfy the original
 `2^-40` farthest-endpoint error bound, and its primitive coordinates and
@@ -245,16 +245,16 @@ family. All 53 original branch labels match. Complete proposed storage
 work includes the old-edge phase changes and both new-edge contributions.
 This is a raw intermediate observation, not a committed successor.
 
-The [failure record](../../docs/assets/maintained_parent_um_execution/failure.json)
+The [failure record](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_um_execution/failure.json)
 shows that the callback's non-pressure-state guard rejected during refresh.
 The shared atomic stage rolled back: the
-[retained rollback endpoint](../../docs/assets/maintained_parent_um_execution/failure-endpoint.json)
+[retained rollback endpoint](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_um_execution/failure-endpoint.json)
 has exactly the frozen before state's typed persistent signature. The live
 source therefore retains its `VAL,THOL` prefix and isolated child. The raw
 `VAL,THOL,UM` history is evidence inside the aborted transaction only.
 There is no successful stage result, response or passing verdict to infer.
 
-The separate [detached diagnosis](../../docs/assets/maintained_parent_um_execution/diagnosis.json)
+The separate [detached diagnosis](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_um_execution/diagnosis.json)
 uses a restored copy of the raw record and the unchanged archived guard.
 It constructs the shared graph-owned cache manager and evaluates only the
 declared pressure map. The permitted maxima change from approximately
@@ -264,19 +264,19 @@ state and cache-owned payload remain unchanged, but the guard follows
 and signs those already-excluded maxima again. Restoring only the two
 permitted maxima restores the frozen signature. This identifies a recursive
 reference false rejection, not a forbidden form, phase, support or history
-write. The [refreshed copy](../../docs/assets/maintained_parent_um_execution/detached-refreshed.json)
+write. The [refreshed copy](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_um_execution/detached-refreshed.json)
 remains explicitly detached; it is not a recovered runtime commit.
 
-The current [execution owner](../../src/tnfr/research/maintained_parent_um_execution.py)
+The current [execution owner](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/maintained_parent_um_execution.py)
 uses the shared structural signature's opaque-reference option for the
 separately protected graph dictionary. Direct non-pressure state, active
 alias identity, inactive aliases and cache-owned payload remain protected.
-The separate [correction record](../../docs/assets/maintained_parent_um_execution/correction.json)
+The separate [correction record](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_um_execution/correction.json)
 binds its source and synthetic controls without replacing the failed producer.
-[Synthetic controls](../../tests/research/test_maintained_parent_um_execution.py)
+[Synthetic controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_parent_um_execution.py)
 cover valid refresh with a populated cache, forbidden cache-payload and
 state writes, typed metadata, durable raw recording and stale-source
-rejection. The [retained-evidence reader](../../tests/research/test_maintained_parent_um_execution_evidence.py)
+rejection. The [retained-evidence reader](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_parent_um_execution_evidence.py)
 rebuilds raw inclusion and rollback without replaying UM or the diagnosis.
 
 The original attempt remains failed and immutable. It establishes no
@@ -287,17 +287,17 @@ detached diagnostic copy into an execution result.
 <a id="maintained-um-committed-result"></a>
 ## 6. Committed UM and separate assessment correction
 
-The corrected [protocol](../../docs/assets/maintained_parent_um_corrected/protocol.json)
-and [source](../../docs/assets/maintained_parent_um_corrected/source.json)
-were independently [frozen](../../docs/assets/maintained_parent_um_corrected/freeze.json)
-before one [attempt](../../docs/assets/maintained_parent_um_corrected/attempt.json).
+The corrected [protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_um_corrected/protocol.json)
+and [source](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_um_corrected/source.json)
+were independently [frozen](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_um_corrected/freeze.json)
+before one [attempt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_um_corrected/attempt.json).
 Its 820-member source archive differs from the first attempt only in the
 documented runtime guard and the instrument that binds the correction.
 The scientific protocol, primitive preparation, predictions, default factors,
 seed, clock and numerical allowances are unchanged. All 689 prior frozen
 artifacts remain byte-identical.
 
-The [primitive response](../../docs/assets/maintained_parent_um_corrected/response.json)
+The [primitive response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_um_corrected/response.json)
 records a completed shared atomic UM stage, its durable raw reset and its
 pressure-refreshed endpoint. It has all 21 nodes, the unchanged 45 old edge
 payloads and exactly the eight predicted additions. Every form and excluded
@@ -307,7 +307,7 @@ capacity and new conductances satisfy the original farthest-endpoint
 debt and unchanged temporal history. The child has no invented temporal
 baseline; hierarchy and structural time remain unchanged.
 
-The original [assessment](../../docs/assets/maintained_parent_um_corrected/report.json)
+The original [assessment](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_um_corrected/report.json)
 remains **25/27**. Its two failed predicates are reader defects:
 
 - Every old-edge form-storage difference is exactly zero from unchanged
@@ -322,15 +322,15 @@ remains **25/27**. Its two failed predicates are reader defects:
   It continues to protect the flag across pressure refresh and rejects all
   unrelated context changes.
 
-A separate [review protocol](../../docs/assets/maintained_parent_um_corrected/review-protocol.json)
+A separate [review protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_um_corrected/review-protocol.json)
 archives the corrected reader and independent synthetic regressions before
-the [read-only review](../../docs/assets/maintained_parent_um_corrected/review.json).
+the [read-only review](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/maintained_parent_um_corrected/review.json).
 That review obtains **27/27** on the same primitive response, rebuilding
 state, full work, both continued rows, means and all branch labels. Only
 the two diagnosed predicates, their aggregate and the old-form/total-work
 enclosures change. The original report and response are not overwritten;
 neither an event nor a trajectory is repeated. The
-[retained-evidence controls](../../tests/research/test_maintained_parent_um_corrected_evidence.py)
+[retained-evidence controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_parent_um_corrected_evidence.py)
 independently check the corrections, source associations and exact endpoint
 inclusion, while forbidding producer execution.
 

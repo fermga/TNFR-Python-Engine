@@ -1819,7 +1819,7 @@ h=\dot Q/W=w\sigma/W.
 
 The weights are held, so `P^2=P`, `P*1=0` and `a^T*P=0`.
 Changing capacities, support, clock or inputs requires the separate
-[continuous/event accounting](FORCED_GEOMETRIC_IDENTITY.md#prescribed-capacity-and-event-mean-balance).
+[continuous/event accounting](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_GEOMETRIC_IDENTITY.md#prescribed-capacity-and-event-mean-balance).
 
 #### Exact relative equivalence and its retained reconstruction coordinate
 

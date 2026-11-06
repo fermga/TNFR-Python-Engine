@@ -542,12 +542,12 @@ alone owns the active status and later result closure.
 The first frozen evaluation returned `certified_reserved_inference` with
 all forty-three stopping conditions passing. No response was retried and
 no source, calibration, horizon, numerical budget or threshold was changed.
-The [saved record](../../docs/assets/sine_formed_classes/two-port-inference-v1.json)
+The [saved record](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-inference-v1.json)
 retains the three complete response certificates, public packets, inverse
 outputs and posterior audits. Its
-[protocol](../../docs/assets/sine_formed_classes/two-port-inference-v1.protocol.json),
-[source archive](../../docs/assets/sine_formed_classes/two-port-inference-v1.source.zip)
-and [manifest](../../docs/assets/sine_formed_classes/two-port-inference-v1.manifest.json)
+[protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-inference-v1.protocol.json),
+[source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-inference-v1.source.zip)
+and [manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-inference-v1.manifest.json)
 retain the preparation and producing implementation. The archived prospective
 proof has 23,649 bytes, with SHA-256
 `488c51e9adc0ecbbf2007cef4c113073e08c61222607cc7a72c8c7a5c630c50f`.

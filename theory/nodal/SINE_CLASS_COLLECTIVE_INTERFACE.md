@@ -455,7 +455,7 @@ does not evaluate a kernel or forward response.
 The [independent structural and budget controls](../../tests/physics/test_sine_class_collective_interface.py)
 check the complete partition, hidden modes, nonlinear recoupling,
 initialization bounds and simultaneous-event work. The
-[retained cubic evidence reader](../../tests/physics/test_sine_class_cubic_evidence.py)
+[retained cubic evidence reader](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_sine_class_cubic_evidence.py)
 reconstructs the existing coefficient enclosure and its association
 with (18)-(22), without regenerating coefficients or trajectories.
 Supplying a cubic interval to the private certificate remains

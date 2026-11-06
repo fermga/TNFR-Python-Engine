@@ -1,4 +1,4 @@
-.PHONY: help clean clean-caches disk-report test test-all examples docs docs-check all hello grammar sdk visualization lint format security security-audit security-setup dev-setup dev-test validate factorization-full-spectrum self-optimize self-optimize-validate
+.PHONY: help clean clean-caches disk-report test test-all examples docs docs-check all hello grammar sdk visualization lint format security security-audit security-setup dev-setup dev-test validate self-optimize self-optimize-validate
 
 SELF_OPT_MANIFEST ?= tests/data/self_optimization/test_run/_manifest.json
 SELF_OPT_MANIFEST_SUMMARY ?= tests/data/self_optimization/test_run/_manifest_summary.json
@@ -34,9 +34,6 @@ test:
 
 test-all:
 	@python -m pytest tests
-
-factorization-full-spectrum:
-	@python applications/factorization-lab/benchmarks/full_spectrum_factorization.py
 
 self-optimize:
 	@python scripts/run_self_optimization.py --manifest $(SELF_OPT_MANIFEST) --manifest-summary $(SELF_OPT_MANIFEST_SUMMARY) --output-dir $(SELF_OPT_OUTPUT) --summary $(SELF_OPT_SUMMARY)

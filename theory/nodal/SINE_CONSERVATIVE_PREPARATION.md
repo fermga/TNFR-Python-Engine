@@ -426,10 +426,10 @@ other preparations. The execution plan remains the sole task queue.
 ### Retained response: the directed checkpoint does not supply a zero-winding source
 
 The single evaluation retains its
-[declaration](../../docs/assets/conservative_reverse_preparation/declaration.json),
-[frozen protocol](../../docs/assets/conservative_reverse_preparation/response-v1.protocol.json),
-[source archive](../../docs/assets/conservative_reverse_preparation/response-v1.source.zip)
-and [response](../../docs/assets/conservative_reverse_preparation/response-v1.json).
+[declaration](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/conservative_reverse_preparation/declaration.json),
+[frozen protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/conservative_reverse_preparation/response-v1.protocol.json),
+[source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/conservative_reverse_preparation/response-v1.source.zip)
+and [response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/conservative_reverse_preparation/response-v1.json).
 The response has no evaluation error and covers all 256 steps through
 original time `128/5`. Its verdict is `no_certificate_on_declared_grid`.
 

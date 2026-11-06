@@ -28,6 +28,7 @@ from tnfr.dynamics.propagation import (
     resolve_dissonance_propagation_policy,
 )
 from tnfr.errors import TNFRValueError
+from tnfr.operators import network_stage
 from tnfr.operators._oz_config import OZStrictPolicy, resolve_oz_strict_policy
 from tnfr.operators.definitions import Dissonance, SelfOrganization, Silence
 from tnfr.operators.factor_contracts import resolve_runtime_operator_factors
@@ -42,10 +43,53 @@ from tnfr.operators.preconditions.self_organization import (
 )
 from tnfr.operators.word_execution import execute_network_operator_stage
 from tnfr.research.local_capacity_history import capture, refresh_pressure
-from tnfr.research.maintained_parent_um_execution import (
-    _pressure_preservation_signature,
-)
 from tnfr.types import Glyph
+from tnfr.utils._structural_signature import structural_proof_signature
+from tnfr.utils.cache import GRAPH_RUNTIME_CACHE_KEYS
+
+_PRESSURE_CACHE_KEYS = frozenset({"_dnfrmax", "_dnfrmax_node"})
+_STAGE_KEYS = frozenset(
+    {network_stage.STAGE_SCHEDULE_KEY, network_stage.STAGE_CONTRACT_KEY}
+)
+
+
+def _without(mapping, excluded):
+    return {key: value for key, value in mapping.items() if key not in excluded}
+
+
+def _write_alias(data, aliases):
+    """Match the shared setter's first-present key without mutating storage."""
+    return next((key for key in aliases if key in data), aliases[0])
+
+
+def _pressure_preservation_signature(graph, *, final_schedule=False, runtime=False):
+    """Sign everything except pressure aliases and explicitly permitted maxima."""
+    excluded = _PRESSURE_CACHE_KEYS
+    if final_schedule:
+        excluded |= _STAGE_KEYS
+    if not runtime:
+        excluded |= GRAPH_RUNTIME_CACHE_KEYS
+    state = (
+        tuple(graph._node),
+        tuple((node, tuple(neighbors)) for node, neighbors in graph._adj.items()),
+        tuple(
+            (
+                node,
+                _write_alias(data, ALIAS_DNFR),
+                _write_alias(data, ALIAS_DNFR) in data,
+                _without(data, {_write_alias(data, ALIAS_DNFR)}),
+            )
+            for node, data in graph._node.items()
+        ),
+        tuple(graph.edges(data=True)),
+        _without(graph.graph, excluded),
+        getattr(graph, "_last_operator_applied", None),
+    )
+    # The cache owner is signed directly above; traversing it again would
+    # reintroduce the excluded pressure maxima.
+    return structural_proof_signature(
+        state, opaque_references=(graph.graph,) if runtime else ()
+    )
 
 
 def _synthetic_graph(**settings):
@@ -79,12 +123,10 @@ def _synthetic_graph(**settings):
 @pytest.fixture(autouse=True)
 def no_retained_source_trajectory_or_thol(monkeypatch):
     from tnfr.dynamics import integrators
-    from tnfr.research import maintained_sha_motion_source
 
     def forbidden(*args, **kwargs):
         pytest.fail("synthetic OZ controls may not acquire a trajectory or child")
 
-    monkeypatch.setattr(maintained_sha_motion_source, "load_sha_successor", forbidden)
     monkeypatch.setattr(integrators, "rk4_coupled_step", forbidden)
     monkeypatch.setattr(SelfOrganization, "_prepare_execution", forbidden)
 

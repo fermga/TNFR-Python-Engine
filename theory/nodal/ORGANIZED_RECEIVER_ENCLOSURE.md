@@ -278,15 +278,15 @@ nonformation.
 <a id="organized-receiver-enclosure-result"></a>
 ## Evaluated result: loss of both donor identities
 
-The first response to the [frozen protocol](../../docs/assets/sine_formed_classes/organized-receiver-enclosure-v1.protocol.json)
+The first response to the [frozen protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/organized-receiver-enclosure-v1.protocol.json)
 certifies **whole-family donor loss**. The
-[response archive](../../docs/assets/sine_formed_classes/organized-receiver-enclosure-v1.response.zip)
+[response archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/organized-receiver-enclosure-v1.response.zip)
 preserves the first outcome JSON and every original step JSON byte-for-byte
 at their recorded repository-relative paths. Its outcome contains the complete
 source admission, ordered step manifest and terminal observation. This lossless
 transport does not replace or regenerate any evaluated value. The
-[freeze record](../../docs/assets/sine_formed_classes/organized-receiver-enclosure-v1.freeze.json)
-and [source archive](../../docs/assets/sine_formed_classes/organized-receiver-enclosure-v1.source.zip)
+[freeze record](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/organized-receiver-enclosure-v1.freeze.json)
+and [source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/organized-receiver-enclosure-v1.source.zip)
 preserve the evaluated implementation and policy. There were 76 accepted
 steps, with no refinement or retry. The declared donor-loss stopping rule
 ended the calculation at

@@ -186,7 +186,7 @@ remainder; and exact interval-product corners. Response wiring uses explicitly
 mocked polynomials and a zero curve, not the reserved integrand. It also checks
 that a positive computed value cannot bypass a failed numerical budget.
 
-The [one-shot driver](../../scripts/run_localized_mobile_response.py) uses the
+The [one-shot driver](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/scripts/run_localized_mobile_response.py) uses the
 shared exact artifact and strict JSON owners. A source archive and freeze are
 written before evaluation; an exclusive attempt precedes the scientific call.
 The first outcome, including failure, is retained. Archives associate declared
@@ -199,7 +199,7 @@ execution. The method was admitted before the reserved response below.
 The first assessment used the unchanged protocol, all 182 cubic output modes,
 12 Gauss nodes on each of 64 panels, and 128-bit outward arithmetic. The
 following decimals are deliberately rounded outwards from the exact rational
-[report](../../docs/assets/localized_mobile_interaction/report.json):
+[report](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/localized_mobile_interaction/report.json):
 
 | Quantity | Certified enclosure or upper bound |
 | --- | --- |
@@ -223,15 +223,15 @@ positive. The zero lower endpoint is not a witness of zero interaction for
 an admissible preparation. Neither acceptance level, source tolerance nor
 other frozen input was changed after evaluation.
 
-The [protocol](../../docs/assets/localized_mobile_interaction/protocol.json)
+The [protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/localized_mobile_interaction/protocol.json)
 pins the scientific admission to revision
 `14cbad44f92194774c4cd66a8763f2069c95270c`. The
-[manifest](../../docs/assets/localized_mobile_interaction/source-manifest.json),
-[source archive](../../docs/assets/localized_mobile_interaction/source.zip),
-[freeze](../../docs/assets/localized_mobile_interaction/freeze.json) and
-[exclusive attempt](../../docs/assets/localized_mobile_interaction/attempt.json)
+[manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/localized_mobile_interaction/source-manifest.json),
+[source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/localized_mobile_interaction/source.zip),
+[freeze](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/localized_mobile_interaction/freeze.json) and
+[exclusive attempt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/localized_mobile_interaction/attempt.json)
 retain the implementation and first outcome, based on source HEAD `a8c02f0b`.
-The [read-only evidence controls](../../tests/physics/test_localized_mobile_response_evidence.py)
+The [read-only evidence controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_localized_mobile_response_evidence.py)
 re-admit primitive inputs, rebuild analytical and quadrature budgets, and
 reconstruct Parseval intervals and verdicts from the retained spectral boxes.
 They forbid producer replay. These reductions are conditional on those boxes;

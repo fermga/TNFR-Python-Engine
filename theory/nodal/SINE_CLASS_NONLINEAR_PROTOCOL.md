@@ -715,12 +715,12 @@ retained.
 
 ### Retained bytes and read-only audit
 
-The [exclusive attempt ledger](../../docs/assets/sine_formed_classes/class-nonlinear-readout-v1.attempt.json)
-and [compressed response](../../docs/assets/sine_formed_classes/class-nonlinear-readout-v1.response.zip)
+The [exclusive attempt ledger](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-nonlinear-readout-v1.attempt.json)
+and [compressed response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-nonlinear-readout-v1.response.zip)
 are associated with the unchanged
-[protocol](../../docs/assets/sine_formed_classes/class-nonlinear-readout-v1.protocol.json),
-[source archive](../../docs/assets/sine_formed_classes/class-nonlinear-readout-v1.source.zip)
-and [freeze receipt](../../docs/assets/sine_formed_classes/class-nonlinear-readout-v1.freeze.json).
+[protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-nonlinear-readout-v1.protocol.json),
+[source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-nonlinear-readout-v1.source.zip)
+and [freeze receipt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-nonlinear-readout-v1.freeze.json).
 Compression changes only the transport: the ZIP contains the single member
 `class-nonlinear-readout-v1.json`, with the exact original response bytes.
 
@@ -730,7 +730,7 @@ Compression changes only the transport: the ZIP contains the single member
 | Response ZIP | 10,554,263 | `b2e96205ed6f185a1193e4a936735572be8f59fd9a585c13203d53309875fbc5` |
 | Uncompressed response member | 191,886,903 | `35c5c049dd00576f515a8ad3e63969a0bf9c12708ded9376beb7f48d7c9e9be2` |
 
-The [read-only evidence audit](../../tests/physics/test_sine_class_readout_evidence.py)
+The [read-only evidence audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_sine_class_readout_evidence.py)
 checks the outer and inner bytes, pinned source/protocol/attempt association,
 primitive source and held-law declarations, every retained step's arithmetic,
 full-state handoffs and events, both mixed constructions and the five

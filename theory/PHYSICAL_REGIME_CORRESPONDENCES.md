@@ -94,7 +94,7 @@ demonstrate atomic formation. In spectroscopy, retain the distinction between
 [observed and Ritz wavelengths](https://physics.nist.gov/PhysRefData/ASD/Html/lineshelp.html),
 laboratory and astronomical sources, and measured versus calculated strengths.
 
-Use the [existing oscillator-source inventory](research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#primitive-phase-information-boundary)
+Use the [existing oscillator-source inventory](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#primitive-phase-information-boundary)
 before reopening a data search. Choose a candidate for independently observable
 formation, persistence or response and discriminating predictions, not visual
 similarity. Published results are known constraints; reserve independent whole
@@ -115,7 +115,7 @@ and excluded oscillator bridges remain unchanged.
 
 | Reviewed case | Independently reported property | Bounded decision |
 | --- | --- | --- |
-| [Quartz resonators in one accelerometer](research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#quartz-observed-organization-admission) | Relative phase/frequency locking and perturbation response | Observational lead only; park until the same apparatus's sustaining/control law, joint readout and independent acquisitions are available. |
+| [Quartz resonators in one accelerometer](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#quartz-observed-organization-admission) | Relative phase/frequency locking and perturbation response | Observational lead only; park until the same apparatus's sustaining/control law, joint readout and independent acquisitions are available. |
 | [Photosensitive BZ scroll ring](https://arxiv.org/html/1406.5964v2#S2) | Maintained chemical wave source near a boundary after controlled initialization | Physical data admission remains open. The published reaction-diffusion model provides a concrete conditional state-sufficiency question. |
 | [Terrestrial hydrogen Balmer emission](https://www.nist.gov/publications/critical-compilation-experimental-data-spectral-lines-and-energy-levels-hydrogen) | Laboratory spectral-line positions | Retain as a future fundamental-property benchmark; no TNFR emission/detector bridge or reserved acquisition is admitted. |
 
@@ -196,7 +196,7 @@ of cards and prerequisites, not independently active campaigns.
 
 | Phenomenon | Present TNFR evidence and reusable owner | Missing bridge or limiting condition |
 | --- | --- | --- |
-| Diffusion / relaxation | **Exact conditional reduction:** isolated EPI transport and its [stability theorem](TNFR_DIFFUSION_STABILITY_THEOREM.md); separate [TCLab exploratory response](research/TCLAB_EXPLORATORY_PROTOCOL.md) | Measurement/clock and constitutive admission remain open; driven thermal input is not unforced diffusion. |
+| Diffusion / relaxation | **Exact conditional reduction:** isolated EPI transport and its [stability theorem](TNFR_DIFFUSION_STABILITY_THEOREM.md); separate [TCLab exploratory response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/TCLAB_EXPLORATORY_PROTOCOL.md) | Measurement/clock and constitutive admission remain open; driven thermal input is not unforced diffusion. |
 | Synchronization / Kuramoto-type dynamics | **Exact conditional observed-phase reduction and mode selection** in [derived form phase](nodal/DERIVED_FORM_PHASE.md#unequal-capacity-mode-selection-and-a-finite-phase-only-discriminator); supplied primitive-phase models are separate | Physical observation/clock map remains open; the admitted passive capacity family locks generically while fading, with no positive-capacity-ratio threshold. |
 | Josephson / superconductivity | **Constitutive comparison candidate:** sine interaction and phase-current readers are reusable algebra | Electrical current/voltage, gauge-invariant junction phase, storage/dissipation and a superconducting bridge are absent. |
 | Dynamical phase transitions | **Open model-specific test:** existing [restoration/response-slope criteria](CAPACITY_LOCALIZATION_BALANCE.md#8-a-local-form-capacity-relation-dissipation-and-restoration-criteria) | Select a complete law, control parameter and order parameter; distinguish bifurcation, finite crossover and thermodynamic transition. |
@@ -224,7 +224,7 @@ and the sole [execution plan](research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-g
 govern that distinction. The following are reusable mechanisms and tests,
 not established correspondences or independent research queues.
 
-The [oscillator preparation/readout admission](research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#rossler-phase-information-admission)
+The [oscillator preparation/readout admission](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#rossler-phase-information-admission)
 illustrates this requirement: documented support and repeated scalar recordings
 still need a justified state reduction, complete law and measurement model
 before they can discriminate the TNFR candidates.
@@ -386,7 +386,7 @@ now separates the fixed and doubled amplitudes under a declared joint
 uncertainty box, with each model's complete history bounded independently.
 The result concerns disjoint prospective record sets. Independent physical
 support for the preparation and measurement premises remains unestablished.
-The [independent feasibility review](research/ORGANIZED_ELECTRICAL_FEASIBILITY.md)
+The [independent feasibility review](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/ORGANIZED_ELECTRICAL_FEASIBILITY.md)
 finds no admitted apparatus in the reviewed sources: the endpoint-voltage
 method has a clock-independent precision/aperture demand, positive ring
 capacitance violates its exact matrix shape, and complete preparation is
@@ -896,10 +896,10 @@ acceleration is `-5*(nu_0-nu_1)^2/8`, while the frozen-ratio approximation
 predicts zero despite matching the initial relative angular velocity. The retained
 finite control separates these predictions without fitting a phase gain.
 This closes the first mathematical card. The
-[conditional measurement contract](research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md)
+[conditional measurement contract](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md)
 now specifies the spatial observation and uncertainty test, but admits none
 of the existing public sources for this directed law. The subsequent
-[six-study review](research/archive/measurement/TRANSPORT_SOURCE_REVIEWS.md#directed-source-decision-2026-09-26)
+[six-study review](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/measurement/TRANSPORT_SOURCE_REVIEWS.md#directed-source-decision-2026-09-26)
 also admits none; the exact-model physical test is parked. MOSTR is a deferred
 three-tank transport lead, not evidence of this phase mechanism. The primary
 [collective-emergence objective](EMERGENT_ONTOLOGY.md#research-target-physical-properties-of-collective-patterns)
@@ -1200,11 +1200,11 @@ physics as a limiting case remains unproved.
 | Current owner | Established contribution | Electromagnetic obligation still open |
 | --- | --- | --- |
 | [Restricted diffusion](TNFR_VARIATIONAL_PRINCIPLE.md#35-exact-restricted-dirichlet-balance), `physics/structural_diffusion.py` | Symmetric held conductance and positive capacity give a local weighted continuity equation and exact Dirichlet loss | Identification of that inventory with electric charge and with a Gauss-constrained dynamical flux |
-| [Maintained interacting pair](nodal/ORGANIZED_COMPOSITE_RELAXATION.md#mixed-pair-identity) | Actual constituent relations, source-conditioned identity, oriented ports and a controlled effective exchange | A spatial field sector, its independent physical degrees and a scalable geometry/clock bridge |
+| [Maintained interacting pair](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/ORGANIZED_COMPOSITE_RELAXATION.md#mixed-pair-identity) | Actual constituent relations, source-conditioned identity, oriented ports and a controlled effective exchange | A spatial field sector, its independent physical degrees and a scalable geometry/clock bridge |
 | [Gauge owner](GAUGE_SYMMETRY_AND_UNIFICATION.md#23-cycle-closure-residual), `physics/gauge.py` | Auxiliary rotations and an exact phase-derived connection; analytic identity holonomy | Nontrivial dynamical curvature and a coupling to the actual source law |
 | `physics/conservation_gauge_unification.py` | Snapshot decompositions and a constant global oscillator-rotation compatibility check | Local dynamical gauge constraints; its checked flow reports that local gauge was not assessed |
 | [Graph-wave and harmonic models](TNFR_VARIATIONAL_PRINCIPLE.md#34-overdamped-graph-diffusion-and-the-missing-bridge) | Useful separately specified wave/oscillator comparators | Derivation of those reversible rows and their retained state from the selected TNFR law |
-| [Electrical realization](nodal/ORGANIZED_ELECTRICAL_REALIZATION.md), [feasibility review](research/ORGANIZED_ELECTRICAL_FEASIBILITY.md) | Conditional circuit realization, source-error/readout analysis and explicit apparatus limitations | Emergence of electromagnetism: Josephson/circuit laws are supplied physical references in that study |
+| [Electrical realization](nodal/ORGANIZED_ELECTRICAL_REALIZATION.md), [feasibility review](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/ORGANIZED_ELECTRICAL_FEASIBILITY.md) | Conditional circuit realization, source-error/readout analysis and explicit apparatus limitations | Emergence of electromagnetism: Josephson/circuit laws are supplied physical references in that study |
 
 The local pure-EPI balance is a genuine starting mechanism. With frozen
 symmetric \(W\), positive \(d_i,\nu_i\) and its declared pressure channel,
@@ -1842,7 +1842,7 @@ Its repetition labels do not describe independently matched complete resets.
 | Preparation and observation | One recorded voltage does not certify the two hidden voltages, primitive phase or an independently prepared capacity profile. Filter initialization and matched reset errors remain unestablished. |
 | Capacity policy and companion rows | Adjusting edge coupling is not a documented switch between held and diffusing native capacity with unchanged form/phase laws. Fixed circuit capacitors are not native capacity by their name. |
 | Reactions, readout and clock | Active electronics and acquisition are reported, but selective-control reaction/resource accounting, channel timing and calibrated total uncertainty required here remain open. Nominal ADC specifications do not supply them. |
-| Exact law or controlled reduction | The earlier [voltage-closure result](research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#rossler-phase-information-admission) retains its original model scope. No new reduction to JO/FO is derived from it here. |
+| Exact law or controlled reduction | The earlier [voltage-closure result](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md#rossler-phase-information-admission) retains its original model scope. No new reduction to JO/FO is derived from it here. |
 
 **Outcome:** insufficient evidence for the complete consumer. The published
 voltage record cannot be treated directly as the native initial state.

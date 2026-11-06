@@ -142,7 +142,7 @@ and organization across scales (pp. 26, 125). The
 [acquired native response](nodal/NATIVE_ACQUIRED_RESPONSE.md#native-acquired-response)
 now supplies a conditional instance of response with retained identity,
 including a local finite contract; quantitative source entry remains separate.
-The [composite-identity account](nodal/ORGANIZED_COMPOSITE_RELAXATION.md#mixed-pair-identity)
+The [composite-identity account](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/ORGANIZED_COMPOSITE_RELAXATION.md#mixed-pair-identity)
 distinguishes maintained joint organization from initially absent acquisition.
 Nesting and scale labels still require sufficient collective state, including
 [derived memory](DERIVED_EPI_MEMORY.md) when needed for prediction.
@@ -433,7 +433,7 @@ substrate, preparation or a universal organizing law.
 
 A regional calculation must retain its environmental boundary influence.
 Recomputing pressure only on an induced subgraph changes the model. The
-[regional balance](nodal/FORCED_REGIONAL_RESPONSE.md#7-a-region-and-its-environment-on-the-same-nodal-support)
+[regional balance](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/FORCED_REGIONAL_RESPONSE.md#7-a-region-and-its-environment-on-the-same-nodal-support)
 separates internal dissipation, environmental exchange, source channels and
 stored-pressure defects on the full graph. Its validity does not select the
 region or predict its indefinite maintenance.
@@ -814,7 +814,7 @@ linked owners; the distinctions needed for collective interpretation are:
 | State or action boundary | Scoped result and implication |
 | --- | --- |
 | Birth, contact and changed capacity | [Maintained-parent THOL](nodal/SINE_MAINTAINED_PARENT_THOL.md) uses genuine parent history and an explicit frozen-isolate successor. The [committed UM endpoint](nodal/SINE_MAINTAINED_PARENT_UM.md#maintained-um-committed-result) has its own inclusion proof, and [post-SHA retention](nodal/SINE_MAINTAINED_PARENT_CLOSURE.md#maintained-sha-retention-result) separately certifies the changed law. Neither gives the child its parent's temporal baseline. |
-| The child's own execution state | [Acquired samples and OZ](nodal/SINE_CHILD_GRAMMAR_TIMING.md#child-history-acquisition-result) support the [actual child word](nodal/SINE_CHILD_THOL_ADMISSION.md#child-word-result). Its level-two descendant remains isolated with no acquired temporal baseline; the word does not establish autonomous growth or a maintained larger organization. |
+| The child's own execution state | [Acquired samples and OZ](nodal/SINE_CHILD_GRAMMAR_TIMING.md#child-history-acquisition-result) support the [actual child word](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/SINE_CHILD_THOL_ADMISSION.md#child-word-result). Its level-two descendant remains isolated with no acquired temporal baseline; the word does not establish autonomous growth or a maintained larger organization. |
 | Local resultants and stored pressure | [IL/OZ handoff](nodal/SINE_COLLECTIVE_PRESSURE_HANDOFF.md#collective-pressure-handoff-result) uses local resultants even when a global circular phase is unavailable. It accounts for actual IL work and OZ erased by immediate constitutive refresh; the [separate phase review](nodal/SINE_COLLECTIVE_PRESSURE_HANDOFF.md#collective-pressure-phase-review) resolves the original accuracy uncertainty. Executed history remains distinct from the refreshed continuous state. |
 | Pressure as independent state | [Pressure completion](nodal/SINE_PRESSURE_COMPLETION.md) adds mean, storage and event-work obligations. Its incompatibility of the old rows, invariant constitutive graph and smooth zero-baseline passive storage does not exclude memory with changed reciprocal reservoirs, phase laws or supplied held intervals. An independently specified pressure law need not make pressure an independent coordinate. |
 | Absolute form and local scaling | [VAL/NUL action](nodal/SINE_FORM_CAPACITY_ACTION.md) can expose a form origin discarded by the continuous translation symmetry. Retain signed form or a declared reference. Failure of its scalar-storage confinement certificate does not itself demonstrate departure. |

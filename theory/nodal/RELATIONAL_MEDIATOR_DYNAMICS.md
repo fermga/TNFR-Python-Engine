@@ -968,9 +968,9 @@ it would not promote the tolerance to a proved nonlinear or solver error bound.
 The [mediator instrument](../../benchmarks/relational_mediation_response.py)
 uses the shared coordinate-memory decomposition and Euler arithmetic for the
 prediction, and `step_relational_exchange` for the full nonlinear response.
-The [prediction](../../docs/assets/relational_mediation_response/result.prediction.json)
-and [source archive](../../docs/assets/relational_mediation_response/result.sources.zip)
-were frozen before the [reserved response](../../docs/assets/relational_mediation_response/result.json).
+The [prediction](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/relational_mediation_response/result.prediction.json)
+and [source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/relational_mediation_response/result.sources.zip)
+were frozen before the [reserved response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/relational_mediation_response/result.json).
 All declared gates passed on both grids without changing the preparation,
 law, coefficients or decision tolerances.
 
@@ -1004,7 +1004,7 @@ Execution used Python 3.13.6, NumPy 2.5.3, NetworkX 3.6.1, Windows AMD64,
 binary64 states, ascending node order, sorted unit edges and no randomness.
 The archive retains all 606 TNFR Python source files plus this producer;
 dependency versions are recorded separately. The
-[record tests](../../tests/physics/test_relational_mediation_response.py)
+[record tests](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_relational_mediation_response.py)
 check frozen evidence without rerunning its trajectories.
 
 This closes the bounded F4 question: a derived intermediary memory predicts

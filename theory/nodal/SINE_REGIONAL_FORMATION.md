@@ -314,7 +314,7 @@ from these analytic restrictions.
 
 ### A bounded full-state organization control
 
-The [prospective declaration](../../docs/assets/conservative_regional_organization/declaration.json)
+The [prospective declaration](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/conservative_regional_organization/declaration.json)
 retains the same support and conservative complete law, with `H=3`, all
 initial phases zero and unit capacities. Receiver initial phase velocities
 are `(-1,+1,0,0,0)` in `tau`; total initial storage is `45/2`, partitioned as
@@ -330,9 +330,9 @@ observation choices are supplied policies. Full regional form, phase rates,
 storage and signed boundary work remain observable; the target does not
 require the stronger low-storage protection condition above.
 
-The [producer](../../benchmarks/conservative_regional_organization.py) freezes
-the [protocol](../../docs/assets/conservative_regional_organization/response-v1.protocol.json),
-[source archive](../../docs/assets/conservative_regional_organization/response-v1.source.zip)
+The [producer](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/benchmarks/conservative_regional_organization.py) freezes
+the [protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/conservative_regional_organization/response-v1.protocol.json),
+[source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/conservative_regional_organization/response-v1.source.zip)
 and runtime before invoking the shared
 Picard/Taylor forecast. The
 [regional observer](../../src/tnfr/physics/relational_sine_regional.py) distinguishes
@@ -341,7 +341,7 @@ or partial evidence. No amplitude, horizon or solver budget is adjusted in
 response to the reserved evolution. A numerical enclosure failure cannot
 become a mathematical impossibility result.
 
-The [frozen response](../../docs/assets/conservative_regional_organization/response-v1.json)
+The [frozen response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/conservative_regional_organization/response-v1.json)
 certifies all 256 whole-time tubes, covering the entire declared horizon.
 Its outcome is `acute_winding_excluded_on_horizon`, with no evaluation error
 or unresolved numerical step. Every receiver edge remains acute and all
@@ -405,12 +405,12 @@ loss; the cross-edge derivative remains `-P_R-P_Q`. This snapshot identity
 does not integrate boundary work or substitute for the finite-window theorem.
 No inverse capacity is needed at zero capacity.
 
-The [analytic declaration](../../docs/assets/conservative_regional_winding/declaration.json)
+The [analytic declaration](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/conservative_regional_winding/declaration.json)
 precedes the retained
-[certificate and controls](../../docs/assets/conservative_regional_winding/certificate-v1.json).
-The [producer](../../benchmarks/conservative_regional_winding.py) reuses the
+[certificate and controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/conservative_regional_winding/certificate-v1.json).
+The [producer](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/benchmarks/conservative_regional_winding.py) reuses the
 write-once evidence transport and retains its
-[source archive](../../docs/assets/conservative_regional_winding/certificate-v1.source.zip).
+[source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/conservative_regional_winding/certificate-v1.source.zip).
 There is no reserved trajectory: the global inequality certifies every time
 in the declared window. Independent tests check the complete nodal jet,
 telescoping, storage partitions and both controls without fitting a response.
@@ -578,9 +578,9 @@ owns admission and projection details. These observers add no evolution law.
 
 ### Retrospective channel diagnosis of the frozen control
 
-The [separate analysis record](../../docs/assets/conservative_regional_organization/channel-analysis-v1.json)
+The [separate analysis record](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/conservative_regional_organization/channel-analysis-v1.json)
 binds the original response, protocol and source archive by hash and retains
-its own [analysis source archive](../../docs/assets/conservative_regional_organization/channel-analysis-v1.source.zip).
+its own [analysis source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/conservative_regional_organization/channel-analysis-v1.source.zip).
 No solver is replayed and no preparation, horizon or original verdict changes.
 All 256 original tubes pass primitive/chain admission and recomputed Picard
 inclusion. Integrating their signed channel intervals on `t in [0,12]` gives
@@ -796,11 +796,11 @@ conditional regional storage retention are separate contracts; one must not
 substitute a rank, a tangent derivative or an approximate midpoint for their
 full hypotheses.
 
-The [declared matched control](../../docs/assets/conservative_source_geometry/declaration.json),
-[analytic certificate](../../docs/assets/conservative_source_geometry/certificate-v1.json)
-and [source archive](../../docs/assets/conservative_source_geometry/certificate-v1.source.zip)
+The [declared matched control](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/conservative_source_geometry/declaration.json),
+[analytic certificate](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/conservative_source_geometry/certificate-v1.json)
+and [source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/conservative_source_geometry/certificate-v1.source.zip)
 retain this positive preparation and its equal-budget reflection control.
-The shared [analytic instrument](../../benchmarks/conservative_regional_winding.py)
+The shared [analytic instrument](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/benchmarks/conservative_regional_winding.py)
 records all eight gates as satisfied, with source/declaration hashes and
 exact interval projections. This is a reproducible evaluation of analytic
 bounds, not a sampled or reserved numerical trajectory. Its duration

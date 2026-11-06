@@ -427,11 +427,6 @@
       "group": "Transport, memory and clocks"
     },
     {
-      "path": "theory/nodal/FORCED_REGIONAL_RESPONSE.md",
-      "title": "Forced regional response and environmental readouts",
-      "group": "Transport, memory and clocks"
-    },
-    {
       "path": "theory/nodal/FORCED_SOURCE_AND_CLOCK.md",
       "title": "Forced-source closure and phase clocks",
       "group": "Transport, memory and clocks"
@@ -447,11 +442,6 @@
       "group": "Transport, memory and clocks"
     },
     {
-      "path": "theory/nodal/FORCED_GEOMETRIC_IDENTITY.md",
-      "title": "Geometric identity and capacity-feedback bounds",
-      "group": "Transport, memory and clocks"
-    },
-    {
       "path": "theory/REMESH_INFINITY_DERIVATION.md",
       "title": "REMESH fixed-delay models",
       "group": "Transport, memory and clocks"
@@ -464,11 +454,6 @@
     {
       "path": "theory/nodal/SINE_REPLICA_PULSE.md",
       "title": "Internal replica pulses and their perturbations",
-      "group": "Transport, memory and clocks"
-    },
-    {
-      "path": "theory/nodal/SINE_COLLECTIVE_PREDICTION.md",
-      "title": "Collective prediction and temporal error allowances",
       "group": "Transport, memory and clocks"
     },
     {
@@ -524,16 +509,6 @@
     {
       "path": "theory/nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md",
       "title": "Constitutive inheritance through organized interfaces",
-      "group": "Organized sources and parent dynamics"
-    },
-    {
-      "path": "theory/nodal/ORGANIZED_COMPOSITE_RECIPROCITY.md",
-      "title": "Carried prediction through a reciprocal composite interaction",
-      "group": "Organized sources and parent dynamics"
-    },
-    {
-      "path": "theory/nodal/ORGANIZED_COMPOSITE_RELAXATION.md",
-      "title": "Composite relaxation, effective interaction and marked-pair identity",
       "group": "Organized sources and parent dynamics"
     },
     {
@@ -742,11 +717,6 @@
       "group": "Organized observation and predictive information"
     },
     {
-      "path": "theory/research/ORGANIZED_ELECTRICAL_FEASIBILITY.md",
-      "title": "Physical feasibility of organized current observation",
-      "group": "Organized observation and predictive information"
-    },
-    {
       "path": "theory/nodal/ORGANIZED_EFFECTIVE_LAW.md",
       "title": "Collective state and matrix response",
       "group": "Organized observation and predictive information"
@@ -764,11 +734,6 @@
     {
       "path": "theory/nodal/ORGANIZED_CONTACT_MAINTENANCE.md",
       "title": "Organized identity under continued external contact",
-      "group": "Collective maintenance and assembly"
-    },
-    {
-      "path": "theory/nodal/SINE_CONTACT_COMPOSITION.md",
-      "title": "Composition error of simultaneous contact responses",
       "group": "Collective maintenance and assembly"
     },
     {
@@ -1102,11 +1067,6 @@
       "group": "Model-specific operator and hierarchy studies"
     },
     {
-      "path": "theory/nodal/SINE_PREPARATION_ROBUSTNESS.md",
-      "title": "Finite preparation families for the held sine law",
-      "group": "Model-specific operator and hierarchy studies"
-    },
-    {
       "path": "theory/nodal/SINE_CHILD_TEMPORAL_READINESS.md",
       "title": "Connected child's temporal capability",
       "group": "Model-specific operator and hierarchy studies"
@@ -1114,11 +1074,6 @@
     {
       "path": "theory/nodal/SINE_CHILD_GRAMMAR_TIMING.md",
       "title": "Child OZ and observation timing",
-      "group": "Model-specific operator and hierarchy studies"
-    },
-    {
-      "path": "theory/nodal/SINE_CHILD_THOL_ADMISSION.md",
-      "title": "Acquired-child THOL and word completion",
       "group": "Model-specific operator and hierarchy studies"
     },
     {
@@ -1172,11 +1127,6 @@
       "group": "Auxiliary models and physical comparisons"
     },
     {
-      "path": "theory/DISSIPATIVE_AND_OPEN_SYSTEMS.md",
-      "title": "Dissipative/open-system models",
-      "group": "Auxiliary models and physical comparisons"
-    },
-    {
       "path": "theory/GAUGE_SYMMETRY_AND_UNIFICATION.md",
       "title": "Gauge and polarization constructions",
       "group": "Auxiliary models and physical comparisons"
@@ -1197,54 +1147,9 @@
       "group": "Arithmetic and applications"
     },
     {
-      "path": "theory/TNFR_ARITHMETIC_DYNAMICS.md",
-      "title": "Arithmetic dynamics — R2",
-      "group": "Arithmetic and applications"
-    },
-    {
-      "path": "theory/TNFR_CRT_FRACTALITY.md",
-      "title": "CRT composition — R3",
-      "group": "Arithmetic and applications"
-    },
-    {
-      "path": "theory/TNFR_PADIC_DYNAMICS.md",
-      "title": "p-adic dynamics — R4",
-      "group": "Arithmetic and applications"
-    },
-    {
-      "path": "theory/TNFR_ALGEBRAIC_NUMBER_FIELDS.md",
-      "title": "Algebraic number fields — R5",
-      "group": "Arithmetic and applications"
-    },
-    {
-      "path": "theory/TNFR_ADDITIVE_DYNAMICS.md",
-      "title": "Additive dynamics — R6",
-      "group": "Arithmetic and applications"
-    },
-    {
-      "path": "theory/TNFR_ARITHMETIC_PRESSURE.md",
-      "title": "Arithmetic pressure — R7",
-      "group": "Arithmetic and applications"
-    },
-    {
-      "path": "theory/TNFR_ARITHMETIC_OPERATORS.md",
-      "title": "Arithmetic operators — R8",
-      "group": "Arithmetic and applications"
-    },
-    {
       "path": "theory/TNFR_RIEMANN_RESEARCH_NOTES.md",
       "title": "Riemann scope",
       "group": "Arithmetic and applications"
-    },
-    {
-      "path": "theory/research/PASSIVE_TRANSPORT_PROTOCOL.md",
-      "title": "Passive transport protocol",
-      "group": "Research, measurement and parked evidence"
-    },
-    {
-      "path": "theory/research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md",
-      "title": "Regional phase/amplitude protocol",
-      "group": "Research, measurement and parked evidence"
     },
     {
       "path": "theory/research/CHEMICAL_OBSERVATION_ADMISSION.md",
@@ -1254,21 +1159,6 @@
     {
       "path": "theory/research/DPLL_PHYSICAL_ADMISSION.md",
       "title": "Physical admission of the delayed digital-PLL realization",
-      "group": "Research, measurement and parked evidence"
-    },
-    {
-      "path": "theory/research/TCLAB_EXPLORATORY_PROTOCOL.md",
-      "title": "TCLab comparison boundary",
-      "group": "Research, measurement and parked evidence"
-    },
-    {
-      "path": "theory/C6_RESEARCH_MECHANISM_AUDIT.md",
-      "title": "Parked C6 evidence boundary",
-      "group": "Research, measurement and parked evidence"
-    },
-    {
-      "path": "theory/research/RELATIVE_COUPLING_PROBE.md",
-      "title": "Relative-coupling observation admission",
       "group": "Research, measurement and parked evidence"
     },
     {

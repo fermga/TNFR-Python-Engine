@@ -7,7 +7,7 @@ plus separate frozen-calibration forecast APIs. This guide owns their current
 engineering contracts; field definitions belong to the
 [tetrad guide](STRUCTURAL_FIELDS_TETRAD.md), and physical admission and priorities
 belong to the [research execution plan](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md#supporting-measurement-bridge).
-The [reported-observation archive](../theory/research/archive/REPORTED_INTERFACE_OBSERVATIONS.md)
+The [reported-observation archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/REPORTED_INTERFACE_OBSERVATIONS.md)
 retains source-bound static, grid-frequency and EEG summaries with their replay
 limits. They are not current API validation or reserved forecasts.
 
@@ -256,7 +256,7 @@ data or dependencies can yield skipped reports, which are not validation passes.
 
 These APIs distinguish implemented engineering behavior from physical
 admission. The [execution plan](../theory/research/FIVE_STAGE_EXECUTION_PLAN.md)
-owns stage status; the [passive transport protocol](../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md)
+owns stage status; the [passive transport protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/PASSIVE_TRANSPORT_PROTOCOL.md)
 owns independent measurement conditions. Historical reports are not replayed
 by API regression tests.
 
@@ -402,16 +402,16 @@ not laboratory evidence and does not replay the archived EEG tables.
 
 ### Continuous P2 uncertainty — `tnfr.validation.p2_transport`
 
-The [P2 protocol annex](../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md#implemented-continuous-time-uncertainty-boundary)
+The [P2 protocol annex](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/PASSIVE_TRANSPORT_PROTOCOL.md#implemented-continuous-time-uncertainty-boundary)
 owns `P2MeasurementBounds`, continuous calibration, rational forecast enclosures,
 hash/acquisition checks and their admission limits. That model does not reuse
 the Euler increment coefficient. Interval overlap is not proof of one joint
 latent fit or physical validation. Example 159 demonstrates its software
 fixture separately from Euler.
 
-The [Volts model boundary](../theory/research/archive/measurement/TRANSPORT_SOURCE_REVIEWS.md#volts-model-boundary)
+The [Volts model boundary](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/measurement/TRANSPORT_SOURCE_REVIEWS.md#volts-model-boundary)
 owns the earlier fixed-reference comparison and its limits. The separately
-declared driven [TCLab protocol](../theory/research/TCLAB_EXPLORATORY_PROTOCOL.md)
+declared driven [TCLab protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/TCLAB_EXPLORATORY_PROTOCOL.md)
 owns its calibration/reserved comparisons and source evidence. Neither result
 admits the full physical model or replaces the primary research queue.
 

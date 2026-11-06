@@ -403,8 +403,8 @@ test of the nonlinear causal interface on the same supplied support.
 
 The first fixed calculation completed for both classes. Its source and
 protocol were associated before coefficient evaluation, after the
-[design declaration](../../docs/assets/sine_formed_classes/class-collective-prediction-v1.design.json).
-The [evidence archive](../../docs/assets/sine_formed_classes/class-collective-prediction-v1.evidence.zip)
+[design declaration](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-collective-prediction-v1.design.json).
+The [evidence archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-collective-prediction-v1.evidence.zip)
 contains that design, the protocol, source archive, freeze receipt,
 exclusive attempt and complete outcome. The full Git base is
 `5b9e721dc6240ea2d21d0690e1cdaa9b4d5b318d`; the source archive declares
@@ -437,7 +437,7 @@ of these computed outputs. No state or source was reset or reacquired.
 The compressed archive has 1,016,399 bytes and SHA-256
 `01b443211665c027bcd5b86ace8a22a4e7ae051f34d172d5520644e6225ba16a`.
 Its outcome retains all causal coefficients and error components. The
-[read-only audit](../../tests/physics/test_sine_class_port_prediction_evidence.py)
+[read-only audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_sine_class_port_prediction_evidence.py)
 reconstructs the consumed endpoints and budgets; retained coefficient
 generation remains an explicit execution premise. Independent
 [algebra controls](../../tests/physics/test_sine_class_port_prediction.py)

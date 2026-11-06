@@ -55,7 +55,7 @@ when its complete premises match. A study export is not a resumable checkpoint.
 | `05_type_hygiene` | [Operator and state-type scope](../theory/README.md#operators-grammar-and-support-events) | Finite delay projection, actual storage and event/window observations |
 | `07_number_theory` | [Arithmetic definitions](../theory/TNFR_NUMBER_THEORY.md), residues and prime structure | Disclose factorization, sieves and other construction inputs |
 | `08_emergent_geometry` | [Scale/geometry bridge](../theory/TNFR_SCALE_GEOMETRY_AND_BRIDGE.md), spectra and auxiliary models | Separate prescribed geometry, observed structure and autonomous generation |
-| `10_applications` | [Measurement protocol](../theory/research/PASSIVE_TRANSPORT_PROTOCOL.md), adapters and backend provenance | Data admission and reserved prediction remain separate obligations |
+| `10_applications` | [Measurement protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/PASSIVE_TRANSPORT_PROTOCOL.md), adapters and backend provenance | Data admission and reserved prediction remain separate obligations |
 
 Use `rg --files examples -g "*.py"` for the current file inventory. The grammar
 automaton examples reuse `_flat_grammar_model.py`; arithmetic and physical

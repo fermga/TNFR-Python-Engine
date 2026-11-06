@@ -568,12 +568,12 @@ inputs; no incoming report or cached verdict is admitted as a premise.
 Its reusable response flag requires strict positivity, while this
 frozen protocol additionally requires the threshold \(10^{-25}\).
 The [contact contract](../../docs/contracts/relational/SINE_PATTERNS.md#sine-formed-class-contact)
-and [independent controls](../../tests/physics/test_sine_formed_class_contact.py)
+and [independent controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_sine_formed_class_contact.py)
 retain its implementation and observation boundaries.
 
 ## Retained evaluation of the unchanged protocol
 
-The [complete saved report](../../docs/assets/sine_formed_classes/contact-v1.json)
+The [complete saved report](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/contact-v1.json)
 returns **certified_formed_class_contact** with no unavailable reasons.
 Both actual-state warmup handoffs pass. The response, whole joined
 identity and event-work allowance flags all pass. The four retained
@@ -610,9 +610,9 @@ It is not inferred from prior dissipation. The contact time remains
 inside the declared guard, and the chosen exact decay bound remains
 \(2^{-512}\).
 
-The [frozen protocol](../../docs/assets/sine_formed_classes/contact-v1.protocol.json),
-[producing source archive](../../docs/assets/sine_formed_classes/contact-v1.source.zip)
-and [evidence manifest](../../docs/assets/sine_formed_classes/contact-v1.manifest.json)
+The [frozen protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/contact-v1.protocol.json),
+[producing source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/contact-v1.source.zip)
+and [evidence manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/contact-v1.manifest.json)
 retain the original source and evaluation provenance. The archive includes
 this owner's protocol and derivation as they stood before the reserved
 evaluation. Those contents remain unchanged; the current owner adds this

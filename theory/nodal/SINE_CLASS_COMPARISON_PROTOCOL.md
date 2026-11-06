@@ -367,9 +367,9 @@ reference histories.
 The prospective text above is preserved unchanged. Its unevaluated statements
 describe protocol admission; the later outcome has a separate section below.
 
-The [exact protocol](../../docs/assets/sine_formed_classes/class-comparison-readout-v1.protocol.json),
-[source archive](../../docs/assets/sine_formed_classes/class-comparison-readout-v1.source.zip)
-and [freeze receipt](../../docs/assets/sine_formed_classes/class-comparison-readout-v1.freeze.json)
+The [exact protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-comparison-readout-v1.protocol.json),
+[source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-comparison-readout-v1.source.zip)
+and [freeze receipt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-comparison-readout-v1.freeze.json)
 pin source commit `8e40dac013c026c0f198a2f95131512277286bbf` without runtime
 overlays. The archive contains the prospective text above, loaded runtime
 owners and supplemental freeze/evaluation scripts; restoration starts from
@@ -396,7 +396,7 @@ python scripts/restore_frozen_source.py --receipt docs/assets/sine_formed_classe
 
 The same shared tool can restore the full pinned base into a new external
 worktree when the execution plan activates its reserved evaluation. The
-[freeze audit](../../tests/physics/test_sine_class_comparison_freeze.py)
+[freeze audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_sine_class_comparison_freeze.py)
 checks this association and synthetic helper behavior without scientific
 execution. The sole [next-task queue](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
 owns later evaluation and follow-up work. The numerical width was an
@@ -456,8 +456,8 @@ separation uses the sixteen-error criterion, not merely a signed midpoint.
 
 ### Byte association and reconstruction
 
-The [exclusive attempt](../../docs/assets/sine_formed_classes/class-comparison-readout-v1.attempt.json)
-and [compressed response](../../docs/assets/sine_formed_classes/class-comparison-readout-v1.response.zip)
+The [exclusive attempt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-comparison-readout-v1.attempt.json)
+and [compressed response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/class-comparison-readout-v1.response.zip)
 retain the first evaluation. The ZIP contains only
 `class-comparison-readout-v1.json`, preserving its original bytes.
 
@@ -467,7 +467,7 @@ retain the first evaluation. The ZIP contains only
 | Response ZIP | 42,090,162 | `c77d5b48a3e77e3e2c826dfb6c850dba73769d861ddc95acbc5bcf1828d8131c` |
 | Uncompressed response member | 808,798,262 | `a6553e20450454a5ff191b608c35a651bd85a82c9ba9dfc5ed78c98302aff03b` |
 
-The [read-only response audit](../../tests/physics/test_sine_class_comparison_evidence.py)
+The [read-only response audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_sine_class_comparison_evidence.py)
 re-admits source, support, law, clock, events and numerical policy. It uses
 the shared evidence reader to reconstruct all retained step arithmetic,
 full-state handoffs, both observation constructions and global completion.

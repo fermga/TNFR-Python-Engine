@@ -468,7 +468,7 @@ These methods do not supply joint coverage of this uninterrupted signed area.
 In particular, treating the predicted late signal as a measured zero would
 use the reserved response to calibrate away a candidate difference.
 
-The [source receipt](../../docs/assets/organized_recovery_observation/method-sources-v1.json)
+The [source receipt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_recovery_observation/method-sources-v1.json)
 records reviewed primary sections and their limits. This is web-text review,
 not archived source bytes, measured arrays or an apparatus calibration.
 The reviewed direct-area route supplies neither the required error coverage
@@ -485,7 +485,7 @@ rebuilds the shared pulse energy bounds, admits recovery duration and integral
 error, and calculates (8)-(14) with normalized exact arithmetic. Its fixed law and pulse
 are explicit; changing them requires a new proof. A shorter duration or larger
 error can leave separation unavailable without proving a physical collision.
-The [independent controls](../../tests/physics/test_organized_recovery_observation.py)
+The [independent controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_organized_recovery_observation.py)
 check the complete modified-energy derivative, sensor endpoint factors,
 nonlinear collar constants, alternative restoring law, arithmetic boundaries
 and laboratory-unit cancellation. Frozen producers and responses are not run.

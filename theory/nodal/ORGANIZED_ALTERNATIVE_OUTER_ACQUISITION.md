@@ -302,13 +302,13 @@ The [contract controls](../../tests/physics/test_organized_alternative_outer_acq
 check independent field and bound calculations, source admission, exact tiny
 residuals, signed faces and explicit unavailability with synthetic failures.
 These do not evaluate the complete original source. The
-[single assessment instrument](../../benchmarks/organized_alternative_outer_acquisition.py)
+[single assessment instrument](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/benchmarks/organized_alternative_outer_acquisition.py)
 fixes all ten original error allowances at `1e-10`, requires the complete
 source and proof to be committed before assessment, and uses the shared exclusive evidence
 lifecycle to retain the attempt, exact report and source inventory. A failed
 or partial attempt remains recorded; no retuned or unrecorded retry is part
 of this gate. No seed, trajectory, parameter scan or physical record is used.
-The [instrument wiring controls](../../tests/research/test_organized_alternative_outer_evaluator.py)
+The [instrument wiring controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_organized_alternative_outer_evaluator.py)
 use a fake assessor. Later audits read the retained complete-source result
 without regenerating it.
 
@@ -316,9 +316,9 @@ without regenerating it.
 ## 7. Retained original-source decision
 
 The method and complete source were committed as `b220012f` before the
-single assessment. The [attempt](../../docs/assets/organized_alternative_outer_acquisition/attempt.json)
+single assessment. The [attempt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_alternative_outer_acquisition/attempt.json)
 retains the Git source inventory, arithmetic and fixed scientific protocol;
-the [exact result](../../docs/assets/organized_alternative_outer_acquisition/result.json)
+the [exact result](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_alternative_outer_acquisition/result.json)
 is **`alternative_outer_acquisition_certified`**, with no unresolved condition.
 All five own-law recoveries, source transport, entry, work/storage budgets,
 full product trapping and paired-control conditions pass together.
@@ -352,7 +352,7 @@ observation word or external-contact certificate has been transferred.
 Source/support preparation and substantial positive work remain supplied;
 autonomous selection and physical identification remain open.
 
-The [read-only evidence audit](../../tests/physics/test_organized_alternative_outer_evidence.py)
+The [read-only evidence audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_organized_alternative_outer_evidence.py)
 checks source receipts, actual-law recovery, clock maps, exact residual bounds,
 all signed faces and the joint inequalities without invoking this assessor or
 the earlier producers. A receipt associates bytes and source; it does not

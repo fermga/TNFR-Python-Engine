@@ -335,10 +335,10 @@ bridge or make the unchanged relaxation dwell \(10^{13}\) operationally
 practical. No new trajectory, laboratory observation or source calibration is
 part of this evaluation.
 
-The retained [protocol](../../docs/assets/sine_formed_classes/port-form-tracking-v1.protocol.json),
-[source archive](../../docs/assets/sine_formed_classes/port-form-tracking-v1.source.zip),
-[complete response](../../docs/assets/sine_formed_classes/port-form-tracking-v1.json)
-and [evidence manifest](../../docs/assets/sine_formed_classes/port-form-tracking-v1.manifest.json)
+The retained [protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/port-form-tracking-v1.protocol.json),
+[source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/port-form-tracking-v1.source.zip),
+[complete response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/port-form-tracking-v1.json)
+and [evidence manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/port-form-tracking-v1.manifest.json)
 preserve the first evaluation. The archive contains the complete pre-evaluation
 owner, including its then-prospective status. After archival, only the
 publication notation in (10) was normalized to avoid false Markdown links;
@@ -350,7 +350,7 @@ The shared implementation is
 [`SinePortFormTracking` / `assess_sine_port_form_tracking`](../../src/tnfr/physics/relational_sine_port_form_tracking.py).
 The [contract](../../docs/contracts/relational/SINE_PATTERNS.md#sine-port-form-tracking),
 [usage guide](../../docs/guides/relational/SINE_PATTERNS.md#sine-port-form-tracking)
-and [independent controls](../../tests/physics/test_sine_port_form_tracking.py)
+and [independent controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_sine_port_form_tracking.py)
 cover original-input admission, noncommuting ordered convolution, initial-state
 terms, bridge variation, separate channel policies and preservation of the
 saved baseline. The controls support implementation fidelity; the all-time

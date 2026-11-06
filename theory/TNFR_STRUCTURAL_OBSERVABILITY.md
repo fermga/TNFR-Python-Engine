@@ -225,9 +225,9 @@ product action. Induced line-graph actions must also preserve the selected edge
 weights and observations. These conditional identities do not place analytic
 `S(T)` in a finite symmetry complement or establish a catalog-wide obstruction.
 
-The [linear flow-morphism owner](TNFR_ARITHMETIC_OPERATORS.md#4-structural-morphisms-of-the-declared-linear-epi-flow-n08)
-proves the intertwining criterion; [CRT](TNFR_CRT_FRACTALITY.md) and
-[p-adic transport](TNFR_PADIC_DYNAMICS.md) retain their product/reduction laws.
+The [linear flow-morphism owner](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/TNFR_ARITHMETIC_OPERATORS.md#4-structural-morphisms-of-the-declared-linear-epi-flow-n08)
+proves the intertwining criterion; [CRT](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/TNFR_CRT_FRACTALITY.md) and
+[p-adic transport](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/TNFR_PADIC_DYNAMICS.md) retain their product/reduction laws.
 The [Riemann scope](TNFR_RIEMANN_RESEARCH_NOTES.md) owns the external-target
 limits. A finite `INDETERMINATE_DEGENERATE_CONSTRUCTION` verdict establishes
 only failure of the selected statistic on its stated fixture and tolerance,

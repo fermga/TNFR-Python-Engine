@@ -365,13 +365,13 @@ binding, or an experimental measurement bridge.
 The original frozen execution completed its certificate calculations but
 failed while exporting the auxiliary control-identity dictionary: the shared
 projector rejected a dictionary passed as one value. No primary report was
-saved. The [first-attempt record](../../docs/assets/sine_formed_classes/two-port-probe-v1.first-attempt.json)
+saved. The [first-attempt record](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-probe-v1.first-attempt.json)
 preserves that software failure; it is neither a failed mathematical
 inequality nor an available first response. The original attempt is not
 represented as a successful retained assessment.
 
 A separately frozen
-[export-recovery wrapper](../../docs/assets/sine_formed_classes/two-port-probe-v1.export-recovery.py.txt)
+[export-recovery wrapper](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-probe-v1.export-recovery.py.txt)
 projects the dictionary's individual values and records the evaluation
 history. Because the first process retained no report, the wrapper repeats
 the deterministic analytical assessment with the identical scientific
@@ -403,7 +403,7 @@ well as the joined model's two errors. Its observation uses the same
 actual-degree mean rule with its own coefficient vector; the two models
 are not assigned an identical linear functional.
 
-The [source handoff audit](../../src/tnfr/research/sine_two_port_handoff.py)
+The [source handoff audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/sine_two_port_handoff.py)
 re-admits the original source and complete law, reconstructs the target
 from strict root brackets, checks the retained reference chain and
 recomputes the complete-state handoff bounds. The admitted original-form
@@ -424,10 +424,10 @@ analytic full-family conclusions, without a probe trajectory, an endpoint
 reset or a measured physical response.
 
 The retained
-[protocol](../../docs/assets/sine_formed_classes/two-port-probe-v1.protocol.json),
-[original producing source archive](../../docs/assets/sine_formed_classes/two-port-probe-v1.source.zip),
-[recovery report](../../docs/assets/sine_formed_classes/two-port-probe-v1.json)
-and [manifest](../../docs/assets/sine_formed_classes/two-port-probe-v1.manifest.json)
+[protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-probe-v1.protocol.json),
+[original producing source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-probe-v1.source.zip),
+[recovery report](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-probe-v1.json)
+and [manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-probe-v1.manifest.json)
 bind the unchanged prior capture artifacts and the separate failure and
 recovery records above. The original source archive SHA-256 is
 `d54a607c76bdd992bedf26f92618360ed506739e2c2e70ed0b260fc704bda578`,

@@ -294,7 +294,7 @@ It resolves neither a nonzero hidden correction nor a competing constitutive
 law, and it evaluates no physical response. Exact input/clock and the
 conditional independent preparation remain necessary premises.
 
-The [read-only evidence controls](../../tests/physics/test_organized_computable_prediction_evidence.py)
+The [read-only evidence controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_organized_computable_prediction_evidence.py)
 rebuild every stored Picard inclusion, time/step chain and metric-error
 recurrence, then the complete source/reading separation. They do not
 regenerate Taylor coefficients or rerun a trajectory; those coefficients

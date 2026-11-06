@@ -2303,7 +2303,7 @@ the pending `EN -> IL -> SHA` word.
 The [general activity contract](../STRUCTURAL_OPERATORS.md#coherence-activity-admission)
 admits the signed targets through explicit `event_domain` without changing
 the event map or the default-policy rejection in section 18. This gate uses
-the [frozen protocol](../../docs/assets/organized_source_coherence_handoff/protocol.json).
+the [frozen protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_source_coherence_handoff/protocol.json).
 It declares one new atomic Reception prerequisite on the fixed section 15
 input, then two atomic Coherence responses: one on that actual EN output and
 one on the previously fixed section 17 nontrivial phase control. The older
@@ -2381,12 +2381,12 @@ an immediate geometric certificate is a different conclusion.
 
 ### Retained response and interpretation
 
-The [source receipt](../../docs/assets/organized_source_coherence_handoff/freeze.json)
+The [source receipt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_source_coherence_handoff/freeze.json)
 binds the complete current source tree, instrument and protocol to the
-[source archive](../../docs/assets/organized_source_coherence_handoff/source.zip).
-The [exclusive attempt](../../docs/assets/organized_source_coherence_handoff/attempt.json)
+[source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_source_coherence_handoff/source.zip).
+The [exclusive attempt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_source_coherence_handoff/attempt.json)
 retains ideal predictions before the three declared events. The
-[response](../../docs/assets/organized_source_coherence_handoff/response.json)
+[response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_source_coherence_handoff/response.json)
 records their primitive before/after states and the pre-refresh callback
 boundary. These byte associations are not independent chronology or provenance
 authentication. No earlier producer was replayed or overwritten.
@@ -2419,7 +2419,7 @@ changed sine currents. Stored pressure contraction is separately verified
 before refresh. The two paired lift increments have a nonzero sum of about
 `-4.899e-16`; numerical closeness is not exact antisymmetry.
 
-The [read-only evidence controls](../../tests/research/test_organized_source_coherence_handoff_evidence.py)
+The [read-only evidence controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_organized_source_coherence_handoff_evidence.py)
 rebuild source predictions with an independent 80-digit oracle, re-admit raw
 states, reconstruct all complete-law rows and clocks, and independently count
 the nine touched edges. They forbid event, source-response and trajectory
@@ -2572,7 +2572,7 @@ phase certificate. The exact raw phase sum and integer turn sum accompany
 their outward interval mean. The barrier's old template origin is only a
 translated reference for energy and face bounds, not the endpoint's limit.
 
-The [independent controls](../../tests/physics/test_organized_source_raw_retention.py)
+The [independent controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_organized_source_raw_retention.py)
 derive a positive rational LDL certificate for `L-(4/15)I` on the entire
 44-dimensional zero-sum fine space, including its nonorthonormal basis metric.
 An asymmetric admitted state has moving child phase means, demonstrating why
@@ -2679,7 +2679,7 @@ rows and storage rates transform under all three declared clocks.
 
 ### Prospective suffix protocol
 
-The [frozen protocol](../../docs/assets/organized_source_silence_handoff/protocol.json)
+The [frozen protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_source_silence_handoff/protocol.json)
 uses the two retained section 19 IL endpoints, their exact raw phases and
 turns, and their original ninety-edge order. The targets remain `(0,1)`.
 The recorded target history is `AL, IL, EN, IL`, at ordinal four. A new
@@ -2726,12 +2726,12 @@ the declared complete law, not those diagnostic estimates.
 
 ### Retained represented response
 
-The [source freeze](../../docs/assets/organized_source_silence_handoff/freeze.json)
-and [exclusive attempt](../../docs/assets/organized_source_silence_handoff/attempt.json)
+The [source freeze](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_source_silence_handoff/freeze.json)
+and [exclusive attempt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_source_silence_handoff/attempt.json)
 preceded the two stages. The frozen evaluator and attempt supplement explicitly
 declare `epi_history_during_silence` absent in the reconstructed runtime; the
 older snapshot does not establish that absence. The
-[response](../../docs/assets/organized_source_silence_handoff/response.json)
+[response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_source_silence_handoff/response.json)
 records exactly two accepted atomic SHA stages, one per preparation, with
 all 64 checks passing in each. No EN/IL event or continuous step was replayed.
 

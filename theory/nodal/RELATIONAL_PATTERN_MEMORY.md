@@ -17,7 +17,7 @@ or certificates.
 | [Return-path geometry and collective response](RELATIONAL_RETURN_PATH_GEOMETRY.md) | Native equilibrium and oscillatory response; separately declared sine/cubic storage geometry. |
 | [Retained phase records and finite contact readout](RELATIONAL_PHASE_MEMORY.md) | Isolated recovery, phase records, contact/removal budgets and retained receiver means. |
 | [Sine relative state, recovery and conservative identity](SINE_PATTERN_RECOVERY.md) | Exact relative state, whole-support recovery and separate zero-loss protection and recurrence. |
-| [Eleven-node receiver formation bounds](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md) | Preparation-specific directional loss and formation obstructions. |
+| [Eleven-node receiver formation bounds](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md) | Preparation-specific directional loss and formation obstructions. |
 | [Eleven-node transfer conditions and endpoint capture](../research/archive/receiver/SINE_RECEIVER_TRANSFER_AND_CAPTURE.md) | Port work, passage conditions, equilibrium classification and donor-well capture. |
 
 Exact elimination retains an independent hidden initial-state source; finite
@@ -479,9 +479,9 @@ evaluates the preceding polynomials analytically and advances their triangular
 system through the shared Euler arithmetic. The
 [response runner](../../benchmarks/relational_memory_response.py) uses the full
 production `step_relational_exchange`, without adding a second nonlinear
-solver. The [prediction](../../docs/assets/relational_memory_response/result.prediction.json)
-and [package-source archive](../../docs/assets/relational_memory_response/result.sources.zip)
-were frozen before the [reserved response](../../docs/assets/relational_memory_response/result.json).
+solver. The [prediction](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/relational_memory_response/result.prediction.json)
+and [package-source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/relational_memory_response/result.sources.zip)
+were frozen before the [reserved response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/relational_memory_response/result.json).
 All TNFR Python sources and the three producer/helper files are archived with
 their recorded hashes; external dependency versions are recorded separately.
 
@@ -880,69 +880,69 @@ These aliases route existing citations to their substantive owner.
 
 - <a id="a-symmetry-obstruction-to-forming-the-receiver-twist"></a>[A symmetry obstruction to forming the receiver twist](SINE_PATTERN_RECOVERY.md#a-symmetry-obstruction-to-forming-the-receiver-twist)
 
-- <a id="sine-formation-eligibility"></a>[sine-formation-eligibility](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-formation-eligibility)
+- <a id="sine-formation-eligibility"></a>[sine-formation-eligibility](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-formation-eligibility)
 
-- <a id="20-formation-eligibility-and-a-finite-time-exclusion"></a>[20. Formation eligibility and a finite-time exclusion](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#20-formation-eligibility-and-a-finite-time-exclusion)
+- <a id="20-formation-eligibility-and-a-finite-time-exclusion"></a>[20. Formation eligibility and a finite-time exclusion](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#20-formation-eligibility-and-a-finite-time-exclusion)
 
-- <a id="exact-odd-response-and-its-controls"></a>[Exact odd response and its controls](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#exact-odd-response-and-its-controls)
+- <a id="exact-odd-response-and-its-controls"></a>[Exact odd response and its controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#exact-odd-response-and-its-controls)
 
-- <a id="storage-is-necessary-but-target-storage-is-not-the-entry-barrier"></a>[Storage is necessary, but target storage is not the entry barrier](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#storage-is-necessary-but-target-storage-is-not-the-entry-barrier)
+- <a id="storage-is-necessary-but-target-storage-is-not-the-entry-barrier"></a>[Storage is necessary, but target storage is not the entry barrier](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#storage-is-necessary-but-target-storage-is-not-the-entry-barrier)
 
-- <a id="an-analytic-time-window-can-exclude-an-apparently-eligible-preparation"></a>[An analytic time window can exclude an apparently eligible preparation](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#an-analytic-time-window-can-exclude-an-apparently-eligible-preparation)
+- <a id="an-analytic-time-window-can-exclude-an-apparently-eligible-preparation"></a>[An analytic time window can exclude an apparently eligible preparation](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#an-analytic-time-window-can-exclude-an-apparently-eligible-preparation)
 
-- <a id="a-uniform-exclusion-for-the-bounded-localized-pulse-family"></a>[A uniform exclusion for the bounded localized-pulse family](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#a-uniform-exclusion-for-the-bounded-localized-pulse-family)
+- <a id="a-uniform-exclusion-for-the-bounded-localized-pulse-family"></a>[A uniform exclusion for the bounded localized-pulse family](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#a-uniform-exclusion-for-the-bounded-localized-pulse-family)
 
-- <a id="what-this-excludes-and-what-it-leaves-open"></a>[What this excludes and what it leaves open](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#what-this-excludes-and-what-it-leaves-open)
+- <a id="what-this-excludes-and-what-it-leaves-open"></a>[What this excludes and what it leaves open](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#what-this-excludes-and-what-it-leaves-open)
 
-- <a id="sine-balanced-formation"></a>[sine-balanced-formation](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-balanced-formation)
+- <a id="sine-balanced-formation"></a>[sine-balanced-formation](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-balanced-formation)
 
-- <a id="21-a-balanced-preparation-and-a-directional-loss-obstruction"></a>[21. A balanced preparation and a directional loss obstruction](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#21-a-balanced-preparation-and-a-directional-loss-obstruction)
+- <a id="21-a-balanced-preparation-and-a-directional-loss-obstruction"></a>[21. A balanced preparation and a directional loss obstruction](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#21-a-balanced-preparation-and-a-directional-loss-obstruction)
 
-- <a id="a-bound-that-retains-the-initial-direction"></a>[A bound that retains the initial direction](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#a-bound-that-retains-the-initial-direction)
+- <a id="a-bound-that-retains-the-initial-direction"></a>[A bound that retains the initial direction](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#a-bound-that-retains-the-initial-direction)
 
-- <a id="a-rational-finite-window-certificate"></a>[A rational finite-window certificate](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#a-rational-finite-window-certificate)
+- <a id="a-rational-finite-window-certificate"></a>[A rational finite-window certificate](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#a-rational-finite-window-certificate)
 
-- <a id="exact-moments-for-the-balanced-eleven-node-family"></a>[Exact moments for the balanced eleven-node family](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#exact-moments-for-the-balanced-eleven-node-family)
+- <a id="exact-moments-for-the-balanced-eleven-node-family"></a>[Exact moments for the balanced eleven-node family](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#exact-moments-for-the-balanced-eleven-node-family)
 
-- <a id="the-same-bounded-amplitude-family-is-still-excluded"></a>[The same bounded amplitude family is still excluded](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#the-same-bounded-amplitude-family-is-still-excluded)
+- <a id="the-same-bounded-amplitude-family-is-still-excluded"></a>[The same bounded amplitude family is still excluded](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#the-same-bounded-amplitude-family-is-still-excluded)
 
-- <a id="corollary-the-whole-constant-donor-preparation-family"></a>[Corollary: the whole constant-donor preparation family](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#corollary-the-whole-constant-donor-preparation-family)
+- <a id="corollary-the-whole-constant-donor-preparation-family"></a>[Corollary: the whole constant-donor preparation family](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#corollary-the-whole-constant-donor-preparation-family)
 
-- <a id="sine-internal-form-geometry"></a>[sine-internal-form-geometry](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-internal-form-geometry)
+- <a id="sine-internal-form-geometry"></a>[sine-internal-form-geometry](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-internal-form-geometry)
 
-- <a id="22-donor-shape-phase-action-and-a-uniform-formation-obstruction"></a>[22. Donor shape, phase action and a uniform formation obstruction](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#22-donor-shape-phase-action-and-a-uniform-formation-obstruction)
+- <a id="22-donor-shape-phase-action-and-a-uniform-formation-obstruction"></a>[22. Donor shape, phase action and a uniform formation obstruction](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#22-donor-shape-phase-action-and-a-uniform-formation-obstruction)
 
-- <a id="the-exact-six-coordinate-quadratic-forms"></a>[The exact six-coordinate quadratic forms](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#the-exact-six-coordinate-quadratic-forms)
+- <a id="the-exact-six-coordinate-quadratic-forms"></a>[The exact six-coordinate quadratic forms](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#the-exact-six-coordinate-quadratic-forms)
 
-- <a id="which-donor-information-reaches-the-receiver-first"></a>[Which donor information reaches the receiver first](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#which-donor-information-reaches-the-receiver-first)
+- <a id="which-donor-information-reaches-the-receiver-first"></a>[Which donor information reaches the receiver first](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#which-donor-information-reaches-the-receiver-first)
 
-- <a id="sine-source-receiver-excitation"></a>[sine-source-receiver-excitation](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-source-receiver-excitation)
+- <a id="sine-source-receiver-excitation"></a>[sine-source-receiver-excitation](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-source-receiver-excitation)
 
-- <a id="source-symmetry-nonlinear-work-and-a-uniform-tangent-obstruction"></a>[Source symmetry, nonlinear work and a uniform tangent obstruction](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#source-symmetry-nonlinear-work-and-a-uniform-tangent-obstruction)
+- <a id="source-symmetry-nonlinear-work-and-a-uniform-tangent-obstruction"></a>[Source symmetry, nonlinear work and a uniform tangent obstruction](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#source-symmetry-nonlinear-work-and-a-uniform-tangent-obstruction)
 
-- <a id="equal-energy-and-spectral-moments-do-not-determine-receiver-work"></a>[Equal energy and spectral moments do not determine receiver work](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#equal-energy-and-spectral-moments-do-not-determine-receiver-work)
+- <a id="equal-energy-and-spectral-moments-do-not-determine-receiver-work"></a>[Equal energy and spectral moments do not determine receiver work](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#equal-energy-and-spectral-moments-do-not-determine-receiver-work)
 
-- <a id="every-communicating-tangent-response-stays-below-the-receiver-barrier"></a>[Every communicating tangent response stays below the receiver barrier](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#every-communicating-tangent-response-stays-below-the-receiver-barrier)
+- <a id="every-communicating-tangent-response-stays-below-the-receiver-barrier"></a>[Every communicating tangent response stays below the receiver barrier](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#every-communicating-tangent-response-stays-below-the-receiver-barrier)
 
-- <a id="a-full-nonlinear-storage-bound-forces-the-donor-barrier-first"></a>[A full nonlinear storage bound forces the donor barrier first](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#a-full-nonlinear-storage-bound-forces-the-donor-barrier-first)
+- <a id="a-full-nonlinear-storage-bound-forces-the-donor-barrier-first"></a>[A full nonlinear storage bound forces the donor barrier first](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#a-full-nonlinear-storage-bound-forces-the-donor-barrier-first)
 
-- <a id="a-receiver-passage-needs-a-nonzero-quantified-nonlinear-contribution"></a>[A receiver passage needs a nonzero, quantified nonlinear contribution](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#a-receiver-passage-needs-a-nonzero-quantified-nonlinear-contribution)
+- <a id="a-receiver-passage-needs-a-nonzero-quantified-nonlinear-contribution"></a>[A receiver passage needs a nonzero, quantified nonlinear contribution](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#a-receiver-passage-needs-a-nonzero-quantified-nonlinear-contribution)
 
-- <a id="sine-weighted-receiver-exclusion"></a>[sine-weighted-receiver-exclusion](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-weighted-receiver-exclusion)
+- <a id="sine-weighted-receiver-exclusion"></a>[sine-weighted-receiver-exclusion](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-weighted-receiver-exclusion)
 
-- <a id="a-weighted-nonlinear-proof-function-excludes-receiver-identity-below-a-source-threshold"></a>[A weighted nonlinear proof function excludes receiver identity below a source threshold](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#a-weighted-nonlinear-proof-function-excludes-receiver-identity-below-a-source-threshold)
+- <a id="a-weighted-nonlinear-proof-function-excludes-receiver-identity-below-a-source-threshold"></a>[A weighted nonlinear proof function excludes receiver identity below a source threshold](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#a-weighted-nonlinear-proof-function-excludes-receiver-identity-below-a-source-threshold)
 
-- <a id="one-nonuniform-donor-preparation-at-the-same-storage-budget"></a>[One nonuniform donor preparation at the same storage budget](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#one-nonuniform-donor-preparation-at-the-same-storage-budget)
+- <a id="one-nonuniform-donor-preparation-at-the-same-storage-budget"></a>[One nonuniform donor preparation at the same storage budget](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#one-nonuniform-donor-preparation-at-the-same-storage-budget)
 
-- <a id="a-class-level-lower-bound-on-any-target-entry-time"></a>[A class-level lower bound on any target-entry time](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#a-class-level-lower-bound-on-any-target-entry-time)
+- <a id="a-class-level-lower-bound-on-any-target-entry-time"></a>[A class-level lower bound on any target-entry time](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#a-class-level-lower-bound-on-any-target-entry-time)
 
-- <a id="sine-maintained-target-obstruction"></a>[sine-maintained-target-obstruction](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-maintained-target-obstruction)
+- <a id="sine-maintained-target-obstruction"></a>[sine-maintained-target-obstruction](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-maintained-target-obstruction)
 
-- <a id="a-global-auxiliary-function-excludes-the-maintained-target-for-the-whole-class"></a>[A global auxiliary function excludes the maintained target for the whole class](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#a-global-auxiliary-function-excludes-the-maintained-target-for-the-whole-class)
+- <a id="a-global-auxiliary-function-excludes-the-maintained-target-for-the-whole-class"></a>[A global auxiliary function excludes the maintained target for the whole class](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#a-global-auxiliary-function-excludes-the-maintained-target-for-the-whole-class)
 
-- <a id="sine-formation-clock-covariance"></a>[sine-formation-clock-covariance](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-formation-clock-covariance)
+- <a id="sine-formation-clock-covariance"></a>[sine-formation-clock-covariance](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#sine-formation-clock-covariance)
 
-- <a id="constitutive-ratio-and-constant-clock-changes-are-different-operations"></a>[Constitutive ratio and constant clock changes are different operations](../research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#constitutive-ratio-and-constant-clock-changes-are-different-operations)
+- <a id="constitutive-ratio-and-constant-clock-changes-are-different-operations"></a>[Constitutive ratio and constant clock changes are different operations](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/archive/receiver/SINE_RECEIVER_FORMATION_BOUNDS.md#constitutive-ratio-and-constant-clock-changes-are-different-operations)
 
 - <a id="sine-receiver-transfer-admission"></a>[sine-receiver-transfer-admission](../research/archive/receiver/SINE_RECEIVER_TRANSFER_AND_CAPTURE.md#sine-receiver-transfer-admission)
 

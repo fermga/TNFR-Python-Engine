@@ -444,10 +444,10 @@ uninterrupted dwell \(10^{13}\), complete law and support remain the
 same supplied mathematical premises, without an empirical clock or
 measurement bridge.
 
-Retain the [frozen protocol](../../docs/assets/sine_formed_classes/port-relaxation-v1.protocol.json),
-[complete report](../../docs/assets/sine_formed_classes/port-relaxation-v1.json),
-[producing source archive](../../docs/assets/sine_formed_classes/port-relaxation-v1.source.zip)
-and [evidence manifest](../../docs/assets/sine_formed_classes/port-relaxation-v1.manifest.json).
+Retain the [frozen protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/port-relaxation-v1.protocol.json),
+[complete report](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/port-relaxation-v1.json),
+[producing source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/port-relaxation-v1.source.zip)
+and [evidence manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/port-relaxation-v1.manifest.json).
 The source archive SHA-256 is
 `5ed129494818ad786d92d4e21fc53fd148646f98287e06aa0fb492db78066d48`.
 It preserves the pre-evaluation protocol and derivation; this retained-result
@@ -463,7 +463,7 @@ The shared owner exposes `assess_sine_port_relaxation` and
 The [contract](../../docs/contracts/relational/SINE_PATTERNS.md#sine-port-relaxation)
 and [guide](../../docs/guides/relational/SINE_PATTERNS.md#sine-port-relaxation)
 retain admission, availability and separate channel criteria. The
-[independent controls](../../tests/physics/test_sine_port_relaxation.py)
+[independent controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_sine_port_relaxation.py)
 cover the fine-state parity identities, spectral and energy premises,
 initial-state exchange, mean restoration and strict reporting boundaries;
 they do not substitute sampled times for the uniform proof.

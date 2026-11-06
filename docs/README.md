@@ -144,10 +144,11 @@ admission in another index or infer scientific proof from a valid link.
 
 ## Evidence and generated material
 
-`docs/assets/` holds website support and referenced frozen research evidence,
-including source archives and numerical reports. Preserve those paths and bytes;
-new runs belong in `artifacts/`, not over the published record. An evidence
-record establishes only its declared scope and does not redefine a live API.
+`docs/assets/` holds website support and the frozen evidence that retained
+claims consume, including source archives and numerical reports. Never rewrite
+those bytes; new runs belong in `artifacts/`, not over the published record. An
+evidence record establishes only its declared scope and does not redefine a
+live API.
 Use [retained-evidence checks](../TESTING.md#current-checks-and-retained-evidence)
 and the [instrument lifecycle](../benchmarks/README.md#freeze-before-evaluating-a-reserved-response)
 to distinguish read-only audits from a separately declared new evaluation.
@@ -159,9 +160,9 @@ of frozen source captures; maintained proofs and contracts remain checked.
 `build/docs-source/` and `site/` are generated; edit their maintained inputs.
 
 Retire a document only after moving useful material to its owner and repairing
-maintained references. Preserve source-bound observations and mark their scope
-and replacement. [Archive records](../theory/research/archive/README.md) explain
-supersession; manifests retain their original recovery paths and hashes.
-Unchanged committed material with verified Git recovery does not need another
-archive copy. Useful conditional results, counterexamples, uncommitted work
-and unique frozen evidence require preservation before removal.
+maintained references. Under the retention policy in
+[AGENTS.md](../AGENTS.md), failed, superseded, secondary and parked material is
+retired with its evidence, producers and tests; Git history is its record, and
+retained documents link it by permalink to the recovery commit. The
+[recovery index](../theory/research/archive/README.md#recovery-records) records
+each retirement. Preserve uncommitted work until its owner decides.

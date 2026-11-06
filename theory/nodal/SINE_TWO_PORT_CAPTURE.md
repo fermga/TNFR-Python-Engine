@@ -436,10 +436,10 @@ local full-state barrier only after that transit. It does not reinterpret
 the obstruction as a dynamical failure or replace the old result.
 
 The retained
-[protocol](../../docs/assets/sine_formed_classes/two-port-capture-v1.protocol.json),
-[producing source archive](../../docs/assets/sine_formed_classes/two-port-capture-v1.source.zip),
-[exact response](../../docs/assets/sine_formed_classes/two-port-capture-v1.json)
-and [evidence manifest](../../docs/assets/sine_formed_classes/two-port-capture-v1.manifest.json)
+[protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-capture-v1.protocol.json),
+[producing source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-capture-v1.source.zip),
+[exact response](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-capture-v1.json)
+and [evidence manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/two-port-capture-v1.manifest.json)
 preserve this first evaluation. The archive SHA-256 is
 `b8df26578b59a32dae82b9cad58450b0d208d6c45dc234769575702830f0fb3f`, based on
 revision `29e4c02339f6246d003a7fbfbdf7f37c8a2c1277` with the two declared
@@ -451,8 +451,8 @@ The [contract](../../docs/contracts/relational/SINE_PATTERNS.md#sine-two-port-ca
 and [inspection guide](../../docs/guides/relational/SINE_PATTERNS.md#sine-two-port-capture)
 retain the distinction between the validated nominal reference and the
 full-law convergence conclusion. The
-[independent field controls](../../tests/physics/test_sine_two_port_capture.py)
-and [read-only evidence audit](../../tests/physics/test_sine_formed_evidence.py)
+[independent field controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_sine_two_port_capture.py)
+and [read-only evidence audit](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_sine_formed_evidence.py)
 cover affine reconstruction, metric and gauge, all-node field agreement,
 step-chain consistency, admitted edge margins and the exact handoff bounds.
 The compact step record does not independently reproduce every Taylor
@@ -768,7 +768,7 @@ certificate does not prove non-entry.
 
 The declaration, source archive, independent numerical/storage and Windows
 reviews, logs and test results are retained in
-`artifacts/formed-two-port-executable-20261029`. Controls distinguish detached
+[`artifacts/formed-two-port-executable-20261029`](https://github.com/fermga/TNFR-Python-Engine/tree/279054b8694a9bf5fd3a7e67da65847a3e36d749/artifacts/formed-two-port-executable-20261029). Controls distinguish detached
 field/Jet identities and one retained-target re-admission from mocked runner
 records and inert Windows workers. They cover source substitution, exact
 serialization, quota boundaries, partial writes, memory denial, timeout,
@@ -812,7 +812,7 @@ skips before the producing freeze; they establish tested orchestration and
 record handling, not a source-entry result. Independent launch, audit and
 root integration reviews are retained with the producing sources.
 
-The evidence owner is `artifacts/formed-two-port-attempt-20261029`:
+The evidence owner is [`artifacts/formed-two-port-attempt-20261029`](https://github.com/fermga/TNFR-Python-Engine/tree/279054b8694a9bf5fd3a7e67da65847a3e36d749/artifacts/formed-two-port-attempt-20261029):
 
 | Record or observation | Retained result |
 | --- | --- |
@@ -901,7 +901,7 @@ the nominal trajectory's departure, target arrival or actual-source capture.
 No new trajectory, target solve, numerical sign admission or retained-box
 diagnostic was evaluated. The four certified steps and both previous failures
 remain unchanged. Analytical notes and reviews are retained in
-`artifacts/formed-two-port-domain-20261029`; the current task belongs only to
+[`artifacts/formed-two-port-domain-20261029`](https://github.com/fermga/TNFR-Python-Engine/tree/279054b8694a9bf5fd3a7e67da65847a3e36d749/artifacts/formed-two-port-domain-20261029); the current task belongs only to
 the [research program](../RESEARCH_PROGRAM.md#research-current-question).
 
 ### A compatible energy sublevel need not be invariant
@@ -1087,7 +1087,7 @@ target-arrival and complete-state obligations remain separate.
 
 The repository already proves that other graph paths can compensate some
 negative edge cosines in different admitted models: see
-[relative storage](SINE_PREPARATION_ROBUSTNESS.md#sine-relative-preparation-storage)
+[relative storage](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/SINE_PREPARATION_ROBUSTNESS.md#sine-relative-preparation-storage)
 and [full-network curvature](SINE_COLLECTIVE_IDENTITY_TRANSITION.md#nul-relative-curvature).
 Those methods require the actual paths, all relative variations and the
 combined loads on shared edges. Their graphs, laws, numerical bounds and
@@ -3674,9 +3674,9 @@ Failure of both tests establishes neither capture nor exclusion.
 
 The producing owners are the shared
 [inclusion kernel](../../src/tnfr/mathematics/_validated_metric_inclusion.py),
-the [actual-source adapter](../../src/tnfr/research/formed_two_port_arrival.py)
-and the [bounded runner](../../src/tnfr/research/formed_two_port_arrival_run.py).
-The [response auditor](../../src/tnfr/research/formed_two_port_arrival_audit.py)
+the [actual-source adapter](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/formed_two_port_arrival.py)
+and the [bounded runner](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/formed_two_port_arrival_run.py).
+The [response auditor](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/formed_two_port_arrival_audit.py)
 checks byte associations, carried balls, exact matrix/radius/terminal arithmetic
 and the supervisor's post-write result. It retains the reviewed producer's
 Picard, Taylor and primitive enclosure premises; it does not reexecute them.
@@ -3770,14 +3770,14 @@ not an empirical identification.
 ### Implementation and the remaining destination question
 
 `bound_formed_two_port_transport` in
-[formed_two_port_reference.py](../../src/tnfr/research/formed_two_port_reference.py)
+[formed_two_port_reference.py](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/formed_two_port_reference.py)
 reuses the existing prefix/post-acute owner and rebuilds the source, lag,
 principal-margin, conditional cut and target-ball constants with rational arithmetic.
 The shared default corridor width has one code owner. The result keeps
 the global tracking start, finite retention interval and conditional
 outgoing periods distinct; it contains no newly evaluated future state.
 The [contract](../../docs/contracts/relational/SINE_PATTERNS.md#sine-formed-source-transport)
-and [controls](../../tests/research/test_formed_two_port_transport.py) cover
+and [controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_formed_two_port_transport.py) cover
 both-row clock factors, weighted means, graph/edge coefficients, strict
 margins, source substitution and altered prefix evidence.
 

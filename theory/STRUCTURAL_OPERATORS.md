@@ -1898,7 +1898,7 @@ deterministic response enclosure vanishes with bridge conductance in this
 weighted-both-rows law; each reading keeps its own observation-error floor.
 This continuity does not transfer to native bare-neighbor phase support,
 select a Coupling occurrence or establish a new joint identity.
-For [two simultaneous contacts](nodal/SINE_CONTACT_COMPOSITION.md#sine-contact-composition),
+For [two simultaneous contacts](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/SINE_CONTACT_COMPOSITION.md#sine-contact-composition),
 a full-state mixed sensitivity bounds the error of adding their separate
 responses by a conductance-product allowance. Exact linear controls show
 that shared and separate endpoints can give different joint responses despite
@@ -1907,13 +1907,13 @@ ports. This is a conditional prediction contract;
 the contacts' admission, occurrence and resulting joint identity remain
 separate obligations. A nonzero composition error does not identify a nonlinear
 constitutive law, because changing contacts also changes a linear generator.
-The [support-associated refinement](nodal/SINE_CONTACT_COMPOSITION.md#sine-contact-influence)
+The [support-associated refinement](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/SINE_CONTACT_COMPOSITION.md#sine-contact-influence)
 retains actual conductances, positive capacities, marked endpoints and the
 observed constituent. Separate invariant contact blocks have exactly zero
 composition error; a connecting path enters the finite allowance with its
 actual weights. A positive allowance alone establishes neither a nonzero
 response nor an autonomous law for the constituent.
-The [retained-boundary predictor](nodal/SINE_CONTACT_COMPOSITION.md#sine-retained-boundary-prediction)
+The [retained-boundary predictor](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/SINE_CONTACT_COMPOSITION.md#sine-retained-boundary-prediction)
 evolves a proper subset of the form and phase coordinates while bounding
 omitted initialization, hidden drift and later boundary feedback. The same
 constituent observation must lie inside the retained region. This is an

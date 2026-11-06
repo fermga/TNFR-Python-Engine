@@ -405,7 +405,7 @@ unsupported positive scales raise explicitly rather than silently becoming
 zero or changing precision. No helper installs an electrical evolution law.
 
 The [instrument controls](../../tests/physics/test_organized_electrical_protocol.py)
-and [independent theorem controls](../../tests/physics/test_organized_electrical_protocol_theory.py)
+and [independent theorem controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_organized_electrical_protocol_theory.py)
 exercise algebra, uncertainty, counterexamples and rejected domains using
 synthetic inputs. An admitted numerical record remains conditional on its
 preparation, full law, clock, input and observation premises. No source

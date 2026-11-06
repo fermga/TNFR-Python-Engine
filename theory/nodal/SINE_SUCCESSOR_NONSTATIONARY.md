@@ -196,7 +196,7 @@ global acceleration enclosure uses sparse rows of A:
 because `|S_k|<=d_k`. This global magnitude bound differs from the signed
 instantaneous acceleration. The owner does not evolve a source or certify
 a cut from a failed margin. Its
-[independent controls](../../tests/research/test_maintained_successor_motion.py)
+[independent controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_successor_motion.py)
 check the complete rows, energy inequality, domains and source immutability.
 
 ### 3.1 Static admission of the unchanged proposed source
@@ -324,12 +324,12 @@ authenticate protocol-freeze chronology or execute a structural operator.
 <a id="successor-nonstationary-result"></a>
 ## 6. Retained finite confinement and turning result
 
-The [protocol](../../docs/assets/successor_nonstationary/protocol.json),
-[primitive source](../../docs/assets/successor_nonstationary/source.json) and
-[complete Python source archive](../../docs/assets/successor_nonstationary/source.zip)
-were [frozen](../../docs/assets/successor_nonstationary/freeze.json) before
-the single [attempt](../../docs/assets/successor_nonstationary/attempt.json).
-The [retained result](../../docs/assets/successor_nonstationary/result.json)
+The [protocol](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/successor_nonstationary/protocol.json),
+[primitive source](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/successor_nonstationary/source.json) and
+[complete Python source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/successor_nonstationary/source.zip)
+were [frozen](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/successor_nonstationary/freeze.json) before
+the single [attempt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/successor_nonstationary/attempt.json).
+The [retained result](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/successor_nonstationary/result.json)
 records all 256 accepted steps, reaching exactly `T=1/2` within the fixed
 900-second wall budget. No step-size, source, order, horizon or criterion
 was retuned.
@@ -346,7 +346,7 @@ exact rational lower bound
 The initial child-parent relative velocity is strictly negative as admitted
 in section 3.1. The first predetermined endpoint with a uniformly positive
 velocity enclosure is `t=21/512`; its
-[step record](../../docs/assets/successor_nonstationary/steps/020.zip)
+[step record](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/successor_nonstationary/steps/020.zip)
 gives the coarser strict containment
 
 \[
@@ -393,7 +393,7 @@ take that path during this window. It establishes neither periodic motion
 nor all-time maintenance, a newly formed stationary minimum, autonomous
 organization or a physical particle interpretation.
 
-The [retained-evidence controls](../../tests/research/test_maintained_successor_motion_evidence.py)
+The [retained-evidence controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_successor_motion_evidence.py)
 check frozen byte associations and recompute consumed field, branch and
 sign readouts from primitive step data without rerunning the producer.
 They check Picard inclusion and endpoint arithmetic; the recorded derivative

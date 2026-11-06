@@ -39,7 +39,7 @@ Freeze the following before evaluating this certificate:
   retained local lift chart. Its radii are exactly the upper bounds
   `warmup_form_norm_upper_bounds` and
   `warmup_target_phase_radius_upper_bounds` from the preceding frozen
-  [complete response report](../../docs/assets/sine_formed_classes/response-v1.json).
+  [complete response report](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/response-v1.json).
   The target lifts remain `theta_k,j^*=k*(2*pi/9)*(j-4)`.
   Rebuild these radii from the original primitive protocol when evaluating;
   an incoming report or cached verdict is not an admission premise.
@@ -304,12 +304,12 @@ bridge follows from this return-map certificate.
 ## Retained quantitative return certificate
 
 The frozen protocol passes without changing its dwell or premises.
-The [complete evaluated report](../../docs/assets/sine_formed_classes/maintenance-v1.json)
+The [complete evaluated report](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/maintenance-v1.json)
 retains the exact rate, pre/post-probe bounds, prerequisite evidence and
-return margins. Its [protocol record](../../docs/assets/sine_formed_classes/maintenance-v1.protocol.json)
-and [source archive](../../docs/assets/sine_formed_classes/maintenance-v1.source.zip)
+return margins. Its [protocol record](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/maintenance-v1.protocol.json)
+and [source archive](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/maintenance-v1.source.zip)
 were captured before evaluation, including the proof derivation above.
-The [evidence manifest](../../docs/assets/sine_formed_classes/maintenance-v1.manifest.json)
+The [evidence manifest](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/sine_formed_classes/maintenance-v1.manifest.json)
 records the committed base and producing source overlay separately from
 subsequent result documentation.
 
@@ -347,7 +347,7 @@ The exponential work limit consumes the proved slow rate times the
 dwell, rather than the initial fast semigroup gap. The
 [contract](../../docs/contracts/relational/SINE_PATTERNS.md#sine-formed-class-maintenance),
 [guide](../../docs/guides/relational/SINE_PATTERNS.md#sine-formed-class-maintenance)
-and [independent controls](../../tests/physics/test_sine_formed_class_maintenance.py)
+and [independent controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_sine_formed_class_maintenance.py)
 retain the execution boundary and unavailable cases.
 
 This certificate proves a uniform return inclusion for the full

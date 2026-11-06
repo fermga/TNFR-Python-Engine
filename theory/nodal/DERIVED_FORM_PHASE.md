@@ -649,7 +649,7 @@ This excludes that exact closed physical identification for every `a,b>0`;
 it does not exclude directed transport, nonreciprocal devices or other models
 with additional state. A finite resemblance of two traces is also weaker
 than generator equivalence. The
-[measurement contract](../research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md)
+[measurement contract](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md)
 retains the required independent bridge and the unresolved source admission.
 
 #### Regional appearance and decay under one unchanged law
@@ -1205,7 +1205,7 @@ owns exact field names, source admission and usage.
 
 **Frozen production protocol.** The maintained entry point is
 [`source_relative_form_response.py`](../../benchmarks/source_relative_form_response.py),
-with [contract controls](../../tests/physics/test_source_relative_form_response.py).
+with [contract controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_source_relative_form_response.py).
 
 | Item | Fixed declaration before evaluation |
 | --- | --- |
@@ -1264,16 +1264,16 @@ The zero-source ablation has exact equal intensity trajectories, although
 represented execution may differ within its separately retained error budget.
 
 **Frozen evaluation and result.** The
-[prediction record](../../docs/assets/source_relative_form_response/result.prediction.json)
+[prediction record](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/source_relative_form_response/result.prediction.json)
 was written before the first production evaluation. Its SHA-256 is
 `1a08e804f2ce17b0457eac26f4196e5cb2fd26e1b4374b96ee730938ec1fc022`.
-The [result record](../../docs/assets/source_relative_form_response/result.json)
+The [result record](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/source_relative_form_response/result.json)
 retains exact rational observations, configuration, runtime versions and
 fingerprints of the producer and relevant engine owners; its SHA-256 is
 `d1a37558f4e5386470b291b648eff0cfa4b2b9a9559a267ef46de76d6be7b94a`.
 Subsequent tests are regression reproductions of that evaluated protocol,
 not new reserved observations.
-The [original producer bytes](../../docs/assets/source_relative_form_response/producer.v1.py.txt)
+The [original producer bytes](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/source_relative_form_response/producer.v1.py.txt)
 preserve the source fingerprint of this first result. The maintained producer
 now enforces scientific admission even under optimized Python and rejects
 replacement of an existing response record. Its later source fingerprint

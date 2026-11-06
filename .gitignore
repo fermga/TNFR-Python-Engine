@@ -33,9 +33,6 @@ profiles/
 # User-supplied reference books remain local; their citations are in theory.
 /bibliografia/
 
-# Exact frozen full-step response is versioned losslessly in its response ZIP.
-/docs/assets/sine_formed_classes/class-nonlinear-readout-v1.json
-
 # Crypto transient logs
 crypto/extract_debug.txt
 crypto/extract_stderr.txt
@@ -94,7 +91,3 @@ logs/
 # Local-only modules (not published to GitHub)
 crypto/
 publish/
-# The first receiver response is retained byte-for-byte in its response ZIP.
-# Keep the original evaluator's local journal without tracking a duplicate.
-/docs/assets/sine_formed_classes/organized-receiver-enclosure-v1.json
-/docs/assets/sine_formed_classes/organized-receiver-enclosure-v1.steps/

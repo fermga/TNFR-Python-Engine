@@ -1257,7 +1257,7 @@ radii, and scaled retention duration. The source center is constructed from
 each endpoint, with its enclosure error retained in the forward-inclusion
 bound. A reversed midpoint by itself does not certify a preparation.
 
-The [shared instrument](../../../benchmarks/conservative_regional_organization.py)
+The [shared instrument](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/benchmarks/conservative_regional_organization.py)
 supports this workflow through a declaration whose `evaluation_kind` is
 `reversible_preparation`. Freeze the declaration and source archive with
 `--prepare` before the single evaluation. The declaration owns the fixed

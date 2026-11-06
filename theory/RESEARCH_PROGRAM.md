@@ -114,7 +114,7 @@ and [post-Silence retention](nodal/SINE_MAINTAINED_PARENT_CLOSURE.md#maintained-
 of all 53 principal edge branches on the 21-node support through elapsed
 `[0,1/2]`. The connected child then acquired
 [its own three samples and Dissonance history](nodal/SINE_CHILD_GRAMMAR_TIMING.md#child-history-acquisition-result).
-Its [completed `OZ,THOL,SHA` word](nodal/SINE_CHILD_THOL_ADMISSION.md#child-word-result)
+Its [completed `OZ,THOL,SHA` word](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/SINE_CHILD_THOL_ADMISSION.md#child-word-result)
 created a level-two descendant: 22 nodes with the same 53 edges. That descendant
 is isolated and has no acquired temporal baseline. Repeating these mechanisms
 would need a new scientific discriminator.
@@ -122,7 +122,7 @@ would need a new scientific discriminator.
 On that conservative source, the [marked response](nodal/SINE_MAINTAINED_PARENT_CLOSURE.md#post-sha-direct-response)
 and [matched cut](nodal/SINE_MAINTAINED_PARENT_CLOSURE.md#post-sha-cut-supervised-response)
 are certified to differ over the declared window. The
-[preparation-robustness owner](nodal/SINE_PREPARATION_ROBUSTNESS.md#sine-preparation-fixed-metric-certificate)
+[preparation-robustness owner](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/SINE_PREPARATION_ROBUSTNESS.md#sine-preparation-fixed-metric-certificate)
 extends the comparison under its retained uncertainty premises.
 The parent-closure chapter also preserves unsuccessful sufficient bounds,
 moving-reference and boundary-work arguments, and exact state counterexamples.
@@ -140,9 +140,9 @@ These results distinguish exact retained information, instantaneous tolerance
 and accumulated prediction error. They do not supply the conservative
 hierarchy source with attraction or a smaller universal NFR state.
 
-The separate [36-node interacting pair](nodal/ORGANIZED_COMPOSITE_RELAXATION.md#mixed-pair-identity)
+The separate [36-node interacting pair](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/ORGANIZED_COMPOSITE_RELAXATION.md#mixed-pair-identity)
 has four nine-cycle regions, a maintained marked identity and a
-[source-associated exchange prediction](nodal/ORGANIZED_COMPOSITE_RELAXATION.md#mixed-collective-sensitivity)
+[source-associated exchange prediction](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/ORGANIZED_COMPOSITE_RELAXATION.md#mixed-collective-sensitivity)
 under its own dissipative law. Oriented ports, phase lifts, hidden profiles and
 initialization remain relevant. This result does not transfer the conservative
 21-node proof or the separate 45-node tracking law to the pair.
@@ -506,12 +506,11 @@ extending its example.
 <a id="deferred-composition-question"></a>
 ### Preserved results and candidates, without automatic activation
 
-The original two-port preparation retains `phi=1/1000`, its actual isolated
-formation images and both full rows. All its policies and the retrospective
-geometry policy are consumed. Its outgoing class and common-destination
-questions remain with the technical owner; no new trajectory, root scan or
-source reset is active. The shifted-origin capture remains a different valid
-preparation. No negative result here rules out every collective organization.
+The two-port line is closed: the original preparation's periods are excluded
+and the shifted-origin capture remains a separate valid preparation, both
+owned by their technical chapters. The consumed attempt records were retired;
+no trajectory, root scan or source reset is active. No negative result here
+rules out every collective organization.
 
 Native source-entry tails, prepared hierarchy, pulse response, collective
 operator descent and predictive-state improvements retain their own missing
@@ -566,20 +565,19 @@ technical owners retain full derivations and unresolved cases.
 <a id="research-evidence-boundary"></a>
 ## Frozen evidence and resource constraints
 
-Keep source archives, prospective declarations, responses, failures and verdicts
-unchanged. Corrections have separate records. Hashes associate bytes; they do
-not authenticate acquisition or chronology. Routine regression and editorial
-reorganization do not regenerate research producers. The
-[evidence guide](../docs/guides/RESEARCH_EVIDENCE.md) and
-[archive index](research/archive/README.md) retain recovery responsibilities.
+Never rewrite a retained source archive, prospective declaration, response,
+failure or verdict; corrections have separate records. Hashes associate bytes;
+they do not authenticate acquisition or chronology. Routine regression and
+editorial reorganization do not regenerate research producers. Under the
+retention policy in [AGENTS.md](../AGENTS.md), evidence that no active question
+consumes is retired: the 2026-11-06 retirement is recoverable from commit
+`279054b8694a9bf5fd3a7e67da65847a3e36d749` (tag `pre-retirement-2026-11-06`).
+The [evidence guide](../docs/guides/RESEARCH_EVIDENCE.md) and
+[recovery index](research/archive/README.md#recovery-records) describe retained
+evidence and recovery.
 
-Two deferred numerical boundaries deserve an explicit reminder:
+One deferred numerical boundary deserves an explicit reminder:
 
-- The [relative-coupling freeze](research/RELATIVE_COUPLING_PROBE.md#5-frozen-declaration-and-numerical-boundary)
-  remains unevaluated: four nominal twenty-coordinate states, sixteen steps
-  of `1/4096` per branch, order twelve and outward dyadic128 arithmetic.
-  The single bounded attempt allows 120 wall seconds per branch, 512 MiB
-  memory and a 32 MiB response; no retries or changed steps/order.
 - The [canonical variational study](nodal/LOCALIZED_RETENTION_MECHANISMS.md#canonical-variational-first-panel)
   retains its pi/4 carrier, periodic `m=1/2` profile, phase time and error class.
   Apply gain 512 once to accumulated initial error, defects and joins. The
@@ -959,9 +957,6 @@ entry point. Existing chapter bookmarks below are generated navigation.
 <a id="chapter-theory-forced-support-balance-md"></a>
 - [Forced support balance](FORCED_SUPPORT_BALANCE.md)
 
-<a id="chapter-theory-nodal-forced-regional-response-md"></a>
-- [Forced regional response and environmental readouts](nodal/FORCED_REGIONAL_RESPONSE.md)
-
 <a id="chapter-theory-nodal-forced-source-and-clock-md"></a>
 - [Forced-source closure and phase clocks](nodal/FORCED_SOURCE_AND_CLOCK.md)
 
@@ -971,9 +966,6 @@ entry point. Existing chapter bookmarks below are generated navigation.
 <a id="chapter-theory-nodal-forced-winding-and-writers-md"></a>
 - [Winding generation and native writer boundaries](nodal/FORCED_WINDING_AND_WRITERS.md)
 
-<a id="chapter-theory-nodal-forced-geometric-identity-md"></a>
-- [Geometric identity and capacity-feedback bounds](nodal/FORCED_GEOMETRIC_IDENTITY.md)
-
 <a id="chapter-theory-remesh-infinity-derivation-md"></a>
 - [REMESH fixed-delay models](REMESH_INFINITY_DERIVATION.md)
 
@@ -982,9 +974,6 @@ entry point. Existing chapter bookmarks below are generated navigation.
 
 <a id="chapter-theory-nodal-sine-replica-pulse-md"></a>
 - [Internal replica pulses and their perturbations](nodal/SINE_REPLICA_PULSE.md)
-
-<a id="chapter-theory-nodal-sine-collective-prediction-md"></a>
-- [Collective prediction and temporal error allowances](nodal/SINE_COLLECTIVE_PREDICTION.md)
 
 <a id="chapter-theory-nodal-sine-pair-grouping-md"></a>
 - [Phase and joint form-phase grouping](nodal/SINE_PAIR_GROUPING.md)
@@ -1020,12 +1009,6 @@ entry point. Existing chapter bookmarks below are generated navigation.
 
 <a id="chapter-theory-nodal-organized-pattern-constitutive-inheritance-md"></a>
 - [Constitutive inheritance through organized interfaces](nodal/ORGANIZED_PATTERN_CONSTITUTIVE_INHERITANCE.md)
-
-<a id="chapter-theory-nodal-organized-composite-reciprocity-md"></a>
-- [Carried prediction through a reciprocal composite interaction](nodal/ORGANIZED_COMPOSITE_RECIPROCITY.md)
-
-<a id="chapter-theory-nodal-organized-composite-relaxation-md"></a>
-- [Composite relaxation, effective interaction and marked-pair identity](nodal/ORGANIZED_COMPOSITE_RELAXATION.md)
 
 <a id="chapter-theory-nodal-organized-regional-transport-md"></a>
 - [Regional contact transport and hidden-profile information](nodal/ORGANIZED_REGIONAL_TRANSPORT.md)
@@ -1154,9 +1137,6 @@ entry point. Existing chapter bookmarks below are generated navigation.
 <a id="chapter-theory-nodal-organized-robust-current-md"></a>
 - [Current discrimination under uncertainty](nodal/ORGANIZED_ROBUST_CURRENT.md)
 
-<a id="chapter-theory-research-organized-electrical-feasibility-md"></a>
-- [Physical feasibility of organized current observation](research/ORGANIZED_ELECTRICAL_FEASIBILITY.md)
-
 <a id="chapter-theory-nodal-organized-effective-law-md"></a>
 - [Collective state and matrix response](nodal/ORGANIZED_EFFECTIVE_LAW.md)
 
@@ -1170,9 +1150,6 @@ entry point. Existing chapter bookmarks below are generated navigation.
 
 <a id="chapter-theory-nodal-organized-contact-maintenance-md"></a>
 - [Organized identity under continued external contact](nodal/ORGANIZED_CONTACT_MAINTENANCE.md)
-
-<a id="chapter-theory-nodal-sine-contact-composition-md"></a>
-- [Composition error of simultaneous contact responses](nodal/SINE_CONTACT_COMPOSITION.md)
 
 <a id="chapter-theory-nodal-organized-weak-contact-maintenance-md"></a>
 - [Organized identity under weak external contact](nodal/ORGANIZED_WEAK_CONTACT_MAINTENANCE.md)
@@ -1380,17 +1357,11 @@ entry point. Existing chapter bookmarks below are generated navigation.
 <a id="chapter-theory-nodal-sine-maintained-parent-closure-md"></a>
 - [Maintained-parent SHA closure and changed law](nodal/SINE_MAINTAINED_PARENT_CLOSURE.md)
 
-<a id="chapter-theory-nodal-sine-preparation-robustness-md"></a>
-- [Finite preparation families for the held sine law](nodal/SINE_PREPARATION_ROBUSTNESS.md)
-
 <a id="chapter-theory-nodal-sine-child-temporal-readiness-md"></a>
 - [Connected child's temporal capability](nodal/SINE_CHILD_TEMPORAL_READINESS.md)
 
 <a id="chapter-theory-nodal-sine-child-grammar-timing-md"></a>
 - [Child OZ and observation timing](nodal/SINE_CHILD_GRAMMAR_TIMING.md)
-
-<a id="chapter-theory-nodal-sine-child-thol-admission-md"></a>
-- [Acquired-child THOL and word completion](nodal/SINE_CHILD_THOL_ADMISSION.md)
 
 <a id="chapter-theory-nodal-sine-successor-stationary-geometry-md"></a>
 - [Stationary geometry of the proposed UM successor](nodal/SINE_SUCCESSOR_STATIONARY_GEOMETRY.md)
@@ -1424,9 +1395,6 @@ entry point. Existing chapter bookmarks below are generated navigation.
 <a id="chapter-theory-tnfr-variational-principle-md"></a>
 - [Variational and exchange models](TNFR_VARIATIONAL_PRINCIPLE.md)
 
-<a id="chapter-theory-dissipative-and-open-systems-md"></a>
-- [Dissipative/open-system models](DISSIPATIVE_AND_OPEN_SYSTEMS.md)
-
 <a id="chapter-theory-gauge-symmetry-and-unification-md"></a>
 - [Gauge and polarization constructions](GAUGE_SYMMETRY_AND_UNIFICATION.md)
 
@@ -1441,52 +1409,16 @@ entry point. Existing chapter bookmarks below are generated navigation.
 <a id="chapter-theory-tnfr-structural-observability-md"></a>
 - [Structural observability — R1](TNFR_STRUCTURAL_OBSERVABILITY.md)
 
-<a id="chapter-theory-tnfr-arithmetic-dynamics-md"></a>
-- [Arithmetic dynamics — R2](TNFR_ARITHMETIC_DYNAMICS.md)
-
-<a id="chapter-theory-tnfr-crt-fractality-md"></a>
-- [CRT composition — R3](TNFR_CRT_FRACTALITY.md)
-
-<a id="chapter-theory-tnfr-padic-dynamics-md"></a>
-- [p-adic dynamics — R4](TNFR_PADIC_DYNAMICS.md)
-
-<a id="chapter-theory-tnfr-algebraic-number-fields-md"></a>
-- [Algebraic number fields — R5](TNFR_ALGEBRAIC_NUMBER_FIELDS.md)
-
-<a id="chapter-theory-tnfr-additive-dynamics-md"></a>
-- [Additive dynamics — R6](TNFR_ADDITIVE_DYNAMICS.md)
-
-<a id="chapter-theory-tnfr-arithmetic-pressure-md"></a>
-- [Arithmetic pressure — R7](TNFR_ARITHMETIC_PRESSURE.md)
-
-<a id="chapter-theory-tnfr-arithmetic-operators-md"></a>
-- [Arithmetic operators — R8](TNFR_ARITHMETIC_OPERATORS.md)
-
 <a id="chapter-theory-tnfr-riemann-research-notes-md"></a>
 - [Riemann scope](TNFR_RIEMANN_RESEARCH_NOTES.md)
 
 ### Research, measurement and parked evidence
-
-<a id="chapter-theory-research-passive-transport-protocol-md"></a>
-- [Passive transport protocol](research/PASSIVE_TRANSPORT_PROTOCOL.md)
-
-<a id="chapter-theory-research-phase-amplitude-measurement-protocol-md"></a>
-- [Regional phase/amplitude protocol](research/PHASE_AMPLITUDE_MEASUREMENT_PROTOCOL.md)
 
 <a id="chapter-theory-research-chemical-observation-admission-md"></a>
 - [Chemical observation and predictive information](research/CHEMICAL_OBSERVATION_ADMISSION.md)
 
 <a id="chapter-theory-research-dpll-physical-admission-md"></a>
 - [Physical admission of the delayed digital-PLL realization](research/DPLL_PHYSICAL_ADMISSION.md)
-
-<a id="chapter-theory-research-tclab-exploratory-protocol-md"></a>
-- [TCLab comparison boundary](research/TCLAB_EXPLORATORY_PROTOCOL.md)
-
-<a id="chapter-theory-c6-research-mechanism-audit-md"></a>
-- [Parked C6 evidence boundary](C6_RESEARCH_MECHANISM_AUDIT.md)
-
-<a id="chapter-theory-research-relative-coupling-probe-md"></a>
-- [Relative-coupling observation admission](research/RELATIVE_COUPLING_PROBE.md)
 
 ### Research navigation
 

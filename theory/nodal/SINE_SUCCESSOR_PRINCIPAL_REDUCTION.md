@@ -291,9 +291,9 @@ The evaluator remains an observation API: failure of a solver, a finite set
 of candidates or an interval box to certify a root would not prove absence.
 The acute theorem is reused only after its actual hypotheses are established.
 
-Verification uses [exact reduction controls](../../tests/research/test_maintained_successor_principal_reduction.py),
+Verification uses [exact reduction controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_successor_principal_reduction.py),
 [candidate admission controls](../../tests/research/test_maintained_successor_principal.py)
-and [independent fine-state comparisons](../../tests/research/test_maintained_successor_principal_evidence.py).
+and [independent fine-state comparisons](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_successor_principal_evidence.py).
 These include the singular chain's cubic variation and independent derivatives
 of F. A synchronized minimum in a different zero-winding class prevents a
 scope expansion to all graph states. No UM, trajectory or frozen producer

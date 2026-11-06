@@ -271,7 +271,7 @@ information obstruction, not a claim that both preparations were acquired,
 or an impossibility of learning from additional finite observations. It
 does not replace a forecast-error proof with an instantaneous difference.
 
-The [independent controls](../../tests/physics/test_organized_compressed_memory.py)
+The [independent controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_organized_compressed_memory.py)
 use shared hidden transport and exact arithmetic, reconstruct interface
 currents and storage from edges, and check the drift and coupled error
 inequalities and initialization obstruction. Frozen evidence and producers

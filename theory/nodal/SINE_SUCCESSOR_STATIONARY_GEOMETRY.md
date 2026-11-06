@@ -17,7 +17,7 @@ alone selects further work; this conditional geometry does not activate it.
 ## 1. Complete law, source and every edge branch
 
 Re-admit the retained THOL successor with the
-[source consumer](../../src/tnfr/research/maintained_parent_um_source.py), then
+[source consumer](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/maintained_parent_um_source.py), then
 rebuild its ideal default UM reset. No earlier producer or event is replayed.
 The [chamber owner](../../src/tnfr/research/maintained_successor_chamber.py)
 retains all 21 nodes, 53 edges, actual predicted conductances and capacities,
@@ -252,9 +252,9 @@ comparison to principal cuts. Nonstationary maintenance still needs its own
 argument. Positive capacity rescaling changes rates and means but
 cannot repair the present stationary phase obstruction.
 
-Verification combines [branch and cycle controls](../../tests/research/test_maintained_successor_chamber.py),
-[interval witness controls](../../tests/research/test_maintained_successor_stationary.py)
-and [independent full-support checks](../../tests/research/test_maintained_successor_stationary_evidence.py).
+Verification combines [branch and cycle controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_successor_chamber.py),
+[interval witness controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_successor_stationary.py)
+and [independent full-support checks](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_maintained_successor_stationary_evidence.py).
 The latter recompute fine currents and static comparison identities without
 executing UM, THOL, a trajectory or a frozen producer. High-precision checks
 are independent numerical controls; the exact inequalities and analytical

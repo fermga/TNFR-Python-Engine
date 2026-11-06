@@ -682,7 +682,7 @@ and implementations.
 `tnfr.factorization`, `TNFR.factorize` and `Network.factorize` are deprecated
 compatibility bridges for a separately supplied legacy `tnfr_factorization`
 package. They do not discover or activate the
-[archived lab](../applications/factorization-lab/README.md).
+[archived lab](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/applications/factorization-lab/README.md).
 An absent or archived implementation raises retirement guidance; an admitted
 external package emits `DeprecationWarning`. Historical factor-candidate,
 acceptance and completeness labels are not independent arithmetic certificates.
@@ -2194,7 +2194,7 @@ product, plus positive integer dimensions. They reject nonfinite constructed
 matrices. These are supplied auxiliary matrix multipliers; a signed multiplier
 does not redefine the nonnegative nodal-capacity domain. Forward GKSL
 interpretation requires a nonnegative overall generator factor and its other
-[model hypotheses](../theory/DISSIPATIVE_AND_OPEN_SYSTEMS.md#1-gksl-generator).
+[model hypotheses](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/DISSIPATIVE_AND_OPEN_SYSTEMS.md#1-gksl-generator).
 
 The auxiliary dissipative diagnostics require representable snapshot purity,
 computed actions, bounds, rates and comparison thresholds as well as finite
@@ -2203,7 +2203,7 @@ They reject nonfinite results before issuing bound or unitality verdicts;
 nonzero collapse-norm squares lost to underflow also reject. Frobenius norms
 use the shared scaled fallback when direct squaring exceeds the numeric range,
 and observed balance rates use the shared signed secant reader. These checks
-preserve the [diagnostic availability conventions](../theory/DISSIPATIVE_AND_OPEN_SYSTEMS.md#6-validation-and-reproducibility):
+preserve the [diagnostic availability conventions](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/DISSIPATIVE_AND_OPEN_SYSTEMS.md#6-validation-and-reproducibility):
 absent collapse or reference data retain explicit NaNs and unevaluated flags.
 The trace-distance ratio remains infinite when the initial distance is at or below
 its configured floor but the final distance is not; that observation fails

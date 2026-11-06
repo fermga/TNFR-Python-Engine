@@ -397,7 +397,7 @@ registered operators follows from this conditional action analysis.
 <a id="nul-finite-reset-contract"></a>
 ## 9. Finite uncertainty through one Contraction stage
 
-The [preparation comparison](SINE_PREPARATION_ROBUSTNESS.md#sine-preparation-fixed-metric-certificate)
+The [preparation comparison](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/SINE_PREPARATION_ROBUSTNESS.md#sine-preparation-fixed-metric-certificate)
 certifies a supplied post-event family under a held law. To connect such a
 family to an operator, the reset must carry its uncertainty as well as its
 nominal state. The following conditional result does this for one specified
@@ -611,7 +611,7 @@ full sine law with capacities nu^+, plus their whole-cell phase enclosures,
 derivative/remainder premises, original observation definition, horizon and
 clock. Rebuild the fixed-metric instrument from these inputs and (18)--(23).
 If its inflated-segment first-exit gates and observation-radius gates pass,
-the [finite-error theorem](SINE_PREPARATION_ROBUSTNESS.md#sine-relative-preparation-metric)
+the [finite-error theorem](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/SINE_PREPARATION_ROBUSTNESS.md#sine-relative-preparation-metric)
 bounds every admitted reset output through that subsequent window.
 
 The proof is composition of inclusions: (17) puts each actual endpoint into
@@ -678,7 +678,7 @@ under `artifacts/nul-reset-contract-20261023/`.
 ## 10. Joint state-and-capacity image and successor observation
 
 Section 9 fixes a common capacity. The
-[positive held-capacity comparison](SINE_PREPARATION_ROBUSTNESS.md#sine-positive-capacity-uncertainty)
+[positive held-capacity comparison](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/theory/nodal/SINE_PREPARATION_ROBUSTNESS.md#sine-positive-capacity-uncertainty)
 now supplies the missing continuation for a capacity interval. Their joint
 consequence is a conditional prediction through one admitted Contraction
 (NUL) stage, including a nonzero-width analytical example below. It does not

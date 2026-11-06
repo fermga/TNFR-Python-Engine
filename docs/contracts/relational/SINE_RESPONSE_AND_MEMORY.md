@@ -371,9 +371,9 @@ Direct schema `tnfr.return-path-geometry-response.v1` and the generic SDK
 envelope preserve exact fractions, unavailable values and declared origins.
 The [guide](../../guides/relational/SINE_RESPONSE_AND_MEMORY.md#infer-return-path-response),
 [admission tests](../../../tests/physics/test_return_path_geometry_inference.py)
-and [independent full-row controls](../../../tests/physics/test_return_path_geometry_prediction.py)
+and [independent full-row controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_return_path_geometry_prediction.py)
 exercise this boundary. The
-[staged producer](../../../benchmarks/return_path_geometry_response.py) consumes
+[staged producer](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/benchmarks/return_path_geometry_response.py) consumes
 a fixed known-source protocol, saves its prediction before evaluation and
 checks saved bounds against rebuilt geometric premises before using them.
 

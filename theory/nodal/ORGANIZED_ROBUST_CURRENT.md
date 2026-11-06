@@ -319,9 +319,9 @@ The [pure bounds and raw statistic](../../src/tnfr/physics/_organized_robust_cur
 admit primitive intervals, nonnegative errors and ordered readings using
 shared owners. They rebuild all consumed fields; no cached margin or
 source report certifies the present law. The fixed corner is reserved to
-the [exclusive analytical driver](../../benchmarks/organized_robust_current.py).
+the [exclusive analytical driver](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/benchmarks/organized_robust_current.py).
 The [instrument tests](../../tests/physics/test_organized_robust_current.py)
-and [independent theory controls](../../tests/physics/test_organized_robust_current_theory.py)
+and [independent theory controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_organized_robust_current_theory.py)
 use other synthetic inputs and algebraic counterexamples, without assessing
 that corner or executing previous frozen producers.
 
@@ -334,13 +334,13 @@ practical sensor capability follows from evaluating this sufficient bound.
 
 Declaration, consuming helper and driver were committed at
 `98ccd8686592eea15ad22151802d731d683d70e2` before one assessment.
-The preserved [attempt](../../docs/assets/organized_robust_current/attempt.json)
-and [result](../../docs/assets/organized_robust_current/result.json) record
+The preserved [attempt](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_robust_current/attempt.json)
+and [result](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/docs/assets/organized_robust_current/result.json) record
 verdict `conditional_current_discrimination_admitted`. Both models retain
 all four positive identity/collar margins, their current envelopes are
 strictly separated, and no unresolved condition remains within this
 declared sufficient-bound decision.
-The [read-only evidence controls](../../tests/physics/test_organized_robust_current_evidence.py)
+The [read-only evidence controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_organized_robust_current_evidence.py)
 reconstruct its receipt, coefficient intervals, both laws' errors and
 identity margins, and the strict separation from archived primitives.
 They do not import or rerun the bound, driver or assessor.

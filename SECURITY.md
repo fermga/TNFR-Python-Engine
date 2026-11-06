@@ -41,7 +41,7 @@ for example with correctly verified TLS. The opt-in is not a pickle sandbox,
 and TLS alone does not make an untrusted server safe. Direct JSON responses
 without a pickle payload retain their existing behavior.
 
-The [archived factorization lab](applications/factorization-lab/README.md)
+The [archived factorization lab](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/applications/factorization-lab/README.md)
 retains this same opt-in as
 `--dispatcher-allow-unsafe-pickle` or, for its environment-configured dispatcher,
 `TNFR_FFT_ALLOW_UNSAFE_PICKLE=true`. Both default to refusal. These options do

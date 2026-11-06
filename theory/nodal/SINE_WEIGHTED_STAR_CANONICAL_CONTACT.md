@@ -3847,7 +3847,7 @@ premise and normalization. This word supplies neither necessity.
 <a id="weighted-star-constitutive-handoff-implementation"></a>
 ### Shared comparison and evidence scope
 
-The [detached handoff reader](../../src/tnfr/research/weighted_star_constitutive_handoff.py)
+The [detached handoff reader](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/src/tnfr/research/weighted_star_constitutive_handoff.py)
 reuses the retained preparation, shared signed-scalar/graph admission, complete
 sine support reader and exact interval arithmetic. It rebuilds consumed fields
 at every prefix and adds the explicitly declared current/potential correction;
@@ -3858,7 +3858,7 @@ all configuration/history/lifecycle associations, including their scalar and
 container types, without creating a parallel operator-admission catalog. The
 record fingerprint and original-file byte receipt are separate associations;
 neither authenticates execution. Its
-[independent controls](../../tests/research/test_weighted_star_constitutive_handoff.py)
+[independent controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/research/test_weighted_star_constitutive_handoff.py)
 check fine edge sums, both rate rows, own storage and event work, strict
 instantaneous separation, nontrivial five-block closure and invalid
 primitive/context associations.
@@ -3963,7 +3963,7 @@ Here `H_0<1129/2560<71/160`; the perturbed energy need not equal `H_0`.
 The existing full-storage theorem retains both old-star identities. It does
 not establish access to the perturbed state or a new common identity.
 
-[Independent static controls](../../tests/physics/test_weighted_star_relational_observation.py)
+[Independent static controls](https://github.com/fermga/TNFR-Python-Engine/blob/279054b8694a9bf5fd3a7e67da65847a3e36d749/tests/physics/test_weighted_star_relational_observation.py)
 rebuild the fine rows from the associated retained source and check the
 phase perturbation without trajectories. The
 [operational identification boundary](RELATION_FOUNDATIONS.md#operational-relational-geometry)
