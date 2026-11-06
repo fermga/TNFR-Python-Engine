@@ -31,11 +31,10 @@ nothing. `python scripts/clean_repository.py` (`make clean`) removes declared
 generated outputs; `--caches` (`make clean-caches`) also removes tool caches and
 source `__pycache__` directories; `--dry-run` lists either set first. The
 script never removes local evidence under `artifacts/`, frozen `build/`
-preparations, `publish/`, `bibliografia/` or environments. Retire local
-evidence only after confirming that no tracked file references it, preferably
-by moving it outside the checkout rather than deleting it. Never bulk-delete the
-checkout itself: restore tracked files with Git, and recreate environments from
-[pyproject.toml](pyproject.toml).
+preparations, `publish/`, `bibliografia/` or environments. Local evidence that
+no tracked file references does not belong in the checkout: confirm that, then
+move it out or delete it. Never bulk-delete the checkout itself: restore tracked
+files with Git, and recreate environments from [pyproject.toml](pyproject.toml).
 
 ## Development Workflow
 
@@ -125,11 +124,12 @@ checked views after changing their inputs and run the
 [documentation checks](TESTING.md#code-quality-and-documentation-checks).
 
 Explain current behavior in maintained guides and contracts; keep results with
-their proof/evidence chapters and avoid delivery logs in overviews. Preserve
-valid anchors and immutable evidence. Check imports, public consumers and frozen
-dependencies before retiring obsolete material. Record its Git revision/blob and
-replacement instead of keeping superseded instructions or known errors as active
-guidance. Preserve unique proofs, counterexamples and frozen source records.
+their proof/evidence chapters and avoid delivery logs in overviews. Retained
+evidence keeps its exact bytes, and retained chapters keep valid anchors. Follow
+the retention policy in the [contributor instructions](AGENTS.md): retire
+failed, superseded, secondary or parked material with its evidence, producers
+and tests after checking imports, public consumers and evidence bindings, and
+link it by permalink to its recovery commit instead of keeping a copy.
 Do not create a competing task list or catalog.
 
 ## Pull Request Process

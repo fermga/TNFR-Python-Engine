@@ -247,7 +247,9 @@ mechanics, not an alternative source of mathematical conclusions. Reuse parsed
 records through module fixtures and isolate mutations. Synthetic intervals and
 stubbed producers test consumer logic, not the execution of the historical run.
 
-Preserve every original failure, partial result and inconclusive verdict.
+Never rewrite a retained original failure, partial result or inconclusive
+verdict. Records that no active question consumes are retired under the
+retention policy in [AGENTS.md](AGENTS.md), not kept for their own sake.
 An export-recovery recomputation keeps its separate source and history; a later
 successful record cannot become a successful first attempt. New analytical
 handoffs or tighter current bounds leave the original evaluated response intact.
@@ -539,7 +541,7 @@ the configured limits. Use `--help` for the supported overrides.
 This checks the wheel and source distribution built for PyPI. Repository
 source archives and the documentation site have different contents and size
 requirements; see [publication payloads](.github/WORKFLOWS.md#published-payloads).
-Frozen scientific evidence must retain its original bytes and dependencies.
+Retained frozen scientific evidence keeps its original bytes and dependencies.
 Removing it merely to meet a package budget would not validate the package.
 
 ### Lightweight development bundle
@@ -551,8 +553,8 @@ examples and tests from the selected commit, without Git history or installed
 dependencies. The builder derives the version from that commit, not the live
 working tree, and excludes bulky `docs/assets/` evidence while retaining the
 site's `mathjax.js`. Omitted evidence remains in the full repository/Zenodo
-archive and is individually recorded for retrieval; omission does not authorize
-deleting or regenerating frozen results.
+archive and is individually recorded for retrieval; omission from the bundle is
+not retirement and does not authorize regenerating frozen results.
 
 Build an initial candidate from a committed tree with Python 3.11+ and Git:
 

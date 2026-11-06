@@ -246,9 +246,9 @@ continuation record; do not rely on conversation memory or create another queue.
 After the gate closes, reassess the next scientific question against the global
 objective instead of automatically continuing the most recent example. Existing
 examples/theorems do not activate campaigns. On closing a gate, update the
-program's current question and link the result chapter. Preserve unresolved
-dependencies and frozen evidence without per-turn logs or duplicate result
-inventories. Follow F1-F4:
+program's current question and link the result chapter. Keep the unresolved
+dependencies and evidence that retained claims consume, without per-turn logs
+or duplicate result inventories. Follow F1-F4:
 
 1. Define identity, sufficient constituent/boundary state, domains, units,
    observations and discarded information.
@@ -299,9 +299,10 @@ extraterrestrial observations or large facilities.
 
 Record source/configuration, support/node order, inputs, seeds, precision,
 backend, pressure refresh, events and residuals; a seed alone is insufficient.
-Preserve frozen protocols, source archives, responses and verdicts. Corrections
-need separate evidence: do not rewrite evaluated predictions or regenerate
-frozen producers for unrelated changes.
+Never rewrite a retained frozen protocol, source archive, response or verdict.
+Corrections need separate evidence; do not regenerate frozen producers for
+unrelated changes. Retiring a record under the retention policy removes it from
+the tree; it does not rewrite it.
 
 The [published evidence selection] declares which local records are available
 in a fresh checkout and which dependencies remain omitted. Resolve a historical
@@ -353,14 +354,18 @@ The program has a 96-KiB file budget. Each research chapter, the program and
 each maintained docs owner also has a 4,000-physical-line editorial limit,
 checked by `scripts/check_documentation.py`. Split chapters by model and
 responsibility while preserving their published routes and evidence.
-Retain useful conditional results and counterexamples. Superseded instructions
-and corrected errors belong in Git recovery records, not active guidance.
-Frozen source captures remain historical evidence, never another task queue.
-Retire superseded drivers, duplicate plans and unused compatibility layers only
-after checking imports, public consumers and evidence dependencies. For unchanged
-committed files, record recovery revision/blob and replacement rather than
-another historical copy. Preserve uncommitted work, unique proofs,
-counterexamples, frozen protocols and evaluated responses.
+
+**Retention policy.** The working tree keeps what serves active research: the
+foundations, the engine and its contracts, the current program, results that it
+or a retained owner consumes, and evidence for claims currently relied on,
+including the reviewed pillar evidence. Retire failed, superseded, secondary and
+parked lines together with their evidence, producers and tests, after checking
+imports, public consumers and evidence bindings; Git history is their record.
+Link a retired source by permalink to its recovery commit instead of keeping a
+copy, summary or historical capture. Keep a negative result only as a concise
+statement where it prevents repeating work on an active question. Superseded
+instructions and corrected errors do not remain as active guidance. Preserve
+uncommitted work until its owner decides.
 
 ## 7. Development and verification workflow
 
