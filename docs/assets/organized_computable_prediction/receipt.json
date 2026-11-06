@@ -1,0 +1,12 @@
+{
+  "response_archive":{
+    "path":"response.zip",
+    "bytes":1452983,
+    "sha256":"c4fca529593dbfdf445d314508b78f3f188cd3fa3dce3388fa52df3a1581e4d3"
+  },
+  "result":{
+    "path":"result.json",
+    "bytes":24548218,
+    "sha256":"8ccabeecabb0dbaf7ba146dc3034ad8cf496e2e258348ccca016b83619273f1f"
+  }
+}

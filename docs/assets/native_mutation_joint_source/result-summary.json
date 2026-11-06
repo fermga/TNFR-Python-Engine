@@ -1,0 +1,10 @@
+{
+  "status_counts": {
+    "rejected": 24
+  },
+  "admitted": [],
+  "total_objective_evaluations": 71204,
+  "budget_exhaustions": 2,
+  "scope": "One frozen finite proposal search plus exact readmission; no global exclusion",
+  "numerical_success_is_not_admission": true
+}

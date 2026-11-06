@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://tnfr.io/schemas/grammar.json",
+  "title": "TNFR Grammar Configuration",
+  "type": "object",
+  "definitions": {
+    "glyphCode": {
+      "description": "Canonical glyph identifier in uppercase notation.",
+      "type": "string",
+      "pattern": "^[A-Z][A-Z_]*$"
+    },
+    "probability": {
+      "description": "Threshold constrained to the [0, 1] interval.",
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "cfg_soft": {
+      "type": "object",
+      "description": "Soft grammar preferences applied before canonical automaton rules.",
+      "properties": {
+        "window": {
+          "description": "History window inspected to avoid short-term glyph repetitions.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "avoid_repeats": {
+          "description": "Glyph codes that should be substituted when repeated inside the window.",
+          "type": "array",
+          "items": { "$ref": "#/definitions/glyphCode" },
+          "uniqueItems": true
+        },
+        "fallbacks": {
+          "description": "Mapping of glyph codes to their explicit substitution when repetition is detected.",
+          "type": "object",
+          "additionalProperties": { "$ref": "#/definitions/glyphCode" }
+        },
+        "force_dnfr": {
+          "description": "Minimum |ΔNFR| normalised score that bypasses soft filtering.",
+          "$ref": "#/definitions/probability"
+        },
+        "force_accel": {
+          "description": "Minimum acceleration normalised score that bypasses soft filtering.",
+          "$ref": "#/definitions/probability"
+        }
+      },
+      "additionalProperties": true
+    },
+    "cfg_canon": {
+      "type": "object",
+      "description": "Native incremental grammar enforcement configuration; operator and word contracts own admission.",
+      "properties": {
+        "enabled": {
+          "description": "Toggle canonical grammar enforcement during metric runs.",
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "properties": {
+    "cfg_soft": { "$ref": "#/definitions/cfg_soft" },
+    "cfg_canon": { "$ref": "#/definitions/cfg_canon" }
+  },
+  "additionalProperties": false
+}

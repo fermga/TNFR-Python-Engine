@@ -1,0 +1,518 @@
+{
+  "protocol_sha256": "83ce921fedfe554e92da2e8ac2395a81ef24bfd2594f8a22c12dd09687a1f625",
+  "driver_sha256": "a96614b8254e7946a6609bb9699aa9ea44e5e9e0765fe6667941354ba0a0cd03",
+  "baseline_sha256": "511cd903f7493815d64734757425509a3b4c2e8dc3126278ee0a83bc16bf388d",
+  "python": "3.13.6 (tags/v3.13.6:4e66535, Aug  6 2025, 14:36:00) [MSC v.1944 64 bit (AMD64)]",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "numpy": "2.5.3",
+  "scipy": "1.18.1",
+  "backend": "NumPy binary64; SciPy SLSQP single process; exact certification separate",
+  "seed": 20261018,
+  "starts": [
+    [
+      0.011503896676003933,
+      0.2835290711373091,
+      0.5328940926119685,
+      0.8124694116413593,
+      0.3364099683240056,
+      0.42101612873375416,
+      0.7283204896375537,
+      0.12051793932914734,
+      0.587526279501617,
+      0.49313488602638245,
+      0.18129861261695623,
+      0.14413151144981384,
+      0.26895342394709587
+    ],
+    [
+      0.8927697716280818,
+      0.936437520198524,
+      0.4168236870318651,
+      0.001825413666665554,
+      0.6848206054419279,
+      0.65886898804456,
+      0.03172634821385145,
+      0.533879891037941,
+      0.4990920638665557,
+      0.9837506050243974,
+      0.5930248266085982,
+      0.6016113553196192,
+      0.8484410028904676
+    ],
+    [
+      0.5339561216533184,
+      0.22044396586716175,
+      0.7783766482025385,
+      0.6916043218225241,
+      0.941546187736094,
+      0.9528076825663447,
+      0.7736685890704393,
+      0.9929868606850505,
+      0.06092755403369665,
+      0.5013399058952928,
+      0.9699079524725676,
+      0.7780118640512228,
+      0.025223704986274242
+    ],
+    [
+      0.4328039363026619,
+      0.6220707288011909,
+      0.14692660700529814,
+      0.4942419873550534,
+      0.032344477251172066,
+      0.18956193700432777,
+      0.45463781990110874,
+      0.4072643993422389,
+      0.8992396993562579,
+      0.022442638874053955,
+      0.2575997915118933,
+      0.47578759118914604,
+      0.6078531602397561
+    ]
+  ],
+  "pairs": [
+    [
+      "stable",
+      "stable"
+    ],
+    [
+      "stable",
+      "transition"
+    ],
+    [
+      "transition",
+      "stable"
+    ],
+    [
+      "transition",
+      "transition"
+    ],
+    [
+      "dissonant",
+      "stable"
+    ],
+    [
+      "dissonant",
+      "transition"
+    ]
+  ],
+  "maxiter": 400,
+  "maxeval": 5000,
+  "ftol": 1e-12,
+  "eps": 1e-07,
+  "strict_proposal_margin": 1e-06,
+  "law": {
+    "pressure": [
+      {
+        "numerator": 26395194241293576,
+        "denominator": 144115188075855871
+      },
+      {
+        "numerator": 8401851274745207,
+        "denominator": 144115188075855871
+      },
+      {
+        "numerator": 109318142559817088,
+        "denominator": 144115188075855871
+      }
+    ],
+    "stability": [
+      {
+        "numerator": 109318142559817088,
+        "denominator": 144115188075855871
+      },
+      {
+        "numerator": 26395194241293576,
+        "denominator": 144115188075855871
+      },
+      {
+        "numerator": 8401851274745207,
+        "denominator": 144115188075855871
+      }
+    ],
+    "form_rails": [
+      {
+        "numerator": -1,
+        "denominator": 1
+      },
+      {
+        "numerator": 1,
+        "denominator": 1
+      }
+    ],
+    "capacity_rails": [
+      {
+        "numerator": 0,
+        "denominator": 1
+      },
+      {
+        "numerator": 884279719003555,
+        "denominator": 140737488355328
+      }
+    ],
+    "oz_factor": {
+      "numerator": 5937139912176161,
+      "denominator": 4503599627370496
+    },
+    "il_factor": {
+      "numerator": 854047988748571,
+      "denominator": 1125899906842624
+    },
+    "mutation_shift": {
+      "numerator": 5070602400912917721802757552745,
+      "denominator": 20282409603651670423947251286016
+    },
+    "source_tiny": {
+      "numerator": 4835703278458517,
+      "denominator": 4835703278458516698824704
+    },
+    "xi": {
+      "numerator": 3602879701896397,
+      "denominator": 36028797018963968
+    },
+    "pressure_cut": {
+      "numerator": 149744687610069,
+      "denominator": 1125899906842624
+    },
+    "si_low": {
+      "numerator": 1,
+      "denominator": 4
+    },
+    "si_high": {
+      "numerator": 1,
+      "denominator": 2
+    },
+    "phase_gains": [
+      {
+        "numerator": 228155022448185,
+        "denominator": 4503599627370496
+      },
+      {
+        "numerator": 5734161139222659,
+        "denominator": 36028797018963968
+      }
+    ],
+    "phase_policy": {
+      "R_hi": {
+        "numerator": 854047988748571,
+        "denominator": 1125899906842624
+      },
+      "R_lo": {
+        "numerator": 5734161139222659,
+        "denominator": 9007199254740992
+      },
+      "disr_hi": {
+        "numerator": 1,
+        "denominator": 2
+      },
+      "disr_lo": {
+        "numerator": 2170735020392579,
+        "denominator": 9007199254740992
+      },
+      "kG_min": {
+        "numerator": 228155022448185,
+        "denominator": 18014398509481984
+      },
+      "kG_max": {
+        "numerator": 5734161139222659,
+        "denominator": 36028797018963968
+      },
+      "kL_min": {
+        "numerator": 5734161139222659,
+        "denominator": 144115188075855872
+      },
+      "kL_max": {
+        "numerator": 5734161139222659,
+        "denominator": 36028797018963968
+      },
+      "up": {
+        "numerator": 5734161139222659,
+        "denominator": 72057594037927936
+      },
+      "down": {
+        "numerator": 5734161139222659,
+        "denominator": 36028797018963968
+      }
+    },
+    "provenance": "fresh CoreDefaults; exact normalization of represented weights"
+  },
+  "premises": {
+    "dt": {
+      "numerator": 1,
+      "denominator": 16
+    },
+    "times": [
+      {
+        "numerator": 1,
+        "denominator": 1
+      },
+      {
+        "numerator": 17,
+        "denominator": 16
+      },
+      {
+        "numerator": 9,
+        "denominator": 8
+      }
+    ],
+    "support": [
+      [
+        8,
+        9,
+        2,
+        3
+      ],
+      [
+        8,
+        9,
+        2,
+        3
+      ],
+      [
+        0,
+        1,
+        4,
+        5
+      ],
+      [
+        0,
+        1,
+        4,
+        5
+      ],
+      [
+        2,
+        3,
+        6,
+        7
+      ],
+      [
+        2,
+        3,
+        6,
+        7
+      ],
+      [
+        4,
+        5,
+        8,
+        9
+      ],
+      [
+        4,
+        5,
+        8,
+        9
+      ],
+      [
+        6,
+        7,
+        0,
+        1
+      ],
+      [
+        6,
+        7,
+        0,
+        1
+      ]
+    ],
+    "traces": [
+      [
+        [
+          "AL",
+          "IL",
+          "EN"
+        ],
+        [
+          "AL",
+          "IL",
+          "EN"
+        ],
+        [
+          "AL",
+          "IL",
+          "EN"
+        ],
+        [
+          "AL",
+          "IL",
+          "EN"
+        ],
+        [
+          "AL",
+          "IL",
+          "EN"
+        ]
+      ],
+      [
+        [
+          "AL",
+          "IL",
+          "EN",
+          "OZ"
+        ],
+        [
+          "AL",
+          "IL",
+          "EN",
+          "IL"
+        ],
+        [
+          "AL",
+          "IL",
+          "EN",
+          "IL"
+        ],
+        [
+          "AL",
+          "IL",
+          "EN",
+          "IL"
+        ],
+        [
+          "AL",
+          "IL",
+          "EN",
+          "IL"
+        ]
+      ],
+      [
+        [
+          "AL",
+          "IL",
+          "EN",
+          "OZ",
+          "ZHIR"
+        ],
+        [
+          "AL",
+          "IL",
+          "EN",
+          "IL",
+          "IL"
+        ],
+        [
+          "AL",
+          "IL",
+          "EN",
+          "IL",
+          "IL"
+        ],
+        [
+          "AL",
+          "IL",
+          "EN",
+          "IL",
+          "IL"
+        ],
+        [
+          "AL",
+          "IL",
+          "EN",
+          "IL",
+          "IL"
+        ]
+      ]
+    ],
+    "debts": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        2,
+        0,
+        0,
+        0,
+        0
+      ]
+    ],
+    "node_ordinals": [
+      3,
+      4,
+      5
+    ],
+    "runtime_ordinals": [
+      0,
+      1,
+      2
+    ],
+    "lags": [
+      0,
+      1,
+      2
+    ],
+    "possible_counts": [
+      [
+        0
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        0,
+        1,
+        2
+      ]
+    ],
+    "hypotheses": [
+      "paired primitive state, unit edges, nodes 0..9 and whole-pair order",
+      "direct default glyph requests; strict grammar raise; supplied initial context",
+      "prior IL true; common nonempty kind; initial debt, lags, counts, rates and acceleration zero",
+      "initial timestamped EPI histories empty at t=1; later samples are associated ideal rows",
+      "Gamma zero; no callbacks, optional mathematics or delayed REMESH evidence",
+      "held Euler pressure; no form clipping; capacities fixed since tau exceeds two",
+      "ideal circular common lifts; absolute Mutation telemetry and binary64 realization excluded",
+      "negative algebraic zero is an outer direction, never an acquired native sign bit"
+    ]
+  },
+  "bounds": {
+    "lower": [
+      0.015625,
+      0.015625,
+      0.015625,
+      0.015625,
+      0.015625,
+      -3.0,
+      -3.0,
+      -3.0,
+      -3.0,
+      -1.456972830669108,
+      -1.456972830669108,
+      -1.456972830669108,
+      -1.456972830669108
+    ],
+    "upper": [
+      6.283185307179586,
+      6.283185307179586,
+      6.283185307179586,
+      6.283185307179586,
+      6.283185307179586,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      1.456972830669108,
+      1.456972830669108,
+      1.456972830669108,
+      1.456972830669108
+    ]
+  },
+  "sources": {
+    "src\\tnfr\\research\\_native_mutation_feasibility.py": "01c54f396db92e8125b345a63d8dea79750efc75bf6ab8162313e67e78b99618",
+    "src\\tnfr\\config\\defaults_core.py": "b8b889fd6f3a99e9369ebb4a5ca64e7c05b81d38bc7212613624c5df4bfe00ba",
+    "src\\tnfr\\config\\defaults_metric.py": "82791f74b273b6fc151a20243f5110f6d9d2b4bc517ef040a7c9158d813d3bbc"
+  }
+}

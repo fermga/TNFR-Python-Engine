@@ -1,0 +1,13 @@
+"""Operational SDK example defaults; these are not structural constants."""
+
+SDK_REWIRING_PROB_DEFAULT = 0.16
+SDK_COUPLING_STRENGTH_WEAK = 0.36
+SDK_COUPLING_STRENGTH_MODERATE = 0.62
+SDK_CONNECTIVITY_DEFAULT = 0.16
+SDK_VF_RANGE_LOW_MIN = 0.16
+SDK_VF_RANGE_LOW_MAX = 0.89
+SDK_VF_RANGE_MODERATE_MIN = 0.62
+SDK_VF_RANGE_MODERATE_MAX = 0.95
+# Previously unresolved template names; values follow their parameter docs.
+SDK_INTERACTION_STRENGTH = 0.25
+SDK_INSPIRATION_LEVEL = 0.4

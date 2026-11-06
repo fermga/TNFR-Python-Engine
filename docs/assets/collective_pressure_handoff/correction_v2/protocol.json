@@ -1,0 +1,194 @@
+{
+  "schema":"tnfr.collective-pressure-handoff-protocol.v3",
+  "scope":"One static represented IL/OZ word on the existing maintained contact; no trajectory or parameter search",
+  "status_at_protocol_creation":"not_evaluated",
+  "question":"Which operator effects survive immediate selected-law pressure refresh, and does the represented IL reset retain the proved joint identity?",
+  "preparation":{
+    "owner":"tests/operators/test_collective_organization_contact.py::_registered_preparation",
+    "arguments":[
+      0,
+      1
+    ],
+    "form_origin":"0",
+    "phase_origin":"3/4096",
+    "source":"nominal split source, count-three contact",
+    "source_word":[
+      "emission",
+      "coupling",
+      "silence"
+    ],
+    "node_order":[
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "expected_edges":45,
+    "preservation":"Preserve complete persistent source state, instance event state and adjacency order; use the shared SDK graph-data copier plus the declared study adapter, omitting only rebuildable TNFR cache payloads and retaining their inventory.",
+    "seed":17,
+    "structural_time":7,
+    "event_timestamp":"2030-01-02T03:04:05+00:00"
+  },
+  "law":{
+    "name":"conservative_sine_support_exchange",
+    "form_row":"dx_i/dt = nu_i * S_i(theta)/(pi*d_i)",
+    "phase_row":"dtheta_i/dt = nu_i * (L_W*x)_i/(pi*d_i)",
+    "S_i":"Sum sin(theta_j-theta_i) over unique bare neighbors",
+    "support":"Actual 45 undirected edges, actual held conductances, bare degrees including zero-conductance support",
+    "capacity":"Held represented source values; 1/2 on targets 0 and 1, one elsewhere",
+    "clock":"Original structural clock, no elapsed interval",
+    "forcing":"GAMMA none; no input or loss",
+    "storage":"H = x^T L_W x / 2 + sum_edges(1-cos(theta_j-theta_i))",
+    "reference":"Common-aligned doubled C5 twist, exact angle 2*pi/5",
+    "joint_identity":"Z^2 = ||P20*x||^2 + ||P20*(theta-theta_reference)||^2 < 1/256",
+    "storage_excess_barrier":"1/6400"
+  },
+  "execution":{
+    "word":[
+      "coherence",
+      "dissonance"
+    ],
+    "token_source":"TNFR.operators registry",
+    "targets":[
+      0,
+      1
+    ],
+    "dispatcher":"tnfr.operators.word_execution.execute_network_operator_stage",
+    "whole_word_admission":"ValidatedSequence with core compatibility and truthful initial_epi_nonzero=True",
+    "grammar_rejection_mode":"raise",
+    "strict_preconditions":true,
+    "IL_phase_coefficient":"binary64 representation of 0.3, existing dispatcher default",
+    "IL_pressure_factor":"Existing resolved default IL_dnfr_factor; record exact represented value",
+    "OZ_pressure_factor":"Existing resolved default OZ_dnfr_factor; record exact represented value",
+    "OZ_NOISE_MODE":false,
+    "OZ_ENABLE_PROPAGATION":true,
+    "OZ_propagation_mode":"phase_weighted",
+    "OZ_MIN_PROPAGATION":"Existing default 0.05, unchanged",
+    "OZ_PHASE_THRESHOLD":"Existing resolved default; record exact represented value",
+    "OZ_near_zero_cutoff":"Existing fixed binary64 1e-9, equality selects seed branch",
+    "OZ_near_zero_seed":"Existing fixed binary64 0.1",
+    "refreshes":[
+      "initial_before_IL",
+      "after_IL",
+      "after_OZ"
+    ],
+    "refresh_writer":"Re-admit primitives with bound_relational_sine_support_exchange; admit every pressure interval midpoint with shared represented-real admission before any set_dnfr write",
+    "callback_guard":"Compare full persistent graph/node/edge state before and after each refresh, permitting only pressure aliases and _dnfrmax/_dnfrmax_node; independently check the maximum and its witness",
+    "captures":[
+      "inherited_source",
+      "configured_source",
+      "initial_refreshed",
+      "IL_raw",
+      "IL_refreshed",
+      "IL_completed",
+      "OZ_raw",
+      "OZ_refreshed",
+      "OZ_completed"
+    ]
+  },
+  "arithmetic":{
+    "runtime":"Python binary64, existing registered kernels and reduction order",
+    "enclosures":"Shared outward rational dyadic128 intervals",
+    "independent_oracle":"mpmath clone with 100 decimal digits, when a non-interval cross-check is used",
+    "absolute_residual_allowance":"1/70368744177664",
+    "unchanged_state_comparisons":"Exact represented values; tolerance cannot establish equality",
+    "IL_lift":"Nearest continuous phase displacement from the captured prestate; retain circular wrap and represented endpoint residual",
+    "IL_work_bridge_allowance":"14/70368744177664, from two degree-seven coordinates and individual phase residuals at most 2^-46",
+    "ideal_IL_coefficient":"Exact rational value of the represented binary64 0.3; not exact 3/10",
+    "propagation":"Retain each consumed candidate, primitive admission and floating product against rational/interval expectation, including candidates suppressed by the existing threshold",
+    "underflow":"Reject a nonzero midpoint lost on materialization; record any nonzero consumed propagation product rounded to zero as an arithmetic failure",
+    "budget":"One declared preparation and two stages; no trajectory, coefficient sweep, source retuning or accuracy escalation"
+  },
+  "prospective_predictions":[
+    {
+      "id":"P1",
+      "claim":"The prepared full word is admitted without replacement or grammar padding.",
+      "failure":"Retain actual grammar/live rejection as a result; do not change the preparation to bypass it."
+    },
+    {
+      "id":"P2",
+      "claim":"IL changes target phases and selected-law form rates, preserves form/support/capacity, and has strictly negative phase-storage work while retaining Z and the storage barrier.",
+      "basis":"The conditional simultaneous-IL theorem with the shared-edge correction; strictness requires a resolved nonzero displacement.",
+      "checks":"Rebuild H, Z, local resultants, actual adjacent-edge work and represented phase residuals from captured state. Do not infer exact-real membership from an operator label."
+    },
+    {
+      "id":"P3",
+      "claim":"OZ changes raw stored pressure and execution context, preserves the continuous state exactly, and its immediate selected-law refresh restores exactly the post-IL pressure and both complete rate rows.",
+      "basis":"Projection equivalence under this algebraic pressure law, conditional on no later context-consuming intervention.",
+      "checks":"Separate raw local proposal, neighbor contributions, final accumulated pressure, refreshed pressure, full state, grammar context and stage records."
+    },
+    {
+      "id":"P4",
+      "claim":"The inherited glyph history does not supply a measured three-sample EPI acceleration.",
+      "checks":"Retain typed availability, source and units; compatibility telemetry zero is not a measured zero or a bifurcation result."
+    }
+  ],
+  "classification_rules":{
+    "operator_admission":"accepted, grammar_rejected or live_state_rejected, with original diagnostic",
+    "numerics":"within frozen residual budget, unsupported/unresolved enclosure, or arithmetic failure",
+    "ideal_OZ_branch":"Classify only when the ideal pressure enclosure resolves the fixed cutoff; otherwise abstain while retaining the executed represented branch",
+    "propagation":"Zero admitted neighbor increments is an allowed outcome; do not lower the policy threshold to manufacture propagation",
+    "strict_work":"Requires an interval wholly below zero; zero-containing work is inconclusive for strictness",
+    "retention":"Requires actual represented endpoint identity and strict storage margin; no trajectory is inferred",
+    "scope":"Finite implemented evidence plus existing conditional proofs; no autonomous occurrence, selected pressure memory, scalar collective closure or physical identification"
+  },
+  "provenance":{
+    "freeze_boundary":"Bind this protocol, evaluator and source snapshot before any new maintained-contact IL/OZ response",
+    "retention":"Preserve attempts, source archive, raw response, analysis and checks; corrective evidence must not overwrite a previous evaluated record",
+    "byte_associations":"Hashes identify retained bytes; they are not provenance authentication"
+  },
+  "correction":{
+    "prior_attempts":[
+      "../attempt.json",
+      "../correction_v1/attempt.json"
+    ],
+    "prior_failures":[
+      "../failure.json",
+      "../correction_v1/failure.json"
+    ],
+    "prior_protocol":{
+      "path":"../protocol.json",
+      "bytes":7939,
+      "sha256":"a64a078d497bcee34bb0aa185676588ebc8ed04bb33bc90183165464298d36ff"
+    },
+    "prior_freezes":[
+      {
+        "path":"../freeze.json",
+        "bytes":819,
+        "sha256":"d800d0d7ee3f12f50be51308eb07b0aa12cbc3e5317b5c499a113eb27f888d59"
+      },
+      {
+        "path":"../correction_v1/freeze.json",
+        "bytes":1861,
+        "sha256":"3ab8a482c63ecb083e86b999806a966f2a1d140dd4be92283b9d90a2645b0cee"
+      }
+    ],
+    "reasons":[
+      "Generic deepcopy encountered a cache RLock before any IL/OZ action or initial refresh.",
+      "Corrected copying succeeded; strict raw-state serialization rejected complex containers in the existing uniform-real BEPI representation before any IL/OZ action or initial refresh. The inspected components have zero imaginary part and pass shared signed-form admission."
+    ],
+    "changed_mechanisms":[
+      "Shared SDK copier with declared event-state/order adapter.",
+      "Explicit finite complex-container projection preserving both represented components, including admitted uniform-real BEPI data; signed EPI admission remains separate and unchanged."
+    ],
+    "scientific_preparation_law_word_budget_predictions_unchanged":true,
+    "prior_IL_OZ_stages_executed":0,
+    "input_preflight":"The existing contact source may be copied, captured, serialized and initially refreshed before this corrective freeze to admit the recording path; no IL/OZ stage is evaluated during that preflight."
+  }
+}

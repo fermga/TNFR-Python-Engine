@@ -1,0 +1,705 @@
+"""Cache results must preserve graph ownership and explicit request semantics."""
+
+import ast
+import importlib
+import inspect
+import pickle
+from dataclasses import fields
+from pathlib import Path
+
+import networkx as nx
+import numpy as np
+import pytest
+
+from tnfr.cache import (
+    CacheLevel,
+    GraphChangeTracker,
+    PersistentTNFRCache,
+    TNFRHierarchicalCache,
+    cache_tnfr_computation,
+    cached_nodes_and_A,
+    edge_version_cache,
+    increment_edge_version,
+    invalidate_function_cache,
+)
+from tnfr.metrics.buffer_cache import ensure_numpy_buffers
+from tnfr.utils.unified_cache import UnifiedLRUCache
+
+
+def test_cache_type_aliases_resolve_to_the_live_shared_owners():
+    from tnfr.utils import cache
+
+    stub = ast.parse(
+        Path(cache.__file__).with_suffix(".pyi").read_text(encoding="utf-8")
+    )
+    owners = {
+        alias.asname: ("." * node.level + node.module, alias.name)
+        for node in stub.body
+        if isinstance(node, ast.ImportFrom)
+        for alias in node.names
+        if alias.asname is not None
+    }
+    shared_names = {
+        "CacheStatistics",
+        "CacheLayer",
+        "MappingCacheLayer",
+        "ShelveCacheLayer",
+        "RedisCacheLayer",
+        "InstrumentedLRUCache",
+        "ManagedLRUCache",
+        "SecurityError",
+        "SecurityWarning",
+        "create_hmac_signer",
+        "create_hmac_validator",
+        "create_secure_shelve_layer",
+        "create_secure_redis_layer",
+    }
+    assert shared_names <= owners.keys()
+    local_classes = {node.name for node in stub.body if isinstance(node, ast.ClassDef)}
+    assert not shared_names & local_classes
+    for name in shared_names:
+        module_name, attribute = owners[name]
+        owner = importlib.import_module(module_name, cache.__package__)
+        assert getattr(cache, name) is getattr(owner, attribute)
+
+
+def test_utility_type_exports_and_import_helpers_match_runtime():
+    import tnfr.utils as utilities
+    from tnfr.utils import init
+
+    stub = ast.parse(
+        Path(utilities.__file__).with_suffix(".pyi").read_text(encoding="utf-8")
+    )
+    exported = next(
+        ast.literal_eval(node.value)
+        for node in stub.body
+        if isinstance(node, ast.Assign)
+        and any(
+            isinstance(target, ast.Name) and target.id == "__all__"
+            for target in node.targets
+        )
+    )
+    assert set(exported) == set(utilities.__all__)
+    for name in exported:
+        getattr(utilities, name)
+    for module in (utilities, init):
+        with pytest.raises(AttributeError):
+            getattr(module, "get_numpy")
+        declarations = ast.parse(
+            Path(module.__file__).with_suffix(".pyi").read_text(encoding="utf-8")
+        )
+        assert not any(
+            isinstance(node, ast.FunctionDef) and node.name == "get_numpy"
+            for node in declarations.body
+        )
+    init_stub = ast.parse(
+        Path(init.__file__).with_suffix(".pyi").read_text(encoding="utf-8")
+    )
+    prune = next(
+        node
+        for node in init_stub.body
+        if isinstance(node, ast.FunctionDef) and node.name == "prune_failed_imports"
+    )
+    assert not inspect.signature(init.prune_failed_imports).parameters
+    assert not prune.args.posonlyargs + prune.args.args + prune.args.kwonlyargs
+    assert prune.args.vararg is None and prune.args.kwarg is None
+
+
+def test_shared_cache_type_declarations_retain_runtime_fields():
+    from tnfr import types
+
+    stub = ast.parse(
+        Path(types.__file__).with_suffix(".pyi").read_text(encoding="utf-8")
+    )
+    declarations = {
+        node.name: node for node in stub.body if isinstance(node, ast.ClassDef)
+    }
+    stats = declarations["CacheStats"]
+    field_names = [
+        node.target.id for node in stats.body if isinstance(node, ast.AnnAssign)
+    ]
+    assert field_names == [field.name for field in fields(types.CacheStats)]
+    enum_values = {
+        node.targets[0].id: ast.literal_eval(node.value)
+        for node in declarations["CacheLevel"].body
+        if isinstance(node, ast.Assign)
+    }
+    assert enum_values == {item.name: item.value for item in types.CacheLevel}
+
+
+def test_copied_graph_does_not_reuse_original_cache_or_scratch_arrays():
+    original = nx.path_graph(3)
+    first = ensure_numpy_buffers(
+        original, key_prefix="ownership", count=3, buffer_count=1
+    )
+    first[0][:] = 1.0
+    copied = original.copy()
+    second = ensure_numpy_buffers(
+        copied, key_prefix="ownership", count=3, buffer_count=1
+    )
+    second[0][:] = 2.0
+    assert second[0] is not first[0]
+    np.testing.assert_array_equal(first[0], np.ones(3))
+    assert (
+        original.graph["_tnfr_cache_manager"] is not copied.graph["_tnfr_cache_manager"]
+    )
+
+
+def test_invalidation_of_copy_preserves_original_cache():
+    original = nx.path_graph(3)
+    value = edge_version_cache(original, "ownership", object)
+    copied = original.copy()
+    increment_edge_version(copied)
+    assert edge_version_cache(original, "ownership", object) is value
+
+
+def test_graph_view_does_not_reuse_parent_graph_result():
+    graph = nx.path_graph(3)
+    assert edge_version_cache(graph, "size", lambda: len(graph)) == 3
+    view = graph.subgraph([0, 1])
+    assert edge_version_cache(view, "size", lambda: len(view)) == 2
+    assert edge_version_cache(graph, "size", lambda: len(graph)) == 3
+
+
+@pytest.mark.parametrize("weak", [False, True])
+def test_copied_node_adapter_binds_to_the_requested_graph(weak):
+    from tnfr.node import NodeNX
+
+    graph = nx.path_graph(2)
+    original = NodeNX.from_graph(graph, 0, use_weak_cache=weak)
+    copied = graph.copy()
+    detached = NodeNX.from_graph(copied, 0, use_weak_cache=weak)
+    assert detached.G is copied
+    assert detached is not original
+    assert NodeNX.from_graph(graph, 0, use_weak_cache=weak) is original
+
+
+def test_operator_on_copy_does_not_mutate_original_through_cached_adapter():
+    from tnfr.node import NodeNX
+    from tnfr.operators import apply_glyph_obj
+    from tnfr.types import Glyph
+
+    graph = nx.Graph()
+    graph.add_node(0, EPI=0.5, **{"νf": 1.0, "ΔNFR": 0.2, "θ": 0.0})
+    NodeNX.from_graph(graph, 0)
+    copied = graph.copy()
+    apply_glyph_obj(NodeNX.from_graph(copied, 0), Glyph.IL)
+    assert graph.nodes[0]["ΔNFR"] == 0.2
+    assert abs(copied.nodes[0]["ΔNFR"]) < 0.2
+
+
+@pytest.mark.parametrize(
+    "dtype", [np.float32, np.int64, np.complex128, np.dtype([("x", "i4")])]
+)
+def test_buffer_key_includes_dtype(dtype):
+    graph = nx.path_graph(2)
+    first = ensure_numpy_buffers(graph, key_prefix="typed", count=2, buffer_count=1)
+    second = ensure_numpy_buffers(
+        graph, key_prefix="typed", count=2, buffer_count=1, dtype=dtype
+    )
+    assert second[0].dtype == np.dtype(dtype)
+    assert first[0].dtype == np.dtype(float)
+
+
+def test_equivalent_buffer_dtype_requests_reuse_storage():
+    graph = nx.Graph()
+    first = ensure_numpy_buffers(
+        graph, key_prefix="typed", count=2, buffer_count=1, dtype="f8"
+    )
+    second = ensure_numpy_buffers(
+        graph, key_prefix="typed", count=2, buffer_count=1, dtype=np.float64
+    )
+    assert first is second
+
+
+@pytest.mark.parametrize("sparse_first", [True, False])
+def test_adjacency_key_distinguishes_sparse_and_dense_requests(sparse_first):
+    graph = nx.path_graph(3)
+    cached_nodes_and_A(graph, prefer_sparse=sparse_first)
+    nodes, adjacency = cached_nodes_and_A(graph, prefer_sparse=not sparse_first)
+    assert nodes == (0, 1, 2)
+    if sparse_first:
+        np.testing.assert_array_equal(adjacency, nx.to_numpy_array(graph, weight=None))
+    else:
+        assert adjacency is None
+
+
+def test_adjacency_key_preserves_explicit_node_order():
+    graph = nx.path_graph(3)
+    cached_nodes_and_A(graph, nodes=(0, 1, 2))
+    nodes, adjacency = cached_nodes_and_A(graph, nodes=(1, 2, 0))
+    assert nodes == (1, 2, 0)
+    np.testing.assert_array_equal(
+        adjacency, nx.to_numpy_array(graph, nodelist=nodes, weight=None)
+    )
+
+
+@pytest.mark.parametrize(
+    "graph_type", [nx.Graph, nx.DiGraph, nx.MultiGraph, nx.MultiDiGraph]
+)
+def test_shared_edge_cache_detects_same_count_direct_rewiring(graph_type):
+    from tnfr.metrics.common import ensure_neighbors_map
+
+    graph = graph_type()
+    graph.add_edges_from([(0, 0), (0, 1), (1, 2)])
+    if graph.is_multigraph():
+        graph.add_edge(0, 1)
+    cached_nodes_and_A(graph)
+    ensure_neighbors_map(graph)
+    before_count = graph.number_of_edges()
+
+    graph.remove_edge(0, 1)
+    graph.add_edge(0, 2)
+    nodes, observed = cached_nodes_and_A(graph)
+    expected = np.array(
+        [[1.0, float(graph.is_multigraph()), 1.0], [0, 0, 1], [0, 0, 0]]
+    )
+    if not graph.is_directed():
+        expected = np.maximum(expected, expected.T)
+    assert graph.number_of_edges() == before_count
+    np.testing.assert_array_equal(observed, expected)
+    assert dict(ensure_neighbors_map(graph)) == {
+        node: tuple(graph.neighbors(node)) for node in nodes
+    }
+
+
+def test_shared_edge_cache_tracks_weight_and_length_channels_separately():
+    graph = nx.MultiDiGraph()
+    graph.add_edge(0, 0, key="loop", weight=3.0, length=1.0)
+    graph.add_edge(0, 1, key="a", weight=1.0, length=2.0)
+    graph.add_edge(0, 1, key="b", weight=2.0, length=5.0)
+
+    def matrix():
+        return nx.to_numpy_array(graph, nodelist=(0, 1), weight="weight")
+
+    def distance():
+        return nx.shortest_path_length(graph, 0, 1, weight="length")
+
+    initial = edge_version_cache(graph, "weighted_matrix", matrix)
+    assert edge_version_cache(graph, "distance", distance) == 2.0
+    graph[0][1]["a"]["weight"] = 4.0
+    updated = edge_version_cache(graph, "weighted_matrix", matrix)
+    np.testing.assert_array_equal(initial, [[3.0, 3.0], [0.0, 0.0]])
+    np.testing.assert_array_equal(updated, [[3.0, 6.0], [0.0, 0.0]])
+    assert edge_version_cache(graph, "distance", distance) == 2.0
+
+    graph[0][1]["a"]["length"] = 7.0
+    assert edge_version_cache(graph, "distance", distance) == 5.0
+    np.testing.assert_array_equal(
+        edge_version_cache(graph, "weighted_matrix", matrix), updated
+    )
+
+
+def test_rewiring_refreshes_sense_and_pressure_consumers_without_manual_invalidation():
+    from tnfr.constants.aliases import ALIAS_DNFR, ALIAS_THETA, ALIAS_VF
+    from tnfr.dynamics.dnfr import default_compute_delta_nfr
+    from tnfr.metrics.sense_index import compute_Si
+
+    graph = nx.path_graph(3)
+    graph.graph["DNFR_WEIGHTS"] = dict(phase=1.0, epi=0.0, vf=0.0, topo=0.0)
+    graph.graph["dnfr_force_dense"] = True
+    for node, phase in enumerate((0.0, 0.3, 2.0)):
+        graph.nodes[node].update({ALIAS_THETA[0]: phase, ALIAS_VF[0]: 1.0})
+    before_sense = compute_Si(graph, inplace=False)
+    default_compute_delta_nfr(graph)
+    graph.remove_edge(0, 1)
+    graph.add_edge(0, 2)
+
+    default_compute_delta_nfr(graph)
+    # Every new neighborhood fits one open semicircle: its circular center is
+    # the scalar midpoint, and the configured channel is wrap(center-phase)/pi.
+    np.testing.assert_allclose(
+        [graph.nodes[node][ALIAS_DNFR[0]] for node in graph],
+        np.array([2.0, 1.7, -1.85]) / np.pi,
+        rtol=1e-14,
+    )
+    observed_sense = compute_Si(graph, inplace=False)
+    cold = nx.Graph()
+    cold.add_nodes_from((node, dict(data)) for node, data in graph.nodes(data=True))
+    cold.add_edges_from(graph.edges())
+    assert observed_sense == pytest.approx(compute_Si(cold, inplace=False))
+    assert observed_sense != before_sense
+
+
+def test_direct_node_reordering_refreshes_trigonometric_array_order():
+    from tnfr.metrics.trig_cache import get_trig_cache
+
+    graph = nx.path_graph(3)
+    nx.set_node_attributes(graph, {0: 0.1, 1: 0.2, 2: 0.3}, "theta")
+    original = get_trig_cache(graph)
+    graph.remove_node(1)
+    graph.add_node(1, theta=0.2)
+    graph.add_edges_from([(0, 1), (1, 2)])
+    refreshed = get_trig_cache(graph)
+    assert original.order == (0, 1, 2)
+    assert refreshed.order == (0, 2, 1)
+    np.testing.assert_allclose(refreshed.theta_values, [0.1, 0.3, 0.2])
+    assert get_trig_cache(graph) is refreshed
+
+
+def test_explicit_edge_invalidation_does_not_double_increment_observed_version():
+    graph = nx.path_graph(2)
+    first = edge_version_cache(graph, "token", object)
+    graph.add_edge(0, 0)
+    increment_edge_version(graph)
+    version = graph.graph["_edge_version"]
+    second = edge_version_cache(graph, "token", object)
+    assert second is not first
+    assert graph.graph["_edge_version"] == version
+    # Node values are separate source dependencies, not an excuse to rebuild
+    # an unchanged edge artifact or to lose scratch-buffer reuse.
+    graph.nodes[0]["theta"] = 0.5
+    assert edge_version_cache(graph, "token", object) is second
+
+
+@pytest.mark.parametrize("weighted", [False, True])
+def test_lru_clear_releases_capacity_and_removal_resources(weighted):
+    removed = []
+    locks = {"old": object()}
+    cache = UnifiedLRUCache(
+        maxsize=2,
+        getsizeof=len if weighted else None,
+        locks=locks,
+        eviction_callbacks=lambda k, v: removed.append(k),
+    )
+    cache["old"] = "ab"
+    cache.clear()
+    assert cache.currsize == 0
+    assert cache.get_stats().size == 0
+    assert locks == {}
+    assert removed == ["old"]
+    cache["new"] = "cd"
+    assert cache["new"] == "cd"
+
+
+@pytest.mark.parametrize(
+    "disk_flag,level",
+    [(False, CacheLevel.GRAPH_STRUCTURE), (True, CacheLevel.TEMPORARY)],
+)
+def test_persistent_memory_only_write(disk_flag, level, tmp_path):
+    cache = PersistentTNFRCache(cache_dir=tmp_path)
+    cache.set_persistent(
+        "key", 42, level, {"graph_topology"}, persist_to_disk=disk_flag
+    )
+    assert cache.get_persistent("key", level) == 42
+    assert not list(tmp_path.rglob("*.pkl"))
+
+
+def test_persistent_invalidation_survives_memory_clear_and_reopen(tmp_path):
+    cache = PersistentTNFRCache(cache_dir=tmp_path)
+    level = CacheLevel.GRAPH_STRUCTURE
+    cache.set_persistent("key", 42, level, {"graph_topology"})
+    assert cache.invalidate_by_dependency("graph_topology") == 1
+    assert cache.get_persistent("key", level) is None
+    reopened = PersistentTNFRCache(cache_dir=tmp_path)
+    assert reopened.get_persistent("key", level) is None
+
+
+def test_memory_only_replacement_cannot_revive_an_older_disk_snapshot(tmp_path):
+    cache = PersistentTNFRCache(cache_dir=tmp_path)
+    level = CacheLevel.GRAPH_STRUCTURE
+    cache.set_persistent("key", 1, level, set())
+    cache.set_persistent("key", 2, level, set(), persist_to_disk=False)
+    assert cache.get_persistent("key", level) == 2
+    assert PersistentTNFRCache(cache_dir=tmp_path).get_persistent("key", level) is None
+
+
+@pytest.mark.parametrize("dependencies", [set(), {"node_epi"}])
+def test_function_invalidation_targets_its_custom_cache_only(dependencies):
+    cache = TNFRHierarchicalCache()
+    calls = {"first": 0, "second": 0}
+
+    @cache_tnfr_computation(CacheLevel.TEMPORARY, dependencies, cache_instance=cache)
+    def first(value):
+        calls["first"] += 1
+        return value
+
+    @cache_tnfr_computation(CacheLevel.TEMPORARY, dependencies, cache_instance=cache)
+    def second(value):
+        calls["second"] += 1
+        return value
+
+    first(1)
+    second(1)
+    assert invalidate_function_cache(first) == 1
+    first(1)
+    second(1)
+    assert calls == {"first": 2, "second": 1}
+
+
+def test_keyword_named_graph_participates_in_dependency_hash():
+    cache = TNFRHierarchicalCache()
+
+    @cache_tnfr_computation(CacheLevel.TEMPORARY, {"node_epi"}, cache_instance=cache)
+    def read(*, network):
+        return network.nodes[0]["EPI"]
+
+    graph = nx.Graph()
+    graph.add_node(0, EPI=1.0)
+    assert read(network=graph) == 1.0
+    graph.nodes[0]["EPI"] = 2.0
+    assert read(network=graph) == 2.0
+
+
+def test_separately_constructed_cached_closures_have_distinct_values():
+    cache = TNFRHierarchicalCache()
+
+    def make_reader(value):
+        @cache_tnfr_computation(CacheLevel.TEMPORARY, set(), cache_instance=cache)
+        def read():
+            return value
+
+        return read
+
+    first, second = make_reader(1), make_reader(2)
+    assert first() == 1
+    assert second() == 2
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    [
+        "add_nodes_from",
+        "add_edges_from",
+        "remove_nodes_from",
+        "remove_edges_from",
+        "clear_edges",
+        "clear",
+    ],
+)
+def test_graph_tracker_covers_bulk_topology_mutation(mutation):
+    graph = nx.path_graph(3)
+    cache = TNFRHierarchicalCache()
+    GraphChangeTracker(cache).track_graph_changes(graph)
+    cache.set("metric", 1, CacheLevel.GRAPH_STRUCTURE, {"graph_topology"})
+    arguments = {
+        "add_nodes_from": ([3, 4],),
+        "add_edges_from": ([(0, 2)],),
+        "remove_nodes_from": ([2],),
+        "remove_edges_from": ([(0, 1)],),
+        "clear_edges": (),
+        "clear": (),
+    }
+    getattr(graph, mutation)(*arguments[mutation])
+    assert cache.get("metric", CacheLevel.GRAPH_STRUCTURE) is None
+
+
+def test_graph_tracker_preserves_multigraph_key_arguments_and_return():
+    graph = nx.MultiGraph()
+    tracker = GraphChangeTracker(TNFRHierarchicalCache())
+    tracker.track_graph_changes(graph)
+    assert graph.add_edge(0, 1, "named", weight=2) == "named"
+    graph.remove_edge(0, 1, "named")
+    assert graph.number_of_edges() == 0
+
+
+def test_tracker_invalidates_a_partially_applied_bulk_operation():
+    graph = nx.Graph()
+    cache = TNFRHierarchicalCache()
+    tracker = GraphChangeTracker(cache)
+    tracker.track_graph_changes(graph)
+    cache.set("metric", 0, CacheLevel.GRAPH_STRUCTURE, {"graph_topology"})
+    with pytest.raises(nx.NetworkXError):
+        graph.add_edges_from([(0, 1), (2,)])
+    assert graph.has_edge(0, 1)
+    assert cache.get("metric", CacheLevel.GRAPH_STRUCTURE) is None
+
+
+def test_hot_path_configuration_is_owned_and_merged_across_calls():
+    from tnfr.cache import configure_hot_path_caches
+
+    graph = nx.Graph()
+    configure_hot_path_caches(graph, buffer_max_entries=256)
+    configure_hot_path_caches(graph, trig_cache_size=16)
+    assert graph.graph["_tnfr_cache_config"]["overrides"]["_edge_version_state"] == 256
+    copied = graph.copy()
+    configure_hot_path_caches(copied, buffer_max_entries=512)
+    assert graph.graph["_cache_config"]["buffer_max_entries"] == 256
+    assert copied.graph["_cache_config"]["buffer_max_entries"] == 512
+
+
+def test_graph_tracker_invalidates_canonical_property_dependency():
+    cache = TNFRHierarchicalCache()
+    tracker = GraphChangeTracker(cache)
+    cache.set("metric", 1, CacheLevel.NODE_PROPERTIES, {"node_phase"})
+    tracker.on_node_property_change(0, "theta", 0.0, 1.0)
+    assert cache.get("metric", CacheLevel.NODE_PROPERTIES) is None
+
+
+def test_memory_profile_reports_retained_bytes_by_level_and_invalidation():
+    cache = TNFRHierarchicalCache(max_memory_mb=1)
+    cache.set("temporary", list(range(16)), CacheLevel.TEMPORARY, {"node_epi"})
+    cache.set("derived", list(range(32)), CacheLevel.DERIVED_METRICS, {"node_phase"})
+    warm = cache.memory_profile()
+    assert warm["retained_bytes"] > 0
+    assert warm["retained_bytes_by_level"][CacheLevel.TEMPORARY.value] > 0
+    assert warm["retained_bytes_by_level"][CacheLevel.DERIVED_METRICS.value] > 0
+    assert cache.invalidate_by_dependency("node_epi") == 1
+    cold = cache.memory_profile()
+    assert cold["retained_bytes"] < warm["retained_bytes"]
+    assert cold["retained_bytes_by_level"][CacheLevel.TEMPORARY.value] == 0
+
+
+class _WriteMarkerOnUnpickle:
+    def __init__(self, path):
+        self.path = str(path)
+
+    def __reduce__(self):
+        return Path.write_text, (Path(self.path), "outer pickle executed")
+
+
+@pytest.mark.parametrize(
+    "extension", [b"\x82\x01", b"\x83\x00\x01", b"\x84\x00\x00\x01\x00"]
+)
+def test_secure_shelve_rejects_extension_opcodes_before_unpickling(
+    tmp_path, monkeypatch, extension
+):
+    from tnfr.cache import SecurityError, create_secure_shelve_layer
+    from tnfr.utils import cache_layers
+
+    layer = create_secure_shelve_layer(str(tmp_path / "extensions"), secret=b"secret")
+    calls = []
+
+    def unexpected_unpickler(*args, **kwargs):
+        calls.append(True)
+        raise AssertionError("outer unpickler must not receive extension opcodes")
+
+    monkeypatch.setattr(cache_layers, "_EnvelopeUnpickler", unexpected_unpickler)
+    try:
+        # A minimal opcode probe, without registering or constructing a callable.
+        layer._shelf.dict[b"extension"] = b"\x80\x04" + extension + b"."
+        with pytest.raises(SecurityError):
+            layer.load("extension")
+        assert calls == []
+    finally:
+        layer.close()
+
+
+def test_secure_shelve_rejects_outer_pickle_before_execution(tmp_path):
+    from tnfr.cache import SecurityError, create_secure_shelve_layer
+
+    marker = tmp_path / "unpickle-marker.txt"
+    layer = create_secure_shelve_layer(
+        str(tmp_path / "secure-cache"), secret=b"test-secret"
+    )
+    try:
+        # Simulate tampering with the outer shelve bytes; the payload is harmless.
+        layer._shelf.dict[b"tampered"] = pickle.dumps(_WriteMarkerOnUnpickle(marker))
+        with pytest.raises(SecurityError):
+            layer.load("tampered")
+        assert not marker.exists()
+    finally:
+        layer.close()
+
+
+@pytest.mark.parametrize("protocol", range(pickle.HIGHEST_PROTOCOL + 1))
+def test_secure_shelve_roundtrip_bytes_and_objects(tmp_path, protocol):
+    from tnfr.cache import create_secure_shelve_layer
+
+    layer = create_secure_shelve_layer(
+        str(tmp_path / "secure-cache"), secret=b"test-secret", protocol=protocol
+    )
+    try:
+        for name, value in [("bytes", b"payload"), ("object", {"value": [1, 2]})]:
+            layer.store(name, value)
+            assert layer.load(name) == value
+    finally:
+        layer.close()
+
+
+class _RedisMemoryClient:
+    def __init__(self):
+        self.data = {}
+
+    def get(self, key):
+        return self.data.get(key)
+
+    def set(self, key, value):
+        self.data[key] = value
+
+    def delete(self, key):
+        self.data.pop(key, None)
+
+
+def test_secure_redis_requires_signed_bytes_even_with_nonbinary_client():
+    from tnfr.cache import SecurityError, create_secure_redis_layer
+
+    client = _RedisMemoryClient()
+    layer = create_secure_redis_layer(client, secret=b"secret")
+    client.data[layer._format_key("unsigned")] = "unverified text"
+    with pytest.raises(SecurityError):
+        layer.load("unsigned")
+
+
+def test_secure_redis_roundtrip_preserves_raw_bytes_and_objects():
+    from tnfr.cache import create_secure_redis_layer
+
+    layer = create_secure_redis_layer(_RedisMemoryClient(), secret=b"secret")
+    for name, value in [("bytes", b"raw data"), ("object", {"value": [1, 2]})]:
+        layer.store(name, value)
+        assert layer.load(name) == value
+
+
+@pytest.mark.parametrize("backend", ["shelve", "redis"])
+def test_signature_authenticates_raw_versus_pickle_interpretation(backend, tmp_path):
+    from tnfr.cache import (
+        SecurityError,
+        create_secure_redis_layer,
+        create_secure_shelve_layer,
+    )
+    from tnfr.utils.cache_layers import _SIGNATURE_PREFIX
+
+    marker = tmp_path / "mode-marker.txt"
+    client = _RedisMemoryClient()
+    layer = (
+        create_secure_shelve_layer(str(tmp_path / "signed"), secret=b"secret")
+        if backend == "shelve"
+        else create_secure_redis_layer(client, secret=b"secret")
+    )
+    try:
+        # Signing raw bytes grants no permission to execute them as a pickle.
+        layer.store("raw", pickle.dumps(_WriteMarkerOnUnpickle(marker)))
+        if backend == "shelve":
+            envelope = layer._shelf["raw"]
+        else:
+            envelope = client.data[layer._format_key("raw")]
+        offset = len(_SIGNATURE_PREFIX)
+        tampered = envelope[:offset] + b"\x01" + envelope[offset + 1 :]
+        if backend == "shelve":
+            layer._shelf["raw"] = tampered
+        else:
+            client.data[layer._format_key("raw")] = tampered
+        with pytest.raises(SecurityError):
+            layer.load("raw")
+        assert not marker.exists()
+    finally:
+        layer.close()
+
+
+def test_unsigned_trusted_shelve_keeps_legacy_object_roundtrip(tmp_path, monkeypatch):
+    from tnfr.cache import ShelveCacheLayer
+
+    monkeypatch.setenv("TNFR_ALLOW_UNSIGNED_PICKLE", "1")
+    layer = ShelveCacheLayer(str(tmp_path / "legacy"))
+    try:
+        layer.store("object", {"value": [1, 2]})
+        assert layer.load("object") == {"value": [1, 2]}
+    finally:
+        layer.close()
+
+
+def test_old_signed_envelopes_are_rejected_for_rebuilding(tmp_path):
+    from tnfr.cache import SecurityError, create_hmac_signer, create_secure_shelve_layer
+
+    payload = pickle.dumps({"legacy": True})
+    signature = create_hmac_signer(b"secret")(payload)
+    envelope = b"TNFRSIG1\x01" + len(signature).to_bytes(4, "big") + signature + payload
+    layer = create_secure_shelve_layer(
+        str(tmp_path / "legacy-signed"), secret=b"secret"
+    )
+    try:
+        layer._shelf["old"] = envelope
+        with pytest.raises(SecurityError, match="legacy"):
+            layer.load("old")
+    finally:
+        layer.close()

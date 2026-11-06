@@ -1,0 +1,63 @@
+{
+  "schema":"native_mutation_joint_source_finite_search_v1",
+  "files":[
+    {
+      "path":"evaluations.jsonl.gz",
+      "bytes":2554963,
+      "sha256":"c7c0136cee23cb140688ccd9f7ad2ea5737d04ffe9bee9f3ef1e3ec2f21a86ca"
+    },
+    {
+      "path":"exact-metadata.json",
+      "bytes":704,
+      "sha256":"c7195fc1e8cece8a9be9283efac6f690a2818f135955705b506464c6b2981f2d"
+    },
+    {
+      "path":"exact-results.json",
+      "bytes":1435926,
+      "sha256":"d4d03beedaba8283edcaf27e4bbf2b6582740b3c2a1232fb75fb2dedbffae10d"
+    },
+    {
+      "path":"proposal-metadata.json",
+      "bytes":10555,
+      "sha256":"11010b15f621b2acb236d4f2ed2871db79bc0e33901a941f6cd10e7ce18044dc"
+    },
+    {
+      "path":"proposal-preflight.json",
+      "bytes":156,
+      "sha256":"5cb6fe5888458622459814ce15c7bf17f3d85bec36ced85a9b51d218ce83d1b7"
+    },
+    {
+      "path":"proposal-results.json",
+      "bytes":127849,
+      "sha256":"e95ec26fb4df2a0162572302c11c263afdcd9c9e2330a0ad476b65c00209a433"
+    },
+    {
+      "path":"protocol.txt",
+      "bytes":6100,
+      "sha256":"83ce921fedfe554e92da2e8ac2395a81ef24bfd2594f8a22c12dd09687a1f625"
+    },
+    {
+      "path":"result-summary.json",
+      "bytes":281,
+      "sha256":"c888e1dc8cb89702dbbcce3d693c04ee7f1c788fd3edfc0104239101396559a3"
+    },
+    {
+      "path":"source-manifest.json",
+      "bytes":113687,
+      "sha256":"5ae95668355e0dcbd814eda821fc11ea45e642d1e97a63511a1b619fe2430565"
+    },
+    {
+      "path":"source.zip",
+      "bytes":4274052,
+      "sha256":"7d093c5bc4f885262727fa904785ab1eb509286997e99903f0229248aa8993df"
+    }
+  ],
+  "evaluation_trace_uncompressed":{
+    "bytes":26036498,
+    "sha256":"a69d14872e25f766f5ae01f0b3d555393051017d1e49df08aa30233e55c4e0d2",
+    "rows":71204
+  },
+  "scope":"One frozen24-run proposal campaign and one exact readmission per selected point",
+  "verdict":"24 selected points rejected; global feasibility open; no native trajectory",
+  "association":"Byte consistency only; no provenance authentication or global exclusion"
+}

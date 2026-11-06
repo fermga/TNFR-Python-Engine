@@ -1,0 +1,11 @@
+{
+  "protocol_sha256": "83ce921fedfe554e92da2e8ac2395a81ef24bfd2594f8a22c12dd09687a1f625",
+  "driver_sha256": "5308cbd55c75e1306d21010f6854a7261b7cc6602d49b42596b2577215f20923",
+  "proposer_sha256": "a96614b8254e7946a6609bb9699aa9ea44e5e9e0765fe6667941354ba0a0cd03",
+  "proposal_results_sha256": "e95ec26fb4df2a0162572302c11c263afdcd9c9e2330a0ad476b65c00209a433",
+  "checker_sha256": "6160166bbcf342eba8c9d7be0fd98ae6eebe7e211181ba262ff8a5da4470068e",
+  "cosine_sha256": "06e06c2577d14f597150dbae44e4b45e1b4510a716323abb4e692d88086a28f3",
+  "rationalization": "nearest ties-to-even dyadic denominator2^40; one attempt per selected physical point",
+  "cosine_terms": 12,
+  "cosine_bits": 128
+}

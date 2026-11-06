@@ -1,0 +1,52 @@
+{
+  "schema":"tnfr.collective-pressure-handoff-report.v1",
+  "completed_utc":"2026-10-14T17:14:03.990496+00:00",
+  "freeze_sha256":"bb22853cf10fe281733ea54ab6efefb2cfcdc483d6bfd177a673e5d587da6b62",
+  "response":{
+    "path":"response.json",
+    "bytes":3454510,
+    "sha256":"39ddab82885e4171ed67bf61eb77a67a1e081039e48d7ca760c0ee494befb3b4"
+  },
+  "execution_status":"completed",
+  "checks":[
+    {
+      "name":"test_actual_word_preserves_source_and_records_all_stage_boundaries",
+      "passed":true
+    },
+    {
+      "name":"test_complex_auxiliary_evidence_keeps_components_without_scalar_admission",
+      "passed":true
+    },
+    {
+      "name":"test_evidence_projection_preserves_signed_zero_and_rejects_unknown_state",
+      "passed":true
+    },
+    {
+      "name":"test_full_il_phase_action_and_adjacent_edge_work_are_retained",
+      "passed":false,
+      "diagnostic":"Traceback (most recent call last):\n  File \"C:\\TNFR-Python-Engine\\docs\\assets\\collective_pressure_handoff\\correction_v2\\evaluate.py\", line 104, in main\n    function(result)\n    ~~~~~~~~^^^^^^^^\n  File \"C:\\TNFR-Python-Engine\\tests\\operators\\test_collective_pressure_handoff.py\", line 823, in test_full_il_phase_action_and_adjacent_edge_work_are_retained\n    assert all(defect.abs_max <= _BUDGET for defect in measured[\"phase_defects\"])\n           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+    },
+    {
+      "name":"test_immediate_oz_refresh_restores_same_complete_continuous_state",
+      "passed":true
+    },
+    {
+      "name":"test_oz_raw_local_and_propagated_values_match_declared_arithmetic",
+      "passed":true
+    },
+    {
+      "name":"test_runtime_graph_copy_excludes_locks_and_preserves_event_state_and_order",
+      "passed":true
+    },
+    {
+      "name":"test_runtime_graph_copy_rejects_unowned_instance_state",
+      "passed":true
+    },
+    {
+      "name":"test_selected_pressure_writer_has_bounded_residuals_and_no_other_effect",
+      "passed":true
+    }
+  ],
+  "all_checks_passed":false,
+  "scope":"One represented static word; conditional law and supplied events"
+}

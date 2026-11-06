@@ -1,0 +1,43 @@
+cff-version: 1.2.0
+title: "TNFR-Python-Engine: Resonant Fractal Nature Theory Implementation"
+message: "If you use this software, please cite it as below."
+type: software
+version: "0.0.4"
+date-released: "2026-11-06"
+authors:
+  - given-names: "F. F."
+    family-names: "Martinez Gamo"
+    orcid: "https://orcid.org/0009-0007-6116-0613"
+repository-code: "https://github.com/fermga/TNFR-Python-Engine"
+url: "https://github.com/fermga/TNFR-Python-Engine/releases/tag/v0.0.4"
+# Project concept DOI (all versions); the URL above identifies this release.
+doi: "10.5281/zenodo.17602860"
+license: "MIT"
+keywords:
+  - "TNFR"
+  - "Resonant Fractal Nature Theory"
+  - "complex systems"
+  - "network dynamics"
+  - "structural operators"
+  - "coherence theory"
+  - "physics simulation"
+  - "fractals"
+  - "resonance"
+  - "nodal equation"
+  - "phase synchronization"
+abstract: >-
+  Python framework for investigating organized mathematical objects under
+  declared nodal laws. It treats the thirteen registered structural operators,
+  their grammar and atomic execution stages as the constitutive mechanisms
+  under study; continuous, native relational and collective descriptions must
+  be grounded in actual operator execution or a proved realization. This
+  release integrates operator-level results on maintenance and ordered return,
+  synthesis, coupling, Emission, Mutation and recursive participation with
+  shared kernels and tests, and resolves four foundation prerequisites within
+  reviewed mathematical scopes; physical mapping remains gated behind a final
+  readiness review. The research program is modular and the repository keeps
+  the material that serves active questions; retired secondary evidence is
+  linked to its recovery commit. Each release ships a lightweight development
+  bundle. Exact identities, conditional proofs and finite computational
+  evidence do not constitute empirical validation or select a unique
+  fundamental law.

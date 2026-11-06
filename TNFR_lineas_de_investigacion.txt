@@ -1,0 +1,9 @@
+# Retired research portfolio
+
+This retired route is a generated compatibility view.
+The [TNFR research program](theory/RESEARCH_PROGRAM.md#research-objective) owns the objective,
+current decision and admission criteria. Historical task instructions are inactive.
+
+
+
+See the [current research question](theory/RESEARCH_PROGRAM.md#research-current-question).

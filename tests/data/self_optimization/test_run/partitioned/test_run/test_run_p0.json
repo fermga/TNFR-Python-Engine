@@ -1,0 +1,36 @@
+{
+  "n": 21,
+  "modulus": 21,
+  "partition_id": "p0",
+  "partition": {
+    "id": "p0",
+    "node_indices": [0, 1, 2, 3, 4, 5],
+    "boundary_nodes": [0, 5],
+    "phase_reference": 0.0,
+    "telemetry": {
+      "phi_s": 0.12,
+      "phase_gradient": 0.08,
+      "phase_curvature": 0.19,
+      "coherence_length": 3.5,
+      "coherence": 0.52,
+      "sense_index": 0.61,
+      "notes": "test"
+    },
+    "metadata": {
+      "range": [0, 5],
+      "ratio": 0.25,
+      "size": 6,
+      "nodal_state": {
+        "sequence": ["AL", "UM", "IL", "SHA"]
+      }
+    }
+  },
+  "candidate_factors": [3, 7],
+  "parent_partition_summary": {
+    "modulus": 21,
+    "partition_count": 2,
+    "overlap_policy": "boundary_overlap",
+    "notes": "test"
+  },
+  "notes": "unit-test"
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "tnfr.frozen-evidence-bundle.v1",
+  "bundle": "response-v1.evidence.zip",
+  "bundle_bytes": 10137390,
+  "bundle_sha256": "16c0b77f8ee439fa6f688e4cffcc84e3a582b1d62abf64dbec77f77eeb473193",
+  "entries": [
+    {
+      "name": "response-v1.json",
+      "bytes": 112761509,
+      "sha256": "5c1e8fe8960e40b1d4d2747d1f859c51964aa35013574a49ecaa3bb37372f92b"
+    },
+    {
+      "name": "response-v1.protocol.json",
+      "bytes": 277649,
+      "sha256": "6858cdd1e29851c7242126afd8dcd2142323f14a2bf611e11f585fc58de05271"
+    },
+    {
+      "name": "response-v1.source.zip",
+      "bytes": 3239558,
+      "sha256": "e0456e5f0479f757e9fda89ff72835ea377cb7421e6ad38d2e31d1844dca8ede"
+    }
+  ],
+  "scope": "Exact retained producer files compressed without editing their contents; original passed=false is preserved. The source archive owns evaluated source, before the subsequent arithmetic-preserving prefix-cache optimization."
+}

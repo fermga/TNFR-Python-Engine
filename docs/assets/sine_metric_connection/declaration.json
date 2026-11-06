@@ -1,0 +1,127 @@
+{
+  "schema": "tnfr.sine-metric-connection-declaration.v1",
+  "law": "normalized_sine_reciprocal_e0_w1_beta1",
+  "support": "fixed_simple_connected_unit_undirected",
+  "forcing": "none",
+  "events": "none",
+  "clock": "original_structural_t; tau=t/pi",
+  "selection_rule": "first_forward_zero_winding_endpoint_and_first_backward_acute_winding_one_window",
+  "directions": [
+    1,
+    -1
+  ],
+  "phase_radius": null,
+  "nodes": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "edges": [
+    [
+      0,
+      1
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      2,
+      3
+    ],
+    [
+      3,
+      4
+    ],
+    [
+      4,
+      0
+    ],
+    [
+      0,
+      5
+    ],
+    [
+      1,
+      6
+    ],
+    [
+      2,
+      7
+    ],
+    [
+      3,
+      8
+    ],
+    [
+      4,
+      9
+    ]
+  ],
+  "cycle_indices": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "epsilon": "1/4294967296",
+  "form": [
+    "108706935976887167438723224039/340282366920938463463374607431768211456",
+    "35997859459557773294511688781/170141183460469231731687303715884105728",
+    "0",
+    "-35997859459557773294511688781/170141183460469231731687303715884105728",
+    "-108706935976887167438723224039/340282366920938463463374607431768211456",
+    "162622975680012904952512763585/340282366920938463463374607431768211456",
+    "76305122777034937099220831035/340282366920938463463374607431768211456",
+    "0",
+    "-76305122777034937099220831035/340282366920938463463374607431768211456",
+    "-162622975680012904952512763585/340282366920938463463374607431768211456"
+  ],
+  "phase": [
+    "-1425371445578411988841435839402915611739/680564733841876926926749214863536422912",
+    "-712685722734493092140911820172544980439/680564733841876926926749214863536422912",
+    "0",
+    "712685722734493092140911820172544980439/680564733841876926926749214863536422912",
+    "1425371445578411988841435839402915611739/680564733841876926926749214863536422912",
+    "-712685722773985655739104911180481954769/340282366920938463463374607431768211456",
+    "-712685722720209872849171938756061090253/680564733841876926926749214863536422912",
+    "0",
+    "712685722720209872849171938756061090253/680564733841876926926749214863536422912",
+    "712685722773985655739104911180481954769/340282366920938463463374607431768211456"
+  ],
+  "capacity": [
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1",
+    "1"
+  ],
+  "duration": "256",
+  "time_step": "1",
+  "initial_coordinate_radius": "1/1267650600228229401496703205376",
+  "order": 16,
+  "max_steps": 256,
+  "growth_rate_bounds": [
+    "0",
+    "1"
+  ],
+  "growth_bisections": 8,
+  "retained_scaled_duration": "1",
+  "acute_margin": "0",
+  "feasibility_scope": "Local saddle growth suggests an order-one departure near original time 240; this is not a nonlinear arrival guarantee. Fixed whole-tube and matrix admission may stop either leg. No retries or horizon changes.",
+  "source_scope": "The initial cube is near the winding-one saddle. Its forward image is not an independently prepared winding-zero source ball.",
+  "evidence_kind": "conditional mathematical-computational connection, not a physical measurement or autonomous source selection"
+}

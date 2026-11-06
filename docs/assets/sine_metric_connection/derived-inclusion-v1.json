@@ -1,0 +1,37 @@
+{
+  "schema": "tnfr.sine-metric-inverse-inclusion-postprocessing.v1",
+  "scope": "Post-evaluation sufficient bound from retained steps; no new forecast and no change to the original protocol verdict. The two-sided block-metric premise and global invertibility are proved in SINE_PATTERN_DYNAMICS section51.",
+  "response_sha256": "5c1e8fe8960e40b1d4d2747d1f859c51964aa35013574a49ecaa3bb37372f92b",
+  "forward_endpoint_time": {
+    "denominator": 1,
+    "numerator": 237
+  },
+  "forward_endpoint_index": 236,
+  "recurrence": "P_next=upper128(g*P); eta_next=upper128(g*eta+ell); P0=1, eta0=0; candidate=r/P-eta",
+  "interval_owner_sha256": "1c19a6666c570d6667e8c3b93d56452f0c38fffecc50a48e81f39a7b9aa2f12f",
+  "growth_product_upper": {
+    "numerator": 25879267045458946787473652693405432995289457294857,
+    "denominator": 340282366920938463463374607431768211456
+  },
+  "nominal_endpoint_error_upper": {
+    "numerator": 250572393253786332214989877,
+    "denominator": 340282366920938463463374607431768211456
+  },
+  "enclosing_initial_radius": {
+    "numerator": 2970218725782854014178537127816484708377,
+    "denominator": 431359146674410236714672241392314090778194310760649159697657763987456
+  },
+  "inscribed_initial_radius": {
+    "numerator": 134217728,
+    "denominator": 258732103903484357453253474976449672981
+  },
+  "enclosing_candidate_radius": {
+    "numerator": -6484629879234492343676219379769676888845368829808416399404074140731852147677,
+    "denominator": 8806258244407812397112942493040482149641700322443468606903809440288023345412298917281792
+  },
+  "inscribed_candidate_radius": {
+    "numerator": -1677781931689737893979090985454793944748933761778517808720925289511930756199386877055859610944434730103942091322401,
+    "denominator": 2278461723093037862650711119942492340083367153355935890300359028181775739740593356678867383734319521590887745340634167825661952
+  },
+  "positive_independent_source_radius_certified": false
+}
