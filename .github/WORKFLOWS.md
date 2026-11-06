@@ -115,6 +115,33 @@ The final Zenodo step only prints a reminder. A separately configured external
 integration may archive a release; this workflow does not upload an archive or
 verify a DOI. No GitHub/PyPI/Zenodo settings are inferred from this file.
 
+### Release checklist
+
+1. Update every version owner that `scripts/check_documentation.py`
+   cross-checks: `pyproject.toml`, `src/tnfr/_version.py`, `CITATION.cff`
+   (version, date, release URL and abstract), `.zenodo.json` (description
+   links, version, publication date and PyPI identifier), `README.md`,
+   `ARCHITECTURE.md` and `AGENTS.md` with its byte-identical mirror.
+2. Run the documentation, reference and prerequisite checks and the
+   [package checks](../TESTING.md#package-content-and-size-checks). Commit, then
+   build a [development bundle](../TESTING.md#lightweight-development-bundle)
+   from that commit and complete its extraction and onboarding checks.
+3. Push and wait until the validation runs described above pass on that exact
+   commit.
+4. Create and push the annotated tag `v<version>` on the commit, then publish
+   the GitHub release from it with notes on scientific scope, engine changes,
+   compatibility and verification.
+5. Confirm the publication run: PyPI lists the wheel and source distribution,
+   and the release carries the development ZIP and sidecar. Optionally compare
+   the ZIP digest with a local build of the same commit; the builder fixes
+   member order, timestamps and attributes.
+6. Download the PyPI files, check them against PyPI's SHA256 digests and attach
+   them with a `SHA256SUMS` covering the wheel, source distribution and
+   development ZIP.
+7. Confirm the new Zenodo version record (version, date, archive and DOI) under
+   the concept DOI, then record the version DOI and payload sizes in the
+   release notes.
+
 ### Published payloads
 
 | Output | Contents and publication path |
@@ -127,12 +154,12 @@ verify a DOI. No GitHub/PyPI/Zenodo settings are inferred from this file.
 | Documentation site | Rendered documentation plus retained downloadable source/evidence, deployed separately to `gh-pages`. Its size is not the installed package size. |
 | Actions reports | JUnit, coverage and dependency-audit reports retained by their respective jobs; they are not package contents or release archives. |
 
-Repository archives can grow as frozen responses and source snapshots are
-retained. A compressed evidence archive may expand substantially, and repeated
-source records can be required to reproduce different evaluated runs. Preserve
-those records rather than treating all archive growth as generated waste.
-Review the distribution check's contents and byte sizes to identify which
-payload actually changed.
+Repository archives grow with retained evidence. Under the
+[retention policy](../AGENTS.md#6-documentation-and-implementation-owners), keep
+the records that retained claims consume and retire the rest with a recovery
+permalink; do not delete consumed evidence merely to reduce size. Review the
+distribution check's contents and byte sizes to identify which payload actually
+changed.
 
 ## Research verification boundary
 

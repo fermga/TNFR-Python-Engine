@@ -9,62 +9,57 @@ routes definitions, contracts and implementation work.
 
 TNFR investigates organized mathematical objects: their identity, dynamics,
 interactions and emergent properties under explicit premises. Develop these
-foundations using the [NFR ontology], without prescribing the investigation's
-outcome. Networks represent constituents and relations; graph construction
-alone does not establish an object's identity or collective behavior.
-The engine, conditional mathematics and finite computational evidence support
-this work. Proofs and numerical experiments do not constitute empirical
-validation; a uniquely selected fundamental law remains open.
+foundations with the [NFR ontology], without prescribing the outcome. Networks
+represent constituents and relations; graph construction alone does not
+establish identity or collective behavior. Proofs and numerical experiments
+support this work but are not empirical validation; a uniquely selected
+fundamental law remains open.
 
 The [matter-emergence hypothesis] asks whether persistent organizations under
 one justified complete dynamics can account for observed physical properties.
-The [physical assessment] owns shared requirements across electromagnetic,
-weak, strong, gravitational and quantum phenomena and their measurement
-boundaries. Favor useful common prerequisites while preserving distinct
-experimental discriminators and compatible scale matching under one law.
-Use them to select discriminating structural questions;
-do not promote a diagnostic label, supplied circuit law or illustrative
-particle profile into a derived physical identification.
+The [physical assessment] owns the shared electromagnetic, weak, strong,
+gravitational and quantum requirements and their measurement boundaries. Use
+them to select discriminating structural questions: favor common prerequisites,
+keep distinct experimental discriminators and compatible scale matching under
+one law, and never promote a diagnostic label, supplied circuit law or
+illustrative particle profile into a derived physical identification.
 
-**Mandatory foundation prerequisite.** The four pillars in the
-[foundation prerequisites] must be
-resolved with scoped evidence and review before starting or extending a
-fundamental-physics mapping, analogy campaign, particle identification or
-experimental fit. A separate independent final readiness review must bind
-all four current resolutions and the current program, and cover the proposed
-physical task. A pillar marked `resolved` admits only its reviewed mathematical
-scope; it does not by itself establish universal foundations or authorize a
-later acquisition, interaction or physical claim. All four resolutions can be
-valid while physical mapping remains blocked by a missing final review.
-Read `theory/research_prerequisites.json` and run
-`python scripts/check_research_prerequisites.py --require-physical-mapping`
-before such work. A nonzero result prohibits that work; continue the active
-foundation question instead. Do not bypass the prerequisite by calling a
-mapping an illustration, assigning a physical label, or editing readiness
-metadata without its required evidence. Historical physical studies may be
-read as context; their existence does not activate them. Mathematical
-foundation work in `src/tnfr/physics/` remains allowed: a package name is not
-a physical identification. The program owns the sole active task; the JSON
-record owns readiness evidence, not another research queue.
+**Mandatory foundation prerequisite.** A fundamental-physics mapping, analogy
+campaign, particle identification or experimental fit may start or extend only
+when the four [foundation prerequisites] are resolved with scoped evidence and
+review and a separate independent final readiness review binds all four current
+resolutions and the current program and covers the proposed task. A `resolved`
+pillar admits only its reviewed mathematical scope, not universal foundations
+or a later acquisition, interaction or physical claim; valid resolutions without
+the final review still block mapping. Before such work, read
+`theory/research_prerequisites.json` and run
+`python scripts/check_research_prerequisites.py --require-physical-mapping`.
+A nonzero result prohibits the work: continue the active foundation question.
+Never bypass it by calling a mapping an illustration, assigning a physical
+label or editing readiness metadata without its evidence. Historical physical
+studies are context; their existence does not activate them. Mathematical work
+in `src/tnfr/physics/` remains allowed; a package name is not a physical
+identification. The program owns the sole active task; the JSON record owns
+readiness evidence, not another queue.
 
-Justify canonical TNFR structure and dynamics against definitions, hypotheses,
+Justify canonical structure and dynamics against definitions, hypotheses,
 derivations and counterexamples; neither a manuscript nor a runtime registry
-establishes their necessity. Evaluate implemented claims against these premises,
-then implementation and relevant tests. Code establishes implemented behavior,
-not mathematical truth; labels, summaries and filenames prove nothing.
-Foundational and constitutive premises remain revisable: identify the affected
-model and scope, preserving valid conditional results and counterexamples.
+establishes necessity. Evaluate implemented claims against these premises, then
+implementation and tests: code establishes implemented behavior, not
+mathematical truth, and labels, summaries and filenames prove nothing. Premises
+remain revisable; identify the affected model and scope and preserve valid
+conditional results and counterexamples.
 
 - Use English for code, documentation, comments, commits, issues and PRs;
   preserve verbatim quotations and raw data in their original language.
-- Lead reader-facing explanations with registered English operator names,
-  such as Emission (AL) and Coherence (IL). Use simple glyph codes without
+- Lead reader-facing explanations with registered English operator names, such
+  as Emission (AL) and Coherence (IL). Use simple glyph codes without
   apostrophes for compact words and formulas; derive names from the registry.
 - Distinguish definitions, supplied laws, derived identities, conditional
   theorems, finite observations, policies and open hypotheses.
 - Explain the present model directly. Definitions belong with their chapters,
-  usage in guides and task status in the research program; overviews are neither
-  delivery logs nor copies of derivations.
+  usage in guides and task status in the research program; overviews are
+  neither delivery logs nor copies of derivations.
 - Arithmetic encodings, graph analogies, auxiliary Hamiltonians and diagnostic
   scores retain their own premises. External identifications require an
   independent model and measurement bridge.
@@ -122,50 +117,45 @@ values from `TNFR.operators()` and words from `list_sequences()`, not display
 names or parallel catalogs. Preserve word order and live preconditions;
 direct glyphs, public classes and atomic stages have different secondary effects.
 
-**Priority 1: canonical implementation and integration of structural operators.**
-They are TNFR's constitutive mechanisms for emergence and self-organization.
-Tie foundation work to an identified operator function, its shared implementation,
-grammar and continued participation in the resulting organization. Mathematical
-analysis and tests support this development; an auxiliary flow or additional
-audit is not a substitute. The [research program] alone selects the next concrete
-gap. Preserve its unresolved roles rather than claiming registry coverage is
-canonical completeness.
+**Priority 1: canonical implementation and integration of structural
+operators**, TNFR's constitutive mechanisms for emergence and self-organization.
+Every claimed canonical structural or dynamical operation, continuous and
+collective descriptions included, must be grounded in the operators and grammar
+through actual admitted execution or a proved realization, restriction,
+reduction or continuous limit. This constitutive research premise is neither
+empirical validation nor proof that the software fully realizes it. Tie
+foundation work to an identified operator function, its shared implementation,
+grammar and continued participation in the resulting organization; an
+auxiliary flow or another audit is no substitute. Identify each consumed
+mechanism and justify inactive or eliminated actions; behavior named coupling,
+resonance or self-organization does not establish UM, RA or THOL. The
+[continuous contact audit](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/STRUCTURAL_OPERATORS.md#continuous-operator-realization-audit)
+records the missing bridge for the postulated weighted contact laws, whose
+conditional results stay non-canonical. The [research program] alone selects
+the next gap; registry coverage is not canonical completeness.
 
 Bind operator requests to actual NFR targets, consumed state/history and their
 selection origin. Supplied words and configured state-dependent selectors are
 not derived occurrence laws; collective selection needs its own descent proof.
-
-Record the selected operator admission policy in prospective studies. Activity
+Record the selected admission policy in prospective studies. Activity
 thresholds do not establish NFR existence or absence; retain legacy-policy
 controls when admitting a new event domain.
 
 Grammar bases belong to `operators/grammar_canon.py`; role sets derive through
 shared predicates and `grammar_types.py`. U1-U6 are admission/monitoring
 contracts, not universal stability or autonomous-selection theorems.
-Every claimed canonical structural or dynamical operation must be grounded
-in structural operators and grammar, including continuous and collective
-descriptions. This is TNFR's constitutive research premise, not an empirical
-validation of the paradigm or proof that current software fully realizes it.
-Structural operators must participate through the
-actual admitted execution or a proved realization, restriction, reduction or
-continuous limit. A separate numerical flow is not that justification. Identify
-each consumed mechanism and justify any inactive/eliminated action; behavior
-named coupling, resonance or self-organization does not establish UM, RA or THOL.
-The [continuous contact audit](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/STRUCTURAL_OPERATORS.md#continuous-operator-realization-audit)
-records the missing bridge for the postulated weighted contact laws. Retain
-their conditional results without promoting them to canonical operator dynamics.
-`GRAMMAR_REJECTION_MODE="raise"` prevents blocked-step substitution.
-Read the [grammar] and [operator] owners before changing semantics.
+`GRAMMAR_REJECTION_MODE="raise"` prevents blocked-step substitution. Read the
+[grammar] and [operator] owners before changing semantics.
 
 Default Mutation requires active capacity, a live finite signed two-sample EPI
-secant strictly above its configured threshold, and independent grammar context.
+secant strictly above its configured threshold and independent grammar context.
 Timestamped history ends at the live state; step-indexed history declares
 operator-step units. Nodal-product predictions cannot replace observed trigger
-evidence. Missing/stale evidence rejects execution or yields explicit abstention.
-The explicit [operator-growth alternative](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NATIVE_OPERATOR_DYNAMICS.md#operator-hybrid-mutation-consumer)
-instead produces and consumes its own hybrid source atomically, retaining exact
-growth, independent grammar and disjoint consumed windows. Detached reports do
-not activate it; ordinary history-based interfaces remain unchanged.
+evidence; missing or stale evidence rejects execution or yields explicit
+abstention. The explicit [operator-growth alternative](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NATIVE_OPERATOR_DYNAMICS.md#operator-hybrid-mutation-consumer)
+instead produces and consumes its own hybrid source atomically, with exact
+growth, independent grammar and disjoint consumed windows; detached reports do
+not activate it and history-based interfaces are unchanged.
 
 Named events are hybrid jumps, not invented finite-duration pressure flows.
 Atomic stages propose from one immutable snapshot, validate every target and
@@ -180,7 +170,7 @@ Admit values before float conversion, caching or array construction:
 `_exact_time.py` owns represented-real admission, `types.py` signed scalar EPI,
 and `alias.py` attribute access. Invalid authoritative values cannot fall
 through to another alias. Reject nonfinite inputs, Boolean physical scalars or
-clocks, and nonzero values lost during materialization. Finite inputs still
+clocks, and nonzero values lost during materialization; finite inputs still
 require representable output arithmetic. Reuse shared Boolean parsing and
 parameter resolution instead of competing defaults.
 
@@ -220,35 +210,32 @@ writer. Retain duplicate-key rejection, finite-number admission and explicit
 projected-value availability. Recipes/exports are neither complete checkpoints
 nor provenance authentication.
 
-A report-consuming calculation must re-admit primitive state, law and evidence
-and rebuild consumed derived fields. Cached bounds/verdicts cannot replace
+A report-consuming calculation re-admits primitive state, law and evidence and
+rebuilds consumed derived fields; cached bounds/verdicts cannot replace
 premises. Compute with normalized values before retaining an equivalent source
 association: Python equality is neither scalar admission nor authentication.
-Distinguish circular observations from continuous phase lifts; declare the lifts
-used by collective means. A lift-dependent storage remainder need not be
+Distinguish circular observations from continuous phase lifts and declare the
+lifts used by collective means; a lift-dependent storage remainder need not be
 nonnegative. Preserve proved cycle/mean correlations: overlapping marginal
 state budgets do not prove entry.
 
 ## 5. Research and evidence discipline
 
 The [research program] owns the global objective, current state, priorities and
-sole active question. Its technical chapters retain definitions, proofs and
-counterexamples in their original contexts. The old plan, strategy and portfolio
-routes are generated compatibility views, not active instructions.
-Before resuming research, read the program's current task and complete any
-open documentation prerequisite there. Run
+sole active question; its chapters keep definitions, proofs and counterexamples
+in context, and generated plan, strategy and portfolio routes are compatibility
+views, not instructions. Before resuming research, read the current task,
+complete any open documentation prerequisite there and run
 `python scripts/check_research_prerequisites.py` with the verified isolated
-interpreter. This ordinary check validates the record and its evidence
-associations; it permits only the work admitted by the live program and does
-not replace the stricter physical-readiness check or substantive review.
-Its current gate is the persistent
-continuation record; do not rely on conversation memory or create another queue.
-After the gate closes, reassess the next scientific question against the global
-objective instead of automatically continuing the most recent example. Existing
-examples/theorems do not activate campaigns. On closing a gate, update the
-program's current question and link the result chapter. Keep the unresolved
-dependencies and evidence that retained claims consume, without per-turn logs
-or duplicate result inventories. Follow F1-F4:
+interpreter. It validates the record and its evidence associations and permits
+only work the live program admits; it replaces neither the physical-readiness
+check nor substantive review. The program, not conversation memory or another
+queue, is the continuation record. When a gate closes, update the current
+question, link the result chapter and reassess the next question against the
+global objective rather than continuing the latest example; existing examples
+and theorems do not activate campaigns. Keep unresolved dependencies and the
+evidence retained claims consume, without per-turn logs or duplicate result
+inventories. Follow F1-F4:
 
 1. Define identity, sufficient constituent/boundary state, domains, units,
    observations and discarded information.
@@ -261,34 +248,34 @@ or duplicate result inventories. Follow F1-F4:
    numerical budget before evaluating the reserved response.
 
 Apply the [NFR ontology] and operator contracts to the actual execution path.
-Declare the object's preparation, symmetries and supported actions; state
-whether identity is supplied, acquired or assessed only on a finite interval.
-A collective event needs its own admission, descent and occurrence argument
-even when continuous collective dynamics closes. Established organizations
-test foundations under their premises; they do not imply that every compatible
-law acquires them or realizes every registered operator.
+Declare the object's preparation, symmetries and supported actions, and whether
+identity is supplied, acquired or assessed only on a finite interval. A
+collective event needs its own admission, descent and occurrence argument even
+when continuous collective dynamics closes. Established organizations test
+foundations under their premises; they do not imply that every compatible law
+acquires them or realizes every registered operator.
 
-Reuse the [theory-to-execution map]. Combine results only after matching complete
-law, support, capacity, clock, preparation and retained coordinates. Methods can
-transfer between models; their coefficients and verdicts do not automatically
-transfer. Matching equilibria and full tangents does not transfer nonlinear
-remainders, source transport or acquisition/capture certificates; re-admit
-regularity and bounds for the actual law. Tangent reduction need not close a
-nonlinear law. Eliminating hidden state can introduce memory and retains
-hidden initialization and forcing.
-An independent phase shift of disconnected components can change the initial
-state after they are joined; transfer through symmetry requires an explicit
-chart, retained means and error bounds under the joined law.
-Formation, recovery, winding, lifetime and maintenance have separate obligations:
-response peaks, pulses, recurrence, invariant families and finite retention do
-not establish formation or autonomous scale selection. An admissible connection
-or passive event does not select its occurrence.
+Reuse the [theory-to-execution map]. Combine results only after matching
+complete law, support, capacity, clock, preparation and retained coordinates.
+Methods can transfer between models; coefficients and verdicts do not
+automatically. Matching equilibria and full tangents transfers neither
+nonlinear remainders, source transport nor acquisition/capture certificates:
+re-admit regularity and bounds for the actual law. Tangent reduction need not
+close a nonlinear law, and eliminating hidden state can introduce memory while
+retaining hidden initialization and forcing. Joining disconnected components
+after independent phase shifts can change the initial state; transfer through
+symmetry needs an explicit chart, retained means and error bounds under the
+joined law.
 
-Account for support-event storage jumps separately from continuous loss. Loss
-is not an event reserve without a declared reservoir and law; event passivity
-is an additional premise. Integrate justified reusable mechanisms in shared
-engine owners and consumers. Auxiliary constructions and arithmetic applications
-retain their own premises; finite comparisons do not select a unique ontology.
+Formation, recovery, winding, lifetime and maintenance have separate
+obligations: response peaks, pulses, recurrence, invariant families and finite
+retention do not establish formation or autonomous scale selection, and an
+admissible connection or passive event does not select its occurrence. Account
+for support-event storage jumps separately from continuous loss; loss is no
+event reserve without a declared reservoir and law, and event passivity is an
+additional premise. Integrate justified reusable mechanisms in shared engine
+owners and consumers. Auxiliary constructions and arithmetic applications keep
+their own premises; finite comparisons do not select a unique ontology.
 
 Any later empirical evaluation follows P1-P5: independent observation/preparation
 and clock models, separate calibration/reserved evaluation, alternatives, then
@@ -299,30 +286,28 @@ extraterrestrial observations or large facilities.
 
 Record source/configuration, support/node order, inputs, seeds, precision,
 backend, pressure refresh, events and residuals; a seed alone is insufficient.
-Never rewrite a retained frozen protocol, source archive, response or verdict.
-Corrections need separate evidence; do not regenerate frozen producers for
-unrelated changes. Retiring a record under the retention policy removes it from
-the tree; it does not rewrite it.
+Never rewrite a retained frozen protocol, source archive, response or verdict;
+corrections need separate evidence, and frozen producers are not regenerated
+for unrelated changes. Retirement under the retention policy removes a record
+from the tree without rewriting it. The [published evidence selection] declares
+which records a fresh checkout contains and which dependencies remain omitted.
+Resolve a historical source by its recorded path and digest in the associated
+archive; current maintained bytes need not match a past freeze. Preserve the
+raw-byte rules in `.gitattributes`; never normalize, reformat or rewrite frozen
+files to repair a digest mismatch.
 
-The [published evidence selection] declares which local records are available
-in a fresh checkout and which dependencies remain omitted. Resolve a historical
-source by its recorded path and digest in the associated archive; current
-maintained bytes need not match a past freeze. Preserve the raw-byte rules in
-`.gitattributes`, including bound chapter files and evidence archives. Do not
-normalize, reformat or rewrite frozen files to repair a digest mismatch.
 A failed sufficient certificate leaves its claim unavailable; it does not
 establish failure of the modeled trajectory. A consumed attempt or failed
-diagnostic does not authorize a retry, repair/replay or enlarged budget.
-Bounds derived under an assumption used for contradiction are conditional:
-once that assumption fails, they do not bound the later actual state. Exiting
-a comparison domain alone proves neither eventual non-entry nor a new identity.
+diagnostic does not authorize a retry, repair/replay or enlarged budget. Bounds
+derived under an assumption used for contradiction stop bounding the actual
+state once that assumption fails. Exiting a comparison domain alone proves
+neither eventual non-entry nor a new identity.
 
-User-supplied books in `bibliografia/` remain local and Git-ignored. Preserve
-them during cleanup or refactoring. Keep the books, extracted text and rendered
-pages out of commits and publication archives; use
-`theory/BIBLIOGRAPHIC_METHODS.md` for source locators, reading limits and
-method integration. Missing local material
-must be reported explicitly, not silently replaced or treated as a result.
+User-supplied books in `bibliografia/` stay local and Git-ignored; preserve them
+during cleanup. Keep the books, extracted text and rendered pages out of
+commits and publication archives; `theory/BIBLIOGRAPHIC_METHODS.md` holds source
+locators, reading limits and method integration. Report missing local material
+explicitly; never silently replace it or treat it as a result.
 
 ## 6. Documentation and implementation owners
 
@@ -341,19 +326,16 @@ Catalogs generate website menus; operator contracts and grammar roles generate
 their checked tables. Glossary checks validate declarations/references, not
 scientific truth. Do not create duplicate catalogs, rule tables or glossaries.
 
-`theory/RESEARCH_PROGRAM.md` is the sole research planning entry point. Keep it
-small enough for ordinary editor and Markdown-preview use. Each linked chapter
-has one canonical Markdown file at its declared path; edit that file directly.
-`theory/research_catalog.json` contains only ordering, titles and compatibility
-routes. It generates navigation, not a second theory or task queue. The optional
-`scripts/research_book.py` reader supports both this layout and historical
-monolithic captures. Never reassemble the maintained corpus into one preview
-page or edit generated website copies; [Contributing] gives the workflow.
-
-The program has a 96-KiB file budget. Each research chapter, the program and
-each maintained docs owner also has a 4,000-physical-line editorial limit,
-checked by `scripts/check_documentation.py`. Split chapters by model and
-responsibility while preserving their published routes and evidence.
+`theory/RESEARCH_PROGRAM.md` is the sole research planning entry point, within a
+96-KiB budget. Each linked chapter has one canonical Markdown file at its
+declared path; edit it directly. `theory/research_catalog.json` holds only
+ordering, titles and compatibility routes and generates navigation, not a second
+theory or queue. Never reassemble the corpus into one preview page or edit
+generated website copies; `scripts/research_book.py` supports focused reading
+and [Contributing] gives the workflow. The program, each chapter and each
+maintained docs owner have a 4,000-physical-line limit checked by
+`scripts/check_documentation.py`; split chapters by model and responsibility
+while preserving their published routes and evidence.
 
 **Retention policy.** The working tree keeps what serves active research: the
 foundations, the engine and its contracts, the current program, results that it
@@ -371,20 +353,15 @@ uncommitted work until its owner decides.
 
 Inspect instructions, local changes, relevant source and tests before editing;
 preserve unrelated work. Use the user's selected source repository, not a
-plugin directory, old ZIP or installed release. Verify the repository root,
-HEAD and working-tree status. Before Python execution, verify the isolated
-interpreter and the imported `tnfr` path against that checkout; a matching
-version string alone does not establish source identity.
-Start from the mathematical question and consumer.
-Use the owner map to locate the definition, selected law, implementation and
-tests before proposing a change. Prefer shared kernels, retain useful adapters
-and keep APIs stable or document and test an explicit migration. Update
+plugin directory, old ZIP or installed release, and verify its root, HEAD and
+working-tree status. Before Python execution, verify the isolated interpreter
+and the imported `tnfr` path; a matching version string does not establish
+source identity. Start from the mathematical question and consumer: use the
+owner map to locate the definition, selected law, implementation and tests
+before proposing a change. Prefer shared kernels, retain useful adapters and
+keep APIs stable or document and test an explicit migration. Update
 implementation and its contract/theory owner together; keep this file focused
 on working rules.
-
-After catalog/registry edits, refresh generated views with
-`python scripts/check_documentation.py --write-generated`. Edit maintained
-inputs, not `build/docs-source/` or `site/`.
 
 - Check postconditions, invalid domains, representation boundaries, atomicity
   and provenance. Valid words need not increase `C`; Resonance need not
@@ -396,19 +373,35 @@ inputs, not `build/docs-source/` or `site/`.
   isolation and provenance controls.
 - Run affected contracts and explicitly select research owners whose models or
   claims changed. The routine engine/API gate is not full research coverage;
-  [Testing] owns selection and dependencies.
-- For docs, verify mirror, generated views, links and executable examples
-  locally. Build the strict site locally when navigation, catalogs, staging
-  or rendering change; otherwise the docs workflow supplies it. Report checks
-  and material limitations.
+  [Testing] owns selection and dependencies. Cold-import checks use fixed
+  subprocess timeouts: run gates without competing heavy jobs and rerun a
+  timeout in isolation before treating it as a regression.
+- After catalog/registry edits, refresh generated views with
+  `python scripts/check_documentation.py --write-generated`. Edit maintained
+  inputs, not `build/docs-source/` or `site/`.
+- For documentation, run the fast gate (`scripts/check_documentation.py` and
+  `scripts/verify_internal_references.py --ci`), which verifies the mirror,
+  generated views, links and executable examples. Build the strict site locally
+  only when navigation, catalogs, staging or rendering change; the docs workflow
+  builds it for every Markdown change. Report checks and material limitations.
+- Keep the checkout lean: write scratch output outside the repository or in
+  ignored generated directories, and use [local maintenance] tooling
+  (`scripts/clean_repository.py --report`, `--caches`, `--dry-run`) instead of
+  ad hoc deletion.
 - For distribution changes, check fresh wheel and source archives with
   `scripts/check_distribution.py` and the release checks in [Testing].
-- Every release must include a verified lightweight development bundle and its
-  SHA256 sidecar as GitHub release assets. Build from the exact release commit
-  with `scripts/build_development_bundle.py`; retain code, theory, instructions,
-  examples and tests, plus onboarding and verified retrieval of omitted evidence.
-  Follow [Testing] for source/version, extraction and helper checks. Preserve
-  the complete repository/Zenodo archive separately.
+
+**Releases** follow the [release checklist]. Bump the version in every owner
+that `scripts/check_documentation.py` cross-checks: `pyproject.toml`,
+`src/tnfr/_version.py`, `CITATION.cff`, `.zenodo.json`, README, ARCHITECTURE and
+this file with its mirror. Validate the exact commit locally and in CI, then
+publish the GitHub release from an annotated `v<version>` tag. The publication
+workflow uploads to PyPI and attaches the lightweight development bundle from
+`scripts/build_development_bundle.py` with its SHA256 sidecar: code, theory,
+instructions, examples and tests with onboarding and verified retrieval of
+omitted evidence. Then attach the PyPI-identical wheel and sdist with
+`SHA256SUMS` and confirm the Zenodo version DOI of the complete repository
+archive.
 
 Distinguish grammar rejection, live-state rejection, solver defects, unavailable
 observations and unsupported theorem domains. Coherence decrease violates only
@@ -458,3 +451,5 @@ Detailed admission and verification belong to the linked contracts.
 [Workflows]: https://github.com/fermga/TNFR-Python-Engine/blob/main/.github/WORKFLOWS.md
 [Examples]: https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/README.md
 [benchmarks]: https://github.com/fermga/TNFR-Python-Engine/blob/main/benchmarks/README.md
+[local maintenance]: https://github.com/fermga/TNFR-Python-Engine/blob/main/CONTRIBUTING.md#local-disk-maintenance
+[release checklist]: https://github.com/fermga/TNFR-Python-Engine/blob/main/.github/WORKFLOWS.md#release-checklist
