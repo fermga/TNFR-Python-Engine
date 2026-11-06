@@ -21,6 +21,22 @@ Before editing, inspect the affected source, tests and specialized documentation
 Search for an existing owner of the calculation or contract. Preserve unrelated
 working-tree changes and keep a contribution focused enough to review.
 
+### Local disk maintenance
+
+A working checkout accumulates generated outputs, caches, environments and local
+evidence. When the folder or tooling slows down, run
+`python scripts/clean_repository.py --report` (`make disk-report`) first: it
+lists usage per top-level entry and nested Python environments, removing
+nothing. `python scripts/clean_repository.py` (`make clean`) removes declared
+generated outputs; `--caches` (`make clean-caches`) also removes tool caches and
+source `__pycache__` directories; `--dry-run` lists either set first. The
+script never removes local evidence under `artifacts/`, frozen `build/`
+preparations, `publish/`, `bibliografia/` or environments. Retire local
+evidence only after confirming that no tracked file references it, preferably
+by moving it outside the checkout rather than deleting it. Never bulk-delete the
+checkout itself: restore tracked files with Git, and recreate environments from
+[pyproject.toml](pyproject.toml).
+
 ## Development Workflow
 
 1. State the problem and intended behavior. For a suspected defect, record a

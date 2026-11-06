@@ -1,4 +1,4 @@
-.PHONY: help clean test test-all examples docs all hello grammar sdk visualization lint format security security-audit security-setup dev-setup dev-test validate factorization-full-spectrum self-optimize self-optimize-validate
+.PHONY: help clean clean-caches disk-report test test-all examples docs docs-check all hello grammar sdk visualization lint format security security-audit security-setup dev-setup dev-test validate factorization-full-spectrum self-optimize self-optimize-validate
 
 SELF_OPT_MANIFEST ?= tests/data/self_optimization/test_run/_manifest.json
 SELF_OPT_MANIFEST_SUMMARY ?= tests/data/self_optimization/test_run/_manifest_summary.json
@@ -12,13 +12,22 @@ help:
 	@echo "  test-all    Include retained research suites (slow cases still opt-in)"
 	@echo "  examples    Run the maintained introductory examples"
 	@echo "  docs        Validate and build the documentation site"
+	@echo "  docs-check  Run the fast documentation gate without building the site"
 	@echo "  validate    Run documentation and SDK validation"
 	@echo "  clean       Remove generated repository artifacts"
+	@echo "  clean-caches  Also remove tool and source bytecode caches"
+	@echo "  disk-report Summarize local disk usage without removing anything"
 	@echo "  dev-setup   Install the supported minimal development extra"
 	@echo "  security    Run dependency and source security checks"
 
 clean:
 	@python scripts/clean_repository.py
+
+clean-caches:
+	@python scripts/clean_repository.py --caches
+
+disk-report:
+	@python scripts/clean_repository.py --report
 
 test:
 	@python -m pytest
@@ -49,9 +58,11 @@ sdk:
 visualization:
 	@python examples/08_emergent_geometry/179_phase_form_driven_response.py --output-dir output/phase_form_driven_response
 
-docs:
+docs-check:
 	@python scripts/verify_internal_references.py --ci
 	@python scripts/check_documentation.py
+
+docs: docs-check
 	@python scripts/prepare_docs.py
 	@python -m mkdocs build --strict
 

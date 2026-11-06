@@ -69,9 +69,33 @@ TREE_SUFFIXES = {
 }
 
 
-def _copy_file(source: Path, destination: Path) -> None:
+def _stage_file(source: Path, destination: Path) -> None:
+    """Hard-link an input that staging never rewrites; copy staged Markdown.
+
+    Links keep large retained evidence from being duplicated under
+    ``build/docs-source``. Staging rewrites only Markdown, and every rewrite
+    replaces its directory entry first, so a linked source is never modified.
+    Filesystems without hard links fall back to a copy.
+    """
     destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.unlink(missing_ok=True)
+    if destination.suffix.lower() != ".md":
+        try:
+            os.link(source, destination)
+            return
+        except OSError:
+            pass
     shutil.copy2(source, destination)
+
+
+def _replace_staged(destination: Path, payload: bytes | str) -> None:
+    """Write a new staged file without writing through an existing link."""
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.unlink(missing_ok=True)
+    if isinstance(payload, bytes):
+        destination.write_bytes(payload)
+    else:
+        destination.write_text(payload, encoding="utf-8")
 
 
 def _source_inventory() -> frozenset[str] | None:
@@ -102,7 +126,7 @@ def _source_inventory() -> frozenset[str] | None:
     return frozenset(os.fsdecode(path) for path in result.stdout.split(b"\0") if path)
 
 
-def _copy_tree(relative: str, *, source_inventory: frozenset[str] | None) -> None:
+def _stage_tree(relative: str, *, source_inventory: frozenset[str] | None) -> None:
     source_root = REPO_ROOT / relative
     if not source_root.exists():
         return
@@ -123,7 +147,7 @@ def _copy_tree(relative: str, *, source_inventory: frozenset[str] | None) -> Non
         ):
             continue
         destination = STAGE_DIR / source_relative
-        _copy_file(source, destination)
+        _stage_file(source, destination)
 
 
 def _separate_display_math(content: str) -> str:
@@ -185,14 +209,14 @@ def prepare() -> Path:
     STAGE_DIR.mkdir(parents=True)
 
     readme = REPO_ROOT / "README.md"
-    _copy_file(readme, STAGE_DIR / "index.md")
+    _stage_file(readme, STAGE_DIR / "index.md")
 
     for relative in ROOT_FILES:
         source, destination = REPO_ROOT / relative, STAGE_DIR / relative
         if source.is_file():
-            _copy_file(source, destination)
+            _stage_file(source, destination)
         else:
-            destination.write_bytes(read_document_bytes(REPO_ROOT, relative))
+            _replace_staged(destination, read_document_bytes(REPO_ROOT, relative))
 
     for relative in (
         ".github",
@@ -205,20 +229,16 @@ def prepare() -> Path:
         "src/tnfr",
         "tests",
     ):
-        _copy_tree(relative, source_inventory=source_inventory)
+        _stage_tree(relative, source_inventory=source_inventory)
 
     # Chapter paths remain website routes and link-resolution bases in both
     # legacy containers and modular checkouts. The program route stays compact.
     for relative, payload in chapter_sources.items():
         if is_frozen_markdown_capture(Path(relative)):
             continue
-        destination = STAGE_DIR / relative
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_bytes(payload)
+        _replace_staged(STAGE_DIR / relative, payload)
     if book_front is not None:
-        destination = STAGE_DIR / RESEARCH_BOOK
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_text(book_front, encoding="utf-8")
+        _replace_staged(STAGE_DIR / RESEARCH_BOOK, book_front)
 
     # Preserve repository paths, but link directory targets to an actual index
     # or the repository browser. A static site cannot display source folders.
@@ -308,7 +328,7 @@ def prepare() -> Path:
             rewrite_markdown_prose(content, convert_links)
         )
         if rendered != content:
-            document.write_text(rendered, encoding="utf-8")
+            _replace_staged(document, rendered)
 
     print(f"Documentation staged at {STAGE_DIR}")
     return STAGE_DIR

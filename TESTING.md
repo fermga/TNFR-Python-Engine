@@ -497,7 +497,11 @@ remains eligible. Git-ignored generated artifacts are omitted. The existing
 extension and directory rules still apply within the repository; names of
 parent directories do not exclude maintained sources. An extracted source tree
 without Git metadata uses those positive rules alone; a failed inventory in a Git
-checkout stops before replacing the previous stage.
+checkout stops before replacing the previous stage. Staged inputs other than
+Markdown are hard links to their sources when the filesystem supports them, so
+retained evidence is not duplicated under `build/docs-source/`; staged Markdown
+is copied, and every staging write replaces its target instead of writing
+through a link. Unsupported filesystems fall back to copies.
 
 The documentation integrity check also validates the theory catalog, its
 generated navigation, operator contracts, grammar roles and glossary cards/index.

@@ -883,6 +883,50 @@ def test_source_archive_staging_uses_positive_rules_without_git(
     assert not (output / "docs/assets/excluded.bin").exists()
 
 
+def test_staging_shares_payloads_but_never_writes_through_to_sources(
+    staging_workspace,
+):
+    staging, workspace = staging_workspace
+    archive = workspace / "docs/assets/evidence.zip"
+    archive.parent.mkdir(parents=True)
+    archive.write_bytes(b"retained archive bytes")
+    page = workspace / "docs/page.md"
+    page_source = b"# Page\n[Home](../README.md#home)\n[Archive](assets/evidence.zip)\n"
+    page.write_bytes(page_source)
+
+    output = staging.prepare()
+
+    staged_archive = output / "docs/assets/evidence.zip"
+    staged_page = output / "docs/page.md"
+    assert staged_archive.read_bytes() == b"retained archive bytes"
+    assert "[Home](../index.md#home)" in staged_page.read_text(encoding="utf-8")
+    assert not staged_page.samefile(page)
+    assert page.read_bytes() == page_source
+    if staged_archive.samefile(archive):
+        staging._replace_staged(staged_archive, b"replacement")
+        assert staged_archive.read_bytes() == b"replacement"
+        assert archive.read_bytes() == b"retained archive bytes"
+        staging.prepare()
+        assert archive.read_bytes() == b"retained archive bytes"
+
+
+def test_staging_copies_when_hard_links_are_unavailable(staging_workspace, monkeypatch):
+    staging, workspace = staging_workspace
+    archive = workspace / "docs/assets/evidence.json"
+    archive.parent.mkdir(parents=True)
+    archive.write_bytes(b'{"retained":true}\r\n')
+
+    def no_links(*args, **kwargs):
+        raise OSError("hard links unsupported")
+
+    monkeypatch.setattr(staging.os, "link", no_links)
+    output = staging.prepare()
+
+    staged = output / "docs/assets/evidence.json"
+    assert staged.read_bytes() == archive.read_bytes()
+    assert not staged.samefile(archive)
+
+
 @pytest.mark.parametrize(
     "error",
     (FileNotFoundError("git unavailable"), subprocess.CalledProcessError(128, "git")),

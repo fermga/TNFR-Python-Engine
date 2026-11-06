@@ -1,4 +1,35 @@
 {
     "git.ignoreLimitWarning": true,
-    "chat.agent.maxRequests": 500
+    "chat.agent.maxRequests": 500,
+    "files.watcherExclude": {
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/__pycache__/**": true,
+        "**/.mypy_cache/**": true,
+        "**/.pytest_cache/**": true,
+        "**/.venv*/**": true,
+        "artifacts/**": true,
+        "bibliografia/**": true,
+        "build/**": true,
+        "dist/**": true,
+        "output/**": true,
+        "publish/**": true,
+        "results/**": true,
+        "site/**": true,
+        "tmp/**": true
+    },
+    "python.analysis.exclude": [
+        "**/node_modules",
+        "**/__pycache__",
+        "**/.*",
+        "artifacts",
+        "bibliografia",
+        "build",
+        "dist",
+        "output",
+        "publish",
+        "results",
+        "site",
+        "tmp"
+    ]
 }

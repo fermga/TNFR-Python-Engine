@@ -14,8 +14,8 @@ current repository.
 | `check_glossary.py` | Validate the canonical glossary's concept cards and generated index; no separate CLI or engine law registry. |
 | `research_book.py` | Read the modular research catalog and canonical chapters, with legacy monolithic compatibility; list, extract or atomically replace one chapter. |
 | `verify_internal_references.py` | Validate repository-relative Markdown targets and GitHub-style heading fragments. |
-| `prepare_docs.py` | Build the deterministic MkDocs source tree under `build/docs-source`. |
-| `clean_repository.py` | Preflight declared generated directories and package metadata before deletion; reject redirected paths and retain frozen source under `build/`. |
+| `prepare_docs.py` | Build the deterministic MkDocs source tree under `build/docs-source`, hard-linking non-Markdown inputs when possible. |
+| `clean_repository.py` | Preflight declared generated directories and package metadata before deletion; reject redirected paths and retain frozen source under `build/`. `--caches` adds tool and source bytecode caches, `--dry-run` lists targets and `--report` summarizes local disk usage without removing anything. |
 
 Run `python scripts/check_distribution.py dist` after building distributions.
 The [package checks](../TESTING.md#package-content-and-size-checks) define the

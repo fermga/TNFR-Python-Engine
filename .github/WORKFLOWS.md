@@ -68,7 +68,8 @@ Edit source owners, not generated site copies.
 The site includes retained evidence and linked source files. Recursive staging
 uses the checkout inventory to omit ignored generated artifacts while retaining
 tracked evidence and untracked nonignored work; source archives without Git
-retain the declared positive copy rules. See the
+retain the declared positive copy rules. Staging hard-links non-Markdown inputs
+when the filesystem permits; the published site content is unchanged. See the
 [staging checks](../TESTING.md#code-quality-and-documentation-checks).
 Pages publishes `site/` to `gh-pages` with `force_orphan: true`, replacing the
 deployment history rather than accumulating a copy of every former site.
