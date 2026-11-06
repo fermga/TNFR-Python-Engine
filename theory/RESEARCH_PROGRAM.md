@@ -9,6 +9,13 @@ their response. The engine, conditional mathematics and retained experiments
 make these questions concrete. Universal realization, autonomous hierarchy,
 a uniquely selected fundamental law and physical identification remain open.
 
+The [operator/grammar constitutive premise](FUNDAMENTAL_THEORY.md#operator-grammar-constitutive-premise)
+applies to every canonical structural and dynamical operation, including any
+continuous or collective representation. Auxiliary equations can test useful
+conditional possibilities; a canonical claim additionally requires their
+operator realization or a justified revision of the formalization. Neither
+current code nor a useful emergent pattern settles that obligation.
+
 The [matter-emergence hypothesis](EMERGENT_ONTOLOGY.md#matter-emergence-hypothesis)
 orients this work toward a generative account of matter and its observed
 fundamental properties. The ontology owns that open hypothesis; each research
@@ -133,7 +140,7 @@ These results distinguish exact retained information, instantaneous tolerance
 and accumulated prediction error. They do not supply the conservative
 hierarchy source with attraction or a smaller universal NFR state.
 
-The current [36-node interacting pair](nodal/ORGANIZED_COMPOSITE_RELAXATION.md#mixed-pair-identity)
+The separate [36-node interacting pair](nodal/ORGANIZED_COMPOSITE_RELAXATION.md#mixed-pair-identity)
 has four nine-cycle regions, a maintained marked identity and a
 [source-associated exchange prediction](nodal/ORGANIZED_COMPOSITE_RELAXATION.md#mixed-collective-sensitivity)
 under its own dissipative law. Oriented ports, phase lifts, hidden profiles and
@@ -219,48 +226,44 @@ For the selected question:
 
 <a id="research-current-question"></a>
 <a id="documentation-before-research"></a>
-## Continuation point: actual-source entry into the two-port organization
+## Continuation point: autonomous and robust collective organization
 
 <!-- research-activity: foundations -->
 
-The [single-bridge eligibility decision](nodal/SINE_FORMED_CLASS_CONTACT.md#sine-formed-joint-cycle-eligibility)
-closes one precise candidate: the actual two-C9 contact adds no cycle class
-independent of its constituent cycles. The proof preserves the established
-class-dependent response, feedback, windings and recovery. It does not exclude
-other collective identities or establish a general failure of composition.
+The two-port investigation now has a closed negative selection result for its
+original formed source. The [critical-energy and integer-representative proof](nodal/SINE_TWO_PORT_COMPATIBILITY.md#sine-formed-two-port-original-period-exclusion)
+establishes eventual absence of the original periods `(2,1,0)` for every
+member, including cut representatives. Its outgoing organization and a common
+destination remain unknown. With the same contacts, the
+[shifted-origin preparation](nodal/SINE_TWO_PORT_CAPTURE.md#sine-formed-two-port-origin-decision)
+has a separate positive capture certificate. Thus the exclusion concerns an
+actual preparation and class; it is not a general impossibility of composition.
 
-The next question is whether actually formed constituents can enter the
-already compatible, internally deformed two-port organization. A
-[prepared-source capture](nodal/SINE_TWO_PORT_CAPTURE.md#sine-two-port-capture-result)
-exists, but its midpoint-aligned preparation is not the retained acquired
-source. The [formed-source admission](nodal/SINE_TWO_PORT_COMPATIBILITY.md#sine-formed-two-port-admission)
-now fixes the source/event, internal identity collar and conditional response,
-with an initial-absence margin and supplied work bound. The
-[source-aware reference method](nodal/SINE_TWO_PORT_CAPTURE.md#sine-formed-two-port-entry-method)
-now closes the analytical comparison and fixes a prospective numerical policy.
-The [executable admission](nodal/SINE_TWO_PORT_CAPTURE.md#sine-formed-two-port-executable-admission)
-now supplies the source-specific adapter, bounded Windows supervisor and
-complete streamed certificates, with independently reviewed finite controls.
-The [single reference attempt](nodal/SINE_TWO_PORT_CAPTURE.md#sine-formed-two-port-attempt-result)
-has now produced four certified steps through slow time one. Its fifth
-candidate tube failed domain admission; the complete source-to-target
-certificate remains unavailable. The subsequent
-[analytical domain decision](nodal/SINE_TWO_PORT_CAPTURE.md#sine-formed-two-port-domain-decision)
-refutes invariance of the whole buffered energy sublevel and extends the
-phase-potential floor. A source-compatible corridor still needs full-network
-curvature and whole-time clearance before another computation.
+The selected priority concerns **autonomous acquisition, maintenance and
+response of a joint organization under one complete causal model**. The
+[fresh bibliographic integration](BIBLIOGRAPHIC_METHODS.md#bibliographic-joint-organization-reading)
+now supplies a shared-loss growth budget, an explicit low-storage regularity
+and global-continuation theorem, and a retained-relation response counterexample
+for the existing fully weighted completions. The exact ledger is integrated
+with the existing first-contact controls; it installs no joint weighted executor.
+The user's operator-fundamentality requirement makes the next obligation the
+causal bridge between this auxiliary model and actual structural operators.
+The [audit](STRUCTURAL_OPERATORS.md#continuous-operator-realization-audit)
+finds no established bridge and gives explicit UM/RA mismatches. Nonuniform
+family analysis is retained conditional preparation, subordinate to that gate.
+No numerical campaign or operator schedule is active.
 
-The native [local response certificate](nodal/NATIVE_ACQUIRED_RESPONSE.md#native-response-finite-budget)
-and [source-entry audit](nodal/NATIVE_ACQUIRED_RESPONSE.md#native-source-entry-admission)
-remain intact. A useful matched quantitative tail is still missing; this
-change of question neither supplies that certificate nor refutes future entry.
-The four foundation approvals retain their prepared one-bridge scope, and
-physical mapping remains closed.
+The [bibliographic synthesis](BIBLIOGRAPHIC_METHODS.md#bibliographic-strategic-pivot)
+informs this change through stability, boundary geometry, symmetry, memory
+and scaling. Those tools constrain a proposed realization; they do not derive
+one universal TNFR law. The [matter-emergence hypothesis](EMERGENT_ONTOLOGY.md#matter-emergence-hypothesis)
+remains the long-term orientation. Its physical interpretation still requires
+the separate readiness and observation premises below.
 
-Historical intuitions and the user-supplied local bibliography can guide
-questions about form, symmetry, memory and scale. Their availability and
-reading depth are recorded separately from mathematical evidence. They do
-not supply missing premises or create a parallel research queue.
+The native [source-entry boundary](nodal/NATIVE_ACQUIRED_RESPONSE.md#native-source-entry-admission),
+all previous positive results, unsuccessful certificates and frozen responses
+remain intact. The four existing approvals retain their scoped foundation
+meaning; the new joint model must establish its own consumed premises.
 
 <a id="foundational-pillars"></a>
 ### Four mandatory pillars and their closure criteria
@@ -325,208 +328,198 @@ scientific truth or the identity of a reviewer. Agents must perform the review
 rather than manufacture approval metadata.
 
 <a id="foundation-resolution-order"></a>
-### Dependency order and a bounded first decision
+### Selection after the two-port exclusion and bibliographic reassessment
 
-Apply P4's selection discipline from the start. Establish the joint P2/P1
-state-and-causality contract before deciding whether its organization meets
-P3. Then review all three together under P4. These are dependencies within
-one investigation, not four independent solvers or parallel campaigns.
+The global objective is a generative and predictive account of organization,
+not completion of every illustrative trajectory. The two-port result connects
+actual preparation, energy and a closed identity class. Its argument extends
+an existing [single-ring selection mechanism](nodal/SINE_PREPARATION_PATH_SELECTION.md#sine-preparation-transient-winding-obstruction)
+to coupled cycles with ambiguous phase representatives; it does not establish
+a new universal storage law. Further work on its outgoing state requires a
+named contribution to the selected capability below.
 
-The [native foundation account](nodal/NATIVE_FOUNDATIONAL_ACCOUNT.md#native-foundational-account)
-and [acquired-response owner](nodal/NATIVE_ACQUIRED_RESPONSE.md#native-acquired-response)
-retain acquisition, local response separation and recovery under AR1. The
-[source-entry audit](nodal/NATIVE_ACQUIRED_RESPONSE.md#native-source-entry-admission)
-preserves the exact DA/W endpoint boxes. No useful complete tail certificate
-has yet connected those boxes to AR15 under its fixed work policy. This is a
-missing domain, norm and decay-rate certificate, not a failed trajectory,
-an irreducible uncertainty floor or a proof of impossible entry.
+The selected methodological readings already support conditional methods for
+stability, viability, symmetry and sufficient response state. They are
+selected-passage readings, not whole-book proof audits. Before the new choice,
+the following existing results were checked to avoid repeating solved tasks:
 
-The subsequent [formed-contact eligibility decision](nodal/SINE_FORMED_CLASS_CONTACT.md#sine-formed-joint-cycle-eligibility)
-has now closed one source-based candidate. Quotienting the joined cycle
-lattice by both constituent cycle lattices gives the trivial group before
-contact, afterward and in the disconnected control. A single bridge cannot
-supply that candidate's necessary independent cycle carrier. This conclusion
-does not negate the already proved feedback and receiver response, or all
-possible joint identities. No positive identity or new acquisition was proved.
+- [Autonomous contact completions](nodal/RELATION_FOUNDATIONS.md#autonomous-contact-completions)
+  already give two local passive laws with positive onset and different nodal
+  responses. Positive conductance alone is not a maintained joint identity.
+- [Constitutive robustness counterexamples](nodal/SINE_CONSERVATIVE_PREPARATION.md#sine-constitutive-robustness)
+  already separate acquisition from matching equilibrium geometry; the
+  [composition scope](nodal/COMPOSITION_COMPATIBLE_CONSTITUTIVE_LAWS.md#composition-compatible-scope)
+  and [oriented-interface premise](nodal/ORIENTED_INTERFACE_PROFILE_INHERITANCE.md#oriented-interface-ontology)
+  distinguish nonselection from conditional sine selection.
+- Exact collective charts, nonclosure counterexamples, retained memory and
+  finite prediction budgets already exist. A new reduced description needs
+  a concrete response or action consumer, not another generic framework.
 
-### Selection after the single-bridge eligibility decision
-
-| Candidate | Contribution and remaining premises | Decision |
+| Candidate | Global contribution and missing premises | Decision |
 | --- | --- | --- |
-| Actually formed sources entering the compatible two-port organization | [Compatibility](nodal/SINE_TWO_PORT_COMPATIBILITY.md#sine-two-port-compatibility) already establishes a deformed joint phase geometry. [Capture](nodal/SINE_TWO_PORT_CAPTURE.md#sine-two-port-capture-result) uses a different supplied source. Connecting actual formation, an explicit event and later joint reorganization would add a generative handoff. | The [formed-source contract](nodal/SINE_TWO_PORT_COMPATIBILITY.md#sine-formed-two-port-admission) and [source-aware reference method](nodal/SINE_TWO_PORT_CAPTURE.md#sine-formed-two-port-entry-method) are established within their conditional scopes. The frozen attempt remains incomplete. The analytical decision excludes whole-energy-sublevel invariance while extending the potential floor. Specify and assess a source-compatible corridor with full-graph curvature and a whole-time comparison collar; no new transit is admitted. |
-| Another generic return geometry | Two-port C9 compatibility, internal deformation and opposed interface currents already exist under the retained sine coefficients. | Do not repeat them as new emergence or privilege triangles. A nontrivial graph cycle is not sufficient identity evidence. |
-| Instantaneous donor-port closure | [Reduced ports](nodal/SINE_REDUCED_CLASS_PORTS.md#sine-reduced-class-ports) retain twenty coordinates, initialization and bounded nonlinear error. The [three-ring obstruction](nodal/SINE_CLASS_MEDIATED_MEMORY.md#sine-class-memory-reached-closure-obstruction) already supplies the closely related hidden-state mechanism. | A two-ring specialization may be useful when consumed by a concrete reduction, but is not the next formation milestone. No coefficients or source verdicts transfer automatically. |
-| Native quantitative source entry | A justified local metric and tail could complete the retained AR15 handoff. | Preserve the unresolved dependency and frozen evidence. No repeated prefix, budget adjustment or tolerance tightening without a new method. |
-| Prepared mixed-pair identity, clocks, fractality or physical identification | [I_D](nodal/ORGANIZED_COMPOSITE_RELAXATION.md#mixed-pair-identity) has a different 36-node model. New scale and physical claims need their own prerequisites. | Contextual or deferred, without another active queue. |
+| Autonomous acquisition and retained response | Small-source consensus acquisition extends to finite component collections under funded connectivity. The two-P2 source-response law now has an all-time remainder and tangent recovery scale. Prior constituent formation and higher-order law selection remain distinct. | Preserve the scoped closure and reuse its resource/response tools. |
+| Nonuniform organization under changing contact | Enlarge the class of internal organizations beyond the newly acquired consensus families, using existing stiffness/circulation methods only after matching the complete law. | Auxiliary preparation deferred until the operator-realization gate; source acquisition remains separately required. |
+| Native action-induced change of acquired organization | A useful future response/identity discriminator under resumed DA1. Actual acquisition-image entry, registered-action admission and dynamic-capacity execution must be resolved. | Preserve as an alternative; no action or transit is activated. |
+| Weighted-star response after one actual local action | Could connect operator descent, transverse state and useful prediction error. Identity retention and several exact nonclosure results are already known. | Select only for a concrete new response/state advantage; not a parallel queue. |
+| Exact destination of the original two-port family | Would refine one source-specific example; the named target and eventual original-period class are now excluded. | Retain as open, without automatic priority or a continued trajectory. |
 
-### Sole active question and first obligation
+### Closed passive-contact acquisition and response scope
 
-**Can the actual formed donor class two and receiver class one reach the
-maintained, internally deformed two-port organization under the admitted
-contact and unchanged subsequent dynamics?**
+The [identity-family result](nodal/RELATION_FOUNDATIONS.md#passive-contact-acquired-response)
+establishes conditional acquisition, maintenance and small-probe recovery from
+a zero-contact near-consensus source domain under both existing h laws;
+consensus is asymptotic. The [all-time source-response estimate](nodal/RELATION_FOUNDATIONS.md#passive-contact-source-response)
+gives `a_infinity=epsilon^2/4+O(abs(epsilon)^3)` for the admitted two-P2 seed,
+and the [finite multicomponent theorem](nodal/RELATION_FOUNDATIONS.md#passive-contact-many-components)
+extends acquisition/recovery under nonduplicated funding and connecting
+contacts. This resolves **elementary acquisition from supplied constituents**
+only. Prior constituent formation, the amplitude-one first-contact destination,
+finite-amplitude law ordering, nonlinear timing, nonuniform persistent
+patterns, candidate access and support kinetics remain open; the
+[bibliographic extension](BIBLIOGRAPHIC_METHODS.md#bibliographic-response-extension-reading)
+records method boundaries. No unique law or physical mapping follows.
 
-The [formed-source admission](nodal/SINE_TWO_PORT_COMPATIBILITY.md#sine-formed-two-port-admission)
-fixes the source/event, work, common internal observation, initial absence,
-maintenance domain and conditional response. The
-[source-aware method](nodal/SINE_TWO_PORT_CAPTURE.md#sine-formed-two-port-entry-method)
-retains the eighteen-phase reference and M1--M9 reconstruction of all
-thirty-six actual variables. These conditional results remain intact.
+### Sole active question: implement and integrate canonical structural operators
 
-The [single frozen attempt](nodal/SINE_TWO_PORT_CAPTURE.md#sine-formed-two-port-attempt-result)
-is complete as an evaluation: four certified quarter-steps through slow time
-one, followed by an unavailable whole-tube margin on the fifth invocation.
-Its candidate for `[1,5/4]` failed before Picard inclusion. No complete
-source-entry certificate or proof of non-entry was obtained. Execution and
-closure stayed inside the declared resources. The documentary audit verified
-the exact four-step chain without replay; 101 synthetic integration controls
-had passed before launch. A separate retained-box diagnostic failed with an
-undefined-variable error before producing a result, and supplies no numerical
-diagnosis of the rejected candidate. All outputs and failures are preserved.
+**Priority 1 is canonical implementation and integration of structural
+operators as the mechanisms of emergence and self-organization. What missing
+operator function must be realized next, on sufficient state and through
+grammar, so that its result can participate in further organization?**
 
-The [domain decision](nodal/SINE_TWO_PORT_CAPTURE.md#sine-formed-two-port-domain-decision)
-now closes two analytical premises. The buffered acute cell intersected with
-the source energy sublevel is not invariant under the reference law: a
-cycle-compatible boundary state has a strictly outward derivative, even in
-the nominal source's exact energy-sublevel component. This does not prove
-that the nominal trajectory reaches it. Separately, a supporting-affine
-inequality extends the same phase-potential floor beyond the acute cell.
-Energy bounds, full-network curvature and transient clearance are distinct
-requirements; the old attempt and failed diagnostic remain untouched.
+Mathematical analysis, historical reading and tests serve that concrete
+implementation goal. The [common state/action specification](STRUCTURAL_OPERATORS.md#structural-state-action-specification)
+now connects source state, admission, actual transformation, inherited state
+and continued participation. The shared selector readmits context after hooks;
+THOL's shared environment reader admits authoritative values and aggregates.
+The [birth-image result](nodal/SINE_COLLECTIVE_HIERARCHY.md#thol-birth-reachable-image)
+identifies inherited child coordinates and fresh history/grammar context.
+This supports integration; independent new preparation variables are not a
+requirement for new collective properties or emergence.
 
-The next bounded obligation is **a source-compatible comparison corridor**:
+The [all-thirteen source and implementation audit](STRUCTURAL_OPERATORS.md#operator-canonical-coverage-audit)
+is complete within its selected manuscript passages and engine boundaries.
+All thirteen have executable registrations and snapshot stages; several
+historical roles exceed their scalar/graph realizations. In particular,
+reception filtering, expansion/proliferation, contraction/synthesis, mutation
+of richer form and cross-scale recursion need explicit representation and
+continuation decisions. The audit corrected reproduced admission, lifecycle,
+represented-effect and monitor-integration defects. It did not prove canonical
+completeness or adopt the manuscript's contradictory syntax as executable law.
 
-1. Specify a candidate domain using the original affine cycle constraints,
-   source and actual graph paths. Assess the full cosine Hessian over its
-   required segments, accounting for any negative edge contributions and
-   shared-path loads. Reuse existing graph-compensation proofs as methods,
-   without importing another model's constants or verdicts.
-2. Establish a boundary or enclosure argument supplying whole-time clearance
-   for the reference, actual phase and mixed phase. The extended potential
-   floor alone does not supply it; neither does curvature along sampled
-   reference states. Close the candidate with a proof, explicit obstruction
-   or named missing premise. A narrower correlated enclosure in the old
-   domain remains an alternative, whose success is not implied by the failed
-   candidate box. No broader-domain method is admitted merely by naming it.
-3. Keep both full rows, memberwise means and the final target handoff. The
-   old comparison constants transfer only with the proved floor,
-   nonexpansion, reference-speed control and adequate collar over the complete
-   horizon. A positive growth bound requires new error/speed bounds. Reaching
-   a domain boundary is not itself loss of identity or impossibility of
-   formation.
+The [causal audit](STRUCTURAL_OPERATORS.md#continuous-operator-realization-audit)
+establishes that the recent weighted contact equations neither invoke the
+operators nor inherit their admission. Positive contact growth can violate
+UM's U3 candidate gate; even compatible existing-edge reinforcement is not
+UM's current map. RA and the joint continuous field have distinct phase rows.
+The weighted acquisition proofs remain useful conditional mathematics, but
+their autonomy and passivity do not close this foundational dependency.
 
-No new trajectory, sign admission, parameter scan, source reset, resumed
-prefix or diagnostic repair/replay belongs to this analytical task. Any
-later computation needs a justified method, independent review and a new
-prospective finite policy. The previous single-attempt policy is consumed.
+Completed integrations retain their definitions, proofs, controls and
+boundaries in the linked owners; none supplies autonomous occurrence:
 
-Keep the actual isolated formation images at `tau_c=100+10^13`, their
-original labels, inherited `phi=1/1000`, residual correlations and zero sums,
-continuous lifts, unit capacities, beta one, `e=1023/1024`, `w=1/1024`
-and `tau=e*t`. The simultaneous unit contacts remain local `4--4` and
-`5--5`, with no nodal jump and both full rows using their actual degrees.
-Preserve the supplied work allowance `1/4` and each member's mass-forty
-weighted means. The old one-edge allowance, midpoint preparation,
-componentwise recentering and reflection folding do not transfer.
+| Function | Owners | Retained boundary |
+| --- | --- | --- |
+| UM creation and births | [bounded creating domain](STRUCTURAL_OPERATORS.md#coupling-potential-pair); [isolated-](STRUCTURAL_OPERATORS.md#operator-birth-contact-composition) and [connected-parent](STRUCTURAL_OPERATORS.md#coupling-connected-parent) births | Partner, histories and access supplied; no creating domain for two connected endpoints; bidirectional phase writes need not preserve other U3 relations. Positive capacity underflow is rejected. |
+| EN sources | [causal sources](STRUCTURAL_OPERATORS.md#reception-causal-sources); [compatibility family](STRUCTURAL_OPERATORS.md#reception-compatibility-policy) | Supplied tolerances and selection, conditional abstention; no unique tolerance or occurrence law. Do not search tolerances without a discriminating question. |
+| VAL/NUL scale | [retained members](STRUCTURAL_OPERATORS.md#retained-member-scale-actions); [derived Expansion](STRUCTURAL_OPERATORS.md#derived-expansion-member); [NUL/EN synthesis](NUL_SYNTHESIS.md) | The full graph remains the state; no general regular scalar reduction; ordering, ratios, deletion and pooled context are not implied. |
+| ZHIR | [retained Mutation](STRUCTURAL_OPERATORS.md#retained-mutation-participation); [native request](NATIVE_OPERATOR_DYNAMICS.md#native-mutation-request-participation); [interval policy](NATIVE_OPERATOR_DYNAMICS.md#native-mutation-interval-occurrence); [growth source](NATIVE_OPERATOR_DYNAMICS.md#native-operator-growth-source-boundary) | Richer-form mutation and a unique occurrence law remain open; native form jumps invalidate continuous history. |
+| AL/THOL access | [zero-flow bridge](NATIVE_OPERATOR_DYNAMICS.md#native-positive-window); [AL episode](EMISSION_EPISODES.md#emission-episode-status); [observation policy](EMISSION_EPISODES.md#emission-selector-observation); [AL/THOL history](THOL_PRESSURE_FEEDBACK.md#thol-emission-history-continuation); [birth/contact chain](THOL_PRESSURE_FEEDBACK.md#thol-acquired-birth-participation); [birth access](STRUCTURAL_OPERATORS.md#coupling-birth-association-access); [connected-component UM](COUPLING_COMPOSITION.md) | Distinct rate, pressure and timing premises; occasion and policy supplied; abstention on empty/ambiguous access; live UM admission. |
+| Lifecycle and maintenance | [retained ports](REMESH_STRUCTURE_AND_MEMORY.md); [guarded lifecycle](REMESH_STRUCTURE_AND_MEMORY.md#retained-silence-reactivation); [selective reading](BIBLIOGRAPHIC_METHODS.md#bibliographic-hybrid-guarded-lifecycle); [one-way return](REMESH_STRUCTURE_AND_MEMORY.md#operator-maintenance-return); [reciprocal extension](REMESH_STRUCTURE_AND_MEMORY.md#reciprocal-maintenance-boundary); [incident-relation preservation](COUPLING_COMPOSITION.md#ordinary-coupling-relation-preservation) | Access, timing and boosts supplied; uniform AL can reject at equal mean; reciprocal phases close while capacity grows; UM capacity remains unbalanced. |
 
-The old fixed 4096-step policy, its controls and source archive remain in the
-method owner as evaluated evidence, not a fresh instruction to run it.
-Its conditional M8--M9 handoff still needs a complete reference certificate;
-the four-step prefix does not supply one. The established target identity and
-conditional response acquire an actual-source conclusion only after that
-chain is justified. No new target root is needed for this methodological task.
+[RA/NUL maintenance](NUL_SYNTHESIS.md#amplification-contraction-maintenance) and
+[ordered viability](NUL_SYNTHESIS.md#operator-viability-and-ordered-return)
+separate admission, reference preservation and return; IL opens RA, and order
+changes the return domain. Occurrence remains supplied.
 
-The independent final physical-readiness review remains absent. Autonomous
-contact occurrence, a uniquely selected universal law and physical
-identification remain outside this foundational question.
+**Next: collective maintenance with reciprocal participant actions.**
+Derive complete positive domains or obstructions under a fixed composition
+of existing operators with every member participating. Separate neutral
+capacity from attraction; account for form, pressure and any actual AL source
+with its admission. No passive donor or reset establishes endogenous renewal.
+Review the complete map before finite controls. No controller, deep REMESH
+or old producer is activated.
 
-### Source context and available methods
+All thirteen remain in the ledger: source, support, pressure and lifecycle
+must compose with representation, birth, mutation, regime and scale functions.
+Resolve dependencies without forcing every operator into one word or graph
+edits to match historical names. Autonomous access, synthesis and richer
+mutation remain open.
 
-The [final bibliographic synthesis](BIBLIOGRAPHIC_METHODS.md#bibliographic-final-synthesis)
-closes three selective reviews of the seven supplied books. It connects form,
-symmetry, networks, dynamics, synchronization, memory and scaling to the
-actual proof and implementation owners. The detailed source, critique and
-preservation records are in artifacts/bibliography-final-review-20261029,
-linked to the two preceding review stages. This is methodological synthesis,
-not a new scientific evaluation or physical correspondence.
+For this task and later operator gaps, apply the common specification:
 
-The closing audit narrows the proposed opportunities: causal interfaces,
-finite event families, retained memory and useful imperfect descriptions
-already have scoped results. State sufficiency, interface error and scale
-composition should be addressed for one missing consumer, rather than opened
-as three generic campaigns. Full state remains a valid reference; compression
-is optional and must improve a declared cost/error contract. Pulse response
-and durable reorganization remain possible later applications with distinct
-obligations, not an additional execution queue.
+1. Use the all-thirteen audit to identify missing roles, sufficient state,
+   richer form versus scalar observation, action domains and identity/support
+   changes. Distinguish implemented actions, proved restrictions, proposed
+   constitutive revisions and open obligations. Define what proliferation,
+   synthesis, mutation and recursion transform before adding graph edits.
+   Primitive operator postulates cannot be defined retrospectively by an ODE.
+2. Select one interaction's mechanisms from that specification and UM/RA/THOL
+   contracts. Identify glyph/public/staged execution, history, targets and
+   access. Justify inactive mechanisms by invariant regime or controlled
+   reduction; all thirteen need not execute on every trajectory.
+3. Declare occurrence/abstention, clock or decision schedule and own grammar.
+   Supplied words are intervention controls, not autonomous acquisition.
+   Reuse native selection and collective grammar only under matching premises.
+4. Establish a full-state bridge through actual hybrid execution, inter-event
+   rows and reset work, or a proved restriction/reduction/limit with domain
+   and error. State obstructions and justify constitutive revisions. The two
+   h postulates and inter-event rows need operator grounding; adding glyphs
+   to an unrelated flow is insufficient.
+5. Check initial/event/successor admission: U3, weights, phase neighborhoods,
+   capacities and histories. A glyph changes the passive ODE's law; rederive
+   balances and identity before transferring acquisition/recovery theorems.
+6. Review this bridge before nonuniform source acquisition or larger objects.
+   Earlier scoped pillar resolutions do not cover this later extension.
+   Physical mapping remains blocked.
 
-The actual formed-source to two-port-organization question above remains the
-selected generative question. Reuse the existing methods only after matching
-their complete law, source, boundary, clock and observation. Seek a useful
-finite response window when that is the claim; require capture or recurrence
-only when the stronger conclusion consumes it. A zero linear discriminator
-does not exclude higher-order response, and finite similarity is not exact
-equivalence. Close this bibliography cycle and reassess the global objective
-after the retained bounded decision; no further transit or physical work is
-admitted.
+The [nonuniform reading](BIBLIOGRAPHIC_METHODS.md#bibliographic-nonuniform-operator-audit)
+retains its full stationary-branch/Jacobian criterion as auxiliary preparation.
+Match the [native stiffness owner](nodal/RELATIONAL_RECOVERY_AND_INTERACTION.md#regular-equilibrium-stiffness)
+before extending it; fixed-profile compatibility, local recovery and source
+acquisition remain separate. This activates no solver or second queue.
 
-Carry the useful intersections into the source-compatible corridor review:
-
-| Part of the declaration | Method and concrete obligation |
-| --- | --- |
-| Actual source and contact event | Account for the action on full state, live degrees, two ports, phase origin/lifts, residual correlations and observation. Separate relabeling covariance, law symmetry, reference symmetry and source-family symmetry. Preserve both event edges and their actual work premise. |
-| Candidate identity and predictive witness | Use the same internal-arc observation before contact and in both continuations; justify a finite membership domain and initial-absence margin. Exact finite-time attainment of a symmetric equilibrium is not a generic acquisition criterion. Screen the one conditional relational witness for symmetry-forced invisibility before proposing a probe; absence of that obstruction proves no positive separation. |
-| Sufficient state or controlled reduction | State whether prediction is memberwise, uniform over the admitted source family, or an explicitly justified ensemble average. Retain hidden initialization and correlations. Reuse full state, reduced ports or coordinate memory as their actual hypotheses permit; an uncertainty box supplies no averaging measure. |
-| Source-to-conclusion chain | Distinguish compatibility, finite entry, local trapping and retained response. Name the source/domain/error output consumed at each step. Qualitative attraction, a small coefficient or an arbitrary long dwell supplies no useful uniform deadline. Use an existing slow comparison only with matched normalization, inherited origin and full-state reconstruction. |
-
-These are applications of F1-F4 within the existing task, not additional
-campaigns or permission to run transit. Reuse the existing proofs and shared
-kernels where their hypotheses hold; the retained domain rejection does not
-by itself identify a numerical-kernel defect. The failed auxiliary diagnostic
-is recorded separately from that scientific question. The scale owner distinguishes
-[unit changes, closure and asymptotic similarity](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#scale-similarity-and-error).
-Further phase-only, statistical or iterated-scale reductions remain conditional
-on an actual consumer and their missing premises. Keep physical readiness closed.
-
+Only bounded canonical operator development, its mathematical justification
+and relevant synthetic contract tests are active. A new scientific trajectory, scan or old producer
+replay would need its own prospective admission, source freeze and budget.
+The old amplitude-one destination, higher-order h discrimination, finite
+arrival bounds and arbitrary hierarchy have no automatic priority.
 
 <a id="foundation-refactoring-plan"></a>
-### Research and repository refactoring sequence
+### Research and repository consolidation sequence
 
-| Stage | Concrete work and existing owners | Acceptance and transition |
-| --- | --- | --- |
-| **A. Consolidate responsibilities** | This program owns priorities and closure criteria. Core/README route readers; fundamental theory owns state/observation; ontology owns identity; structural operators own causal roles; scale and memory chapters own reductions. Glossary and agent instructions use those owners. | One active queue, intact evidence and published anchors, no conflicting physical go-ahead. Documentation and prerequisite checks pass. This establishes organization of the work, not scientific closure. |
-| **B. Resolve the joint causal account** | Follow the bounded first decision above. Reuse actual pressure/phase/capacity/event owners and compare complete realizations. Resolve the first missing state or mechanism with one discriminator. | A scoped result updates P1/P2 evidence; unresolved obligations remain visible. A supplied premise remains labeled as such. No unrelated scan, new pulse family or larger hierarchy is activated by convenience. |
-| **C. Establish organization and response** | Apply the ontology to that same admitted realization. Test identity, perturbations, continued interaction and the claimed activity; include acquisition only when it is part of the claim. | P3 has its own evidence. Periodicity, high coherence and state reduction cannot substitute for identity; a failed reduction need not refute organization. |
-| **D. Refactor demonstrated implementation gaps** | Reuse `dynamics/relational.py` or the selected field owner, `dynamics/integrators.py`, operator contracts/stages, `physics/structural_morphism.py`, `quotient_structure.py`, `joint_quotient.py`, `epi_memory.py` and `mathematics/linear_observation.py` as applicable. Keep state, observations, identity and occurrence distinguishable. | Change one proven contract and its actual consumers together. Preserve public behavior or document a tested migration; use independent expected results. Do not build a universal abstraction or four pipelines before identifying shared requirements. This stage can accompany B/C when needed. |
-| **E. Remove demonstrated redundancy** | Audit imports, public consumers, anchors and frozen evidence before retiring a wrapper, duplicated implementation or obsolete instruction. Keep proofs in their model owners and catalog metadata separate. | Preserve uncommitted work, unique results, negative controls and evidence. For committed obsolete material record Git revision/blob and replacement. Retain compatibility adapters that still serve a consumer. Keep preview-size budgets and generated navigation valid. |
-| **F. Review the foundations jointly** | Compare alternatives and remaining freedom; associate the four evidence-backed resolutions and an independent final readiness review. | All four machine-checked prerequisites and the substantive scope review must pass before a physical task may be proposed as active. If one dependency remains open, continue foundations. |
+Keep definitions and new derivations with their existing model owners. The
+bibliographic chapter owns method transfer and reading scope; this program
+alone owns selection. Reuse validated kernels only after matching full state,
+law, clock and source. Introduce shared execution code only for an admitted
+consumer, with a corresponding contract and meaningful controls.
+
+Follow the [current gate](#research-current-question), then reassess the remaining
+operator-realization obligations. Each step must name its operator function or
+dependency; source acquisition needs that same complete mechanism.
+The closed elementary and source-response results support a generative
+mechanism within explicit auxiliary premises; they do not establish operator
+causality, arbitrary scale iteration, physical identity or a uniquely selected
+fundamental law. Reassess
+the global contribution when this gate closes rather than automatically
+extending its example.
 
 <a id="deferred-composition-question"></a>
-### Preserved candidates, without automatic priority
+### Preserved results and candidates, without automatic activation
 
-The former two-NFR restoration question remains useful: can existing
-capacity adaptation and pressure feedback compensate operator attenuation
-under an autonomous state-based occurrence law? It is conditional on the
-P1/P2 account. Its actual joint balances, refresh ordering, per-call counters,
-bounds and admission remain obligations; a fitted inverse gain or increase
-at one target is not joint regeneration. No new restorative law or return
-map has been evaluated. Exact return is only one possible P3 criterion.
+The original two-port preparation retains `phi=1/1000`, its actual isolated
+formation images and both full rows. All its policies and the retrospective
+geometry policy are consumed. Its outgoing class and common-destination
+questions remain with the technical owner; no new trajectory, root scan or
+source reset is active. The shifted-origin capture remains a different valid
+preparation. No negative result here rules out every collective organization.
 
-The hypothesis of a basic law yielding organization-dependent effective laws
-is another candidate within P4. The [scale owner](TNFR_SCALE_GEOMETRY_AND_BRIDGE.md#scale-dependent-effective-laws)
-records its conditional support and limits. It has no automatic priority,
-assumed ladder of laws or prescribed outcome. A law, observation or operator
-may have different effective roles across scales; each transfer needs its
-own domain and retained information.
-
-The [operator-pulse closure result](nodal/OPERATOR_PULSE_CLOSURE.md#operator-pulse-causal-closure)
-and [continuous pulse results](nodal/GLOBAL_PULSE_HYPOTHESIS.md#global-pulse-hypothesis)
-remain valid on their declared models. Their evidence remains in
-`artifacts/operator-pulse-causal-closure-20261028/` and
-`artifacts/counterpropagating-pulse-robustness-20261028/`, including failed
-representation attempts and source archives. Exact full-flow coordinated
-multimode motion stays deferred; no result is inferred from preliminary
-read-only analysis. Physical particle comparisons and other mapping campaigns
-remain blocked by the foundation prerequisite, including an electron or
-hydrogen interpretation of an existing pulse.
+Native source-entry tails, prepared hierarchy, pulse response, collective
+operator descent and predictive-state improvements retain their own missing
+premises. They become active only when the selection rule identifies a
+concrete shared obligation or discriminating consumer. The four foundation
+records are unchanged; the independent final physical-readiness review is
+still absent. Physical observations may orient requirements, but no new
+particle, field or force identification is admitted by this planning change.
 
 <a id="research-admission"></a>
 ## Shared scientific admission
@@ -743,6 +736,15 @@ entry point. Existing chapter bookmarks below are generated navigation.
 
 <a id="chapter-theory-structural-operators-md"></a>
 - [Structural operators](STRUCTURAL_OPERATORS.md)
+
+<a id="chapter-theory-coupling-composition-md"></a>
+- [Coupling participation between connected organizations](COUPLING_COMPOSITION.md)
+
+<a id="chapter-theory-remesh-structure-and-memory-md"></a>
+- [Recursivity: structure, memory and post-birth participation](REMESH_STRUCTURE_AND_MEMORY.md)
+
+<a id="chapter-theory-nul-synthesis-md"></a>
+- [NUL synthesis and response sufficiency](NUL_SYNTHESIS.md)
 
 <a id="chapter-theory-unified-grammar-rules-md"></a>
 - [Unified grammar](UNIFIED_GRAMMAR_RULES.md)
@@ -1314,6 +1316,9 @@ entry point. Existing chapter bookmarks below are generated navigation.
 
 <a id="chapter-theory-native-operator-dynamics-md"></a>
 - [Native operator dynamics](NATIVE_OPERATOR_DYNAMICS.md)
+
+<a id="chapter-theory-emission-episodes-md"></a>
+- [Finite-duration Emission proposal and native source competition](EMISSION_EPISODES.md)
 
 <a id="chapter-theory-native-collective-calculus-md"></a>
 - [Native collective calculus](NATIVE_COLLECTIVE_CALCULUS.md)

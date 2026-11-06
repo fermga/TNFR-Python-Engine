@@ -28,6 +28,11 @@ from tnfr.physics.fields import (
     estimate_coherence_length_with_provenance,
 )
 from tnfr.physics.forcing_realization import capture_non_epi_forcing
+from tnfr.physics.passive_contact import (
+    bound_passive_contact_consensus_source,
+    bound_passive_contact_growth,
+    evaluate_passive_contact_budget,
+)
 from tnfr.physics.relational_observations import observe_relational_reset
 from tnfr.physics.support_transport import (
     observe_support_transport,
@@ -266,6 +271,163 @@ def test_contact_positive_weight_pressure_reuses_native_transport_only(
     # not called with a=0 birth, nor used for weighted nonlinear phase motion.
 
 
+def test_small_source_admission_consumes_native_initial_fields(contact_preparation):
+    graph, model, _, _, _ = contact_preparation
+    small = deepcopy(graph)
+    for node in small:
+        small.nodes[node]["EPI"] /= 32
+        small.nodes[node]["delta_nfr"] /= 32
+    before = deepcopy(small)
+    fields = tuple(
+        evaluate_relational_exchange(small.subgraph(nodes).copy(), model=model)
+        for nodes in ((0, 1), (2, 3))
+    )
+    source = observe_support_transport(small)
+    bound = bound_passive_contact_consensus_source(
+        form_deviations=source.epi,
+        phase_lift_deviations=tuple(small.nodes[i]["theta"] for i in small),
+        background_strengths=tuple(small.degree(i, weight="weight") for i in small),
+    )
+    assert bound.within_sufficient_ball
+    assert bound.metric_upper_bound == F(1, 512)
+    storage = sum(field.storage for field in fields)
+    assert storage == F(1, 2048)
+    loss = tuple(value for field in fields for value in field.work.dissipation)
+    assert loss == (F(1, 2048), F(1, 2048), 0, 0)
+    for law in ("reciprocal", "squared_reciprocal"):
+        ledger = evaluate_passive_contact_budget(
+            node_losses=loss,
+            candidates=((1, 2),),
+            contact_costs=((source.epi[1] - source.epi[2]) ** 2 / 2,),
+            port_shares=((1, 1),),
+            storage_scale=model.storage_scale,
+            law=law,
+        )
+        assert ledger.contact_allocations == (storage,)
+        assert ledger.contact_rates[0] > 0
+    assert nx.utils.graphs_equal(small, before)
+    # Only the disconnected initial state is natively evaluated. The all-time
+    # weighted conclusion is the analytical theorem, not an executed orbit.
+
+
+def test_shared_source_loss_can_fund_a_three_component_spanning_candidate_set():
+    graph = nx.Graph()
+    graph.add_nodes_from(range(6))
+    graph.add_edges_from(((0, 1), (2, 3), (4, 5)), weight=1.0)
+    epsilon = F(1, 64)
+    for node in graph:
+        graph.nodes[node].update(
+            EPI=float(epsilon if node == 1 else 0),
+            theta=0.0,
+            nu_f=1.0,
+            delta_nfr=0.0,
+        )
+    fields = tuple(
+        evaluate_relational_exchange(
+            graph.subgraph(nodes).copy(), model=RelationalExchangeModel(storage_scale=1)
+        )
+        for nodes in ((0, 1), (2, 3), (4, 5))
+    )
+    source = bound_passive_contact_consensus_source(
+        form_deviations=tuple(graph.nodes[i]["EPI"] for i in graph),
+        phase_lift_deviations=(0,) * 6,
+        background_strengths=(1,) * 6,
+    )
+    assert source.within_sufficient_ball
+    losses = tuple(value for field in fields for value in field.work.dissipation)
+    candidates = ((1, 2), (1, 4))
+    for law in ("reciprocal", "squared_reciprocal"):
+        ledger = evaluate_passive_contact_budget(
+            node_losses=losses,
+            candidates=candidates,
+            contact_costs=(epsilon**2 / 2,) * 2,
+            port_shares=((F(1, 2), 1), (F(1, 2), 1)),
+            storage_scale=1,
+            law=law,
+        )
+        assert ledger.contact_allocations == (epsilon**2 / 4,) * 2
+        assert all(rate > 0 for rate in ledger.contact_rates)
+        assert ledger.allocated_node_fractions[1] == 1
+        funded_support = graph.copy()
+        funded_support.add_edges_from(candidates)
+        assert nx.is_connected(funded_support)
+        funded_support.remove_edge(1, 4)
+        assert not nx.is_connected(funded_support)
+    # This tests initial funding and the spanning premise, not a trajectory
+    # or the magnitude/time of future intercomponent response.
+    assert graph.number_of_edges() == 3
+
+
+def test_initial_response_omits_relative_disconnected_background_scales():
+    epsilon = F(1, 32)
+    normalized, onsets = [], []
+    for left_weight in (1, 2):
+        graph = nx.Graph()
+        graph.add_nodes_from(range(4))
+        graph.add_weighted_edges_from(((0, 1, left_weight), (2, 3, 1)))
+        for node in graph:
+            graph.nodes[node].update(
+                EPI=float(epsilon if node == 1 else 0),
+                theta=0.0,
+                nu_f=1.0,
+                delta_nfr=0.0,
+            )
+        graph.graph["DNFR_WEIGHTS"] = {"epi": 0.5, "phase": 0.5, "vf": 0, "topo": 0}
+        initial = capture_non_epi_forcing(graph)
+        normalized.append(initial.full_kernel_pressure)
+        strengths = tuple(F(graph.degree(i, weight="weight")) for i in graph)
+        losses = tuple(
+            F(1, 2) * q**2 / degree
+            for q, degree in zip(
+                initial.snapshot.dirichlet_gradient, strengths, strict=True
+            )
+        )
+        ledger = evaluate_passive_contact_budget(
+            node_losses=losses,
+            candidates=((1, 2),),
+            contact_costs=(epsilon**2 / 2,),
+            port_shares=((1, 1),),
+            storage_scale=1,
+        )
+        onsets.append(ledger.contact_rates[0])
+    assert normalized[0] == normalized[1] == (epsilon / 2, -epsilon / 2, 0, 0)
+    assert onsets == [F(1, 2049), F(2, 2049)]
+    # Entire P2 block-normalized form matrices are scale invariant. With the
+    # same receiver background, the different onset gives different chi_dot.
+
+
+def test_internal_phase_drives_form_before_loss_funded_contact_onset():
+    eta = F(1, 64)
+    graph = nx.Graph()
+    graph.add_edge(0, 1, weight=1.0)
+    for node in graph:
+        graph.nodes[node].update(
+            EPI=0.0, theta=float(eta if node == 1 else 0), nu_f=1.0, delta_nfr=0.0
+        )
+    field = evaluate_relational_exchange(
+        graph, model=RelationalExchangeModel(storage_scale=1)
+    )
+    assert field.continuous_loss == 0
+    assert field.form_rate == pytest.approx(
+        (float(eta) / (2 * pi), -float(eta) / (2 * pi))
+    )
+    qdot_port = field.form_rate[1] - field.form_rate[0]
+    assert qdot_port == pytest.approx(-float(eta) / pi)
+    bound = bound_passive_contact_consensus_source(
+        form_deviations=(0,) * 4,
+        phase_lift_deviations=(0, eta, 0, 0),
+        background_strengths=(1,) * 4,
+    )
+    assert bound.metric_upper_bound == F(3, 1024)
+    assert bound.within_sufficient_ball
+    # Independent symbolic leading jet; not an evolved nonlinear contact.
+    s = pytest.importorskip("sympy")
+    angle, time, h = s.symbols("angle time h", positive=True)
+    local_loss_jet = (angle * time / s.pi) ** 2 / 2
+    contact_jet = s.integrate(h * local_loss_jet, (time, 0, time))
+    assert s.simplify(s.diff(contact_jet, time, 3)) == h * angle**2 / s.pi**2
+
+
 def test_two_extra_contact_laws_have_distinct_passive_receiver_onset_jets(
     contact_preparation,
 ):
@@ -274,7 +436,28 @@ def test_two_extra_contact_laws_have_distinct_passive_receiver_onset_jets(
     loss = sum(field.continuous_loss for field in fields)
     local_budget = fields[0].work.dissipation[1] + fields[1].work.dissipation[0]
     cost, beta = reset.energy_change, F(model.storage_scale)
-    rates = (local_budget / (beta + cost), beta * local_budget / (beta + cost) ** 2)
+    losses = tuple(value for field in fields for value in field.work.dissipation)
+    ledgers = tuple(
+        evaluate_passive_contact_budget(
+            node_losses=losses,
+            candidates=((1, 2),),
+            contact_costs=(cost,),
+            port_shares=((1, 1),),
+            storage_scale=beta,
+            law=law,
+        )
+        for law in ("reciprocal", "squared_reciprocal")
+    )
+    assert all(ledger.contact_allocations == (local_budget,) for ledger in ledgers)
+    continuation = bound_passive_contact_growth(
+        initial_storage=sum(field.storage for field in fields),
+        storage_scale=beta,
+        initial_weights=(0,),
+        background_strengths=(1, 1, 1, 1),
+    )
+    assert continuation.sum_increase_upper_bound == F(1, 2)
+    assert continuation.resultant_real_lower_bounds == (F(1, 2),) * 4
+    rates = tuple(ledger.contact_rates[0] for ledger in ledgers)
     assert rates == (F(1, 3), F(2, 9))
 
     t, rate = s.symbols("t rate", real=True)

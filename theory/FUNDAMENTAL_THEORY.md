@@ -15,6 +15,25 @@ mathematical questions under those premises. The
 [ontology](EMERGENT_ONTOLOGY.md) owns these object-level distinctions and the
 [theory catalog](README.md#choose-a-question) locates their concrete models.
 
+<a id="operator-grammar-constitutive-premise"></a>
+**Constitutive premise.** TNFR takes structural operators and their grammar
+as the foundation of every canonical structural and dynamical transformation:
+form, phase, capacity, relations, formation, propagation and collective
+reorganization. A continuous or collective description must justify how it
+realizes, reduces or approximates those mechanisms, including the relevant
+admission, causal state and clock. A nodal differential identity or an attractive
+pattern alone does not supply that justification.
+
+This is a premise of the intended paradigm, not an empirical result or a claim
+that the current thirteen software maps and configured grammar policies are
+already its complete mathematical realization. Their implementations remain
+subject to theoretical correction. Explicit auxiliary laws are useful for
+conditional proofs and counterexamples, but their consequences become
+canonical TNFR dynamics only after the required bridge is established.
+The [operator realization audit](STRUCTURAL_OPERATORS.md#continuous-operator-realization-audit)
+states this obligation for the current contact research; it also applies to
+any other continuous, reduced or hybrid model making that canonical claim.
+
 The tetrad is a selected diagnostic interface; complete state reconstruction
 and universal minimality are not established. Hypotheses and counterexamples
 for diagnostics and grammar are centralized in

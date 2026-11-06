@@ -116,6 +116,23 @@ class CandidateResult:
     suggested_alternative: str | None = None
 
 
+@dataclass(frozen=True, slots=True)
+class GrammarDecisionObservation:
+    """One actual grammar decision, not a replay or invocation certificate.
+
+    A fallback may return the same code as a rejected candidate. The observed
+    outcome and allowed flag preserve that distinction. Invalid inputs that
+    prevent a decision produce no observation.
+    """
+
+    candidate: str
+    allowed: bool
+    selected: str | None
+    rejection_mode: str
+    violations: tuple[tuple[str, str, str], ...]
+    outcome: str
+
+
 # ── core incremental checks ──────────────────────────────────────────────
 
 
@@ -192,6 +209,9 @@ def _check_u3(
     candidate: str,
     G: Any,
     node: Any,
+    *,
+    potential_partner: Any = None,
+    potential_scope: str = "isolated",
 ) -> GrammarViolation | None:
     """U3: Coupling/resonance candidates require phase-compatible neighbours."""
     if candidate not in _COUPLING_CODES:
@@ -201,15 +221,24 @@ def _check_u3(
 
     # Symbolic/proactive selection validates configured limits but leaves an
     # isolate unassessed: it may acquire an edge before concrete execution.
-    # Every concrete UM/RA path separately requires a compatible live edge.
+    # Concrete execution separately admits compatible participants: existing
+    # support for ordinary UM/RA, or UM's explicitly supplied isolated partner
+    # together with compatible outgoing support. A request must be re-admitted;
+    # it is not permission to skip the live phase check.
     resolve_u3_phase_limits(G.graph, operator_code=candidate)
-    if not tuple(G.neighbors(node)):
+    if potential_partner is None and not tuple(G.neighbors(node)):
         return None
 
     # Non-isolated selection and execution share the same wrapped-distance
     # compatibility predicate.
     try:
-        validate_phase_gate_u3(G, node, _CODE_TO_NAME[candidate])
+        validate_phase_gate_u3(
+            G,
+            node,
+            _CODE_TO_NAME[candidate],
+            potential_partner=potential_partner,
+            potential_scope=potential_scope,
+        )
     except OperatorPreconditionError as exc:
         return GrammarViolation(
             rule="U3",
@@ -295,8 +324,15 @@ def _check_violations(
     window: int = _DEFAULT_WINDOW,
     *,
     sequence_context: Any = None,
+    potential_partner: Any = None,
+    potential_scope: str = "isolated",
 ) -> tuple[bool, list[GrammarViolation]]:
     """Core validation logic without alternative suggestion (avoids recursion)."""
+    from ._coupling_potential import _resolve_potential_scope
+
+    potential_scope = _resolve_potential_scope(potential_scope, potential_partner)
+    if potential_partner is not None and code != "UM":
+        raise ValueError("potential_partner grammar requests are supported only for UM")
     if code not in _CODE_TO_NAME:
         return False, [
             GrammarViolation(
@@ -352,7 +388,13 @@ def _check_violations(
         violations.append(v2)
 
     # U3 needs the graph
-    v3 = _check_u3(code, G, node)
+    v3 = _check_u3(
+        code,
+        G,
+        node,
+        potential_partner=potential_partner,
+        potential_scope=potential_scope,
+    )
     if v3 is not None:
         violations.append(v3)
 
@@ -368,6 +410,8 @@ def validate_candidate(
     *,
     window: int = _DEFAULT_WINDOW,
     sequence_context: Any = None,
+    potential_partner: Any = None,
+    potential_scope: str = "isolated",
 ) -> CandidateResult:
     """Check whether *candidate* is grammar-valid given the node's recent history.
 
@@ -377,6 +421,8 @@ def validate_candidate(
     consumed; read-only checks require a replayable list, tuple or deque.
     An optional validated sequence step can supply a future U4a handler;
     it supplies no past history, stabilization credit, or phase permission.
+    An explicit UM ``potential_partner`` re-admits that supplied participant
+    alongside realized support; omitted requests retain proactive selection.
 
     Parameters
     ----------
@@ -401,6 +447,8 @@ def validate_candidate(
         code,
         window,
         sequence_context=sequence_context,
+        potential_partner=potential_partner,
+        potential_scope=potential_scope,
     )
 
     alt: str | None = None
@@ -498,6 +546,9 @@ def enforce_grammar_on_glyph(
     *,
     window: int = _DEFAULT_WINDOW,
     sequence_context: Any = None,
+    potential_partner: Any = None,
+    potential_scope: str = "isolated",
+    _decision_trace: list[GrammarDecisionObservation] | None = None,
 ) -> str:
     """Apply live grammar with an explicit rejection policy.
 
@@ -527,6 +578,8 @@ def enforce_grammar_on_glyph(
     str
         The validated (or replaced) glyph code.
     """
+    if _decision_trace is not None and type(_decision_trace) is not list:
+        raise TypeError("grammar decision trace must be an exact list or None")
     mode = G.graph.get("GRAMMAR_REJECTION_MODE", "fallback")
     if type(mode) is not str:
         raise TypeError("GRAMMAR_REJECTION_MODE must be 'fallback' or 'raise'")
@@ -540,18 +593,44 @@ def enforce_grammar_on_glyph(
         code,
         window,
         sequence_context=sequence_context,
+        potential_partner=potential_partner,
+        potential_scope=potential_scope,
     )
+
+    def observe(selected: str | None, outcome: str) -> None:
+        if _decision_trace is not None:
+            _decision_trace.append(
+                GrammarDecisionObservation(
+                    candidate=code,
+                    allowed=allowed,
+                    selected=selected,
+                    rejection_mode=mode,
+                    violations=tuple(
+                        (item.rule, item.message, item.severity) for item in violations
+                    ),
+                    outcome=outcome,
+                )
+            )
+
     if allowed:
+        observe(code, "accepted")
         return code
     if mode == "raise" or sequence_context is not None:
         from .grammar_types import StructuralGrammarError
 
+        observe(None, "rejected")
         raise StructuralGrammarError(
             rule=violations[0].rule,
             candidate=code,
             message="; ".join(violation.message for violation in violations),
         )
-    return suggest_alternative(G, node, code, window=window)
+    try:
+        alternative = suggest_alternative(G, node, code, window=window)
+    except BaseException:
+        observe(None, "alternative_failed")
+        raise
+    observe(alternative, "fallback")
+    return alternative
 
 
 def validate_sequence_incremental(

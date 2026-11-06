@@ -25,6 +25,7 @@ from ..constants.aliases import ALIAS_EPI, ALIAS_THETA
 from ..constants.canonical import COUPLING_GENTLE, COUPLING_MODERATE
 from ..mathematics.unified_numerical import np
 from ._argument_validation import (
+    finite_node_real,
     finite_real,
     nonnegative_integer,
     reject_operator_argument,
@@ -75,6 +76,12 @@ def capture_network_signals(G: TNFRGraph, node: NodeId) -> dict[str, Any] | None
 
     Notes
     -----
+    Each consumed form and phase is admitted before aggregation. The first
+    present phase alias is authoritative; an invalid value cannot fall through
+    to a different alias. Finite inputs must also produce finite aggregates
+    before circular-variance clipping. These summaries are observations, not
+    a complete network-state representation or a U3 admission certificate.
+
     TNFR Principle: THOL doesn't operate in vacuum—it metabolizes the network's
     vibrational field. EPI gradient represents "structural pressure" from environment.
     Circular phase variance indicates "complexity" of external patterns to digest.
@@ -101,8 +108,10 @@ def capture_network_signals(G: TNFRGraph, node: NodeId) -> dict[str, Any] | None
         return None
 
     node_epi = _read_node_scalar_epi(G.nodes[node], label=f"node {node!r} EPI")
-    node_theta = finite_real(
-        get_attr(G.nodes[node], ALIAS_THETA, 0.0),
+    node_theta = finite_node_real(
+        G.nodes[node],
+        ALIAS_THETA,
+        0.0,
         operator=_OPERATOR,
         label=f"node {node!r} phase",
     )
@@ -114,8 +123,10 @@ def capture_network_signals(G: TNFRGraph, node: NodeId) -> dict[str, Any] | None
 
     for n in neighbors:
         n_epi = _read_node_scalar_epi(G.nodes[n], label=f"neighbor {n!r} EPI")
-        n_theta = finite_real(
-            get_attr(G.nodes[n], ALIAS_THETA, 0.0),
+        n_theta = finite_node_real(
+            G.nodes[n],
+            ALIAS_THETA,
+            0.0,
             operator=_OPERATOR,
             label=f"neighbor {n!r} phase",
         )
@@ -129,18 +140,45 @@ def capture_network_signals(G: TNFRGraph, node: NodeId) -> dict[str, Any] | None
         coupling_strengths.append(coupling_strength)
 
     # Compute structural gradients
-    mean_neighbor_epi = float(np.mean(neighbor_epis))
-    epi_gradient = mean_neighbor_epi - node_epi
+    mean_neighbor_epi = finite_real(
+        float(np.mean(neighbor_epis)),
+        operator=_OPERATOR,
+        label="mean neighbor EPI",
+    )
+    epi_gradient = finite_real(
+        mean_neighbor_epi - node_epi,
+        operator=_OPERATOR,
+        label="EPI gradient",
+    )
 
     # Circular variance is invariant under the 0/2pi chart boundary.  A linear
     # variance would label two nearly aligned phases on opposite sides of that
     # boundary as maximally dissonant.
-    mean_cos = float(np.mean(np.cos(neighbor_thetas)))
-    mean_sin = float(np.mean(np.sin(neighbor_thetas)))
-    phase_variance = max(0.0, min(1.0, 1.0 - (mean_cos**2 + mean_sin**2) ** 0.5))
+    mean_cos = finite_real(
+        float(np.mean(np.cos(neighbor_thetas))),
+        operator=_OPERATOR,
+        label="mean phase cosine",
+    )
+    mean_sin = finite_real(
+        float(np.mean(np.sin(neighbor_thetas))),
+        operator=_OPERATOR,
+        label="mean phase sine",
+    )
+    raw_phase_variance = finite_real(
+        1.0 - (mean_cos**2 + mean_sin**2) ** 0.5,
+        operator=_OPERATOR,
+        label="unclipped circular phase variance",
+    )
+    phase_variance = max(0.0, min(1.0, raw_phase_variance))
 
     # Mean coupling strength
-    coupling_strength_mean = float(np.mean(coupling_strengths))
+    coupling_strength_mean = finite_real(
+        float(np.mean(coupling_strengths)),
+        operator=_OPERATOR,
+        label="mean coupling strength",
+        lower=0.0,
+        upper=1.0,
+    )
 
     return {
         "epi_gradient": epi_gradient,

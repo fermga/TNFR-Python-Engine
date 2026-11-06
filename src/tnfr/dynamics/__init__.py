@@ -92,6 +92,11 @@ from .integrators import (
     update_epi_via_nodal_equation,
 )
 from .learning import AdaptiveLearningSystem
+from .native_epi_source import (
+    NativeEPIBatchObservation,
+    NativeEPIDispatch,
+    NativeEPIEndpoint,
+)
 from .propagation import (
     compute_network_dissonance_field,
     detect_bifurcation_cascade,
@@ -114,6 +119,7 @@ from .sampling import update_node_sample as _update_node_sample
 from .selectors import (
     AbstractSelector,
     DefaultGlyphSelector,
+    NativeOperatorDecision,
     ParametricGlyphSelector,
     _apply_glyphs,
     _apply_selector,
@@ -124,6 +130,7 @@ from .selectors import (
     _resolve_preselected_glyph,
     _selector_parallel_jobs,
     _SelectorPreselection,
+    apply_native_operator_batch,
     default_glyph_selector,
     parametric_glyph_selector,
 )
@@ -155,6 +162,11 @@ __all__ = (
     "ALIAS_VF",
     "AbstractSelector",
     "DefaultGlyphSelector",
+    "NativeOperatorDecision",
+    "NativeEPIEndpoint",
+    "NativeEPIDispatch",
+    "NativeEPIBatchObservation",
+    "apply_native_operator_batch",
     "ParametricGlyphSelector",
     "GlyphCode",
     "_SelectorPreselection",

@@ -328,3 +328,52 @@ def test_semidefinite_preserves_singular_and_definite_symmetric_cases(
 ) -> None:
     assert exact_symmetric_semidefinite(matrix) is semidefinite
     assert exact_symmetric_semidefinite(matrix, strict=True) is definite
+
+
+def test_semidefinite_matches_three_dimensional_principal_minor_oracle() -> None:
+    values = (Fraction(-1, 3), Fraction(0), Fraction(2, 3))
+    for a, b, c, d, e, f in product(values, repeat=6):
+        matrix = ((a, b, c), (b, d, e), (c, e, f))
+        ad = a * d - b * b
+        determinant = a * d * f + 2 * b * c * e - a * e * e - d * c * c - f * b * b
+        minors = (a, d, f, ad, a * f - c * c, d * f - e * e, determinant)
+
+        assert exact_symmetric_semidefinite(matrix) is all(
+            value >= 0 for value in minors
+        )
+        assert exact_symmetric_semidefinite(matrix, strict=True) is (
+            a > 0 and ad > 0 and determinant > 0
+        )
+        assert matrix == ((a, b, c), (b, d, e), (c, e, f))
+
+
+@pytest.mark.parametrize("strict", (False, True))
+def test_semidefinite_zero_skipping_retains_new_schur_fill_in(strict: bool) -> None:
+    # Eliminating the first coordinate creates the initially absent 1--2 entry.
+    # The resulting block [[1,-2],[-2,1]] is indefinite despite positive diagonals.
+    matrix = _matrix((1, 1, 2), (1, 2, 0), (2, 0, 5))
+
+    assert exact_symmetric_semidefinite(matrix, strict=strict) is False
+    assert matrix == _matrix((1, 1, 2), (1, 2, 0), (2, 0, 5))
+
+
+@pytest.mark.parametrize("diagonal", (False, True))
+def test_semidefinite_divides_only_for_nonzero_elimination_rows(
+    monkeypatch: pytest.MonkeyPatch, diagonal: bool
+) -> None:
+    size = 8
+    matrix = tuple(
+        tuple(Fraction(int(i == j) + (0 if diagonal else 1)) for j in range(size))
+        for i in range(size)
+    )
+    divide = Fraction.__truediv__
+    calls = 0
+
+    def counted_division(left, right):
+        nonlocal calls
+        calls += 1
+        return divide(left, right)
+
+    monkeypatch.setattr(Fraction, "__truediv__", counted_division)
+    assert exact_symmetric_semidefinite(matrix, strict=True) is True
+    assert calls <= (0 if diagonal else size * (size - 1) // 2)

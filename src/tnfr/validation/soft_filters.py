@@ -154,6 +154,7 @@ def soft_grammar_filters(
     *,
     original: Glyph | str | None = None,
     template: Glyph | str | None = None,
+    _acceleration_score: float | None = None,
 ) -> Glyph | str:
     """Apply the configured soft grammar pipeline for ``cand``.
 
@@ -185,6 +186,16 @@ def soft_grammar_filters(
     anchor = cand if original is None else original
     filtered = check_repeats(ctx, n, cand)
     filtered = maybe_force(ctx, n, filtered, anchor, normalized_dnfr, "force_dnfr")
-    filtered = maybe_force(ctx, n, filtered, anchor, acceleration_norm, "force_accel")
+    accessor = acceleration_norm
+    if _acceleration_score is not None:
+        score = bounded_represented_real(
+            _acceleration_score, "typed acceleration score", minimum=0.0, maximum=1.0
+        )[0]
+
+        def typed_acceleration(_ctx, _nd):
+            return score
+
+        accessor = typed_acceleration
+    filtered = maybe_force(ctx, n, filtered, anchor, accessor, "force_accel")
     base_template = cand if template is None else template
     return _match_template(filtered, base_template)

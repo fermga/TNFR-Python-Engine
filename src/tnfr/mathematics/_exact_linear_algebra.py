@@ -229,7 +229,8 @@ def exact_symmetric_semidefinite(
     """Test a nonempty symmetric Fraction matrix by exact LDL elimination.
 
     Malformed or asymmetric inputs are rejected, not interpreted as an
-    indefinite matrix. ``strict`` must be an exact boolean.
+    indefinite matrix. ``strict`` must be an exact boolean. Zero Schur
+    products are skipped using the evolving matrix, retaining fill-in.
     """
 
     if type(strict) is not bool:
@@ -255,11 +256,14 @@ def exact_symmetric_semidefinite(
                 return False
             continue
         for row in range(pivot_index + 1, dimension):
+            entry = work[row][pivot_index]
+            if entry == 0:
+                continue
+            factor = entry / pivot
             for column in range(row, dimension):
-                updated = (
-                    work[row][column]
-                    - work[row][pivot_index] * work[pivot_index][column] / pivot
-                )
+                if work[pivot_index][column] == 0:
+                    continue
+                updated = work[row][column] - factor * work[pivot_index][column]
                 work[row][column] = updated
                 work[column][row] = updated
     return True

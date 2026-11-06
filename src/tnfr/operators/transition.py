@@ -14,6 +14,7 @@ import warnings
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from fractions import Fraction
 from typing import TYPE_CHECKING, Any, ClassVar
 
 from ..alias import get_attr, set_attr
@@ -42,6 +43,21 @@ _VF_LATENT_THRESHOLD = 0.05
 _EPI_RESONANT_THRESHOLD = 0.5
 _VF_RESONANT_THRESHOLD = 0.8
 _EPI_DRIFT_TOLERANCE = 0.01
+
+
+def _propose_transition_capacity(capacity: float, multiplier: float) -> float:
+    """Materialize an admitted product without erasing positive capacity.
+
+    Both operands are already finite nonnegative binary64 values. Retaining
+    their exact product until shared scalar admission distinguishes underflow
+    from a deliberate zero source or multiplier; the result remains binary64.
+    """
+    return finite_real(
+        Fraction.from_float(capacity) * Fraction.from_float(multiplier),
+        operator="Transition",
+        label="nu_f proposal",
+        lower=0.0,
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -227,31 +243,9 @@ class Transition(Operator):
 
     def _validate_precondition_config(self, G: TNFRGraph) -> None:
         """Validate every threshold consumed by ``validate_transition``."""
+        from .preconditions import _transition_precondition_parameters
 
-        if "NAV_STRICT_SEQUENCE_CHECK" in G.graph:
-            strict_bool(
-                G.graph["NAV_STRICT_SEQUENCE_CHECK"],
-                operator=self.name,
-                label="NAV_STRICT_SEQUENCE_CHECK",
-            )
-        finite_real(
-            G.graph.get("NAV_MIN_VF", 0.01),
-            operator=self.name,
-            label="NAV_MIN_VF",
-            lower=0.0,
-        )
-        finite_real(
-            G.graph.get("NAV_MAX_DNFR", 1.0),
-            operator=self.name,
-            label="NAV_MAX_DNFR",
-            lower=0.0,
-        )
-        finite_real(
-            G.graph.get("NAV_MIN_EPI_FROM_LATENCY", 0.05),
-            operator=self.name,
-            label="NAV_MIN_EPI_FROM_LATENCY",
-            lower=0.0,
-        )
+        _transition_precondition_parameters(G)
 
     def _validate_sinks_and_monitor(
         self, G: TNFRGraph, node: Any, kw: Mapping[str, Any]
@@ -455,12 +449,7 @@ class Transition(Operator):
         )
 
         vf_multiplier = {"latent": 1.2, "resonant": 0.95}.get(regime, vf_factor)
-        vf_after = finite_real(
-            vf * vf_multiplier,
-            operator=self.name,
-            label="nu_f proposal",
-            lower=0.0,
-        )
+        vf_after = _propose_transition_capacity(vf, vf_multiplier)
         theta_normalized = finite_real(
             theta % math.tau,
             operator=self.name,
@@ -825,12 +814,7 @@ class Transition(Operator):
             label="phase_shift",
         )
         vf_multiplier = {"latent": 1.2, "resonant": 0.95}.get(regime, vf_factor)
-        vf_after = finite_real(
-            vf * vf_multiplier,
-            operator=self.name,
-            label="nu_f proposal",
-            lower=0.0,
-        )
+        vf_after = _propose_transition_capacity(vf, vf_multiplier)
         theta_normalized = theta % math.tau
         theta_after = finite_real(
             (theta_normalized + phase_shift) % math.tau,

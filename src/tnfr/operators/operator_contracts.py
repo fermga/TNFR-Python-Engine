@@ -154,13 +154,19 @@ class OperatorScale(Enum):
 
 
 class EffectDirection(Enum):
-    """The canonical direction of an operator's primary channel effect."""
+    """Nominal classification of the primary effect, not a mode-free bound.
+
+    The admitted mode and branch-specific postcondition govern each event.
+    For example, OZ's INCREASE label describes amplification; finite jitter
+    can decrease pressure magnitude. These labels do not replace endpoint
+    checks or assert a direction for the subsequent continuous evolution.
+    """
 
     INCREASE = "increase"  # ordered event effect; not a continuous rate
     DECREASE = "decrease"  # ordered event effect; not a continuous rate
     PRESERVE = "preserve"  # channel held at the event
     REORGANIZE = "reorganize"  # channel reshaped toward a target (mix/sync)
-    TRANSFORM = "transform"  # channel crosses a threshold (θ → θ')
+    TRANSFORM = "transform"  # channel transformed under separate admission
 
 
 class ContractContext(Enum):
@@ -215,7 +221,8 @@ class OperatorContract:
     primary_channel : StateChannel
         The nodal-equation state channel the operator primarily acts on.
     primary_direction : EffectDirection
-        The canonical direction of that primary effect.
+        Nominal primary-effect classification; the admitted mode and explicit
+        postcondition determine the actual branch's guarantee.
     scale : OperatorScale
         The scale at which the operator acts (NODE for twelve operators,
         NETWORK for the U5 fractality operator REMESH).
@@ -423,11 +430,14 @@ OPERATOR_CONTRACTS: dict[str, OperatorContract] = {
         name=DISSONANCE,
         english_name="Dissonance",
         glyph="OZ",
-        purpose="Injects controlled instability, raising |ΔNFR| (may bifurcate).",
+        purpose="Amplifies local |ΔNFR| or applies configured finite jitter.",
         primary_channel=StateChannel.DELTA_NFR,
         primary_direction=EffectDirection.INCREASE,
         scale=OperatorScale.NODE,
-        postcondition="|ΔNFR| not decreased",
+        postcondition=(
+            "local |ΔNFR| not decreased in amplification mode; "
+            "finite pressure in jitter mode"
+        ),
         context=ContractContext.NODE,
         nodal_expression=(
             "O'Z: local |ΔNFR| not decreased in amplification mode; "
@@ -546,7 +556,8 @@ def contract_identifiability_certificate(
 ) -> ContractIdentifiabilityCertificate:
     """Partition operators by a declared instantaneous contract signature.
 
-    Supported features are the four executable contract classifications.  Two
+    Supported features are four declared catalog classifications, not measured
+    endpoint directions or mode-dependent behavioral signatures. Two
     operators in one returned group cannot be distinguished from these features
     alone.  Text descriptions, glyphs and names are excluded because including
     an identifier would make the inverse problem tautological.

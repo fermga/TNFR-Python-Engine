@@ -4,6 +4,14 @@ from typing import Any, Literal, Sequence
 
 from tnfr.types import GlyphCode, TNFRGraph
 
+from .native_epi_source import NativeEPIBatchObservation as NativeEPIBatchObservation
+from .native_epi_source import NativeEPIDispatch as NativeEPIDispatch
+from .native_epi_source import NativeEPIEndpoint as NativeEPIEndpoint
+from .native_operator_observation import (
+    NativeOperatorDecision as NativeOperatorDecision,
+)
+from .selectors import apply_native_operator_batch as apply_native_operator_batch
+
 __all__: tuple[str, ...]
 
 dnfr: Any

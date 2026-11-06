@@ -4,6 +4,7 @@ These generic analytic systems exercise the numerical owner; no research
 preparation, scientific trajectory or retained producer is evaluated.
 """
 
+from dataclasses import replace
 from fractions import Fraction as Q
 
 import mpmath as mp
@@ -13,6 +14,7 @@ from tnfr.mathematics._rational_interval import I
 from tnfr.mathematics._validated_metric import (
     _metric_error_upper,
     certify_metric_logarithmic_bound,
+    metric_taylor_observation_boxes,
     validated_metric_taylor_step,
 )
 from tnfr.mathematics._validated_taylor import comparison_matrix, interval_jacobian
@@ -612,3 +614,69 @@ def test_one_static_corridor_domain_has_a_certified_rate_outside_the_local_saddl
                     )
                 ) / mp.pi
                 assert _contains(bound.jacobian_bounds[i][10 + j], form_derivative)
+
+
+def test_metric_difference_dual_norms_and_ball_enclosures_tighten_coordinate_boxes():
+    from tnfr.mathematics._validated_metric import (
+        enclose_metric_ball_differences,
+        metric_coordinate_projection_factors,
+        metric_difference_dual_norms,
+    )
+
+    # Diagonal degree-like metric: nodes 0 and 1 have weight 2; node 2 has weight 3.
+    metric = ((Q(2), Q(0), Q(0)), (Q(0), Q(2), Q(0)), (Q(0), Q(0), Q(3)))
+    projections = metric_coordinate_projection_factors(metric)
+    duals = metric_difference_dual_norms(metric, ((0, 1), (1, 2)))
+    assert duals[0] == Q(1) < projections[0] + projections[1]
+    assert duals[1] ** 2 >= Q(5, 6) and duals[1] < projections[1] + projections[2]
+    enclosures = enclose_metric_ball_differences(
+        (I(Q(3, 4)), I(Q(-1, 2))), Q(1, 16), duals
+    )
+    assert enclosures[0] == I(Q(11, 16), Q(13, 16))
+    with pytest.raises(ValueError, match="distinct node indices"):
+        metric_difference_dual_norms(metric, ((0, 0),))
+    with pytest.raises(ValueError, match="nonnegative"):
+        enclose_metric_ball_differences((I(0),), Q(-1), (Q(1),))
+
+
+@pytest.mark.parametrize("dimension", (1, 3))
+def test_observation_rejects_metric_dimension_before_any_field(dimension):
+    step, failed, reason = validated_metric_taylor_step(
+        (Q(0), Q(0)),
+        Q(0),
+        ((Q(1), Q(0)), (Q(0), Q(1))),
+        Q(1, 4),
+        _zero,
+        _everywhere,
+        growth_rate=Q(0),
+        order=1,
+    )
+    assert step is not None and failed is reason is None
+    different = tuple(
+        tuple(Q(i == j) for j in range(dimension)) for i in range(dimension)
+    )
+
+    def forbidden(_):
+        pytest.fail("dimension admission must precede every field evaluation")
+
+    with pytest.raises(ValueError, match="center dimension"):
+        metric_taylor_observation_boxes(
+            replace(step, metric=different), forbidden, bin_count=1
+        )
+
+
+@pytest.mark.parametrize("off_diagonal, expected", ((3, Q(1)), (-3, Q(1, 2))))
+def test_difference_dual_norm_preserves_off_diagonal_metric_terms(
+    off_diagonal, expected
+):
+    from tnfr.mathematics._validated_metric import metric_difference_dual_norms
+
+    metric = ((Q(5), Q(off_diagonal)), (Q(off_diagonal), Q(5)))
+    assert metric_difference_dual_norms(metric, ((0, 1), (1, 0))) == (
+        expected,
+        expected,
+    )
+    radius = Q(1, 8)
+    vector = (-radius * expected / 2, radius * expected / 2)
+    assert _quadratic(metric, vector) == radius**2
+    assert vector[1] - vector[0] == radius * expected

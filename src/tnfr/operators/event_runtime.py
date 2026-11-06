@@ -1329,6 +1329,11 @@ def _reception_observation_matches_neighbor_step(
     """Bind one EN observation to its exact all-target certificate row."""
 
     try:
+        # The existing realization certifies the ordinary all-neighbor map.
+        # An explicit request retains its different causal source contract,
+        # even when its ordered inputs or endpoint happen to coincide.
+        if observation.source_nodes is not None:
+            return False
         local = step.local_certificates[index]
         runtime_neighbors = tuple(local.runtime_neighbors)
         neighbor_indices = tuple(local.runtime_neighbor_indices)

@@ -6,10 +6,13 @@ implements the broader configured equation:
     ∂EPI/∂t = νf · ΔNFR(t) + Γi(R)
 
 The extended equation includes:
-  - Base term: νf · ΔNFR(t) - canonical structural evolution
+  - Base term: νf · ΔNFR(t) - the declared nodal identity
   - Additive term: Γi - optional Kuramoto-based or harmonic forcing
 
 Gamma is an additional rate source, not a derivation from the nodal product.
+Neither the nodal product nor this integrator derives its supplied pressure
+or forcing from structural operators and grammar. That constitutive bridge
+must be supplied by the selected complete model.
 At positive capacity it can be written as an effective pressure ``dnfr+Gamma/vf``;
 this representation is singular at zero capacity. Nonzero Gamma can therefore
 move EPI at ``vf=0``. Unforced certificates and Silence claims require Gamma

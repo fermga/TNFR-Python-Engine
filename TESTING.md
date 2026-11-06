@@ -75,6 +75,11 @@ different model would reject it.
 
 Collect the full inventory before broad execution. Choose the non-slow suites
 and any additional slow owners explicitly, preserving frozen-producer guards.
+Before adding a test to a scoped foundation run, inspect its fixtures and
+helper imports: an unmarked runtime test can replay a historical producer in
+memory even when it writes no artifact. Such a fixture still requires the
+research program's scientific admission. A construction helper or detached
+contract check does not automatically have the same scope as a producer.
 Finish source changes and independent review before the final regression run;
 if code changes during that run, its result cannot alone validate the new
 source. Record the final interpreter, selection, skipped scope and checks.
@@ -452,15 +457,28 @@ owns the substantive closure and review criteria. Machine checks validate
 declared associations, hashes and review completeness; they do not establish
 the scientific truth of a submitted proof.
 
-The remaining documentation checks are:
+The remaining documentation checks are a fast local gate, run before every
+documentation commit:
 
 ```sh
 python scripts/verify_internal_references.py --ci
 python scripts/check_documentation.py
+```
+
+and the strict site build:
+
+```sh
 python -m pip install -e ".[docs]"
 python scripts/prepare_docs.py
 python -m mkdocs build --strict
 ```
+
+The [documentation workflow](.github/workflows/docs.yml) runs both stages on
+every push or pull request touching Markdown or documentation tooling. Run the
+strict build locally when changing `mkdocs.yml`, navigation, catalogs, staging
+scripts or rendered Markdown features; otherwise the fast gate suffices before
+committing and the workflow result is the strict-build evidence. Report which
+stage was run locally.
 
 The reference checker accepts `--dirs` followed by files or directories,
 including logical research chapter paths, to bound the check; an unknown

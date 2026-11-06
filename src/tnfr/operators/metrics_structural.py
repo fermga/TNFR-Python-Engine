@@ -788,7 +788,25 @@ def mutation_metrics(
     if "_zhir_gate_depi_dt" in node_data and "_zhir_gate_xi" in node_data:
         depi_dt = float(node_data["_zhir_gate_depi_dt"])
         xi = float(node_data["_zhir_gate_xi"])
-        threshold_met = depi_dt > xi
+        if node_data.get("_zhir_gate_history_key") == "operator_schedule_net_growth":
+            from fractions import Fraction
+
+            exact_rate = node_data.get("_zhir_gate_exact_depi_dt")
+            exact_xi = node_data.get("_zhir_gate_exact_xi")
+            if type(exact_rate) is not Fraction or type(exact_xi) is not Fraction:
+                raise ValueError(
+                    "operator growth Mutation metrics require exact gate values"
+                )
+            if any(
+                type(value.numerator) is not int or type(value.denominator) is not int
+                for value in (exact_rate, exact_xi)
+            ):
+                raise ValueError(
+                    "operator growth Mutation metric fractions need Python integers"
+                )
+            threshold_met = exact_rate > exact_xi
+        else:
+            threshold_met = depi_dt > xi
     else:
         threshold_sample = mutation_threshold_sample(node_data, G.graph)
         depi_dt = threshold_sample.depi_dt

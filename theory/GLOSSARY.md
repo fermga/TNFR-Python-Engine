@@ -507,10 +507,10 @@ IDs and update the definition/proof owner before changing its summary.
 - **Premises:** Retain hidden initialization and forcing; admit approximation error separately.
 - **Dependencies:** closure
 - **Owner:** [EPI memory](DERIVED_EPI_MEMORY.md), [relational memory](nodal/RELATIONAL_PATTERN_MEMORY.md).
-- **Evidence:** [Exact elimination](DERIVED_EPI_MEMORY.md#3-exact-elimination-including-the-initial-hidden-state); [nonlinear forecast scope](nodal/RELATIONAL_PATTERN_MEMORY.md#derived-cubic-memory-forecast).
+- **Evidence:** [Exact elimination](DERIVED_EPI_MEMORY.md#3-exact-elimination-including-the-initial-hidden-state); [reversible omission budget](DERIVED_EPI_MEMORY.md#reversible-memory-omission-budget); [held-profile extension](DERIVED_EPI_MEMORY.md#profile-anchored-memory-omission); [nonlinear forecast scope](nodal/RELATIONAL_PATTERN_MEMORY.md#derived-cubic-memory-forecast).
 - **Implementation:** [EPI memory](../src/tnfr/physics/epi_memory.py), [coordinate elimination](../src/tnfr/mathematics/linear_observation.py).
-- **Tests:** [Linear memory](../tests/physics/test_epi_memory.py), [nonlinear controls](../tests/physics/test_relational_pattern_memory.py).
-- **Limits:** Memory selects no microscopic law. A signed remainder is not a sufficient hidden state; exact elimination does not imply forgetting, irreversible damping or a finite-history approximation.
+- **Tests:** [Linear memory](../tests/physics/test_epi_memory.py), [omission and held-profile controls](../tests/physics/test_epi_memory_omission.py), [nonlinear controls](../tests/physics/test_relational_pattern_memory.py).
+- **Limits:** Memory selects no microscopic law. A signed remainder is not a sufficient hidden state; exact elimination alone does not justify omitting history. The reversible omission budget retains source, decay, metric and horizon; preserving a held affine profile is weaker than all-state closure or autonomous maintenance.
 
 <a id="retained-phase-offset"></a>
 
@@ -727,9 +727,9 @@ IDs and update the definition/proof owner before changing its summary.
 - **Status:** maintained
 - **Basis:** constitutive
 - **Emergence:** not-claimed
-- **Definition:** Thirteen registered transformations define declared jump contracts on nodal/graph state.
+- **Definition:** Structural operators are the constitutive transformation mechanisms of TNFR. The current thirteen registered maps implement declared jump contracts on nodal/graph state; they do not exhaust that theoretical claim by registration alone.
 - **Domain:** The actual glyph, public operator, atomic stage or word-execution path.
-- **Premises:** Identify the actual target, primary and secondary writes, consumed state/history and selection origin. Resolve names and tokens through the shared registry.
+- **Premises:** Identify the actual target, primary and secondary writes, consumed state/history and selection origin. Resolve names and tokens through the shared registry. Every canonical continuous or collective dynamics needs a proved realization, restriction, reduction or limit under the [constitutive premise](FUNDAMENTAL_THEORY.md#operator-grammar-constitutive-premise).
 - **Dependencies:** nodal-equation, phase, support
 - **Owner:** [Structural operators](STRUCTURAL_OPERATORS.md).
 - **Evidence:** [Execution contracts](../docs/API_CONTRACTS.md#contract-model); [collective action and ordered-language descent](STRUCTURAL_OPERATORS.md#collective-grammar-descent).
@@ -744,7 +744,7 @@ IDs and update the definition/proof owner before changing its summary.
 - **Status:** maintained
 - **Basis:** policy
 - **Emergence:** not-claimed
-- **Definition:** U1-U5 impose word/live-state contracts; U6 monitors reference-relative potential drift. Automatic selection is a separate policy.
+- **Definition:** Grammar constrains structural transformation and composition in the constitutive TNFR premise. In the current runtime formalization, U1-U5 impose word/live-state contracts and U6 monitors reference-relative potential drift. Automatic selection is a separate policy; the policy basis of this implementation card does not reduce the theoretical grammar to an optional controller.
 - **Domain:** Declared history, node state, grammar profile and execution path.
 - **Premises:** Retain registered roles, configured choices, history and actual execution context; a supplied flag is not verified evidence. Collective execution must retain or descend every consumed part of this context.
 - **Dependencies:** operators

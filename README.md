@@ -21,6 +21,12 @@ for working with these objects. Its purpose is to investigate the scope of
 TNFR: which organizations its dynamics admit, what they retain when interacting,
 and which collective properties follow from their structure.
 
+TNFR's [constitutive premise](theory/FUNDAMENTAL_THEORY.md#operator-grammar-constitutive-premise)
+grounds every canonical transformation in structural operators and grammar.
+Continuous equations and collective descriptions need a proved connection to
+those mechanisms. This is the paradigm's research premise; the present engine
+and auxiliary mathematical models are not yet a complete realization of it.
+
 The network represents constituent relations and supports execution. Object
 studies test whether a state description retains the information needed for
 response, which consequences follow from a law, and which operator actions
@@ -161,8 +167,10 @@ positive held capacities and no forcing. The finite Euler step reports its
 storage-balance defect separately; two admitted endpoints are not an
 error bound for the intervening numerical path.
 
-This example prepares the object. Its formation is a separate research
-question, as are operator events and the comparison of different laws.
+This example prepares the object and executes a conditional relational law.
+It invokes no structural operators or ordered grammar; a canonical operator
+realization remains to be established. Formation and the comparison of
+different laws are separate research questions.
 Time is structural time, not laboratory seconds or an operator count.
 The [complete hello world](https://github.com/fermga/TNFR-Python-Engine/blob/main/examples/01_foundations/01_hello_world.py)
 retains the network and all reports. Continue with the
@@ -184,6 +192,7 @@ different claims:
 | Acquired native organizations and response | Formation/selection evidence and conditional regional response under a two-bridge dynamic-capacity law; quantitative entry of the actual sources into the response domains remains open | [Acquired native response](theory/nodal/NATIVE_ACQUIRED_RESPONSE.md) |
 | Formation, retention and recovery | Prepared families under specified laws, with source, stability and uncertainty conditions | [Pattern dynamics](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/SINE_PATTERN_DYNAMICS.md) |
 | Collective state, interaction and memory | Exact reductions or bounded descriptions that retain required constituent and boundary information | [Emergent ontology](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/EMERGENT_ONTOLOGY.md) |
+| Controlled EPI simplification | Finite error bounds for omitted memory under fixed reversible dynamics; a held-input extension preserves the maintained profile and mean drift | [Memory omission and profile preservation](theory/DERIVED_EPI_MEMORY.md#profile-anchored-memory-omission) |
 | Localized motion | Finite transport of a prepared full-state identity on supplied support | [Identity transport](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/nodal/LOCALIZED_IDENTITY_TRANSPORT.md) |
 | Operator actions on organized states | Admitted actions and conditional compositions, with explicit event work, capacity and live grammar requirements | [Structural operators](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/STRUCTURAL_OPERATORS.md) |
 
@@ -193,17 +202,48 @@ implementation, and numerical experiments describe their cases and error
 controls. Empirical validation requires independent measurements; mathematical
 storage is not identified with measured energy by its name.
 
+**The first development priority is canonical implementation and integration
+of structural operators**, as the mechanisms of emergence and self-organization.
 The [current foundation question](theory/RESEARCH_PROGRAM.md#research-current-question)
-connects already formed constituents to a maintained organization through
-two contacts. In the normalized-sine model, compatibility and capture from a
-separately supplied preparation are established under their premises; entry
-from the retained formed source remains uncertified. The
-[single retained attempt](theory/nodal/SINE_TWO_PORT_CAPTURE.md#sine-formed-two-port-attempt-result)
-certified four initial steps before the next tube failed domain admission.
-That outcome proves neither entry nor non-entry. The subsequent
-[domain analysis](theory/nodal/SINE_TWO_PORT_CAPTURE.md#sine-formed-two-port-domain-decision)
-separates energy bounds from the curvature and whole-time clearance still
-needed for comparison. The program owns the next analytical obligation.
+connects each missing function to sufficient state, actual actions, grammar
+and continued collective participation. The
+[all-thirteen audit](theory/STRUCTURAL_OPERATORS.md#operator-canonical-coverage-audit)
+confirms executable coverage and corrects concrete integration defects, while
+identifying unresolved filtering, topology, richer-form and scale roles.
+Registered operators are not yet a complete canonical realization. The
+[operator audit](theory/STRUCTURAL_OPERATORS.md#continuous-operator-realization-audit)
+finds that the recent continuous contact laws have no established bridge to
+UM, RA or THOL. Closing this dependency takes priority over extending their
+results as canonical TNFR dynamics.
+The existing passive contact completions now have a
+[conditional elementary acquisition theorem](theory/nodal/RELATION_FOUNDATIONS.md#passive-contact-acquired-response):
+a relatively open family of small preparations with no initial bridge acquires
+a stable common-form/common-phase organization, retains a predictive relation
+value and recovers after small supplied probes. The proof controls the complete
+changing-contact state through zero contact. It establishes neither prior
+constituent formation nor the older amplitude-one source's destination.
+The [source-to-response result](theory/nodal/RELATION_FOUNDATIONS.md#passive-contact-source-response)
+now gives a controlled leading law for retained contact and its tangent
+recovery scale. The same acquisition proof extends to finite collections of
+components when appropriately funded contacts connect them. These results
+broaden retained response geometry; acquisition of nonuniform internal
+patterns remains a separate question. These are conditional results for
+postulated auxiliary laws, not proofs of operator-driven formation. Exact
+detached budget/source readers are not a joint weighted executor or a uniquely
+selected fundamental law. The
+[bibliographic synthesis](theory/BIBLIOGRAPHIC_METHODS.md#bibliographic-strategic-pivot)
+connects this priority to stability, viability, symmetry, memory and scaling,
+including the selected readings and their implementation scope.
+
+The completed [two-port selection result](theory/nodal/SINE_TWO_PORT_COMPATIBILITY.md#sine-formed-two-port-original-period-exclusion)
+proves eventual absence of the original periods `(2,1,0)` for every member of
+its original source family, including cut representatives. It leaves the
+outgoing equilibrium, periods and a common destination unidentified. This
+scoped exclusion does not rule out collective organization: the same contacts
+with the [shifted-origin preparation](theory/nodal/SINE_TWO_PORT_CAPTURE.md#sine-formed-two-port-origin-decision)
+have a separate positive capture certificate. The original law, source and
+frozen responses remain unchanged; completing that particular trajectory is
+not automatically the next research priority.
 
 ## Choose an execution path
 

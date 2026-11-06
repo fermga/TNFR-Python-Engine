@@ -66,6 +66,9 @@ ownership. The catalog and compatibility routes below are generated.
 | Chapter | Source |
 | --- | --- |
 | [Structural operators](STRUCTURAL_OPERATORS.md) | Maintained technical chapter |
+| [Coupling participation between connected organizations](COUPLING_COMPOSITION.md) | Maintained technical chapter |
+| [Recursivity: structure, memory and post-birth participation](REMESH_STRUCTURE_AND_MEMORY.md) | Maintained technical chapter |
+| [NUL synthesis and response sufficiency](NUL_SYNTHESIS.md) | Maintained technical chapter |
 | [Unified grammar](UNIFIED_GRAMMAR_RULES.md) | Maintained technical chapter |
 | [Diagnostic and grammar scope](DIAGNOSTIC_AND_GRAMMAR_SCOPE.md) | Maintained technical chapter |
 | [Relational support events](nodal/RELATIONAL_SUPPORT_EVENTS.md) | Maintained technical chapter |
@@ -317,6 +320,7 @@ ownership. The catalog and compatibility routes below are generated.
 | Chapter | Source |
 | --- | --- |
 | [Native operator dynamics](NATIVE_OPERATOR_DYNAMICS.md) | Maintained technical chapter |
+| [Finite-duration Emission proposal and native source competition](EMISSION_EPISODES.md) | Maintained technical chapter |
 | [Native collective calculus](NATIVE_COLLECTIVE_CALCULUS.md) | Maintained technical chapter |
 | [Aggregate operators and native transitions](NATIVE_AGGREGATE_OPERATORS.md) | Maintained technical chapter |
 | [Collective IL/OZ pressure handoff](nodal/SINE_COLLECTIVE_PRESSURE_HANDOFF.md) | Maintained technical chapter |

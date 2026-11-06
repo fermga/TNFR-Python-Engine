@@ -287,7 +287,9 @@ def _assert_uniform_runtime_coordinates(graph, form):
     )
     assert graph.number_of_edges() == 20
     assert all(data["weight"] == 1.0 for _, _, data in graph.edges(data=True))
-    assert graph.graph["history"]["stable_frac"] == []
+    # No observer supplied stability evidence; an abstaining REMESH gate must
+    # not manufacture even an empty observation series.
+    assert "stable_frac" not in graph.graph["history"]
     assert "_last_remesh_step" not in graph.graph
 
 

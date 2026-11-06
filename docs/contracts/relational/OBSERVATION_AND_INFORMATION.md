@@ -35,6 +35,76 @@ See the [joint mediator derivation](../../../theory/nodal/RELATIONAL_MEDIATOR_DY
 for an admitted use with the relational tangent; it does not replace full
 `Network.step_relational` evolution with a fitted memory law.
 
+<a id="epi-memory-omission-budget"></a>
+### Reversible EPI memory-omission budget
+
+`tnfr.physics.epi_memory.bound_epi_memory_omission(reference, blocks, *,
+horizon, hidden_decay_lower, epi=None)` returns an immutable
+`EpiMemoryOmissionBound`. The existing `ForcedSupportBalance` and exact
+partition owners rebuild the primitive model and state; cached metrics,
+profiles and verdicts are not premises. This calculation additionally
+requires **zero forcing**, positive held capacities, connected positive
+conductance and a positive EPI coefficient. No primitive phase row is
+consumed or added.
+
+`horizon` is nonnegative and `hidden_decay_lower` is strictly positive in
+the same declared clock as the generator. Exact/represented-real admission
+rejects booleans and nonfinite scalars before arithmetic. The supplied
+decay bound must satisfy `Q.T*(H*A-lambda*H)*Q >= 0`; exact semidefinite
+admission checks this on the hidden subspace without an eigenvalue search.
+
+The [proof](../../../theory/DERIVED_EPI_MEMORY.md#reversible-memory-omission-budget)
+bounds the **squared Hbar norm** of `Rx(t)-y_M(t)` uniformly on
+`[0,horizon]`, where `y_M'=-RAP*y_M` starts at `Rx(0)` and omits both
+memory and hidden initialization. The report keeps the rebuilt `closure`,
+gap slack, coupling bound, initial norm squares, time factors and separate
+`initial_source_error_squared_upper` and `feedback_error_squared_upper`.
+`error_squared_upper` combines those bounds; it is not a measured error,
+an equilibrium decision, or an identity/coherence score.
+
+A failing gap returns `status="unavailable"` with reason
+`hidden_decay_lower_not_certified` and all three error fields `None`.
+Malformed state/law/parameters raise through the existing admission owners.
+There is no fallback gap, zero-error substitute, trajectory integration or
+matrix exponential. Rational squared bounds preserve tiny nonzero scales.
+The captured EPI is the initial-state premise; this reader does not
+authenticate its acquisition or infer an uncertainty family.
+
+No native relational, normalized-sine, hybrid-event, time-dependent forcing
+or changed-support conclusion follows from this restricted certificate.
+
+<a id="profile-anchored-epi-memory"></a>
+### Held-profile affine memory approximation
+
+`tnfr.physics.epi_memory.bound_anchored_epi_memory_omission(reference, blocks,
+*, horizon, hidden_decay_lower, epi=None)` extends the same budget to an
+independently specified **constant** forcing, using the current forced
+profile rather than applying an unforced formula to raw EPI.
+
+For `x'=-Ax+b`, rebuild `A*z=b-vbar*1` in the zero-H-mean gauge.
+The explicit comparison is
+`y_M'=-RAP*y_M+macro_forcing`, `y_M(0)=Rx0`, with
+`macro_forcing=R*b-RAQ*z` and `forcing_correction=RAQ*z`.
+The report sets `comparison_kind="profile_anchored_affine"`.
+The original `bound_epi_memory_omission` still rejects nonzero forcing,
+sets `comparison_kind="unforced"` and returns zero source/correction vectors.
+
+Both routes share exact gap admission, geometry and rational squared error
+arithmetic. On the affine route, the initial norm squares refer to
+`u0=x0-mean_H(x0)*1-z` and `Q*u0`; the hidden part of raw `x0` is not
+silently treated as zero. The bound preserves the held model's relative
+profile and actual mean drift, but does not claim exact transient closure.
+The [derivation](../../../theory/DERIVED_EPI_MEMORY.md#profile-anchored-memory-omission)
+supplies the required correction and a nonclosed counterexample to using
+`R*b` alone.
+
+Gap failure leaves the three error fields unavailable, while the exact
+coarse source remains a mathematical observation of the rebuilt model.
+Cached profiles/means never override primitive input checks. No new
+equilibrium search, exponential or trajectory is run. Earlier identity
+reference profiles remain separate observations; updating this current-law
+prediction is not evidence that an earlier organization was maintained.
+
 <a id="form-loss-observation-bound"></a>
 
 ### Conservative observation versus form-only loss

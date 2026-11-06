@@ -33,9 +33,9 @@ fundamental-physics mapping, analogy campaign, particle identification or
 experimental fit. A separate independent final readiness review must bind
 all four current resolutions and the current program, and cover the proposed
 physical task. A pillar marked `resolved` admits only its reviewed mathematical
-scope; it does not by itself establish universal foundations or authorize a later acquisition, interaction or
-physical claim. All four resolutions can be valid while physical mapping
-remains blocked by a missing final review.
+scope; it does not by itself establish universal foundations or authorize a
+later acquisition, interaction or physical claim. All four resolutions can be
+valid while physical mapping remains blocked by a missing final review.
 Read `theory/research_prerequisites.json` and run
 `python scripts/check_research_prerequisites.py --require-physical-mapping`
 before such work. A nonzero result prohibits that work; continue the active
@@ -122,6 +122,15 @@ values from `TNFR.operators()` and words from `list_sequences()`, not display
 names or parallel catalogs. Preserve word order and live preconditions;
 direct glyphs, public classes and atomic stages have different secondary effects.
 
+**Priority 1: canonical implementation and integration of structural operators.**
+They are TNFR's constitutive mechanisms for emergence and self-organization.
+Tie foundation work to an identified operator function, its shared implementation,
+grammar and continued participation in the resulting organization. Mathematical
+analysis and tests support this development; an auxiliary flow or additional
+audit is not a substitute. The [research program] alone selects the next concrete
+gap. Preserve its unresolved roles rather than claiming registry coverage is
+canonical completeness.
+
 Bind operator requests to actual NFR targets, consumed state/history and their
 selection origin. Supplied words and configured state-dependent selectors are
 not derived occurrence laws; collective selection needs its own descent proof.
@@ -133,14 +142,30 @@ controls when admitting a new event domain.
 Grammar bases belong to `operators/grammar_canon.py`; role sets derive through
 shared predicates and `grammar_types.py`. U1-U6 are admission/monitoring
 contracts, not universal stability or autonomous-selection theorems.
+Every claimed canonical structural or dynamical operation must be grounded
+in structural operators and grammar, including continuous and collective
+descriptions. This is TNFR's constitutive research premise, not an empirical
+validation of the paradigm or proof that current software fully realizes it.
+Structural operators must participate through the
+actual admitted execution or a proved realization, restriction, reduction or
+continuous limit. A separate numerical flow is not that justification. Identify
+each consumed mechanism and justify any inactive/eliminated action; behavior
+named coupling, resonance or self-organization does not establish UM, RA or THOL.
+The [continuous contact audit](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/STRUCTURAL_OPERATORS.md#continuous-operator-realization-audit)
+records the missing bridge for the postulated weighted contact laws. Retain
+their conditional results without promoting them to canonical operator dynamics.
 `GRAMMAR_REJECTION_MODE="raise"` prevents blocked-step substitution.
 Read the [grammar] and [operator] owners before changing semantics.
 
-Mutation requires active capacity, a live finite signed two-sample EPI secant
-strictly above its configured threshold, and independent grammar context.
+Default Mutation requires active capacity, a live finite signed two-sample EPI
+secant strictly above its configured threshold, and independent grammar context.
 Timestamped history ends at the live state; step-indexed history declares
 operator-step units. Nodal-product predictions cannot replace observed trigger
 evidence. Missing/stale evidence rejects execution or yields explicit abstention.
+The explicit [operator-growth alternative](https://github.com/fermga/TNFR-Python-Engine/blob/main/theory/NATIVE_OPERATOR_DYNAMICS.md#operator-hybrid-mutation-consumer)
+instead produces and consumes its own hybrid source atomically, retaining exact
+growth, independent grammar and disjoint consumed windows. Detached reports do
+not activate it; ordinary history-based interfaces remain unchanged.
 
 Named events are hybrid jumps, not invented finite-duration pressure flows.
 Atomic stages propose from one immutable snapshot, validate every target and
@@ -251,6 +276,9 @@ remainders, source transport or acquisition/capture certificates; re-admit
 regularity and bounds for the actual law. Tangent reduction need not close a
 nonlinear law. Eliminating hidden state can introduce memory and retains
 hidden initialization and forcing.
+An independent phase shift of disconnected components can change the initial
+state after they are joined; transfer through symmetry requires an explicit
+chart, retained means and error bounds under the joined law.
 Formation, recovery, winding, lifetime and maintenance have separate obligations:
 response peaks, pulses, recurrence, invariant families and finite retention do
 not establish formation or autonomous scale selection. An admissible connection
@@ -284,6 +312,9 @@ normalize, reformat or rewrite frozen files to repair a digest mismatch.
 A failed sufficient certificate leaves its claim unavailable; it does not
 establish failure of the modeled trajectory. A consumed attempt or failed
 diagnostic does not authorize a retry, repair/replay or enlarged budget.
+Bounds derived under an assumption used for contradiction are conditional:
+once that assumption fails, they do not bound the later actual state. Exiting
+a comparison domain alone proves neither eventual non-entry nor a new identity.
 
 User-supplied books in `bibliografia/` remain local and Git-ignored. Preserve
 them during cleanup or refactoring. Keep the books, extracted text and rendered
@@ -361,8 +392,10 @@ inputs, not `build/docs-source/` or `site/`.
 - Run affected contracts and explicitly select research owners whose models or
   claims changed. The routine engine/API gate is not full research coverage;
   [Testing] owns selection and dependencies.
-- For docs, verify mirror, generated views, links, executable examples and strict
-  site build. Report checks and material limitations.
+- For docs, verify mirror, generated views, links and executable examples
+  locally. Build the strict site locally when navigation, catalogs, staging
+  or rendering change; otherwise the docs workflow supplies it. Report checks
+  and material limitations.
 - For distribution changes, check fresh wheel and source archives with
   `scripts/check_distribution.py` and the release checks in [Testing].
 - Every release must include a verified lightweight development bundle and its

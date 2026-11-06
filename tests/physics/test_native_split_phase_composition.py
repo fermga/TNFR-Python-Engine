@@ -289,7 +289,7 @@ def composition(no_complete_native_execution):
     final = _snapshot(graph)
     # Terminal runtime stages: archive the endpoint, then independently abstain
     # from delayed REMESH because no qualifying stability window exists.
-    assert not graph.graph["history"].get("stable_frac", ())
+    assert "stable_frac" not in graph.graph["history"]
     assert graph.graph["REMESH_STABILITY_WINDOW"] > 0
     nodes_before_remesh = deepcopy(dict(graph.nodes(data=True)))
     support_before_remesh = tuple(graph.edges(data="weight"))
@@ -298,7 +298,7 @@ def composition(no_complete_native_execution):
     assert dict(graph.nodes(data=True)) == nodes_before_remesh
     assert tuple(graph.edges(data="weight")) == support_before_remesh
     assert _snapshot(graph) == final
-    assert not graph.graph["history"]["stable_frac"]
+    assert "stable_frac" not in graph.graph["history"]
     assert "_last_remesh_step" not in graph.graph
     context = deepcopy(dict(graph.graph["history"]))
     runtime._prepare_dnfr(graph, use_Si=True)
@@ -434,11 +434,9 @@ def test_terminal_remesh_archive_retains_support_order_without_a_stability_windo
     (archive,) = graph.graph["_epi_hist"]
     assert tuple(archive) == tuple(graph) == tuple(range(10))
     _close(tuple(archive.values()), expected["endpoint"])
-    assert len(composition["context"]["stable_frac"]) == 0
-    assert (
-        len(composition["context"]["stable_frac"])
-        < graph.graph["REMESH_STABILITY_WINDOW"]
-    )
+    # Archiving an endpoint and abstaining from REMESH supply no observation.
+    assert "stable_frac" not in composition["context"]
+    assert graph.graph["REMESH_STABILITY_WINDOW"] > 0
 
 
 def test_premature_adaptation_error_in_a_separate_exact_due_flag_control():

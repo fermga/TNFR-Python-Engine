@@ -44,6 +44,10 @@ class MutationThresholdSample:
     def crossed(self) -> bool:
         """Whether the signed rate strictly exceeds the configured threshold."""
 
+        from ._operator_growth_trigger import OperatorGrowthTriggerCertificate
+
+        if type(self.certificate) is OperatorGrowthTriggerCertificate:
+            return self.certificate.exact_observed_rate > self.certificate.exact_xi
         return self.depi_dt > self.xi
 
 
@@ -179,11 +183,16 @@ def validate_mutation_threshold(
     return sample
 
 
-def validate_mutation_capacity(
+def _read_mutation_capacity(
     node_data: Mapping[str, Any],
     graph_data: Mapping[str, Any],
 ) -> tuple[float, float]:
-    """Require active structural capacity and an optional configured floor."""
+    """Admit capacity and its floor without classifying valid inactivity.
+
+    Missing, malformed, negative or unrepresentable values remain errors.
+    A conditional consumer may distinguish a valid zero/below-floor capacity
+    from those errors without parsing a strict validator's exception text.
+    """
 
     for key in ALIAS_VF:
         if key in node_data:
@@ -212,6 +221,16 @@ def validate_mutation_capacity(
         _reject(f"ZHIR_MIN_VF {exc.reason}; got {exc.value!r}")
     nu_f = capacity.nu_f
     minimum = minimum_certificate.nu_f
+    return nu_f, minimum
+
+
+def validate_mutation_capacity(
+    node_data: Mapping[str, Any],
+    graph_data: Mapping[str, Any],
+) -> tuple[float, float]:
+    """Require active structural capacity and an optional configured floor."""
+
+    nu_f, minimum = _read_mutation_capacity(node_data, graph_data)
     if nu_f <= 0.0 or nu_f < minimum:
         _reject(
             "ZHIR requires active structural frequency; "

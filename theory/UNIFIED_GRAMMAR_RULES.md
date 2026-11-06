@@ -13,6 +13,16 @@ by [grammar_types.py](../src/tnfr/operators/grammar_types.py), and are materiali
 in [grammar_canon.py](../src/tnfr/operators/grammar_canon.py). Validation is exposed
 through [grammar.py](../src/tnfr/operators/grammar.py).
 
+The [constitutive premise](FUNDAMENTAL_THEORY.md#operator-grammar-constitutive-premise)
+grounds all canonical TNFR transformations in structural operators and grammar.
+It applies to continuous and collective descriptions as well as explicit
+words. Their derivation must retain or justify the elimination of the relevant
+admission and composition state. The current runtime contracts below are a
+concrete formalization to assess, not a proof that every configured threshold,
+selector or monitoring policy is fundamental. The
+[continuous contact audit](STRUCTURAL_OPERATORS.md#continuous-operator-realization-audit)
+identifies an unresolved realization rather than an exception to that premise.
+
 The nodal equation
 
     ∂EPI/∂t = ν_f · ΔNFR
@@ -314,6 +324,16 @@ canonical coupling gate. A sequence-level role check records this obligation;
 the graph-specific phase comparison belongs to operator preconditions. Operator
 execution must preserve this separation and must not replace a real phase
 check with acceptance of a word.
+The ordinary UM and RA paths consume existing neighbors. The bounded
+[potential-pair UM action](STRUCTURAL_OPERATORS.md#coupling-potential-pair)
+can create a link to an explicitly supplied isolated partner, including when
+the target already has support. Compatible outgoing neighbors and the
+mandatory partner enter the shared UM map, with initial and final U3
+admission. Live request-aware grammar reads this same domain; an old
+incompatible neighbor neither excludes a compatible requested partner nor
+admits an incompatible one. Other grammar rules remain in force. This
+extends the action's source domain, not its phase limit. RA still requires
+realized support, and supplied access does not establish autonomous selection.
 For positive phasor amplitudes the pi/2 gate is equivalent to a nonnegative
 pairwise interference cross term. That compatibility criterion is a declared
 premise, not forced by the scalar EPI equation. U3 gates participating UM/RA

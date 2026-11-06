@@ -280,8 +280,15 @@ def validate_dissonance(G: "TNFRGraph", node: "NodeId") -> None:
         G.nodes[node]["_bifurcation_ready"] = False
 
 
-def validate_phase_gate_u3(G: "TNFRGraph", node: "NodeId", operator: str) -> None:
-    """U3 hard invariant: UM/RA require a phase-compatible neighbour.
+def validate_phase_gate_u3(
+    G: "TNFRGraph",
+    node: "NodeId",
+    operator: str,
+    *,
+    potential_partner=None,
+    potential_scope: str = "isolated",
+) -> None:
+    """U3 hard invariant: UM/RA require phase-compatible participants.
 
     Canonical Invariant #2 / grammar U3: Coupling and Resonance are admissible
     only under the resonance condition ``|wrap(φ_i − φ_j)| ≤ Δφ_max`` with the
@@ -289,15 +296,39 @@ def validate_phase_gate_u3(G: "TNFRGraph", node: "NodeId", operator: str) -> Non
     before any state mutation and **raises** (it is not a warning and cannot be
     disabled via ``VALIDATE_OPERATOR_PRECONDITIONS``).
 
-    A runtime target must have at least one neighbour within the effective
+    An ordinary runtime target must have at least one neighbour within the effective
     gate; otherwise the operator would be a no-op or couple/propagate into
     destructive phase opposition. ``UM_MAX_PHASE_DIFF`` may tighten the UM
     gate but cannot widen the hard graph limit.
+    UM additionally admits a supplied isolated ``potential_partner`` through
+    its shared domain reader, alongside any compatible outgoing neighbors.
+    The supplied partner must itself pass U3. RA consumes realized support.
+    The explicit ``disjoint_components`` scope instead admits nontrivial
+    disconnected components and checks all relations incident to phase writers.
     """
     from ...alias import get_attr
+    from .._coupling_potential import _resolve_potential_scope
     from .._phase_gate import U3PhaseGateError, resolve_u3_phase_neighbors
 
+    potential_scope = _resolve_potential_scope(potential_scope, potential_partner)
     operator_code = "UM" if str(operator).casefold() in {"um", "coupling"} else "RA"
+
+    if potential_partner is not None:
+        if operator_code != "UM":
+            raise OperatorPreconditionError(
+                operator, "potential partners are admitted only by Coupling"
+            )
+        from .._coupling_potential import resolve_potential_coupling
+
+        try:
+            resolve_potential_coupling(
+                G, node, potential_partner, potential_scope=potential_scope
+            )
+        except (TypeError, ValueError) as exc:
+            raise OperatorPreconditionError(
+                operator, f"U3 potential pair: {exc}"
+            ) from exc
+        return
 
     def phase(candidate: "NodeId") -> object:
         return get_attr(
@@ -340,7 +371,13 @@ def _coupling_activity_policy(graph_attributes) -> tuple[float, float]:
     )
 
 
-def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
+def validate_coupling(
+    G: "TNFRGraph",
+    node: "NodeId",
+    *,
+    potential_partner=None,
+    potential_scope: str = "isolated",
+) -> None:
     """Apply the selected activity policy and mandatory U3 phase gate.
 
     Activity thresholds are configured admission, not criteria establishing
@@ -349,7 +386,7 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
     1. **Graph connectivity**: At least one other node exists for coupling
     2. **EPI magnitude**: Absolute signed form reaches the selected minimum
     3. **Structural frequency**: Nonnegative capacity reaches its selected minimum
-    4. **Phase compatibility** (MANDATORY per Invariant #2): At least one neighbor within phase range
+    4. **Phase compatibility** (MANDATORY): Existing participants and the explicit UM partner
 
     Configuration Parameters
     ------------------------
@@ -369,6 +406,10 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
         Graph containing the node
     node : NodeId
         Node to validate
+    potential_partner : NodeId, optional
+        Explicit isolated partner for UM creation. Target and partner meet
+        the activity policy; the target may already have other neighbors.
+        Supplied access does not imply an existing edge.
 
     Raises
     ------
@@ -399,8 +440,8 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
     >>> nx.set_node_attributes(G, 0.0, "theta")
     >>> validate_coupling(G, 0)
 
-    An isolated node fails this precondition even with adequate EPI/capacity;
-    a word-level UM token is not evidence of an available coupling relation.
+    An isolated node without an explicit potential partner fails even with
+    adequate EPI/capacity. A word-level UM token alone supplies no partner.
 
     See Also
     --------
@@ -410,11 +451,32 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
 
     [Legacy: Previously referenced EMERGENT_GRAMMAR_ANALYSIS.md RC3]
     """
+    from .._coupling_potential import _resolve_potential_scope
+
+    potential_scope = _resolve_potential_scope(potential_scope, potential_partner)
     # Basic graph check - at least one other node required
     if G.number_of_nodes() <= 1:
         raise OperatorPreconditionError(
             "Coupling", "Graph has no other nodes to couple with"
         )
+
+    _validate_coupling_activity(G, node)
+    if potential_partner is not None:
+        # Admit identifiers and pair domain before reading the partner state.
+        validate_phase_gate_u3(
+            G,
+            node,
+            "Coupling",
+            potential_partner=potential_partner,
+            potential_scope=potential_scope,
+        )
+        _validate_coupling_activity(G, potential_partner)
+    else:
+        validate_phase_gate_u3(G, node, "Coupling")
+
+
+def _validate_coupling_activity(G: "TNFRGraph", node: "NodeId") -> None:
+    """Apply existing signed-form/capacity minima to one consumed participant."""
 
     from ...alias import get_attr
     from ...types import require_finite_real_scalar_epi
@@ -451,10 +513,6 @@ def validate_coupling(G: "TNFRGraph", node: "NodeId") -> None:
         raise OperatorPreconditionError(
             "Coupling", f"Structural frequency too low (νf={vf:.3f} < {min_vf:.3f})"
         )
-
-    # U3 is a hard runtime invariant even when configurable preconditions are
-    # disabled. Calling this validator directly must preserve that contract.
-    validate_phase_gate_u3(G, node, "Coupling")
 
 
 def validate_resonance(G: "TNFRGraph", node: "NodeId") -> None:
@@ -834,11 +892,36 @@ def validate_mutation(G: "TNFRGraph", node: "NodeId") -> None:
     validate_mutation_strict(G, node)
 
 
-def validate_transition(G: "TNFRGraph", node: "NodeId") -> None:
-    """NAV - Comprehensive canonical preconditions for transition.
+def _transition_precondition_parameters(
+    G: "TNFRGraph",
+) -> tuple[float, float, float, bool]:
+    """Admit the same NAV policy at direct, public and staged boundaries."""
+    from .._argument_validation import finite_real, strict_bool
 
-    Validates comprehensive preconditions for NAV (Transition) operator according
-    to TNFR.pdf §2.3.11:
+    thresholds = tuple(
+        finite_real(
+            G.graph.get(key, default), operator="Transition", label=key, lower=0.0
+        )
+        for key, default in (
+            ("NAV_MIN_VF", 0.01),
+            ("NAV_MAX_DNFR", 1.0),
+            ("NAV_MIN_EPI_FROM_LATENCY", 0.05),
+        )
+    )
+    strict = strict_bool(
+        G.graph.get("NAV_STRICT_SEQUENCE_CHECK", False),
+        operator="Transition",
+        label="NAV_STRICT_SEQUENCE_CHECK",
+    )
+    return thresholds[0], thresholds[1], thresholds[2], strict
+
+
+def validate_transition(G: "TNFRGraph", node: "NodeId") -> None:
+    """Validate NAV's configured state and optional sequence policy.
+
+    The historical transition role appears in TNFR.pdf §2.2.1, pp. 121-124.
+    These numerical thresholds and warnings are implementation policies, not
+    a derivation of stable transition from that source or the nodal identity:
 
     1. **Minimum νf**: Structural frequency must exceed threshold
     2. **Controlled ΔNFR**: |ΔNFR| must be below maximum for stable transition
@@ -879,13 +962,10 @@ def validate_transition(G: "TNFRGraph", node: "NodeId") -> None:
 
     Notes
     -----
-    NAV requires controlled ΔNFR to prevent instability during regime transitions.
-    High |ΔNFR| indicates significant reorganization pressure that could cause
-    structural disruption during transition. Apply IL (Coherence) first to reduce
-    ΔNFR before attempting regime transition.
-
-    Deep latency transitions (EPI < 0.05 after SHA) benefit from prior AL (Emission)
-    to provide smoother reactivation path.
+    The checks bound stored pressure and capacity under the supplied policy.
+    Passing them does not prove stability of the event or its continuation.
+    Latency and predecessor warnings are advisory, not a replacement for live
+    grammar. Invalid consumed values are rejected before any warning or write.
 
     Examples
     --------
@@ -905,33 +985,58 @@ def validate_transition(G: "TNFRGraph", node: "NodeId") -> None:
     --------
     Transition : NAV operator implementation
     validate_coherence : IL preconditions for ΔNFR reduction
-    TNFR.pdf : §2.3.11 for NAV canonical requirements
+    TNFR.pdf : §2.2.1, pp. 121-124, historical transition role
     """
     import warnings
 
-    # 1. νf minimum (existing check - preserved for backward compatibility)
-    vf = _get_node_attr(G, node, ALIAS_VF)
-    min_vf = float(G.graph.get("NAV_MIN_VF", 0.01))
+    from ...alias import get_attr
+    from ...types import require_finite_real_scalar_epi
+    from .._argument_validation import finite_node_real, strict_bool
+    from ..grammar_debt import require_replayable_history
+
+    min_vf, max_dnfr, min_epi_from_latency, strict_sequence = (
+        _transition_precondition_parameters(G)
+    )
+    data = G.nodes[node]
+    vf = finite_node_real(
+        data, ALIAS_VF, 0.0, operator="Transition", label="nu_f", lower=0.0
+    )
+    dnfr = finite_node_real(
+        data, ALIAS_DNFR, 0.0, operator="Transition", label="DeltaNFR"
+    )
+    # Preserve the public NAV scalar-form error type for every entry point.
+    epi = require_finite_real_scalar_epi(
+        get_attr(data, ALIAS_EPI, 0.0, strict=True, conv=lambda value: value),
+        "NAV stored EPI",
+    )
+    latent = strict_bool(
+        data.get("latent", False), operator="Transition", label="latent"
+    )
+    history = data.get("glyph_history", []) if strict_sequence else ()
+    if strict_sequence:
+        if history is None:
+            raise OperatorPreconditionError(
+                "Transition", "glyph_history must not be None"
+            )
+        try:
+            require_replayable_history(history)
+        except (TypeError, ValueError) as exc:
+            raise OperatorPreconditionError("Transition", str(exc)) from exc
+
+    # All consumed state and policy have been admitted before semantic checks.
     if vf < min_vf:
         raise OperatorPreconditionError(
             "Transition",
             f"Structural frequency too low (νf={vf:.3f} < {min_vf:.3f})",
         )
 
-    # 2. ΔNFR positivity and bounds check (NEW - CRITICAL)
-    dnfr = _get_node_attr(G, node, ALIAS_DNFR)
-    max_dnfr = float(G.graph.get("NAV_MAX_DNFR", 1.0))
+    # Pressure is signed; the configured policy bounds its magnitude.
     if abs(dnfr) > max_dnfr:
         raise OperatorPreconditionError(
             "Transition",
             f"ΔNFR too high for stable transition (|ΔNFR|={abs(dnfr):.3f} > {max_dnfr}). "
             f"Apply IL (Coherence) first to reduce reorganization pressure.",
         )
-
-    # 3. Regime origin validation (NEW - WARNING)
-    latent = G.nodes[node].get("latent", False)
-    epi = _get_node_attr(G, node, ALIAS_EPI)
-    min_epi_from_latency = float(G.graph.get("NAV_MIN_EPI_FROM_LATENCY", 0.05))
 
     if latent and epi < min_epi_from_latency:
         # Warning: transitioning from deep latency
@@ -942,16 +1047,14 @@ def validate_transition(G: "TNFRGraph", node: "NodeId") -> None:
             stacklevel=2,
         )
 
-    # 4. Sequence compatibility check (NEW - OPTIONAL)
-    if G.graph.get("NAV_STRICT_SEQUENCE_CHECK", False):
-        history = G.nodes[node].get("glyph_history", [])
+    # This predecessor warning is a supplied policy, separate from grammar.
+    if strict_sequence:
         if history:
             from ..grammar import glyph_function_name
 
             last_op = glyph_function_name(history[-1]) if history else None
 
-            # NAV works best after stabilizers or generators
-            # Valid predecessors per TNFR.pdf §2.3.11 and AGENTS.md
+            # Configured advisory predecessors; no optimality theorem is implied.
             valid_predecessors = {
                 "emission",  # AL → NAV (activation-transition)
                 "coherence",  # IL → NAV (stable-transition)

@@ -128,6 +128,10 @@ def execute_network_operator_stage(
     compute_delta_nfr: Any = None,
     include_epi_jump_certificate: bool = False,
     transaction_snapshot: "GraphTransactionSnapshot | None" = None,
+    potential_partner: Any | None = None,
+    potential_scope: str = "isolated",
+    source_nodes: tuple[Any, ...] | None = None,
+    preserve_relations: bool = False,
 ) -> "NetworkStageResult":
     """Dispatch one fixed-target stage through the canonical network route.
 
@@ -136,10 +140,31 @@ def execute_network_operator_stage(
     retains its own preconditions, immutable proposal boundary and rollback.
     Recursivity remains advisory-only here. Delayed EPI mixing is exposed
     separately by apply_network_remesh.
+    ``potential_partner`` supplies only the bounded UM creating request;
+    other operators cannot consume potential access as realized support.
+    ``potential_scope`` preserves isolated access by default; the explicit
+    ``disjoint_components`` scope admits two connected undirected components.
+    ``source_nodes`` supplies an ordered EN input tuple on realized support;
+    the same tuple is validated independently for each target.
+    ``preserve_relations=True`` requests ordinary fixed-support UM with all
+    existing relations incident to phase writers protected through commit.
     """
 
+    from ._argument_validation import strict_bool
+    from ._coupling_potential import _resolve_potential_scope
+
+    preserve_relations = strict_bool(
+        preserve_relations, operator="Coupling", label="preserve_relations"
+    )
+    potential_scope = _resolve_potential_scope(potential_scope, potential_partner)
     if type(include_epi_jump_certificate) is not bool:
         raise TypeError("include_epi_jump_certificate must be a bool")
+    if potential_partner is not None and operator.name != "coupling":
+        raise ValueError("potential_partner is supported only for Coupling")
+    if source_nodes is not None and operator.name != "reception":
+        raise ValueError("source_nodes is supported only for Reception")
+    if preserve_relations and operator.name != "coupling":
+        raise ValueError("preserve_relations is supported only for Coupling")
 
     from .network_stage import (
         POINTWISE_EPI_JUMP_GLYPHS,
@@ -159,6 +184,13 @@ def execute_network_operator_stage(
     }
     if transaction_snapshot is not None:
         kwargs["transaction_snapshot"] = transaction_snapshot
+    if potential_partner is not None:
+        kwargs["potential_partner"] = potential_partner
+        kwargs["potential_scope"] = potential_scope
+    if source_nodes is not None:
+        kwargs["source_nodes"] = source_nodes
+    if preserve_relations:
+        kwargs["preserve_relations"] = True
     if operator.name in {"reception", "resonance"}:
         return execute_neighbor_stage(
             graph,

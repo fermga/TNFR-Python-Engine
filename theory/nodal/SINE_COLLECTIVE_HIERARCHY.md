@@ -198,6 +198,9 @@ transformer that requires a recent destabilizer under U4b. It is not a closure.
 `OZ -> THOL -> SHA` is a valid complete word with existing nonzero form when
 its live conditions pass. This is an example, not a compulsory evolution law.
 The synthetic tests execute it on an independently prepared no-child case.
+That complete-word control starts with resolved context after IL; its executed
+OZ supplies THOL's recent destabilizer. Direct THOL controls instead retain a
+supplied OZ in their synthetic preparation.
 Their manufactured temporal records are reader/event controls, not observations
 of a retained organization. Neither passing grammar nor (5) supplies those
 records to an actual research object.
@@ -292,6 +295,75 @@ whose final callback demands the existing full-graph sine refresh rejects and
 rolls back the birth and contextual writes; it cannot return an admitted
 selected-law successor by silently ignoring the child.
 
+<a id="thol-birth-reachable-image"></a>
+### Reachable birth image and inherited child state
+
+The [common state/action specification](../STRUCTURAL_OPERATORS.md#structural-state-action-specification)
+distinguishes the successor's ambient coordinate space from the image of an
+admitted source family. Its [reachable-image criterion](../STRUCTURAL_OPERATORS.md#operator-reachable-image)
+has a concrete THOL instance. Fix support, boundary, positive stored parent
+pressure, discrete history/grammar context, targets and coefficients. Disable
+the optional metabolic modifier and choose a branch without clipping, wrapping
+or hierarchy changes other than the admitted birth. Let `x in (3/4,1)`, let
+`nu>0` lie in the admitted capacity domain, and let `theta` vary inside one
+regular phase chart. Supply the associated samples
+
+\[
+ (t_0,t_1,t_2)=(0,1,2),\qquad
+ (x_0,x_1,x_2)=(x-3/8,x-1/4,x).
+\]
+
+Their secants are `1/8` and `1/4`, giving measured acceleration `A=1/8`,
+strictly above supplied `tau=0.1`. Prior IL/OZ provides the separate grammar
+context; all live proposal requirements remain applicable. These are supplied
+reader inputs, not a continuous trajectory. Varying x shifts every associated
+sample, preserving its live endpoint and A.
+
+Write `s` and `eta` for the declared sub-EPI scaling and child-capacity damping
+coefficients. Immediately after the event and before any refresh callback,
+the ideal real parent/child projection is
+
+\[
+ J(x,\nu,\theta)
+  =(x,\nu,\theta,\;s x,\eta\nu,\theta,0).
+\]
+
+The first three rows of `DJ` are `I_3`; the remaining rows are
+`(s,0,0)`, `(0,eta,0)`, `(0,0,1)` and `(0,0,0)`. Its rank is exactly three
+in this seven-coordinate ambient chart. The image obeys
+
+\[
+ x_c=s x_i,\qquad\nu_c=\eta\nu_i,\qquad
+ \theta_c=\theta_i\ \text{in the selected chart},\qquad p_c=0.
+\]
+
+The old pressure becomes the fixed value `p_i+k*A`, where k is the pressure
+gain; retaining it adds a constant row. Histories and hierarchy records are
+also determined by this source and branch. The result counts independent
+source parameters, not graph identities: the new child and its possible
+future effects are real parts of the constructed successor, but its initial
+coordinates are inherited. With metabolism enabled, neighbor form and phase
+must additionally be retained among the source arguments. Their influence is
+not an independently generated child input.
+
+The newborn has one legacy EPI sample and empty glyph history. It does not
+inherit the parent's measured acceleration, executed IL/OZ history, persistent
+debt or stable-base marker. Parent/child association is neither a temporal
+observation nor a previously executed child action. Future events and the
+continuing law must admit that new context independently.
+
+This rank statement concerns the ideal real map on a regular branch, not
+the dimension of binary64 values, clipping boundaries or all possible birth
+preparations. Admission on this constrained image does not establish
+robustness to arbitrary ambient perturbations of the child. It also does not
+exclude new collective properties: new effects need not introduce new free
+source parameters. The continuation obstruction above still applies; a regular
+flow, when independently justified, may deform this initial image.
+The [synthetic source-image controls](../../tests/operators/test_thol_birth_state_image.py)
+check actual public/staged dependencies, associated parent histories, fresh
+child context and consumed-neighbor contrasts. They estimate no numerical rank
+and prove no autonomous occurrence or rich-form law.
+
 ### An explicit comparison extension, not an installed law
 
 One mathematically consistent extension would declare (1) on every connected
@@ -316,8 +388,8 @@ it; it is not a complete mean of the enlarged organization. Any additional
 positive fixed child weight kappa would also give a conserved weighted mean
 under (12), but birth shifts that mean by
 `kappa*(x_c-mu_x)/(sum(rho)+kappa)` for one child. No particular kappa is
-selected by (1). The frozen child's coordinates are independent constants,
-not a coupled higher-scale dynamical mode.
+selected by (1). The frozen child's coordinates remain fixed at their birth
+values; this supplies no coupled higher-scale dynamical mode.
 
 Other isolate laws or actual connections are possible supplied completions.
 They are not selected by the hierarchy record. Connecting a child changes

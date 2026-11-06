@@ -1,6 +1,7 @@
 # TNFR Structural Operators
 
-## Complete Specification of the 13 Canonical Operators
+<a id="complete-specification-of-the-13-canonical-operators"></a>
+## Implemented contracts and canonical development of the 13 operators
 
 **Status**: CANONICAL registry specification; generative completeness over an
 independently defined admissible-transformation space remains open
@@ -34,9 +35,12 @@ independently defined admissible-transformation space remains open
 
 ## 1. Scope and Motivation
 
-Registered structural operators are the canonical semantic interface for named
-node and network transformations. Declared numerical solvers are a separate,
-explicit evolution path: the shared nodal integrator consumes admitted capacity,
+Under TNFR's [constitutive premise](FUNDAMENTAL_THEORY.md#operator-grammar-constitutive-premise),
+structural operators and grammar ground every canonical transformation. The
+registered operators implement named node and network maps; that implementation
+does not by itself exhaust or prove the theoretical premise. Declared numerical
+solvers are a separate, explicit execution path whose canonical interpretation
+requires a justified operator realization. The shared nodal integrator consumes admitted capacity,
 pressure and any declared Gamma source, with their provenance and residuals.
 The unforced continuous row is
 
@@ -176,6 +180,252 @@ The mathematical owners are the
 [REMESH history derivation](REMESH_INFINITY_DERIVATION.md); their hypotheses
 remain necessary when composing their results.
 
+<a id="structural-state-action-specification"></a>
+### 2.4 Common structural state/action specification
+
+Operators are the proposed generative mechanisms of TNFR organization: their
+actions must change what constituents can do together, and their resulting
+state must participate in subsequent admitted actions. The historical source
+(TNFR.pdf, PDF pp.22–27) presents emergence and functional recursion in this
+sense. This motivates implementation requirements; its illustrative biological,
+physical and symbolic claims do not establish a law or empirical validation.
+Neither a registered name nor a supplied repeating word proves self-organization.
+
+The THOL passage (pp.112–116) also sketches internal reorganization with
+unchanged EPI. This makes changed relations and subsequent response relevant
+targets even without birth. Its internal coherence matrix is not thereby
+identified with graph conductance. REMESH (pp.124–128) requires recognizable
+function across scales; copying nodes alone does not realize that role.
+Both need explicit structural state and actual operator mechanisms below.
+
+Use the existing [state/representation distinction](FUNDAMENTAL_THEORY.md#24-physical-concepts-mathematical-types-and-implementation)
+and [partial-action descent](#collective-grammar-descent), rather than a second
+operator registry or a universal scalar state. Each concrete action requires:
+
+1. **Source and successor state.** Declare member identities, realized and
+   potential relations when consumed, hierarchy, form representation, capacity,
+   circular phase and stored versus refreshed pressure. Retain associated
+   temporal samples, persistent grammar context, lifecycle, clocks, policy,
+   boundary inputs and reproducibility state that affect admission or output.
+   A rollback snapshot is not a proof of minimal sufficient state.
+2. **Actual action.** Bind the registered operator, execution path, ordered
+   targets, parameters and branch to a partial map and its admitted domain.
+   Include context writes, abstention and relevant outputs. A supplied action
+   or candidate has supplied provenance; autonomous occurrence requires a
+   justified state-dependent mechanism, including its clock and abstention.
+3. **Structural result.** Identify preserved, transformed, born and removed
+   constituents and relations. Declare the reachable output image, inherited
+   constraints and any independently supplied inputs. A hierarchy record alone
+   does not make a child a functioning collective NFR.
+4. **Continued participation.** Specify the subsequent operators and any
+   operator-grounded inter-event rows, successor admission and feedback through
+   which constituents influence one another. Prove any claimed reduction,
+   robustness or effective identity under that complete mechanism. Justify
+   inactive operators; no fixed itinerary of all thirteen is required.
+
+The existing descent theorem owns when an observation preserves admission,
+actions and outputs. This specification adds no universal law or general
+autonomous selector. It connects the historical roles to the actual shared
+engine contracts; justified constitutive revisions remain possible.
+
+Two implemented boundaries make that connection concrete. The
+[selector batch](../src/tnfr/dynamics/selectors.py) readmits live policy, grammar,
+clock, lag records and the original ordered targets after preparation and
+selection hooks. Hook changes cannot authorize a glyph using stale admission;
+lag counters advance once. Proposals retain their selection boundary, and
+hook effects are not implicitly rolled back. The
+[THOL signal reader](../src/tnfr/operators/metabolism.py) admits authoritative
+form/phase aliases and finite aggregates before clipping; the public birth
+path reuses that reader instead of duplicating neighbor admission. Invalid
+causal inputs cannot silently become an apparently valid child construction.
+The [execution map](THEORY_TO_EXECUTION.md#operator-audit-execution) links the
+direct, public, stage and selector controls.
+
+<a id="operator-contextual-rewriting"></a>
+#### Guarded rewriting, context and causal access
+
+The [formal-method comparison](BIBLIOGRAPHIC_METHODS.md#formal-operator-languages)
+provides tools for the existing specification, not a replacement interpreter.
+The following are conditional deductions about marked actions and observations;
+they are not claims that the engine already implements a graph grammar or a
+bigraphical reactive system.
+
+An action label must retain its operator, path, targets, parameters and consumed
+inputs. Write `s --a--> T_a(s)` only when the complete source belongs to `D_a`.
+The [partial-action criterion](#collective-grammar-descent) already owns these
+domains and the conditions for projecting them. The thirteen names identify
+families of transformations, not thirteen fixed maps: parameter values, marks,
+history and route matter. A faithful rewrite encoding must preserve admission,
+successors and relevant outcomes in both directions, or explicitly claim only
+one-way simulation. Encoding a recorded glyph word proves neither property.
+
+**A composite action inherits its prefix guards.** For successful deterministic
+actions, the domain of first `a` then `b` is exactly
+`D_a intersect inverse_image(T_a,D_b)`. Iterating gives the domain of a finite
+word. This follows directly from when composition of partial maps is defined.
+Transport the actual successor predicate, including history and support,
+through the earlier reset; concatenating token names cannot replace it.
+Abstention and non-atomic failure need their explicit outcome transitions.
+For example, the [birth/contact control](THOL_PRESSURE_FEEDBACK.md#thol-acquired-birth-participation)
+has parent pressure 3/4 without UM and 9/16 with UM. Two IL contractions by 1/2
+leave 3/16 above EN's 0.15 ceiling in the first branch but 9/64 below it in the
+second; three contractions admit both pressure gates. This derives that part
+of the shared preparation without a scan; it does not replace EN's other gates.
+
+**Independent actions require independent reads.** Consider deterministic
+partial actions `a,b` on a fixed, explicitly addressed state domain. Let `R_a`
+include every value on which `a`'s guard or written values depend, and let `W_a`
+bound its writes; require a frame property outside `W_a`. Include support and
+absence tests, histories, grammar, configuration and allocation state where
+consumed. Assume both actions are admitted initially, their read/write bounds
+remain valid after either action, and
+
+```text
+W_a intersect (R_b union W_b) = empty,
+W_b intersect (R_a union W_a) = empty.
+```
+
+Then both orders remain admitted and `T_b(T_a(s))=T_a(T_b(s))`. Proof: each
+action leaves the other's complete guard and proposal inputs unchanged; their
+disjoint write patches agree in either order, and the frame property preserves
+everything else. This is a sufficient criterion, not a necessary one: overlapping
+actions can commute for other proved reasons. Dynamic support or allocation
+needs stable declared addresses, reserved fresh identities or a separate proof
+up to consistent renaming. It cannot silently use the fixed-domain argument.
+
+For runtime equality, include RNG progress, refresh callbacks, audit streams
+and lifecycle effects. Ordered logs usually break full-state commutation. A
+weaker structural projection requires an explicit equivalence and proof that
+discarded effects cannot change the compared continuation. Reuse the existing
+[conservative stage resources](../src/tnfr/operators/stage_contracts.py);
+their abstract unions are not concrete independence certificates. No new
+scheduler, target reordering or selective cache invalidation is authorized by
+this criterion alone.
+
+**Distinct targets do not imply that criterion.** In the ideal, unclipped scalar
+Reception restriction, suppose both own contexts admit their actions, mixing
+is 1/2, and two connected targets initially have forms `(1/4,3/4)`. A common
+pre-state update gives `(1/2,1/2)`. Updating the first then the second gives
+`(1/2,5/8)`; reversing the order gives `(3/8,1/2)`. Each target writes its own
+form but reads the other. This exact arithmetic is a form-channel counterexample
+to schedule equivalence, not a new executed trajectory, a complete-state
+comparison or a proof of global nonconfluence. The existing
+[snapshot stages](../src/tnfr/operators/network_stage.py) deliberately define
+their own proposal/merge semantics. Parallel derivation does not justify
+changing a sequential word or mixing different operator kinds in one stage.
+
+Support guards can conflict as well: if two targets request the same isolated
+potential partner, a successful first UM makes its degree nonzero. The second
+request then fails the existing potential-pair guard. This conditional
+produce/forbid example needs no edge deletion and shows why a name-only
+operator-pair table cannot decide independence.
+
+**An identity must retain the admitted environment.** Let `Q` satisfy the
+existing partial-action criterion for a family `A`. Let `I_u` describe each
+allowed boundary intervention, including its admission, state changes and
+observable outcome. If the same criterion holds for every `I_u`, and the
+compared outputs of both families also factor through `Q`, and the domain
+is closed under the compared successors, induction on words in
+`A union {I_u}` proves equal projected outcomes and admission at every prefix.
+This is a corollary of the existing theorem, not an independent universal
+bisimulation claim. Conversely, disagreement for one allowed boundary action
+already prevents this contextual replacement. Autonomous timed replacement
+additionally retains the law selecting actions and times.
+
+Consequently, a proposed collective NFR must declare its ports and allowed
+contexts. Equal current EPI, internal shape or one isolated response is
+insufficient. The actual [birth/contact discriminator](THOL_PRESSURE_FEEDBACK.md#thol-acquired-birth-participation)
+already shows that ancestry without realized input cannot substitute for
+contact. The [retained-member interface](#retained-member-scale-actions)
+preserves information for subsequent actions; it does not establish a smaller
+state or invariance under arbitrary new environments.
+
+<a id="operator-access-separation"></a>
+**Hierarchy, access and transport have distinct roles.** Denote declared
+ancestry by `H`, realized support by `E`, and the candidate
+relation available to an occurrence policy by `A`. This notation defines no
+new engine storage. Retained collective membership is another association;
+it need not be exclusive, and ancestry need not mean spatial containment.
+Actual THOL can extend `H` while leaving the child isolated
+in `E`. A policy may consume the returned birth association or live hierarchy
+as evidence for `A`; that is an explicit access premise, not an automatic UM
+edge or a requirement that coupling occurs. UM must still pass its actual
+grammar, U3, compatibility, state and successor checks. EN/RA continue to use
+their declared realized support.
+
+There is a precise information obstruction to a transport-only policy. If its
+entire observation omits external node identities, birth/ancestry associations
+and global candidate enumeration, adding or permuting an isolated outside
+child leaves that observation unchanged. A deterministic function of it cannot
+distinguish those possibilities; it cannot uniquely return the actual unseen
+child in a way equivariant under such permutations. This does not apply when
+the parent's `sub_nodes`, hierarchy or returned birth association is consumed:
+those supply additional information. The engine already retains such data.
+The missing implication is a justified access policy, not a lack of a possible
+representation or a need to scan every graph node.
+
+Candidate discovery can therefore be studied independently of physical distance
+or a global word: declare the available association, re-admit its current
+endpoints, and distinguish no candidate, ambiguous access, rejected UM and
+executed UM. Equal access must not be confused with equal affinity or priority.
+Node labels and insertion order cannot select among equivalent candidates
+without an explicit tie-breaking premise. A fixed attempt clock still remains
+a supplied occurrence policy even if the request is generated from NFR state.
+
+**Reachability does not fix timing.** For an auxiliary finite-state continuous-time
+Markov jump model with nonnegative rates `lambda_a(s)` and finite total rates,
+scaling all rates by `c>0` preserves enabled transitions and relative choice
+probabilities, while scaling holding times by `1/c` at nonabsorbing states.
+Absorbing states remain absorbing. Thus one untimed language admits different
+clocks; no stochastic TNFR law is imported. A timed quotient cannot merely
+forget multiplicity: if `m` distinct matches each have rate `lambda` and lead
+to the same different observed successor class, they contribute `m*lambda`
+from that fine source to the observed successor class. This alone establishes
+no Markov quotient. Within-class event intensity is not a visible
+quotient jump rate. Match symmetries and indistinguishability must be fixed before
+counting. A target/partner UM request is oriented even on undirected support;
+swapping its roles need not be the same action. Discrete generations, operator
+steps and elapsed structural time retain their existing separate contracts.
+
+These deductions support guarded operator composition, explicit candidate
+access and context-sensitive identity. They do not choose a pressure law,
+inheritance coefficient, occurrence rate, universal normal form or collective
+scale. Complete expressive sufficiency would require a target transformation
+class, an equivalence and a constructive generation theorem under live grammar.
+
+<a id="operator-reachable-image"></a>
+### 2.5 Reachable image of a structural action
+
+More constituents can support new collective behavior without adding new
+independent preparation variables. To distinguish these claims, fix a source
+chart `U` open in `R^d`, a discrete branch, parameters, event times and inputs.
+For an ideal real `C^1` reset `J:U -> R^m`, `rank DJ <= d`. Constant rank `r`
+on a neighborhood gives a local `r`-dimensional image by the constant-rank
+theorem; rank at one point does not identify the whole image.
+
+If `m>d`, the image has zero ambient m-dimensional measure. Indeed, on a compact
+chart neighborhood J is Lipschitz. A mesh of source cubes of side epsilon uses
+`O(epsilon^-d)` cubes, each with image diameter `O(epsilon)`, giving total
+ambient covering volume `O(epsilon^(m-d)) -> 0`. A countable cover of U gives
+the claim, hence no open ambient output set. This does not prohibit birth,
+new response functions or collective organization.
+
+At fixed elapsed time, an independently justified `C^1` local flow `Phi_t`
+is a local diffeomorphism. The chain rule gives
+`rank D(Phi_t o J) = rank DJ`; a noninvertible regular continuation only gives
+an upper bound. Independent input `u in R^k` augments the source bound to
+`d+k`, without guaranteeing an increase. Variable elapsed time is another
+parameter. No conclusion here concerns infinite-time closures, nonregular or
+nonunique continuation, arbitrary input histories or infinite event cascades.
+Clipping and branch boundaries need their own strata; this is not a dimension
+claim about discrete binary64 states.
+
+The [THOL birth instance](nodal/SINE_COLLECTIVE_HIERARCHY.md#thol-birth-reachable-image)
+gives a three-parameter inherited child image, its actual associated histories
+and fresh child grammar context. Its controls also show when neighbor state
+must remain an argument. Continued coupling and organization are separate
+operator obligations, not consequences of the image's dimension.
+
 ---
 
 ## 3. The Operator Taxonomy
@@ -272,6 +522,12 @@ pressure alone. `NAV_RANDOM=False` selects signed deterministic jitter;
 it does not remove a nonzero configured jitter amplitude. The numeric table
 describes the standard policy values; represented arithmetic retains the
 actual configured scalars.
+
+Capacity multiplication admits the exact product of the represented operands
+before returning binary64. A positive product rounded to zero rejects before
+the public/staged or compatibility transition commits; an intentional zero
+factor, zero initial capacity and representable subnormal result remain valid.
+No positive floor or reactivation law is introduced by this admission rule.
 
 The direct NAV glyph only performs its declared pressure action. Regime and
 latency effects belong to the public/staged path. `NAV_STRICT` and `NAV_RANDOM`
@@ -407,6 +663,11 @@ nonlinear.
 
 The [collective sine specialization](nodal/SINE_COLLECTIVE_RECURSIVITY.md)
 retains associated histories, actual form-reset work and both continued rows.
+The [structure and memory owner](REMESH_STRUCTURE_AND_MEMORY.md) separates the
+historical cross-scale role from current temporal lags and local/collective
+memory. Its [post-birth composition](REMESH_STRUCTURE_AND_MEMORY.md#remesh-postbirth-response)
+uses actual THOL/UM, acquired sampling and advisory/map controls followed by
+EN/RA; it does not complete structural recursion or create an inherited past.
 
 **Fixed-delay Cesàro surrogate (historical N15 programme)**:
 
@@ -460,8 +721,9 @@ glyph reader. It is defined for raw finite real values and uniform-real BEPI
 embeddings, retaining their signed value. Genuinely nonuniform or complex BEPI
 values have a maximum-component magnitude for generic read-only diagnostics,
 but Reception rejects them before proposing a blend. Let
-`B_i=ensure_bepi(EPI_i)` be the accepted target operand. Reception first
-forms the unweighted arithmetic mean of the runtime neighbours,
+`B_i=ensure_bepi(EPI_i)` be the accepted target operand. With
+`source_nodes=None`, Reception forms the unweighted arithmetic mean of all
+runtime incoming neighbours,
 
 $$
 \bar r_i = \frac{1}{|N_i|}\sum_{j\in N_i}r(\mathrm{EPI}_j),
@@ -509,7 +771,10 @@ configuration uses the selected $1/(\pi+1)$ policy value).
   two-stage runtime value separate. It promotes the represented map only when
   the declared scalar chart and clipping conditions pass and its consensus-row
   identity is exact. Snapshot agreement with the runtime is diagnostic, not a
-  global floating-point linearity proof.
+  global floating-point linearity proof. This existing certificate covers the
+  all-input action. An explicit `source_nodes` request, even one listing every
+  input, remains outside that promotion; stage evidence abstains rather than
+  attaching the old certificate to a different requested action.
 - **Pressure refresh**: If a nontrivial local update changes the target by
   `delta`, retaining the pre-update pure-EPI pressure leaves the exact defect
   `delta L_rw e_i`. On connected positive conductance this is nonzero, so the
@@ -530,10 +795,219 @@ configuration uses the selected $1/(\pi+1)$ policy value).
   and finite non-Boolean ceilings before conversion or comparison; a ceiling
   remains an upper bound, not an absolute-value test. Isolation and an empty
   detected-source set are admitted
-  rather than treated as hard failures; graph-backed execution with source
-  tracking enabled emits one advisory for the latter.
+  under the default all-input action rather than treated as hard failures;
+  graph-backed execution with source tracking enabled emits one advisory for
+  the latter. An explicit causal-source request has the separate nonempty
+  source domain below; a diagnostic source list is not that request.
 - Post: Neighbour EPI is integrated; stored pressure and change rate are
   unchanged, hence immediate operator-local $C(t)$ is unchanged.
+
+<a id="reception-causal-sources"></a>
+#### Explicit causal sources and selective reception
+
+**Constitutive action decision.** Public Reception, its atomic stage and the
+stage dispatcher accept `source_nodes` as either `None` or a nonempty tuple of
+unique realized incoming sources. `None` retains the existing all-input action.
+The explicit public request uses the single-target atomic stage; a multi-target
+stage applies the same tuple to each target and re-admits its incoming arcs.
+An explicit tuple determines which source forms enter the mean and which source
+kinds can influence the kind proposal. Every selected source must exist, belong
+to the receiver's current incoming neighborhood, and supply explicit admitted
+scalar EPI. Supplied order is retained, including the existing first-source
+tie rule for equal dominant magnitudes. An empty tuple rejects before writes;
+it does not fall back to all neighbors or manufacture a self-source.
+
+This is supplied source access within an actual relation, not an autonomous
+compatibility filter. An outgoing-only arc, a distant detected emitter or a
+merely potential UM partner does not become an input. Existing self-loop and
+unique-neighbor conventions remain separate from source selection. The shared
+[Reception snapshot](../src/tnfr/operators/_reception_kernel.py) validates the
+selection against available incoming support and binds the actual selected
+sources, values, kinds and selection origin at the pre-write boundary; the
+blend, kind and observation must describe that same read. Source-ranking
+telemetry does not decide it. The
+[execution contract](../docs/API_CONTRACTS.md) owns request validation and
+public/stage evidence, including the legacy certificate's abstention.
+
+Let $N_i$ be the nonempty available incoming set and $S_i\subseteq N_i$ the
+nonempty selected set. In the ideal real scalar chart, with fixed sources,
+$0<m\leq1$ and inactive clipping, the selected action is
+
+$$
+J_{S_i}(x)_i=(1-m)x_i+m\mu_{S_i},\qquad
+\mu_{S_i}=\frac{1}{|S_i|}\sum_{j\in S_i}x_j,
+$$
+
+with other form coordinates fixed. Its difference from the all-input action is
+
+$$
+\bigl(J_{S_i}(x)-J_{N_i}(x)\bigr)_i
+=m(\mu_{S_i}-\mu_{N_i}).
+$$
+
+For a proper subset, this difference has coefficient $-m/|N_i|$ in any omitted
+source coordinate on an open independent-form domain. The common target term
+cancels, also when a retained self-loop makes that source the target itself.
+Thus selection changes the map; it is not just a restriction of the old map's
+admitted domain. With target $1/4$, sources $3/4,-1/4$ and $m=1/2$, all-input
+reception gives $1/4$, while the two singleton selections give $1/2$ and zero.
+The same selected-source association must govern semantic kind; an excluded
+large donor cannot determine the received kind. Coincident outputs on one
+snapshot do not establish equal actions or full identity preservation.
+
+The [finite EN-to-RA control](../tests/operators/test_reception_source_integration.py)
+executes selected or legacy Reception from matched prepared states, then actual
+Resonance at another node reading the receiver. The changed received form
+changes that later RA response while support stays fixed. Public and staged
+EN paths give the same algebraic predictions. This establishes finite
+participation under supplied requests, not autonomous compatibility, source
+acquisition or continuing organization.
+
+For fixed selection the ideal scalar action preserves constants and the
+common convex EPI interval. It is covariant under affine form-chart changes
+when rails are transformed consistently. These identities concern the ideal
+map, separately from rounded coefficients, actual binary64 evaluation,
+clipping and semantic-kind thresholds. The kind rule compares absolute form
+magnitudes and need not be invariant under a form translation, even without
+ties; scalar covariance is not a symmetry of the complete semantic action.
+These identities do not establish passivity: on a
+three-node star with degree weights $(2,1,1)$, target/leaf forms $(0,1,-1)$
+and $m=1/2$, selecting the positive leaf gives $(1/2,1,-1)$. The squared
+degree-weighted centered norm rises from $2$ to $9/4$, although every form
+remains in $[-1,1]$. The pure-EPI pressure-defect identity above still applies
+to the actual local form change on its original connected diffusion support;
+excluding an EN input does not delete a transport edge or refresh pressure.
+
+**Historical scope and open mechanism.** The retained May manuscript's EN
+section (pp83–86; [source audit](UNIFIED_GRAMMAR_RULES.md#source-grammar-and-notation))
+motivates filtering by the receiver's phase and compatibility in phase and
+$\nu_f$. It gives no quantitative capacity test and does not require equal
+capacities. Page 84's exact-phase pseudocode does not derive a robust circular
+tolerance or a universal law. The current explicit-source action therefore
+does not silently impose U3, phase alignment, a capacity ratio, prior AL
+history or form similarity. Under held forms and selection its scalar response
+is unchanged by phase/capacity changes; that boundary remains deliberate.
+
+The bounded state-dependent family below supplies one compatibility and
+selection/abstention policy. It does not select a unique law or identify an
+observed oscillation period: the
+[capacity and pulse distinction](NODAL_PARAMETER_FOUNDATIONS.md#34-derived-pulse-scales-and-observation-periods)
+still applies. Autonomous attempt scheduling, retention of richer identity and
+a complete historical EN realization remain open.
+
+<a id="reception-compatibility-policy"></a>
+#### A declared compatibility family and conditional occurrence
+
+`ReceptionCompatibilityPolicy(max_phase_gap, max_relative_capacity_gap, mode)`
+requires two supplied thresholds: $\delta\in[0,\pi]$ for circular phase
+separation and $\eta\in[0,1]$ for relative capacity contrast. The
+[shared compatibility owner](../src/tnfr/operators/_reception_compatibility.py)
+admits explicit finite phase and nonnegative capacity for the target and every
+realized incoming candidate. A source $j$ is compatible with receiver $i$ when
+
+$$
+|\operatorname{wrap}(\theta_j-\theta_i)|\leq\delta,
+\qquad
+|\nu_{f,j}-\nu_{f,i}|
+\leq\eta\max(\nu_{f,i},\nu_{f,j}).
+$$
+
+This is an opt-in constitutive family, not U3 or a uniquely derived threshold.
+Equality is included. The phase test reuses the shared circular-difference
+implementation, with its numerical domain. The capacity inequality compares
+exact rational products of admitted represented inputs, avoiding a rounded
+ratio or epsilon denominator. Missing or malformed consumed state rejects;
+an invalid candidate cannot be hidden by first failing its other comparison.
+EPI is not a compatibility input. An actual selected EN action must still admit
+its consumed forms, grammar and all other existing execution conditions.
+An existing self-loop retains the incoming-source convention; its equal
+phase/capacity pair is compatible. A nonempty selection alone therefore does
+not prove that form arrived from a distinct NFR.
+
+The capacity test explicitly admits $(0,0)$; a pair with exactly one zero is
+admitted only at $\eta=1$. This states equality or allowed disparity of supplied
+capacities, not the presence of an active emission. $\eta=0$ requires equality,
+while $\eta=1$ permits any admitted capacity pair. A zero capacity freezes the
+unforced continuous form row, not all possible hybrid EN jumps. Requiring
+strictly positive receiving capacity would be a different additional premise.
+
+The [conditional dispatch](../src/tnfr/operators/reception_selection.py) uses
+one receiver and the incoming support order. Let $N_i$ be that candidate tuple
+and $C_i$ its compatible subsequence. Its two modes distinguish the earlier
+mathematical alternatives:
+
+- `select` invokes EN with $C_i$ when it is nonempty; this generally changes
+  the form/kind action relative to the all-input map.
+- `require_all` invokes EN with $N_i$ only when $N_i$ is nonempty and every
+  source is compatible; this restricts the all-input action's admitted domain.
+
+`execute_eligible_reception_stage` returns compatibility evidence and
+`stage_result=None` when the selected condition is unmet. No EN history,
+accepted-stage result or refresh callback is fabricated by this abstention.
+The empty neighborhood cannot pass through a vacuous all-source test. Once a
+nonempty tuple is selected, canonical EN executes through its existing atomic
+stage. Invalid selected EPI, grammar rejection, a failed precondition or glyph
+substitution remains a rejection, not a disguised compatibility abstention.
+The helper supplies conditional occurrence at an explicitly requested attempt;
+it derives neither attempt times nor inter-attempt dynamics.
+
+Compatibility evidence must retain associated target and **all candidate**
+phase/capacity values, identities/order and policy, including rejected sources.
+A source previously outside the threshold can become eligible without changing
+any old selected value. Binding only the selected tuple would therefore lose
+the cause of selection. Actual execution associates this decision with the
+same pre-write read as the EN form/kind action. Source telemetry retains its
+independent read domain. The existing all-input affine certificates remain
+unavailable for policy-derived explicit-source actions, including permissive
+thresholds that select every input.
+
+**Invariances and alternatives.** In the ideal coordinates the predicate is
+invariant under common phase rotation, exchange of the two phase/capacity
+values and common positive capacity scaling. Incoming graph orientation does
+not become reciprocal. Under a common clock change with positive instantaneous
+rate $\alpha$, replacing every capacity by $\nu_f/\alpha$ preserves selection;
+equivalence of a complete dynamics still requires transforming every row and
+schedule. Independent node-wise capacity rescaling generally changes it.
+
+For positive capacities let $d_{\max}=|\nu_i-\nu_j|/\max(\nu_i,\nu_j)$.
+The alternative sum-normalized contrast satisfies
+$d_{\Sigma}=d_{\max}/(2-d_{\max})$. A threshold $\eta$ therefore corresponds
+to $\eta/(2-\eta)$; these are the same positive-domain threshold family in
+different parameters. A logarithmic ratio is likewise monotone in this
+contrast on positive capacities. An absolute capacity tolerance is another
+possible model but carries units that must transform. None is selected by the
+nodal product alone, and exact real invariance is separate from represented
+input rounding and shared phase arithmetic.
+
+**Selection boundaries.** Strict margins away from both thresholds make the
+selected set locally constant. At a boundary the hybrid action need not be
+continuous: with target form zero, one always-compatible zero-form source and
+another unit-form source crossing the phase threshold, the selected EN output
+changes between zero and $m/2$. Both selected sets are nonempty. The normalized
+capacity contrast also has no continuous extension at $(0,0)$: along
+$(\epsilon,\epsilon)$ it is zero and along $(\epsilon,0)$ it is one. The
+division-free inequality is defined there, but for $\eta<1$ its accepted origin
+is not robust to arbitrary small unequal perturbations. Smooth weights or
+hysteresis would change the action or add memory; neither follows silently.
+
+**Cross-operator participation.** A successful EN form reset itself preserves
+phase, capacity and support. At held policy its compatible tuple is therefore
+unchanged: EN alone cannot alternate this filter. This is selection invariance,
+not an involution, continuing EN admissibility or a proof of stable identity.
+IL's public phase adjustment, UM, RA and ZHIR can change phase eligibility;
+SHA, VAL, NUL and NAV can change capacity eligibility under their own contracts.
+UM can change realized access, while THOL's lineage alone supplies no source
+arc. Delayed REMESH form mixing changes content but not this predicate when
+support/phase/capacity are held; an actual support/identity replacement needs
+new source admission. AL changes content, and OZ's primary pressure action
+affects separate admission without itself changing this predicate.
+
+The [kernel controls](../tests/operators/test_reception_compatibility_kernel.py)
+separate policy boundaries, state association and arithmetic; the
+[finite integration controls](../tests/operators/test_reception_compatibility_integration.py)
+test actual occurrence/abstention and continued canonical participation.
+These bounded supplied attempts do not establish autonomous source acquisition,
+universal compatibility, continuing organization or physical identification.
 
 ---
 
@@ -808,6 +1282,9 @@ increment; holding that increment through a physical interval instead gives
 the additional exact reference change `h*nu_f*THOL_accel*A_hat`. See
 [THOL pressure and feedback](THOL_PRESSURE_FEEDBACK.md) for the execution-order
 budget, disconnected zero modes and finite implementation evidence.
+The [actual AL continuation](THOL_PRESSURE_FEEDBACK.md#thol-emission-history-continuation)
+uses history produced by IL/OZ/AL to test signed THOL feedback and the next
+admitted AL action. Its observation window and no-child domain remain explicit.
 The [collective hierarchy contract](nodal/SINE_COLLECTIVE_HIERARCHY.md)
 specializes these obligations to the selected sine law, including the
 isolated child's unsupported connected-law domain and separately supplied
@@ -987,6 +1464,121 @@ cases. This is optional post-event reporting, not a new VAL precondition,
 rollback promise or future-health theorem. The
 [focused telemetry controls](../tests/operators/test_expansion_metrics_scope.py)
 cover signed form, invalid authoritative aliases, policy boundaries and absence.
+The [retained-member scale interface](#retained-member-scale-actions) applies
+the same actual VAL/NUL maps to declared members without replacing their
+state or ports by a scalar aggregate.
+
+<a id="derived-expansion-member"></a>
+### 7.3 Explicit family with one derived Expansion member
+
+The historical VAL role includes compatible derived forms retaining a core
+(TNFR.pdf pp.105–108); its clone/link example does not determine a complete
+state, context or port law. The
+[derived-member action](../src/tnfr/operators/derived_expansion.py) implements
+one declared constitutive family beyond the ordinary scalar map. It is an
+explicit opt-in action associated with VAL, not a fourteenth token, a unique
+canonical proliferation law or an autonomous selection mechanism.
+
+`DerivedExpansionPolicy` requires `source_order="pre_val"` or `"post_val"`
+and explicit `form_ratio=alpha`, `capacity_ratio=beta`, both in `(0,1]`.
+The bounded positive ratios are this family's restriction, not a necessity
+for every NFR or every possible Expansion. A current singleton retained-source
+record and a supplied fresh child ID identify the parent and successor.
+`execute_derived_expansion_stage` executes the existing canonical scalar VAL
+on that parent with its own grammar, preconditions and exact-stage admission.
+No replacement glyph or inherited sequence context can stand in for VAL.
+
+Write its actual primitive source and result as
+
+```
+S^- = (x,nu,theta,p)
+S^+ = (F(x),f*nu,theta,p),  f>1.
+```
+
+Here F is the configured VAL form map, including projection or the identity
+when edge awareness is disabled. Both inherited coordinates come from the
+same requested before/after boundary. The isolated child is initialized by
+
+```
+x_child = alpha*x_source
+nu_child = beta*nu_source
+theta_child = theta_source
+p_child = 0.
+```
+
+Signed form and semantic kind are inherited. The proposed child form must
+lie inside configured EPI bounds; rejection preserves the stated formula
+instead of clipping it. Nonfinite and lost nonzero products reject, while
+zero source form or capacity may legitimately produce zero. Pressure zero
+is a declared initial condition, not a conserved-resource result. The child
+has its own fresh context and one initial legacy EPI sample, without a
+timestamped past, measured acceleration or an independently executed VAL.
+Its `derived_from` association does not create THOL hierarchy or authenticate
+an event history.
+
+Only [fresh-node materialization](../src/tnfr/operators/_birth_materialization.py)
+is shared with THOL. THOL's acceleration, metabolism, nonnegative child-form
+clamp, hierarchy and occurrence remain its own mechanisms. Reusing that
+numerical proposal here would lose signed derived forms. The parent's identity
+and old ports are retained while its actual VAL changes state. No edge or
+external-port copy is part of birth. A later UM must separately admit and
+create a relation; subsequent EN/RA still read actual directed support.
+Failure within the compound parent-action/birth transaction restores the
+graph-owned source. Failure of a later separate UM does not undo a previously
+successful birth.
+
+#### Ordering, response and parameter identification
+
+At fixed source and ratios, the final parent is identical for both orders,
+but the child differences, post minus pre, are
+
+```
+Delta x_child = alpha*(F(x)-x)
+Delta nu_child = beta*(f-1)*nu.
+```
+
+With inactive clipping and `F(x)=f*x`, the form difference is
+`alpha*(f-1)*x`, retaining its sign. With no form change, forms can agree
+while capacities differ for positive nu. Successor admission can itself
+distinguish the orders; a response comparison requires both to be admitted.
+
+If both later UM requests have k identical compatible old neighbors, their
+phase proposals agree. Optional target capacity blending with gain gamma
+instead gives target-capacity difference `gamma*beta*(f-1)*nu/(k+1)`.
+Their new edge scores can differ through form; equal support does not imply
+equal weighted-flow continuation. On the undirected one-old-peer domain,
+actual parent EN with factor m followed by peer RA with factor r, same-kind
+form and inactive clipping, gives peer-response difference
+`r*m*alpha*(F(x)-x)/2`. This is a finite operator response, not an observed
+oscillation-frequency or physical identification.
+
+Primitive state and EN/RA responses do not identify ordering if ratios can be
+freely refitted. In the linear branch, post inheritance with
+`(alpha/f,beta/f)` produces the same ideal primitive child coordinates as pre
+inheritance with `(alpha,beta)`; the declared policy/provenance records remain
+distinct. Both satisfy the
+bounded ratio domain; the reverse conversion requires the corresponding
+multiplied ratios to remain at most one. Saturation can make the conversion
+state dependent, and the no-form-change branch only needs the capacity-ratio
+conversion. No historical or current premise uniquely selects one order.
+
+Phase inheritance commutes with a common circular phase rotation in the ideal
+model. Positive ratios preserve form sign and capacity nonnegativity; a
+common form translation is not automatically a symmetry. Neither total EPI
+nor total capacity is assumed conserved: their coordinate-sum changes at this
+event are `(F(x)-x)+alpha*x_source` and `(f-1)*nu+beta*nu_source`. These are
+bookkeeping identities, not universal resources or physical energies. The
+event changes arity and is not a finite-duration unforced nodal flow. A later
+complete law must admit the new state and supply its own balance and identity
+conditions. Fixed inheritance adds constrained coordinates, not by itself
+new independent preparation freedoms.
+
+The [family contract controls](../tests/operators/test_derived_expansion.py)
+check policy, identity, source admission, unchanged ordinary VAL and atomic
+failure boundaries. The [actual continuation controls](../tests/operators/test_derived_expansion_continuation.py)
+compare both orders, signed and degenerate sources, reparameterized primitive
+agreement, and UM followed by EN/RA. These are supplied finite interventions;
+neither spontaneous source acquisition nor persistent organization follows.
 
 ---
 
@@ -1022,10 +1614,13 @@ That score threshold is not a phase angle or an autonomous attachment law.
 | $\Delta\text{NFR}$ reduction | $1/(2\pi)\approx0.1592$ | Default phase-alignment pressure-relief gain |
 
 **Properties**:
-- **Phase verification mandatory**: An existing compatible neighbor is required.
-  Snapshot-incompatible new candidates are excluded; a new candidate outside
-  final U3 is omitted, while a selected old neighbor outside final U3 rejects
-  the common stage. These gates supply no wave-amplitude or
+- **Phase verification mandatory**: The ordinary action requires an existing
+  compatible neighbor. The explicit potential-pair action below supplies its
+  isolated partner alongside compatible old neighbors without changing U3.
+  Ordinary candidate search excludes snapshot-incompatible candidates and
+  omits a new candidate outside final U3. A selected old neighbor or explicitly
+  requested partner outside final U3 instead rejects the common stage.
+  These gates supply no wave-amplitude or
   destructive-interference calculation.
 - **EPI identity preserving**: Form is not modified; phase alignment, optional
   capacity synchronization, pressure relief and functional-link proposals
@@ -1040,12 +1635,209 @@ is in [§15.2](#152-base-operator-workflow); disabling an effect cannot bypass U
 
 **Contract**:
 - Pre: The non-disableable U3 gate requires an existing phase-compatible
-  neighbor. Enabled strict preconditions additionally check configured EPI
+  neighbor, or the explicit isolated-partner request below. Enabled strict
+  preconditions additionally check configured EPI
   and capacity thresholds. Link candidates retain their separate score and
   post-merge phase admission.
 - Post: Configured circular phase proposals; EPI preserved. Optional functional
   proposals may add admitted links. Neither global phase-spread decrease nor
-  the creation of at least one edge follows from a successful invocation.
+  the creation of at least one edge follows from an ordinary invocation. The
+  explicit creating request instead requires its one final edge or rejects.
+
+<a id="coupling-potential-pair"></a>
+#### Creating a relation to an explicit isolated partner
+
+The public call `Coupling()(G, i, potential_partner=j)` and shared UM stage
+admit one target i and one supplied, already existing partner j with total
+graph degree zero. The target may have realized neighbors. Directed incoming
+edges, self-loops and zero-weight edges also violate j's isolation premise;
+a partner already connected elsewhere remains outside this domain. Potential
+access is consumed request state; no temporary edge is inserted to pass a
+gate. This declared constitutive extension serves UM's historical creating
+and iterated-union roles (TNFR.pdf pp.93–97); it does not derive autonomous
+partner discovery or merge constituent identities.
+
+The [shared pair reader](../src/tnfr/operators/_coupling_potential.py) admits
+both endpoint signed forms, nonnegative capacities and authoritative phases.
+It checks j against the target separately: another compatible neighbor cannot
+hide an incompatible requested partner. It also reads the target's actual
+outgoing neighbors in their existing order, admits their phases and retains
+the ordinary U3-compatible tuple K. The participant tuple is K followed
+by j, including when K is empty. Functional links must be enabled; the
+configured activity policy retains its current admission. The
+[existing proposal kernel](../src/tnfr/operators/_coupling_stage_kernel.py)
+uses that augmented tuple for the same circular map, optional target capacity
+synchronization and stored-pressure relief. Bidirectional phase movement
+includes the target in the circular mean and moves the participating old
+neighbors as well as j. All forms and old edge records/weights remain
+unchanged. A phase write on another participant does not execute UM on it
+or append to its operator history.
+
+For the single-target bidirectional action, lift the target to zero and all
+participant phases `phi_k` into `[-L,L]`, where `L <= pi/2`. The resultant
+`1 + sum_k exp(i*phi_k)` has real part at least one, so its argument M exists
+in the same sector. With `lambda in [0,1]`, the consistent lifted proposals
+are `theta_i'=lambda*M` and `phi_k'=(1-lambda)*phi_k+lambda*M`. Thus every
+selected target-participant gap contracts by `1-lambda` in exact arithmetic.
+The former two-isolate case remains a subdomain: both unidirectional and
+bidirectional maps leave its relative gap `(1-lambda)*delta`.
+
+Unidirectional movement on the augmented domain has no such general guarantee.
+For target and requested child at zero, old neighbors at `(-L,L,L)` and
+`L=pi/4`, the partner-inclusive mean has positive argument M. Moving only the
+target by `lambda*M>0` increases its gap from the neighbor at `-L` beyond L.
+Final U3 must reject that entire action. The represented stage rechecks every
+selected target-participant relation; the real proof does not bound all
+floating-point trigonometric errors. Edges from a moved old neighbor to other
+nodes, global phase spread and overlapping multi-target requests are outside
+this guarantee.
+
+The supplied partner bypasses candidate sampling, candidate-count policy and
+random draws; it does not bypass the configured form/Si/phase affinity score.
+A failed final affinity rejects the entire creating action. The final edge's
+conductance is the existing UM score, not an assumed unit coupling. A directed
+graph receives i→j only. A zero score can create support if the supplied
+threshold admits zero; support and nonzero conductance remain distinct.
+
+Public creation delegates to the existing atomic stage. One actual UM request
+must pass grammar, whose live U3 read includes the same supplied partner even
+if no old neighbor is compatible. Other grammar conditions are retained;
+request-free prospective selection keeps its ordinary domain. A fallback
+glyph cannot count as successful creation. The
+stage commits phase, optional channels, link and target context together, with
+its existing graph-owned rollback on failure. Optional refresh is an explicit
+callback, not an inferred continuation law. The existing last-stage telemetry
+records the supplied pair and its request origin; it is not an authenticated
+event history. Customized execution subclasses are outside this bounded path.
+
+Omitting the partner retains the ordinary API and its numerical policy. The
+raw glyph API, graphless protocol path and all-node word runner do not infer
+potential access. RA still consumes realized outgoing neighbors: RA on i can
+read j through i→j, while RA on j still requires its own outgoing support.
+Reception likewise uses its actual direction
+convention. Subsequent actions retain their own state/history admission. The
+[pair controls](../tests/operators/test_coupling_potential_relation.py) and
+[pure proposal controls](../tests/operators/test_coupling_potential_kernel.py)
+retain the isolated subdomain; the [connected-target controls](../tests/operators/test_connected_coupling_kernel.py)
+exercise augmented selection, represented final admission and old-weight
+preservation. Creating
+this relation enables interaction; it proves neither persistent organization
+nor a collective identity or autonomous occurrence.
+
+The separate [disjoint-component request](COUPLING_COMPOSITION.md#connected-coupling-request)
+admits a connected partner through the same UM map, protecting all old edges
+incident to phase participants. Its [collateral counterexample](COUPLING_COMPOSITION.md#connected-coupling-collateral-boundary)
+explains why removing the isolation check alone is insufficient. The default
+isolated domain above keeps its original boundary.
+
+<a id="coupling-birth-association-access"></a>
+#### Deriving a potential request from live birth associations
+
+The [access consumer](../src/tnfr/operators/birth_access_coupling.py) implements
+the declared policy `unique_isolated_birth_child`. At a supplied parent and
+occasion, let H(i) be its consistent direct `sub_nodes` list and define
+`A(i) = {j in H(i): degree(j) = 0}`. Degree means total support degree,
+including incoming edges in directed graphs. Every association is validated
+before filtering: duplicate, missing, self or contradictory child references
+are state errors. A present parent entry in the redundant hierarchy index must
+agree; missing entries retain THOL's legacy node-local authority. Historical
+`sub_epis` values are not a current access authority or proof of executed birth.
+
+If A(i) is empty or has more than one member, the consumer abstains without an
+operator event. Only a singleton supplies the partner to the existing strict
+atomic UM stage. Numerical compatibility does not resolve ambiguous access;
+a unique incompatible child raises through UM rather than causing a fallback
+search. Access, actual admission and committed transport remain separate.
+The passive report cannot activate execution: every invocation reads current
+state. Enabled canonical grammar, rejection mode `raise` and requested strict
+preconditions are mandatory, including before abstention.
+
+Under a consistent identity relabeling, H and degree transport with the graph,
+so A transports and a unique selection is equivariant. Order supplies no
+winner for a larger set. This is a conditional property of the declared
+relation, not authentication of genealogy or an autonomous occurrence theorem.
+Actual UM effects equal an explicit request for the same child under the same
+admitted state and options. [Acquired-source controls](THOL_PRESSURE_FEEDBACK.md#thol-state-derived-access)
+connect that equivalence to subsequent EN/RA participation.
+
+Successful contact removes the child's isolation. A later declared disconnection
+can restore access: no consumed-birth receipt or age cutoff is introduced.
+Discovery uses direct associations, not global candidate enumeration; the
+existing transaction can still traverse the graph. Parent choice, invocation
+timing, ambiguous competition and persistent organization remain unresolved.
+
+<a id="operator-birth-contact-composition"></a>
+#### Finite birth, contact and response through actual operators
+
+The [birth/contact controls](../tests/operators/test_operator_birth_contact_chain.py)
+compose actual THOL, explicit-pair UM, RA, IL and SHA on one initially isolated
+prepared parent. Its associated temporal samples and IL/OZ context are supplied
+admission evidence, not an acquired trajectory. THOL creates the child recorded
+in its own birth association; both endpoints are still isolated before UM.
+The caller supplies that child as the potential partner, then RA on the parent
+reads the child's form over the newly realized relation.
+
+With parent form x, the admitted nonmetabolic child form `s*x` and supplied RA
+mixing coefficient r, the ideal parent response is `(1-r+r*s)*x`. The finite
+control checks the represented result against an independent affine expression.
+The same preparation and birth without UM leaves RA inadmissible for lack of
+support. This establishes a concrete causal role for the new relation in this
+supplied sequence; it does not establish spontaneous selection or maintenance.
+
+Raw public/stage RA does not own temporal sampling. Its form jump leaves the
+old parent endpoint inconsistent with the live EPI, so that old history cannot
+authorize a new measured acceleration. The control explicitly uses the existing
+runtime boundary recorder at the unchanged declared clock. That observation
+step retains one current parent sample and the child's own first timestamped
+sample; neither has a measured acceleration. No elapsed flow, inherited parent
+history or artificial child action is inserted. IL/SHA then retain form and
+support while applying their actual coherence/lifecycle effects. The child
+does not inherit the parent's operator history or stabilization credit.
+
+This is a finite composition and a history-ownership control on public and
+shared-stage paths. It is not a new all-operator itinerary, an autonomous
+organization theorem, or evidence about the connected-parent domain below.
+
+<a id="coupling-connected-parent"></a>
+#### Connected-parent birth, contact and continued participation
+
+The [connected birth/contact controls](../tests/operators/test_connected_parent_birth_contact.py)
+prepare a parent with an old realized peer, associated temporal samples and
+IL/OZ context. Actual THOL creates an isolated child; its recorded identity
+supplies the requested UM partner. No ancestry metadata is used as an extra
+UM gate. The common proposal now includes both the old compatible peer and
+the child, retaining all old edge records, parent form history and the child's
+fresh context. Public, atomic and dispatcher controls cover directed and
+undirected support, including parallel edges with the existing unique-neighbor
+convention.
+
+Ordinary UM can create that same child edge through its candidate policy.
+It nevertheless reads only the old phase/capacity neighborhood for its reset;
+the explicit request makes the child participate in those reads. For target
+and child phase zero and old-peer phase `alpha in (0,L]`, the ideal
+bidirectional means are respectively `alpha/2` and `arg(2+exp(i*alpha))`.
+The latter lies strictly between zero and `alpha/2`. The finite controls
+distinguish the actual phase and capacity results rather than treating equal
+edge sets as equal actions.
+
+Subsequent actual EN on the parent and RA on its old peer distinguish the
+connected child from the matched no-UM control: the child's form enters the
+unweighted donor mean only after contact. The no-UM case still has the old
+peer, so it remains a valid response control. Directed controls separately
+check incoming EN versus outgoing RA; creation does not silently add the
+reverse arc. Neither UM participation nor neighboring EN/RA grants the child
+an operator event, inherited grammar or measured acceleration. Invocation
+times and source samples remain supplied; this finite composition establishes
+causal participation without deriving source acquisition, autonomous partner
+access, continued stability or a collective NFR identity.
+
+The [acquired-history extension](THOL_PRESSURE_FEEDBACK.md#thol-acquired-birth-participation)
+instead produces the source samples and grammar through actual IL/OZ/AL,
+then invokes eligible THOL and the existing UM/EN/RA paths. A third branch
+retains UM but excludes the child from EN's inputs, isolating its causal
+contribution. A separate branch executes the child's own EN/RA word. These
+finite controls retain supplied timing, access and inheritance coefficients;
+they do not establish autonomous occurrence or universal operator sufficiency.
 
 Link existence and stored conductance are separate. UM assigns its calculated
 compatibility score to a newly created edge; this path does not continuously
@@ -1317,7 +2109,7 @@ This prediction describes the current capacity-pressure product. Its strict
 comparison with $\xi$ is a predictive diagnostic; it is not evidence that a
 growth rate has been observed and does not admit ZHIR by itself.
 
-**Observed temporal evidence**: the non-disableable runtime trigger instead
+**Default observed temporal evidence**: the non-disableable runtime trigger instead
 uses the last two finite scalar EPI samples to form the signed secant
 
 $$
@@ -1364,6 +2156,13 @@ only for valid physical-time evidence, where those rates share a time basis;
 it remains unavailable for a legacy operator-step difference.
 Neither interface evaluates the prior-IL/recent-destabilizer requirements and
 neither certifies U4b execution readiness.
+
+The separate opt-in [operator-growth consumer](NATIVE_OPERATOR_DYNAMICS.md#operator-hybrid-mutation-consumer)
+executes an actual source schedule and immediately admits the same phase-only
+ZHIR stage from its exact signed hybrid growth. It retains independent grammar,
+active capacity and disjoint consumed windows without fabricating continuous
+history. Its supplied trigger law does not change the default interfaces below
+or establish autonomous timing, richer mutation or a unique canonical threshold.
 
 When a dynamic selector proposes ZHIR without valid crossing evidence or active
 capacity, it substitutes IL before ordinary grammar enforcement and records the
@@ -1455,10 +2254,103 @@ or sub-EPI creation belongs to THOL and must be expressed through that operator.
   legacy unit-operator-step evidence under the compatibility contract. The
   normal grammar route or the strict precondition route enforces the two U4b
   context requirements.
-- Post: phase $\theta$ shifted; the structural identity `epi_kind` preserved;
+- Post: phase $\theta$ shifted; the semantic label `epi_kind` preserved;
   bifurcation potential flagged if $\partial^2\text{EPI}/\partial t^2>\tau$.
   After successful dispatch, `source_glyph` records `ZHIR` as provenance. That
-  provenance field does not define or overwrite `epi_kind`.
+  provenance field does not define or overwrite `epi_kind`; retaining a label
+  alone does not establish organizational identity.
+
+<a id="retained-mutation-participation"></a>
+### 9.2 Retained Mutation and relational participation
+
+The [retained Mutation consumer](../src/tnfr/operators/retained_mutation.py)
+applies actual ZHIR to a supplied nonempty, unique, ordered tuple of members
+inside a current [retained organization](#retained-member-scale-actions).
+It reuses the canonical atomic stage and each target's own temporal evidence
+and grammar. No history, prior coherence or trigger is pooled or inherited
+from a parent. Timestamped evidence retains its current-form endpoint
+requirement; legacy evidence retains its distinct operator-step contract.
+Neither is authenticated as an acquired history by the retained observation.
+
+The graph remains the full state. One transaction covers live re-admission,
+execution and the resulting observation. Actual target phase, context and
+lifecycle can change; raw target form, kind, capacity and pressure remain
+held, with support/edge data and non-target state protected. The returned
+`RetainedMutationDispatch` associates `before`, `after`, `targets` and the
+actual stage result. Its per-target sealed decisions retain the consumed
+evidence and event boundary; consistency is not invocation authentication,
+a portable checkpoint or a collective-identity theorem. Recapture observations
+after the event even when their form mean and contrast happen to be unchanged.
+
+**Indirect form response.** Let S and S' be the nonempty incoming source
+tuples selected for a core before and after a local phase reset. ZHIR holds
+capacities, so the [EN compatibility family's](#reception-compatibility-policy)
+relative-capacity predicates are unchanged. Only its circular phase predicates
+can change the tuple. On an admitted same-kind, unclipped real form branch,
+with EN mix m and source means `mu_S`, `mu_S'`,
+
+```text
+x_core_EN = (1-m)*x_core + m*mu_S,
+Delta x_core_EN = m*(mu_S' - mu_S).
+```
+
+If the tuple stays fixed, EN's immediate form output stays fixed. Strict
+eligibility margins provide such a region; crossing a source boundary can
+produce a discontinuous mean change. Empty selection is explicit abstention,
+not an EN event with a fabricated mean. Rejected state/grammar and invalid
+selected form remain separate from that abstention. For a later admitted RA
+with the core as its sole compatible donor and mix r, its form difference is
+`r*m*(mu_S' - mu_S)` on the same unclipped branch. Binary64 rounding and the
+actual sign/kind/projection gates retain their own scope.
+
+The current ZHIR event thus need not change scalar EPI to alter a later real
+operator response. Even the invertible form pair `(q,d)` is insufficient when
+associated phase/ports are omitted. This is a consequence of ZHIR followed
+by EN/RA, not a claim that ZHIR directly realizes the manuscript's nonzero
+form change or its unspecified topology-changing mutation.
+
+**RA has a separate phase response.** RA uses outgoing U3-compatible neighbors,
+not EN's incoming selection. A changed tuple can alter its form mean. With a
+fixed tuple, unchanged forms and the same branch, its immediate form result
+is unchanged, but its circular-resultant phase alignment can still change.
+For example, two donors initially at one phase, one shifted by s with `|s|<pi`,
+have resultant angle shifted by `s/2` in a consistent chart. If U3 stays
+admitted, an RA phase gain kappa gives a target phase difference `kappa*s/2`.
+The nonzero-resultant and represented arithmetic conditions are essential.
+
+**Symmetry is scoped.** A common rotation of every consumed phase preserves
+ideal circular distances, source tuples and form means; a defined resultant
+and the RA phase result rotate covariantly. Rotating a pair while leaving an
+external port fixed is a relative change, not that symmetry. Absolute
+quadrant telemetry, raw phase associations and floating-point threshold
+decisions need separate treatment. Recapture sealed observations, use margins
+for finite controls, and do not infer full-state or bitwise symmetry from
+the ideal circular identity.
+
+The [finite continuation controls](../tests/operators/test_retained_mutation_continuation.py)
+compare actual ZHIR and no-ZHIR with unchanged ports, selected EN and later
+RA, plus unchanged-source, common-rotation and unavailable-own-history
+controls. Their supplied timestamped secant can exceed the trigger while the
+instantaneous capacity-pressure product does not. Actual IL/OZ prepare own
+grammar while holding form; they do not generate the supplied past samples.
+The [transaction controls](../tests/operators/test_retained_mutation.py) cover
+member association, own admission and protected-state boundaries. These are
+finite interventions, not an autonomous origin or persistence claim.
+
+**Occurrence must come from the NFR.** The canonical requirement separates
+action maps from the request generated by an NFR's state, history and
+relations, its admission or abstention, and its timing. A supplied target/word
+tests an action but does not close this causal requirement. It does not mean
+that an NFR invents an arbitrary operator law. The
+[native selector](NATIVE_OPERATOR_DYNAMICS.md#native-selector-memory-and-occurrence)
+is an existing candidate mechanism: diagnostic proposals, lag priority,
+temporal gate and live grammar jointly determine an applied action. Its
+normalization can consume disconnected context, and outer calls supply its
+decision schedule. State dependence alone therefore establishes neither
+locality nor an autonomous clock. A richer form/identity realization and
+endogenous occurrence must retain these unresolved premises; the
+[research program](RESEARCH_PROGRAM.md#research-current-question) owns their
+next bounded discriminator.
 
 ---
 
@@ -1573,6 +2465,160 @@ projected-form action.
 
 Implementation: [shared scale proposal](../src/tnfr/operators/_scale_operator_kernel.py);
 [reciprocal coefficient and branch controls](../tests/operators/test_scale_operator_kernel.py).
+
+<a id="retained-member-scale-actions"></a>
+### 10.3 Retained members, ports and actual VAL/NUL participation
+
+**Constitutive scope.** The historical Expansion passage (TNFR.pdf pp.105–108)
+describes compatible derived forms and reorganization retaining a core; its
+clone/link example does not define inherited state, context or ports. The
+Contraction passage (pp.109–112) describes synthesis retaining diversity and
+memory. Its sum-to-core arrow is not an equality or a conservation law, and
+its merge example leaves the successor state unspecified. These roles are
+broader than the current scalar maps. A graph clone or average cannot silently
+supply the missing realization.
+
+The [retained organization interface](../src/tnfr/operators/retained_organization.py)
+captures a supplied nonempty ordered tuple of existing members. It retains
+their primitive state, own context/history associations, ordered incoming and
+outgoing neighbor identities, and incident keyed edge data. Internal and
+boundary ports stay associated with actual member identities; describing a
+port does not consume its boundary node's form. The sealed record belongs to
+its source graph. The full graph remains the runtime state, and the record
+is neither a portable checkpoint nor a minimal sufficient collective state.
+Graph policies and boundary-node coordinates remain live inputs rather than
+frozen record contents. Temporal signatures retain present raw evidence,
+including stale samples, without certifying endpoint currency or acceleration.
+
+`execute_retained_scale_stage` re-admits that association and executes the
+existing atomic Expansion or Contraction stage on those members. It requires
+the requested two-phase action; a fallback glyph cannot satisfy the request.
+No refresh callback or alternate sequence context is admitted by this bounded
+consumer. Before/after observations accompany the actual stage result. Member
+identities, phases, support, edge records and nonmember state are preserved;
+each member receives its own admitted scale action and context update. Failure
+of the guard or subsequent observation rolls back the graph-owned transaction.
+No new scalar law, macro-node, birth, merge or autonomous occurrence is added.
+
+The child's own context matters without imposing a new initiation rule. In
+the current incremental grammar, U1a requires a generator only when EPI is
+zero and history is empty; a nonzero THOL child is not blocked merely by its
+empty history. Its zero stored pressure separately fails default strict VAL
+minimum-pressure admission. Selecting `VAL_MIN_DNFR=0` is an explicit policy
+choice, not inherited stabilization credit. A child EN can supply an actual
+history entry and participation, but is not a universal VAL/NUL prerequisite.
+Neither execution nor grouping transfers the parent's prior IL/OZ history,
+debt, coherence credit or timestamped past to the child. Form jumps still
+require their own temporal observation boundary before derivative claims.
+
+#### Why a scalar average loses continued response
+
+Consider the undirected path `v--parent--child`, with forms v, xp and xc.
+Fix support, same-kind scalar form, compatible phases and a region where
+clipping is inactive. Each action retains its own grammar and preconditions.
+From the same prestate, actual RA at the peer with factor r and EN at the
+parent with factor m give
+
+```
+Y_RA = (1-r)*v + r*xp
+Y_EN = (1-m)*xp + (m/2)*(v+xc).
+```
+
+Their derivative with respect to `(xp,xc)` is
+`[[r,0],[1-m,m/2]]`, with determinant `r*m/2`. For positive factors, these
+responses cannot both factor through one `C^1` scalar observation with `C^1`
+response maps on an open two-form domain: the chain rule would give rank at
+most one. In particular, `(xp+epsilon,xc-epsilon)` preserves the member mean
+but changes the peer RA response by `r*epsilon`. This is a regular predictive
+reduction obstruction, not a claim about arbitrary scalar encodings.
+
+The actual sequential word RA at the peer followed by EN at the parent has
+the same obstruction. Its second output is
+`(1-m+m*r/2)*xp + (m/2)*xc + m*(1-r)*v/2`, because EN reads the already changed
+peer. The joint derivative still has determinant `r*m/2`. Separate-prestate
+and sequential probes therefore retain their different schedules. Neither
+argument certifies a full-state macro-NFR; phase, capacity, pressure, history
+and admission remain additional obligations.
+
+#### The initial inherited form image does not close under EN
+
+Nonmetabolic THOL initially gives `xc=s*xp`; UM preserves these forms. This
+one-dimensional form image can be represented by one scalar initially. EN
+on the parent with factor m instead gives
+
+```
+xp' = (1-m)*xp + (m/2)*(v+s*xp)
+xc' = s*xp
+xc' - s*xp' = s*m*((1-s/2)*xp-v/2).
+```
+
+The defect is generally nonzero. Its special zero set needs its own invariant
+domain; initial inheritance alone does not supply one. This statement is
+about form proportionality, since optional UM capacity blending can already
+change the full initial THOL capacity relation. Varying the supplied initial
+xp and a prior EN factor m gives a two-form map with determinant
+`s*((1-s/2)*xp-v/2)`. Where nonzero it has a locally open form image. The
+extra preparation variable is a supplied input; deterministic birth alone
+has not created a new independent degree of freedom.
+
+#### Replication multiplicity is part of a port contract
+
+For n independent donor forms, the current unweighted mean is
+`mu=sum_j(x_j)/n`. Replacing each donor j by `k_j` copies gives
+`mu_copy=sum_j(k_j*x_j)/K`, where `K=sum_j(k_j)`. Equality for all forms in an
+open domain requires and is implied by `k_j/K=1/n` for every j: equal
+replication multiplicity in that read row. One particular vector can agree
+by cancellation without satisfying this all-state condition. Duplicating one
+donor a k times changes the mean by `(k-1)*(x_a-mu)/(n+k-1)`; donors `1,-1`
+therefore have mean zero, while `1,1,-1` have mean `1/3`.
+
+Equal means alone preserve neither ordered semantic-kind selection nor the
+phase, capacity and context channels of the full operator. Existing parallel
+edges do not manufacture repeated donor identities. Conductance weights do
+not generally repair an unweighted EN/RA read. Restricted quotients can remain
+valid when admission, retained observations and successor actions intertwine
+on their declared domain. A new organization may instead have a changed
+response; it must not be called an invisible representation refinement.
+The [addressed-port construction](REMESH_STRUCTURE_AND_MEMORY.md#remesh-addressed-port-reexpression)
+retains unequal members while preserving a declared EN-input/output/RA family.
+Its [output interface](../docs/API_CONTRACTS.md#retained-addressed-output) reads
+only an actually shared receiver through canonical EN; it does not turn an
+unweighted neighbor list into an automatically grouped collective state.
+The [collective Emission realization](REMESH_STRUCTURE_AND_MEMORY.md#collective-emission-port-realization)
+uses one admitted member to realize a declared port gain through actual AL.
+Its local boost depends on member count; target admission and own activation
+remain constituent information. Equal mean alone cannot authorize a broadcast
+or repeated collective word.
+The [interface controls](../tests/operators/test_retained_organization.py)
+check association, admission, unchanged ports and transaction boundaries;
+the [finite continuation controls](../tests/operators/test_retained_scale_continuation.py)
+use an actual THOL child and UM contact before scale actions and EN/RA
+participation, with default-pressure rejection kept separate. Their sources
+and invocation schedule are supplied. The retained-member interface preserves
+the distinction above. The separate [single-derived-member VAL family](#derived-expansion-member)
+now supplies one explicit birth contract; uniquely selected or general
+proliferation and collective identity remain open. The concentration fragment
+below adds actual internal Reception; it does not establish memory-preserving
+reabsorption of a member.
+
+<a id="retained-synthesis-concentration"></a>
+### 10.4 Retained NUL/EN concentration
+
+The [synthesis owner](NUL_SYNTHESIS.md#retained-synthesis-concentration) retains
+the complete concentration derivation and its integration controls. Actual
+NUL on both members followed by selected-source EN at the core changes form
+response while retaining identities, ports and own contexts. It is an explicit
+fragment, not a new glyph or a complete historical reabsorption mechanism.
+The ideal unclipped map is `xp'=f*((1-m)*xp+m*xc), xc'=f*xc`; full mixing can
+erase old form contrast. The original endpoint, pressure/admission and rollback
+results retain their premises in that owner.
+
+Historical TNFR.pdf pp109-112 motivates synthesis retaining diversity and
+memory; its unspecified merge operation does not require graph-node deletion.
+The [future-response and admission analysis](NUL_SYNTHESIS.md#nul-future-response)
+distinguishes concentration, response-sufficient encapsulation and information
+loss. A shared present form or one equal boundary response does not establish
+that the interior can be forgotten.
 
 ---
 
@@ -1978,6 +3024,90 @@ and relaxes collateral endpoint conditions. It neither executes a word nor
 excludes smaller gains, and separates the direct event's held pressure from
 the same-law refresh used in a continuous endpoint comparison.
 
+<a id="continuous-operator-realization-audit"></a>
+### Operator participation in the continuous contact studies
+
+**Audit result:** the fully weighted autonomous contact completion in
+[Relation foundations](nodal/RELATION_FOUNDATIONS.md#weighted-contact-operator-boundary)
+does not execute the registered operators or their grammar. No reduction,
+continuous-generator limit or full-state realization of that completion from
+those operators has been established. Its acquisition and recovery theorems
+remain conditional results for independently postulated equations. They cannot
+yet be claimed as consequences of TNFR's fundamental operator mechanisms.
+The engine's permission to evaluate continuous laws is not a mathematical
+justification for omitting those mechanisms from a foundational claim.
+
+| Mechanism | Actual operator participation | Boundary of the weighted completion |
+| --- | --- | --- |
+| Contact / union | Coupling (UM) proposes U3-compatible new edges with a configured compatibility weight; existing edge weights are preserved. Actual reset work and subsequent-law admission have separate owners. | The two positive loss-funded support rates continuously change supplied candidate weights. Neither rate is derived from UM, and neither checks primitive phase, U3 context or the compatibility score. |
+| Form propagation / resonance | Resonance (RA) mixes form over admitted neighbors and has declared phase/capacity effects. | The weighted form/phase exchange is an independently specified field. Agreement of one diffusion channel would not identify all of RA, its occurrence or its grammar. Oscillation, synchronization and the RA event are distinct claims. |
+| Self-organization | Self-organization (THOL) uses its admitted acceleration/pressure mechanism; the public/staged path can additionally create an isolated child subject to history/hierarchy gates. | Attraction to an organized state under the auxiliary ODE does not execute THOL. That ODE retains neither THOL's temporal evidence nor its child-creation state. |
+| Ordered structural dynamics | The native hybrid path executes selected glyphs with live admission and retained grammar/history. Its decision schedule is part of the law. | The contact field has no word, event trace, selector memory or grammar state. Smoothness, storage loss and a regular resultant chart do not establish U1-U6. |
+
+Existing partial bridges remain useful. For example,
+[the RA realization reader](../src/tnfr/physics/resonance_realization.py)
+relates an admitted local EPI blend to a represented affine jump and, under
+its additional premises, fixed post-event pure-EPI recovery. The collective
+operator and grammar descent results likewise retain their established scope.
+The missing result is the realization of the **complete weighted contact law**,
+not the absence of every mathematical connection between operators and flows.
+
+**A concrete admission obstruction.** Take two unit P2 components with forms
+`(0,epsilon,0,0)`, positive held unit capacities, phases `(0,0,delta,delta)`,
+and absent candidate contact `{1,2}`. Choose `epsilon!=0` and
+`pi/2<delta<pi`. Each component's relative resultant is one, so the auxiliary
+field is regular. At zero contact, `q=(-epsilon,epsilon,0,0)` and the full
+endpoint allocation gives `B=e*epsilon^2>0`. The candidate cost is finite:
+
+```text
+c = epsilon^2/2 + beta*(1-cos(delta)).
+```
+
+Both postulated contact rates are therefore strictly positive. Actual UM with
+the default U3 limit excludes this cross-component candidate, even when its
+separate score threshold is relaxed to zero. Its existing same-phase neighbor
+does admit the target's UM event. Thus this is a candidate mismatch, not an
+invalid target or a contradiction in either separate model. It disproves
+unqualified identification of the support law with registered UM over its
+regular domain. It does not disprove an explicitly restricted or otherwise
+derived operator realization. Inside the small phase-compatible acquisition
+ball this particular obstruction is absent, but the missing derivation remains.
+
+There is also a compatible-domain distinction: UM does not reinforce an
+already present edge, whereas either support row can have positive rate there.
+For RA, equal phases with unequal form can give nonzero relational phase
+velocity while its configured phase-alignment event leaves those phases equal.
+Matching form mixing alone consequently misses a consumed row.
+The [cross-path controls](../tests/operators/test_passive_contact_operator_boundary.py)
+use actual finite UM/RA events and native initial fields against detached
+support-rate accounting. They install no weighted trajectory or new operator.
+
+**Required bridge.** A foundational use must provide at least one explicit
+construction, with every claimed channel and its domain covered:
+
+1. A hybrid law that actually executes the registered maps, declares their
+   selection/abstention, grammar state, elapsed schedule and inter-event flow,
+   and includes each jump's work and its successor domain. Every consumed
+   inter-event row also needs an operator-based constitutive justification;
+   attaching events to an arbitrary auxiliary flow does not close the bridge; or
+2. A proved restriction, observation/reduction or scaled operator limit,
+   retaining the state/history required by admission and reaction. Specify
+   its map, units, clock, gain scaling, error/convergence and time interval,
+   including support birth and any switching boundaries; or
+3. An explicitly proposed revision of the constitutive operator mechanisms,
+   with independent equations, justification and comparison to existing
+   contracts. A new label or a post-hoc decomposition is not that derivation.
+
+Not every member of the catalog must act on every trajectory. An inactive
+operator or eliminated channel needs the stated regime and a proof of the
+claimed invariance, restriction or approximation. A finite fixed-gain event
+cannot simply be divided by an arbitrarily small time to define a finite
+continuous generator. Inserting occasional UM/RA/THOL events into the existing
+ODE would change its complete law and require rechecking its theorems.
+The [current program](RESEARCH_PROGRAM.md#research-current-question) prioritizes
+this causal obligation; the earlier scoped pillar resolutions are not a bridge
+for the later weighted contact extension.
+
 <a id="analytic-fixed-duration-realization"></a>
 ### Analytic obstruction to fixed-duration constant increments
 
@@ -2108,6 +3238,14 @@ lifecycle or a prevalidated complete word. Its realized glyph history does not
 necessarily retain every proposal or selection reason. Matching operator names
 across these paths cannot substitute for their different execution contracts.
 
+The default runtime separately applies nodal integration, phase coordination,
+capacity adaptation and an automatic REMESH gate. Enabling glyph selection
+does not derive these inter-event rows or their schedule; disabling selection
+does not remove them. The opt-in relational executor advances supplied form
+and phase laws without invoking structural operators or ordered grammar.
+Both routes therefore require a complete operator realization for a canonical
+claim. The nodal product alone does not supply that missing derivation.
+
 The strongest existing synergies are already conditional results: retained
 histories distinguish admissibility at equal aggregate state; the maintained
 parent supplies genuine pre-birth history; actual support events carry separate
@@ -2117,23 +3255,48 @@ be renamed as proof that one has been derived. The
 [collective grammar criterion](#collective-grammar-descent) gives the appropriate
 obstruction when the proposed NFR state discards information needed by a gate.
 
-### All thirteen actions: useful mechanisms and remaining premises
+<a id="operator-canonical-coverage-audit"></a>
+### All thirteen actions: implementation and canonical realization
 
-| Operator | Actual mechanism relevant to interaction | Reusable synergy and boundary |
-| --- | --- | --- |
-| **AL — Emission** | Adds/projected form on existing support; basic event holds phase, capacity and stored pressure | [Collective descent](nodal/SINE_PAIR_INTERACTION.md#sine-pair-emission-descent) and the [complete AL/SHA word](nodal/SINE_PAIR_WORD.md) retain targets, source, context and work. A local form contrast changes phase rates. No node or edge creation or autonomous input selection. |
-| **EN — Reception** | Blends unweighted existing incoming-neighbor form; source ranking is telemetry | The [weighted contact action](nodal/SINE_COLLECTIVE_RECEPTION.md) admits EN/IL/SHA and exact simultaneous work, which can be positive. Fresh sine pressure is unchanged while phase rates change. No U3 source filter or absent-edge reception. |
-| **IL — Coherence** | Glyph contracts stored pressure; public/staged path also aligns target phase with its neighbor resultant | The [collective handoff](nodal/SINE_COLLECTIVE_PRESSURE_HANDOFF.md) accounts for actual adjacent-target phase work and refresh; its [identity domain](nodal/SINE_COLLECTIVE_IDENTITY_TRANSITION.md) retains context. The stabilizer label supplies no universal storage theorem. |
-| **OZ — Dissonance** | Perturbs stored pressure, with near-zero/jitter branches and optional neighbor propagation | The [handoff](nodal/SINE_COLLECTIVE_PRESSURE_HANDOFF.md) separates changed context from pressure erased on constitutive refresh. A [persistent pressure extension](nodal/SINE_PRESSURE_COMPLETION.md) needs its own mean, storage and law premises. Signed propagation can cancel pressure. |
-| **UM — Coupling** | Moves phase, optionally aligns capacity/contracts stored pressure and proposes links to compatible nonneighbors | The [weighted support completion](nodal/SINE_PAIR_COUPLING.md) and [maintained contact](nodal/SINE_PROXIMITY_CONTACT.md) admit actual conductances, geometry and continuation. Existing-neighbor U3, candidate access, affinity and occurrence remain premises. |
-| **RA — Resonance** | Mixes form over existing U3-compatible neighbors; configured phase interpolation and triggered capacity amplification | The [collective AL/RA/SHA contract](nodal/SINE_PAIR_RESONANCE.md) proves a conditional complete action and retention domain. RA creates no support and does not contract stored pressure; passivity and identity do not follow merely from its name. |
-| **SHA — Silence** | Attenuates capacity and records latency information, preserving form at the event | The [complete word](nodal/SINE_PAIR_WORD.md) and [lifecycle-sensitive NAV action](nodal/SINE_COLLECTIVE_TRANSITION.md) retain latency and successor capacities. Capacity-only work is zero, but future rows change; finite attenuation need not freeze flow. |
-| **VAL — Expansion** | Raises capacity; default edge-aware policy also scales/projects EPI | The [full form-capacity action](nodal/SINE_FORM_CAPACITY_ACTION.md) accounts for actual form work, mean leaves and both rows. Its conditional reset is not a complete VAL-word theorem; the [contextual NUL identity contract](nodal/SINE_COLLECTIVE_IDENTITY_TRANSITION.md) is a separate result. Expansion does not derive a new dimension or common clock. |
-| **NUL — Contraction** | Lowers capacity and rescales stored pressure; default edge-aware policy also scales/projects EPI | The [same full reset owner](nodal/SINE_FORM_CAPACITY_ACTION.md) and [directional continuation](nodal/SINE_DIRECTIONAL_MAINTENANCE.md) distinguish stored-product algebra from refreshed flow and identity. Valid grammar does not imply future maintenance. |
-| **THOL — Self-organization** | Primitive signed acceleration/pressure reset; public/staged path can create an isolated nested child after history/hierarchy gates | The [collective hierarchy contract](nodal/SINE_COLLECTIVE_HIERARCHY.md) separates no-child refresh equivalence from a changed domain. [Maintained-parent birth](nodal/SINE_MAINTAINED_PARENT_THOL.md) supplies one actual event with genuine parent history and a declared frozen-isolate continuation. Parent metadata is not an edge or a new child's temporal baseline. |
-| **ZHIR — Mutation** | Configured phase reset following a live signed EPI-growth test and separate grammar context | [Temporal admission](nodal/SINE_COLLECTIVE_MUTATION_ADMISSION.md) and the [complete phase action](nodal/SINE_COLLECTIVE_MUTATION_ACTION.md) retain separate obligations, work and successor-domain conditions. Eligibility does not select occurrence or certify identity. |
-| **NAV — Transition** | Primitive pressure change; public/staged regimes can also change phase and capacity | The [contextual Transition contract](nodal/SINE_COLLECTIVE_TRANSITION.md) separates lasting phase/capacity changes from jitter erased on refresh. Its admitted word can leave the original acute sector; regimes and invocation remain policies. |
-| **REMESH — Recursivity** | Advisory glyph, delayed same-support EPI mixing, and explicitly invoked topological replacement are distinct APIs | The [collective delayed-state contract](nodal/SINE_COLLECTIVE_RECURSIVITY.md) retains associated histories, actual mixing and reset work. The advisory does not mix form; topology replacement requires its own before/after state and law admission. |
+**Coverage decision.** All thirteen operators have registered contracts,
+primitive dispatch, public classes and declared snapshot-stage contracts.
+This is implemented coverage, not a complete realization of their fundamental
+roles. The retained manuscript's broader formation, filtering, topology,
+mutation and multiscale claims have unresolved bridges to the present scalar
+and graph maps. Neither the historical descriptions nor passing software
+contracts establishes that those bridges exist.
+
+The source comparison uses the identified 378-page May manuscript in the
+[grammar source audit](UNIFIED_GRAMMAR_RULES.md#source-grammar-and-notation).
+Complete relevant operator sections, surrounding grammar and selected rendered
+equations were checked. Page locators below refer to that source, not the
+different March manuscript. The source contains incompatible prescriptions;
+we retain its functional objectives without silently imposing every example
+or numerical policy on the engine.
+
+The direction of justification is **structural operators and grammar, then
+complete dynamics, then organized behavior and observations**. Operators may
+be postulated as primitive mechanisms; they need not be circularly inferred
+from an already chosen ODE. Their complete maps, domains, causal occurrence
+and composition still need mathematical definitions. A primary-channel entry
+is a description of current implementation, not a proof that a fundamental
+operator can affect no other part of a richer form.
+
+| Operator | Actual mechanism relevant to interaction | Reusable synergy and boundary | Historical role still to justify |
+| --- | --- | --- | --- |
+| **AL — Emission** | Adds/projected form on existing support; the separate [finite-duration proposal](EMISSION_EPISODES.md#emission-episode-status) integrates held form flow with one admitted AL lifecycle | [Collective descent](nodal/SINE_PAIR_INTERACTION.md#sine-pair-emission-descent) and the [complete AL/SHA word](nodal/SINE_PAIR_WORD.md) retain targets, source, context and work. A local form contrast changes phase rates. The [episode observation](EMISSION_EPISODES.md#emission-selector-observation) separates law-derived activity from solver diagnostics for actual native selection. No node/edge creation or autonomous input timing. | pp80-82: endogenous activation of a latent organization is broader than a supplied finite boost on an existing node; its source and occurrence remain to be grounded. |
+| **EN — Reception** | Blends realized incoming form from all neighbors, an [explicit tuple](#reception-causal-sources), or a [declared compatibility policy](#reception-compatibility-policy) at a supplied attempt | The [weighted contact action](nodal/SINE_COLLECTIVE_RECEPTION.md) retains its original all-input EN/IL/SHA and work premises. Selected mean/kind and compatibility evidence retain their associated sources; changed actions do not inherit the old affine certificate. | pp83-86: one conditional phase/capacity family does not derive unique compatibility, autonomous attempt timing or richer identity retention. It is not U3; capacity is not an observed oscillation frequency. |
+| **IL — Coherence** | Glyph contracts stored pressure; public/staged path also aligns target phase with its neighbor resultant | The [collective handoff](nodal/SINE_COLLECTIVE_PRESSURE_HANDOFF.md) accounts for actual adjacent-target phase work and refresh; its [identity domain](nodal/SINE_COLLECTIVE_IDENTITY_TRANSITION.md) retains context. The stabilizer label supplies no universal storage theorem. | pp86-89: persistent functional coherence and an asymptotic coherence-matrix condition do not follow from one stored-pressure contraction. The richer form/coherence representation and continued law are required. |
+| **OZ — Dissonance** | Perturbs stored pressure, with near-zero/jitter branches and optional neighbor propagation | The [handoff](nodal/SINE_COLLECTIVE_PRESSURE_HANDOFF.md) separates changed context from pressure erased on constitutive refresh. A [persistent pressure extension](nodal/SINE_PRESSURE_COMPLETION.md) needs its own mean, storage and law premises. Signed propagation can cancel pressure. | pp89-93: opening a controlled reorganization is not proof of a bifurcation. Amplification, signed jitter, incoming propagation and pressure persistence have distinct contracts. |
+| **UM — Coupling** | Moves phase, optionally aligns capacity/contracts stored pressure and proposes links; explicit [isolated-partner](#coupling-potential-pair) and [disjoint-component](COUPLING_COMPOSITION.md#connected-coupling-request) requests retain distinct domains | The [actual birth/contact](#coupling-connected-parent), [weighted support](nodal/SINE_PAIR_COUPLING.md), [maintained contact](nodal/SINE_PROXIMITY_CONTACT.md) and [one-way return domain](REMESH_STRUCTURE_AND_MEMORY.md#operator-maintenance-return) retain different laws and participation premises. The [reciprocal boundary result](REMESH_STRUCTURE_AND_MEMORY.md#reciprocal-maintenance-boundary) motivates optional [incident-relation preservation](COUPLING_COMPOSITION.md#ordinary-coupling-relation-preservation): actual merged writers retain their original U3 boundary through atomic return. Legacy behavior, affinity and access remain explicit; bounded capacity is separate. | pp93-97: functional union does not automatically merge identities or acquire a collective NFR. Reciprocal persistence, endogenous candidate access and overlapping organizations remain open. |
+| **RA — Resonance** | Mixes form over existing U3-compatible neighbors; configured phase interpolation and triggered capacity amplification | The [collective AL/RA/SHA contract](nodal/SINE_PAIR_RESONANCE.md) proves a conditional complete action and retention domain. The [reciprocal return](REMESH_STRUCTURE_AND_MEMORY.md#reciprocal-maintenance-boundary) exposes capacity growth; [RA/NUL composition and live renewal](NUL_SYNTHESIS.md#amplification-contraction-maintenance) distinguish neutral capacity, pressure growth and participant-supported numerical retention. RA creates no support and does not contract stored pressure; passivity and identity require their own premises. | pp97-100: propagation preserving organization is broader than a local scalar blend. Existing EPI realization and collective-action proofs are partial bridges, not a derivation of autonomous sustained resonance. |
+| **SHA — Silence** | Attenuates capacity and records latency information, preserving form at the event | The [complete word](nodal/SINE_PAIR_WORD.md), [lifecycle-sensitive NAV action](nodal/SINE_COLLECTIVE_TRANSITION.md) and [retained reactivation prefix](REMESH_STRUCTURE_AND_MEMORY.md#retained-silence-reactivation) retain own memory and successor domains. Capacity-only work is zero, but future rows change; finite attenuation need not freeze flow. | pp101-105: a continued law must sustain recovery beyond the admitted finite prefix. Finite attenuation is not total silence; zero capacity does not recover through multiplicative VAL/NAV alone. |
+| **VAL — Expansion** | Ordinary VAL scales capacity and optionally form; the separate [derived-member family](#derived-expansion-member) adds one isolated successor with explicit inheritance and fresh context | The [retained-member action](#retained-member-scale-actions) preserves individual ports/context; the opt-in birth composes actual scalar VAL with shared materialization and separate UM/EN/RA participation. The [full form-capacity action](nodal/SINE_FORM_CAPACITY_ACTION.md) retains its own work/flow premises. | pp105-108: one bounded supplied family does not select unique inheritance, arbitrary branching, autonomous proliferation or persistent identity. Existing scalar VAL remains unchanged; a graph clone alone does not realize the historical role. |
+| **NUL — Contraction** | Lowers capacity and reciprocally rescales stored pressure; optional form scaling remains separate from the [NUL/EN concentration fragment](#retained-synthesis-concentration) | The fragment retains actual members/ports and adds internal Reception; the [full reset owner](nodal/SINE_FORM_CAPACITY_ACTION.md) and [directional continuation](nodal/SINE_DIRECTIONAL_MAINTENANCE.md) retain their distinct work and flow premises. The [amplification/renewal analysis](NUL_SYNTHESIS.md#amplification-contraction-maintenance) retains NUL's pressure cost and the closed-population capacity obstruction. Form agreement, context and identity are not interchangeable. | pp109-112: elementary retained concentration does not derive memory-preserving reabsorption, a unique synthesis map or persistent identity. No member is merged/deleted, and NUL still supplies no live U1 closure or U2 stabilization credit. |
+| **THOL — Self-organization** | Primitive signed acceleration/pressure reset; public/staged path can create an isolated nested child after history/hierarchy gates | The [collective hierarchy contract](nodal/SINE_COLLECTIVE_HIERARCHY.md) separates no-child refresh equivalence from a changed domain. [Maintained-parent birth](nodal/SINE_MAINTAINED_PARENT_THOL.md) supplies one actual event with genuine parent history and a declared frozen-isolate continuation. The [episode selection boundary](EMISSION_EPISODES.md#emission-selector-observation) distinguishes cached acceleration requests from THOL's actual history-derived pressure action. Parent metadata is neither an edge nor child temporal evidence. | pp112-116: a history-gated nested child is a construction, not yet a proof of autonomous self-organization, its connectivity or its inherited dynamics. Acceleration gain and clock units remain declared. |
+| **ZHIR — Mutation** | Configured phase reset following a live signed EPI-growth test and separate grammar context; [retained participation](#retained-mutation-participation) can change later actual EN/RA response | [Temporal admission](nodal/SINE_COLLECTIVE_MUTATION_ADMISSION.md) and the [complete phase action](nodal/SINE_COLLECTIVE_MUTATION_ACTION.md) retain separate obligations, work and successor-domain conditions. [Actual episode/native competition](EMISSION_EPISODES.md#emission-native-source-competition) retains own grammar and shared consumption of matching physical intervals; selected sources and phase/port association remain necessary. | pp116-121: indirect form response does not complete richer-form mutation or organizational identity. NFR-generated request and timing remain distinct from supplied invocation; a retained kind label is insufficient. |
+| **NAV — Transition** | Primitive pressure change; public/staged regimes can also change phase and capacity | The [contextual Transition contract](nodal/SINE_COLLECTIVE_TRANSITION.md) separates lasting phase/capacity changes from jitter erased on refresh. Its admitted word can leave the original acute sector; regimes and invocation remain policies. | pp121-124: activation of a prepared regime is not node creation from nothing. Regime labels and warnings are configured policies, not a proved bifurcation or source-acquisition law. |
+| **REMESH — Recursivity** | Advisory glyph, delayed same-support EPI mixing, and explicitly invoked topological replacement are distinct APIs | The [collective delayed-state contract](nodal/SINE_COLLECTIVE_RECURSIVITY.md) retains associated histories, actual mixing and reset work. The advisory does not mix form; topology replacement requires its own before/after state and law admission. | pp124-128: structural recursion across scales needs a state/identity map. Advisory, delayed mixing and topological reconstruction are distinct partial realizations, not interchangeable operations. |
 
 Execution owners are linked in §15. The particularly relevant shared kernels
 are [AL/SHA proposals](../src/tnfr/operators/al_sha_stage_proposals.py),
@@ -2150,9 +3313,68 @@ clock/pressure conventions must match before combining results. The
 admission and successor state at every prefix. THOL birth can leave the
 connected-support law domain, and a REMESH advisory cannot stand in for
 delayed mixing. Preserving such explicit boundaries is part of integration.
+The [viability and ordered-return analysis](NUL_SYNTHESIS.md#operator-viability-and-ordered-return)
+separates actual admission, reference preservation and continued response:
+IL can open a blocked RA pressure gate, while NUL's position changes which
+live form input is contracted. A selector proposal certifies none of those
+obligations. Support/type-changing roles require their own successor domains.
 A compatibility classification does not establish that all thirteen full
 public actions preserve one identity, that their words realize every TNFR
 transformation, or that the continuous law selects their occurrence.
+
+#### Execution integrity and the remaining constitutive decision
+
+The audit corrected concrete inconsistencies within the existing finite-action
+contracts, without promoting their policies to fundamental laws:
+
+- AL treats an explicit inactive flag as first activation, validates its type
+  and rejects conflicting retained AL provenance before writing lifecycle state.
+- The optional OZ overload policy counts unresolved perturbations after the
+  latest admitted resolver in its existing window. Earlier stabilization does
+  not resolve a later perturbation; persistent grammar debt remains separate.
+  Its monitor binds amplification versus jitter to the pre-event policy and
+  rejects invalid pressure endpoints. Finite jitter may reduce pressure
+  magnitude; local amplification is checked before incoming stage propagation.
+- ZHIR rejects a phase proposal with no represented circular effect before
+  committing. Its postcondition uses the same comparison instead of an
+  arbitrary minimum amplitude. The represented period is `math.tau`, not a
+  symbolic exact value of pi.
+- Capacity and nonzero form products lost to represented zero are rejected by
+  the shared scale proposal before commit. Intentional zeros and declared
+  clipping retain their own semantics.
+- Direct and public NAV admission share finite threshold and strict flag
+  validation, preserving signed form/pressure and the optional history scope.
+  Its monitor recognizes admitted represented changes without a minimum-size
+  cutoff. THOL monitoring checks finite endpoints and the unchanged parent
+  form, capacity and phase; its signed pressure reset need not keep the
+  instantaneous coherence diagnostic within an arbitrary ten-percent drop.
+  These are partial postconditions, not full reset or hierarchy certificates.
+- Automatic REMESH requires a positive evidence window and admitted consumed
+  samples. Missing or short history abstains; an empty window cannot trigger
+  mixing. Its configured thresholds still do not derive autonomous occurrence.
+- Atomic stages accept the engine's exact integrity-monitor modes while
+  retaining manual state capture and rollback. External or modified copy
+  protocols remain rejected; monitor identity and mutable reports are restored
+  when a later event/refresh fails.
+
+These are execution guarantees, not proof of productive dissonance, permanent
+coherence, a new identity or cross-scale recursion. The live implementations,
+regression owners and broader historical roles have distinct evidence.
+The [execution map](THEORY_TO_EXECUTION.md#operator-audit-execution) routes the
+corrected boundaries to their shared kernels and controls.
+
+The [common state/action specification](#structural-state-action-specification)
+must now be applied to each proposed realization. Distinguish richer form from its scalar
+EPI observation; retain support, phase, capacity, history and identity data
+actually consumed; and specify how birth, synthesis, mutation and scale maps
+change that domain. Each historical role needs an explicit choice: existing
+implementation, justified restriction, proposed constitutive revision or open
+obligation. Current primary-channel metadata cannot decide that choice.
+Then a complete interacting mechanism must justify occurrence, abstention,
+grammar and every inter-event row. The
+[research program](RESEARCH_PROGRAM.md#research-current-question) owns this
+sequence. It does not require every operator on every trajectory, or discard
+the existing partial realization and collective-action theorems.
 
 All thirteen glyphs also have implemented snapshot stages in the shared
 [stage contracts](../src/tnfr/operators/stage_contracts.py). This execution
@@ -2266,9 +3488,13 @@ NFR activation must justify this boundary, not merely pass a storage check.
 **Potential contact versus existing support.** UM's search over graph nodes
 or a supplied sample assumes candidate access. EN/RA consume existing edges;
 they cannot themselves transmit input across a missing edge. THOL children
-start isolated. Two isolates cannot bootstrap UM because its initial U3 gate
-needs an existing neighbor. The potential-contact relation is therefore a
-separate hypothesis from the realized transport graph.
+start isolated. Ordinary UM cannot bootstrap two isolates from its sampled
+candidate list because its initial gate needs an existing neighbor. The
+[explicit potential-pair extension](#coupling-potential-pair) now admits one
+supplied isolated partner, including for a target with old neighbors, through
+the same circular gate and augmented participant map. This
+does not derive access: potential contact remains distinct from the realized
+transport graph and from autonomous occurrence.
 
 **Symmetry versus a configured score.** UM's absolute-form similarity changes
 under a common form offset, while the selected relational law does not. Si

@@ -1,4 +1,11 @@
-"""Runtime orchestration for TNFR dynamics."""
+"""Configured hybrid orchestration for TNFR dynamics.
+
+Glyph selection executes registered operators when enabled. Nodal integration,
+phase coordination, capacity adaptation and automatic REMESH also consume their
+own supplied policies. Enabling glyphs does not derive those other rows from
+operators or establish a complete canonical constitutive realization. Keep the
+state, admission, history and decision schedule of this execution explicit.
+"""
 
 from __future__ import annotations
 

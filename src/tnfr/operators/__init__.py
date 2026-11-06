@@ -53,6 +53,7 @@ from ._neighbor_epi_kernel import (
     neighbor_epi_unweighted_mean,
     reception_proposed_epi_kind,
 )
+from ._operator_growth_trigger import OperatorGrowthTriggerCertificate
 from ._phase_gate import (
     U3PhaseGateError,
     U3PhaseNeighborSet,
@@ -79,6 +80,8 @@ from ._scale_operator_kernel import (
     nul_densification_event,
     propose_scale_operator,
 )
+from .emission_episode import EmissionEpisodeResult, execute_emission_episode
+from .emission_observation import EmissionEpisodeObservation, observe_emission_episode
 from .event_remesh_causal_runtime import (
     CausalEventRemeshCycleReceipt,
     EventRemeshCycleExecutionSpec,
@@ -138,12 +141,36 @@ from .jitter import (
     random_jitter,
     reset_jitter_manager,
 )
+from .native_emission_window import (
+    NativeEmissionWindowDispatch,
+    NativeEmissionWindowGrowth,
+    NativeEmissionWindowSource,
+    execute_native_emission_window,
+)
+from .native_positive_window import (
+    NativePositiveWindowDispatch,
+    NativePositiveWindowGrowth,
+    NativePositiveWindowSource,
+    execute_native_positive_window,
+)
 from .nodal_remainder_runtime import (
     ExecutedNodalRemainderEvent,
     ExecutedNodalRemainderFlow,
     NodalRemainderEventExecution,
     NodalRemainderRuntimeBinding,
     execute_nodal_remainder_event_schedule,
+)
+from .operator_growth import (
+    OperatorEPIContribution,
+    OperatorEPIGrowthObservation,
+    observe_operator_epi_growth,
+)
+from .operator_growth_mutation import (
+    EligibleOperatorGrowthMutationDispatch,
+    OperatorGrowthMutationCandidate,
+    OperatorGrowthMutationDispatch,
+    execute_eligible_operator_growth_mutation,
+    execute_operator_growth_mutation,
 )
 from .registry import OPERATORS, get_operator_class
 from .remesh import (
@@ -180,6 +207,17 @@ if TYPE_CHECKING:  # pragma: no cover - type checking only
 GlyphFactors = dict[str, Any]
 GlyphOperation = Callable[["NodeProtocol", GlyphFactors], None]
 
+from .birth_access_coupling import (
+    BirthAccessCouplingDispatch,
+    BirthAssociationAccess,
+    execute_birth_access_coupling,
+    observe_birth_association_access,
+)
+from .derived_expansion import (
+    DerivedExpansionDispatch,
+    DerivedExpansionPolicy,
+    execute_derived_expansion_stage,
+)
 from .grammar import apply_glyph_with_grammar  # noqa: E402
 from .grammar_evidence import (
     StructuralGrammarEvidence,
@@ -202,6 +240,39 @@ from .pattern_detection import (  # noqa: E402
     UnifiedPatternDetector,
     analyze_sequence,
     detect_pattern,
+)
+from .reception_selection import (
+    EligibleReceptionDispatch,
+    ReceptionCompatibilityDecision,
+    ReceptionCompatibilityPolicy,
+    execute_eligible_reception_stage,
+    observe_reception_compatibility,
+)
+from .retained_emission import RetainedEmissionDispatch, execute_retained_emission_stage
+from .retained_mutation import RetainedMutationDispatch, execute_retained_mutation_stage
+from .retained_organization import (
+    RetainedMemberState,
+    RetainedOrganization,
+    RetainedScaleDispatch,
+    capture_retained_organization,
+    execute_retained_scale_stage,
+    retained_organization_matches_graph,
+)
+from .retained_reception import (
+    RetainedInputPort,
+    RetainedOutputPort,
+    RetainedOutputReceptionDispatch,
+    RetainedReceptionDispatch,
+    execute_retained_output_reception_stage,
+    execute_retained_reception_stage,
+    retained_input_ports,
+    retained_output_ports,
+)
+from .retained_synthesis import (
+    RetainedPairState,
+    RetainedSynthesisDispatch,
+    capture_retained_pair,
+    execute_retained_synthesis_stage,
 )
 from .self_organization_selection import (
     EligibleSelfOrganizationDispatch,
@@ -254,6 +325,9 @@ __all__ = [
     "RepresentedEPIScheduleOperation",
     "OperatorEventExecutionResult",
     "execute_operator_event_schedule",
+    "OperatorEPIContribution",
+    "OperatorEPIGrowthObservation",
+    "observe_operator_epi_growth",
     "NodalRemainderRuntimeBinding",
     "ExecutedNodalRemainderFlow",
     "ExecutedNodalRemainderEvent",
@@ -304,7 +378,59 @@ __all__ = [
     "SelfOrganizationCandidate",
     "SelfOrganizationEligibility",
     "execute_eligible_self_organization_stage",
+    "EligibleReceptionDispatch",
+    "ReceptionCompatibilityDecision",
+    "ReceptionCompatibilityPolicy",
+    "execute_eligible_reception_stage",
+    "observe_reception_compatibility",
+    "DerivedExpansionDispatch",
+    "DerivedExpansionPolicy",
+    "execute_derived_expansion_stage",
+    "RetainedMutationDispatch",
+    "execute_retained_mutation_stage",
+    "OperatorGrowthMutationDispatch",
+    "EligibleOperatorGrowthMutationDispatch",
+    "OperatorGrowthMutationCandidate",
+    "execute_eligible_operator_growth_mutation",
+    "OperatorGrowthTriggerCertificate",
+    "execute_operator_growth_mutation",
+    "NativePositiveWindowSource",
+    "NativePositiveWindowGrowth",
+    "NativePositiveWindowDispatch",
+    "execute_native_positive_window",
+    "EmissionEpisodeResult",
+    "execute_emission_episode",
+    "EmissionEpisodeObservation",
+    "observe_emission_episode",
+    "NativeEmissionWindowSource",
+    "NativeEmissionWindowGrowth",
+    "NativeEmissionWindowDispatch",
+    "execute_native_emission_window",
+    "RetainedMemberState",
+    "RetainedOrganization",
+    "RetainedScaleDispatch",
+    "capture_retained_organization",
+    "execute_retained_scale_stage",
+    "retained_organization_matches_graph",
+    "RetainedPairState",
+    "RetainedSynthesisDispatch",
+    "capture_retained_pair",
+    "execute_retained_synthesis_stage",
+    "RetainedInputPort",
+    "RetainedReceptionDispatch",
+    "retained_input_ports",
+    "execute_retained_reception_stage",
+    "RetainedOutputPort",
+    "RetainedOutputReceptionDispatch",
+    "retained_output_ports",
+    "execute_retained_output_reception_stage",
+    "RetainedEmissionDispatch",
+    "execute_retained_emission_stage",
     "observe_self_organization_eligibility",
+    "BirthAccessCouplingDispatch",
+    "BirthAssociationAccess",
+    "execute_birth_access_coupling",
+    "observe_birth_association_access",
 ]
 
 __all__.extend(_DEFINITION_EXPORTS.keys())
@@ -1806,6 +1932,7 @@ GLYPH_OPERATIONS: dict[Glyph, GlyphOperation] = {
     Glyph.NAV: _op_NAV,
     Glyph.REMESH: _op_REMESH,
 }
+_NATIVE_SOURCE_GLYPH_BINDINGS = tuple(GLYPH_OPERATIONS.items())
 
 
 def _resolve_glyph_operation(glyph: Glyph | str) -> tuple[Glyph, GlyphOperation]:
@@ -1971,7 +2098,14 @@ def _apply_glyph_impl(
         G.graph.get("GLYPH_FACTORS"), glyph, G.graph
     )
     _validate_u3_graph_application(G, n, glyph)
-    validate_affine_epi_graph_input(G, n, glyph)
+    source_nodes = None
+    if glyph is Glyph.EN and _prepared_operator_state is not None:
+        from ._reception_kernel import ReceptionReadSnapshot
+
+        if type(_prepared_operator_state) is not ReceptionReadSnapshot:
+            raise TypeError("Reception requires a canonical pre-state snapshot")
+        source_nodes = _prepared_operator_state.source_nodes
+    validate_affine_epi_graph_input(G, n, glyph, source_nodes=source_nodes)
     if glyph in (Glyph.IL, Glyph.OZ):
         from ._argument_validation import finite_node_real
 
@@ -2043,6 +2177,17 @@ def apply_glyph(
     """Adapter to operate on ``networkx`` graphs."""
 
     _apply_glyph_impl(G, n, glyph, window=window)
+
+
+_NATIVE_SOURCE_DISPATCH_BINDINGS = tuple(
+    (name, globals()[name])
+    for name in (
+        "apply_glyph",
+        "_apply_glyph_impl",
+        "_apply_glyph_obj_impl",
+        "_resolve_glyph_operation",
+    )
+)
 
 
 def _apply_prepared_reception_glyph(

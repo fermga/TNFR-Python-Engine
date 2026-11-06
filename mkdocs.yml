@@ -103,6 +103,9 @@ nav:
           - "Operators, autonomous occurrence and pulse closure": theory/nodal/OPERATOR_PULSE_CLOSURE.md
       - "Operators, grammar and support events":
           - "Structural operators": theory/STRUCTURAL_OPERATORS.md
+          - "Coupling participation between connected organizations": theory/COUPLING_COMPOSITION.md
+          - "Recursivity: structure, memory and post-birth participation": theory/REMESH_STRUCTURE_AND_MEMORY.md
+          - "NUL synthesis and response sufficiency": theory/NUL_SYNTHESIS.md
           - "Unified grammar": theory/UNIFIED_GRAMMAR_RULES.md
           - "Diagnostic and grammar scope": theory/DIAGNOSTIC_AND_GRAMMAR_SCOPE.md
           - "Relational support events": theory/nodal/RELATIONAL_SUPPORT_EVENTS.md
@@ -298,6 +301,7 @@ nav:
           - "Localized retention mechanisms": theory/nodal/LOCALIZED_RETENTION_MECHANISMS.md
       - "Model-specific operator and hierarchy studies":
           - "Native operator dynamics": theory/NATIVE_OPERATOR_DYNAMICS.md
+          - "Finite-duration Emission proposal and native source competition": theory/EMISSION_EPISODES.md
           - "Native collective calculus": theory/NATIVE_COLLECTIVE_CALCULUS.md
           - "Aggregate operators and native transitions": theory/NATIVE_AGGREGATE_OPERATORS.md
           - "Collective IL/OZ pressure handoff": theory/nodal/SINE_COLLECTIVE_PRESSURE_HANDOFF.md

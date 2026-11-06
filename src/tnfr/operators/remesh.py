@@ -65,7 +65,7 @@ from collections.abc import Hashable, Iterable, Mapping, MutableMapping, Sequenc
 from dataclasses import dataclass, field
 from fractions import Fraction
 from functools import cache
-from itertools import combinations, islice
+from itertools import combinations
 from operator import ge, le
 from statistics import StatisticsError, fmean
 from types import ModuleType
@@ -2852,16 +2852,8 @@ def apply_topological_remesh(
         G.add_edges_from(new_edges)
 
 
-def _retained_tail(series: Sequence[float], window: int) -> Sequence[float]:
-    """Read a chronological sample window from lists or bounded deques."""
-
-    if isinstance(series, deque):
-        return tuple(islice(reversed(series), window))[::-1]
-    return series[-window:]
-
-
 def _extra_gating_ok(
-    hist: MutableMapping[str, Sequence[float]],
+    hist: Mapping[str, Any],
     cfg: Mapping[str, RemeshConfigValue],
     w_estab: int,
 ) -> bool:
@@ -2873,15 +2865,36 @@ def _extra_gating_ok(
         ("kuramoto_R", "REMESH_MIN_KURAMOTO_R", ge),
         ("Si_hi_frac", "REMESH_MIN_SI_HI_FRAC", ge),
     ]
+    admitted = True
     for hist_key, cfg_key, op in checks:
-        series = hist.get(hist_key)
-        if series is not None and len(series) >= w_estab:
-            win = _retained_tail(series, w_estab)
-            avg = sum(win) / len(win)
-            threshold = _as_float(cfg[cfg_key])
-            if not op(avg, threshold):
-                return False
-    return True
+        if hist_key not in hist:
+            continue
+        win = _stability_gate_samples(hist[hist_key], hist_key, w_estab)
+        if len(win) == w_estab:
+            # Exact accumulation of admitted represented samples cannot overflow
+            # or round a mean across the configured comparison boundary.
+            avg = sum((Fraction(value) for value in win), Fraction(0)) / w_estab
+            admitted = bool(op(avg, Fraction(cfg[cfg_key]))) and admitted
+    return admitted
+
+
+def _stability_gate_scalar(value: Any, label: str) -> float:
+    """Admit one runtime scalar before comparison, without default fallback."""
+    from .._exact_time import finite_represented_real
+
+    try:
+        return finite_represented_real(value, label)[0]
+    except (TypeError, ValueError) as exc:
+        raise TNFRValueError(str(exc)) from exc
+
+
+def _stability_gate_samples(value: Any, label: str, window: int) -> tuple[float, ...]:
+    """Read the selected tail of a present history; absence is caller-owned."""
+    samples = _materialize_indexed_history(value, label=f"history {label!r}")
+    return tuple(
+        _stability_gate_scalar(sample, f"history {label!r} sample")
+        for sample in samples[-window:]
+    )
 
 
 def apply_remesh_if_globally_stable(
@@ -2895,9 +2908,15 @@ def apply_remesh_if_globally_stable(
     Standalone callers retain the historical stable-sample-count convention.
     Changing between these incomparable bases starts a fresh cooldown on the
     next successful application; physical-time cooldown remains independent.
+
+    The selected stability window is a positive integer, not an enable switch.
+    Missing or short stability history abstains without creating observations.
+    Additional histories remain optional; present consumed samples and all
+    configured gate scalars must be finite, non-Boolean runtime reals. This
+    function selects a declared delayed map, not autonomous canonical occurrence.
     """
 
-    from ..glyph_history import ensure_history
+    from ._argument_validation import nonnegative_integer, strict_bool
 
     if kwargs:
         unexpected = ", ".join(sorted(kwargs))
@@ -2906,63 +2925,64 @@ def apply_remesh_if_globally_stable(
             f"{unexpected}"
         )
 
-    params = [
-        (
-            "REMESH_STABILITY_WINDOW",
-            int,
-            REMESH_DEFAULTS["REMESH_STABILITY_WINDOW"],
-        ),
-        (
-            "REMESH_REQUIRE_STABILITY",
-            bool,
-            REMESH_DEFAULTS["REMESH_REQUIRE_STABILITY"],
-        ),
-        (
-            "REMESH_MIN_PHASE_SYNC",
-            float,
-            REMESH_DEFAULTS["REMESH_MIN_PHASE_SYNC"],
-        ),
-        (
-            "REMESH_MAX_GLYPH_DISR",
-            float,
-            REMESH_DEFAULTS["REMESH_MAX_GLYPH_DISR"],
-        ),
-        (
-            "REMESH_MIN_SIGMA_MAG",
-            float,
-            REMESH_DEFAULTS["REMESH_MIN_SIGMA_MAG"],
-        ),
-        (
-            "REMESH_MIN_KURAMOTO_R",
-            float,
-            REMESH_DEFAULTS["REMESH_MIN_KURAMOTO_R"],
-        ),
-        (
-            "REMESH_MIN_SI_HI_FRAC",
-            float,
-            REMESH_DEFAULTS["REMESH_MIN_SI_HI_FRAC"],
-        ),
-        (COOLDOWN_KEY, int, REMESH_DEFAULTS[COOLDOWN_KEY]),
-        ("REMESH_COOLDOWN_TS", float, REMESH_DEFAULTS["REMESH_COOLDOWN_TS"]),
-    ]
-    cfg = {}
-    for key, conv, _default in params:
-        cfg[key] = conv(get_param(G, key))
-    frac_req = _as_float(get_param(G, "FRACTION_STABLE_REMESH"))
-    w_estab = (
-        stable_step_window
+    operator = "Recursivity stability gate"
+    window_key = (
+        "stable_step_window"
         if stable_step_window is not None
-        else cfg["REMESH_STABILITY_WINDOW"]
+        else "REMESH_STABILITY_WINDOW"
     )
+    w_estab = nonnegative_integer(
+        (
+            stable_step_window
+            if stable_step_window is not None
+            else get_param(G, "REMESH_STABILITY_WINDOW")
+        ),
+        operator=operator,
+        label=window_key,
+    )
+    if w_estab == 0:
+        raise TNFRValueError(f"{window_key} must be a positive integer")
+    require_stability = strict_bool(
+        get_param(G, "REMESH_REQUIRE_STABILITY"),
+        operator=operator,
+        label="REMESH_REQUIRE_STABILITY",
+    )
+    cooldown = nonnegative_integer(
+        get_param(G, COOLDOWN_KEY), operator=operator, label=COOLDOWN_KEY
+    )
+    cfg = {
+        key: _stability_gate_scalar(get_param(G, key), key)
+        for key in (
+            "REMESH_MIN_PHASE_SYNC",
+            "REMESH_MAX_GLYPH_DISR",
+            "REMESH_MIN_SIGMA_MAG",
+            "REMESH_MIN_KURAMOTO_R",
+            "REMESH_MIN_SI_HI_FRAC",
+            "REMESH_COOLDOWN_TS",
+            "FRACTION_STABLE_REMESH",
+        )
+    }
+    if cfg["REMESH_COOLDOWN_TS"] < 0:
+        raise TNFRValueError("REMESH_COOLDOWN_TS must be nonnegative")
 
-    hist = ensure_history(G)
-    sf = hist.setdefault("stable_frac", [])
-    if len(sf) < w_estab:
+    if "history" not in G.graph:
         return
-    win_sf = _retained_tail(sf, w_estab)
-    if not all(v >= frac_req for v in win_sf):
+    hist = G.graph["history"]
+    if not isinstance(hist, Mapping):
+        raise TNFRValueError("graph history must be a mapping")
+    if "stable_frac" not in hist:
         return
-    if cfg["REMESH_REQUIRE_STABILITY"] and not _extra_gating_ok(hist, cfg, w_estab):
+    sf = _materialize_indexed_history(
+        hist["stable_frac"], label="history 'stable_frac'"
+    )
+    win_sf = _stability_gate_samples(sf, "stable_frac", w_estab)
+    if len(win_sf) < w_estab:
+        return
+    extra_admitted = not require_stability or _extra_gating_ok(hist, cfg, w_estab)
+    if (
+        not all(v >= cfg["FRACTION_STABLE_REMESH"] for v in win_sf)
+        or not extra_admitted
+    ):
         return
 
     next_index = _raw_runtime_step_marker(G.graph)
@@ -2970,13 +2990,20 @@ def apply_remesh_if_globally_stable(
     step_idx = resolve_runtime_step_index(next_index, fallback=len(sf))
     step_basis = "runtime" if runtime_basis else "stable_samples"
     last_basis = G.graph.get("_last_remesh_step_basis", "stable_samples")
+    if last_basis not in ("runtime", "stable_samples"):
+        raise TNFRValueError(
+            "_last_remesh_step_basis must name the recorded clock basis"
+        )
     if last_basis == step_basis and "_last_remesh_step" in G.graph:
-        if step_idx - G.graph["_last_remesh_step"] < cfg[COOLDOWN_KEY]:
+        last_step = nonnegative_integer(
+            G.graph["_last_remesh_step"], operator=operator, label="_last_remesh_step"
+        )
+        if step_idx - last_step < cooldown:
             return
-    t_now = _as_float(G.graph.get("_t", 0.0))
+    t_now = _stability_gate_scalar(G.graph.get("_t", 0.0), "_t")
     if cfg["REMESH_COOLDOWN_TS"] > 0 and "_last_remesh_ts" in G.graph:
-        last_ts = _as_float(G.graph["_last_remesh_ts"])
-        if (t_now - last_ts) < cfg["REMESH_COOLDOWN_TS"]:
+        last_ts = _stability_gate_scalar(G.graph["_last_remesh_ts"], "_last_remesh_ts")
+        if Fraction(t_now) - Fraction(last_ts) < Fraction(cfg["REMESH_COOLDOWN_TS"]):
             return
 
     result = apply_network_remesh(G)

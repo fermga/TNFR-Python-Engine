@@ -11,11 +11,21 @@ from _typeshed import Incomplete
 from ..selector import _selector_parallel_jobs as _selector_parallel_jobs
 from ..types import GlyphCode as GlyphCode
 from ..types import GlyphSelector, HistoryState, NodeId, TNFRGraph
+from .native_epi_source import NativeEPIBatchObservation, _NativeEPIBatchCapture
+from .native_operator_observation import (
+    NativeOperatorDecision as NativeOperatorDecision,
+)
+from .native_operator_observation import (
+    NativeSelectorObservation as NativeSelectorObservation,
+)
 
 __all__ = [
     "GlyphCode",
     "AbstractSelector",
     "DefaultGlyphSelector",
+    "NativeOperatorDecision",
+    "NativeSelectorObservation",
+    "apply_native_operator_batch",
     "ParametricGlyphSelector",
     "default_glyph_selector",
     "parametric_glyph_selector",
@@ -43,16 +53,37 @@ class _SelectorPreselection:
     base_choices: Mapping[Any, GlyphCode]
     thresholds: Mapping[str, float] | None = ...
     margin: float | None = ...
+    weights: Mapping[str, float] | None = ...
+    acceleration_source: str = ...
+    acceleration_window: tuple[Any, Any] | None = ...
 
 class DefaultGlyphSelector(AbstractSelector):
     def __init__(self) -> None: ...
     def prepare(self, graph: TNFRGraph, nodes: Sequence[NodeId]) -> None: ...
-    def select(self, graph: TNFRGraph, node: NodeId) -> GlyphCode: ...
+    def select(
+        self,
+        graph: TNFRGraph,
+        node: NodeId,
+        *,
+        _selection_details: dict[str, Any] | None = ...,
+    ) -> GlyphCode: ...
 
 class ParametricGlyphSelector(AbstractSelector):
     def __init__(self) -> None: ...
-    def prepare(self, graph: TNFRGraph, nodes: Sequence[NodeId]) -> None: ...
-    def select(self, graph: TNFRGraph, node: NodeId) -> GlyphCode: ...
+    def prepare(
+        self,
+        graph: TNFRGraph,
+        nodes: Sequence[NodeId],
+        *,
+        _episode_selection_context: Any = ...,
+    ) -> None: ...
+    def select(
+        self,
+        graph: TNFRGraph,
+        node: NodeId,
+        *,
+        _selection_details: dict[str, Any] | None = ...,
+    ) -> GlyphCode: ...
 
 default_glyph_selector: Incomplete
 parametric_glyph_selector: Incomplete
@@ -75,8 +106,24 @@ def _resolve_preselected_glyph(
     n: NodeId,
     selector: GlyphSelector,
     preselection: _SelectorPreselection | None,
+    *,
+    _selection_details: dict[str, Any] | None = ...,
 ) -> GlyphCode: ...
 def _apply_glyphs(
-    G: TNFRGraph, selector: GlyphSelector, hist: HistoryState
+    G: TNFRGraph,
+    selector: GlyphSelector,
+    hist: HistoryState,
+    *,
+    _decision_trace: list[NativeOperatorDecision] | None = ...,
+    _epi_capture: _NativeEPIBatchCapture | None = ...,
+    _source_guard: Any = ...,
+    _episode_selection_context: Any = ...,
+) -> None: ...
+def apply_native_operator_batch(
+    graph: TNFRGraph,
+    history: HistoryState,
+    *,
+    decision_trace: list[NativeOperatorDecision] | None = ...,
+    epi_trace: list[NativeEPIBatchObservation] | None = ...,
 ) -> None: ...
 def _apply_selector(G: TNFRGraph) -> GlyphSelector: ...

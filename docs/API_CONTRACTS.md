@@ -139,6 +139,351 @@ glyph execution does not consume lag limits or grammar policy. This covers
 the supplied batch configuration/context, not arbitrary callbacks or a full-step
 transaction. A late failure can retain observations and its invocation ordinal.
 
+Selector preparation and selection hooks also have a live admission boundary.
+The batch readmits policy, clock, grammar and lag records after preparation
+and after collecting proposals, before executing a glyph. Both boundaries
+require the original ordered target population. Preparation may change which
+lag choices are forced; collected proposals retain their selection boundary
+and are not recomputed. Lag counters advance once. Replaced lag mappings and
+history-window settings are consumed from the live context. A rejected hook
+result does not roll back the hook's own changes or imply an atomic batch.
+The [hook controls](../tests/test_selector_hook_readmission.py) exercise this
+boundary through actual glyph execution and rejected requests.
+
+`tnfr.dynamics.apply_native_operator_batch(G, history, decision_trace=None, epi_trace=None)`
+exposes that same native all-node batch. It resolves the graph's configured
+selector, returns `None` and advances no time. It does not refresh pressure or
+diagnostics, supply past samples, select a target subset or install a scheduler.
+Default and parametric policies retain their current candidate sets and
+normalizers; exposing this boundary does not make them generate all thirteen
+operators. Direct glyph execution retains its existing distinction from public
+operator classes and atomic stages.
+
+Optional `decision_trace` must be an exact caller-owned list. The batch appends
+frozen `NativeOperatorDecision` reports without replaying selection or grammar.
+Their `selection` describes the evaluated builtin branch (base, hysteresis,
+score, override and soft filter where consumed), or marks custom selection as
+opaque. Forced lag choices do not invent an evaluated selector branch.
+Requests retain their preparation boundary; temporal and grammar admission use
+the live sequential execution state. The reports preserve that distinction.
+
+The report records lag origin/counts, the actual Mutation gate certificate or
+abstention reason, the observed grammar decision and the direct dispatch result.
+The shared grammar observer distinguishes acceptance, fallback, rejection and
+alternative-selection failure, including fallback to the same code. Invalid
+inputs before a decision yield no invented approval. `applied_glyph` is recorded
+only after dispatch returns; later bookkeeping may still fail.
+
+This is a sequential batch: a later failure preserves completed earlier actions
+and propagates the same exception. The caller's list retains the captured
+prefix, terminal failure and already computed but unreached proposals where
+available. A failed dispatch may itself have partial effects; absent
+`applied_glyph` does not certify rollback. Preflight failure before admitted
+targets can leave the trace empty. Reports are neither checkpoints nor
+authenticated provenance, and custom values retain their opaque scope. See
+the [native participation analysis](../theory/NATIVE_OPERATOR_DYNAMICS.md#native-mutation-request-participation)
+for the supplied policy, diagnostic and decision-clock boundaries.
+
+<a id="native-epi-source"></a>
+**Actual native EPI source observation.** The optional `epi_trace` must be an
+exact caller-owned list distinct from `decision_trace`. It receives one frozen
+`NativeEPIBatchObservation` around the actual public batch call, including an
+incomplete call that raises. Return value, selector preparation, lag advancement,
+grammar, dispatch order and sequential failure semantics remain unchanged. The
+default performs no full-population EPI captures. These observations are exposed
+through `tnfr.dynamics` and defined in `tnfr.dynamics.native_epi_source`.
+
+`NativeEPIEndpoint` retains ordered `nodes`, `node_storage_ids`, `exact_epi`,
+`exact_time` and `unavailability_reasons`. EPI uses the shared signed scalar
+binary64 embedding, including uniform-real BEPI; fractions encode that admitted
+representation, not arbitrary-precision raw input. Missing, invalid or richer
+non-scalar form makes observation unavailable without adding a native action
+precondition. Storage identities associate this local capture; they are not
+portable node identity or authenticated provenance.
+
+Each `NativeEPIDispatch` records the actual dispatch index, target and glyph,
+whole-population `before`/`after`, `returned` and `failure_type`. Its
+`exact_increment` is the represented endpoint difference where available. An
+abstained or None request creates no dispatch entry; an action preserving EPI
+creates a zero increment, even if it changes other structural channels. A raised
+dispatch can retain measured partial effects and `returned=False`.
+
+The batch contains `initial`, `final`, `dispatches`, `completed`, failure metadata,
+`available` and `clock_preserved`. When all endpoints retain the same ordered
+population/storage and captured clock, it supplies `exact_net_increment`,
+`exact_dispatch_increment`, `exact_dispatch_variation`,
+`exact_outside_dispatch_increment`, `exact_outside_dispatch_variation` and the
+individual `exact_outside_dispatch_increments`. These are vector sums of exact
+represented differences. Failed-prefix arithmetic can be available while
+`completed=False`; successful execution can have unavailable observations.
+Changed population/storage, changed or unreadable clock, or unavailable EPI
+leaves whole-batch totals unavailable rather than inserting zeros.
+
+An unexpected failure of post-dispatch recording marks capture incomplete. If
+the primitive returned, its native history cleanup, interval receipt and waiting
+bookkeeping still complete before the observation error propagates; later targets
+are not executed. If the primitive or its existing bookkeeping fails, that
+original error takes precedence. Missing capture cannot be relabelled as an
+outside-dispatch change or a complete source.
+
+Outside-dispatch changes include selector/grammar/hook effects between captured
+boundaries; they are not attributed to an operator. Zero net residual can hide
+cancelling gaps, and endpoint variation misses an internal round trip. Mutable
+dispatch registrations and glyph names do not authenticate a canonical map.
+The record contains no rate, creates no temporal samples or receipt, and cannot
+activate Mutation. The restricted producer below owns its own positive interval
+and immediate live admission. See the [source analysis](../theory/NATIVE_OPERATOR_DYNAMICS.md#native-epi-source).
+
+<a id="native-positive-window"></a>
+**Restricted positive-window native source.** The opt-in
+`tnfr.operators.execute_native_positive_window(graph, *, duration, candidates=None,
+method=None, n_jobs=None, mutation_kwargs=None)` executes a real positive interval,
+one terminal native batch and eligible canonical ZHIR responses. It accepts no
+detached source/report/certificate input. The supplied order differs from the
+ordinary runtime's batch-before-flow order; the existing native API is unchanged.
+
+The interval requires the canonical default nodal integrator, zero stored
+pressure, no Gamma or extended dynamics, and fixed ordered node/storage identity.
+Form, phase, capacity and support are held during that interval. The actual flow
+executor advances its declared clock and records its boundaries; a timestamp
+assignment cannot substitute for it. The terminal batch requires the admitted
+builtin selector, enabled grammar with rejection mode `"raise"`, and unchanged
+direct dispatch bindings. Its live grammar,
+AL/EN waiting priority, sequential order and histories remain in force.
+Native history is the graph-owned exact dictionary `graph.graph["history"]`,
+retained by identity; absence creates an empty dictionary. No external history
+argument or dictionary subclass is admitted by this restricted route.
+Source acceptance requires complete scalar capture, unchanged terminal clock,
+contiguous endpoints and zero outside-dispatch variation, not just zero residual.
+
+The source retains the actual flow execution and native observations separately;
+native actions are not represented as atomic schedule stages. Growth records exact
+represented signed endpoint changes divided by the declared positive duration,
+with separate flow, jump and variation accounting. The interval is (s,t], including
+the terminal jumps. These values are historical reports; only the private current
+production scope can bind a fresh response snapshot. They create no continuous
+secant. Form-writing native actions retain their ordinary history invalidation.
+
+The returned `NativePositiveWindowDispatch` exposes `source_result`, `growth`,
+`candidates`, `decisions`, `selected_targets` and optional `stage_result`;
+`executed` means a supplementary phase stage occurred. `NativePositiveWindowSource`
+retains `flow_result`, `native_batch`, `native_decisions` and the initial/flow
+endpoints. `NativePositiveWindowGrowth` carries the exact interval and vector
+balance. The growth source is `native_positive_window_net_growth`; trigger
+telemetry uses `native_positive_window_time`, distinct from schedule growth.
+
+Candidates default to all initial nodes in order; an explicit set is a nonempty
+unique exact tuple. Each candidate must independently pass strict exact growth,
+capacity/floor, live grammar and unused-window admission. The shared hybrid
+`_operator_growth_mutation_end` watermark retains successful consumed endpoints
+across this route and the supplied-schedule consumer. Native ZHIR, if actually
+returned, has precedence over a supplementary response on that target. It cannot
+acquire a crossing continuous secant in this restricted one-batch zero-flow source;
+the precedence guard is not evidence of general source competition. Empty selection
+retains the source and adds no empty phase stage, ZHIR event or hybrid receipt.
+
+Initial request and domain admission precede source execution; later readmission
+can fail after actual source effects. The flow executor retains its own failure
+boundary; native failure preserves elapsed flow
+and the completed/partial native prefix. An incomplete or unavailable source grants
+no response. After source completion, eligibility and response have a separate
+graph transaction: their failure restores the completed source state. External
+callback effects are outside graph rollback. This is not the source-and-response
+atomicity of the supplied-schedule consumer. See the [restricted source analysis](../theory/NATIVE_OPERATOR_DYNAMICS.md#native-positive-window).
+
+<a id="emission-episode"></a>
+**Finite-duration Emission proposal.** The opt-in
+`execute_emission_episode(graph, targets, *, duration, method=None, n_jobs=None,
+window=None)` executes a distinct AL episode. It is an explicit constitutive
+extension: the primary coordinate action follows the AL translation family,
+while counting one duration-bearing episode as one occurrence is a declared
+lifecycle choice. Ordinary instantaneous AL and the zero-flow native interface
+retain their contracts. See the [proposal and its assumptions](../theory/EMISSION_EPISODES.md#emission-episode-status).
+
+Targets are a nonempty unique exact tuple. Each has positive admitted capacity
+and pressure, strict AL entry/completion state, and its own enabled grammar in
+rejection mode `"raise"`. Duration is positive and uses the live structural clock.
+An already activated target must retain a countable AL lineage; missing lineage
+cannot certify a new counted episode. Completion checks preserve that lineage.
+Every nonzero form row must belong to a target; nonparticipants have zero row.
+The canonical nodal integrator holds pressure, capacity, phase and support, with
+Gamma absent. A prospective target gain `duration * nu_f * DeltaNFR` is compared
+against the shared AL proposal. Clipping or a represented endpoint mismatch
+rejects the episode; a measured increment cannot be used to fit its own gain.
+
+The integrator supplies the EPI change and real physical boundary samples.
+Completion commits shared AL activation lineage, source-glyph provenance and
+exactly one grammar occurrence, without another AL form write. Physical history
+therefore remains valid. Native waiting counters are unchanged, matching the
+separate public-operator semantics. The episode is atomic on graph-owned state;
+failure restores its entry state. It is not an interruptible persistent action,
+and external callback effects are outside graph rollback.
+
+`EmissionEpisodeResult` retains ordered population/targets, the actual
+`flow_result`, prospective rates/gains and represented EPI endpoints. Numerical
+substeps count within one episode; separately invoked episodes count separately.
+Actual solver derivative diagnostics remain observable and may depend on the
+subdivision. Neither a report nor equal endpoints authenticate another execution.
+
+Successive episodes retain actual physical history across pressure-only IL/OZ
+actions. A subsequent graph-backed THOL reads active history. Public/staged/native
+routes retain their own grammar admission and the optional strict public/staged
+gate remains separate; direct glyph dispatch alone is not full grammar admission.
+The selected finite window remains part of the observation. Its signed pressure
+result need not admit another
+positive-rate AL episode. Rejection of that later episode restores its own entry
+state, preserving completed THOL. See the [causal composition and boundaries](../theory/THOL_PRESSURE_FEEDBACK.md#thol-emission-history-continuation).
+
+The same actual source can feed the existing eligible THOL dispatcher and
+admitted child creation. Its returned parent/child association can supply an
+explicit UM request, followed by actual EN/RA participation. Birth supplies
+neither contact nor inherited child grammar/physical history. The
+[three-branch integration](../theory/THOL_PRESSURE_FEEDBACK.md#thol-acquired-birth-participation)
+separates child input from UM's other effects and tests the child's own later
+actions; invocation times and source selection remain supplied policies.
+
+`execute_native_emission_window(graph, emission_targets, *, duration,
+candidates=None, method=None, n_jobs=None, episode_window=None,
+mutation_kwargs=None, selector_acceleration_source="solver_diagnostic")` owns an
+actual episode, one sequential native batch and
+eligible supplementary ZHIR responses. It requires the unchanged builtin native
+dispatch family, exact graph-owned history and
+`NATIVE_ZHIR_OCCURRENCE_POLICY="consume_timestamped_interval"`. Its source result
+retains the episode and native capture separately. The growth source is
+`native_emission_window_net_growth`, with trigger time basis
+`native_emission_window_time`; the episode flow and terminal jumps each enter the
+whole-window balance once. All rows, endpoint joins and outside-dispatch coverage
+are re-admitted by the private live producer.
+
+An actual native ZHIR takes precedence over a supplementary response. For other
+candidates, exact growth, capacity, grammar and unused evidence remain independent
+requirements. A successful supplementary response also consumes any retained valid
+physical interval matching this window and live EPI, through the shared native
+occurrence owner. Previously consumed matching evidence blocks admission; a form
+jump that cleared physical history creates no invented physical receipt. Phase,
+grammar and those receipts commit in the same response transaction. Native failure
+retains the completed episode/prefix; response failure restores the post-source
+state. No detached source, episode result or growth report is an activation input.
+
+`observe_emission_episode(result)` returns a passive `EmissionEpisodeObservation`
+from the actual sealed episode. It separates `exact_held_rates`, actual endpoint
+`exact_observed_rates`, law-derived `exact_interior_accelerations`, and the
+`solver_rates`/`solver_accelerations` retained at completion. Endpoint secants
+need not equal the represented held rate after rounding. The episode's two
+endpoints alone leave `episode_sampled_acceleration_available` and
+`boundary_transition_available` false; earlier live history is a separate source.
+See the [derivation and selection scope](../theory/EMISSION_EPISODES.md#emission-selector-observation).
+
+The native wrapper's opt-in `selector_acceleration_source="emission_interior"`
+requires the unchanged builtin parametric selector and the producer's own live
+episode. Its call-local channel covers the complete produced population and
+supplies acceleration consistently to normalization, base choice, hysteresis,
+score and the soft repetition/force filter. It creates no derivative-cache or
+history writes. `source_result.selector_observation` retains the passive basis;
+`source_result.selector_acceleration_source` and the decision trace identify the
+selected channel and episode window. A returned observation cannot activate a
+later or foreign batch. Cleanup retires the channel on success and failure.
+Ordinary selector calls retain the stored-diagnostic policy. THOL's actual
+history-derived pressure action remains distinct; the episode policy does not
+reinterpret missing temporal curvature as measured zero or supply a child birth.
+Later actions retain their own diagnostic effects: supplementary staged ZHIR
+writes its history-derived acceleration cache, while direct native ZHIR does
+not. The retained episode report still records the earlier completion values.
+
+Native dispatch also owns a target-local continuous-history boundary. For an
+actual scalar-form writer (AL, EN, RA, VAL or NUL), an existing non-None
+`epi_time_history` is invalidated to an empty tuple if the final form differs
+from its admitted pre-dispatch value. An unreadable final form invalidates
+conservatively. This applies to the final dispatched glyph and to visible
+partial effects after a failed dispatch; the original exception is preserved.
+The optional `physical_history_invalidated` trace field distinguishes a completed
+boundary from an unavailable observation. This is not a rollback guarantee or
+an audit of arbitrary transient or non-target writes by external replacements.
+
+The boundary creates no timestamps, samples or elapsed duration. It does not
+read history contents, alter legacy histories or populate absent/None physical
+histories. Phase-only actions and numerically unchanged forms retain the exact
+history binding. Empty physical history remains authoritative, preventing silent
+fallback to an older legacy series. A later form round trip cannot restore the
+discarded continuous interval. The runtime recorder can subsequently begin a
+new history at its actual right endpoint; acquiring another growth interval
+requires its own admitted temporal mechanism.
+
+This automatic invalidation belongs to native batches and their runtime
+consumer. Explicit direct/class/staged interventions retain their separate
+observation responsibilities; the event runtime records individual stage
+boundaries and the network-word preflight retains its conservative Mutation
+guard for earlier primary-EPI writers. See the [operator source boundary](../theory/NATIVE_OPERATOR_DYNAMICS.md#native-operator-growth-source-boundary)
+for the difference between finite jumps, a primitive continuous limit and
+admissible temporal evidence.
+
+The native graph setting `NATIVE_ZHIR_OCCURRENCE_POLICY` defaults to `"level"`:
+qualifying own growth evidence can support repeated Mutation requests. The
+explicit alternative `"consume_timestamped_interval"` retains each successfully
+dispatched native ZHIR interval in that node's
+`_native_zhir_consumed_intervals`. Its identity is the evidence source and two
+represented binary64 timestamps, independently of sampled EPI values, threshold,
+phase or invocation count. The exact tuple ledger is re-admitted before use;
+malformed entries reject. It has no automatic eviction. Revising values or
+replaying an older interval does not renew a consumed identity. Changing the
+ledger externally resets the model's memory; it is not authenticated provenance.
+
+The alternative retains live capacity/growth checks and configured grammar admission.
+An otherwise valid legacy step history lacks timestamped interval identity and
+abstains; a consumed interval also abstains. Both requests use the existing
+IL substitution by default, or the explicit no-action policy below. A final ZHIR dispatch must satisfy
+live occurrence admission even if selected by a grammar fallback. Rejection,
+substitution to another glyph and a dispatch that raises do not consume an
+interval. A successful ZHIR return commits consumption before later bookkeeping
+or another target can fail. Mutation of the ledger during dispatch rejects the
+commit; arbitrary external writes are outside the retained-memory guarantee.
+Existing partial-effect limitations still apply.
+
+The optional decision trace reports the occurrence policy, interval, prior
+consumption and completed consumption separately. This rule applies to native
+selector batches, including their existing runtime consumer. Explicit direct
+glyphs, public operator classes and atomic stages retain their own contracts;
+they neither consult nor populate this native ledger. The level policy ignores
+the ledger and does not add receipts. Switching policies does not reconstruct
+earlier executions. This is an opt-in occurrence law with growing retained
+memory, not a derived clock or a new default canonical law. See the
+[interval occurrence analysis](../theory/NATIVE_OPERATOR_DYNAMICS.md#native-mutation-interval-occurrence).
+
+<a id="native-mutation-abstention"></a>
+**Native Mutation abstention policy.**
+
+`NATIVE_ZHIR_ABSTENTION_POLICY` accepts exactly `"coherence"` (the default)
+or `"skip"`. It affects an actual native Mutation request whose own trigger or
+interval policy reports an abstention reason. The default substitutes Coherence
+and then applies configured grammar. With `"skip"`, that target dispatches no
+operator and does not search for a grammar alternative. Other requests, live
+admission of eligible Mutation, and explicit direct/public/staged actions keep
+their separate contracts. Neither policy selects hybrid operator-growth evidence.
+
+The policy is admitted before selector construction/preparation, after hooks and
+at use. Every actual Mutation request admits explicit capacity and its configured
+`ZHIR_MIN_VF` through the shared reader, even when earlier trigger conditions
+would exclude execution. Missing/malformed capacity, invalid floor, threshold or
+other consumed primary scalars remain errors. Valid inactivity, noncrossing and
+the existing certificate's unavailable/invalid temporal-evidence classification
+remain distinct reported abstention conditions. This is not approval of those
+historical samples. An unrelated request does not consume the Mutation floor.
+
+A skipped Mutation occasion still increments native AL/EN lag counters once.
+It adds no glyph, operator step, grammar debt/coherence update, continuous-history
+cleanup or interval receipt. The existing `mutation_abstentions` sink is admitted
+and records `applied_glyph=None`. The optional decision trace records the consumed
+`mutation_abstention_policy`, reason, `status="abstained"`, and no post-gate or
+applied glyph. This differs from `status="skipped"` for an opaque selector's
+`None` proposal. Tracing itself changes no selection or execution.
+
+No-action applies to the target's dispatch, not the whole sequential batch:
+other nodes can still modify it through their real neighborhood actions. A later
+error retains the completed prefix and lag writes. Skipping cannot suppress an
+eligible action's grammar rejection or a failed actual dispatch. The
+[selection analysis](../theory/NATIVE_OPERATOR_DYNAMICS.md#native-mutation-abstention)
+states the pressure/memory consequences and remaining source-selection boundary.
+
 Soft repetition thresholds `GRAMMAR.force_dnfr` and `force_accel` and consumed
 normalized scores admit original represented-real values in `[0,1]`; Boolean,
 text, nonfinite or lost nonzero values reject. Explicit malformed fallback
@@ -802,7 +1147,7 @@ live preconditions or measured postcondition.
 | Coupling | coupling | UM | theta | node | network | &#124;ΔNFR&#124; not increased (mutual stabilization) |
 | Mutation | mutation | ZHIR | theta | node | phase | θ transformed (θ → θ') |
 | Coherence | coherence | IL | delta_nfr | node | network | &#124;ΔNFR&#124; not increased and C(t) not decreased |
-| Dissonance | dissonance | OZ | delta_nfr | node | node | &#124;ΔNFR&#124; not decreased |
+| Dissonance | dissonance | OZ | delta_nfr | node | node | local &#124;ΔNFR&#124; not decreased in amplification mode; finite pressure in jitter mode |
 | Self-organization | self_organization | THOL | delta_nfr | node | network | parent EPI, nu_f and phase fixed; DeltaNFR follows signed acceleration; nested child creation preserves parent identity |
 | Transition | transition | NAV | delta_nfr | node | state | state changed (νf, θ, or ΔNFR) |
 | Recursivity | recursivity | REMESH | EPI | network | advisory | node-level advisory; network effect = EPI mixed toward temporal/multi-scale history |
@@ -828,6 +1173,28 @@ A direct node-level Recursivity glyph and its shared word stage are
 advisory-only: the stage derives one immutable advisory from its snapshot,
 deduplicates one graph event per telemetry step and leaves structural channels
 unchanged. It never triggers delayed EPI mixing implicitly.
+
+<a id="remesh-postbirth-history"></a>
+For participation after membership growth, use the existing live sampler
+`tnfr.dynamics.remesh_history.append_remesh_epi_history_snapshot` only after
+the new members exist. Explicitly starting observation there does not reset
+any earlier records. The existing `execute_event_remesh_cycle` composes a
+fixed-node schedule, one pre-map sample and the delayed map; a schedule that
+creates a node is outside its domain. `apply_network_remesh` itself appends
+no delayed row and supplies no advisory occurrence or grammar credit.
+
+The direct map requires its two selected lag rows to match current support;
+the event cycle requires every retained row to do so before the schedule.
+A pre-birth row can therefore block the cycle even after newer rows admit the
+direct map. Neither path fills a missing child's past. An insufficient-history
+result is an explicit no-op, not successful recursion. Index delays do not
+specify elapsed time without a separate sampling-clock law.
+
+Both `REMESH_TAU_LOCAL` and `REMESH_TAU_GLOBAL` select past values of the same
+node from the same population snapshot history. They are not constituent and
+collective-memory stores, nor spatial means. The
+[structure/memory analysis and actual EN/RA continuation](../theory/REMESH_STRUCTURE_AND_MEMORY.md)
+explain these distinctions and the remaining historical cross-scale role.
 
 The optional memory helper `propagate_structural_identity` is a separate
 hybrid jump. It interpolates signed scalar form and nonnegative capacity and
@@ -867,6 +1234,215 @@ The word starts with a U1 generator, contains a stabilizer, and ends with a U1
 closure. State-dependent operator preconditions remain mandatory during
 execution. Coupling and Resonance additionally enforce U3 before mutation.
 
+Coupling also supports `Coupling()(G, i, potential_partner=j)` and the
+`potential_partner` keyword of `execute_network_operator_stage`. This request
+defaults to `potential_scope="isolated"`: the shared atomic UM stage with one target and a totally isolated
+partner. The target may already have support: its U3-compatible outgoing
+neighbors in their existing order, followed by the requested partner, enter
+the same phase, optional capacity and pressure map. The partner must itself
+pass U3; another compatible neighbor cannot admit an incompatible request.
+Only the requested new link is proposed. Existing edge attributes are
+preserved; bidirectional phase writes also affect participating old neighbors
+without executing UM or adding history on those neighbors. Final U3 covers
+target-participant relations, not every other relation incident to a moved
+neighbor. Incoming-only neighbors do not participate in this outgoing map.
+Initial/final U3, enabled functional links, configured affinity
+and actual UM grammar admission are mandatory; a fallback action does not
+satisfy a creating request. The
+[potential-pair contract](../theory/STRUCTURAL_OPERATORS.md#coupling-potential-pair)
+owns its complete state and continuation limits. Omitting the keyword preserves
+ordinary execution. Other operators reject it at the network dispatcher;
+the all-node word and hybrid schedule APIs do not select potential partners.
+An actual THOL child ID can supply the partner, but ancestry metadata neither
+selects the invocation nor authenticates its provenance. No temporary edge is
+inserted for admission, and two already-connected endpoints remain outside
+this default domain. In directed graphs the new edge is target to
+partner: subsequent RA at the target can read the partner, while EN there
+still uses only incoming sources. Each continuation has its own admission.
+
+<a id="connected-organization-coupling"></a>
+#### Coupling between disjoint connected organizations
+
+`Coupling()(G, i, potential_partner=j, potential_scope="disjoint_components")`
+uses the same atomic stage and numerical UM map. The shared
+`execute_coupling_stage` and `execute_network_operator_stage` accept the same
+keywords. Scope accepts only `isolated` (default) or `disjoint_components`;
+the latter requires a partner. An explicit request must execute one canonical
+UM target, with its own live grammar; fallback is not successful creation.
+
+The new scope requires an undirected non-multigraph, distinct whole connected
+components containing at least two identities each, an absent requested edge
+and enabled functional links. Zero-weight support counts. A self-loop alone
+does not establish a second constituent. Compatible old target neighbors and
+the mandatory partner enter the shared phase/capacity/pressure map. Only the
+target receives the operator occurrence; other phase participants keep their
+own history and counters.
+
+All old edges incident to the original phase-write set, plus the requested
+relation, must satisfy effective U3 initially and after the represented map.
+Additional boundary endpoints do not become consensus participants. After
+postchecks and callbacks, the same original write set and admitted limit
+(or a stricter live limit) remain binding. Node identities, old support and
+old edge attributes are preserved, with exactly the requested new edge.
+Failure rolls back graph-owned invocation state. External callback effects
+are not transactional. Distant unrelated phases/edges are not consumed.
+
+The [derivation and continuation controls](../theory/COUPLING_COMPOSITION.md)
+distinguish these guarantees from ordinary UM's existing candidate-link
+creation and the default isolated-partner request. They do not supply partner
+discovery, collective identity or autonomous occurrence. New-scope stage
+telemetry adds `scope` to `potential_pair`; default telemetry is unchanged.
+
+<a id="ordinary-coupling-relation-preservation"></a>
+#### Preserving existing relations in ordinary Coupling
+
+`Coupling()(G, i, preserve_relations=True)` routes the ordinary request through
+the atomic singleton UM stage. `execute_coupling_stage` and
+`execute_network_operator_stage` accept the same Boolean keyword; the latter
+admits an enabled request only for UM. The public call still returns `None`;
+the stage and dispatcher retain `NetworkStageResult`. Omitted or `False`
+requests retain legacy behavior. Strings, integers and `None` are invalid
+request values, including on an empty-target branch.
+
+The atomic stage retains its existing transaction metadata domain. Builtin
+container cycles are supported; embedding a NetworkX Graph object in edge
+metadata is rejected before this request executes. The option does not extend
+that admission domain or assign it to the legacy direct public path.
+
+The enabled domain requires canonical Coupling, a nonempty target tuple, an
+undirected non-multigraph and `UM_FUNCTIONAL_LINKS=False`. Self-loops and
+zero-weight edges are allowed. No potential partner or alternative potential
+scope may be combined with it. Multiple targets use the existing common
+snapshot and phase merger. Live grammar still applies; a substituted action
+cannot satisfy the explicit UM request.
+
+The request preserves all existing edges incident to every original proposed
+phase writer, including secondary neighbors, zero displacements and writes
+cancelled by the merger. It admits that boundary initially, after the joint
+proposal and after postchecks/refresh, retaining the original or stricter live
+U3 bound. Extra boundary endpoints do not become consensus inputs. Node
+identities, support and edge attributes remain fixed. A preflight change cannot
+replace the original source with a more permissive baseline.
+
+Failure restores the graph-owned invocation, including its histories and
+telemetry; external callback effects are outside rollback. The guarantee is
+about the returned relation boundary, not arbitrary callback metadata,
+continuous-time safety, bounded capacity or future compatibility. Normal own
+UM events belong only to the actual targets. The
+[derivation and controls](../theory/COUPLING_COMPOSITION.md#ordinary-coupling-relation-preservation)
+distinguish this fixed-support request from disjoint-component link creation.
+
+<a id="birth-association-coupling"></a>
+### State-derived birth-association access to Coupling
+
+`observe_birth_association_access(G, parent)` returns a passive
+`BirthAssociationAccess` with the parent, ordered associated, isolated and
+connected children, and policy `unique_isolated_birth_child`. Status is
+`no_associated_child`, `no_isolated_child`, `ambiguous` or `selected`;
+`selected_partner` is available only for a singleton isolated set.
+Missing `sub_nodes` means empty; present containers and every referenced
+child/parent relation must be valid. Missing hierarchy/index entries retain
+THOL's legacy behavior, while a present conflicting index rejects. No global
+genealogy audit or historical-origin authentication is implied.
+
+`execute_birth_access_coupling(G, parent, execution_kwargs=None)` re-reads
+current access and returns `BirthAccessCouplingDispatch(access, stage_result)`;
+`executed` distinguishes actual UM from a side-effect-free abstention. It
+accepts neither a partner ID nor a previously returned report. A unique child
+still passes the actual atomic UM stage; multiple children abstain before
+numerical eligibility, with no scoring or fallback. Directed incoming support
+prevents isolation. Unlisted compatible nodes are outside this access domain.
+
+The optional mapping accepts only `window`, `validate_preconditions`,
+`collect_metrics`, `validate_nodal_equation`, `validate_postconditions` and
+`dt`, using existing common admission. Preconditions must be requested,
+canonical grammar enabled and rejection mode `raise`, even on abstention.
+Unused UM numerical fields are admitted only if a candidate reaches the stage.
+The full invocation rolls back graph-owned changes on failure, preserving
+any birth completed beforehand; external effects are outside that guarantee.
+The outer result records association-derived access; the inner stage retains
+`potential_pair.origin="explicit_request"` at its concrete-argument boundary.
+No scheduler, event clock or birth callback is installed. The
+[theory contract](../theory/STRUCTURAL_OPERATORS.md#coupling-birth-association-access)
+owns the policy and its relabeling/lifetime limits.
+
+### Reception source requests
+
+Reception also supports `Reception()(G, i, source_nodes=(j, k))` and the
+`source_nodes` keyword of `execute_neighbor_stage` and
+`execute_network_operator_stage`. The tuple is ordered, nonempty and unique;
+each selected source must be an existing incoming neighbor of every target
+and provide explicit admitted signed scalar EPI. Directed support uses
+predecessors, including unique sources on multigraphs. The selected forms
+determine the unweighted mean and the supplied order resolves semantic-kind
+ties. Missing selected form, duplicate sources and empty selections reject;
+there is no implicit fallback to all neighbors.
+
+An explicit public request runs the shared atomic stage and returns `None`.
+The same tuple is independently validated for each stage target, and all
+proposals read one pre-state. Canonical Reception and actual EN grammar
+admission are mandatory. Replacement by another glyph cannot satisfy the
+request. The stage rolls back graph-owned state on failure; opaque external
+callback effects are outside that guarantee. Omitting the tuple or using
+`None` preserves ordinary execution, including its missing-form policy.
+
+This is a supplied causal source selection, not an autonomous phase/capacity
+filter. `track_sources` retains its separate telemetry read set and may report
+sources that the blend did not consume. Snapshots and stage observations
+retain `source_nodes`, ordered associated forms/kinds and
+`source_selection_origin`; executor metrics additionally expose
+`input_neighbors`. Standalone metrics only observe the live legacy read set
+and identify it as `live_legacy_observation`, without reconstructing a past
+selection. Existing auxiliary all-neighbor certificates abstain for every
+explicit tuple, including a tuple equal to the full neighbor set. The
+[causal-source contract](../theory/STRUCTURAL_OPERATORS.md#reception-causal-sources)
+owns the mathematics and remaining compatibility question. Other operators
+reject the keyword at the stage dispatcher; word and hybrid schedule APIs
+do not choose source tuples.
+
+For state-dependent source choice, use
+`ReceptionCompatibilityPolicy(max_phase_gap, max_relative_capacity_gap,
+mode="select")` and `execute_eligible_reception_stage(G, i, policy)`, exported
+from `tnfr.operators`. Both numerical bounds are required. The policy uses
+the shared circular phase distance and the dimensionless capacity inequality
+`abs(nu_j-nu_i) <= eta * max(nu_i, nu_j)` on admitted represented capacities.
+It supplies no measured-frequency interpretation or UM/RA U3 constraint.
+`mode="require_all"` instead abstains unless the entire nonempty incoming
+set is compatible. The [family and numerical scope](../theory/STRUCTURAL_OPERATORS.md#reception-compatibility-policy)
+own the threshold, zero-capacity and symmetry boundaries.
+
+The pure `observe_reception_compatibility` reads explicit phase/capacity for
+the receiver and **every** incoming candidate, including excluded sources.
+Invalid consumed state raises. It returns a sealed decision with policy,
+ordered candidate coordinates and selected IDs; it does not admit EPI or
+grammar. Existing self-loops remain candidates, so a nonempty decision does
+not itself establish input from another NFR.
+
+The conditional dispatcher handles one receiver per supplied invocation.
+Its `EligibleReceptionDispatch` contains `compatibility` and either the
+existing canonical `stage_result` or `None`; `executed` distinguishes them.
+A source-rule abstention runs no EN, increments no operator history, writes
+no stage schedule and calls no pressure refresh. A nonempty decision still
+passes actual EN form admission, grammar and configured preconditions;
+failures raise and a substituted glyph cannot satisfy the request. The stage
+rechecks the complete decision against its own pre-state before commit.
+Snapshots and observations retain the sealed `compatibility_decision`.
+Executor metrics retain its primitive report projection under the same key,
+without a proof seal; it is not execution evidence. These readers report
+`source_selection_origin="compatibility_policy"`. Standalone metrics cannot
+reconstruct such a past decision.
+
+`execution_kwargs` supports `window`, `validate_preconditions`,
+`collect_metrics`, `validate_nodal_equation`, `dt`, `track_sources` and
+`max_distance`. Separate keyword arguments accept an optional
+`compute_delta_nfr` callback and `include_epi_jump_certificate`; the latter
+reports the existing selected-source certificate abstention on an executed
+stage. An empty attempt has no stage certificate. All graph-owned failures
+roll back, including callback failure; external effects are outside that
+guarantee. The dispatcher does not install a recurring selector or event
+clock, and it does not extend the fixed-target word/event APIs to partial
+stages. The legacy and explicit-source APIs retain their original domains.
+
 Resonance's optional strict preconditions and readiness report share admitted
 state and finite nonnegative policy thresholds. Invalid thresholds reject
 before direct or atomic-stage writes. The readiness flag covers the configured
@@ -874,6 +1450,336 @@ form-magnitude, capacity, pressure-magnitude and connectivity checks; it does
 not replace U3 or authorize execution. Its neighbor-mean phase warning retains
 an unavailable direction at an exactly zero represented resultant, while invalid
 consumed phases raise. These reads do not write graph caches.
+
+### Retained members and scale actions
+
+`capture_retained_organization(G, members)` accepts a nonempty exact tuple of
+unique existing member IDs. It returns an owner-bound `RetainedOrganization`
+with ordered `member_states`, incoming/outgoing neighbor tuples and incident
+edge records, including multigraph keys and attribute signatures. Those port
+tuples include internal neighbors as well as the external boundary. Parallel
+edges retain their records but do not duplicate EN/RA neighbors. Boundary-node
+coordinates are not admitted merely to describe a port.
+
+Members must supply admitted signed scalar EPI, finite phase and pressure,
+nonnegative capacity, and valid own grammar context. Kind may be absent or
+empty. Raw member metadata and present temporal histories retain their
+associations through immutable signatures; no missing history is fabricated,
+and stale temporal samples are not promoted to current derivative evidence.
+The complete graph remains the runtime state. The observation is neither a
+portable checkpoint nor a scalar macro-NFR or a collective identity proof.
+
+`retained_organization_matches_graph(G, record)` re-admits the member/port
+association. A foreign graph, changed member state/context, changed incident
+edge or changed neighbor order invalidates the record. Unrelated boundary
+coordinates may change; the actual subsequent operator always reads the live
+state it consumes.
+
+`execute_retained_scale_stage(G, record, operator, execution_kwargs=None)`
+accepts the canonical `Expansion()` or `Contraction()` and delegates to the
+existing atomic pointwise stage on exactly those members. It requires the
+requested two-phase action before fallback execution. Each member must pass
+its own grammar and configured preconditions; grouping supplies no inherited
+history or admission credit. The default scalar maps remain unchanged.
+
+The `execution_kwargs` mapping accepts `window`, `validate_preconditions`,
+`collect_metrics`, `validate_nodal_equation` and `dt`. This bounded consumer
+accepts no refresh callback, sequence-context override or graph edit. It
+checks that all node identities/support/edge attributes, nonmember node state
+and member phases remain intact. Existing graph telemetry and the members'
+own event context may change. Failure at admission, execution or the returned
+observation restores graph-owned state; external effects are outside that
+transaction guarantee.
+
+The returned `RetainedScaleDispatch` contains `before`, `after` and the actual
+`stage_result`. These are associated observations and a transaction summary,
+not an authenticated execution certificate. Subsequent actions continue on
+the actual graph and member IDs; a retained request must match its live
+source again. The [mathematical scope](../theory/STRUCTURAL_OPERATORS.md#retained-member-scale-actions)
+explains why averaging members or cloning donor ports cannot silently replace
+this representation, and why proliferation/synthesis remain separate roles.
+
+The shared `execute_pointwise_stage(..., require_exact_operator=True)` exposes
+the same opt-in rejection of grammar replacement independently of any EPI
+certificate. It accepts an actual Boolean; the default `False` preserves
+ordinary fallback behavior. It requires the requested implemented two-phase
+path, without supplying a theorem about organization or changing grammar.
+
+### One explicitly derived Expansion member
+
+`DerivedExpansionPolicy(source_order=..., form_ratio=..., capacity_ratio=...)`
+requires all three keyword arguments. The order is `pre_val` or `post_val`;
+both ratios must be admitted finite represented reals in `(0,1]`. This is a
+bounded constitutive family, not a uniquely derived proliferation law or an
+additional glyph. Ordinary `Expansion()` keeps its existing scalar semantics.
+
+`execute_derived_expansion_stage(G, source, child, policy, execution_kwargs=None)`
+requires a current singleton `RetainedOrganization` for the parent and a fresh
+supplied child identity. It executes the actual canonical retained VAL stage
+on that parent, then derives one isolated member from its admitted pre-VAL or
+post-VAL state. Form and capacity use the same selected boundary and their
+respective ratios. The child inherits the source phase and semantic kind;
+stored pressure starts at zero by the declared birth law. Nonfinite or nonzero
+underflowed products and child EPI outside configured bounds reject; birth
+does not silently clip the formula. The ordinary parent VAL may still apply
+its configured edge-aware projection.
+
+The child has empty own glyph history and one initial EPI sample. It inherits
+no parent debt, stabilization credit, elapsed time or temporal evidence. Its
+lineage identifies the parent and selected order; this is not THOL hierarchy,
+an acceleration-triggered THOL event or a claim of collective identity. No
+parent port or edge is copied. Connect it separately through actual Coupling
+(UM), with live U3, affinity and grammar admission; birth does not authorize
+that later action. A failed later UM leaves the already committed birth intact.
+
+The executor reuses the retained scale option whitelist and its rejection of
+fallback replacement. An outer transaction covers parent VAL, child admission,
+materialization and final observation: a failure restores graph-owned state,
+not external Python side effects. Existing parent identity, support and
+nonmember state remain intact. The result `DerivedExpansionDispatch` contains
+the normalized policy, parent and child IDs, `inheritance_source`, actual
+`scale_result`, and an `after` observation of `(parent, child)`. It is an
+execution summary, not an authenticated invocation certificate or checkpoint.
+The [constitutive analysis](../theory/STRUCTURAL_OPERATORS.md#derived-expansion-member)
+owns order dependence, balance limits and the distinction from THOL and NUL.
+
+<a id="retained-addressed-input"></a>
+### Addressed Reception into a retained organization
+
+`retained_input_ports(record)` derives a tuple of `RetainedInputPort` records
+with `ordinal`, `member` and `source`. It requires an intact exact
+`RetainedOrganization`. Addresses follow retained member order and incoming
+unique-neighbor order, excluding all internal members. Undirected edges supply
+inputs; directed reverse-only arcs do not. Parallel edges give one donor
+address while their separate attributes remain retained. Empty tables are
+valid passive observations. A table is not current execution authorization.
+
+`execute_retained_reception_stage(G, record, port_index, execution_kwargs=None)`
+re-admits the owner-bound organization and resolves the exact nonnegative
+built-in integer address in that fresh table. Booleans, invalid indices,
+foreign/tampered records and changed member state/context or incident support
+reject. There is no implicit refresh, fallback or empty successful action.
+External donor coordinates and kind are live: the canonical EN snapshot reads
+them at execution. Generic retained kind normalization does not replace EN's
+actual kind semantics. One selected external donor supplies one actual EN at
+the resolved member; the caller passes no separate target or source IDs.
+
+The only execution options are `window`, `validate_preconditions`,
+`collect_metrics`, `validate_nodal_equation` and `dt`. Local precondition
+validation defaults to and must remain true. Canonical grammar must be enabled
+with rejection mode `raise`; the existing global optional precondition policy
+retains its own meaning. Source tracking is fixed off. Source/context overrides,
+callbacks, pressure refresh and alternative glyphs are unsupported. The inner
+EN observation keeps `explicit_request` provenance; the outer resolved port
+records organization-relative addressing.
+
+The graph-owned transaction begins before options materialization. Failure
+restores the invocation, including post-execution observation and protection
+checks. Every non-target node, support and edge attribute, all phases, and the
+target's capacity/pressure are preserved. Target form/kind, own event context
+and ordinary graph telemetry may change. External effects are not transactional.
+`RetainedReceptionDispatch` retains `before`, `after`, `port` and `stage_result`;
+these associated summaries are not authenticated receipts. The after record
+can be consumed again if fresh; a before record with changed member context
+cannot. Subsequent RA is separate, with its own admission and transaction.
+The [conditional continuation](../theory/NUL_SYNTHESIS.md#retained-addressed-input)
+distinguishes retained interior state from the live external input.
+
+<a id="retained-addressed-output"></a>
+### Addressed Reception from a retained source group
+
+`retained_output_ports(record)` passively enumerates `RetainedOutputPort`
+records with `ordinal`, `receiver` and `sources`. Every source is an actual
+member of the intact retained organization, in its declared order. An external
+receiver appears only when it is an outgoing neighbor of **every** member.
+Ordering follows the first member's retained outgoing unique-neighbor order.
+Directed arcs must point from member to receiver, the incoming direction used
+by EN. Internal members and self-loops cannot create external output ports;
+parallel edges do not duplicate sources. An empty table is a valid observation.
+
+`execute_retained_output_reception_stage(G, record, port_index,
+execution_kwargs=None)` re-admits the source record and resolves that exact
+nonnegative built-in integer ordinal. It executes one actual EN at the external
+receiver with `source_nodes=record.members` and source tracking disabled. The
+caller supplies neither an alternate receiver nor a replacement source list.
+Missing, foreign, stale or unsealed associations reject without fallback.
+This reuses the ordinary unweighted mean over unique selected sources; edge
+weights do not become averaging mass. It is not a new macro-node or a new glyph.
+
+Source member state, own context/history and incident support remain bound to
+the retained record. Capture again after a source changes. External receiver
+form, kind and own context remain live until invocation; changing them alone
+does not stale the source group. Actual EN semantic kinds retain their exact
+string-valued interpretation rather than the generic record's normalization.
+The conservation guard admits finite nonnegative receiver capacity and finite
+pressure through shared primitive readers, with their zero defaults. It adds
+no finite-phase check or retained-member kind restriction to the receiver.
+The options, enabled grammar/raise requirement, local precondition validation
+and existing global policy match the [input consumer](#retained-addressed-input).
+Callbacks, source/context overrides and pressure refresh remain unsupported.
+
+One graph-owned transaction covers option materialization, live admission,
+execution and final checks. All source members, other non-target nodes, support,
+edge attributes and phases remain unchanged, as do receiver capacity and
+pressure. Receiver form/kind, own event context and ordinary graph telemetry
+may change. A failure restores this invocation; external effects and a later
+separate RA are outside that transaction. `RetainedOutputReceptionDispatch`
+contains `before`, `after`, `port` and the actual `stage_result`. Its unchanged
+source observations and resolved port are consistency-checked summaries, not
+authenticated invocation receipts or authorization to reuse a stale record.
+The [structural re-expression owner](../theory/REMESH_STRUCTURE_AND_MEMORY.md)
+keeps this interface distinct from a complete cross-scale REMESH law.
+
+<a id="retained-collective-emission"></a>
+### One member realizing a declared collective Emission gain
+
+`execute_retained_emission_stage(G, record, member_index, mean_gain=b,
+execution_kwargs=None)` resolves one member of a freshly re-admitted
+`RetainedOrganization`. The ordinal is an exact nonnegative Python integer,
+excluding Boolean, within the ordered member tuple. The caller supplies that
+address and the occasion; this interface does not search for another member.
+
+The gain must be a finite positive represented real. With N retained members,
+the existing resolved `AL_boost` must equal `N*b` as represented rationals.
+The consumer checks this relation and never changes factor configuration.
+The shared prospective AL proposal must realize that exact local increment;
+clipping, overflow or rounded addition that breaks it rejects this exact-gain
+interface. This is a restricted realization contract. Ordinary Emission keeps
+its existing projection/rounding behavior, and a supplied rational gain is
+interpreted through the shared binary64 materialization contract.
+
+The chosen member must pass actual strict Emission entry admission even when
+the graph's optional global precondition switch is disabled. Enabled grammar
+with rejection `raise` and local `validate_preconditions=True` are mandatory.
+The common options are `window`, `validate_preconditions`, `collect_metrics`,
+`validate_nodal_equation` and `dt`; target, context, callback, refresh and factor
+overrides are unsupported. The stage executes one actual canonical AL, using
+its shared proposal, lifecycle and own grammar. An already activated target
+must have valid counted lineage; another member's origin cannot supply it.
+Other members need not satisfy AL's latent threshold because they do not act.
+
+The graph-owned transaction starts before option materialization and covers
+live admission, execution and final observation. It preserves all non-target
+nodes, support/edge attributes and phases, target capacity/pressure/kind aliases,
+factor configuration and runtime clock. The selected member's actual AL form,
+activation, latency clearing and grammar/history updates remain its own. Final
+checks verify the declared mean increment and the admitted lifecycle patch;
+a late failure restores the invocation. External effects and later EN/RA calls
+are outside this transaction.
+
+`RetainedEmissionDispatch` exposes `before`, `after`, `member_index`, `member`,
+`mean_gain`, `local_boost`, `realized_mean_gain` and `stage_result`. The gains
+are exact `Fraction` observations of represented values. The checked summary
+does not authenticate an invocation or prove complete collective AL descent.
+The [port realization and its admission boundary](../theory/REMESH_STRUCTURE_AND_MEMORY.md#collective-emission-port-realization)
+explain the actual acquired-source comparison and why a mean is insufficient.
+
+<a id="retained-synthesis"></a>
+### Retained pair concentration through NUL and EN
+
+`capture_retained_pair(G, (core, member))` requires two distinct existing
+members in an exact ordered tuple. Its `RetainedPairState` contains the
+underlying owner-bound `organization` and exact `Fraction` values `form_mean`
+and `form_contrast`, computed from the admitted binary64 forms. Both member
+states, own contexts and ordered ports remain retained. Properties `members`,
+`core` and `member` expose that supplied role order. Capture alone requires
+no edge and changes no state. Fractions preserve represented real arithmetic,
+including halves below the smallest float; they are not a bitwise signed-zero
+encoding or a complete state/checkpoint. Runtime actions use actual members,
+never a rounded reconstruction from these two observations.
+The additional `reception_kinds` tuple retains EN's actual string-valued kind
+read: an absent kind yields `""`, while a stored `None` yields `"None"` under
+that existing reader. This differs from the generic retained member's empty
+kind normalization. Execution re-admits both source associations instead of
+silently treating those observations as interchangeable.
+
+`execute_retained_synthesis_stage(G, pair, contraction_kwargs=None,
+reception_kwargs=None)` re-admits the pair and requires an existing incoming
+`member -> core` arc or their undirected edge. It executes actual simultaneous
+Contraction (NUL) on both members, then Reception (EN) on the core using only
+that member as its explicit source. A lone `core -> member` arc is insufficient;
+the wrapper creates no edge and does not substitute for an admitted UM action.
+This is a declared concentration fragment. It does not modify ordinary NUL,
+add a glyph, remove a constituent or prove historical reabsorption/synthesis.
+
+Each substage accepts only `window`, `validate_preconditions`, `collect_metrics`,
+`validate_nodal_equation` and `dt` through its corresponding mapping. Its own
+grammar and factor/precondition owners remain authoritative. EN source tracking
+is fixed off; arbitrary source, context, callback and fallback overrides are
+unsupported. Neither operation supplies U2 stabilization credit. The existing
+factor domains remain `0 < NUL_scale < 1` and `0 < EN_mix <= 1`; a comparison
+without reception uses ordinary NUL, not an invalid zero EN coefficient.
+After `inject_defaults`, changing `NUL_scale` also requires updating or removing
+the explicit `NUL_densification_factor` entry. An omitted entry is derived as
+`1/NUL_scale`; a contradictory retained value rejects rather than overriding
+that relation. Densification is not an independent factor.
+NUL's increase of stored positive pressure can itself block the subsequent
+EN at its configured ceiling. Valid NUL admission does not promise that the
+whole fragment is admitted; selecting another ceiling is an explicit policy.
+
+The outer transaction includes both stages, preservation checks and final
+observation. Failure at the second stage restores the pre-NUL graph as well.
+Support, edge attributes, member phases and nonmember state remain intact;
+EN also preserves the member's post-NUL state/context. Graph telemetry and
+each actual target's event bookkeeping retain their ordinary semantics.
+External side effects remain outside graph-owned rollback.
+
+`RetainedSynthesisDispatch` retains `before`, `contracted` and `after` pair
+observations plus the actual `contraction_result` and `reception_result`.
+These are associated transaction summaries, not authenticated invocations.
+Its form chart does not replace capacities, pressure, phase or grammar state.
+At full EN mixing, old form contrast may be lost from current forms; a
+before-observation does not make the executed action reversible. The
+[mathematical owner](../theory/NUL_SYNTHESIS.md#retained-synthesis-concentration)
+states the unclipped concentration law, numerical limits and open roles.
+The [continuation controls](../theory/NUL_SYNTHESIS.md#nul-future-response)
+also distinguish a first matching output from sufficient future response.
+The actual graph remains necessary: retained child form can affect a later
+RA/EN/RA word, and own grammar can change OZ admission even when primitive
+coordinates agree. Neither the core form nor a returned observation authorizes
+pooling member histories, removing a constituent or executing a macro-node.
+
+### Retained Mutation and relational participation
+
+`execute_retained_mutation_stage(G, organization, targets,
+execution_kwargs=None)` re-admits the existing owner-bound
+`RetainedOrganization`. The explicit `targets` must be a nonempty tuple of
+distinct retained members. It executes actual canonical Mutation (ZHIR) through
+the shared atomic pointwise stage; it supplies no trigger, copied history,
+pooled context or replacement glyph. A requested grammar fallback rejects.
+
+Each target needs its own active capacity, admitted signed-growth evidence and
+grammar. The existing temporal contract remains authoritative: timestamped
+evidence ends at the live EPI value, while legacy histories retain their
+unit-operator-step basis without a live-endpoint guarantee. Neither evidence
+format authenticates measured provenance or derives an occurrence law. Prior
+births and zero-duration jumps do not supply elapsed-time samples.
+
+The option mapping admits `window`, `validate_preconditions`, `collect_metrics`,
+`validate_nodal_equation`, `dt`, `tau` and `validate_postconditions`, as consumed
+by the existing stage. It admits no pressure callback, source or context
+override. The hard Mutation trigger and actual grammar are not replaced by
+optional activity or postcondition checks.
+
+The transaction preserves support, edge attributes, all non-target state and
+the target's raw form, kind, capacity and stored-pressure aliases. Target phase,
+own event history and ordinary lifecycle telemetry may change. Capture,
+execution, final observation and preservation checks share one graph rollback
+boundary; external side effects retain the shared transaction limitation.
+
+`RetainedMutationDispatch` contains `before`, `after`, ordered `targets` and
+`stage_result`. The latter's sealed `mutation_decision_observations` retain the
+actual per-target decision, temporal certificate and represented phase map.
+The summary checks target coordinates/context; it does not reconstruct a
+certificate from the retained observation's opaque history signatures. A
+publicly assembled summary cannot authenticate which history produced it.
+It is neither a checkpoint nor proof of collective identity. Mutation keeps
+the scalar EPI unchanged, but
+its phase change can alter a subsequent compatibility-selected EN source set
+and therefore the next EN/RA form response. This is an indirect consequence
+through existing operators; richer-form mutation and autonomous occurrence
+retain their own open obligations. See the
+[retained Mutation analysis](../theory/STRUCTURAL_OPERATORS.md#retained-mutation-participation).
 
 ## Nodal solver input, clock and output boundaries
 
@@ -945,10 +1851,20 @@ the canonical factor schema. The conservation/gauge snapshot mapper applies the
 same scalar admission to consumed U3 phases and U6 pressure/reference fields;
 nonzero underflow makes that diagnostic unavailable, not a passing zero.
 Direct and simultaneous Resonance reuse one capacity proposal: finite
-nonnegative capacity is required even when amplification is inactive. Graphless
-unidirectional Coupling updates only the target phase. On graph paths, UM/RA
+nonnegative capacity is required even when amplification is inactive. Transition
+also rejects a positive capacity product lost to zero, preserving intentional
+zero factors and representable subnormals through shared scalar admission.
+Graphless unidirectional Coupling updates only the target phase. On ordinary graph paths, UM/RA
 means use unique outgoing support neighbors, including zero-weight edges;
 parallel multiplicity and incoming arcs do not supply additional samples.
+Default isolated potential-pair UM instead uses its one declared partner and creates
+the directed target-to-partner arc when applicable, while retaining compatible
+outgoing neighbors in its shared synchronization map. Live grammar admission
+receives this request; `validate_candidate(..., potential_partner=j)` can
+check the same domain for UM. It supplies no U1/U2/U4 credit and does not
+select a partner for ordinary proactive selectors.
+The [disjoint-component scope](#connected-organization-coupling) also reaches
+request-aware admission and retains its separate collateral-edge guarantee.
 These remain operator policies, distinct from weighted EPI transport. The
 [coupled-state controls](../tests/operators/test_coupled_state_admission.py)
 also verify support-cache invalidation after functional-link creation.

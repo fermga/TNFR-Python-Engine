@@ -480,10 +480,10 @@ GRAMMAR_BASES = MappingProxyType(
             ),
             GrammarBasis(
                 GrammarBasisKind.CONTRACT,
-                "Concrete UM/RA requires a compatible existing neighbor; merged UM relations are rechecked.",
+                "UM/RA requires compatible participants: existing neighbors, with a supplied isolated partner additionally admitted for explicit UM creation; merged UM relations are rechecked.",
                 (
                     "finite live phases",
-                    "actual graph support",
+                    "actual graph support or the declared UM potential-pair domain",
                     "admitted phase limits",
                     "merged stage proposals for a stage-level claim",
                 ),

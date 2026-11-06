@@ -360,10 +360,15 @@ def enforce_canonical_grammar(
     n: Any,
     cand: Any,
     ctx: Any | None = None,
+    *,
+    _decision_trace: list[Any] | None = None,
 ) -> Any:
     """Proxy to the canonical grammar enforcement helper preserving Glyph outputs."""
 
-    result = _ENFORCE_CANONICAL_GRAMMAR(G, n, cand, ctx)
+    trace_options = (
+        {} if _decision_trace is None else {"_decision_trace": _decision_trace}
+    )
+    result = _ENFORCE_CANONICAL_GRAMMAR(G, n, cand, ctx, **trace_options)
     if isinstance(cand, Glyph) and not isinstance(result, Glyph):
         translated = _grammar.function_name_to_glyph(result)
         if translated is None and isinstance(result, str):

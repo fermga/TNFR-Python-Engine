@@ -110,6 +110,109 @@ def test_empty_file_and_exact_newline_bytes_have_distinct_receipts(tmp_path):
     assert owner.sha256_bytes(b"a\n") != owner.sha256_bytes(b"a\r\n")
 
 
+class ObservedReader(io.BytesIO):
+    """A manufactured stream that records requested allocation sizes."""
+
+    def __init__(self, content, *, short_read=None, growth=b""):
+        super().__init__(content)
+        self.requests = []
+        self.returned_bytes = 0
+        self.short_read = short_read
+        self.growth = growth
+
+    def read(self, size=-1):
+        assert type(size) is int and 0 < size <= 64 * 1024
+        self.requests.append(size)
+        effective = size if self.short_read is None else min(size, self.short_read)
+        result = super().read(effective)
+        self.returned_bytes += len(result)
+        if self.growth:
+            position = self.tell()
+            self.seek(0, io.SEEK_END)
+            self.write(self.growth)
+            self.seek(position)
+            self.growth = b""
+        return result
+
+
+def _install_observed_reader(monkeypatch, stream):
+    opens = []
+
+    class StreamPath:
+        def __init__(self, path):
+            self.path = path
+
+        def open(self, mode):
+            assert mode == "rb"
+            opens.append(self.path)
+            assert len(opens) == 1, "bounded content must use one open file"
+            return stream
+
+        def stat(self, *args, **kwargs):
+            pytest.fail("bounded reading must not trust a separate size observation")
+
+    monkeypatch.setattr(owner, "Path", StreamPath)
+    return opens
+
+
+def test_large_quota_does_not_request_a_large_buffer_for_tiny_content(monkeypatch):
+    content = b"manufactured exact bytes\r\n" * 1300
+    stream = ObservedReader(content)
+    opens = _install_observed_reader(monkeypatch, stream)
+    assert owner.read_bytes_bounded("synthetic.bin", max_bytes=256 * 1024**2) == content
+    assert len(opens) == 1 and stream.closed
+    assert stream.returned_bytes == len(content)
+    assert max(stream.requests) <= 64 * 1024
+
+
+@pytest.mark.parametrize("limit", (0, 1, 64 * 1024 - 1, 64 * 1024, 64 * 1024 + 1))
+@pytest.mark.parametrize("extra", (0, 1))
+def test_chunked_read_keeps_exact_limit_and_one_byte_sentinel(monkeypatch, limit, extra):
+    content = b"x" * (limit + extra)
+    stream = ObservedReader(content)
+    _install_observed_reader(monkeypatch, stream)
+    if extra:
+        with pytest.raises(ValueError, match="byte budget"):
+            owner.read_bytes_bounded("synthetic.bin", max_bytes=limit)
+        assert stream.returned_bytes == limit + 1
+    else:
+        assert owner.read_bytes_bounded("synthetic.bin", max_bytes=limit) == content
+        assert stream.returned_bytes == limit
+        assert stream.requests[-1] == 1
+    assert stream.closed
+
+
+def test_short_reads_are_accumulated_until_actual_eof(monkeypatch):
+    content = b"short reads preserve all bytes\x00\r\n"
+    stream = ObservedReader(content, short_read=1)
+    _install_observed_reader(monkeypatch, stream)
+    assert owner.read_bytes_bounded("synthetic.bin", max_bytes=len(content)) == content
+    assert len(stream.requests) == len(content) + 1
+    assert stream.closed
+
+
+@pytest.mark.parametrize("limit,expected", ((6, b"abcdef"), (3, None)))
+def test_growth_after_first_read_is_counted_on_same_stream(monkeypatch, limit, expected):
+    stream = ObservedReader(b"abc", growth=b"def")
+    _install_observed_reader(monkeypatch, stream)
+    if expected is None:
+        with pytest.raises(ValueError, match="byte budget"):
+            owner.read_bytes_bounded("synthetic.bin", max_bytes=limit)
+        assert stream.returned_bytes == limit + 1
+    else:
+        assert owner.read_bytes_bounded("synthetic.bin", max_bytes=limit) == expected
+    assert stream.closed
+
+
+def test_read_limit_rejected_before_opening_or_allocating(monkeypatch):
+    def forbidden(*args, **kwargs):
+        pytest.fail("invalid byte quota reached a file operation")
+    monkeypatch.setattr(Path, "open", forbidden)
+    for limit in (True, -1, Q(10), 10.0, None):
+        with pytest.raises(ValueError):
+            owner.read_bytes_bounded("synthetic.bin", max_bytes=limit)
+
+
 @pytest.mark.parametrize(
     "name",
     (

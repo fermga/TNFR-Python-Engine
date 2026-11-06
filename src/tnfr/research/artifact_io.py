@@ -121,13 +121,28 @@ def _limit(value, *, optional=False):
 
 
 def read_bytes_bounded(path, *, max_bytes):
-    """Read at most limit+1 bytes from one open file; reject growth beyond limit."""
+    """Read one file in bounded chunks; reject the first byte beyond the limit.
+
+    The quota is an admission limit, not an allocation request. Temporary read
+    buffers stay at most 64 KiB, even when a tiny record has a large quota.
+    Count bytes from the same open stream, including short reads and growth;
+    a separate stat result never supplies the admitted content size.
+    """
     limit = _limit(max_bytes)
+    chunks = []
+    size = 0
     with Path(path).open("rb") as stream:
-        data = stream.read(limit + 1)
-    if len(data) > limit:
-        raise ValueError("record exceeds audit byte budget")
-    return data
+        while True:
+            chunk = stream.read(min(_CHUNK_SIZE, limit - size + 1))
+            if not chunk:
+                break
+            size += len(chunk)
+            if size > limit:
+                raise ValueError("record exceeds audit byte budget")
+            chunks.append(chunk)
+    if len(chunks) == 1:
+        return chunks[0]
+    return b"".join(chunks)
 
 
 def sha256_bytes(data):

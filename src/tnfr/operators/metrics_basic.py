@@ -266,6 +266,9 @@ def _reception_metrics_impl(
         source_tracking_enabled = None
         source_max_distance = None
         stored_source_metadata_boundary = "metrics_call_live_state"
+        source_nodes = None
+        source_selection_origin = "live_legacy_observation"
+        compatibility_decision = None
     else:
         if type(read_snapshot) is not ReceptionReadSnapshot:
             raise TypeError("read_snapshot must be a ReceptionReadSnapshot")
@@ -291,6 +294,9 @@ def _reception_metrics_impl(
         source_tracking_enabled = read_snapshot.source_tracking_enabled
         source_max_distance = read_snapshot.source_max_distance
         stored_source_metadata_boundary = RECEPTION_PRESSURE_OBSERVATION_BOUNDARY
+        source_nodes = read_snapshot.source_nodes
+        source_selection_origin = read_snapshot.source_selection_origin
+        compatibility_decision = read_snapshot.compatibility_decision
 
     # Compute the signed EPI change. This is form change, not C(t).
     delta_epi = epi_after - epi_before
@@ -349,6 +355,30 @@ def _reception_metrics_impl(
         # Legacy metrics (backward compatibility)
         "neighbor_count": neighbor_count,
         "neighbor_epi_mean": neighbor_epi_mean,
+        "input_neighbors": neighbors,
+        "source_nodes": source_nodes,
+        "source_selection_origin": source_selection_origin,
+        # Metrics are a serializable report projection, not the sealed evidence
+        # retained by the actual read snapshot and stage observation.
+        "compatibility_decision": (
+            None
+            if compatibility_decision is None
+            else {
+                "node": compatibility_decision.node,
+                "policy": {
+                    "max_phase_gap": compatibility_decision.policy.max_phase_gap,
+                    "max_relative_capacity_gap": compatibility_decision.policy.max_relative_capacity_gap,
+                    "mode": compatibility_decision.policy.mode,
+                },
+                "target_phase": compatibility_decision.target_phase,
+                "target_capacity": compatibility_decision.target_capacity,
+                "candidates": compatibility_decision.candidates,
+                "candidate_phases": compatibility_decision.candidate_phases,
+                "candidate_capacities": compatibility_decision.candidate_capacities,
+                "selected_sources": compatibility_decision.selected_sources,
+                "reason": compatibility_decision.reason,
+            }
+        ),
         "integration_strength": abs(delta_epi),
         # EN-specific (NEW)
         "num_sources": num_sources,

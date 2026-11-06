@@ -522,6 +522,152 @@ possibly nonacute comparison above or establish eventual capture. Its
 model-specific coefficients and prepared phase origins do not transfer
 without admission of the new complete model.
 
+<a id="sine-velocity-graph-defect"></a>
+### A declared velocity graph: defect, source error and boundary rates
+
+The slow-manifold and viability methods can be connected without asserting
+existence of a new invariant manifold. Retain this section's complete law,
+held support/capacities, consistent lifts, means and slow clock. Write
+`v=theta_sigma=(e/a)*A*P_Mx`. The exact second-order identity gives
+
+\[
+\theta_\sigma=v,\qquad \eta v_\sigma=-A(v-f(\theta)).
+\tag{VG1}
+\]
+
+On a declared open domain of the affine mean leaf, supply a continuously
+differentiable velocity graph `g(theta)` with `1^T M g=0`. The domain and graph
+are part of the comparison, not inferred from the future response. All
+derivatives below act on the weighted-mean-zero tangent space. Define its
+invariance defect and the actual graph error by
+
+\[
+ d_g(\theta)=Dg(\theta)g(\theta)
+               +\frac A\eta\bigl(g(\theta)-f(\theta)\bigr),
+ \qquad r=v-g(\theta).
+\]
+
+The chain rule, retaining both complete rows, gives exactly
+
+\[
+ \boxed{r_\sigma=-\left(\frac A\eta+Dg(\theta)\right)r-d_g(\theta).}
+ \tag{VG2}
+\]
+
+Suppose throughout that domain
+`||Dg||_(M->M)<=L_g`, `||d_g||_M<=Delta_g`, with nonnegative finite
+bounds, and `c_g=lambda/eta-L_g>0`. Given the actual incoming bound
+`R_0>=||v(0)-g(theta(0))||_M`, then, for every time before domain exit,
+
+\[
+ \boxed{\|r(\sigma)\|_M\le R_g(\sigma):=
+ e^{-c_g\sigma}R_0+
+ \frac{\Delta_g}{c_g}(1-e^{-c_g\sigma}).}
+ \tag{VG3}
+\]
+
+**Proof.** Both `v` and `g` have zero weighted mean, so the quotient gap
+applies to `r`. Taking the `M` inner product of (VG2) with `r` bounds the
+upper right derivative of its norm by `-c_g*||r||_M+Delta_g`. The same bound
+holds at zero norm by continuity. Scalar comparison gives (VG3). It holds
+memberwise; a family bound requires uniform constants and an incoming radius
+covering every member, without deleting its form or replacing its means.
+
+This separates a graph's failure to be invariant from source mismatch. If
+`d_g=0`, the graph is locally invariant and incoming mismatch decays under
+the stated gap condition. If also `R_0=0`, the actual solution remains on
+it only for its admitted continuation within the domain. Taking `g=f`
+recovers the existing velocity-lag mechanism with `d_f=Df*f`; the explicit
+[source bound](SINE_TWO_PORT_CAPTURE.md#sine-formed-two-port-source-transport)
+is an existing quantitative instance, not a new consequence about arrival.
+A formal higher-order graph is useful only if its actual derivative, defect
+and source bounds improve a consumed certificate at the fixed parameter.
+
+For a linear face `q^T theta<=b_q`, (VG3) yields the exact worst-case bound
+over its admitted mean-zero error ball:
+
+\[
+ \left|q^T(\theta_\sigma-g(\theta))\right|
+ \le R_g(\sigma)\,\kappa_q,\qquad
+ \kappa_q^2=q^TM^{-1}q-
+       \frac{(q^T\mathbf1)^2}{\mathbf1^TM\mathbf1}.
+ \tag{VG4}
+\]
+
+Indeed, project `M^(-1/2)q` onto the orthogonal complement of
+`M^(1/2)1` and use Cauchy--Schwarz; its squared norm is the displayed
+nonnegative expression. Equality is attained on the ball in that projected
+direction, unless the direction is zero. Thus a sufficient strict inward
+sign on a face is `q^T g+R_g*kappa_q<0` throughout its admitted boundary.
+For a phase-difference face `q^T1=0`, this is the already used dual factor;
+mean retention provides no extra tightening there. Other observations may
+benefit from preserving the mean constraint instead of dropping it.
+
+These calculations bound velocity relative to a graph, not position relative
+to an independently evolved reduced trajectory. Source inclusion, all boundary
+faces, domain continuation, finite target arrival and a full-state capture
+handoff remain distinct obligations. Form is still reconstructible as
+`P_Mx=(a/e)*A^-1*v` on the quotient, with its conserved mean retained.
+No source region or new graph is selected here; no evaluator, trajectory,
+new event policy or measured acceleration is supplied. This is a direct
+comparison result for the held complete law and does not transfer across
+support/capacity changes or operator jumps without new premises.
+
+<a id="sine-acceleration-tracking"></a>
+### Acceleration tracking retains the complete incoming state
+
+A bound on velocity error alone does not bound its derivative. The same
+complete law (VG1) supplies a separate estimate. On a declared domain of the
+conserved-mean leaf, let `f` be twice continuously differentiable and write
+`J=Df(theta)`, `e_v=v-f(theta)` and `z=(e_v)_sigma`. Differentiating both
+rows, rather than differentiating an error inequality, gives exactly
+
+\[
+ z=v_\sigma-Jv,\qquad
+ \boxed{z_\sigma=-\left(\frac A\eta+J\right)z
+                 -D^2f(\theta)[v,v]-J^2v.} \tag{VG5}
+\]
+
+Indeed, `v_sigma_sigma=-(A/eta)*(v_sigma-Jv)` and the derivative of
+`Jv` is `D^2f[v,v]+J*v_sigma`. The vectors remain in the mean-zero
+space. Smoothness and the held support/coefficient premises matter here;
+this calculation does not differentiate through an operator jump.
+
+Suppose `||J||<=L`, `||D^2f[p,q]||<=K*||p||*||q||`,
+`||v||<=V`, and `c=lambda/eta-L>0` on the admitted continuation from
+`s_a`, with `Z_a>=||z(s_a)||`. All norms use the same degree or mass
+metric as (VG1). The norm's upper derivative is at most
+`-c*||z||+K*V^2+L^2*V`, including at zeros. Scalar comparison yields
+
+\[
+ \boxed{\|z(s_a+h)\|\le e^{-ch}Z_a+
+       \frac{KV^2+L^2V}{c}(1-e^{-ch}),\qquad h\ge0.} \tag{VG6}
+\]
+
+The bound ends at domain exit. `Z_a` must cover the actual preparation;
+at the original source it contains `-(A/eta)*e_v-Jv`, which can be large
+even if a later velocity error is small. No reset onto a slow graph or
+independently prescribed acceleration is involved.
+
+Writing `Z(s)` for the right-hand side and using `v=f+e_v` gives
+
+\[
+ \boxed{\|\theta_{\sigma\sigma}-Df(\theta)f(\theta)\|
+       \le Z(s)+L\|e_v(s)\|.} \tag{VG7}
+\]
+
+Thus a fixed linear observation `q^T theta` has acceleration error at most
+`kappa_q*(Z+L*||e_v||)`, with the mean-aware dual factor in (VG4).
+For a smooth scalar observable `b(theta)`, its field-rate derivative obeys
+`d[b(theta)]/d sigma=Db(theta)f(theta)+Db(theta)e_v`; a proved derivative
+bound controls the second term. These are estimates of derivatives along
+the actual full flow, not a second-order model replacing it.
+
+The [formed-source application](SINE_TWO_PORT_CAPTURE.md#sine-formed-two-port-rate-transport)
+provides fixed-parameter constants after its retained initial layer. Neither
+(VG6) nor (VG7) fixes an acceleration sign without a signed bound on the
+remaining phase-field expression, and neither proves target arrival.
+
 ## 30. Full-state capture from controlled phase geometry
 
 <a id="sine-slow-phase-capture-handoff"></a>

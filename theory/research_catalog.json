@@ -77,6 +77,21 @@
       "group": "Operators, grammar and support events"
     },
     {
+      "path": "theory/COUPLING_COMPOSITION.md",
+      "title": "Coupling participation between connected organizations",
+      "group": "Operators, grammar and support events"
+    },
+    {
+      "path": "theory/REMESH_STRUCTURE_AND_MEMORY.md",
+      "title": "Recursivity: structure, memory and post-birth participation",
+      "group": "Operators, grammar and support events"
+    },
+    {
+      "path": "theory/NUL_SYNTHESIS.md",
+      "title": "NUL synthesis and response sufficiency",
+      "group": "Operators, grammar and support events"
+    },
+    {
       "path": "theory/UNIFIED_GRAMMAR_RULES.md",
       "title": "Unified grammar",
       "group": "Operators, grammar and support events"
@@ -979,6 +994,11 @@
     {
       "path": "theory/NATIVE_OPERATOR_DYNAMICS.md",
       "title": "Native operator dynamics",
+      "group": "Model-specific operator and hierarchy studies"
+    },
+    {
+      "path": "theory/EMISSION_EPISODES.md",
+      "title": "Finite-duration Emission proposal and native source competition",
       "group": "Model-specific operator and hierarchy studies"
     },
     {

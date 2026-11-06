@@ -304,9 +304,198 @@ following discriminating observations with default THOL factors:
   parent feedback; the prepared trigger is not a causal emergence result.
 
 These are reproducible engine observations, not laboratory validation or
-an autonomous localization theorem. The next constructive test must first
-generate a birth-triggering history through actual canonical dynamics,
-then identify an admitted parent/child interaction and measure whether
-the resulting connected structure feeds back through the existing nodal
-channels. The isolated hierarchy result does not supply that interaction
-implicitly.
+an autonomous localization theorem. The [operator-grounded birth composition](#thol-acquired-birth-participation)
+below supplies actual history and an admitted parent/child interaction. Its
+finite response has a distinct source and does not retroactively turn the
+earlier prepared-history fixture into acquired evidence. The isolated hierarchy
+result supplies no interaction implicitly.
+
+<a id="thol-emission-history-continuation"></a>
+## 7. Actual Emission history and a subsequent operator action
+
+The [finite-duration Emission proposal](EMISSION_EPISODES.md#emission-episode-status)
+supplies an operator-grounded realization of the two held intervals in section 2.
+It remains a declared constitutive lift with supplied durations. Coherence (IL)
+and Dissonance (OZ) change stored pressure at the boundary without a form jump;
+the shared episode executor records actual physical EPI samples. No acceleration,
+physical history or grammar context is inserted as a substitute for execution.
+
+For fixed capacity nu, let the two episode pressures be p1,p2 and durations
+h1,h2. In exact held-row arithmetic the history estimate and THOL map give
+
+```text
+A = 2*nu*(p2-p1)/(h1+h2),
+p_T = p2 + g*A,                       g = THOL_accel > 0,
+x_next - x_no_THOL = h3*nu*g*A.
+```
+
+Arbitrary binary64 endpoint rounding can separate observed secants from the
+declared held rates; the dyadic controls below represent these predictions exactly.
+The last equality requires a third admitted, unclipped, held AL episode of
+duration h3 in both branches. It is the section 4 identity with actual AL as
+the continued action. Here `[g]=[time]/[capacity]`; a numerical gain cannot be
+transferred unchanged across arbitrary clock conventions. A is a finite-window
+comparison of observed secants. When rates differ, the classical second
+derivative at the instantaneous rate change is undefined; each open held
+interior instead has zero acceleration. Neither observation replaces the other.
+
+The finite controls use a unit-weight P2 with equal x=1/4, nu=1, phase zero and
+p=1/2. Actual IL with retention 1/2 followed by OZ with factor 2 supplies context
+and restores p. An AL episode of duration 1/8 ends at 5/16. Boundary IL with
+retention 1/2 and OZ with factor m gives p2=m/4, followed by another duration-1/8
+AL. With g=1/8 and a third duration-1/8 AL, independent exact predictions are:
+
+| Boundary OZ factor m | Observed A | EPI before THOL | Pressure after THOL | Next EPI with THOL | Next EPI without THOL |
+| --- | --- | --- | --- | --- | --- |
+| 3/2 | -1 | 23/64 | 1/4 | 25/64 | 26/64 |
+| 2 | 0 | 24/64 | 1/2 | 28/64 | 28/64 |
+| 5/2 | 1 | 25/64 | 3/4 | 31/64 | 30/64 |
+
+All these endpoints remain inside AL's strict latent chart. The public/staged
+controls use tau=1: the strict child threshold is not crossed, while pressure
+action remains available. Native primitive execution has no child commit in
+any case. [Participation controls](../tests/operators/test_emission_thol_continuation.py)
+retain actual grammar, lifecycle, phase, capacity, support and physical history;
+the matched control omits THOL rather than resetting its consequence.
+
+**Successor admission is independent.** In the negative row, choosing g=3/8 or
+g=1/2 gives p_T=0 or p_T=-1/8. The signed THOL map itself permits this result,
+but the positive-rate AL episode cannot continue. Its rejection preserves the
+completed THOL effect and does not advance EPI, time or AL count. This is a
+domain boundary of the composition, not evidence that THOL is a universally
+positive-pressure stabilizer. [Admission controls](../tests/operators/test_emission_thol_admission.py)
+also keep insufficient history, stale endpoints and native invocation distinct.
+
+**Episode boundaries carry observational meaning.** In the negative row, split
+the second duration-1/8 episode into two independently invoked duration-1/16
+episodes. The same piecewise-linear form path ends at 23/64, but its last three
+samples now lie entirely in the second held rate. The active estimate becomes
+zero; THOL retains pressure 3/8 and the next EPI is 26/64. There is also one more
+actual AL occurrence. This differs from internal numerical subdivision, which
+retains the whole episode's physical boundary samples in these controls. Equal
+form paths do not imply equal observation windows, memory or complete states.
+
+For a fixed rate jump, shrinking h1+h2 changes A and hence the pressure action
+unless a separate gain/observation law compensates. This section derives no
+such law. The shared detached reader validates its selected samples and final
+EPI, but does not authenticate their origin or equality with the live graph
+clock; the actual composition supplies that provenance. These results establish
+a bounded causal operator composition, not autonomous scheduling, hierarchical
+birth, persistent identity or a uniquely selected feedback law. This is one
+supplied THOL invocation; its history read creates no at-most-once receipt. The
+[research program](RESEARCH_PROGRAM.md#research-current-question) owns the next
+missing function across all thirteen operators.
+
+<a id="thol-acquired-birth-participation"></a>
+## 8. Acquired history, admitted birth and actual child participation
+
+The [birth/contact controls](../tests/operators/test_emission_birth_contact.py)
+extend the previous episode source asymmetrically. After the common first AL
+episode, only the parent receives IL with retention 1/2 and OZ with factor 5/2.
+The second duration-1/8 AL episode acts on both original nodes. At time 1/4,
+parent and old peer have forms x=25/64 and y=3/8, pressures 5/8 and 1/2, and
+actual history accelerations 1 and 0. Their samples and grammar are produced
+by those operators; no threshold-crossing history is supplied in their place.
+
+The existing [eligible THOL dispatcher](../src/tnfr/operators/self_organization_selection.py)
+is invoked with tau=1/2 and gain 1/8, enabling strict preconditions and explicitly
+disabling the metabolic amplitude extension. Its fresh all-node relation selects
+only the parent and commits one actual birth. Parent pressure becomes 3/4.
+The returned parent/child association identifies the new isolated node, whose
+pressure is zero, phase zero and capacity the represented value 0.95. In this
+particular control, binary64 multiplication of 0.3 by 25/64 rounds exactly to
+child form c=15/128. This is not an exact decimal-inheritance theorem for
+arbitrary forms or capacities.
+
+Birth supplies one legacy child form sample and an empty own operator context;
+it supplies neither an edge, inherited physical samples nor the parent's AL
+activation count. The birth record's timestamp is parent operator step 7,
+distinct from structural time 1/4. Eligibility chooses from the current state
+at a supplied occasion; its invocation and threshold remain declared policies.
+
+The parent already has an old peer. Actual UM, requested with this isolated
+child as potential partner, creates the new contact through its admitted U3
+and affinity path while preserving the old edge. Phase zero is retained. Its
+configured capacity blend and pressure reduction remain real effects: with
+reduction 1/4, parent pressure becomes 9/16. Three actual IL actions of retention
+1/2 give 9/128, compared with 3/32 in the no-UM branch. Both then satisfy the
+unchanged EN pressure ceiling 0.15. No pressure reset or weakened admission
+substitutes for those stabilizing actions.
+
+Compare three independently produced branches with the same source and birth:
+
+| Branch | Parent EN inputs | Parent after EN | Old peer after RA |
+| --- | --- | --- | --- |
+| No contact | Old peer | 99/256 | 195/512 |
+| UM contact, ordinary EN | Old peer and child | 363/1024 | 747/2048 |
+| Same UM, selected EN | Explicit old-peer tuple | 99/256 | 195/512 |
+
+With EN mixing a=1/4 and RA form mixing b=1/2, the conditional scalar identities
+are `x_EN=(1-a)*x+a*mean(inputs)` and `y_RA=(1-b)*y+b*x_EN`. The child's causal
+contribution to the old-peer response is therefore `a*b*(c-y)/2=-33/2048`.
+The third branch retains UM's support, capacity, phase and pressure effects
+but removes the child from EN's admitted read set. This isolates actual child
+input from birth count and the other UM effects. The negative sign denotes a
+response difference, not loss of validity or an optimization score. Ordinary
+EN's incoming source map remains distinct from emitter-ranking telemetry.
+
+Actual RA also acts on capacity: amplification 1/8 raises the peer from 1 to
+9/8 in every branch. This is not pure-form RA or equality of complete states
+between contact and no-contact. No post-contact continuous law is imported.
+The [admission controls](../tests/operators/test_emission_birth_contact_admission.py)
+retain short-history and equality abstention, stale-source rejection, missing
+child input before contact and UM rollback that preserves completed birth.
+
+The child can also act in its own right after contact. In a separate branch,
+keep parent form 25/64 and apply EN on the child from the parent, then RA on the
+child. Its forms become 95/512 and 295/1024, its own grammar becomes EN,RA,
+and its actual capacity becomes `float(0.95*(1+1/8))`. This records new child
+actions, not inherited parent history or a collective-identity theorem.
+
+All these post-source actions occur at the same structural time. Public/staged
+EN and RA can leave old physical samples inconsistent with the new form;
+those samples do not authorize another current acceleration. The child never
+acquires elapsed-time evidence merely by receiving instantaneous operators.
+Timing, partner access, inheritance coefficients and later maintenance remain
+open. These finite compositions do not prove that thirteen operators generate
+every structure or dynamics: such a claim needs a specified state domain,
+equivalence, target transformation class and reachability/completeness proof
+under the actual grammar and live admission.
+
+<a id="thol-state-derived-access"></a>
+## 9. State-derived access after acquired birth
+
+The [birth-association policy](STRUCTURAL_OPERATORS.md#coupling-birth-association-access)
+uses the parent's live direct associations to obtain a unique isolated child.
+The caller supplies the parent and occasion, but no child identifier. The
+policy changes access to UM; it changes neither the preceding AL/THOL source
+nor UM's numerical map or grammar. It is an explicit constitutive choice,
+not a deduction that ancestry necessarily causes contact.
+
+The [integration controls](../tests/operators/test_birth_access_coupling.py)
+reuse section 8's actual IL/OZ/AL history and eligible THOL birth. On its unique
+accessible-child domain, deriving the UM request must agree with explicitly
+requesting that same child. With the same subsequent IL/EN/RA actions, the
+independent prediction remains parent form 363/1024 and old-peer form 747/2048.
+No contact and same-contact/peer-only EN instead give 195/512 at the old peer,
+retaining the child-input discriminator -33/2048 and RA capacity 9/8.
+Equivalence concerns primary state, support and actual grammar effects, not
+incidental diagnostic timestamps.
+
+An explicitly initialized unrelated compatible isolate tests the association
+boundary; it is not reported as an emerged child. A uniquely associated but
+phase-incompatible child must reject even when that other isolate is compatible.
+Two actual THOL births test ambiguity before eligibility: repeated supplied
+THOL occasions create no autonomous timing or consumed-window rule. An actual
+explicit contact with one child removes its isolation and leaves the other
+accessible. Re-reading after contact and consistently relabeling the initial
+identities distinguish live structural access from cached or name-based choice.
+
+The [independent boundary controls](../tests/operators/test_birth_access_coupling_admission.py)
+retain malformed-association errors, legacy missing-index behavior, incoming
+support, mandatory grammar and rollback. Supplied association controls establish
+the reader's domain; only the actual-source controls establish their executed
+birth history. No report authenticates arbitrary supplied genealogy. The new
+path removes a caller-supplied partner from this bounded composition while
+leaving parent selection, occasions, ambiguous competition, inheritance and
+maintenance explicit or open. It does not establish autonomous organization.

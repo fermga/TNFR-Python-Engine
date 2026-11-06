@@ -1,25 +1,14 @@
-"""Strict precondition validation for OZ (Dissonance) operator.
+"""Configured strict admission policy for OZ (Dissonance).
 
-This module implements canonical precondition validation for the Dissonance (OZ)
-structural operator according to TNFR canonical theory. OZ requires specific
-structural conditions to enable productive dissonance without premature collapse:
+The policy imposes a signed EPI floor, pressure-magnitude ceiling, capacity
+floor, a bounded unresolved-OZ history check and a degree warning. These
+operational thresholds do not prove productive reorganization or exclude a
+future collapse. They are separate from live grammar and its persistent U2 debt.
 
-1. **Minimum coherence base (EPI)**: Node must have sufficient structural form to
-   withstand disruption (EPI >= threshold)
-2. **ΔNFR not critically high**: Avoid sobrecarga (overload) when ΔNFR already extreme
-3. **Sufficient νf**: Structural frequency must support reorganization response
-4. **No overload pattern**: Detect sobrecarga disonante (multiple OZ without resolution)
-5. **Network connectivity**: Warn if isolated (bifurcation requires alternative paths)
-
-These validations implement the canonical warning from TNFR.pdf:
-> "OZ debe ir precedido por estabilización adecuada (IL). Genera nodos frágiles o
-> fallidos si se aplica sobre estructuras sin coherencia interna."
-
-References
-----------
-- TNFR.pdf §2.3.6: Catálogo de errores arquetípicos (Sobrecarga disonante)
-- TNFR.pdf §2.3.3: Reglas sintácticas R4 (Bifurcación)
-- Tabla de validación estructural: Condiciones de activación de OZ
+The retained May TNFR.pdf, printed/PDF pages 89-93 and 151, motivates critical
+perturbation and resolution of accumulated dissonance. It does not derive
+these numerical thresholds, the five-event window or the IL/THOL/NUL resolver
+set. Page 151's premature-closure warning concerns SHA, not an OZ requirement.
 """
 
 from __future__ import annotations
@@ -36,15 +25,15 @@ __all__ = ["validate_dissonance_strict"]
 
 
 def validate_dissonance_strict(G: TNFRGraph, node: Any) -> None:
-    """Validate strict canonical preconditions for OZ (Dissonance) operator.
+    """Validate the enabled strict OZ policy before its event.
 
-    According to TNFR canonical theory, Dissonance (OZ - Disonancia) requires:
+    The configured admission conditions are:
 
-    1. **Coherence base**: EPI >= threshold (sufficient structure to withstand disruption)
-    2. **ΔNFR safety**: |ΔNFR| <= critical (configured inclusive pressure limit)
-    3. **Active νf**: νf >= threshold (capacity to respond to dissonance)
+    1. **Form floor**: signed EPI >= configured threshold
+    2. **Pressure ceiling**: |ΔNFR| <= configured inclusive limit
+    3. **Capacity floor**: νf >= configured threshold
     4. **No overload**: < 2 consecutive OZ without resolution (IL/THOL/NUL)
-    5. **Network connectivity**: degree >= 1 (warning only - enables bifurcation paths)
+    5. **Network connectivity**: configured degree minimum (warning only)
 
     Parameters
     ----------
@@ -56,15 +45,14 @@ def validate_dissonance_strict(G: TNFRGraph, node: Any) -> None:
     Raises
     ------
     ValueError
-        If EPI < minimum (insufficient coherence base - apply IL first)
-        If |ΔNFR| > maximum (reorganization pressure critical - apply IL first)
-        If νf < minimum (cannot respond to dissonance)
+        If signed EPI or capacity is below its configured minimum
+        If |ΔNFR| exceeds its configured maximum
         If overload detected (>= 2 OZ without resolver operators)
 
     Warnings
     --------
     UserWarning
-        If node has low connectivity (degree < 1) - bifurcation paths limited
+        If node degree is below the configured warning threshold
 
     Notes
     -----
@@ -85,13 +73,13 @@ def validate_dissonance_strict(G: TNFRGraph, node: Any) -> None:
     >>> from tnfr.operators.preconditions.dissonance import validate_dissonance_strict
     >>> G, node = create_nfr("test", epi=0.5, vf=1.0)
     >>> G.nodes[node]["dnfr"] = 0.3
-    >>> validate_dissonance_strict(G, node)  # OK - sufficient coherence base
+    >>> validate_dissonance_strict(G, node)  # OK - configured floors satisfied
 
     >>> G2, node2 = create_nfr("weak", epi=0.05, vf=1.0)
     >>> validate_dissonance_strict(G2, node2)  # doctest: +SKIP
     Traceback (most recent call last):
         ...
-    ValueError: OZ precondition failed: EPI=0.050 < 0.2. Insufficient coherence base.
+    ValueError: OZ precondition failed: EPI=0.050 < 0.2. Configured EPI floor not met.
 
     See Also
     --------
@@ -133,50 +121,44 @@ def validate_dissonance_strict(G: TNFRGraph, node: Any) -> None:
     min_epi, max_dnfr = policy.min_epi, policy.max_dnfr
     min_vf, min_degree = policy.min_vf, policy.min_degree
 
-    # Precondition 1: Minimum coherence base (EPI)
-    # OZ requires existing structure to perturb - without it, OZ causes collapse
+    # Precondition 1: Configured signed form floor, not a coherence observable.
     if epi < min_epi:
         raise TNFRValueError(
             f"OZ precondition failed: EPI={epi:.3f} < {min_epi:.3f}. "
-            f"Insufficient coherence base to withstand dissonance. "
-            f"Suggestion: Apply IL (Coherence) first to stabilize node before introducing dissonance.",
+            f"Configured EPI floor not met. "
+            f"Supply form satisfying this policy; IL does not increase EPI.",
             context={"epi": epi, "min_epi": min_epi},
-            suggestion="Apply IL (Coherence) first to stabilize node before introducing dissonance.",
+            suggestion="Supply form satisfying the configured signed EPI floor.",
         )
 
-    # Precondition 2: ΔNFR not critically high
-    # Applying OZ when ΔNFR already extreme creates sobrecarga (overload) → collapse
+    # Precondition 2: Configured inclusive pressure-magnitude ceiling.
     if abs(dnfr) > max_dnfr:
         raise TNFRValueError(
             f"OZ precondition failed: |ΔNFR|={abs(dnfr):.3f} > {max_dnfr:.3f}. "
-            f"Reorganization pressure already critical - applying OZ risks collapse. "
+            f"Configured pressure ceiling exceeded. "
             f"Suggestion: Apply IL (Coherence) first to reduce ΔNFR before introducing more dissonance.",
             context={"dnfr": dnfr, "max_dnfr": max_dnfr},
             suggestion="Apply IL (Coherence) first to reduce ΔNFR before introducing more dissonance.",
         )
 
-    # Precondition 3: Sufficient νf for reorganization response
-    # OZ triggers reorganization - node needs capacity (νf) to respond
+    # Precondition 3: Configured nonnegative capacity floor.
     if vf < min_vf:
         raise TNFRValueError(
             f"OZ precondition failed: νf={vf:.3f} < {min_vf:.3f}. "
-            f"Structural frequency too low - node lacks capacity to respond to dissonance. "
+            f"Configured capacity floor not met. "
             f"Suggestion: Increase νf before applying OZ.",
             context={"vf": vf, "min_vf": min_vf},
             suggestion="Increase νf before applying OZ.",
         )
 
-    # Precondition 4: Detect OZ overload (sobrecarga disonante)
-    # Multiple OZ without resolution = entropic loop (violates R5)
+    # Precondition 4: Bounded chronological resolver policy; U2 is separate.
     _validate_oz_no_overload(G, node)
 
-    # Precondition 5: Network connectivity (warning only - not blocking)
-    # Isolated nodes can experience dissonance but bifurcation paths are limited
+    # Precondition 5: Connectivity warning, not a proved bifurcation criterion.
     if degree < min_degree:
         warnings.warn(
             f"OZ warning: Node {node!r} has low connectivity (degree={degree} < {min_degree}). "
-            f"OZ-induced bifurcation may have limited structural paths. "
-            f"Consider applying UM (Coupling) first to increase network coupling.",
+            f"Check that the supplied support matches the intended operation.",
             UserWarning,
             stacklevel=3,
         )
@@ -192,11 +174,12 @@ def validate_dissonance_strict(G: TNFRGraph, node: Any) -> None:
 
 
 def _validate_oz_no_overload(G: TNFRGraph, node: Any) -> None:
-    """Detect and prevent dissonance overload (sobrecarga disonante).
+    """Reject an unresolved OZ in the selected recent-history window.
 
-    Sobrecarga occurs when multiple OZ operators are applied in succession
-    without intervening resolution operators (IL, THOL, NUL). This creates
-    entropic loops that violate TNFR structural coherence requirements.
+    Only a later IL, THOL or NUL resolves an earlier OZ for this configured
+    policy. A resolver before the most recent OZ cannot cover that event.
+    This bounded check neither replaces persistent U2 debt nor establishes a
+    dynamical instability or entropy increase.
 
     Parameters
     ----------
@@ -241,26 +224,22 @@ def _validate_oz_no_overload(G: TNFRGraph, node: Any) -> None:
     history_list = list(history)
     recent_history = history_list[-5:] if len(history_list) >= 5 else history_list
 
-    # Count OZ applications in recent history
-    oz_count = sum(
-        1 for glyph in recent_history if glyph_function_name(glyph) == "dissonance"
-    )
+    resolvers = {"coherence", "self_organization", "contraction"}
+    recent_names = [glyph_function_name(g) for g in recent_history]
+    oz_count = 0
+    for name in recent_names:
+        if name in resolvers:
+            oz_count = 0
+        elif name == "dissonance":
+            oz_count += 1
 
-    # If >= 1 OZ in history, check for resolver operators
-    # (we're about to apply another OZ, so that would make >= 2 total)
     if oz_count >= 1:
-        # Resolver operators that integrate dissonance
-        resolvers = {"coherence", "self_organization", "contraction"}
-        recent_names = [glyph_function_name(g) for g in recent_history]
-        has_resolver = any(name in resolvers for name in recent_names)
-
-        if not has_resolver:
-            raise TNFRValueError(
-                f"OZ precondition failed: Sobrecarga disonante detected. "
-                f"Found {oz_count} OZ in recent history without resolution. "
-                f"Applying another OZ without resolving previous dissonance risks collapse. "
-                f"Suggestion: Apply IL (Coherence), THOL (Self-organization), or NUL (Contraction) "
-                f"to integrate dissonance before introducing more.",
-                context={"oz_count": oz_count, "recent_history": recent_names},
-                suggestion="Apply IL (Coherence), THOL (Self-organization), or NUL (Contraction) to integrate dissonance before introducing more.",
-            )
+        raise TNFRValueError(
+            f"OZ precondition failed: Sobrecarga disonante detected. "
+            f"Found {oz_count} OZ in recent history without a later resolver. "
+            f"The configured overload policy rejects another unresolved OZ. "
+            f"Suggestion: Apply IL (Coherence), THOL (Self-organization), or NUL (Contraction) "
+            f"to integrate dissonance before introducing more.",
+            context={"oz_count": oz_count, "recent_history": recent_names},
+            suggestion="Apply IL (Coherence), THOL (Self-organization), or NUL (Contraction) to integrate dissonance before introducing more.",
+        )

@@ -186,6 +186,10 @@ def enforce_canonical_grammar(
     n,  # NodeId
     cand: Any,
     ctx: Any = None,
+    *,
+    potential_partner: Any = None,
+    potential_scope: str = "isolated",
+    _decision_trace: list[Any] | None = None,
 ) -> Any:
     """Enforce incremental grammar rules (U1a, U2, U3, U4) on *cand*.
 
@@ -219,4 +223,15 @@ def enforce_canonical_grammar(
     from .grammar_execution import ValidatedSequenceStep
 
     sequence_context = ctx if isinstance(ctx, ValidatedSequenceStep) else None
-    return enforce_grammar_on_glyph(G, n, cand, sequence_context=sequence_context)
+    trace_options = (
+        {} if _decision_trace is None else {"_decision_trace": _decision_trace}
+    )
+    return enforce_grammar_on_glyph(
+        G,
+        n,
+        cand,
+        sequence_context=sequence_context,
+        potential_partner=potential_partner,
+        potential_scope=potential_scope,
+        **trace_options,
+    )

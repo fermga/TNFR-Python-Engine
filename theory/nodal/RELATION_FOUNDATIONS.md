@@ -265,6 +265,11 @@ actual reset and budget.
 
 To separate the second obstruction, consider an explicitly different,
 **conditional mathematical extension**, not an installed engine model.
+Its operator realization is unresolved: the
+[causal audit](../STRUCTURAL_OPERATORS.md#continuous-operator-realization-audit)
+does not identify the equations below with UM, RA or THOL. All later weighted
+contact results in this chapter retain this auxiliary scope, including the
+elementary acquisition and source-to-response theorems.
 Take symmetric nonnegative weights on a finite potential-pair domain and set
 
 \[
@@ -394,6 +399,7 @@ component. It still supplies a chosen allocation and reads both endpoints
 of the candidate pair; locality relative to this potential pair does not
 derive candidate access or the allocation itself.
 
+<a id="weighted-contact-operator-boundary"></a>
 ### Two complete local autonomous countermodels
 
 Combine the same nodal rows with either of the two **postulated** support rows
@@ -404,10 +410,18 @@ Combine the same nodal rows with either of the two **postulated** support rows
 \]
 
 These are autonomous equations for `(X,a)`, not an external invocation or
-thresholded diagnostic. On a regular positive-background chart they are
+thresholded diagnostic. Autonomy here means that the supplied state determines
+the derivative; it does not mean that the law was derived from structural
+operators. These rows execute no UM event and consume no U3 or ordered grammar
+state. The [operator audit](../STRUCTURAL_OPERATORS.md#continuous-operator-realization-audit)
+gives an explicit regular source where they grow a candidate that UM excludes,
+and the additional bridge required for a canonical structural claim.
+On a regular positive-background chart they are
 smooth, nonnegative at the boundary and nonsingular because `beta>0`.
-Local existence is the ordinary smooth-ODE result, stopped at any first
-exit from that chart. No global continuation or later recovery is asserted.
+Local existence here is the ordinary smooth-ODE result, stopped at any first
+exit from that chart. The later [regularity](#passive-contact-regular-continuation)
+and [small-source acquisition](#passive-contact-zero-source-trapping) results
+add the premises needed for global continuation and recovery.
 If `mathcal B(0)>0`, each produces `a(t)>0` for sufficiently small `t>0`.
 An initially zero allocation alone does not prove permanent inactivity:
 subsequent nodal evolution can change it.
@@ -679,7 +693,7 @@ unmodeled coordinates inside every scalar node.
 These results make joint node/contact evolution an explicit requirement for
 the next admission. The audit below classifies what could supply the missing
 nonzero boundary drive; it derives none. The
-[execution plan](../research/FIVE_STAGE_EXECUTION_PLAN.md#current-g3-gate)
+[research program](../RESEARCH_PROGRAM.md#research-current-question)
 owns what remains.
 
 ### Zero-boundary audit: what can drive a first contact
@@ -913,10 +927,11 @@ owns the next bounded admission, not a theorem that these premises are exhaustiv
 The passage from separately evolving patterns to a maintained coupled
 organization could be investigated as a transition of the joint dynamics.
 This meaning of transition is distinct from changing the angular phase
-`theta` of a node. The current smooth positive-onset examples establish
-neither a critical threshold nor a change of stability or a maintained
-coupled regime. A weight becoming positive is not sufficient evidence for
-those claims.
+`theta` of a node. The smooth positive-onset argument alone establishes
+neither a critical threshold nor a change of stability or a maintained coupled
+regime. The [small-source result](#passive-contact-acquired-response) separately
+proves acquisition and recovery of an elementary response family. It does not
+prove a bifurcation; a weight becoming positive alone remains insufficient.
 
 Once a joint law is justified, identify its uncoupled and coupled invariant
 states or persistent regimes and the declared preparation or model parameter
@@ -932,6 +947,818 @@ established, would retain its own scope rather than establish a physical
 thermodynamic transition. This is an interpretation criterion for the same
 contact study, not a new campaign or an additional phase-transition law.
 
+<a id="passive-contact-resource-budget"></a>
+### Integrated growth and shared local loss
+
+The following results retain the fully weighted rows, held positive capacities,
+fixed positive background strengths, the admitted regular phase chart, and
+`Psi=0`. They concern the existing passive completions, not native bare-neighbor
+phase execution. For one candidate set `r=c/beta` and
+`a_dot=(mathcal B/beta) h(r)`. Suppose, additionally, that a fixed `kappa>0`
+satisfies
+
+\[
+ (r+\kappa)h(r)\le1
+ \quad\hbox{on the entire visited cost domain}. \tag{J1}
+\]
+
+This is stronger than passivity `r h(r)<=1`. Both existing functions
+`h_1=1/(1+r)` and `h_2=1/(1+r)^2` satisfy (J1) with `kappa=1`.
+The auxiliary accounting functional, without any change to the storage or
+equations, obeys
+
+\[
+ Q=S+\kappa\beta a,\qquad
+ \dot Q=-\mathcal D+(r+\kappa)\mathcal B h(r)
+ \le-(\mathcal D-\mathcal B)\le0. \tag{J2}
+\]
+
+Since `S>=0` and `a_dot>=0`, every admitted continuation satisfies
+
+\[
+ 0\le a(t)-a(0)\le {S(0)\over\kappa\beta}. \tag{J3}
+\]
+
+This includes the original transient storage; it neither adds a reservoir
+`Psi=beta*a` nor changes the support force. The bound holds up to any regular
+existence time. If existence is global, monotonicity and boundedness give a
+finite `a_infinity`, without determining its value or an arrival time.
+Passivity alone does not imply (J1): a nonnegative smooth `h` can obey
+`rh<=1` while saturating it at positive r, where every positive kappa fails.
+Also, `h=0` satisfies (J1) but produces no onset.
+
+For several supplied distinct candidate pairs, allocating `D_u+D_v` to every
+pair can spend the same nodal loss repeatedly. Introduce explicitly supplied
+nonnegative endpoint fractions `alpha_ie`, zero off the candidate endpoints,
+with `sum_e alpha_ie<=1` for each node, and define
+
+\[
+ \mathcal B_e=\sum_i\alpha_{ie}D_i,\qquad
+ \sum_e\mathcal B_e\le\mathcal D,\qquad
+ \dot a_e={\mathcal B_e\over\beta}h_e(c_e/\beta). \tag{J4}
+\]
+
+These are additional allocation premises, not derived candidate or occurrence
+laws. Use fixed fractions for the continuation results below. A state-dependent
+allocation additionally needs smoothness and the symmetries consumed by any
+quotient; the instantaneous inequality alone does not establish them.
+Recompute each nodal loss from the same current weighted state once,
+then allocate it. The full support-work balance gives
+
+\[
+ \dot S=-\mathcal D+\sum_ec_e\dot a_e,\qquad
+ Q=S+\kappa\beta\sum_ea_e,\qquad
+ \dot Q\le-\bigl(\mathcal D-\sum_e\mathcal B_e\bigr)\le0,\qquad
+ \sum_e[a_e(t)-a_e(0)]\le {S(0)\over\kappa\beta}. \tag{J5}
+\]
+
+Each `h_e` must meet (J1) with the common kappa. A simple failure control is
+one node with loss one assigned completely to two cost-nine contacts, with
+`beta=1,h=h_1`. Each rate is `1/10`, but total work is `9/5`, exceeding
+the total loss. Splitting that node's allocation equally restores the shared
+balance. Even a currently zero loss does not waive allocation admission for
+later states.
+
+The exact [contact budget owner](../../src/tnfr/physics/passive_contact.py)
+implements both existing completions and the `kappa=1` aggregate growth bound.
+Its inputs are primitive declared costs, losses, candidate endpoints and
+fractions; it does not authenticate them against a graph or prove a future
+domain. A required aggregate increase above (J5) is excluded under the
+continued premises. Equality or a smaller requirement establishes no acquisition.
+Any such requirement must come from an independently defined joint identity.
+
+<a id="passive-contact-stationary-limits"></a>
+### What compact regular continuation can sustain
+
+On a domain with `r_e<=R`, (J1) gives
+`r_e h_e(r_e)<=R/(R+kappa)`. Hence the same complete balance implies
+
+\[
+ \dot S\le-{\kappa\over R+\kappa}\mathcal D. \tag{J6}
+\]
+
+Suppose the autonomous joint orbit has compact closure strictly inside an
+admitted regular domain, possibly after quotienting exact common form and
+phase symmetries. The bounds and laws must be well defined in that quotient.
+LaSalle's invariant-set argument then places its omega-limit set in the
+largest invariant subset of `mathcal D=0`. This is a conditional dynamical
+statement; bounded coordinates approaching a singular phase resultant do
+not supply its compact regular hypothesis.
+
+Here that invariant subset is stationary. Positive e, capacities and strengths
+give `q=0`, so every support rate and `theta_dot` vanishes. The weighted graph
+is therefore fixed on an orbit staying in this subset. On each connected
+component C, `q=0` makes x constant. Remaining there requires
+`B N g=0`, so `nu_i g_i=k_C` on C. But the actual weighted phase geometry gives
+
+\[
+ \sum_{i\in C}H_i g_i
+ =\sum_{i\in C}\operatorname{Im} Z_i=0,
+ \qquad
+ k_C\sum_{i\in C}{H_i\over\nu_i}=0. \tag{J7}
+\]
+
+The last sum is strictly positive; hence `k_C=0`, `g=0` and `x_dot=0` too.
+The quotient introduces no concealed uniform drift: the same argument kills
+it. Thus the compact regular omega-limit set consists of stationary joint
+states. This does not identify a unique equilibrium or its basin. It excludes
+a nonconstant periodic orbit within these premises, while allowing transient
+activity and response to a supplied perturbation. Neither mathematical
+storage nor this relaxation result establishes a physical thermodynamic law.
+
+<a id="passive-contact-regular-continuation"></a>
+### An explicit low-storage source domain removes the phase-boundary assumption
+
+Let the fixed background strengths satisfy `d_i^bg>0`, and let S_0 be the
+actual initial storage of the same fully weighted state. For the existing
+completions, or fixed-fraction generalizations satisfying (J1), assume
+
+\[
+ \delta=\min_i d_i^{\rm bg}-S_0/\beta>0. \tag{J8}
+\]
+
+Every term of V_W is nonnegative, and a node's incident terms form a subset
+of the undirected edge terms. Throughout a regular solution, passivity gives
+
+\[
+ \operatorname{Re}Z_i
+ =d_i-\sum_jW_{ij}[1-\cos(\theta_j-\theta_i)]
+ \ge d_i-V_W\ge d_i^{\rm bg}-S_0/\beta\ge\delta. \tag{J9}
+\]
+
+Thus `|arg Z_i|<pi/2`. For `|z|<pi/2`, `sinc(z)>=cos(z)`, since
+`sin(z)-z cos(z)` has derivative `z sin(z)>=0` for nonnegative z and the
+comparison is even. Consequently `H_i>=pi Re Z_i>=pi delta`. This supplies
+a uniform regularity margin; it does not require every edge gap to be acute.
+Failure of (J8) is inconclusive rather than proof of a singular trajectory.
+
+The maximal solution is global under these premises. The growth budget bounds
+all candidate weights; the fixed positive backgrounds bound d away from zero,
+and (J9) bounds H away from zero. Also `|g_i|<1/2`. With held finite positive
+coefficients and capacities, the nodal rows therefore obey finite bounds
+`|x_dot|<=C_1|x|+C_2` and `|theta_dot|<=C_3|x|`. Gronwall bounds x on each
+finite interval, and integration bounds any chosen real phase lift on that
+interval. Contact weights remain bounded and nonnegative. Smooth local
+continuation extends past any proposed finite endpoint, because that finite
+state stays inside the regular chart with a uniform margin. This proves
+neither bounded unwrapped phases nor a bounded absolute form mean for all time.
+
+For a background consisting of exactly two connected components, let one
+candidate bridge have `a(0)=0` and `mathcal B(0)>0`. Both existing h_1,h_2 are
+positive, so there is a finite tau with `a(tau)>0`; monotonicity retains this
+positive lower bound. The strict conditions (J8) and `mathcal B(0)>0` define
+a nonempty relatively open source subclass on the zero-contact preparation
+manifold. For example, the existing first-contact fixture has `S_0=1/2`,
+`beta=1`, all background strengths one, and `mathcal B(0)=1/2`.
+It therefore admits global regular continuation and `0<a_infinity<=1/2`
+under either completion. These are analytic consequences of the already
+declared source, not evaluated trajectories or an identified final organization.
+
+For any such tau the connected graph has `gamma=lambda_2(B(tau))>0`.
+Writing `P=I-11^T/n`, nondecreasing weights imply
+
+\[
+ 2S_0\ge x(t)^T B(t)x(t)
+ \ge x(t)^T B(\tau)x(t)
+ \ge\gamma\,|Px(t)|^2,\qquad t\ge\tau. \tag{J10}
+\]
+
+Hence the orbit is precompact modulo one common form translation, with
+circular phases on a finite torus and bounded relation coordinates. The
+complete law and storage descend to this quotient for the existing laws and
+fixed shares; arbitrary absolute-form-dependent allocations would not do so.
+Its closure stays regular by (J9). The stationary-set result above now
+applies without an assumed compact trapping domain. Distance to that set in
+the quotient tends to zero, and every contact has a finite limit. This is not
+convergence to a specified equilibrium, phase consensus, a common destination
+or a uniformly timed acquired identity.
+
+Non-consensus stationary states occur even inside this sufficient domain.
+On the four-node chain with weights `(1,a,1)`, uniform form and phases
+`(0,0,pi,pi)` give `Z=(1,1-a,1-a,1)`, `q=g=0` and `S=2 beta a`.
+For `0<a<1/2`, (J8) holds and both support rates vanish. This prepared
+counterexample establishes neither attraction nor access from the zero-contact
+source; it prevents replacing stationary-set convergence by phase consensus.
+
+The exact growth-bound consumer optionally returns the nodewise lower bounds
+`d_i^bg-S_0/beta` from admitted scalar premises. It does not independently
+verify a graph's initial storage/background or install this weighted dynamics.
+Positive margins justify the stated conditional domain; nonpositive margins
+leave that sufficient condition unavailable. The
+[existing source controls](../../tests/physics/test_constitutive_support_scope.py)
+connect these bounds to the native disconnected first-contact fixture.
+
+<a id="joint-contact-scaling-and-memory"></a>
+### Whole-model scaling, retained relations and the response criterion
+
+The fixed-weight cancellation in section 4 extends to the complete family of
+the two autonomous completions. Multiply every background weight and every
+candidate weight by a constant `rho>0`, retaining x, theta, capacities, beta
+and clock. Then q, d, H, S and every nodal loss scale by rho, whereas g and
+each contact cost do not. With fixed allocation fractions, the full equations
+therefore give
+
+\[
+ F_{\rho W}(X)=F_W(X),\qquad
+ f_e(X,\rho W)=\rho f_e(X,W),\qquad
+ X_\rho(t)=X(t),\quad a_{e,\rho}(t)=\rho a_e(t). \tag{J11}
+\]
+
+Local uniqueness gives the last correspondence over the matched regular
+existence interval. Since background weights are parameters, this is a
+conjugacy of the model family, not an additional orbit within one fixed
+background experiment. It justifies one constant background reference scale
+and avoids redundant comparisons. It does not authorize scaling a alone,
+using a time-varying normalization, dropping candidate-zero coordinates or
+identifying an absolute weight from scale-invariant nodal observations.
+Weight/storage readouts and interventions that break this matching need their
+own transformation. This adds no measured execution-speed claim.
+
+Within a fixed background, uniform form and phase give `q=g=0` and zero
+support rates for every admissible candidate weight. There is therefore a
+continuum of joint equilibria. Since the allocation is quadratic in q,
+its first derivative vanishes there, and `partial_a F=0` at uniform X.
+The joint linearization retains neutral relation directions. An individual
+equilibrium specified by an exact interior weight cannot be asymptotically
+attracting in the full joint state: arbitrarily nearby distinct relation
+equilibria remain distinct, even after common nodal symmetries are removed.
+
+Those neutral coordinates remain predictively relevant. Take two unit P2
+background components and a bridge `(1,2)` of weight a, uniform form/phase,
+and positive fixed capacities. Apply the same supplied form perturbation
+`x_1 += epsilon` to two preparations having different a. At receiver 2,
+
+\[
+ \dot x_2=e\nu_2\epsilon{a\over1+a},\qquad
+ \dot\theta_2=-{w\nu_2\epsilon\over\beta\pi}{a\over1+a},\qquad
+ \dot a=O(\epsilon^2). \tag{J12}
+\]
+
+The two nodal rates are exact initial formulas at phase consensus. Equal
+unperturbed nodal observations do not determine the response: relative
+relation weights must be retained or otherwise identified. This is a prepared
+state counterexample, not proof that a particular actual source acquires both
+weights. The matched perturbation has supplied work `(1+a)*epsilon^2/2`;
+equal form amplitude does not mean equal work. No registered operator or
+autonomous perturbation is inferred. The
+[native EPI response control](../../tests/physics/test_passive_contact.py)
+checks the form rate at phase consensus using the existing weighted pressure
+owner, without executing the weighted nonlinear phase row.
+
+A joint identity therefore needs a stated response family/tolerance or an
+independent source-selection argument, rather than attraction to an exact
+chosen contact weight. A positive edge, zero baseline nodal velocity or a
+Laplacian gap alone establishes neither that identity nor a self-sustained
+oscillator. Stability must retain the complete node/relation Jacobian,
+including `partial_a F` and the state derivative of the support row.
+
+<a id="joint-contact-moving-mean"></a>
+### An instantaneous balance is not a conserved moving mean
+
+For chosen continuous phase lifts let `m_i=H_i/nu_i`, `M=sum_i m_i` and
+`mu=sum_i m_i theta_i/M`. The complete phase row gives the instantaneous
+annihilation `sum_i m_i theta_dot_i=(w/beta) sum_i q_i=0`. Differentiating
+the actual moving weights nevertheless gives
+
+\[
+ \dot\mu={1\over M}\sum_i\dot m_i(\theta_i-\mu). \tag{J13}
+\]
+
+Here H changes with both phase and contact weight. Thus this phase mean is
+not a conserved charge in general. A centered chart must retain this term;
+global phase compactness concerns circular phases, not arbitrary unbounded
+real lifts. Similarly, a moving reference `X_*(a)` contributes
+`-D_a X_*(a) a_dot` to its deviation row, and a quadratic deviation metric
+contributes its actual time derivative. Frozen-weight stability estimates
+do not remove these terms.
+
+For two connected background blocks of sizes n_L and n_R joined by a single
+weight a, the combinatorial Laplacian additionally satisfies
+
+\[
+ \lambda_2(B(a))\le a(1/n_L+1/n_R). \tag{J14}
+\]
+
+Use a trial vector constant `1/n_L` on the left and `-1/n_R` on the right;
+its mean is zero and its Rayleigh quotient is the right side. A uniformly
+positive inter-block gap cannot hold through zero contact. This statement
+concerns the combinatorial Laplacian, not the complete form/phase/relation
+Jacobian; it supplies no automatic time-scale separation. Keep the relative
+block mode and relation coordinate until a justified later domain permits
+their controlled elimination.
+
+<a id="passive-contact-family-stability"></a>
+### A predictive equilibrium family has full-state local attraction
+
+Retain the complete fully weighted law and either existing passive support
+row. An elementary identity can retain common form/phase, a relation profile,
+and recovery/transmission under a declared probe. For the two unit P2
+backgrounds with candidate `(1,2)`, define the equilibrium family by common
+form and phase, `0<a<1/2`, and the retained susceptibility `chi=a/(1+a)`.
+The supplied probe is `x_1 -> x_1+epsilon`; the output is the incremental
+receiver form rate. This fixes a family and a response before selecting a
+source or a final weight. It includes transverse recovery, not merely
+connectivity. Exact equilibrium membership is asymptotic; finite acquisition
+means eventual entry and retention within a stated positive nodal tolerance
+and a local recovery neighborhood. There is no source-uniform minimum gain
+or maximum arrival time in this definition.
+
+At any common nodal equilibrium let `K=N D^-1 B` and `M=D N^-1`.
+The argument derivative is `D_theta g=-D^-1 B/pi`, and `H=pi D`.
+Derivatives of H or normalization multiply `q=0`; support rates are quadratic
+in q, and `F(X,a)=0` at common X for every a. Thus the **full** Jacobian is
+
+\[
+ J=\begin{pmatrix}
+ -eK&-wK/\pi&0\\
+ wK/(\beta\pi)&0&0\\
+ 0&0&0
+ \end{pmatrix},\qquad MK=B. \tag{J15}
+\]
+
+K is similar to `M^-1/2 B M^-1/2`. For connected W its spectrum is a simple
+zero and positive values mu. In coordinates `u=x/sqrt(beta)`,
+`omega=w/(pi sqrt(beta))`, each transverse block is `mu C`, where
+`C=[[-e,-omega],[omega,0]]`. Its roots are
+`mu*(-e +/- sqrt(e^2-4omega^2))/2`, with negative real parts. Critical damping
+can give a defective negative block; its polynomial factor does not destroy
+exponential stability, but forbids assuming the sharp exponential alone.
+The zero eigenspace is semisimple and consists exactly of the two common
+nodal shifts and the retained relation directions. It is tangent to the
+equilibrium family, not an omitted instability or a contracting contact mode.
+
+Here is a local proof that retains the moving metric. On a compact contact
+interval strictly inside the positive domain, use a **fixed** orthonormal
+chart perpendicular to the common nodal shifts. The exact quotient row is
+`z_dot=L(a)z+R(z,a)`, `a_dot=f(z,a)`, with `R=O(|z|^2)` and
+`f=O(|z|^2)`. Every L is Hurwitz. Its smooth positive Lyapunov solution
+`P_a L+L^T P_a=-I` has uniform bounds on this interval. Therefore
+
+`d(z^T P_a z)/dt=-|z|^2+2z^T P_a R+z^T(D_a P_a)[f]z`
+
+is at most `-|z|^2/2` in a sufficiently small tube: the remainder terms
+are respectively cubic and quartic. Integrating `|a_dot|<=C|z|^2`
+bounds the total contact drift by `C'|z(0)|^2`; choose the tube inside an
+interior contact margin to close the argument. Transverse coordinates decay
+exponentially and a converges. The actual common-coordinate derivatives are
+`O(|z|)` and hence integrable, so they converge too. This proves convergence
+to a source-dependent family member, without assuming a conserved mean.
+The tube and constants can degenerate at a=0. This local proof alone supplies
+no zero-contact source entry. The selective
+[Wiggins/Kuehn reading](../BIBLIOGRAPHIC_METHODS.md#bibliographic-contact-identity-reading)
+supports this distinction; no fast-slow parameter or global Fenichel theorem
+is presumed.
+
+<a id="passive-contact-zero-source-trapping"></a>
+### A common metric controls entry without an initial inter-block gap
+
+A separate argument now covers a nonempty small-source domain. Keep positive
+held e, w, beta and capacities, positive background strengths, one bridge
+between two connected background components, and either existing support row.
+Set `u_i=(x_i-x_*)/sqrt(beta)` and `phi_i=theta_i-theta_*` using one **fixed**
+common reference and consistent real phase lifts. Put `z_i=(u_i,phi_i)` and
+
+\[
+ P=\begin{pmatrix}1/e&1/(2\omega)\\
+ 1/(2\omega)&1/e+e/(2\omega^2)\end{pmatrix},\quad
+ C^TP+PC=-I,\quad
+ \det P=1/e^2+1/(4\omega^2)>0,\quad
+ V=\sum_i{d_i\over\nu_i}z_i^TPz_i. \tag{J16}
+\]
+
+P is a mathematical Lyapunov metric in the declared structural units, not new
+storage or a constitutive law. The normalized nodal coordinates are
+dimensionless; the fixed reference does not move, whereas the d-dependent
+metric does. Its derivative is essential below.
+
+Suppose `|z_i|<=R<=1/4`. For `delta_ij=phi_j-phi_i` put `rho=2R`,
+`A_i=sum_j W_ij cos(delta_ij)/d_i`,
+`b_i=sum_j W_ij sin(delta_ij)/d_i`,
+`mu_i=sum_j W_ij delta_ij/d_i`, and
+`t_i=sum_j W_ij delta_ij^2/d_i`.
+Then `A_i>=1-rho^2/2>=7/8`, `1-A_i<=t_i/2`, `|b_i|<=rho`,
+and `b_i^2<=t_i`. The argument lies in `[-rho,rho]`. Using the elementary
+sine and arctangent cubic remainder bounds gives
+
+\[
+ |\arg Z_i-\mu_i|
+ \le\rho t_i\left({1\over6}+{1\over2A_i}+{1\over3A_i^3}\right)
+ \le4Rt_i,\qquad
+ 0\le\eta_i:={\pi d_i\over H_i}-1\le t_i. \tag{J17}
+\]
+
+For the first estimate split the error into `b_i-mu_i`, `b_i/A_i-b_i`,
+and `atan(b_i/A_i)-b_i/A_i`; the bracket is less than two at `A_i>=7/8`.
+For the second, `A_i<=H_i/(pi d_i)<=1` follows from
+`sinc(alpha)>=cos(alpha)` and `|Z_i|<=d_i`, so
+`eta_i<=(1-A_i)/A_i<=4t_i/7`.
+
+Write `v=B u`, `s=B phi`, `m_i=d_i/nu_i`. The exact rows decompose as
+`z_dot_i=(nu_i/d_i)C(Bz)_i+r_i`, where
+`m_i r_i^u=omega d_i(arg Z_i-mu_i)` and
+`m_i r_i^phi=omega v_i eta_i`. Let
+`E_u=sum_edges W(Delta u)^2`, `E_phi=sum_edges W(Delta phi)^2`,
+and `E=E_u+E_phi`. Incident sums `E_u,i,E_phi,i` count every edge twice.
+Equation (J17) gives `|m_i r_i^u|<=4omega R E_phi,i`.
+Cauchy's inequality and `sqrt(E_phi,i/d_i)<=2R` give
+`|v_i|E_phi,i/d_i<=2R sqrt(E_u,i E_phi,i)<=R(E_u,i+E_phi,i)`.
+Consequently `2sum_i m_i z_i^TP r_i<=20||P||omega R^2 E`.
+
+The exact linear contribution is `-E`, without a spectral-gap denominator.
+Also `a_dot<=2e nu_max E_u`, since both h choices are at most one.
+At the two ports `d_dot_i=a_dot`; hence
+`sum_i m_dot_i z_i^TPz_i<=4||P||e(nu_max/nu_min)R^2 E_u`.
+The complete derivative therefore obeys
+
+\[
+ \dot V\le-[1-\|P\|(20\omega+4e\kappa_\nu)R^2]E,
+ \qquad \kappa_\nu=\nu_{\max}/\nu_{\min}. \tag{J18}
+\]
+
+These bounds extend to several candidate edges with fixed admitted shares:
+`sum_e a_dot_e<=2e nu_max E_u` by the nonduplicated allocation (J5),
+and the metric-growth bound is at most
+`2||P||R^2 sum_e a_dot_e/nu_min`. This extends trapping, not a guarantee
+that those candidates activate or connect the graph.
+
+Choose R so that the square-bracket coefficient in (J18) is at least one
+half. With `m_min=min_i(d_i^bg/nu_i)`, require
+
+\[
+ V(0)<m_{\min}\lambda_{\min}(P)R^2. \tag{J19}
+\]
+
+No first exit through `max_i|z_i|=R` is possible: V is nonincreasing inside,
+whereas an exit requires at least the right side of (J19). The strict initial
+margin persists. All nodal coordinates stay bounded in this **fixed** chart,
+and `Re Z_i>=d_i^bg cos(2R)>0`. The existing resource bound keeps all contact
+weights bounded. Thus the full state remains in a compact regular domain and
+the solution is global. This proves trapping even through a=0, where the
+inter-block spectral gap vanishes; it does not assert a uniform positive gap.
+
+If the initial bridge allocation is positive, either support row gives
+positive onset. At some finite tau the connected support has `a(tau)>0`,
+which is retained monotonically. Applying LaSalle to (J18) on the trapped
+full state puts the omega set in `E=0`. Connectedness then forces common
+form and common lifted phase, with zero support rate. The contact has a
+positive finite limit. The local family theorem at an omega-limit point
+upgrades approach to the family to convergence to one member, including the
+actual common coordinates. There is no selected common destination across
+the source family and no sustained autonomous oscillation in this regime.
+
+<a id="passive-contact-acquired-response"></a>
+### An explicit source domain acquires an elementary response organization
+
+Specialize to the declared structural units `e=w=1/2`, `beta=nu_i=1`.
+Then `P=[[2,pi],[pi,2+pi^2]]`, `P>I`, `||P||<14`, and
+`omega<1/6`. Positivity of `P-I` follows from its positive first minor and
+determinant one. Set `R=1/16`; the loss coefficient in (J18) is greater
+than `1-14*(16/3)/256=17/24>1/2`. For zero initial candidate weights,
+the following rational upper bound admits a source without a floating-point
+replacement of pi:
+
+\[
+ V(0)\le U_0:=\sum_i d_i^{\rm bg}
+ \left(2u_i^2+{44\over7}|u_i\phi_i|+12\phi_i^2\right)
+ <{\min_i d_i^{\rm bg}\over256}. \tag{J20}
+\]
+
+The upper bound uses `pi<22/7` and `pi^2<10`. It is sufficient, not necessary.
+The [exact source-bound reader](../../src/tnfr/physics/passive_contact.py)
+computes it from admitted primitives, keeping real lifts and strict comparison
+before rounding. It does not authenticate the graph, selected coefficients,
+zero contacts or positive local onset. A failed or equal bound is inconclusive.
+
+For the two unit P2 backgrounds and bridge `(1,2)`, the new seed
+`x=(0,1/32,0,0)`, `theta=0`, `a=0` has
+`V_0=U_0=1/512`, `S_0=1/2048`, and `B_local(0)=1/2048`.
+It satisfies all strict conditions. Both controls have positive onset:
+`a_dot_1(0)=1/2049`, `a_dot_2(0)=2048/2049^2`.
+Continuity makes the strict domain relatively open on the a=0 preparation
+manifold, including nearby nonuniform phases and forms. These are analytical
+statements; the [native initial-field controls](../../tests/physics/test_constitutive_support_scope.py)
+read only the disconnected initial state, without a weighted trajectory.
+
+For every source in this unit-background domain,
+`S_0<=sum_i d_i^bg |z_i|^2<=V_0<1/256`, using
+`1-cos(delta)<=delta^2/2` and `y^T B y<=2sum_i d_i y_i^2`.
+Thus `0<a_infinity<=S_0<1/256<1/2`; the limit lies inside the independently
+defined identity family. The exact seed has the sharper `a_infinity<=1/2048`.
+At a=0 it lacks the joint identity and direct cross-port response. At positive
+contact its retained response is
+
+\[
+ F_{x,2}(x+\epsilon e_1,\theta,a)-F_{x,2}(x,\theta,a)
+ =e\nu_2\epsilon\,{a\over1+a}. \tag{J21}
+\]
+
+This increment is exact at arbitrary admitted phases because g does not depend
+on x. At phase consensus the phase increment is the second formula in (J12);
+elsewhere its actual H_2 is required. The full finite-time tangent response
+at equilibrium is `exp(tJ)` applied to the probe, with `O_T(epsilon^2)` error
+on each fixed horizon. The local theorem proves return after a sufficiently
+small supplied probe, with `a_after-a_before=O(epsilon^2)` and hence a
+quadratic change in chi. Nonlinear support is not frozen by its zero tangent.
+At equilibrium the supplied probe work is `(1+a)epsilon^2/2`; at a general
+state it additionally contains `epsilon q_1`. Neither a registered operator
+nor autonomous probe occurrence is inferred.
+
+Every fixed positive nodal tolerance is eventually entered and retained.
+At sufficiently late finite states, small probes stay in a local recovery
+domain and return to the family. Exact consensus is generally only asymptotic.
+There is no uniform acquisition deadline, lower gain or probe amplitude as
+`a_infinity` approaches zero. Arbitrarily repeated probes need a cumulative
+work/contact-drift budget. The family is a stationary response organization,
+not an internally self-sustained oscillator.
+
+This closes **conditional elementary acquisition from supplied constituents**,
+maintenance and local response for both existing completions. It does not
+derive the constituents' isolated formation, candidate access, the support
+law, a source-selected response floor, a nonuniform pattern or a hierarchy.
+The old amplitude-one source has `V_0=2` in this chart and is not certified
+by (J20); no failed trajectory or non-acquisition result follows. Its prior
+evidence is unchanged. The two-ring historical formation images belong to a
+different complete law and have not been substituted into this theorem.
+
+<a id="passive-contact-source-response"></a>
+### All-time resource accounting determines a retained-response scale
+
+Keep the same two unit P2 backgrounds, candidate `(1,2)`, full endpoint loss
+allocation, `e=w=1/2`, `beta=nu_i=1` and structural clock. The source is
+`x=(0,epsilon,0,0)`, zero phases/contact, with `0<|epsilon|<=1/32`.
+Both existing support rows meet the preceding acquisition theorem. This
+source restriction is supplied and precedes the calculation; the result does
+not cover the older amplitude-one source or arbitrary source shapes.
+
+Put `r=x_1-x_0`, `s=x_2-x_3`, `b=x_1-x_2`. At the actual evolving state,
+
+\[
+ q=(-r,r+ab,s-ab,-s),\quad d=(1,1+a,1+a,1),\quad
+ \mathcal B-\tfrac12\mathcal D
+ ={ -a(r^2+s^2)+2ab(r-s)+2a^2b^2\over4(1+a)}. \tag{J22}
+\]
+
+Here `D_i=q_i^2/(2d_i)`, `mathcal B=D_1+D_2` and
+`mathcal D=sum_i D_i`. V still denotes the fixed-reference Lyapunov metric,
+not storage S. The previous theorem gives, over the entire future,
+
+\[
+ V(t)\le2\epsilon^2,\quad
+ \int_0^\infty E\,dt\le4\epsilon^2,\quad
+ 0\le a(t)\le\epsilon^2/2,\quad
+ 0\le c(t)\le V(t)\le2\epsilon^2. \tag{J23}
+\]
+
+For the cost bound, `P>I`, `d_i>=1` and
+`c<=|z_1-z_2|^2/2<=|z_1|^2+|z_2|^2<=V`. Also
+`E=r^2+s^2+ab^2+sum_edges W(Delta theta)^2`.
+Convergence implies `S_infinity=0`, so the exact storage balance yields
+`integral D=S_0+integral c a_dot<=epsilon^2/2+epsilon^4`.
+Every integral here is justified first on finite intervals and then by the
+nonnegative bounds. No short-time expansion is extrapolated to infinite time.
+
+The three numerator terms in (J22), with `1+a>=1`, have integrated absolute
+bounds `epsilon^4/2`, `2|epsilon|^3`, and `epsilon^4`. For the cross term,
+
+`integral a|b||r-s|/2 <= sqrt[(integral a^2b^2)(integral(r-s)^2)]/2`
+
+is at most `sqrt[(2epsilon^4)(8epsilon^2)]/2=2|epsilon|^3`.
+The weighted dissipation controls even a long slow tail; small a alone would
+not have justified this integral estimate. Combining storage work with the
+support law gives the exact identity
+
+\[
+ a_\infty-S_0/2
+ =\int(\mathcal B-\mathcal D/2)\,dt
+ +\int\mathcal B[(1+c/2)h(c)-1]\,dt. \tag{J24}
+\]
+
+The last bracket is `-c/[2(1+c)]` for h_1 and
+`-[(3/2)c+c^2]/(1+c)^2` for h_2. Their magnitudes are at most `c/2`
+and `3c/2`. Since `integral B<=integral D`, both laws therefore satisfy
+
+\[
+ \left|a_\infty-\epsilon^2/4\right|
+ \le R(\epsilon):=2|\epsilon|^3+3\epsilon^4+3\epsilon^6,
+ \qquad {\epsilon^2\over6}<a_\infty<{\epsilon^2\over3}. \tag{J25}
+\]
+
+The second envelope follows because
+`R/epsilon^2<=68611/1048576<1/12` for the admitted amplitudes. This is
+a controlled leading law `a_infinity/epsilon^2 -> 1/4`, with the full
+infinite-time remainder accounted for. The two support laws need not select
+identical finite-amplitude contacts or have the same higher-order terms;
+their trajectories differ. The sign of their destination difference remains
+unproved. This coefficient is specific to this geometry and allocation,
+not a universal one-half partition or a new constitutive law.
+
+The [exact seed-response reader](../../src/tnfr/physics/passive_contact.py)
+intersects (J25) with the independent storage envelope, then bounds the
+retained susceptibility, actual form gain and tangent decay rate. It admits
+the amplitude before arithmetic, rejects values outside the proved domain,
+and retains zero as the stationary no-contact control. It authenticates no
+graph or preparation history and evaluates no trajectory.
+
+**Broader preparation dependence.** For any zero-contact source on the same
+unit P4 admitted by the preceding trapping condition and converging as above,
+let `A=S_0` and `v=V_0` be its actual storage and
+fixed-reference metric. The same proof uses `a<=A`, `c<=v`,
+`integral E<=2v` to give
+
+\[
+ |a_\infty-A/2|\le v\sqrt{2A}+3Av+\tfrac32Av^2. \tag{J26}
+\]
+
+In detail the allocation imbalance is at most `v sqrt(2A)+(3/2)Av`,
+and the law/work correction is at most `(3/2)v A(1+v)`. For a fixed
+shape `x=x_*+epsilon u`, `theta=theta_*+epsilon phi`, its initial storage is
+
+`A=(epsilon^2/2)[(u_1-u_0)^2+(u_2-u_3)^2`
+` +(phi_1-phi_0)^2+(phi_2-phi_3)^2]+O(epsilon^4)`.
+
+When its onset/capture conditions hold, `a_infinity=A/2+O(|epsilon|^3)`.
+Both internal form and internal phase contribute to the leading response.
+Relative block offsets enter the correction, not that initial internal
+storage. General-shape constants must be derived from its actual A and v;
+the seed-reader constants cannot be reused silently. Uniform relative claims
+need an admitted shape family with nonzero internal resource bounded away
+from zero. This result does not derive those constituent preparations.
+
+**Recovery and response use the same retained coordinate.** Put
+`chi=a_infinity/(1+a_infinity)`; the actual receiver form-rate gain is
+`chi/2`. Reflection splits `K=D^-1 B` on P4 into the even block
+`[[1,-1],[-1/(1+a),1/(1+a)]]` and odd block
+`[[1,-1],[-1/(1+a),(1+2a)/(1+a)]]`. Thus
+
+\[
+ \operatorname{spec}K=\{0,\chi,(2+a)/(1+a),2\},\quad
+ \lambda_{\rm slow}=\kappa_0\chi,\quad
+ \kappa_0={1-\sqrt{1-4/\pi^2}\over4},\quad
+ \lambda_{\rm slow}={\kappa_0\over4}\epsilon^2+O(|\epsilon|^3).
+ \tag{J27}
+\]
+
+This is the smallest positive decay magnitude among the transverse **linear**
+nodal modes of the full joint Jacobian. Relation/common-shift modes remain
+neutral. Its reciprocal scales as `4/(kappa_0 epsilon^2)` in the structural
+clock. It is not a uniform source-to-tolerance deadline or a nonlinear
+recovery bound with a supplied prefactor. The rational bounds
+`1/20<kappa_0<1/15` follow from `9<pi^2<10`,
+`(11/15)^2<5/9` and `3/5<(4/5)^2`. They give exact conservative
+reader intervals without evaluating an irrational eigenvalue.
+Monotonicity gives `epsilon^2/(6+epsilon^2)<chi<epsilon^2/(3+epsilon^2)`.
+An independently fixed source annulus can therefore have a positive response
+floor; a family approaching zero amplitude cannot have one absolute floor.
+
+<a id="passive-contact-phase-onset"></a>
+### Internal phase can fund delayed contact; relative offsets alone cannot
+
+Positive initial allocated form loss is sufficient, not necessary. On the
+same two P2 backgrounds take `x=0`, `theta=(0,eta,0,0)`, `a=0` and
+`0<|eta|<=1/64`. The rational source bound is
+`U_0=12eta^2<=3/1024<1/256`, so trapping holds even though `q(0)=0`.
+The disconnected P2 phase pressure gives
+`x_dot_0=eta/(2pi)`, `x_dot_1=-eta/(2pi)`, and
+`q_dot_1=-eta/pi`, `q_dot_2=0`. For each fixed admitted eta, smoothness gives
+
+\[
+ \mathcal B(t)={\eta^2\over2\pi^2}t^2+O(t^3),\qquad
+ a(t)={h(1-\cos\eta)\eta^2\over6\pi^2}t^3+O(t^4)>0
+ \quad\hbox{for sufficiently small }t>0. \tag{J28}
+\]
+
+Both h choices are positive. Once contact becomes positive, the same trapped
+LaSalle/local-family argument supplies acquisition and recovery. Here
+`S_0=1-cos eta` and (J26) gives `a_infinity=eta^2/4+O(|eta|^3)`.
+The local onset jet is not itself extrapolated to that limit. No externally
+prescribed pulse or new operator occurrence was added: the existing phase
+row first drives form differences, whose loss funds the existing contact law.
+
+In contrast, if both form and phase are constant within each isolated
+background component, q and g vanish there and all candidate rates remain
+zero. Different small block offsets can give nonzero hypothetical port cost
+but no internal loss. Such states remain disconnected under these unchanged
+laws. Phase activity, internal preparation and an intercomponent mismatch
+therefore have different causal roles.
+
+<a id="passive-contact-many-components"></a>
+### The same proof extends to finitely many components with funded connecting contacts
+
+Let a finite symmetric loop-free background have k connected components,
+each with positive node strengths. Keep finitely many distinct candidate
+pairs, all initially zero; positive held capacities/e,w/beta; and fixed
+endpoint shares with `sum_e alpha_ie<=1`. Each candidate may use either
+existing h, with that assignment supplied in the complete model. Assume the
+same strict source trapping condition (J19), or (J20) at its stated unit
+parameters. Isolated singleton nodes are outside this positive-background
+normalization theorem.
+
+Define `E_0={e:B_e(0)>0}`. Suppose its cross-component pairs connect the
+graph whose vertices are the background components: equivalently they contain
+a spanning set of contacts between those components. Every such contact
+has positive initial rate. Finiteness supplies one common finite tau when
+all contacts in a chosen spanning subset have positive weights, retained
+thereafter. Nonduplicated allocation gives the same estimate (J18) and
+
+\[
+ \sum_e\dot a_e\le2e\nu_{\max}E_u,\qquad
+ \sum_e a_e(t)\le S_0/\beta. \tag{J29}
+\]
+
+Trapping gives global regular continuation and a compact full state.
+Connected retained support and `V_dot<=-E/2` put the omega set at common
+form/common lifted phase. Every relation has a finite limit. At any such
+equilibrium the full Jacobian has the stable nodal blocks (J15) and `m+2`
+neutral directions for m retained candidates and two common nodal shifts.
+The local-family metric proof extends with `D_a P_a[a_dot]`, giving convergence
+to one member and local recovery with all relation coordinates retained.
+If some nonspanning contact limits are zero, extend the smooth field locally
+across those coordinates for the proof: the positive spanning subgraph keeps
+d,H regular and B positive on the transverse space under sufficiently small
+signed changes. Restrict the resulting estimate back to the invariant
+nonnegative orthant. Those auxiliary negative coordinates are not admitted
+physical states or executed inputs.
+
+There is also a useful source criterion. Call a candidate enabled when at
+least one endpoint share is positive. If the enabled component graph is
+connected, an open dense subset of every nonempty admitted open source ball
+funds all enabled candidates initially. Indeed, at a=0, `q=B_bg x`, and
+`B_e(0)=0` exactly when every funded endpoint row `(B_bg x)_i` vanishes.
+Each such row is a nonzero linear functional because its loop-free background
+strength is positive. Failure therefore lies in a finite union of proper
+linear subspaces. Scaling a generic form towards a common state preserves
+nonzero gradients while making the source bound small. This is topological
+genericity under supplied preparation assumptions, not a probability or a
+theorem of prior constituent formation. A constrained formation image may
+lie in an exceptional subspace and requires its own source analysis.
+
+If the enabled component graph is disconnected, every candidate across a
+separating cut has zero allocation identically and can never activate from
+zero. Cross-cut response is then excluded. Failure of the initially funded
+spanning test alone is inconclusive: (J28) shows that later funding is possible.
+The internally relaxed disconnected control remains an exception even with
+a connected enabled candidate graph.
+
+This extends the theorem to arbitrary **finite** component sizes and cycle
+geometries under its premises. Bounds need not be uniform with size, source,
+or contact profile. It provides more possible retained response networks;
+it does not derive a nonuniform nodal pattern, persistent oscillation,
+fractal hierarchy, scale closure or a preferred geometry. The
+[three-component control](../../tests/physics/test_constitutive_support_scope.py)
+checks native initial loss, shared allocation and the spanning premise; it
+does not execute a coupled weighted trajectory.
+
+<a id="passive-contact-response-identification"></a>
+### Response identifies relative support under declared calibration, not the whole state
+
+At any admitted fixed instantaneous phase/contact state, a supplied form
+displacement has exact incremental response
+
+\[
+ \Delta F_x=G\,\Delta x,\qquad G=-eND^{-1}B. \tag{J30}
+\]
+
+For loop-free symmetric support and known e and positive capacities,
+the off-diagonal values `T_ij=G_ij/(e nu_i)=W_ij/d_i` form the transition
+matrix, with `T_ii=0`. Positive edges are identified. Symmetry requires
+`d_j/d_i=T_ij/T_ji` on each edge. On a connected component these ratios
+determine all strengths and weights up to one positive common scale; cycle
+consistency and row sums must be checked before reconstructing an arbitrary
+supplied response matrix. One known positive background weight fixes that
+scale. With known e, the full calibrated diagonal also identifies capacities
+as `nu_i=-G_ii/e`. Even without separating e and nu, ratios
+`T_ij=-G_ij/G_ii` recover the row normalization in this loop-free positive
+domain. Directed weights, loops, missing calibration or partial probes require
+their own admission; they cannot silently inherit the stated symmetric inverse.
+
+At consensus, full G and known e,w,beta determine K and the nodal tangent
+part of (J15), hence its transverse spectrum. One port gain alone generally
+does not. On P4 with weights `(b,a,c)`, the receiver-2 gain depends only on
+`a/(a+c)`, while the nontrivial normalized eigenvalues are
+`1 +/- sqrt[bc/((a+b)(a+c))]`. Holding a,c fixed and changing b preserves
+that gain but changes recovery. Conversely, even the full G does not reveal
+actual phases, support kinetics or nonlinear future; it is an instantaneous
+form-response observation, not a closed joint state.
+
+At zero contact the separate component scales are particularly important.
+For P2 background weights b,c, `x=(0,epsilon,0,0)`, zero phases/contact,
+and unit capacities, the entire initial G is independent of b and c.
+Nevertheless `B_local(0)=e b epsilon^2`. At the receiver,
+`chi=a/(c+a)` has `chi_dot(0)=a_dot(0)/c`, so h_1 gives
+`chi_dot(0)=e(b/c)epsilon^2/[beta+epsilon^2/2]`, and h_2 gives
+`chi_dot(0)=e(b/c)beta epsilon^2/[beta+epsilon^2/2]^2`.
+The same complete instantaneous form response can therefore precede different
+emerging responses. Common scaling of the whole model gives the matched-model
+covariance (J11), not an extra orbit at fixed background; discarding independent
+component scales before contact does not preserve the full dynamics. The
+[native initial-response control](../../tests/physics/test_constitutive_support_scope.py)
+retains this difference between normalized response and loss funding.
+
+The [bibliographic transfer](../BIBLIOGRAPHIC_METHODS.md#bibliographic-response-extension-reading)
+connects the all-time estimates, component geometry and retained-response
+conditions to their selected sources. The books motivate methods and missing
+premises; these results are deductions for the explicitly supplied TNFR models.
+
 ## 8. Reuse and the remaining foundation
 
 The [normalized-neighbor owner](../../src/tnfr/mathematics/_neighbor_differences.py),
@@ -942,6 +1769,14 @@ The [shared pressure controls](../../tests/core_physics/test_stable_neighbor_pre
 check the zero-strength and positive-background limits on five execution paths.
 The [relational executor](../../src/tnfr/dynamics/relational.py) remains
 unit-support execution; none of the weighted alternatives above is installed.
+The [passive contact ledger](../../src/tnfr/physics/passive_contact.py) adds
+exact allocation and resource-bound consumers, not a joint weighted executor.
+Its [controls](../../tests/physics/test_passive_contact.py) include shared-port
+overspending, units/scaling, conditional exclusion, retained-state response,
+the sufficient common-metric source ball and all-time seed-response bounds.
+Those detached readers install no weighted nonlinear executor; a scalar
+source-ball check alone does not establish contact onset or authenticate a
+complete law. Seed-response bounds have their separate fixed-source premises.
 Existing [attachment controls](../../tests/test_relational_attachment.py) and
 [actual operator reset controls](../../tests/physics/test_coupling_attachment_budget.py)
 exercise distinct hybrid cases without selecting their occurrence.

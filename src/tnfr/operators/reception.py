@@ -34,6 +34,20 @@ class Reception(Operator):
     name: ClassVar[str] = RECEPTION
     glyph: ClassVar[Glyph] = Glyph.EN
 
+    def __call__(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
+        """Receive all legacy inputs or an explicit ordered source tuple.
+
+        Explicit sources select realized incoming neighbors, not diagnostic
+        source rankings. Their atomic stage must actually admit EN; a grammar
+        replacement cannot satisfy the selected-source request.
+        """
+        if kw.get("source_nodes") is None:
+            super().__call__(G, node, **kw)
+            return
+        from .network_stage import execute_neighbor_stage
+
+        execute_neighbor_stage(G, self, (node,), **kw)
+
     def _validate_application_preconditions(
         self,
         G: TNFRGraph,
@@ -42,6 +56,11 @@ class Reception(Operator):
     ) -> None:
         """Validate EN execution controls before source reads or warnings."""
 
+        if (
+            kw.get("_reception_compatibility_decision") is not None
+            and kw.get("source_nodes") is None
+        ):
+            raise ValueError("Reception compatibility requires selected sources")
         super()._validate_application_preconditions(G, node, **kw)
         from ._argument_validation import nonnegative_integer, strict_bool
 
@@ -72,6 +91,8 @@ class Reception(Operator):
             node,
             track_sources=track_sources,
             max_distance=kw.get("max_distance", 2),
+            source_nodes=kw.get("source_nodes"),
+            compatibility_decision=kw.get("_reception_compatibility_decision"),
         )
         # Direct EN has no outer graph transaction. Keep this advisory before
         # the write so warning-as-error cannot leave a partially applied node.
@@ -106,3 +127,7 @@ class Reception(Operator):
             state_before["epi"],
             read_snapshot=snapshot,
         )
+
+
+_CANONICAL_RECEPTION_CALL = Reception.__call__
+_CANONICAL_RECEPTION_EXECUTE = Reception._execute

@@ -6,6 +6,9 @@ one explicit Euler step stages both rows and validates its endpoint before
 committing. Graph clipping, controllers, histories and other pressure channels
 are not part of this explicitly unclipped model. Continuous storage loss does
 not guarantee that a finite Euler step decreases storage.
+This path executes no structural operators or ordered grammar. Its canonical
+operator realization requires a separate proof; using native pressure kernels
+does not establish that bridge.
 
 The default acute executor uses the shared signed atan2 phase chart. The
 positive-resultant option certifies a sufficient right-half-plane chamber.

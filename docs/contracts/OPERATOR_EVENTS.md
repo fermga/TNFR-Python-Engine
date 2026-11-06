@@ -449,6 +449,125 @@ operation/composition records seal their proof fields; wrapper and aggregate
 properties revalidate those seals and fail closed if a factor or claim flag is
 replaced.
 
+<a id="operator-epi-growth-observation"></a>
+### Signed growth from a completed operator schedule
+
+`tnfr.operators.observe_operator_epi_growth(result)` reads an intact
+`OperatorEventExecutionResult` produced with `include_stage_certificates=True`.
+It re-admits the complete result and its operation endpoints, then returns a
+typed observation of each retained node's EPI change. It executes no operator
+and changes neither graph state nor Mutation history or occurrence policy.
+
+The window is the schedule's positive-duration `(start_time,end_time]`, with
+the initial EPI taken after every initial-time event and the final EPI after
+every terminal-time event. All events at the initial time are excluded;
+all terminal events are included in their actual execution order. The first
+included operation supplies the right-side initial state. Excluded-event
+captures may be absent; an available final excluded endpoint must match the
+first included one. Available adjacent endpoints must agree, and every
+included operation must retain the same ordered node population.
+Changing edges alone need not invalidate this EPI balance.
+
+The observation retains exact rational changes of the represented EPI values:
+separate flow and glyph contributions, their signed sum, its growth rate over
+the whole window, and the sum of absolute glyph changes. A cancelling
+pair can have zero net growth and positive jump variation. Zero total flow
+change does not establish that every flow contribution was zero. No jump is
+assigned a duration. The denominator is the declared `exact_total_flow_duration`,
+not subtraction of rounded binary64 absolute timestamps. Flow changes describe
+the executed numerical intervals;
+they are not certified continuous-law integrals or solver-error bounds.
+
+Missing stage capture, missing included endpoints, population mismatch or
+disconnected EPI boundaries yield explicit unavailability, never zero-filled
+growth. A zero-duration schedule has no growth rate. An altered or malformed
+execution record rejects before an observation can be accepted. Affine-energy
+gain or common-metric certification is not required for this separate balance.
+
+This is a passive source of type `operator_schedule_net_growth`. It supplies
+no live graph-owner binding, grammar approval, threshold decision or event
+consumption. Repeated reads remain observations. The separate atomic consumer
+below produces its own live source; it cannot activate from this report.
+Distinct window identifiers alone do not prevent reusing the same jump.
+The [source comparison](../../theory/NATIVE_OPERATOR_DYNAMICS.md#operator-hybrid-growth-observation)
+owns the mathematical scope and the distinction from continuous growth evidence.
+
+<a id="operator-growth-mutation"></a>
+### Mutation from a live operator-growth window
+
+`execute_operator_growth_mutation(graph, schedule, targets, ...)` is an explicit
+alternative to ordinary history-based Mutation. It runs the supplied complete
+schedule with endpoint capture on its full initial population, then executes
+the canonical atomic ZHIR stage on the requested nonempty unique tuple of nodes.
+The returned `OperatorGrowthMutationDispatch` contains `source_result`, `growth`,
+`targets` and `stage_result`. It is a past report, not reusable authorization.
+No old result or observer report can be passed in place of source execution.
+
+Each selected node must have an available exact signed net growth strictly above
+the represented nonnegative `ZHIR_THRESHOLD_XI`, active capacity, its own prior
+IL and recent destabilizer, and all remaining live grammar/preconditions. The
+whole schedule `(start,end]` is the observation window; xi has EPI per runtime-
+clock units. Exact rational rates decide crossing. In the distinct
+`OperatorGrowthTriggerCertificate`, ordinary float rate fields are projections
+and can round equal to xi even when the exact comparison passes. The source is
+`operator_schedule_net_growth` and time basis `operator_schedule_time`;
+`physical_time_resolved` identifies the declared runtime clock, not laboratory
+validation. Continuous histories and the default Mutation trigger are unchanged.
+
+Private admission exists only during this call and binds the actual live graph,
+source, node and stage snapshot. Each target's exact
+`_operator_growth_mutation_end` must be absent or a valid Fraction. Its next
+start must be at least that end. After successful source and ZHIR execution the
+watermark advances to the new exact end. This prevents reuse within this variant
+with intact retained memory, including differently named overlapping windows.
+It intentionally rejects all overlap; unrelated APIs and manually rewritten
+ledgers remain outside the policy. A shared boundary is admitted.
+
+Any source or Mutation failure restores the entire graph-owned transaction,
+including source changes, runtime clock, grammar and watermarks. Callback effects
+outside the graph are not rolled back. Post-source support, non-target state and
+target non-phase coordinates are protected through the ZHIR stage. `context`,
+`method`, `n_jobs` and `physical_flow_partitions` retain their event-executor
+meaning; `mutation_kwargs` accepts only ordinary retained Mutation execution
+options, not supplied evidence or fallback. Retained-member Mutation remains
+history-based. The [theory](../../theory/NATIVE_OPERATOR_DYNAMICS.md#operator-hybrid-mutation-consumer)
+owns the nonreuse proof, control predictions and remaining autonomous/collective
+dependencies.
+
+<a id="eligible-operator-growth-mutation"></a>
+### Conditional Mutation at an explicit source opportunity
+
+`execute_eligible_operator_growth_mutation(graph, schedule, candidates=None, ...)`
+executes the supplied source once, then selects an ordered ZHIR target subset.
+`None` uses the initial source population; an explicit candidate tuple must be
+nonempty, unique and belong to that graph. The source still acts on its full
+initial population. Keyword options have the same meaning as the strict consumer.
+
+Each `OperatorGrowthMutationCandidate` retains its node, exact rate and threshold,
+capacity and minimum, previous consumed end, grammar violation codes and reasons.
+Its `selected` property means all declared eligibility predicates passed. The
+`EligibleOperatorGrowthMutationDispatch` retains `source_result`, `growth`,
+`candidates`, ordered `decisions`, `selected_targets` and optional `stage_result`.
+`executed` reports a real committed ZHIR stage. These values are reports, not
+reusable activating permissions or autonomous-selection certificates.
+
+Valid noncrossing growth, inactive/below-floor capacity, inadmissible grammar
+or overlap with an intact consumed window exclude that candidate. They cause
+no fallback glyph. Malformed consumed inputs, unavailable source evidence and
+corrupt receipts raise and restore the whole call. Shared definitive factor,
+phase and stage checks still apply to every selected target; a selected action's
+failure is not silently converted into abstention. Inactive action-specific
+parameters are not certified by an empty selection.
+
+If no target is selected, the completed source is preserved and no ZHIR stage
+is invoked: no additional phase write, history increment, schedule bookkeeping
+or watermark. With selected targets, source and atomic Mutation commit together;
+every other node retains its entire post-source state. The strict
+`execute_operator_growth_mutation` keeps its original all-requested-targets
+contract. Both preserve ordinary history-based Mutation and native policies.
+The [selection argument](../../theory/NATIVE_OPERATOR_DYNAMICS.md#operator-growth-conditional-selection)
+defines this explicit policy and its remaining source-word/clock dependencies.
+
 <a id="scale-stage-configuration"></a>
 ### Scale-stage configuration and strict policies
 

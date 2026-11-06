@@ -20,27 +20,18 @@ Tests verify:
 
 from __future__ import annotations
 
-import math
 import os
 import sys
 
 import networkx as nx
-import numpy as np
 import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
-from tnfr.alias import get_attr, set_attr
-from tnfr.constants.aliases import (
-    ALIAS_DEPI,
-    ALIAS_DNFR,
-    ALIAS_EPI,
-    ALIAS_THETA,
-    ALIAS_VF,
-)
+from tnfr.alias import set_attr
+from tnfr.constants.aliases import ALIAS_DEPI, ALIAS_DNFR, ALIAS_THETA, ALIAS_VF
 from tnfr.physics.integrity import (
     IntegrityReport,
-    IntegritySummary,
     MonitorMode,
     OperatorContractAudit,
     OperatorContractResult,
@@ -473,27 +464,28 @@ class TestPostconditions:
         assert report.postcondition_ok is False
         assert "|ΔNFR| increased" in report.postcondition_detail
 
-    def test_self_organization_postcondition_passes_on_stable_coherence(self) -> None:
-        """THOL: Small coherence change is tolerable."""
+    def test_self_organization_postcondition_passes_on_parent_invariants(self) -> None:
+        """THOL: This partial check observes the fixed parent channels."""
         G = _make_graph()
         monitor = enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)
         monitor.before_operator(G, 0)
-        # No state change → coherence unchanged → passes
+        # Fixed parent channels pass; this does not verify a pressure reset.
         report = monitor.after_operator(G, 0, "Self_organization")
         assert report.postcondition_ok is True
 
-    def test_self_organization_postcondition_fails_on_catastrophic_drop(self) -> None:
-        """THOL: >10% coherence drop is a violation."""
+    def test_self_organization_pressure_increase_is_not_an_invariant_failure(
+        self,
+    ) -> None:
+        """THOL: Signed pressure feedback has no arbitrary C(t) drop bound."""
         G = _make_graph()
         monitor = enable_integrity_monitor(G, mode=MonitorMode.OBSERVE)
         monitor.before_operator(G, 0)
-        # Cause catastrophic coherence drop by spiking ΔNFR everywhere
+        # This decreases C(t), but the monitor only verifies parent invariants.
         for n in G.nodes():
             G.nodes[n]["ΔNFR"] = 999.0
             G.nodes[n]["delta_nfr"] = 999.0
         report = monitor.after_operator(G, 0, "Self_organization")
-        assert report.postcondition_ok is False
-        assert "Coherence dropped" in report.postcondition_detail
+        assert report.postcondition_ok is True
 
     def test_transition_postcondition_passes_on_state_change(self) -> None:
         """NAV: At least one state variable must change."""

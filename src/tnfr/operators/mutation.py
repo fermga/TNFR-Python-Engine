@@ -65,6 +65,7 @@ class Mutation(Operator):
             node,
             factors,
             tau=kw.get("tau"),
+            _operator_growth_context=kw.get("_operator_growth_context"),
         )
 
         validate_postconditions = kw.get(
@@ -127,6 +128,34 @@ class Mutation(Operator):
         from ._mutation_gate import validate_mutation_runtime_gate
 
         validate_mutation_runtime_gate(G.nodes[node], G.graph)
+
+    def _validate_requested_hard_invariants(
+        self, G: TNFRGraph, node: Any, **kw: Any
+    ) -> None:
+        """Select the private live source only for its authorized atomic stage."""
+
+        if "_operator_growth_context" in kw:
+            from ._operator_growth_trigger import _requested_operator_growth_context
+
+            context = _requested_operator_growth_context(kw["_operator_growth_context"])
+            context.gate_for(G, node)
+        else:
+            self._validate_hard_invariants(G, node)
+
+    def _validate_requested_preconditions(
+        self, G: TNFRGraph, node: Any, **kw: Any
+    ) -> None:
+        """Retain grammar checks without substituting a continuous history."""
+
+        if "_operator_growth_context" in kw:
+            from ._operator_growth_trigger import _requested_operator_growth_context
+            from .preconditions.mutation import validate_grammar_u4b
+
+            context = _requested_operator_growth_context(kw["_operator_growth_context"])
+            context.gate_for(G, node)
+            validate_grammar_u4b(G, node)
+        else:
+            self._validate_preconditions(G, node)
 
     def _verify_postconditions(
         self, G: TNFRGraph, node: Any, state_before: dict[str, Any]

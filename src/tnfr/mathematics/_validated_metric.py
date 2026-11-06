@@ -236,6 +236,74 @@ def _metric_error_upper(metric, coordinate_errors):
     return scale * sqrt(I(square)).hi
 
 
+def metric_coordinate_projection_factors(metric):
+    """Return outward coordinate projection factors ``sqrt((M^-1)_{ii})``."""
+    rows = _ordered(metric, "metric")
+    if not 1 <= len(rows) <= MAX_COMPARISON_DIMENSION:
+        raise ValueError("metric dimension outside the shared comparison domain")
+    admitted = _admit_metric(rows, len(rows))
+    return _metric_coordinate_projection_factors(admitted)
+
+
+def _metric_coordinate_projection_factors(admitted_metric):
+    """Project an already admitted metric without repeating its SPD test."""
+    inverse = exact_matrix_inverse(admitted_metric)
+    return tuple(sqrt(I(inverse[i][i])).hi for i in range(len(admitted_metric)))
+
+
+def metric_difference_dual_norms(metric, oriented_edges):
+    """Return outward ``M^-1`` dual norms for difference rows ``e_right - e_left``.
+
+    On the ball ``||z - z_0||_M <= R``, Cauchy--Schwarz bounds each difference
+    ``|(z_right - z_left) - (z_{0,right} - z_{0,left})|`` by
+    ``sqrt((M^-1)_{ll} - 2*(M^-1)_{lr} + (M^-1)_{rr}) * R``, avoiding the
+    larger independent-coordinate sum ``(sqrt((M^-1)_{ll}) + sqrt((M^-1)_{rr})) * R``.
+    """
+    rows = _ordered(metric, "metric")
+    dimension = len(rows)
+    if not 1 <= dimension <= MAX_COMPARISON_DIMENSION:
+        raise ValueError("metric dimension outside the shared comparison domain")
+    admitted = _admit_metric(rows, dimension)
+    edges = _ordered(oriented_edges, "oriented edges")
+    if not edges:
+        raise ValueError("oriented edges must not be empty")
+    inverse = exact_matrix_inverse(admitted)
+    norms = []
+    for edge in edges:
+        pair = _ordered(edge, "oriented edge")
+        if (
+            len(pair) != 2
+            or type(pair[0]) is not int
+            or type(pair[1]) is not int
+            or not (0 <= pair[0] < dimension and 0 <= pair[1] < dimension)
+            or pair[0] == pair[1]
+        ):
+            raise ValueError("each oriented edge must be two distinct node indices")
+        left, right = pair
+        square = inverse[left][left] - 2 * inverse[left][right] + inverse[right][right]
+        norms.append(sqrt(I(square)).hi)
+    return tuple(norms)
+
+
+def enclose_metric_ball_differences(center_differences, radius, dual_norms):
+    """Enclose difference functionals on ``||z - z_0||_M <= radius``."""
+    r = _exact(radius)
+    if r < 0:
+        raise ValueError("metric ball radius must be nonnegative")
+    centers = tuple(
+        I.coerce(value) for value in _ordered(center_differences, "center differences")
+    )
+    factors = tuple(_exact(value) for value in _ordered(dual_norms, "dual norms"))
+    if not centers or len(centers) != len(factors):
+        raise ValueError("center differences and dual norms must have equal length")
+    if min(factors) <= 0:
+        raise ValueError("dual norms must be strictly positive")
+    return tuple(
+        center + I(-factor * r, factor * r)
+        for center, factor in zip(centers, factors, strict=True)
+    )
+
+
 def metric_taylor_observation_boxes(step, flow, *, bin_count):
     """Enclose every time in equal bins of one already admitted metric step.
 
@@ -286,9 +354,10 @@ def metric_taylor_observation_boxes(step, flow, *, bin_count):
         type(clock) is not I or clock != I(time, time + duration)
     ):
         raise ValueError("prescribed time interval differs from the admitted step")
+    # Admit the metric against the state dimension before projecting it or
+    # evaluating any supplied field; the projection kernel assumes admission.
     metric = _admit_metric(step.metric, size)
-    inverse = exact_matrix_inverse(metric)
-    projections = tuple(sqrt(I(inverse[i][i])).hi for i in range(size))
+    projections = _metric_coordinate_projection_factors(metric)
     growth = max(Q(1), _growth_upper(rate * duration))
     errors = tuple(growth * radius * factor for factor in projections)
     series = flow_jets(
@@ -384,8 +453,7 @@ def validated_metric_taylor_step(
         growth = _growth_upper(growth_rate * duration)
     metric = _admit_metric(metric, dimension)
     clock = I(time, time + duration) if time_dependent else None
-    inverse = exact_matrix_inverse(metric)
-    projection = tuple(sqrt(I(inverse[i][i])).hi for i in range(dimension))
+    projection = _metric_coordinate_projection_factors(metric)
     box = tuple(
         I(value - factor * radius, value + factor * radius)
         for value, factor in zip(center, projection)

@@ -34,6 +34,7 @@ from ..constants.canonical import COUPLING_GENTLE, SHA_VF_FACTOR
 from ..dynamics.feedback import StructuralFeedbackLoop
 from ..errors import TNFRValueError
 from ..types import Glyph, TNFRGraph
+from ._argument_validation import strict_bool
 from ._epi_domain import require_real_scalar_epi
 
 __all__ = [
@@ -167,7 +168,25 @@ def _emission_lifecycle_fields(
                 )
         clear_keys = tuple(key for key in _LATENCY_KEYS if key in data)
 
-    initialize = "_emission_activated" not in data
+    activated = strict_bool(
+        data.get("_emission_activated", False),
+        operator="Emission",
+        label="_emission_activated",
+    )
+    initialize = not activated
+    if initialize:
+        # An explicit False is the same unactivated state as an absent flag.
+        # Never erase retained AL provenance while initializing that state.
+        emission_records = (
+            "_emission_origin",
+            "_structural_lineage",
+            *ALIAS_EMISSION_TIMESTAMP,
+        )
+        if any(key in data for key in emission_records):
+            raise TNFRValueError(
+                "Inactive Emission state already carries emission provenance; "
+                "resolve the inconsistent activation flag before emitting"
+            )
     increment_lineage = not initialize and "_structural_lineage" in data
     activation_count_after = None
     if increment_lineage:

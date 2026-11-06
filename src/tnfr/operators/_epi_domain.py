@@ -99,15 +99,20 @@ def validate_affine_epi_graph_input(
     glyph: Glyph | None,
     *,
     operator: str | None = None,
+    source_nodes: tuple[Any, ...] | None = None,
 ) -> None:
     """Preflight every EPI value a scalar-writing local glyph would consume.
 
     The check is deliberately read-only and runs before construction of a
     ``NodeNX`` adapter or any public-operator metadata. Reception consumes each
     incoming neighbour on directed support and each ordinary neighbour on
-    undirected support. Resonance consumes only its U3-compatible subset.
+    undirected support by default. An explicit Reception source tuple instead
+    admits only its selected incoming forms and requires their presence.
+    Resonance consumes only its U3-compatible subset.
     """
 
+    if source_nodes is not None and glyph is not Glyph.EN:
+        raise ValueError("Explicit source_nodes are supported only for Reception")
     if glyph not in AFFINE_EPI_GLYPHS:
         return
     name = operator or glyph.value
@@ -116,7 +121,16 @@ def validate_affine_epi_graph_input(
 
     if glyph is Glyph.EN:
         # Local import avoids the kernel/domain initialization cycle.
-        from ._reception_kernel import reception_input_neighbors
+        from ._reception_kernel import (
+            reception_input_neighbors,
+            validate_reception_source_nodes,
+        )
+
+        if source_nodes is not None:
+            # The shared reader admits every selected source's explicit EPI.
+            # Excluded forms are not operands of this declared request.
+            validate_reception_source_nodes(graph, node, source_nodes)
+            return
 
         neighbors = reception_input_neighbors(graph, node)
     elif glyph is Glyph.RA:

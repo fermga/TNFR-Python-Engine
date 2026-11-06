@@ -31,6 +31,7 @@ from tnfr.constants.canonical import COUPLING_GENTLE, COUPLING_MODERATE
 from tnfr.mathematics import BEPIElement
 from tnfr.operators import apply_glyph
 from tnfr.operators.definitions import Dissonance, SelfOrganization, Silence
+from tnfr.operators.grammar_debt import node_debt, reset_grammar_state_from_history
 from tnfr.operators.grammar_dynamics import validate_candidate
 from tnfr.operators.grammar_execution import ValidatedSequence
 from tnfr.operators.network_stage import execute_self_organization_stage
@@ -127,6 +128,13 @@ def test_selected_law_acceleration_has_independent_form_contrast_domain():
 
 def test_full_word_and_no_child_event_have_separate_physical_budgets():
     graph = _preparation((1 / 16, 1 / 16))
+    for node in PORTS:
+        data = graph.nodes[node]
+        # Direct THOL controls need the supplied OZ; this word executes its own.
+        assert data["glyph_history"][-1] == "OZ"
+        data["glyph_history"].pop()
+        reset_grammar_state_from_history(data)
+        assert data["glyph_history"][-1] == "IL" and node_debt(data) == 0
     operators = (Dissonance(), SelfOrganization(), Silence())
     sequence = ValidatedSequence(
         operators,
@@ -148,6 +156,8 @@ def test_full_word_and_no_child_event_have_separate_physical_budgets():
             compute_delta_nfr=_refresh,
         )
         assert stage.schedule == "two_phase_jacobi"
+        if index == 0:
+            assert all(node_debt(graph.nodes[node]) == 1 for node in PORTS)
         if index == 1:
             assert _physical(graph) == before
             after = _fields(graph)

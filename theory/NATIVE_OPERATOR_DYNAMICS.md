@@ -92,6 +92,751 @@ It does not derive the controller, its lag limits or Emission's form increment f
 the nodal identity. In particular, it does not transfer the closed sine law's
 conserved form to this hybrid path or establish physical particle formation.
 
+<a id="native-mutation-request-participation"></a>
+### Native Mutation request and relational participation
+
+`apply_native_operator_batch(graph, history, decision_trace=None)` exposes the
+[existing native batch](../src/tnfr/dynamics/selectors.py) through
+`tnfr.dynamics`. It resolves the configured selector, advances its lag memory
+once and executes actual direct glyphs over the original ordered node set.
+It supplies no operator word, target subset, pressure refresh, flow or clock
+advance. Stored diagnostics remain stored unless their observation owners are
+separately invoked. This path retains its distinct direct-glyph lifecycle;
+it does not substitute public Mutation or an atomic retained-member stage.
+
+An optional caller-owned exact list receives frozen
+[`NativeOperatorDecision` observations](../src/tnfr/dynamics/native_operator_observation.py).
+They retain the actually evaluated selector branch, lag origin, live ZHIR
+certificate/abstention, actual grammar resolution and dispatch outcome.
+Built-in base, hysteresis, score/override and soft-filter fields exist only
+where consumed; a custom hook is explicitly opaque. A lag-forced request does
+not acquire an evaluated selector proposal from a prepared cache. Observation
+does not replay a selector or infer an event from the last retained glyph.
+
+Proposals and live execution have different boundaries. Built-in preparation
+freezes metrics for the batch; actions then execute in node order with live
+temporal and grammar admission. The trace associates each layer with that
+actual sequence. Grammar acceptance, fallback, rejection and an unsuccessful
+alternative remain distinct, including fallback to the same code. An invalid
+input can prevent a decision from existing at all.
+
+The batch remains sequential. A later failure retains its completed prefix
+and prior lag writes; it propagates the same exception. `applied_glyph` is
+populated only after primitive dispatch returns. A later bookkeeping failure
+can retain that completed mark, while `None` after a failed dispatch does not
+prove absence of partial effects. A `not_reached` target may already have a
+prepared proposal. Reports are not authenticated invocations, atomic rollback
+certificates or evidence that their externally assembled history was acquired.
+The [trace controls](../tests/operators/test_native_operator_decision_trace.py)
+exercise these execution distinctions and optional-observation parity.
+
+**A relational request discriminator.** Consider ordered directed nodes
+`core, member, external, anchor` and arcs `member -> core`, `external -> core`,
+`core -> anchor`. Core and anchor form are `1/2`; member and external forms are
+`1/4` and `3/4`. Core capacity is `1/8`, the others one, and every stored
+pressure is positive zero. Core/member phases are zero and external phase is
+`1/4`. Change only anchor phase between pi and zero. Supplied own temporal
+evidence and grammar, thresholds, node order and decision occasion are held
+fixed. This is a declared stored-driver state, not an assertion of equilibrium
+under a freshly recomputed default pressure law.
+
+The core's own context is prepared by actual `IL -> OZ -> IL`, with phase
+locking disabled and the explicit IL pressure factor zero. Noiseless OZ at
+zero pressure uses its existing positive seed; the final IL removes that
+pressure. This yields the stated final source without changing the numerical
+operators. These events preserve form and do not produce its past samples.
+
+Let alpha, beta and gamma be the actual normalized Si weights. A fresh
+`compute_Si` over these relationships gives
+
+```text
+Si_core(antiphase anchor) = alpha/8 + gamma,
+Si_core(aligned anchor)   = alpha/8 + beta + gamma.
+```
+
+Under the existing defaults the first is below `1/4` and the second lies
+between `1/4` and `1/2`. All stored pressures vanish, so the actual normalization
+fallback gives zero normalized pressure. The default policy therefore requests
+ZHIR and RA respectively; the other three nodes request IL. The explicitly
+selected valid RA amplification factor one doubles the aligned core's capacity
+from `1/8` to `1/4`; the ZHIR branch retains `1/8`. Aligned core RA reads equal
+anchor/core form and leaves its phase zero. The full successors therefore
+differ in capacity as well as phase. All native actions belong to the
+comparison; this is not a phase-only intervention on otherwise equal successors.
+
+The core's supplied timestamped samples `(0,1/4), (1,3/8), (2,1/2)` have secant
+`1/8`, above default xi, despite its instantaneous nodal product being zero.
+Positive-zero stored pressure selects ZHIR's default positive quarter-radian
+shift. The target still needs its own grammar. Neither a changed neighbor
+phase nor the resulting selector choice manufactures this earlier evidence.
+
+**Continued operator participation.** The
+[native continuation controls](../tests/operators/test_native_mutation_participation.py)
+use the unchanged incoming EN donors at phases zero and `1/4`, selected with
+explicit phase tolerance `1/8` and relative-capacity tolerance one. With EN
+mix `1/4`, an admitted ZHIR branch
+selects the external source and gives core form `9/16`; the aligned RA control
+selects the member and gives `7/16`. A later admitted external RA, reading only
+the core with mix `1/2`, gives `21/32` versus `19/32`. This is the conditional
+real-map difference `r*m*(mu_after-mu_before)=1/16` from the
+[retained phase/response analysis](STRUCTURAL_OPERATORS.md#retained-mutation-participation).
+Capacity tolerance one admits both donors in both branches, so the retained
+capacity difference does not change this selected tuple. The scalar EN/RA
+rows are independent of capacity under these admitted factors; the later RA
+doubles external capacity from one to two in both branches. This does not
+eliminate capacity from other future actions or from the complete state.
+Actual sign/kind, clipping, represented arithmetic and successor grammar remain
+part of execution; supplied samples are not reported as an acquired trajectory.
+
+This boundary removes a fixed externally chosen ZHIR token from one finite
+action chain: associated state and a real relation determine the native
+request, then own evidence and grammar determine its action or abstention.
+It does not derive diagnostic weights, selection thresholds or supplied
+history. The existing [normalization](#native-selector-environment-inputs),
+[memory](#native-selector-memory-and-occurrence) and
+[decision-schedule](#native-selector-clock-admission) obstructions still apply.
+NFR-generated request at a supplied occasion is narrower than local or
+autonomous occurrence. Reusing the same qualifying interval can remain a
+level-trigger policy. The [interval-consumption family below](#native-mutation-interval-occurrence)
+makes this choice explicit while preserving that baseline; acquisition of
+own evidence and timing remain open.
+
+<a id="native-mutation-interval-occurrence"></a>
+### Own interval memory and native Mutation occurrence
+
+The [native occurrence owner](../src/tnfr/dynamics/_mutation_occurrence.py)
+adds an explicit alternative to the unchanged level trigger. Missing
+`NATIVE_ZHIR_OCCURRENCE_POLICY` or `"level"` keeps that baseline;
+`"consume_timestamped_interval"` admits at most one successful native ZHIR
+dispatch per retained own interval key. This is a constitutive model choice,
+not a correction proving that level triggering was wrong or a uniquely
+canonical occurrence law. Explicit direct/public/staged interventions retain
+their separate contracts and do not use this native ledger.
+
+**Identity and state.** A key consists of the evidence source and two admitted
+represented timestamps, not EPI values, duration, container identity or call
+count. The node owns its retained tuple of consumed keys without automatic
+eviction. Revised values under the same times cannot renew a consumed cause;
+another node's receipt cannot consume this node's evidence. Valid legacy
+operator-step evidence has no absolute interval identity and abstains under
+this alternative. Live growth/capacity checks and configured grammar stay in
+force; the finite controls keep canonical grammar enabled.
+The [API contract](../docs/API_CONTRACTS.md) owns field admission and trace details.
+
+**Retained-memory bound.** Let L_i be the intact ledger of node i. Immediately
+before an actual native ZHIR dispatch under the consume policy, its final
+guard requires key k not in L_i. After that dispatch returns, k is appended
+before later bookkeeping or another target can execute. Induction gives at
+most one returned native ZHIR for each k while that memory is retained under
+the declared policy. A completed prefix stays consumed if a later batch action
+fails. The final glyph controls this rule, including a grammar fallback to
+ZHIR; substitution to another glyph, rejection or a dispatch that raises does
+not consume. A newly blocked final ZHIR rejects without replaying grammar.
+Failed primitives can have partial effects, and external ledger changes lie
+outside this bound. The statement is not rollback or provenance authentication.
+
+Keeping only the latest key fails on successful A, successful B, then replay A.
+The full ledger blocks that replay. A watermark would require a separately
+justified monotone-time domain. This family accepts distinct timestamp pairs,
+including overlapping intervals, and retains their memory cost. It supplies
+neither a universal refractory duration nor a rate independent of sampling.
+Switching to level mode or invoking another execution path does not extend
+the bound to those events or reconstruct their missing receipts.
+
+**Two-call structural discriminator.** Reuse the preceding four-node source,
+its actual `IL -> OZ -> IL` preparation, supplied core samples and held driver.
+Refresh Si before each of two native batches at the same supplied clock value.
+After first ZHIR, core phase is `1/4` and its sense index is
+`alpha/8 + gamma + beta/(4*pi)`. With the ideal default weights this is below
+`1/4` because `pi^2+3*pi-8>0`; finite represented branches remain checked.
+Default lag counts one and two do not force another operator, and own grammar
+admits the second level-triggered ZHIR.
+
+| Policy | Actual core actions | Final core phase |
+| --- | --- | --- |
+| Absent / level | ZHIR, ZHIR | `1/2` |
+| Consume timestamped interval | ZHIR, IL abstention | `1/4` |
+
+The second opt-in request can have valid growth evidence but an already
+consumed interval. Its actual IL action is not an empty event. With EN phase
+tolerance `1/8`, neither incoming donor is eligible in the level branch; EN
+explicitly abstains. The consume branch selects the external donor, producing
+core EPI `9/16` and subsequent actual external RA EPI `21/32` under the declared
+factors. RA amplification one makes external capacity two. No EN is forced
+through an empty source set. The
+[participation controls](../tests/operators/test_native_mutation_occurrence_participation.py)
+also distinguish new intervals, revised values, replay and retry; the
+[policy controls](../tests/operators/test_native_mutation_occurrence.py)
+cover actual final dispatch, own ledgers and failure boundaries.
+
+This limits ZHIR reuse, not all repeated-call effects: IL, lag, grammar and
+other nodes can still change. It does not derive the observations or their
+timing. A common phase rotation leaves interval identity unchanged. An affine
+clock change must transport both histories and every ledger timestamp, along
+with the observed-rate threshold and all consumed dynamical rows. Membership
+is covariant under an injective admitted time transport; binary64 collisions
+or collapsed intervals invalidate that equivalence. No clock-conversion API
+or authentication of supplied measurement history follows from this result.
+
+**Source boundary.** Starting without supplied past times, zero-duration
+resets at one clock value plus the actual recorder cannot create a positive
+time interval: unchanged form retains one endpoint, and an EPI jump replaces
+it. More generally, if the continuous form row vanishes between correctly
+recorded jumps, every newly available inter-event secant is zero. A retained
+old interval is not newly acquired evidence. A nonzero canonical source needs
+each pressure, phase, capacity and clock row grounded in operators through a
+justified realization/restriction/limit or explicit constitutive revision.
+An existing runtime recorder or independently supplied flow does not close
+the [operator bridge](STRUCTURAL_OPERATORS.md#continuous-operator-realization-audit).
+The [program](RESEARCH_PROGRAM.md#research-current-question) owns that next
+bounded source decision; this result activates no trajectory campaign.
+
+<a id="native-operator-growth-source-boundary"></a>
+### Operator form changes and the acquisition of growth evidence
+
+**Actual boundary.** Within the native batch, each final dispatched AL, EN,
+RA, VAL or NUL is checked at its own target's scalar EPI endpoints. An actual
+change invalidates existing non-`None` `epi_time_history` by retaining an
+empty tuple. This prevents an old continuous secant from surviving a later
+operator's return to the original EPI. The present-but-empty source also
+prevents silently falling back to legacy operator-step evidence. It creates
+no sample, timestamp, elapsed duration, pressure row or occurrence receipt.
+
+The [shared boundary](../src/tnfr/dynamics/_operator_form_history.py) runs at
+the actual [native dispatch](../src/tnfr/dynamics/selectors.py), including
+partial form effects before a dispatch error; cleanup preserves that original
+exception. An unreadable post-dispatch endpoint also invalidates the retained
+source. Unchanged endpoints, including signed-zero equality, phase-only
+actions and absent/`None` physical history preserve their existing semantics.
+This is target-local observation of the named canonical form writers, not
+tracking arbitrary callback writes or an unseen round trip inside one
+dispatch. Supported node storage and intact recorder state remain premises.
+
+Explicit direct glyphs, public classes and atomic stages outside the native
+batch retain their separate caller-managed observation contracts. The event
+runtime already records each stage; network-word preflight separately rejects
+earlier primary-EPI operators before ZHIR. The
+[native boundary controls](../tests/operators/test_native_form_history.py)
+distinguish changed form, no-ops, evidence absence and partial failures.
+The [participation control](../tests/operators/test_native_form_history_participation.py)
+uses actual AL/EN with restored outer EPI before another native request.
+Neither boundary checking nor an outer endpoint comparison authenticates
+past measurements or proves a canonical source for their continuous growth.
+
+**A conditional operator limit.** Fix positive independently supplied pressure
+`p0`, capacity `nu>0`, `lambda>0`, fixed support and phase. On an admitted hard
+in-rail branch apply the primary word
+
+```text
+AL(boost=h*nu*p) -> IL(retention=exp(-lambda*h)),    h>0.
+```
+
+The maps give `x+=h*nu*p`, then `p*=exp(-lambda*h)`, holding capacity and
+phase. AL's gain is positive; IL's retention lies strictly below one.
+The state-dependent gain and lambda are declared constitutive choices, not
+deductions from the operator names. With `t_n=n*h`, exact composition gives
+
+```text
+p_n=p0*exp(-lambda*t_n),
+x_n=x0+nu*p0*h*(1-exp(-lambda*t_n))/(1-exp(-lambda*h)).
+```
+
+The comparison curve satisfies `x_dot=nu*p`, `p_dot=-lambda*p`, with the
+other retained rows zero, and
+`x(t)=x0+nu*p0*(1-exp(-lambda*t))/lambda`. Since p(t) decreases, comparison
+of each left rectangle with its integral and summation gives
+
+```text
+0 <= x_n-x(t_n) <= nu*h*(p0-p_n) <= nu*p0*h.
+```
+
+This proves uniform convergence on every admitted finite interval. The
+piecewise linear x interpolant has the same error bound; the held p
+interpolant has error at most `lambda*p0*h`. Reversed word order gives the
+right sum and the same limit with opposite finite bias, not the same word.
+
+For strict default AL/IL activity admission take `x0>0`, capacity at least
+the AL basal floor and keep `x(T)+nu*p0*h` below the AL latent ceiling and
+hard upper rail. Signed negative form instead needs IL's declared
+`event_domain` policy. Public/staged IL additionally needs zero phase locking
+on a canonical representative, or a proved invariant phase proposal.
+AL/IL adds no debt from zero under incremental admission, but IL is not a U1b
+word closure; this is a primary-map composition, not an admitted complete word.
+It supplies no recent destabilizer for a later ZHIR. At zero capacity or
+pressure the required AL gain is inadmissible; negative pressure also lies
+outside this positive-emission family. No general signed-row realization
+follows. Binary64 loss of increments or retention rounded to one, clipping,
+lifecycle counters and finite glyph histories are not covered by the ideal
+coordinate limit. In particular, activation counts grow without a finite
+ordinary limit when the number of public AL events tends to infinity.
+
+**The observation does not automatically descend.** These are discrete primary-map
+approximations on a declared mesh, not complete finite-h hybrid solutions of
+`x_dot=nu*p`. Holding x between jumps while `nu*p>0` violates that row;
+adding its flow between AL events changes the comparison and double-counts
+the assigned form motion. Separately, a zero-continuous-form source with both
+sides of each jump recorded has only zero new inter-event secants. Every AL
+restarts continuous history. Primitive-coordinate convergence therefore does
+not lift the current certificate; recording after the limit is a different
+operation. A fictitious jump duration or an analytic derivative inserted as a
+sample would change the contract.
+
+Two constitutive alternatives remain distinct. A continuous realization
+needs a justified lift of memory, observation and all consumed rows. A typed
+hybrid observation could instead retain, for a positive window `(s,t]`,
+`x(t+)-x(s+)=integral(x_dot)+sum(jumps)` and divide by `t-s`. A positive jump
+then differs from zero continuous growth; cancelling jumps give zero signed
+net growth. Absolute variation would be a third observable. Window choice,
+event reuse, clock and grammar still require explicit laws. The passive observer
+and explicit atomic consumer below develop the second choice; no continuous
+operator-generated growth law follows from it.
+The [program](RESEARCH_PROGRAM.md#research-current-question) owns the remaining
+source-selection question and [operator-grounding obligation](STRUCTURAL_OPERATORS.md#continuous-operator-realization-audit).
+
+<a id="operator-hybrid-growth-observation"></a>
+### A typed net-growth observation of executed operator schedules
+
+The selected observation source, `operator_schedule_net_growth`, reads a
+completed finite operator schedule. It retains actual form contributions from
+flow and zero-duration glyph stages without rewriting `epi_time_history` or
+activating ZHIR. This is an explicit observation choice, motivated by actual
+operator participation; it is not a uniquely derived Mutation trigger.
+The [observer](../src/tnfr/operators/operator_growth.py) reuses the sealed
+runtime result and ordered represented EPI operation endpoints. The
+[event contract](../docs/contracts/OPERATOR_EVENTS.md#operator-epi-growth-observation) owns its
+availability and API details.
+
+**Identity and window.** The elementary balance retains the same labeled nodes
+and their order at every consumed endpoint. Edges may change; birth, deletion
+or unmatched node identity instead requires a separately justified transport.
+Use the whole declared positive window `(s,t]`. All initial-time events are
+excluded, including several at s; the baseline is `x(s+)`, after them. All
+terminal-time events are included, preserving the order of coincident events.
+The first included operation's left endpoint supplies the baseline; an
+available last excluded endpoint must agree with it. Missing excluded-event
+captures alone need not invalidate complete included coverage.
+
+**Exact represented balance.** For each included operation k let `a_k,b_k`
+be its exact rational represented EPI vectors. Re-admit the associated
+schedule, node identity and adjacent equality `b_k=a_(k+1)`. Componentwise,
+
+```text
+F = sum_flow (b_k-a_k),       J = sum_glyph (b_k-a_k),
+D = F+J = x(t+)-x(s+),       V_J = sum_glyph abs(b_k-a_k),
+G = D/(t-s).
+```
+
+The equality for D is telescoping, not a stability claim. `V_J>=abs(J)`;
+cancelling jumps can give zero J and positive variation. Missing included
+endpoints or broken association make the observation unavailable, not zero.
+An affine-energy gain or fixed positive metric is unnecessary for this
+endpoint identity. The denominator is the exact declared schedule duration,
+not a fictitious duration of a glyph or subtraction of rounded absolute clocks.
+
+F sums represented numerical flow increments; it is not automatically an
+exact continuous-law integral. For a separately justified ideal hybrid law,
+the analogous identity is `D=integral(nu*p+Gamma)+sum(jumps)`. Its continuous
+row, forcing, numerical accuracy and full operator realization retain their
+own obligations. A signed window average is not a derivative at a jump;
+`V_J` is neither net growth nor the total variation of an unobserved flow.
+
+**Operator discriminator.** On a two-node edge prepare same-kind forms
+`(3/8,1/8)`, capacities one, phases zero and independently held pressure zero.
+Use AL boost `1/8`, EN mix `1/2` and SHA retention `1/2`, with events after s
+and no hidden forcing. The actual complete words give these ideal dyadic
+predictions on the admitted hard-bound branch:
+
+| Word | Final EPI | Signed jump J | Jump variation V_J |
+| --- | --- | --- | --- |
+| AL, SHA | `(1/2,1/4)` | `(1/8,1/8)` | `(1/8,1/8)` |
+| AL, EN, SHA | `(3/8,3/8)` | `(0,1/4)` | `(1/4,1/4)` |
+
+Here F is zero and final capacity is `1/2`. SHA is the actual word closure;
+all operator admission and grammar remain required. The held inter-event
+form satisfies the nodal row because p=0, even after capacity changes. No
+positive pressure is reconstructed from a jump. The first node's cancellation
+does not cancel the all-node gain from AL. A separately supplied continuous
+law can match a net endpoint while assigning that increment to F instead of J;
+this comparison does not establish its canonical operator realization.
+
+The [observer controls](../tests/operators/test_operator_epi_growth.py) retain
+endpoint availability, exact balance and boundary conventions; the
+[participation controls](../tests/operators/test_operator_epi_growth_participation.py)
+execute the admitted words and separate supplied-flow comparisons. Reading is
+passive and repeatable; it neither supplies own grammar context nor certifies
+that an old trace still matches the live node. The former AL/IL approximation
+remains a distinct primary-coordinate limit, with its unresolved temporal
+memory lift and complete-word realization.
+
+**Clock and reuse.** `[G]=[EPI]/[time]`; any future threshold must have those
+units. An admitted exact affine clock change `t'=a*t+b`, `a>0`, transports
+event inclusion and gives `G'=G/a`; thresholds must transform accordingly.
+Represented clock collisions remain separate admission limits. Common form
+translation cancels in this observation, not necessarily in the full engine.
+
+Different windows can reuse one jump: a jump b at time one belongs to both
+`(0,2]` and `(1/2,3/2]`, giving rates `b/2` and b. A positive threshold below
+`b/2` accepts both despite distinct interval keys. Thus window-key deduplication
+alone is not an event-consumption law, and narrowing a window can increase its
+average without changing the action. Before activation, the
+[program](RESEARCH_PROGRAM.md#research-current-question) requires explicit live
+node/clock association, grammar, window selection, threshold and anti-reuse
+decisions. The passive observer itself installs neither a new ZHIR source nor
+an autonomous clock; the explicit consumer below supplies a separate rule.
+
+<a id="operator-hybrid-mutation-consumer"></a>
+### Atomic Mutation from an executed operator-growth window
+
+The opt-in [consumer](../src/tnfr/operators/operator_growth_mutation.py) selects
+the following constitutive family. Execute a complete source schedule on the
+actual graph, reconstruct its whole positive `(s,t]` observation, then request
+the existing phase-only ZHIR stage on a nonempty ordered subset. For each target
+require exact signed `G_i > xi`, active capacity and independent live grammar.
+Here xi is the nonnegative represented binary64 threshold in EPI per declared
+runtime-clock unit. G retains exact rational endpoint/duration arithmetic;
+its projected float is telemetry and cannot decide a strict threshold near
+rounding equality. This rate is a window average including jumps, not a
+continuous derivative at a jump. No continuous samples are fabricated.
+
+This choice preserves ordinary history-based Mutation and the native selector's
+separate occurrence policy. Neither the nodal identity nor the balance theorem
+selects this window length, threshold, source word or timing uniquely. Exact
+source coverage is necessary; affine-gain certification remains unnecessary.
+The same finite clock/materialization restrictions as the event executor apply.
+
+**Production and current state.** A private context is created only around
+actual source execution; no public interface accepts an old result as permission.
+The context binds the actual graph by identity and the full post-source state,
+admits only its stage's detached snapshot, rechecks source/target/endpoint and
+expires on success or failure. The shared canonical Mutation proposal, actual
+grammar selection, phase effect, lifecycle and stage observations remain in use.
+ZHIR is admitted incrementally after the complete source word; the concatenation
+is not declared a closed word, and its destabilization debt remains for later
+operators.
+Prior IL and a registered recent destabilizer are still required; the latter
+need not be exclusively OZ or immediately adjacent. Source and subsequent ZHIR
+form one graph-owned transaction. Failure restores both, including the clock,
+grammar, histories and consumption memory. External callback effects are outside
+that transaction. Successful execution preserves post-source support, non-target
+state and target EPI/capacity/pressure; only the phase action and its legitimate
+lifecycle effects belong to this Mutation stage.
+
+**Nonreuse proof.** Each target retains the exact end `w` of its latest successful
+window under this variant. Admit the next window only if `s>=w`, then set `w=t`
+after the whole stage succeeds. By induction accepted windows are disjoint:
+any previous window ends no later than the next one's excluded left boundary.
+Consequently no included source event can authorize two accepted mutations of
+the same target through this interface. A shared boundary is allowed because
+the next window excludes its initial events. This is a restrictive supplied
+policy: an overlapping window rejects even if it contains additional events.
+Other Mutation interfaces and external rewriting/restoration of the ledger are
+outside this guarantee. A returned report is not an activating capability.
+
+**Discriminator.** Keep the two-node preparation above. Put AL at time one half
+and IL,OZ,IL,SHA at time one, with IL pressure factor zero and SHA factor one
+half. OZ executes and the following IL resets its pressure before any later
+flow. Thus the represented form increment is `(1/8,1/8)` with zero continuous
+contribution. The actual terminal history includes OZ,IL,SHA and prior IL;
+it supplies grammar separately from growth. A configured fixed ZHIR shift
+`1/4` predicts the same phase change for each accepted target, preserving form.
+Adding EN after AL instead gives core growth zero and jump variation `1/4`,
+while the donor has growth `1/4`. This distinguishes activity from net growth,
+including a positive donor-only request and an all-target rejection.
+
+The [participation controls](../tests/operators/test_operator_growth_mutation_participation.py)
+exercise these finite compositions and grammar countercontrols; the
+[boundary controls](../tests/operators/test_operator_growth_mutation.py) cover
+exact threshold rounding, live binding, consumption and rollback. This is
+operator-generated growth under supplied scheduling, not autonomous selection,
+a continuous realization or acquired persistent organization.
+
+**Collective dependency.** A collective NFR may retain active constituent NFRs
+while maintaining a dynamic balance. Establishing that identity requires
+sufficient constituent/boundary state, persistent organization, retained memory
+and collective responses realized through admitted constituent operators.
+An aggregate mean, a named group or this finite source-to-Mutation chain does
+not establish those properties. Collective decision means a state/history-
+conditioned transition, not intention. The retained-member interfaces preserve
+the needed distinction between members and their collective observation; a
+closed collective law and its operator descent remain separate obligations.
+
+<a id="operator-growth-conditional-selection"></a>
+### Conditional target selection from actual operator growth
+
+The [conditional consumer](../src/tnfr/operators/operator_growth_mutation.py)
+removes a supplied Mutation target choice while retaining the same explicit
+hybrid trigger. Its input is an ordered candidate population C, defaulting to
+all initial source nodes. After the source executes once, before any ZHIR write,
+define the ordered subset
+
+```text
+E = { i in C : G_i > xi, nu_i > 0, nu_i >= minimum,
+              s >= last_consumed_end_i (if present),
+              own incremental grammar admits ZHIR }.
+```
+
+All terms belong to the admitted current state, source endpoints or retained
+own memory. The shared grammar reader supplies U1a/U2/U4a/U4b admission without
+searching for an alternative glyph. The exact growth, represented threshold,
+capacity domains and disjoint-window policy remain those of the strict consumer.
+There is no added score, tolerance or fitted preference. This is a declared
+restriction of the candidate domain, not a derivation of a unique occurrence law.
+All members of E are selected by these predicates; definitive phase/factor and
+stage admission still precedes execution and may reject the whole transaction.
+
+The private eligibility probe observes one internally constructed post-source
+snapshot without consuming the execution snapshot's single binding. Selected
+targets then undergo the existing shared stage's live readmission. No detached
+decision report can authorize a later action. Rejected grammar is a valid
+abstention condition; corrupted grammar state is an error. The same distinction
+separates nonpositive growth, valid inactive capacity or a consumed window from
+malformed scalars, source coverage and receipts. Every consumed candidate input
+is admitted even if another predicate already excludes that candidate.
+
+**Transaction and occurrence.** If E is empty, return the actual source and
+candidate decisions without calling an empty ZHIR stage. The source's clock,
+forms, capacities and real operator histories survive; no extra glyph, fallback
+or consumption receipt is invented. If E is nonempty, the same protected atomic
+stage acts exactly on E. Every excluded node retains its entire post-source
+state. Any invalid source or selected action rolls back the complete call. This
+differs from the strict API, which requires every supplied target and rolls back
+on a valid but unmet gate. It is not implemented by executing and catching that
+strict action. With intact receipts the disjoint-window nonreuse proof applies
+unchanged to each selected target; abstention consumes no window.
+
+**Causal discriminator.** The real AL/IL/OZ/IL/SHA source above yields positive
+growth for both candidates and selects both. Inserting EN after AL cancels the
+core increment but leaves donor growth `1/4`; the same candidate population now
+selects only the donor. Recipient choice is a consequence of the executed source,
+not an input identifying the desired result. For equal initial forms `3/8`,
+IL/OZ/IL/SHA supplies real grammar and a capacity change but zero form growth:
+the source survives and both candidates abstain. Positive AL/SHA with absent
+context distinguishes growth from grammar. Capacity and consumption memory
+independently restrict the subset. The
+[participation controls](../tests/operators/test_operator_growth_selection_participation.py)
+and [boundary controls](../tests/operators/test_operator_growth_selection.py)
+retain these distinctions and the difference between abstention and failure.
+
+**Remaining selection problem.** The native selector already uses supplied
+Si/pressure/acceleration bands, hysteresis and AL/EN waiting counters. It may
+choose IL in a state where this optional policy would select ZHIR. This consumer
+neither implements that competition nor selects its source word or occasion.
+The native heterogeneous sequential batch also has different state updates and
+evidence boundaries from these captured stages. A bridge must justify both
+selection and ownership before reuse. Persistent organization, collective memory
+and descent of collective operators therefore remain separate research goals.
+
+<a id="native-mutation-abstention"></a>
+### Native source-action priority and an explicit no-action branch
+
+The native path already generates real actions from supplied state and memory;
+its admissibility predicates do not uniquely select a competing action. For one
+original target, after once-incrementing waiting counts, the request is
+
+```text
+r_i = AL if a_i+1 > L,
+      EN if a_i+1 <= L and e_i+1 > E,
+      configured_selector_i otherwise.
+```
+
+Built-in selector metrics are prepared before the ordered event loop. Mutation
+admission consumes live own capacity, temporal evidence and, when configured,
+unused interval memory. These boundaries differ: a request need not be eligible,
+and an eligible Mutation need not be requested. The complete decision state
+includes pressure, normalized diagnostics, grammar and temporal histories,
+receipts, waiting counters, configuration and node order, not only EPI and phase.
+
+The explicit `NATIVE_ZHIR_ABSTENTION_POLICY` separates two supplied continuations
+of an untriggerable Mutation request. Missing policy or `coherence` retains the
+actual IL replacement followed by configured grammar; `skip` dispatches no
+operator for this target. The latter is a restriction at the native request
+boundary, not an automatic hybrid-growth consumer, new competing score or claim
+that one policy is uniquely canonical. Valid eligible Mutation still faces its
+own live grammar and direct-action admission. Errors are not a new skip rule.
+
+**Memory and priority.** A skipped decision advances waiting counters but adds
+no operator to the grammar word. In particular, it does not repay U2 debt,
+establish prior Coherence, evict an older OZ by adding IL, or consume a temporal
+interval. A recent-operator window counts actual operators, not elapsed time or
+failed requests. This distinction cannot establish indefinitely retained physical
+plasticity. AL still wins over EN when both are due; either due request wins over
+the metric proposal and therefore over this Mutation-only abstention branch.
+Other actual targets can change a skipped node through neighborhood actions;
+absence of its own action is not isolation or a whole-batch identity map.
+
+**Causal discriminator.** The [finite participation controls](../tests/operators/test_native_mutation_abstention_participation.py)
+compare supplied P2 sources with forms `(1/4,3/4)`, capacity one, zero phase,
+stored Si `(0,1)` and pressure `(1/32,1/2)`. Actual IL then OZ prepare the core's
+grammar and restore its pressure, with IL factor `1/2` and OZ factor two. Its
+own supplied zero-growth evidence makes the default selector's ZHIR request
+untriggerable. Legacy IL halves core pressure and repays its debt; skip does
+neither, while the peer executes IL under both policies. After two batches the
+core/maximum-pressure ratio is `1/16` with legacy replacement and `1/4` with
+skip. Under the same selector cuts, the third core request is ZHIR followed by
+IL in the legacy branch, but actual OZ in the skip branch.
+This is feedback through actual operators, without a changed source word or
+threshold between decisions. Stored diagnostics, samples, policy and decision
+occasions remain declared inputs; no acquired growth or autonomous clock follows.
+
+The [boundary controls](../tests/operators/test_native_mutation_abstention.py)
+separate no-action, actual replacement, invalid capacity/floor and sequential
+failures. Shared capacity admission now precedes native trigger classification,
+so inactivity or noncrossing cannot hide malformed `ZHIR_MIN_VF`. The existing
+temporal certificate's invalid/unavailable-evidence reporting remains unchanged.
+The [API contract](../docs/API_CONTRACTS.md#native-mutation-abstention) owns the
+configuration, trace and lifecycle details.
+
+**Remaining bridge.** Native source generation is heterogeneous and sequential;
+the captured hybrid source consumer executes a supplied complete atomic word.
+Their ownership, grammar, action order and observation domains do not coincide.
+A bridge must justify how actual native actions provide a reusable source and
+how its response competes with native requests, without treating a detached
+growth report as permission or silently replacing continuous evidence. Source
+selection, temporal acquisition, persistent organization and collective operator
+descent remain separate obligations.
+
+<a id="native-epi-source"></a>
+### Exact represented source accounting in the actual native batch
+
+The [optional native capture](../src/tnfr/dynamics/native_epi_source.py) is
+integrated at the real sequential dispatch boundary. It observes all ordered
+nodes before/after each actual glyph, with outer endpoints around the public
+call. Selector preparation, live grammar, waiting priorities and the distinct
+direct-glyph lifecycle are retained. No complete word is supplied in place of
+the selector, no operator is replayed, and no atomic-stage result is fabricated.
+The [API contract](../docs/API_CONTRACTS.md#native-epi-source) owns availability,
+configuration and failure behavior.
+
+**State and balance.** Let x0 and xf be admitted signed scalar EPI vectors at
+outer boundaries, and ak,bk the represented vectors around dispatch k. The
+same ordered node/storage population and captured clock must be retained.
+Fractions describe the binary64 scalar embedding used by the runtime, not a
+proof of exact arithmetic on arbitrary raw representations. Define
+
+```text
+D = xf-x0,       J = sum_k (bk-ak),       V = sum_k abs(bk-ak),
+g0 = a0-x0,      gk = ak-b_(k-1),         gfinal = xf-b_last,
+R = sum(gaps) = D-J,                     W = sum(abs(gaps)).
+```
+
+With no dispatched operator, the only gap is xf-x0 and J=V=0. Telescoping
+proves the identity componentwise for these observed endpoints. V is variation
+across captured dispatch endpoints; it does not reveal a round trip hidden
+inside one call. R and W separate changes outside dispatch, including selector
+or grammar effects. R=0 does not imply W=0, and neither certifies an unobserved
+internal mechanism or authenticates a canonical implementation. The mutable
+dispatch registry and opaque hooks remain part of the supplied execution.
+
+The source is instantaneous on the retained clock. No division by an invented
+duration, continuous growth sample or new ZHIR permission follows. A partial
+failed execution can still have exact observed arithmetic, but its source is
+incomplete; missing/richer EPI or changed node/storage/clock makes the whole-batch
+totals unavailable. Captured endpoints remain observational evidence, not
+portable checkpoints, authenticated invocation records or live activation gates.
+
+**Operator participation.** The [finite controls](../tests/operators/test_native_epi_source_participation.py)
+retain actual native order on P2 with x=(1/4,1/8), AL boost1/8 and EN mix1/2.
+Supplied waiting memory makes the core emit and the peer receive. Core-first
+execution gives increments `(1/8,1/8)`; peer-first gives peer increment `1/16`
+before core increment `1/8`. The difference comes from EN reading the actual
+earlier endpoint; a simultaneous-stage substitution would change this result.
+An actual AL/EN return in consecutive batches separately has zero signed net
+change and positive accumulated dispatch variation. No elapsed time or acquired
+continuous history is assigned to those calls.
+
+The thirteen direct glyphs have finite capture controls under their declared
+supplied selections and grammar preparation. AL/EN/RA/VAL/NUL can change form;
+other direct roles can return zero EPI increments while changing pressure,
+capacity, phase or support. In particular direct THOL has no child birth, and
+direct REMESH is advisory rather than network history mixing. Observing those
+routes does not complete their richer representations or derive their selection.
+The [boundary controls](../tests/operators/test_native_epi_source.py) preserve
+abstention, unsupported observations, outside-dispatch gaps and failed prefixes.
+
+**Ownership boundary.** A captured batch supplies the event component, not a
+complete temporal source. The restricted live bridge below owns one actual
+positive interval and its terminal native batch. General intervening rows,
+identity transport, temporal acquisition, autonomous timing and persistent
+collective identity remain open. The atomic schedule consumer cannot accept
+these reports as a substitute schedule.
+
+<a id="native-positive-window"></a>
+### Restricted positive-window native production and immediate response
+
+The [live producer](../src/tnfr/operators/native_positive_window.py) owns one
+actual positive held-form interval, one terminal native batch and an optional
+canonical ZHIR response. Its [API contract](../docs/API_CONTRACTS.md#native-positive-window)
+specifies domain, live binding and failure boundaries. This is supplied
+flow-then-native-then-response orchestration, distinct from the ordinary
+runtime's native-before-flow order. Neither orchestration is derived merely
+from the nodal equation.
+
+**Complete restricted source.** During the interval, each stored pressure is
+zero, Gamma is absent and the canonical nodal integrator acts on a fixed ordered
+population. Form is constant; phase, capacity and support are held. No pressure
+refresh, coordination, adaptation, birth, network REMESH or hidden forcing is
+inserted. The positive duration and decision occasion are supplied. Native
+operators act only at its right endpoint, retaining their actual sequential
+semantics, waiting priority, own grammar and form-history invalidation. Direct
+THOL and REMESH retain their distinct native roles.
+
+Let s<t be the declared represented window, x(s) its initial form and x(t) the
+form after the completed terminal batch. With the source-accounting notation
+above, admission checks the actual flow increment F=0, fixed population/storage,
+complete native coverage and outside-dispatch variation W=0. Then
+
+```text
+D = x(t)-x(s) = F+J,       G = D/(t-s).
+```
+
+This is a signed hybrid average over (s,t], with EPI per structural-time units.
+The terminal jumps belong to the window; they acquire no invented duration.
+The actual flow recorder retains equal continuous samples, while form-changing
+native actions invalidate those samples through their existing owner. G is not
+written back as a continuous derivative. Captured variation remains separate
+from signed growth, and neither establishes future stability.
+
+**Immediate conditional response.** A private production lifetime binds the
+real graph, actual source and complete live endpoint to one fresh stage
+snapshot. Every candidate retains its own exact G>xi, active capacity/floor,
+grammar and nonoverlapping successful-response window. The canonical phase
+stage is reused; report construction or replacement cannot authorize it. The
+shared hybrid watermark prevents overlapping response windows across this
+route and the supplied-schedule route, conditional on intact graph memory.
+Empty selection retains the source and creates no response stage or receipt.
+
+An actually returned native ZHIR has declared precedence over a supplementary
+response. Under this restricted source, that branch is unreachable: the flow
+records equal own-form endpoints, each node has one native action, and no other
+canonical direct action first changes that target's EPI. Thus ordinary native
+ZHIR cannot obtain a positive own continuous secant here. This is a structural
+restriction, not demonstrated competition between two acquired growth sources.
+The guard does not justify a general arbitration law.
+
+**Prospective finite discriminator.** The [actual P2 controls](../tests/operators/test_native_positive_window.py)
+prepare forms `(3/8,1/4)`, unit capacity, zero phase and each node's own actual
+IL/OZ/IL grammar. With AL boost1/8, EN mix1/2 and duration1, native waiting
+priority selects AL on the core and EN on the peer. Core-first gives signed
+rates `(1/8,1/8)`; peer-first gives named rates `(1/8,1/16)`. At xi1/16 the
+strict gate selects both in the first order and only the core in the second.
+The configured canonical phase increment1/4 then distinguishes the actual
+responses. Holding the core-first source but doubling duration makes both
+rates exactly xi: neither response occurs. These are controls of the declared
+source and response policy, not an autonomous timing result.
+
+Source execution retains its existing failure boundary: a failed native action
+does not erase elapsed flow or successful earlier actions. Only the later
+response has a graph transaction restoring the completed post-source state.
+The [admission controls](../tests/operators/test_native_positive_window_admission.py)
+cover that distinction and reject detached activation or unsupported source
+domains. General nonzero flow, competing native growth, acquired invocation
+times and collective identities require separate complete-law justification.
+
+The [finite-duration Emission proposal](EMISSION_EPISODES.md#emission-episode-status)
+defines a separate nonzero-flow episode and its lifecycle lift. It retains this
+zero-flow route and the finite-jump history obstruction; it does not reinterpret
+ordinary AL or establish a unique continuous operator law.
+
 <a id="native-selector-clock-admission"></a>
 ### Decision schedule and structural time
 

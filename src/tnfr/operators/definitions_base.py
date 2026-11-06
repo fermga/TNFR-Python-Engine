@@ -87,7 +87,7 @@ class Operator(metaclass=OperatorMetaAuto):
         # Hard structural invariants — always enforced before any state
         # mutation, independent of VALIDATE_OPERATOR_PRECONDITIONS.  Coupling
         # and Resonance override this to run the U3 phase gate (Invariant #2).
-        self._validate_hard_invariants(G, node)
+        self._validate_requested_hard_invariants(G, node, **kw)
 
         self._validate_application_preconditions(G, node, **kw)
 
@@ -137,6 +137,7 @@ class Operator(metaclass=OperatorMetaAuto):
             node,
             self.glyph,
             operator=self.name,
+            source_nodes=kw.get("source_nodes"),
         )
         collect_metrics = bool(kw.get("collect_metrics", False)) or bool(
             G.graph.get("COLLECT_OPERATOR_METRICS", False)
@@ -159,7 +160,7 @@ class Operator(metaclass=OperatorMetaAuto):
         if validate_preconditions and G.graph.get(
             "VALIDATE_OPERATOR_PRECONDITIONS", False
         ):
-            self._validate_preconditions(G, node)
+            self._validate_requested_preconditions(G, node, **kw)
 
     def _execute(self, G: TNFRGraph, node: Any, **kw: Any) -> None:
         """Execute an already selected operator; subclasses extend this hook.
@@ -268,6 +269,18 @@ class Operator(metaclass=OperatorMetaAuto):
         may override this hook when metrics and monitor checks must observe
         metadata derived from the same pre-glyph proposal.
         """
+
+    def _validate_requested_hard_invariants(
+        self, G: TNFRGraph, node: Any, **kw: Any
+    ) -> None:
+        """Admit a request, retaining the existing hook for ordinary actions."""
+        self._validate_hard_invariants(G, node)
+
+    def _validate_requested_preconditions(
+        self, G: TNFRGraph, node: Any, **kw: Any
+    ) -> None:
+        """Apply the selected activity policy to the actual request domain."""
+        self._validate_preconditions(G, node)
 
     def _validate_hard_invariants(self, G: TNFRGraph, node: Any) -> None:
         """Validate non-disableable structural invariants.

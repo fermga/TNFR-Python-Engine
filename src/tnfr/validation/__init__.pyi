@@ -13,7 +13,6 @@ from ..operators.grammar import (
     TholClosureError,
     TransitionCompatibilityError,
     apply_glyph_with_grammar,
-    enforce_canonical_grammar,
     on_applied_glyph,
     record_grammar_violation,
     validate_sequence,
@@ -58,6 +57,16 @@ from .p2_transport import (
 )
 from .rules import coerce_glyph, get_norm, glyph_fallback, normalized_dnfr
 from .runtime import GraphCanonicalValidator, apply_canonical_clamps, validate_canon
+
+def enforce_canonical_grammar(
+    G: Any,
+    n: Any,
+    cand: Any,
+    ctx: Any | None = None,
+    *,
+    _decision_trace: list[Any] | None = None,
+) -> Any: ...
+
 from .signal_confrontation import (
     ModalRootDiagnostic,
     NodalPredictionSkill,

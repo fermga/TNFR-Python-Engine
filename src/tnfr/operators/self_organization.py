@@ -27,6 +27,7 @@ from ._argument_validation import (
     strict_bool,
     validate_common_execution_arguments,
 )
+from ._birth_materialization import materialize_isolated_member
 from ._thol_config import resolve_thol_bifurcation_threshold
 from ._thol_constants import THOL_CHILD_VF_DAMPING, THOL_SUB_EPI_SCALING
 from ._thol_pressure import propose_thol_pressure
@@ -531,15 +532,6 @@ class SelfOrganization(Operator):
         )
         signals = None
         if metabolic_enabled:
-            for neighbor in G.neighbors(node):
-                _finite_node_epi(G.nodes[neighbor], label=f"neighbor {neighbor!r} EPI")
-                finite_node_real(
-                    G.nodes[neighbor],
-                    ALIAS_THETA,
-                    0.0,
-                    operator=_OPERATOR,
-                    label=f"neighbor {neighbor!r} theta",
-                )
             from .metabolism import capture_network_signals
 
             signals = capture_network_signals(G, node)
@@ -835,7 +827,9 @@ class SelfOrganization(Operator):
         bifurcation = proposal.bifurcation
         if bifurcation is None:
             return
-        G.add_node(bifurcation.sub_node_id, **dict(bifurcation.sub_node_data))
+        materialize_isolated_member(
+            G, bifurcation.sub_node_id, bifurcation.sub_node_data
+        )
         G.nodes[node]["sub_nodes"] = list(bifurcation.sub_nodes)
         hierarchy = G.graph.setdefault("hierarchy", {})
         hierarchy[node] = list(bifurcation.hierarchy_children)

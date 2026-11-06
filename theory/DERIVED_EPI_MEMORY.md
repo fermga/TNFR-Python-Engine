@@ -1,7 +1,8 @@
 # Memory derived by observing groups of EPI nodes
 
 **Status:** Exact fixed-generator elimination, captured-affine closure and minimal linear realizations,
-P5 finite-history error bounds, and nested P5 orbit closure with an obstruction to direct REMESH substitution;
+source-aware reversible and held-profile memory-omission bounds, P5 finite-history error bounds,
+and nested P5 orbit closure with an obstruction to direct REMESH substitution;
 exact controls and finite numerical/runtime observations. General multichannel
 closure and broader memory-to-operator realizations remain open.
 **Implementation:** [epi_memory.py](../src/tnfr/physics/epi_memory.py), using the
@@ -13,6 +14,10 @@ For the selected nonlinear phase/form model, the
 elimination and error-propagation methods below. Its hidden generator and
 nonlinear sources have their own admission; reversible kernel positivity,
 P5 truncation formulas and REMESH equivalence do not transfer automatically.
+
+The [memory-omission budget](#reversible-memory-omission-budget) adds a
+finite-horizon, source-aware accuracy criterion for the memoryless quotient
+of this reversible EPI law. It is not a nonlinear phase/form reduction.
 
 The [five-child constituent result](nodal/ORGANIZED_CONSTITUENT_MEMORY.md)
 retains nonlinear hidden initialization even though its mean tangent kernel
@@ -203,6 +208,170 @@ $$
 
 The macro equation retains the influence of hidden coordinates of this same
 dissipative system. It does not establish a new source of sustained vibration.
+
+<a id="reversible-memory-omission-budget"></a>
+### 4.1 A source-aware budget for omitting the memory
+
+Retain the fixed unforced law, partition and weighted geometry of sections
+1--4, with connected microscopic positive conductance. Compare the exact
+observed state with the memoryless approximation
+
+$$
+y(t)=Rx(t),\qquad
+\dot y_M=-\bar A y_M,\qquad y_M(0)=Rx_0.
+$$
+
+This approximation discards both the initial hidden source and the memory
+feedback. It is not an exact quotient unless the existing closure criterion
+holds. A positive scalar multiplying the EPI generator is allowed if the
+same factor is retained in every matrix and time-dependent bound below.
+There are no changing capacities, support events, forcing, clipping or phase
+rows in this theorem.
+
+Write $\|v\|_H^2=v^\top Hv$ and use the corresponding macro norm.
+Let $\lambda>0$ satisfy
+
+$$
+Q^\top H(A-\lambda I)Q\succeq0. \tag{MB1}
+$$
+
+This is precisely a lower decay bound on the hidden subspace, not on the
+ambient $T=QAQ$, whose lifted macro directions remain null. The condition
+can be checked by the shared exact semidefinite owner without a spectral
+search. Define
+
+$$
+\mu=\operatorname{tr}(\bar H^{-1}C^\top HC),\quad
+Z_0=\|Qx_0\|_H^2,\quad
+E_0=\|x_0-\bar x_0\mathbf1\|_H^2,\quad
+\bar x_0=\frac{\mathbf1^\top Hx_0}{\mathbf1^\top H\mathbf1}. \tag{MB2}
+$$
+
+The coefficient $\mu$ is an upper bound on the **squared** operator norm of
+$C$ from the macro metric to the hidden metric. Indeed, it is the squared
+Frobenius norm of $H^{1/2}C\bar H^{-1/2}$. The matrices need not be
+materialized in square-root coordinates to evaluate this trace.
+
+**Conditional finite-horizon bound.** For every $h\ge0$ put
+
+$$
+a_h=\min(h,\lambda^{-1}),\qquad
+b_h=\min(h^2/2,h/\lambda),\qquad
+U_h=\mu a_h^2Z_0,\quad V_h=\mu^2b_h^2E_0.
+$$
+
+Then
+
+$$
+\sup_{0\le t\le h}\|y(t)-y_M(t)\|_{\bar H}
+\le \sqrt{\mu Z_0}\,a_h+\mu\sqrt{E_0}\,b_h, \tag{MB3}
+$$
+
+and a purely rational squared upper bound is
+
+$$
+\sup_{0\le t\le h}\|y(t)-y_M(t)\|_{\bar H}^2
+\le {\cal B}_h:=
+\begin{cases}
+U_h+V_h,&U_hV_h=0,\\
+2(U_h+V_h),&U_hV_h>0.
+\end{cases} \tag{MB4}
+$$
+
+**Proof.** By (MB1), the hidden semigroup has norm at most
+$e^{-\lambda t}$. Weighted adjointness and section 4's kernel identity give
+
+$$
+\|f(t)\|_{\bar H}\le\sqrt{\mu Z_0}\,e^{-\lambda t},
+\qquad
+\|K(t)\|_{\bar H\to\bar H}\le\mu e^{-\lambda t}.
+$$
+
+Subtract the conserved common form once for the argument, without changing
+the observed difference $y-y_M$. Both $C\mathbf1=0$ and $\bar A\mathbf1=0$.
+Fine dissipation and orthogonal projection imply
+$\|R(x(t)-\bar x_0\mathbf1)\|_{\bar H}\le\sqrt{E_0}$.
+The macro semigroup is also contractive in $\bar H$. Variation of constants
+for $y-y_M$, using the exact memory equation rather than an assumed closed
+rate, therefore bounds its norm by
+
+$$
+\sqrt{\mu Z_0}\int_0^t e^{-\lambda s}\,ds+
+\mu\sqrt{E_0}\int_0^t\int_0^s e^{-\lambda(s-r)}\,dr\,ds.
+$$
+
+The integrals are respectively
+$(1-e^{-\lambda t})/\lambda$ and
+$t/\lambda-(1-e^{-\lambda t})/\lambda^2$.
+They are nondecreasing and bounded above by $a_h$ and $b_h$ on $[0,h]$.
+This proves (MB3). Squaring the sum and using
+$2\sqrt{U_hV_h}\le U_h+V_h$ proves (MB4), with the sharper zero-term case.
+No approximation to an exponential, random initial state or probability
+measure enters this proof.
+
+For a declared scalar output $\ell^\top y$, the same bound gives
+
+$$
+\sup_{0\le t\le h}|\ell^\top(y-y_M)|^2
+\le(\ell^\top\bar H^{-1}\ell)\,{\cal B}_h. \tag{MB5}
+$$
+
+Thus a structural simplification can be assessed against a requested
+observation tolerance, not just a generic coherence score.
+
+**What can be optimized.** The initial hidden contribution is first order
+in the coupling norm $\sqrt\mu$; memory feedback is second order in that
+norm. An exactly block-constant preparation has $Z_0=0$, but generally
+$\mu>0$ and nonzero feedback. Better approximate invariance can reduce this
+feedback quadratically; it cannot erase an independently unknown hidden
+initialization. A smaller hidden gap or a longer horizon can offset that
+gain. Candidate partitions must retain the same required observation and
+source contract before comparing their budgets. This is neither a globally
+optimal partition rule nor a proof that increasing graph connectivity helps.
+
+The bound is covariant under a uniform clock rescaling: replacing
+$(A,\lambda,\mu,h)$ by $(cA,c\lambda,c^2\mu,h/c)$ at fixed metrics and source
+leaves (MB4) unchanged. A change of individual capacities is generally a
+different model and metric, not that common clock transformation. The
+linear-in-$h$ long-time factor in (MB3) is a sufficient finite-window bound,
+not an assertion that the actual error grows indefinitely.
+
+**Independent order control.** On a three-node triangle choose
+$W_{01}=1$, $W_{02}=1+\delta$, $W_{12}=1-\delta$, $|\delta|<1$,
+and supplied capacities $\nu_i=d_i$, so $H=I$ and $A$ is its weighted
+Laplacian. Observe blocks $\{0,1\}$ and $\{2\}$.
+Here $\bar H=\operatorname{diag}(2,1)$,
+$C=((\delta,-\delta),(-\delta,\delta),(0,0))$,
+$\mu=3\delta^2$, and the hidden decay is exactly three.
+In the orthonormal relative basis
+$(1,1,-2)/\sqrt6$, $(1,-1,0)/\sqrt2$, the generator is
+
+$$
+\begin{pmatrix}3&\sqrt3\delta\\\sqrt3\delta&3\end{pmatrix}.
+$$
+
+For $x_0=(1,1,-2)$ the squared macro error is exactly
+$6e^{-6t}[\cosh(\sqrt3\delta t)-1]^2$, fourth order in $\delta$ for fixed
+positive time. In contrast, $x_0=(1,-1,0)$ has the same zero macro state as
+$x_0=0$ but projected initial rate $(-\delta,2\delta)$; its squared error is
+$2e^{-6t}\sinh^2(\sqrt3\delta t)$. These controls distinguish second-order
+feedback from first-order hidden-source influence without assuming the
+bound equals the response. This supplied scalar family is not the formed
+two-port source and establishes no phase dynamics or organization.
+
+The existing [EPI memory owner](../src/tnfr/physics/epi_memory.py) exposes
+`bound_epi_memory_omission(reference, blocks, *, horizon, hidden_decay_lower,
+epi=None)`. It rebuilds the reference and exact partition through
+`observe_forced_support_closure`, rejects nonzero forcing, verifies (MB1)
+and returns both contributions and (MB4). A failed supplied gap gives an
+explicit unavailable result, not a new gap search or zero error.
+All norm squares and products remain rational, including very small
+preparation amplitudes. The
+[independent controls](../tests/physics/test_epi_memory_omission.py) cover the
+triangle family, its closed-form response, zero memory, clock and common-form
+invariance, stale derived fields, invalid inputs and exact small scales.
+The [API contract](../docs/contracts/relational/OBSERVATION_AND_INFORMATION.md#epi-memory-omission-budget)
+retains the numerical/source boundary. No scientific producer is replayed.
 
 ## 5. Exact zero-memory control: P4
 
@@ -1114,6 +1283,146 @@ cached reference fields. An affine control with `R*A*Q=0` but `Q*b!=0` verifies
 that projected closure is not confused with lifted affine invariance. The
 actual generated-family application is owned by
 [THOL_BIRTH_AND_TRANSPORT.md](THOL_BIRTH_AND_TRANSPORT.md#14-state-sufficiency-of-actual-parent-child-families).
+
+<a id="profile-anchored-memory-omission"></a>
+### 10.5 A memoryless model preserving the held profile and mean drift
+
+The homogeneous budget (MB1)--(MB5) does not apply directly to forced raw
+EPI. Section 10.2 already supplies the exact current-model coordinate change.
+Combining those results gives a distinct approximation with an explicit
+coarse source, rather than silently discarding the drive.
+
+Retain the complete held law $\dot x=-Ax+b$, its positive metric $H$,
+connected reciprocal support and partition. The source $b$ is specified
+independently of the response. Let $z_*$ be the current centered relative
+profile and $\bar v$ the mean drift:
+
+$$
+Az_*=b-\bar v\mathbf1,\qquad
+\mathbf1^\top Hz_*=0,\qquad
+\bar v=\frac{\mathbf1^\top Hb}{\mathbf1^\top H\mathbf1}.
+$$
+
+These quantities are already derived by the forced-support owner.
+For $m_0=m_H(x_0)$, the exact residual
+$u=x-(m_0+\bar v t)\mathbf1-z_*$ satisfies $\dot u=-Au$.
+Define the comparison by
+
+$$
+\begin{aligned}
+\dot v_M&=-\bar A v_M,&v_M(0)&=Ru_0,\\
+\widehat y(t)&=(m_0+\bar v t)\mathbf1+Rz_*+v_M(t).
+\end{aligned}
+$$
+
+Using $\bar A\mathbf1=0$ and $I=PR+Q$ gives
+
+$$
+\boxed{
+\dot{\widehat y}=-\bar A\widehat y+b_{\rm eff},\quad
+\widehat y(0)=Rx_0,\quad
+b_{\rm eff}=\bar A Rz_*+\bar v\mathbf1
+           =Rb-RAQz_*.
+} \tag{MA1}
+$$
+
+The correction $c=RAQz_*$ is computed from the complete current model,
+not fitted to an observed endpoint. With the quotient generator fixed,
+matching this relative profile and mean drift uniquely fixes its constant
+source to (MA1). This does not select a unique coarse generator or a new
+fundamental input law.
+
+**Finite response bound.** Since $Rx-\widehat y=Ru-v_M$, (MB1)--(MB5)
+apply without modification of $\mu,\lambda,a_h,b_h$ but with
+
+$$
+E_0^*=\|x_0-m_0\mathbf1-z_*\|_H^2,\qquad
+Z_0^*=\|Q(x_0-z_*)\|_H^2. \tag{MA2}
+$$
+
+Thus the same rational budget bounds the squared macro error uniformly on
+$[0,h]$. All hidden initial deviations remain present. An exactly prepared
+drifting profile has $E_0^*=Z_0^*=0$ and is reproduced exactly, even when
+the partition does not close the transient dynamics for arbitrary states.
+No small forcing, zero mean drift or statistical ensemble is assumed.
+The unrestricted scalar chart and held-input premises remain essential.
+
+The approximation is also asymptotically unbiased for every admitted
+initial EPI, not only for an initially exact profile. Fine connectedness
+gives $u(t)\to0$. Moreover,
+$w^\top\bar H\bar A w=(Pw)^\top HA(Pw)$ vanishes only for constant
+$w$, so the quotient has positive decay on its zero-mean subspace.
+Since $Ru_0$ has zero $\bar H$ mean, $v_M(t)\to0$ as well, hence
+$Rx(t)-\widehat y(t)\to0$. This does not say that the raw states converge
+when $\bar v\ne0$, or that the approximation is uniformly more accurate
+than every alternative at finite times. The finite budget and this
+asymptotic conclusion have different roles.
+
+The source correction preserves the actual mean balance:
+
+$$
+\mathbf1^\top\bar Hc=0,\qquad
+\mathbf1^\top\bar Hb_{\rm eff}
+=\mathbf1^\top Hb. \tag{MA3}
+$$
+
+The first identity follows from $A\mathbf1=0$ and $HA=A^\top H$.
+For fixed $A,H,P,R$, both $z_*$ and $b_{\rm eff}$ depend linearly on $b$.
+Adding a uniform rate source $d\mathbf1$ changes $\bar v$ by $d$ and
+$b_{\rm eff}$ by $d\mathbf1$, but leaves $z_*$ and the correction unchanged.
+For a common clock rescaling, **both** $A$ and $b$ scale by the same factor;
+then $z_*$ is unchanged and the earlier budget covariance still holds.
+The error budget itself need not add linearly under superposed inputs.
+
+**Why retaining only $Rb$ is insufficient.** On a true drifting profile,
+the fine projected rate is $\bar v\mathbf1$. The naive quotient
+$\dot y_N=-\bar A y_N+Rb$ instead has initial rate
+$\bar v\mathbf1+c$. It preserves that profile exactly iff $c=0$.
+This criterion is weaker than all-state closure $RAQ=0$ and says nothing
+by itself about transient accuracy.
+
+For an independent rational control, use the triangle of section 4.1 with
+$\delta=1/2$, capacities $(5/2,3/2,2)$ and independently supplied pressure
+forcing $F=(9/5,-1,0)$. Then
+
+$$
+\begin{gathered}
+b=(9/2,-3/2,0),\quad H=I,\quad
+z_*=(1,-1,0),\quad\bar v=1,\quad Rz_*=(0,0),\\
+\bar A=\begin{pmatrix}1&-1\\-2&2\end{pmatrix},\quad
+Rb=(3/2,0),\quad c=(1/2,-1),\quad b_{\rm eff}=(1,1).
+\end{gathered}
+$$
+
+Starting at $x_0=z_*$ gives the exact fine solution
+$x(t)=z_*+t\mathbf1$ and $\widehat y(t)=(t,t)$.
+The naive model's excess $y_N-Rx$ is
+$(1-e^{-3t})(1,-2)/6$, with squared $\bar H$ norm
+$(1-e^{-3t})^2/6$. A permanently wrong relative macro profile therefore
+survives ordinary averaging of the source, despite matching the initial
+group means. Adding the independent visible or hidden initial deviations
+from section 4.1 retains that section's exact two-mode error controls for
+the anchored model. No numerical trajectory is needed for this comparison.
+
+`bound_anchored_epi_memory_omission` in
+[epi_memory.py](../src/tnfr/physics/epi_memory.py) implements (MA1)--(MA3)
+through the same gap/Gram/budget kernel as `bound_epi_memory_omission`.
+The latter keeps its unforced-only admission and rejection of nonzero
+forcing. The shared report now retains `comparison_kind`, `macro_forcing`
+and `forcing_correction`; the affine route identifies itself as
+`profile_anchored_affine`. It rebuilds the profile, mean and initial
+residual from primitives rather than trusting public cached fields.
+The [contract](../docs/contracts/relational/OBSERVATION_AND_INFORMATION.md#profile-anchored-epi-memory)
+and [controls](../tests/physics/test_epi_memory_omission.py) keep gap
+abstention and the exact small-scale/clock boundaries explicit.
+
+This is an optimization of the **prediction model**, not a change to the
+fine law or proof of autonomous maintenance. Current-model anchoring must
+not replace an earlier reference when the question is retention of that
+earlier identity. Changing support, capacity or forcing requires fresh
+admission and the actual incoming state; resetting the residual to zero
+would erase history. Periodic inputs, nonlinear phase/form laws, events
+and finite clipping remain outside this held-affine result.
 
 ## 11. Minimal linear state retaining a declared observation
 

@@ -1011,6 +1011,57 @@ laboratory time or physical binding. The
 [inspection guide](../../guides/relational/SINE_PATTERNS.md#sine-two-port-capture)
 keeps prospective setup and the subsequent retained response separate.
 
+<a id="sine-formed-source-transport"></a>
+### Actual-source velocity tracking and conditional cut transport
+
+`tnfr.research.formed_two_port_reference.bound_formed_two_port_transport(
+reference, evidence_directory)` returns `FormedTwoPortTransportBounds`.
+The fixed reference must retain the original eighteen labels, twenty edges,
+degree metric, lifts and `phi=1/1000` source. The directory is the retained
+`formed-two-port-attempt-20261029` evidence owner. Primitive reference and
+all four prefix records are re-admitted through the existing post-acute
+reader, without invoking a producer, target sign, field or later step.
+
+The [proof](../../../theory/nodal/SINE_TWO_PORT_CAPTURE.md#sine-formed-two-port-source-transport)
+keeps the following guarantees distinct:
+
+- For the complete A2 law with no subsequent event or forcing,
+  `velocity_lag_upper_bound<1/7000` applies for
+  `sigma>=tracking_start_slow_time=1/128`. It bounds
+  `||theta_sigma-f(theta)||_D`, at the **actual** phase. This is not an
+  all-time position error relative to the auxiliary reference.
+- `retention_slow_interval=(0,7/4)` and
+  `principal_margin_lower_bound>3/50` certify cut avoidance of all twenty
+  edges on the closed interval, with `retained_periods=(2,1,0)`.
+  The time interval is not extended by the global velocity statement.
+- `cut_gap_pi_coefficients` specifies the existing correlated principal-cut
+  witness in the original lifts. In its common-mean-matched `D`-ball of
+  radius `cut_patch_radius=1/256`, the active edge has actual normal
+  velocity greater than `2/3` after the initial layer. The reported
+  `local_outgoing_periods=(1,1,0)` is **conditional on arrival and crossing**
+  there, not a predicted endpoint or final identity.
+
+The report retains squared edge dual norms and squared velocity allowances
+without materializing square roots, and nests the rebuilt post-acute
+evidence and its separate numerical radius. Invalid references or altered
+records reject rather than returning a successful fallback. Receipt
+associations inherit the historical Picard/remainder premises; they are
+not execution authentication. No supplied cached transport report is an
+input to this calculation. A source-to-patch or source-to-basin certificate
+remains a separate obligation.
+
+`conditional_capture_phase_radius=1/1024` supplies a complementary test:
+actual phase proximity to the exact retained target after `sigma=1/128`
+bounds centered form below `1/8192` and excess storage below `1/648000`.
+The fields prefixed `conditional_capture_` express that implication, not
+an evaluated distance or a capture verdict. They neither solve the target
+nor restore a numerical reference horizon.
+
+The later [relative-lag and phase-progress proof](../../../theory/nodal/SINE_TWO_PORT_CAPTURE.md#sine-formed-two-port-relative-progress)
+and [endpoint enclosure](../../../theory/nodal/SINE_TWO_PORT_CAPTURE.md#sine-formed-two-port-transport-seed)
+are analytical extensions. This report does not evaluate their state-dependent
+field norm, construct a transport region or issue an arrival deadline.
+
 <a id="sine-two-port-transit"></a>
 ### Finite directional deformation under the complete two-port law
 

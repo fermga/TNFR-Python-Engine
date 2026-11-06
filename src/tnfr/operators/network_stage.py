@@ -71,6 +71,7 @@ from ..constants.aliases import (
 from ..errors import TNFRValueError
 from ..mathematics.epi import BEPIElement
 from ..mathematics.unified_numerical import np
+from ..physics.integrity import MonitorMode
 from ..physics.mutation_trigger import (
     MutationTriggerCertificate,
     MutationTriggerEvidence,
@@ -84,7 +85,7 @@ from ..utils._structural_signature import (
     structural_proof_signature,
 )
 from ..utils.cache import NodeCache
-from ._argument_validation import require_list_sink
+from ._argument_validation import require_list_sink, strict_bool
 from ._epi_domain import require_real_scalar_epi
 from ._neighbor_epi_kernel import (
     neighbor_epi_blend_value,
@@ -92,6 +93,10 @@ from ._neighbor_epi_kernel import (
     reception_proposed_epi_kind,
 )
 from ._phase_gate import U3PhaseGateError, resolve_u3_phase_neighbors
+from ._reception_compatibility import (
+    ReceptionCompatibilityDecision,
+    _reception_compatibility_payload_stamp,
+)
 from ._reception_kernel import (
     RECEPTION_PRE_STATE_BOUNDARY,
     ReceptionReadSnapshot,
@@ -244,6 +249,19 @@ _COUNTER_PROTOCOL_BINDINGS = (("__reduce__", Counter.__dict__["__reduce__"]),)
 _BEPI_ELEMENT_PROTOCOL_BINDINGS = tuple(
     (name, BEPIElement.__dict__[name])
     for name in ("__delattr__", "__getstate__", "__setattr__", "__setstate__")
+)
+_MONITOR_MODE_MEMBERS = (MonitorMode.OFF, MonitorMode.OBSERVE, MonitorMode.ENFORCE)
+_MONITOR_MODE_PROTOCOL_BINDINGS = tuple(
+    (
+        owner,
+        tuple(
+            (name, owner.__dict__[name])
+            for name in sorted(_RUNTIME_DEEPCOPY_PROTOCOL_NAMES)
+            if name in owner.__dict__
+        ),
+    )
+    for owner in MonitorMode.__mro__
+    if owner is not object
 )
 _ATOMIC_IMMUTABLE_RUNTIME_TYPES = (
     bool,
@@ -744,6 +762,34 @@ def _validate_runtime_deepcopy_protocol(
                 "runtime metadata with instance copy-protocol hooks cannot "
                 "be deep-copied observationally"
             )
+    if kind is MonitorMode:
+        # The engine's exact enum is a supported runtime object, not an
+        # immutable atom: its namespace remains in the manual rollback walk.
+        # Retain singleton identity via that walk's memo; never invoke Enum's
+        # deepcopy/reconstruction hooks. External enums remain unsupported.
+        if not any(value is member for member in _MONITOR_MODE_MEMBERS):
+            raise TNFRValueError("runtime MonitorMode must be a registered singleton")
+        owners = _runtime_class_mro(kind)
+        expected_owners = tuple(owner for owner, _ in _MONITOR_MODE_PROTOCOL_BINDINGS)
+        if len(owners) != len(expected_owners) + 1 or any(
+            actual is not expected for actual, expected in zip(owners, expected_owners)
+        ):
+            raise TNFRValueError("runtime MonitorMode has a modified class hierarchy")
+        for owner, bindings in _MONITOR_MODE_PROTOCOL_BINDINGS:
+            owner_namespace = _runtime_class_namespace(owner)
+            declared = frozenset(
+                name
+                for name in _RUNTIME_DEEPCOPY_PROTOCOL_NAMES
+                if name in owner_namespace
+            )
+            if declared != frozenset(name for name, _ in bindings) or any(
+                owner_namespace[name] is not binding for name, binding in bindings
+            ):
+                raise TNFRValueError(
+                    "runtime MonitorMode has modified copy-protocol hooks and "
+                    "cannot be snapshotted observationally"
+                )
+        return
     trusted_bindings = None
     trusted_name = None
     if kind is CallbackSpec:
@@ -2913,7 +2959,11 @@ class GraphTransactionSnapshot:
         self._predecessor_inner_mappings = layout.predecessor_inner
         self._adjacency_edge_key_mappings = layout.adjacency_edge_keys
         self._predecessor_edge_key_mappings = layout.predecessor_edge_keys
-        runtime_memo = {id(graph): graph}
+        # Metadata is an owned mapping just like the topology containers.
+        # Seed it before capturing indirect references (for example NodeNX.graph)
+        # so rollback preserves their association with the live graph metadata.
+        # Its contents are still captured separately below.
+        runtime_memo = {id(graph): graph, id(graph_mapping): graph_mapping}
         runtime_memo.update({id(value): value for _key, value in runtime_items})
         runtime_memo.update({id(value): value for _key, value in graph_attribute_items})
         runtime_memo.update({id(value): value for _slot, value in graph_slot_items})
@@ -3610,7 +3660,7 @@ class RecursivityStageProposal:
     advisory: RecursivityAdvisoryProposal
 
 
-_RECEPTION_STAGE_OBSERVATION_VERSION = "reception_stage_observation_v1"
+_RECEPTION_STAGE_OBSERVATION_VERSION = "reception_stage_observation_v3"
 _RECEPTION_STAGE_POST_STATE_BOUNDARY = "completed_en_stage_before_result"
 
 
@@ -3648,6 +3698,15 @@ def _reception_stage_observation_stamp(
                 observation.reception_sources,
                 observation.reception_sources_present_after,
                 observation.reception_sources_after,
+                observation.source_nodes,
+                observation.source_selection_origin,
+                (
+                    _reception_compatibility_payload_stamp(
+                        observation.compatibility_decision
+                    )
+                    if observation.compatibility_decision is not None
+                    else None
+                ),
                 observation.read_boundary,
                 observation.post_state_boundary,
                 observation.glyph,
@@ -3686,6 +3745,8 @@ def _reception_observation_read_snapshot(
         source_tracking_enabled=observation.source_tracking_enabled,
         source_max_distance=observation.source_max_distance,
         reception_sources=observation.reception_sources,
+        source_nodes=observation.source_nodes,
+        compatibility_decision=observation.compatibility_decision,
         _read_graph_owner=validation_owner,
         _metric_consumer_graph_owner=validation_owner,
         _graph_identity=id(validation_owner),
@@ -3788,6 +3849,8 @@ class ReceptionStageObservation:
     reception_sources: tuple[tuple[Any, float, float], ...] | None
     reception_sources_present_after: bool
     reception_sources_after: tuple[tuple[Any, float, float], ...] | None
+    source_nodes: tuple[Any, ...] | None = None
+    compatibility_decision: ReceptionCompatibilityDecision | None = None
     read_boundary: str = field(
         default=RECEPTION_PRE_STATE_BOUNDARY,
         init=False,
@@ -3820,6 +3883,15 @@ class ReceptionStageObservation:
         if name == "auxiliary_stability_certified":
             return False
         return object.__getattribute__(self, name)
+
+    @property
+    def source_selection_origin(self) -> str:
+        """Distinguish a supplied causal tuple from legacy neighbor intake."""
+        if self.compatibility_decision is not None:
+            return "compatibility_policy"
+        return (
+            "legacy_all_neighbors" if self.source_nodes is None else "explicit_request"
+        )
 
     def __post_init__(self) -> None:
         _validate_reception_stage_observation(self)
@@ -3907,6 +3979,8 @@ def _observe_reception_proposal(
         reception_sources=read.reception_sources,
         reception_sources_present_after=sources_present_after,
         reception_sources_after=committed_sources,
+        source_nodes=read.source_nodes,
+        compatibility_decision=read.compatibility_decision,
     )
     object.__setattr__(
         candidate,
@@ -3968,6 +4042,15 @@ def _validate_mutation_trigger_certificate(
     certificate: MutationTriggerCertificate,
 ) -> None:
     """Reject internally contradictory trigger evidence in a public record."""
+
+    from ._operator_growth_trigger import (
+        OperatorGrowthTriggerCertificate,
+        _validate_operator_growth_trigger_certificate,
+    )
+
+    if type(certificate) is OperatorGrowthTriggerCertificate:
+        _validate_operator_growth_trigger_certificate(certificate)
+        return
 
     required_floats = (
         certificate.current_epi,
@@ -4093,7 +4176,12 @@ def _validate_mutation_decision_fields(
 
     if type(observation.target_index) is not int or observation.target_index < 0:
         raise ValueError("Mutation observation target_index must be nonnegative")
-    if type(observation.trigger_certificate) is not MutationTriggerCertificate:
+    from ._operator_growth_trigger import OperatorGrowthTriggerCertificate
+
+    if type(observation.trigger_certificate) not in (
+        MutationTriggerCertificate,
+        OperatorGrowthTriggerCertificate,
+    ):
         raise TypeError("Mutation observation requires a MutationTriggerCertificate")
     certificate = observation.trigger_certificate
     _validate_mutation_trigger_certificate(certificate)
@@ -4629,6 +4717,8 @@ def _propose_reception(
     track_sources: bool,
     max_distance: Any,
     metric_consumer_graph: Any,
+    source_nodes: tuple[Any, ...] | None = None,
+    compatibility_decision: ReceptionCompatibilityDecision | None = None,
 ) -> NeighborStageProposal:
     raw_epi = _raw_alias(snapshot, node, ALIAS_EPI, 0.0)
     read_snapshot = capture_reception_read_snapshot(
@@ -4636,6 +4726,8 @@ def _propose_reception(
         node,
         track_sources=track_sources,
         max_distance=max_distance,
+        source_nodes=source_nodes,
+        compatibility_decision=compatibility_decision,
         _metric_consumer_graph_owner=metric_consumer_graph,
     )
     epi_before = read_snapshot.target_epi
@@ -4927,6 +5019,9 @@ def _propose_pointwise(
             node,
             factors,
             tau=tau,
+            _operator_growth_context=(execution_kwargs or {}).get(
+                "_operator_growth_context"
+            ),
         )
     elif glyph is Glyph.NAV:
         if transition_now is None:
@@ -5363,6 +5458,13 @@ def _certify_neighbor_epi_jump_from_proposals(
     abstention; disagreement between two supposedly shared kernels is an
     internal error and must abort the surrounding transaction.
     """
+
+    if glyph is Glyph.EN and any(
+        proposal.reception_read_snapshot is not None
+        and proposal.reception_read_snapshot.source_nodes is not None
+        for proposal in proposals
+    ):
+        return None, "neighbor_certificate_unsupported_explicit_reception_sources"
 
     from ..physics._conductance import read_conductance
     from ..physics._neighbor_epi_realization import (
@@ -5815,6 +5917,16 @@ def _preflight_two_phase_stage(
     validate_graph_seed(graph)
     snapshot = _detached_stage_graph(graph)
 
+    if "_operator_growth_context" in resolved_kwargs:
+        from ._operator_growth_trigger import _requested_operator_growth_context
+
+        if operator.glyph is not Glyph.ZHIR:
+            raise ValueError("operator growth admission supports Mutation only")
+        context = _requested_operator_growth_context(
+            resolved_kwargs["_operator_growth_context"]
+        )
+        context.bind_snapshot(graph, snapshot)
+
     for node in targets:
         if node not in snapshot:
             raise KeyError(node)
@@ -5832,7 +5944,7 @@ def _preflight_two_phase_stage(
         or collect_metrics
     )
     for node in targets:
-        operator._validate_hard_invariants(snapshot, node)
+        operator._validate_requested_hard_invariants(snapshot, node, **resolved_kwargs)
         validation_kwargs = dict(resolved_kwargs)
         if operator.glyph is Glyph.NAV:
             validation_kwargs["_stage_now"] = transition_now
@@ -5857,8 +5969,17 @@ def _preflight_two_phase_stage(
                 sequence_context=sequence_context,
                 **validation_kwargs,
             )
+        grammar_request = {}
+        if (
+            operator.glyph is Glyph.UM
+            and resolved_kwargs.get("potential_partner") is not None
+        ):
+            grammar_request["potential_partner"] = resolved_kwargs["potential_partner"]
+            grammar_request["potential_scope"] = resolved_kwargs.get(
+                "potential_scope", "isolated"
+            )
         selected = enforce_canonical_grammar(
-            snapshot, node, operator.glyph, sequence_context
+            snapshot, node, operator.glyph, sequence_context, **grammar_request
         )
         selections.append(selected)
         if needs_state_before:
@@ -6200,6 +6321,193 @@ def _commit_coupling_structure(graph: Any, stage: Any) -> None:
         add_edge(graph, edge.left, edge.right, edge.weight)
 
 
+def _connected_coupling_support(graph: Any) -> tuple[Any, ...]:
+    """Retain live identities and old edge data for the new request domain."""
+    references: list[Any] = []
+    edges = tuple(
+        (
+            left,
+            right,
+            structural_proof_signature(
+                data, opaque_references=(graph,), _retained_references=references
+            ),
+        )
+        for left, right, data in graph.edges(data=True)
+    )
+    return tuple(graph.nodes), edges, references
+
+
+def _validate_coupling_support(
+    graph: Any,
+    support: tuple[Any, ...],
+    added_edges: Sequence[Any] = (),
+    *,
+    check_edge_data: bool = True,
+) -> None:
+    """Keep admitted node identities and exact old edge data."""
+    original_nodes, original_edges, _references = support
+    current_nodes = tuple(graph.nodes)
+    if (
+        graph.is_directed()
+        or graph.is_multigraph()
+        or len(current_nodes) != len(original_nodes)
+        or any(left is not right for left, right in zip(original_nodes, current_nodes))
+    ):
+        raise RuntimeError("connected Coupling changed the admitted node identities")
+    expected = {
+        frozenset((left, right)): stamp for left, right, stamp in original_edges
+    }
+    for edge in added_edges:
+        expected[frozenset((edge.left, edge.right))] = structural_proof_signature(
+            {"weight": edge.weight}, opaque_references=(graph,)
+        )
+    current = {
+        frozenset((left, right)): (
+            structural_proof_signature(data, opaque_references=(graph,))
+            if check_edge_data
+            else None
+        )
+        for left, right, data in graph.edges(data=True)
+    }
+    if current.keys() != expected.keys() or (
+        check_edge_data
+        and any(
+            not proof_stamps_are_identical(stamp, current[key])
+            for key, stamp in expected.items()
+        )
+    ):
+        raise RuntimeError(
+            "connected Coupling changed the admitted support or edge data"
+        )
+
+
+def _validate_connected_coupling_commit(
+    graph: Any, stage: Any, support: tuple[Any, ...]
+) -> None:
+    """Re-admit the original write boundary after monitors and refresh hooks."""
+    from ._coupling_potential import _validate_coupling_boundary
+    from ._phase_gate import resolve_u3_phase_limits
+
+    _validate_coupling_support(graph, support, stage.edges)
+    # Never recompute W from live flags or allow a widened limit to replace
+    # the proposal's original gate. A stricter current limit still applies.
+    _, current_limit = resolve_u3_phase_limits(graph.graph, operator_code="UM")
+    proposal = stage.target_proposals[0]
+    _validate_coupling_boundary(
+        graph,
+        proposal.affected_relations,
+        min(proposal.effective_phase_limit, current_limit),
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class _CouplingPreservationStart:
+    """Invocation-start relation ownership, captured before preflight hooks."""
+
+    support: tuple[Any, ...]
+    phases: tuple[tuple[Any, float], ...]
+    storages: tuple[Any, ...]
+    flags: Any
+    phase_limit: float
+
+
+def _coupling_preservation_phases(graph: Any) -> tuple[tuple[Any, float], ...]:
+    from ._coupling_stage_kernel import _finite_real, _raw_alias
+
+    # The ordinary UM merge already admits every snapshot phase; this opt-in
+    # does not introduce a promise to ignore malformed distant phase values.
+    return tuple(
+        (
+            node,
+            _finite_real(_raw_alias(graph, node, ALIAS_THETA, None), "snapshot phase"),
+        )
+        for node in graph.nodes
+    )
+
+
+def _capture_coupling_preservation_start(graph: Any) -> _CouplingPreservationStart:
+    from ._phase_gate import resolve_u3_phase_limits
+
+    _, limit = resolve_u3_phase_limits(graph.graph, operator_code="UM")
+    return _CouplingPreservationStart(
+        support=_connected_coupling_support(graph),
+        phases=_coupling_preservation_phases(graph),
+        storages=tuple(graph.nodes[node] for node in graph.nodes),
+        flags=_resolve_coupling_flags(graph.graph),
+        phase_limit=limit,
+    )
+
+
+def _validate_coupling_preservation_start(
+    graph: Any, start: _CouplingPreservationStart, *, live: bool
+) -> None:
+    """Reject a changed source instead of silently rebuilding its boundary."""
+    from ._phase_gate import resolve_u3_phase_limits
+
+    # A detached graph legitimately remaps graph/self references in edge
+    # payloads. Only support is consumed by this fixed-link map; full payload
+    # identity belongs to the original live graph before and after commit.
+    _validate_coupling_support(graph, start.support, check_edge_data=live)
+    if live and any(
+        graph.nodes[node] is not storage
+        for node, storage in zip(start.support[0], start.storages)
+    ):
+        raise RuntimeError("preserved Coupling node storage changed before commit")
+    _, limit = resolve_u3_phase_limits(graph.graph, operator_code="UM")
+    if (
+        _coupling_preservation_phases(graph) != start.phases
+        or _resolve_coupling_flags(graph.graph) != start.flags
+        or limit != start.phase_limit
+    ):
+        raise RuntimeError("preserved Coupling phase source changed during preflight")
+
+
+def _validate_preserved_coupling_boundary(
+    graph: Any,
+    stage: Any,
+    start: _CouplingPreservationStart,
+    *,
+    merged: bool = False,
+    live: bool = True,
+) -> None:
+    """Check the original boundary, never a boundary rebuilt from live flags."""
+    from ._coupling_potential import _validate_coupling_boundary
+    from ._phase_gate import resolve_u3_phase_limits
+
+    _validate_coupling_support(graph, start.support, check_edge_data=live)
+    contributors = {
+        row.node
+        for proposal in stage.target_proposals
+        for row in proposal.phase_proposals
+    }
+    writers = tuple(node for node in start.support[0] if node in contributors)
+    relations = tuple(
+        (left, right)
+        for left, right, _ in start.support[1]
+        if left in contributors or right in contributors
+    )
+    phase_updates = {
+        row.node: row.theta_after
+        for row in stage.node_updates
+        if row.theta_after is not None
+    }
+    if (
+        stage.edges
+        or set(phase_updates) != contributors
+        or stage.preserved_phase_writers != writers
+        or stage.preserved_relations != relations
+        or stage.preserved_phase_limit != start.phase_limit
+    ):
+        raise RuntimeError("preserved Coupling proposal changed its original boundary")
+    _, limit = resolve_u3_phase_limits(graph.graph, operator_code="UM")
+    _validate_coupling_boundary(
+        graph,
+        relations,
+        min(start.phase_limit, limit),
+        phase_overrides=phase_updates if merged else None,
+    )
+
+
 def execute_coupling_stage(
     graph: Any,
     operator: Any,
@@ -6208,6 +6516,7 @@ def execute_coupling_stage(
     sequence_context: Any = None,
     compute_delta_nfr: Any = None,
     transaction_snapshot: GraphTransactionSnapshot | None = None,
+    preserve_relations: bool = False,
     **execution_kwargs: Any,
 ) -> NetworkStageResult:
     """Execute one atomic all-target UM stage from an immutable snapshot.
@@ -6217,14 +6526,67 @@ def execute_coupling_stage(
     theorem. Structural phase, optional target capacity and pressure, and new
     edge support are target-order invariant before the opaque pressure refresh.
     Ordered histories, metrics, and monitor streams retain target order.
+    By default an explicit ``potential_partner`` admits one target and an isolated
+    partner. Existing compatible outgoing neighbors also participate in the
+    shared map. It requires actual UM selection and a committed new link; an
+    alternative grammar action cannot satisfy that creation request.
+    ``potential_scope='disjoint_components'`` requires distinct nontrivial
+    undirected non-multigraph components and protects the complete affected
+    phase boundary before proposal, after merge and after postcommit hooks.
+    ``preserve_relations=True`` opts ordinary UM into a fixed-support boundary:
+    all existing edges incident to actual phase writers must remain within U3.
+    It requires an undirected non-multigraph, nonempty canonical UM targets,
+    no potential partner and disabled functional links. Self-loops are allowed.
+    Public target histories still record their own admitted UM only.
     """
 
+    from ._coupling_potential import _resolve_potential_scope
+
+    potential_partner = execution_kwargs.get("potential_partner")
+    potential_scope = _resolve_potential_scope(
+        execution_kwargs.get("potential_scope", "isolated"), potential_partner
+    )
+    preserve_relations = strict_bool(
+        preserve_relations, operator="Coupling", label="preserve_relations"
+    )
     if operator.glyph is not Glyph.UM:
         raise ValueError("Coupling stage supports UM only")
 
     targets_tuple = _unique_stage_targets(targets)
+    if potential_partner is not None or preserve_relations:
+        from .coupling import (
+            _CANONICAL_COUPLING_CALL,
+            _CANONICAL_COUPLING_CLASS,
+            _CANONICAL_COUPLING_EXECUTE,
+            Coupling,
+        )
+
+        if potential_partner is not None and len(targets_tuple) != 1:
+            raise ValueError("potential Coupling requires exactly one target")
+        if (
+            type(operator)
+            is not (_CANONICAL_COUPLING_CLASS if preserve_relations else Coupling)
+            or type(operator).__call__ is not _CANONICAL_COUPLING_CALL
+            or type(operator)._execute is not _CANONICAL_COUPLING_EXECUTE
+        ):
+            if potential_partner is not None:
+                raise ValueError(
+                    "potential Coupling requires canonical stage execution"
+                )
+            raise ValueError("preserved Coupling requires canonical stage execution")
     transaction = _select_graph_transaction(graph, transaction_snapshot)
     try:
+        preservation_start = None
+        if preserve_relations:
+            from ._coupling_stage_kernel import _require_coupling_preservation_domain
+
+            _require_coupling_preservation_domain(
+                graph,
+                targets_tuple,
+                potential_partner=potential_partner,
+                potential_scope=potential_scope,
+            )
+            preservation_start = _capture_coupling_preservation_start(graph)
         if not targets_tuple:
             if callable(compute_delta_nfr):
                 compute_delta_nfr(graph)
@@ -6253,8 +6615,23 @@ def execute_coupling_stage(
         execution_kwargs = preflight.execution_kwargs
         states_before = preflight.states_before
 
-        if not preflight.exact_stage:
+        if preservation_start is not None:
+            _validate_coupling_preservation_start(
+                snapshot, preservation_start, live=False
+            )
+            _validate_coupling_preservation_start(graph, preservation_start, live=True)
 
+        if not preflight.exact_stage:
+            if potential_partner is not None:
+                raise ValueError(
+                    "potential Coupling requires UM grammar admission; "
+                    "a substituted operator cannot create the requested relation"
+                )
+            if preserve_relations:
+                raise ValueError(
+                    "preserved Coupling requires UM grammar admission; "
+                    "a substituted operator cannot satisfy the requested relation"
+                )
             _execute_gauss_seidel_targets(
                 graph,
                 operator,
@@ -6272,6 +6649,11 @@ def execute_coupling_stage(
                 nodes_processed=len(targets_tuple),
             )
 
+        support = (
+            _connected_coupling_support(graph)
+            if potential_scope == "disjoint_components"
+            else None
+        )
         factors = resolve_runtime_operator_factors(
             snapshot.graph.get("GLYPH_FACTORS"),
             operator.glyph,
@@ -6287,7 +6669,7 @@ def execute_coupling_stage(
         configured_seed = validate_graph_seed(snapshot)
         resolved_seed: int | None = None
         node_offsets: Mapping[Any, int] = {}
-        if functional_links:
+        if functional_links and potential_partner is None:
             resolved_seed = resolve_graph_seed(snapshot)
             from ..utils.cache import ensure_node_offset_map
 
@@ -6295,15 +6677,30 @@ def execute_coupling_stage(
 
         from ._coupling_stage_kernel import propose_coupling_stage
 
+        preservation_kwargs = {"preserve_relations": True} if preserve_relations else {}
         stage = propose_coupling_stage(
             snapshot,
             targets_tuple,
             factors,
             resolved_seed=resolved_seed,
             node_offsets=node_offsets,
+            potential_partner=potential_partner,
+            potential_scope=potential_scope,
+            **preservation_kwargs,
         )
         if stage.targets != targets_tuple:
             raise RuntimeError("Coupling stage target order changed")
+        if preservation_start is not None:
+            _validate_coupling_preservation_start(
+                snapshot, preservation_start, live=False
+            )
+            _validate_coupling_preservation_start(graph, preservation_start, live=True)
+            _validate_preserved_coupling_boundary(
+                snapshot, stage, preservation_start, live=False
+            )
+            _validate_preserved_coupling_boundary(
+                snapshot, stage, preservation_start, merged=True, live=False
+            )
 
         if resolved_seed is not None:
             if validate_graph_seed(graph) != configured_seed:
@@ -6332,6 +6729,20 @@ def execute_coupling_stage(
             schedule=TWO_PHASE_JACOBI,
             count=len(targets_tuple),
         )
+        if potential_partner is not None:
+            graph.graph[STAGE_SCHEDULE_KEY]["potential_pair"] = {
+                "target": targets_tuple[0],
+                "partner": potential_partner,
+                "origin": "explicit_request",
+            }
+            if potential_scope == "disjoint_components":
+                graph.graph[STAGE_SCHEDULE_KEY]["potential_pair"][
+                    "scope"
+                ] = potential_scope
+        if support is not None:
+            _validate_connected_coupling_commit(graph, stage, support)
+        if preservation_start is not None:
+            _validate_preserved_coupling_boundary(graph, stage, preservation_start)
         return NetworkStageResult(
             operator=operator.name,
             glyph=operator.glyph.value,
@@ -6525,6 +6936,7 @@ def execute_pointwise_stage(
     compute_delta_nfr: Any = None,
     transaction_snapshot: GraphTransactionSnapshot | None = None,
     epi_jump_fixed_support_declared: bool | None = None,
+    require_exact_operator: bool = False,
     _allow_epi_jump_certificate_abstention: bool = False,
     **execution_kwargs: Any,
 ) -> NetworkStageResult:
@@ -6536,6 +6948,9 @@ def execute_pointwise_stage(
     histories, metrics and monitor callbacks retain the requested target
     order. If live grammar selects any replacement glyph, the complete stage
     falls back to the established transactional Gauss--Seidel path.
+    ``require_exact_operator=True`` instead rejects that replacement before
+    any fallback action executes. This opt-in admission guard does not request
+    an EPI certificate or establish collective identity.
 
     Supplying ``epi_jump_fixed_support_declared`` as an actual Boolean requests
     the conditional EPI realization/gain certificate. The certificate consumes
@@ -6551,6 +6966,8 @@ def execute_pointwise_stage(
         )
     if type(_allow_epi_jump_certificate_abstention) is not bool:
         raise TypeError("_allow_epi_jump_certificate_abstention must be a bool")
+    if type(require_exact_operator) is not bool:
+        raise TypeError("require_exact_operator must be a bool")
     if (
         epi_jump_fixed_support_declared is not None
         and type(epi_jump_fixed_support_declared) is not bool
@@ -6614,6 +7031,15 @@ def execute_pointwise_stage(
         execution_kwargs = preflight.execution_kwargs
         states_before = preflight.states_before
         if not preflight.exact_stage:
+            if require_exact_operator:
+                raise TNFRValueError(
+                    "Pointwise stage requires the requested operator's exact "
+                    "two-phase path; grammar replacement is not admitted.",
+                    context={
+                        "operator": operator.name,
+                        "reason": "requested_exact_operator_unavailable",
+                    },
+                )
             if (
                 epi_jump_fixed_support_declared is not None
                 and not _allow_epi_jump_certificate_abstention
@@ -6754,6 +7180,13 @@ def execute_pointwise_stage(
             )
 
         _emit_pointwise_precommit_warnings(graph, proposals)
+        if "_operator_growth_context" in execution_kwargs:
+            from ._operator_growth_trigger import _requested_operator_growth_context
+
+            context = _requested_operator_growth_context(
+                execution_kwargs["_operator_growth_context"]
+            )
+            context.validate_live_before_commit(graph)
         if resolved_seed is not None:
             if validate_graph_seed(graph) != configured_seed:
                 raise RuntimeError(
@@ -6993,6 +7426,10 @@ def execute_neighbor_stage(
     this stage's detached snapshot and accepted only after exact comparison
     with every frozen proposal. Unsupported mathematical domains abstain while
     preserving ordinary stage execution.
+
+    ``source_nodes`` supplies one nonempty ordered incoming-source tuple for
+    every EN target. Explicit requests require canonical EN without grammar
+    replacement. Source tracking remains independent telemetry.
     """
 
     if operator.glyph not in (Glyph.EN, Glyph.RA):
@@ -7001,6 +7438,33 @@ def execute_neighbor_stage(
         raise TypeError("include_epi_jump_certificate must be a bool")
 
     targets_tuple = _unique_stage_targets(targets)
+    source_nodes = execution_kwargs.get("source_nodes")
+    compatibility_decision = execution_kwargs.get("_reception_compatibility_decision")
+    if compatibility_decision is not None and (
+        source_nodes is None
+        or len(targets_tuple) != 1
+        or operator.glyph is not Glyph.EN
+    ):
+        raise ValueError(
+            "Reception compatibility requires one explicitly sourced EN target"
+        )
+    if source_nodes is not None:
+        from .reception import (
+            _CANONICAL_RECEPTION_CALL,
+            _CANONICAL_RECEPTION_EXECUTE,
+            Reception,
+        )
+
+        if operator.glyph is not Glyph.EN:
+            raise ValueError("source_nodes is supported only for Reception")
+        if not targets_tuple:
+            raise ValueError("explicit Reception sources require nonempty targets")
+        if (
+            type(operator) is not Reception
+            or type(operator).__call__ is not _CANONICAL_RECEPTION_CALL
+            or type(operator)._execute is not _CANONICAL_RECEPTION_EXECUTE
+        ):
+            raise ValueError("explicit Reception sources require canonical execution")
     transaction = _select_graph_transaction(graph, transaction_snapshot)
     try:
         if not targets_tuple:
@@ -7035,6 +7499,11 @@ def execute_neighbor_stage(
         execution_kwargs = preflight.execution_kwargs
         states_before = preflight.states_before
         if not preflight.exact_stage:
+            if source_nodes is not None:
+                raise ValueError(
+                    "explicit Reception sources require EN grammar admission; "
+                    "a substituted operator cannot receive the requested sources"
+                )
             # Standalone grammar selection may legally replace the request.
             # Preserve that compatibility under a complete transaction and
             # label the resulting heterogeneous public-operator sweep honestly.
@@ -7089,6 +7558,8 @@ def execute_neighbor_stage(
                     track_sources=track_sources,
                     max_distance=max_distance,
                     metric_consumer_graph=graph,
+                    source_nodes=source_nodes,
+                    compatibility_decision=compatibility_decision,
                 )
                 for node in targets_tuple
             )

@@ -183,6 +183,17 @@ reflection partition of a path has zero residual to machine precision. A path pa
 whose middle block mixes boundary and interior nodes is an executable
 counterexample.
 
+For a nonzero defect, the
+[reversible memory-omission budget](DERIVED_EPI_MEMORY.md#reversible-memory-omission-budget)
+separates hidden initialization from feedback created during evolution.
+It bounds the memoryless quotient's finite-horizon output error using the
+actual weighted coupling, hidden decay and source norms. For a held affine
+input, the [profile-preserving extension](DERIVED_EPI_MEMORY.md#profile-anchored-memory-omission)
+derives a correction to the projected input that retains the relative profile
+and mean drift, then applies the same budget to the actual initial deviation.
+Neither result makes the quotient exact for every state or transfers to
+phase/form or event dynamics without their own hypotheses.
+
 ### Inherited topology source and same-law scope
 
 Closure of EPI diffusion does not imply that every canonical pressure channel

@@ -29,9 +29,9 @@ OPERATOR POSTCONDITIONS
 Each canonical operator has a contract (AGENTS.md §Operators):
 
     IL  → C(t) must not decrease  (monotonicity)
-    OZ  → |ΔNFR| must increase   (destabilisation)
+    OZ  → local |ΔNFR| nondecrease in amplification; finite pressure in jitter
     UM  → |wrap(φ_i − φ_j)| ≤ Δφ_max  (phase compatibility)
-    RA  → effective coupling must increase (propagation)
+    RA  → scalar EPI sign preserved; νf not decreased
     SHA → EPI unchanged           (silence)
     EN  → immediate operator-local C(t) is unchanged  (reception)
     AL  → EPI nondecrease; νf, ΔNFR and phase unchanged
@@ -345,9 +345,29 @@ def _postcond_dissonance(
     before: dict[str, Any],
     after: dict[str, Any],
 ) -> str | None:
-    """OZ: |ΔNFR| must increase."""
+    """Check the local OZ branch bound to this monitor interval.
+
+    Amplification cannot decrease pressure magnitude. The admitted jitter
+    branch may do so; finite endpoints alone do not establish stochastic
+    destabilization. Neither later graph configuration nor telemetry owns
+    the branch selection of this already captured interval.
+    """
+    for state in (before, after):
+        pressure_error = state.get("scalar_admission_errors", {}).get("dnfr")
+        if pressure_error is not None:
+            return f"OZ local pressure must be finite and admitted: {pressure_error}"
     d_before = abs(before.get("dnfr", 0.0))
     d_after = abs(after.get("dnfr", 0.0))
+    if not math.isfinite(d_before) or not math.isfinite(d_after):
+        return "OZ pressure must be finite at both local interval endpoints"
+    policy_error = before.get("dissonance_policy_error")
+    if policy_error is not None:
+        return f"OZ interval policy could not be admitted: {policy_error}"
+    noise_mode = before.get("dissonance_noise_mode")
+    if not isinstance(noise_mode, bool):
+        return "OZ interval policy is unavailable in the before snapshot"
+    if noise_mode:
+        return None
     if d_after < d_before - 1e-9:
         return (
             f"|ΔNFR| decreased: {d_before:.6f} → {d_after:.6f} "
@@ -548,20 +568,24 @@ def _postcond_self_organization(
     before: dict[str, Any],
     after: dict[str, Any],
 ) -> str | None:
-    """THOL: Global coherence must not catastrophically decrease.
+    """Check THOL's finite parent endpoints and unchanged EPI, νf and phase.
 
-    THOL is a stabiliser (U2) that creates sub-EPIs while preserving global
-    form.  A small coherence dip is tolerable (new nodes shift the mean),
-    but a large drop signals failed self-organisation.
+    This is a partial invariant check, not verification of the signed pressure
+    reset or any child hierarchy. The kernel owns the history-bound pressure
+    proposal. Its signed acceleration can increase |ΔNFR| and reduce C(t).
     """
-    c_before = before.get("coherence", 0.0)
-    c_after = after.get("coherence", 0.0)
-    # Allow up to 10 % relative decrease; below that flag a violation
-    if c_before > 1e-9 and c_after < c_before * 0.9 - 1e-9:
-        return (
-            f"Coherence dropped >10 % during Self-organisation: "
-            f"{c_before:.6f} → {c_after:.6f}"
-        )
+    from ..operators._mutation_stage_kernel import mutation_phase_changed
+
+    for state in (before, after):
+        errors = state.get("scalar_admission_errors", {})
+        for key in ("epi", "vf", "dnfr", "theta"):
+            if key in errors or not math.isfinite(state.get(key, 0.0)):
+                return f"THOL parent {key} endpoint must be finite and admitted"
+    for key, label in (("epi", "EPI"), ("vf", "νf")):
+        if after.get(key, 0.0) != before.get(key, 0.0):
+            return f"{label} changed on the parent during Self-organization"
+    if mutation_phase_changed(before.get("theta", 0.0), after.get("theta", 0.0)):
+        return "Phase changed on the parent during Self-organization"
     return None
 
 
@@ -571,12 +595,19 @@ def _postcond_transition(
     before: dict[str, Any],
     after: dict[str, Any],
 ) -> str | None:
-    """NAV: At least one state variable (νf, θ, ΔNFR) must change."""
-    vf_changed = abs(after.get("vf", 0.0) - before.get("vf", 0.0)) > 1e-9
-    theta_changed = (
-        abs(angle_diff(after.get("theta", 0.0), before.get("theta", 0.0))) > 1e-9
+    """NAV: a finite represented change in νf, circular phase or ΔNFR."""
+    from ..operators._mutation_stage_kernel import mutation_phase_changed
+
+    for state in (before, after):
+        errors = state.get("scalar_admission_errors", {})
+        for key in ("vf", "dnfr", "theta"):
+            if key in errors or not math.isfinite(state.get(key, 0.0)):
+                return f"NAV {key} endpoint must be finite and admitted"
+    vf_changed = after.get("vf", 0.0) != before.get("vf", 0.0)
+    theta_changed = mutation_phase_changed(
+        before.get("theta", 0.0), after.get("theta", 0.0)
     )
-    dnfr_changed = abs(after.get("dnfr", 0.0) - before.get("dnfr", 0.0)) > 1e-9
+    dnfr_changed = after.get("dnfr", 0.0) != before.get("dnfr", 0.0)
     if not (vf_changed or theta_changed or dnfr_changed):
         return "No state change during Transition: " "νf, θ, and ΔNFR all unchanged"
     return None
@@ -687,6 +718,42 @@ def _capture_node_state(G: TNFRGraph, node: Any) -> dict[str, Any]:
         state["coherence"] = float(_compute_coherence(G))
     except Exception:
         state["coherence"] = 0.0
+    # Legacy scalar capture is permissive. The endpoint-aware OZ, THOL and NAV
+    # checks must not treat a fallback as evidence for an invalid authoritative
+    # alias. Capture shared admission errors without blocking unrelated checks.
+    from ..operators._argument_validation import finite_node_real
+    from ..operators._epi_domain import require_real_scalar_epi
+    from ..operators.preconditions import OperatorPreconditionError
+
+    errors: dict[str, str] = {}
+    for key, aliases, lower in (
+        ("dnfr", ALIAS_DNFR, None),
+        ("vf", ALIAS_VF, 0.0),
+        ("theta", ALIAS_THETA, None),
+    ):
+        try:
+            finite_node_real(
+                G.nodes[node],
+                aliases,
+                0.0,
+                operator="Integrity monitor",
+                label=f"{key} interval state",
+                lower=lower,
+            )
+        except (OperatorPreconditionError, OverflowError, TypeError, ValueError) as exc:
+            errors[key] = str(exc)
+    try:
+        require_real_scalar_epi(
+            get_attr(
+                G.nodes[node], ALIAS_EPI, 0.0, strict=True, conv=lambda value: value
+            ),
+            operator="Integrity monitor",
+            label="EPI interval state",
+        )
+    except (OperatorPreconditionError, OverflowError, TypeError, ValueError) as exc:
+        errors["epi"] = str(exc)
+    if errors:
+        state["scalar_admission_errors"] = errors
     return state
 
 
@@ -792,6 +859,17 @@ class StructuralIntegrityMonitor:
 
         # Save per-node scalar state (for postconditions)
         self._node_state_before = _capture_node_state(G, node)
+        # before_operator has no operator-name argument. Capture OZ's admitted
+        # policy without making invalid inactive OZ configuration reject other
+        # operators; only its own postcondition consumes a captured error.
+        from ..operators.factor_contracts import _resolve_dissonance_noise_mode
+
+        try:
+            self._node_state_before["dissonance_noise_mode"] = (
+                _resolve_dissonance_noise_mode(G.graph)
+            )
+        except (OverflowError, TypeError, ValueError) as exc:
+            self._node_state_before["dissonance_policy_error"] = str(exc)
 
     def after_operator(
         self,

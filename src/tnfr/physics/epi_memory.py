@@ -29,6 +29,7 @@ import numpy as np
 
 from .._exact_time import exact_or_represented_real
 from ..dynamics._euler_kernel import euler_update
+from ..mathematics._exact_linear_algebra import exact_symmetric_semidefinite
 from ..mathematics.linear_observation import derive_linear_observation
 from ._cycle_algebra import Matrix, Vector, dot, ordered_vector
 from .forced_support import ForcedSupportBalance
@@ -45,6 +46,9 @@ __all__ = [
     "ForcedSupportClosure",
     "ForcedSupportClosureWitness",
     "observe_forced_support_closure",
+    "EpiMemoryOmissionBound",
+    "bound_epi_memory_omission",
+    "bound_anchored_epi_memory_omission",
     "ForcedSupportRealization",
     "ForcedSupportRealizationLevel",
     "observe_forced_support_realization",
@@ -358,6 +362,189 @@ def observe_forced_support_closure(
             "A detached algebraic witness need not satisfy a graph chart, clipping or grammar. "
             "No trajectory, runtime closure, empirical macro-entity or delay law is certified."
         ),
+    )
+
+
+@dataclass(frozen=True)
+class EpiMemoryOmissionBound:
+    """Uniform squared Hbar-error budget for omitting reversible EPI memory.
+
+    The closure geometry is rebuilt from the supplied reference and EPI.
+    A positive hidden decay rate is checked on the hidden subspace, not
+    assumed from a cached verdict. Norms concern the current-model relative
+    error; for the unforced law its reference profile is zero. The explicit
+    macro forcing distinguishes the two comparison laws. Unavailable
+    bounds remain None.
+    """
+
+    closure: ForcedSupportClosure
+    horizon: Fraction
+    hidden_decay_lower: Fraction
+    hidden_decay_slack: Matrix
+    hidden_decay_certified: bool
+    coupling_squared_upper: Fraction
+    initial_relative_norm_squared: Fraction
+    initial_hidden_norm_squared: Fraction
+    initial_source_time_factor: Fraction
+    feedback_time_factor: Fraction
+    initial_source_error_squared_upper: Fraction | None
+    feedback_error_squared_upper: Fraction | None
+    error_squared_upper: Fraction | None
+    status: str
+    unavailable_reasons: tuple[str, ...]
+    scope: str = (
+        "Uniform squared Hbar norm of Rx(t)-y_M(t) on [0,horizon], "
+        "y_M'=-RAP*y_M+macro_forcing and y_M(0)=Rx(0), for the rebuilt "
+        "fixed-support, positive-capacity reversible EPI law. The comparison "
+        "is unforced or explicitly anchored to the held affine profile. "
+        "No exponential, trajectory, source acquisition, nonlinear phase law, "
+        "operator event or physical identity is certified."
+    )
+    comparison_kind: str = "unforced"
+    macro_forcing: Vector = ()
+    forcing_correction: Vector = ()
+
+
+def bound_epi_memory_omission(
+    reference: ForcedSupportBalance,
+    blocks: object,
+    *,
+    horizon: object,
+    hidden_decay_lower: object,
+    epi: object = None,
+) -> EpiMemoryOmissionBound:
+    """Bound discarded initialization and feedback without evaluating a flow.
+
+    Require zero forcing and the existing connected reversible projection
+    domain. Check Q.T*(H*A-lambda*H)*Q >= 0 exactly for the positive supplied
+    lambda. Failure returns an unavailable bound without a gap search.
+
+    With mu=trace(Hbar^-1*C.T*H*C), Z=||Qx0||_H^2 and
+    E=||x0-mean_H(x0)||_H^2, use a=min(T,1/lambda) and
+    b=min(T^2/2,T/lambda). The two squared contributions are
+    U=mu*a^2*Z and V=mu^2*b^2*E. Their sum bounds the squared error
+    when one is zero; otherwise use 2*(U+V). All arithmetic is rational.
+    """
+    return _bound_epi_memory_omission(
+        reference,
+        blocks,
+        horizon=horizon,
+        hidden_decay_lower=hidden_decay_lower,
+        epi=epi,
+        profile_anchored=False,
+    )
+
+
+def bound_anchored_epi_memory_omission(
+    reference: ForcedSupportBalance,
+    blocks: object,
+    *,
+    horizon: object,
+    hidden_decay_lower: object,
+    epi: object = None,
+) -> EpiMemoryOmissionBound:
+    """Preserve a held forced profile while bounding omitted transient memory.
+
+    For the rebuilt law x'=-Ax+b, let z be its centered profile with
+    A*z=b-vbar*1. The comparison is y_M'=-RAP*y_M+b_eff, where
+    b_eff=R*b-RAQ*z, starting at R*x0. Its mean drift and relative profile
+    agree with the fine model; arbitrary transient closure is not claimed.
+
+    Apply the unforced budget to u0=x0-mean_H(x0)*1-z and Q*u0.
+    The same exact hidden-gap admission and unavailable fields apply.
+    """
+    return _bound_epi_memory_omission(
+        reference,
+        blocks,
+        horizon=horizon,
+        hidden_decay_lower=hidden_decay_lower,
+        epi=epi,
+        profile_anchored=True,
+    )
+
+
+def _bound_epi_memory_omission(
+    reference: ForcedSupportBalance,
+    blocks: object,
+    *,
+    horizon: object,
+    hidden_decay_lower: object,
+    epi: object,
+    profile_anchored: bool,
+) -> EpiMemoryOmissionBound:
+    time = exact_or_represented_real(horizon, "horizon")
+    decay = exact_or_represented_real(hidden_decay_lower, "hidden_decay_lower")
+    if time < 0 or decay <= 0:
+        raise ValueError("require nonnegative horizon and positive hidden_decay_lower")
+    closure = observe_forced_support_closure(reference, blocks, epi=epi)
+    if not profile_anchored and any(closure.affine_source):
+        raise ValueError("memory-omission bound requires an unforced EPI law")
+    h = closure.metric_weights
+    q = closure.hidden_projector
+    a = closure.micro_generator
+    zero = Fraction(0)
+    weighted = tuple(
+        tuple(
+            h[i] * a[i][j] - (decay * h[i] if i == j else zero) for j in range(len(h))
+        )
+        for i in range(len(h))
+    )
+    slack = _exact_matrix_product(
+        tuple(zip(*q, strict=True)), _exact_matrix_product(weighted, q)
+    )
+    gap_certified = exact_symmetric_semidefinite(slack)
+    mu = sum(
+        (
+            closure.coupling_gram[i][i] / mass
+            for i, mass in enumerate(closure.macro_metric_weights)
+        ),
+        zero,
+    )
+    relative = closure.current_relative_error
+    hidden = tuple(dot(row, relative) for row in q)
+    relative_square = sum(
+        (mass * value**2 for mass, value in zip(h, relative, strict=True)), zero
+    )
+    hidden_square = sum(
+        (mass * value**2 for mass, value in zip(h, hidden, strict=True)), zero
+    )
+    correction = tuple(
+        dot(row, closure.reference.relative_profile) for row in closure.hidden_to_macro
+    )
+    macro_forcing = tuple(
+        source - lost
+        for source, lost in zip(closure.projected_source, correction, strict=True)
+    )
+    source_factor = min(time, 1 / decay)
+    feedback_factor = min(time**2 / 2, time / decay)
+    source_error = feedback_error = total_error = None
+    if gap_certified:
+        source_error = mu * source_factor**2 * hidden_square
+        feedback_error = mu**2 * feedback_factor**2 * relative_square
+        total_error = source_error + feedback_error
+        if source_error and feedback_error:
+            total_error *= 2
+    return EpiMemoryOmissionBound(
+        closure=closure,
+        horizon=time,
+        hidden_decay_lower=decay,
+        hidden_decay_slack=slack,
+        hidden_decay_certified=gap_certified,
+        coupling_squared_upper=mu,
+        initial_relative_norm_squared=relative_square,
+        initial_hidden_norm_squared=hidden_square,
+        initial_source_time_factor=source_factor,
+        feedback_time_factor=feedback_factor,
+        initial_source_error_squared_upper=source_error,
+        feedback_error_squared_upper=feedback_error,
+        error_squared_upper=total_error,
+        status="bounded" if gap_certified else "unavailable",
+        unavailable_reasons=(
+            () if gap_certified else ("hidden_decay_lower_not_certified",)
+        ),
+        comparison_kind="profile_anchored_affine" if profile_anchored else "unforced",
+        macro_forcing=macro_forcing,
+        forcing_correction=correction,
     )
 
 

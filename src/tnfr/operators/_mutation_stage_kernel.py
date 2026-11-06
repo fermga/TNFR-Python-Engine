@@ -11,6 +11,7 @@ from __future__ import annotations
 import math
 from collections.abc import Mapping
 from dataclasses import dataclass, field
+from fractions import Fraction
 from typing import Any
 
 from .. import glyph_history
@@ -19,6 +20,7 @@ from ..alias import get_attr, set_attr
 from ..constants.aliases import ALIAS_D2EPI, ALIAS_DNFR, ALIAS_EPI_KIND, ALIAS_THETA
 from ..constants.canonical import INV_PI
 from ..errors import TNFRValueError
+from ..mathematics.unified_numerical import normalize_phase
 from ..types import Glyph
 from ._argument_validation import (
     finite_real,
@@ -34,6 +36,7 @@ __all__ = [
     "commit_mutation_lifecycle",
     "commit_mutation_structure",
     "emit_mutation_lifecycle_log",
+    "mutation_phase_changed",
     "propose_mutation_network_stage",
     "propose_mutation_stage",
 ]
@@ -57,6 +60,28 @@ def _finite_scalar(value: Any, label: str) -> float:
     if resolved == 0.0:
         resolved = math.copysign(0.0, value)
     return resolved
+
+
+def mutation_phase_changed(theta_before: Any, theta_after: Any) -> bool:
+    """Compare admitted endpoints modulo the represented binary64 period.
+
+    This is a represented effect test, not a minimum physical displacement.
+    Normalizing an equivalent phase coordinate alone does not count as ZHIR.
+    Exact ratios avoid losing a small negative phase during float modulo. The
+    period is the represented ``math.tau``, not an exact symbolic value of pi.
+    """
+
+    before = Fraction.from_float(_finite_scalar(theta_before, "ZHIR phase before"))
+    after = Fraction.from_float(_finite_scalar(theta_after, "ZHIR phase after"))
+    return bool((after - before) % Fraction.from_float(math.tau))
+
+
+def _require_phase_effect(theta_before: float, theta_after: float) -> None:
+    if not mutation_phase_changed(theta_before, theta_after):
+        raise TNFRValueError(
+            "ZHIR phase proposal has no represented circular effect",
+            context={"theta_before": theta_before, "theta_after": theta_after},
+        )
 
 
 @dataclass(frozen=True, slots=True)
@@ -136,13 +161,16 @@ def propose_mutation_stage(
     ``theta_shift_factor``, matching the active-factor runtime contract.
     """
 
-    theta_before = _finite_scalar(theta, "ZHIR phase state") % math.tau
+    raw_theta = _finite_scalar(theta, "ZHIR phase state")
+    theta_before = float(normalize_phase(raw_theta))
     if fixed_shift is not None:
         shift = _finite_scalar(fixed_shift, "ZHIR phase shift")
         theta_after = _finite_scalar(
             (theta_before + (shift % math.tau)) % math.tau,
             "ZHIR phase proposal",
         )
+        _require_phase_effect(theta_before, theta_after)
+        _require_phase_effect(raw_theta, theta_after)
         return MutationStageProposal(
             theta_before=theta_before,
             theta_after=theta_after,
@@ -163,6 +191,8 @@ def propose_mutation_stage(
         (theta_before + (shift % math.tau)) % math.tau,
         "ZHIR phase proposal",
     )
+    _require_phase_effect(theta_before, theta_after)
+    _require_phase_effect(raw_theta, theta_after)
     regime_before = int(theta_before // (math.pi / 2.0))
     regime_after = int(theta_after // (math.pi / 2.0))
     return MutationStageProposal(
@@ -182,6 +212,7 @@ def propose_mutation_network_stage(
     factors: Mapping[str, Any],
     *,
     tau: Any = None,
+    _operator_growth_context: Any = None,
 ) -> MutationNetworkStageProposal:
     """Freeze one complete ZHIR decision without changing ``graph``.
 
@@ -190,7 +221,13 @@ def propose_mutation_network_stage(
     telemetry and the pre-ZHIR destabilizer context to one graph snapshot.
     """
 
-    gate = validate_mutation_runtime_gate(graph.nodes[node], graph.graph)
+    if _operator_growth_context is None:
+        gate = validate_mutation_runtime_gate(graph.nodes[node], graph.graph)
+    else:
+        from ._operator_growth_trigger import _requested_operator_growth_context
+
+        context = _requested_operator_growth_context(_operator_growth_context)
+        gate = context.gate_for(graph, node)
     raw_phase = get_attr(
         graph.nodes[node], ALIAS_THETA, 0.0, strict=True, conv=lambda value: value
     )
@@ -307,6 +344,15 @@ def commit_mutation_lifecycle(
     data["_zhir_gate_xi"] = proposal.runtime_gate.threshold.xi
     data["_zhir_gate_history_key"] = proposal.runtime_gate.threshold.history_key
     data["_zhir_gate_sample_interval"] = proposal.runtime_gate.threshold.sample_interval
+    from ._operator_growth_trigger import OperatorGrowthTriggerCertificate
+
+    certificate = proposal.runtime_gate.threshold.certificate
+    if type(certificate) is OperatorGrowthTriggerCertificate:
+        data["_zhir_gate_exact_depi_dt"] = certificate.exact_observed_rate
+        data["_zhir_gate_exact_xi"] = certificate.exact_xi
+    else:
+        data.pop("_zhir_gate_exact_depi_dt", None)
+        data.pop("_zhir_gate_exact_xi", None)
     commit_mutation_bifurcation_event(graph, proposal)
 
 

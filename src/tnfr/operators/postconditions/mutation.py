@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 from ...alias import get_attr
 from ...constants.aliases import ALIAS_EPI_KIND, ALIAS_THETA
-from ...utils import angle_diff
+from .._mutation_stage_kernel import mutation_phase_changed
 from . import OperatorContractViolation
 
 __all__ = [
@@ -48,8 +48,9 @@ def verify_phase_transformed(G: TNFRGraph, node: NodeId, theta_before: float) ->
 
     Notes
     -----
-    A small tolerance (1e-6) is used to account for floating-point precision.
-    If theta changes by less than this tolerance, it's considered unchanged.
+    The shared proposal comparison checks the represented circular endpoints.
+    Every nonzero represented change counts; there is no physical-size cutoff.
+    Changing only the phase chart does not constitute a transformation.
 
     This check ensures that ZHIR actually performs its structural transformation
     rather than being a no-op.
@@ -63,15 +64,14 @@ def verify_phase_transformed(G: TNFRGraph, node: NodeId, theta_before: float) ->
     >>> Mutation()(G, node)
     >>> verify_phase_transformed(G, node, theta_before)  # Should pass
     """
-    theta_after = float(get_attr(G.nodes[node], ALIAS_THETA, 0.0))
-
-    # Check if phase actually changed (with small tolerance for floating-point)
-    phase_difference = abs(angle_diff(theta_after, theta_before))
-    if phase_difference < 1e-6:
+    theta_after = get_attr(
+        G.nodes[node], ALIAS_THETA, 0.0, strict=True, conv=lambda value: value
+    )
+    if not mutation_phase_changed(theta_before, theta_after):
         raise OperatorContractViolation(
             "Mutation",
-            f"Phase was not transformed (θ before={theta_before:.6f}, "
-            f"θ after={theta_after:.6f}, diff={phase_difference:.9f}). "
+            f"Phase was not transformed (θ before={theta_before!r}, "
+            f"θ after={theta_after!r}). "
             f"ZHIR must transform phase to fulfill its contract.",
         )
 

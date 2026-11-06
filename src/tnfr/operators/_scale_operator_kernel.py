@@ -182,6 +182,16 @@ def propose_scale_operator(
         resolved_vf_before * resolved_factor,
         f"{glyph.value} nu_f proposal",
     )
+    if resolved_vf_before > 0.0 and vf_after == 0.0:
+        raise TNFRValueError(
+            f"{glyph.value} capacity product is positive but underflows "
+            "to represented zero",
+            context={
+                "nu_f_before": resolved_vf_before,
+                "factor": resolved_factor,
+                "nu_f_after": vf_after,
+            },
+        )
     if vf_after < 0.0:
         raise TNFRValueError(
             f"{glyph.value} must preserve nonnegative structural frequency"
@@ -273,6 +283,20 @@ def propose_scale_operator(
             resolved_epi_before * effective_epi_scale,
             f"{glyph.value} EPI proposal",
         )
+        if (
+            resolved_epi_before != 0.0
+            and effective_epi_scale != 0.0
+            and raw_epi_after == 0.0
+        ):
+            raise TNFRValueError(
+                f"{glyph.value} EPI product is nonzero but underflows "
+                "to represented zero before clipping",
+                context={
+                    "epi_before": resolved_epi_before,
+                    "effective_scale": effective_epi_scale,
+                    "raw_epi_after": raw_epi_after,
+                },
+            )
         epi_after = _finite_scalar(
             structural_clip(
                 raw_epi_after,

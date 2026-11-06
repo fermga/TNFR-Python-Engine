@@ -30,6 +30,13 @@ from ..metrics.phase_compatibility import compute_phase_coupling_strength
 from ..rng import make_rng
 from ..types import Glyph
 from ..utils import angle_diff
+from ._argument_validation import strict_bool
+from ._coupling_potential import (
+    _potential_coupling_boundary,
+    _resolve_potential_scope,
+    _validate_coupling_boundary,
+    resolve_potential_coupling,
+)
 from ._epi_domain import require_real_scalar_epi
 from ._phase_gate import U3PhaseGateError, resolve_u3_phase_neighbors
 from .factor_contracts import _resolve_coupling_flags
@@ -104,6 +111,9 @@ class CouplingTargetProposal:
     write_dnfr: bool
     link_candidates: tuple[CouplingLinkCandidate, ...]
     compatibility_threshold: float
+    potential_partner: Any | None = None
+    potential_scope: str = "isolated"
+    affected_relations: tuple[tuple[Any, Any], ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -133,6 +143,39 @@ class CouplingStageProposal:
     target_proposals: tuple[CouplingTargetProposal, ...]
     node_updates: tuple[CouplingNodeUpdate, ...]
     edges: tuple[CouplingEdgeProposal, ...]
+    preserved_phase_writers: tuple[Any, ...] = ()
+    preserved_relations: tuple[tuple[Any, Any], ...] = ()
+    preserved_phase_limit: float | None = None
+
+
+def _require_coupling_preservation_domain(
+    snapshot: Any,
+    targets: tuple[Any, ...],
+    *,
+    potential_partner: Any | None,
+    potential_scope: str,
+) -> None:
+    """Admit the opt-in fixed-support ordinary UM domain, including loops."""
+    if not targets:
+        raise ValueError("preserve_relations requires nonempty Coupling targets")
+    if potential_partner is not None or potential_scope != "isolated":
+        raise ValueError("preserve_relations supports ordinary Coupling only")
+    if snapshot.is_directed() or snapshot.is_multigraph():
+        raise ValueError("preserve_relations requires an undirected non-multigraph")
+    if _resolve_coupling_flags(snapshot.graph).functional_links:
+        raise ValueError("preserve_relations requires UM_FUNCTIONAL_LINKS=False")
+
+
+def _coupling_incident_relations(
+    snapshot: Any, writers: tuple[Any, ...]
+) -> tuple[tuple[Any, Any], ...]:
+    """Keep existing relations incident to actual writers, without new inputs."""
+    selected = set(writers)
+    return tuple(
+        (left, right)
+        for left, right in snapshot.edges
+        if left in selected or right in selected
+    )
 
 
 def _finite_real(value: Any, label: str) -> float:
@@ -315,22 +358,30 @@ def propose_coupling_target(
     resolved_seed: int | None,
     node_offset: int | None,
     rank: Mapping[Any, int],
+    potential_partner: Any | None = None,
+    potential_scope: str = "isolated",
 ) -> CouplingTargetProposal:
     """Build one target-local UM proposal without mutating the snapshot."""
 
+    potential_scope = _resolve_potential_scope(potential_scope, potential_partner)
     flags = _resolve_coupling_flags(snapshot.graph)
     theta_push = _unit_interval(factors["UM_theta_push"], "UM_theta_push")
 
     try:
-        selection = resolve_u3_phase_neighbors(
-            snapshot.graph,
-            _raw_alias(snapshot, node, ALIAS_THETA, None),
-            tuple(snapshot.neighbors(node)),
-            phase_getter=lambda neighbor: _raw_alias(
-                snapshot, neighbor, ALIAS_THETA, None
-            ),
-            operator_code="UM",
-        )
+        if potential_partner is None:
+            selection = resolve_u3_phase_neighbors(
+                snapshot.graph,
+                _raw_alias(snapshot, node, ALIAS_THETA, None),
+                tuple(snapshot.neighbors(node)),
+                phase_getter=lambda neighbor: _raw_alias(
+                    snapshot, neighbor, ALIAS_THETA, None
+                ),
+                operator_code="UM",
+            )
+        else:
+            selection = resolve_potential_coupling(
+                snapshot, node, potential_partner, potential_scope=potential_scope
+            )
     except U3PhaseGateError as exc:
         raise TNFRValueError(
             f"Coupling phase gate rejected the operation: {exc}",
@@ -416,26 +467,31 @@ def propose_coupling_target(
             ),
             "UM_COMPAT_THRESHOLD",
         )
-        if resolved_seed is None or node_offset is None:
-            raise RuntimeError(
-                "Coupling functional-link proposal lacks seed or node offset"
-            )
-        limit = _candidate_count(snapshot.graph.get("UM_CANDIDATE_COUNT", 0))
-        mode = str(snapshot.graph.get("UM_CANDIDATE_MODE", "sample")).lower()
+        if potential_partner is None:
+            if resolved_seed is None or node_offset is None:
+                raise RuntimeError(
+                    "Coupling functional-link proposal lacks seed or node offset"
+                )
+            limit = _candidate_count(snapshot.graph.get("UM_CANDIDATE_COUNT", 0))
+            mode = str(snapshot.graph.get("UM_CANDIDATE_MODE", "sample")).lower()
         epi_source = _scalar_epi(snapshot, node, "target EPI")
         si_source = _nonnegative_real(
             _raw_alias(snapshot, node, ALIAS_SI), "target sense index"
         )
-        for candidate in _selected_candidate_ids(
-            snapshot,
-            node,
-            target_phase=selection.target_phase,
-            limit=limit,
-            mode=mode,
-            seed=resolved_seed,
-            node_offset=node_offset,
-            rank=rank,
-        ):
+        if potential_partner is None:
+            candidates = _selected_candidate_ids(
+                snapshot,
+                node,
+                target_phase=selection.target_phase,
+                limit=limit,
+                mode=mode,
+                seed=resolved_seed,
+                node_offset=node_offset,
+                rank=rank,
+            )
+        else:
+            candidates = (potential_partner,)
+        for candidate in candidates:
             link_candidates.append(
                 CouplingLinkCandidate(
                     source=node,
@@ -464,6 +520,13 @@ def propose_coupling_target(
         write_dnfr=write_dnfr,
         link_candidates=tuple(link_candidates),
         compatibility_threshold=threshold,
+        potential_partner=potential_partner,
+        potential_scope=potential_scope,
+        affected_relations=(
+            _potential_coupling_boundary(snapshot, node, potential_partner, selection)
+            if potential_scope == "disjoint_components"
+            else ()
+        ),
     )
 
 
@@ -510,10 +573,29 @@ def propose_coupling_stage(
     *,
     resolved_seed: int | None = None,
     node_offsets: Mapping[Any, int] | None = None,
+    potential_partner: Any | None = None,
+    potential_scope: str = "isolated",
+    preserve_relations: bool = False,
 ) -> CouplingStageProposal:
     """Merge immutable target proposals with a deterministic engine policy."""
 
+    potential_scope = _resolve_potential_scope(potential_scope, potential_partner)
+    preserve_relations = strict_bool(
+        preserve_relations, operator="Coupling", label="preserve_relations"
+    )
     targets_tuple = tuple(targets)
+    if preserve_relations:
+        _require_coupling_preservation_domain(
+            snapshot,
+            targets_tuple,
+            potential_partner=potential_partner,
+            potential_scope=potential_scope,
+        )
+    if potential_partner is not None and len(targets_tuple) != 1:
+        raise TNFRValueError(
+            "Coupling potential pair requires exactly one target",
+            context={"operator": "Coupling", "failed_condition": "potential_pair"},
+        )
     if len(set(targets_tuple)) != len(targets_tuple):
         raise TNFRValueError(
             "Coupling stage targets must be unique",
@@ -531,19 +613,41 @@ def propose_coupling_stage(
             node,
             factors,
             resolved_seed=resolved_seed,
-            node_offset=offsets.get(node),
+            node_offset=offsets.get(node) if potential_partner is None else None,
             rank=rank,
+            potential_partner=potential_partner,
+            potential_scope=potential_scope,
         )
         for node in targets_tuple
     )
     if tuple(proposal.node for proposal in target_proposals) != targets_tuple:
         raise RuntimeError("Coupling target proposal order changed")
 
+    phase_nodes = (
+        snapshot.nodes
+        if potential_partner is None
+        else tuple(
+            dict.fromkeys((targets_tuple[0], *target_proposals[0].compatible_neighbors))
+        )
+    )
+    if potential_scope == "disjoint_components":
+        phase_nodes = tuple(
+            dict.fromkeys(
+                (
+                    *phase_nodes,
+                    *(
+                        endpoint
+                        for relation in target_proposals[0].affected_relations
+                        for endpoint in relation
+                    ),
+                )
+            )
+        )
     snapshot_phase = {
         node: _finite_real(
             _raw_alias(snapshot, node, ALIAS_THETA, None), "snapshot phase"
         )
-        for node in snapshot.nodes
+        for node in phase_nodes
     }
     contributions: dict[Any, list[CouplingPhaseProposal]] = defaultdict(list)
     for proposal in target_proposals:
@@ -553,6 +657,17 @@ def propose_coupling_stage(
             if phase_proposal.theta_before != snapshot_phase[phase_proposal.node]:
                 raise RuntimeError("Coupling phase proposal snapshot changed")
             contributions[phase_proposal.node].append(phase_proposal)
+
+    preserved_writers: tuple[Any, ...] = ()
+    preserved_relations: tuple[tuple[Any, Any], ...] = ()
+    preserved_limit: float | None = None
+    if preserve_relations:
+        preserved_writers = tuple(sorted(contributions, key=rank.__getitem__))
+        preserved_relations = _coupling_incident_relations(snapshot, preserved_writers)
+        preserved_limit = min(
+            proposal.effective_phase_limit for proposal in target_proposals
+        )
+        _validate_coupling_boundary(snapshot, preserved_relations, preserved_limit)
 
     merged_phase: dict[Any, float] = {}
     for node in sorted(contributions, key=rank.__getitem__):
@@ -568,12 +683,18 @@ def propose_coupling_stage(
         )
 
     final_phase = {
-        node: _final_phase(node, merged_phase, snapshot_phase)
-        for node in snapshot.nodes
+        node: _final_phase(node, merged_phase, snapshot_phase) for node in phase_nodes
     }
+    if preserve_relations:
+        _validate_coupling_boundary(
+            snapshot,
+            preserved_relations,
+            preserved_limit,
+            phase_overrides=final_phase,
+        )
 
-    # Existing target-neighbor relations used by the proposals must still obey
-    # the same U3 limit after all overlapping phase writes are merged.
+    # Participating existing or potential relations must still obey the same
+    # U3 limit after all phase writes are merged.
     for proposal in target_proposals:
         for neighbor in proposal.compatible_neighbors:
             separation = abs(
@@ -590,6 +711,22 @@ def propose_coupling_stage(
                         "phase_limit": proposal.effective_phase_limit,
                     },
                 )
+        if proposal.potential_scope == "disjoint_components":
+            try:
+                _validate_coupling_boundary(
+                    snapshot,
+                    proposal.affected_relations,
+                    proposal.effective_phase_limit,
+                    phase_overrides=final_phase,
+                )
+            except U3PhaseGateError as exc:
+                raise TNFRValueError(
+                    f"Coupling affected relation violates the final U3 gate: {exc}",
+                    context={
+                        "operator": "Coupling",
+                        "failed_condition": "final_u3_boundary",
+                    },
+                ) from exc
 
     updates_by_node: dict[Any, dict[str, float | None]] = {
         node: {"theta": phase, "vf": None, "dnfr": None}
@@ -662,6 +799,11 @@ def propose_coupling_stage(
             key=lambda item: (rank[item[0]], rank[item[1]]),
         )
     )
+    if potential_partner is not None and not edges:
+        raise TNFRValueError(
+            "Coupling potential pair did not pass final link admission",
+            context={"operator": "Coupling", "failed_condition": "potential_affinity"},
+        )
     node_updates = tuple(
         CouplingNodeUpdate(
             node=node,
@@ -676,6 +818,9 @@ def propose_coupling_stage(
         target_proposals=target_proposals,
         node_updates=node_updates,
         edges=edges,
+        preserved_phase_writers=preserved_writers,
+        preserved_relations=preserved_relations,
+        preserved_phase_limit=preserved_limit,
     )
 
 
